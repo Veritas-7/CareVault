@@ -871,6 +871,7 @@ textarea:focus {
 .attachment-summary,
 .document-attachment {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 7px;
   min-width: 0;
@@ -890,6 +891,12 @@ textarea:focus {
 .document-attachment small {
   flex: 0 0 auto;
   color: #0f4c5c;
+}
+
+.attachment-status {
+  border-radius: 999px;
+  padding: 3px 7px;
+  background: #eef5f4;
 }
 
 .attachment-empty {

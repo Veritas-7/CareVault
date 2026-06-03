@@ -17,6 +17,7 @@ CareVault is a local-first health notebook for manually tracking:
 - per-document review status and next-action tracking with in-list updates for clinical follow-up
 - per-document audit history for saved records, review status changes, next-action edits, and attachment removal
 - recoverable document deletion through an in-app deleted-document archive
+- attachment availability checks that mark saved files as found, missing, failed, or filename-reference-only
 - document attachment lifecycle controls with Tauri sandbox-copy selection and browser filename fallback
 - clinician visit summary export as a Markdown packet with selectable 7/30/90/all-record date range
 
@@ -35,6 +36,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - document review status and next-action tracking with in-list updates and category/status filtering
 - document audit history shown on each saved record for recent review/action/attachment changes
 - deleted-document archive with restore controls so manual medical notes are not immediately lost
+- saved attachment status checks with document-history entries for found/missing/reference-only files
 - document attachment preparation, opening, removal, and document deletion through Tauri dialog/fs plugins
 - Markdown visit summary export for clinical conversations with a selectable date range
 - pure TypeScript health rule module in `src/healthRules.ts`
@@ -63,4 +65,6 @@ Document history is stored with each saved document and is used as an in-app aud
 
 Document deletion is recoverable: deleting a saved note moves it to an in-app deleted-document archive and keeps its text, metadata, attachment reference, and history available for restore.
 
-The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment preview, missing-file recovery, and stronger long-term archive management.
+Saved attachment checks update the document card without reading or uploading medical file contents. Tauri runtime checks the sandbox copy path; browser preview keeps filename-reference-only status.
+
+The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment preview/re-attachment recovery and stronger long-term archive management.

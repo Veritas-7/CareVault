@@ -543,7 +543,7 @@ function App() {
     const statusMatches =
       documentStatusFilter === "all" || document.reviewStatus === documentStatusFilter;
     const haystack =
-      `${document.date} ${documentLabel[document.category]} ${document.title} ${document.body} ${document.tags} ${document.nextAction} ${documentReviewStatusLabel[document.reviewStatus]} ${document.attachmentName ?? ""}`.toLowerCase();
+      `${document.date} ${documentLabel[document.category]} ${document.title} ${document.body} ${document.tags} ${document.nextAction} ${documentReviewStatusLabel[document.reviewStatus]} ${document.attachmentName ?? ""} ${document.attachmentStatus ?? ""}`.toLowerCase();
     return categoryMatches && statusMatches && haystack.includes(documentFilter.toLowerCase());
   });
 
@@ -755,6 +755,54 @@ function App() {
     } catch (error) {
       console.error("Document attachment open failed", error);
       setSaveLabel("첨부 파일 열기 실패");
+    }
+  };
+
+  const updateDocumentAttachmentStatus = (
+    documentId: string,
+    attachmentStatus: string,
+    historyDetail: string,
+  ) => {
+    const historyEntry = createDocumentHistory(
+      "attachment-check",
+      "첨부 확인",
+      historyDetail,
+    );
+    setState((current) => ({
+      ...current,
+      documents: current.documents.map((document) =>
+        document.id === documentId
+          ? {
+              ...document,
+              attachmentStatus,
+              history: appendDocumentHistory(document.history, historyEntry),
+            }
+          : document,
+      ),
+    }));
+  };
+
+  const checkDocumentAttachment = async (document: CareDocument) => {
+    if (!document.attachmentName) return;
+
+    if (!document.attachmentPath || !canUseTauriRuntime()) {
+      const status = "파일명 참조만 저장됨";
+      updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
+      setSaveLabel(status);
+      return;
+    }
+
+    try {
+      const { exists } = await import("@tauri-apps/plugin-fs");
+      const attachmentExists = await exists(document.attachmentPath).catch(() => false);
+      const status = attachmentExists ? "파일 확인됨" : "파일 없음 - 재첨부 필요";
+      updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
+      setSaveLabel(status);
+    } catch (error) {
+      console.error("Document attachment check failed", error);
+      const status = "첨부 확인 실패";
+      updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
+      setSaveLabel(status);
     }
   };
 
@@ -2106,10 +2154,19 @@ function App() {
                             ? attachmentStorageLabel[document.attachmentStorage]
                             : "첨부"}
                         </small>
+                        {document.attachmentStatus ? (
+                          <small className="attachment-status">{document.attachmentStatus}</small>
+                        ) : null}
                       </div>
                     ) : null}
                   </div>
                   <div className="document-actions">
+                    {document.attachmentName ? (
+                      <button type="button" onClick={() => checkDocumentAttachment(document)}>
+                        <ShieldCheck aria-hidden="true" />
+                        첨부 확인
+                      </button>
+                    ) : null}
                     {document.attachmentPath ? (
                       <button type="button" onClick={() => openDocumentAttachment(document)}>
                         <ExternalLink aria-hidden="true" />
