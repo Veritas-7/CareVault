@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
   AlertTriangle,
   Apple,
   CalendarDays,
   ClipboardList,
+  Download,
   FileText,
   HeartPulse,
   Hospital,
@@ -13,6 +14,7 @@ import {
   Save,
   Search,
   ShieldCheck,
+  Upload,
   UserRound,
 } from "lucide-react";
 import {
@@ -218,6 +220,7 @@ function App() {
   const [documentDraft, setDocumentDraft] = useState<CareDocument>(emptyDocument);
   const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
   const [documentFilter, setDocumentFilter] = useState("");
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -346,6 +349,55 @@ function App() {
       .catch(() => setSaveLabel("저장 실패"));
   };
 
+  const exportBackup = () => {
+    const payload = {
+      app: "CareVault",
+      schemaVersion: 1,
+      exportedAt: new Date().toISOString(),
+      state,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `carevault-backup-${today}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const importBackup = (file: File | undefined) => {
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        const importedState =
+          parsed && typeof parsed === "object" && "state" in parsed ? parsed.state : parsed;
+        if (!importedState?.profile || !Array.isArray(importedState?.vitals)) {
+          setSaveLabel("가져오기 실패");
+          return;
+        }
+        setState({
+          ...defaultState,
+          ...importedState,
+          profile: { ...defaultState.profile, ...importedState.profile },
+          vitals: importedState.vitals ?? [],
+          visits: importedState.visits ?? [],
+          documents: importedState.documents ?? [],
+        });
+        setSaveLabel("백업 가져옴");
+      } catch {
+        setSaveLabel("가져오기 실패");
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <main className="app-shell">
       <aside className="sidebar">
@@ -389,6 +441,25 @@ function App() {
           <div className="top-actions">
             <span>{state.profile.cancerCareMode ? "암환자 관리 모드" : "일반 관리 모드"}</span>
             <span>{saveLabel}</span>
+            <button type="button" className="secondary-button" onClick={exportBackup}>
+              <Download aria-hidden="true" />
+              내보내기
+            </button>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => importInputRef.current?.click()}
+            >
+              <Upload aria-hidden="true" />
+              가져오기
+            </button>
+            <input
+              ref={importInputRef}
+              className="visually-hidden"
+              type="file"
+              accept="application/json"
+              onChange={(event) => importBackup(event.currentTarget.files?.[0])}
+            />
             <button type="button" onClick={saveNow}>
               <Save aria-hidden="true" />
               저장

@@ -191,6 +191,28 @@ h2 {
   background: #0b635d;
 }
 
+.top-actions .secondary-button {
+  color: #0f4c5c;
+  background: #ffffff;
+  border: 1px solid #c7d8da;
+}
+
+.top-actions .secondary-button:hover {
+  background: #eaf5f4;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
