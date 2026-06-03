@@ -1348,6 +1348,52 @@ textarea:focus {
   flex: 0 0 auto;
 }
 
+.export-preview-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px 18px;
+  border-top: 1px solid #dce6e5;
+}
+
+.export-preview-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.export-preview-header h2 {
+  margin: 0 0 4px;
+}
+
+.export-preview-header span {
+  color: #526066;
+  font-size: 0.86rem;
+}
+
+.export-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.export-preview-panel pre {
+  max-height: 360px;
+  margin: 0;
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid #27383d;
+  border-radius: 8px;
+  color: #eef8f6;
+  background: #132125;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 @media (max-width: 1120px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -1434,5 +1480,13 @@ textarea:focus {
   .inline-actions {
     flex-direction: row;
     flex-wrap: wrap;
+  }
+
+  .export-preview-header {
+    display: grid;
+  }
+
+  .export-preview-actions {
+    justify-content: flex-start;
   }
 }

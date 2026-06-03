@@ -7,6 +7,7 @@ import {
   ClipboardList,
   Download,
   ExternalLink,
+  Eye,
   FileText,
   HeartPulse,
   Hospital,
@@ -153,6 +154,14 @@ type AttachmentPreviewState = {
   attachmentName: string;
   previewUrl: string;
   sourceLabel: string;
+};
+
+type ExportPreviewState = {
+  content: string;
+  filename: string;
+  format: string;
+  mimeType: string;
+  title: string;
 };
 
 type SymptomEntry = {
@@ -534,6 +543,7 @@ function App() {
     useState<DocumentReviewStatusFilter>("all");
   const [savedAttachmentTargetId, setSavedAttachmentTargetId] = useState<string | null>(null);
   const [attachmentPreview, setAttachmentPreview] = useState<AttachmentPreviewState | null>(null);
+  const [exportPreview, setExportPreview] = useState<ExportPreviewState | null>(null);
   const [browserAttachmentPreviewUrls, setBrowserAttachmentPreviewUrls] = useState<
     Record<string, string>
   >({});
@@ -1401,6 +1411,42 @@ function App() {
       .catch(() => setSaveLabel("저장 실패"));
   };
 
+  const downloadTextFile = (content: string, filename: string, mimeType: string) => {
+    const blob = new Blob([content], {
+      type: mimeType,
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const buildVisitPacketExport = () =>
+    buildVisitPacketMarkdown(state, {
+      exportedAt: new Date().toISOString(),
+      foodQuery: state.foodQuery,
+      range: visitPacketRange,
+    });
+
+  const buildCsvExport = () => buildCareVaultCsv(state, new Date().toISOString());
+
+  const buildCaregiverExport = () => buildCaregiverExportHtml(state, new Date().toISOString());
+
+  const showExportPreview = (preview: ExportPreviewState) => {
+    setExportPreview(preview);
+    setSaveLabel(`${preview.format} 미리보기 생성`);
+  };
+
+  const downloadExportPreview = () => {
+    if (!exportPreview) return;
+    downloadTextFile(exportPreview.content, exportPreview.filename, exportPreview.mimeType);
+    setSaveLabel(`${exportPreview.format} 내보냄`);
+  };
+
   const exportBackup = () => {
     const payload = {
       app: "CareVault",
@@ -1422,54 +1468,20 @@ function App() {
   };
 
   const exportVisitPacket = () => {
-    const markdown = buildVisitPacketMarkdown(state, {
-      exportedAt: new Date().toISOString(),
-      foodQuery: state.foodQuery,
-      range: visitPacketRange,
-    });
-    const blob = new Blob([markdown], {
-      type: "text/markdown;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `carevault-visit-summary-${today}.md`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const markdown = buildVisitPacketExport();
+    downloadTextFile(markdown, `carevault-visit-summary-${today}.md`, "text/markdown;charset=utf-8");
     setSaveLabel(`진료 요약 내보냄 (${visitPacketRangeLabels[visitPacketRange]})`);
   };
 
   const exportCsvCompanion = () => {
-    const csv = buildCareVaultCsv(state, new Date().toISOString());
-    const blob = new Blob([csv], {
-      type: "text/csv;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `carevault-records-${today}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const csv = buildCsvExport();
+    downloadTextFile(csv, `carevault-records-${today}.csv`, "text/csv;charset=utf-8");
     setSaveLabel("CSV 내보냄");
   };
 
   const exportCaregiverHtml = () => {
-    const html = buildCaregiverExportHtml(state, new Date().toISOString());
-    const blob = new Blob([html], {
-      type: "text/html;charset=utf-8",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `carevault-caregiver-share-${today}.html`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const html = buildCaregiverExport();
+    downloadTextFile(html, `carevault-caregiver-share-${today}.html`, "text/html;charset=utf-8");
     setSaveLabel("보호자 공유본 내보냄");
   };
 
@@ -1575,13 +1587,61 @@ function App() {
               <FileText aria-hidden="true" />
               진료 요약
             </button>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() =>
+                showExportPreview({
+                  content: buildVisitPacketExport(),
+                  filename: `carevault-visit-summary-${today}.md`,
+                  format: "진료 요약",
+                  mimeType: "text/markdown;charset=utf-8",
+                  title: `진료 요약 미리보기 (${visitPacketRangeLabels[visitPacketRange]})`,
+                })
+              }
+            >
+              <Eye aria-hidden="true" />
+              요약 미리보기
+            </button>
             <button type="button" className="secondary-button" onClick={exportCsvCompanion}>
               <Download aria-hidden="true" />
               CSV
             </button>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() =>
+                showExportPreview({
+                  content: buildCsvExport(),
+                  filename: `carevault-records-${today}.csv`,
+                  format: "CSV",
+                  mimeType: "text/csv;charset=utf-8",
+                  title: "CSV 미리보기",
+                })
+              }
+            >
+              <Eye aria-hidden="true" />
+              CSV 미리보기
+            </button>
             <button type="button" className="secondary-button" onClick={exportCaregiverHtml}>
               <FileText aria-hidden="true" />
               공유본
+            </button>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() =>
+                showExportPreview({
+                  content: buildCaregiverExport(),
+                  filename: `carevault-caregiver-share-${today}.html`,
+                  format: "보호자 공유본",
+                  mimeType: "text/html;charset=utf-8",
+                  title: "보호자 공유본 미리보기",
+                })
+              }
+            >
+              <Eye aria-hidden="true" />
+              공유본 미리보기
             </button>
             <button
               type="button"
@@ -2751,9 +2811,36 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 다운로드 전 내보내기 미리보기.
+            다음 개발 슬라이스: 미리보기 복사·인쇄 액션.
           </p>
         </section>
+        {exportPreview ? (
+          <section className="export-preview-panel" aria-label="내보내기 미리보기">
+            <div className="export-preview-header">
+              <div>
+                <p className="eyebrow">{exportPreview.format}</p>
+                <h2>{exportPreview.title}</h2>
+                <span>{exportPreview.filename}</span>
+              </div>
+              <div className="export-preview-actions">
+                <button type="button" className="secondary-inline-button" onClick={downloadExportPreview}>
+                  <Download aria-hidden="true" />
+                  다운로드
+                </button>
+                <button
+                  type="button"
+                  className="text-icon-button"
+                  onClick={() => setExportPreview(null)}
+                  aria-label="내보내기 미리보기 닫기"
+                >
+                  <X aria-hidden="true" />
+                  닫기
+                </button>
+              </div>
+            </div>
+            <pre>{exportPreview.content}</pre>
+          </section>
+        ) : null}
       </section>
       {attachmentPreview ? (
         <div className="attachment-preview-backdrop" role="presentation">
