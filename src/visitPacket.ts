@@ -6,6 +6,7 @@ import {
   calculateBmi,
   type GlucoseContext,
 } from "./healthRules";
+import { exportSourceLabels, getLabRangeSourceLabel } from "./exportSourceLabels";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose";
@@ -210,7 +211,8 @@ export function buildVisitPacketMarkdown(
         lab.upper ? Number.parseFloat(lab.upper) : undefined,
       );
       const labRange = lab.lower || lab.upper ? ` (기준 ${lab.lower || "-"}-${lab.upper || "-"})` : "";
-      return `- ${lab.date}: ${lab.name} ${lab.value} ${lab.unit}${labRange} - ${assessment.label}${optionalSuffix(lab.note, " / ")}`;
+      const sourceLabel = getLabRangeSourceLabel(lab.lower, lab.upper);
+      return `- ${lab.date}: ${lab.name} ${lab.value} ${lab.unit}${labRange} - [${sourceLabel}] ${assessment.label}${optionalSuffix(lab.note, " / ")}`;
     });
 
   const symptomLines = latestFirst(filterByRange(state.symptoms, rangeStartDate))
@@ -248,7 +250,9 @@ export function buildVisitPacketMarkdown(
     ? (() => {
         const food = assessCancerFood(options.foodQuery ?? "");
         const matches = food.matches.map((match) => `${match.term}: ${match.reason}`).join("; ");
-        return [`- ${options.foodQuery}: ${food.label} - ${food.summary}${optionalSuffix(matches, " / 근거: ")}`];
+        return [
+          `- ${options.foodQuery}: [${exportSourceLabels.foodLocalRules}] ${food.label} - ${food.summary}${optionalSuffix(matches, " / 근거: ")}`,
+        ];
       })()
     : [];
 

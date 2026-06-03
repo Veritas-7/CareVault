@@ -12,7 +12,7 @@ const state: CsvExportState = {
     diabetes: true,
     hypertension: true,
   },
-  foodQuery: "브로콜리, 현미밥",
+  foodQuery: "브로콜리, 현미밥, 자몽 주스",
   vitals: [
     {
       date: "2026-06-01",
@@ -84,7 +84,13 @@ describe("csvExport", () => {
 
     expect(csv).toContain('"section","date","title","value","status","detail"');
     expect(csv).toContain('"visit","2026-06-02","서울암센터","항암 후 추적","다음 예약 2026-06-10"');
-    expect(csv).toContain('"lab","2026-06-01","WBC","3.4 10^3/uL","4.0~10.0","낮음"');
+    expect(csv).toContain(
+      '"lab","2026-06-01","WBC","3.4 10^3/uL","사용자 입력 기준 범위 4.0~10.0","기준보다 낮음 | 낮음"',
+    );
+    expect(csv).toContain(
+      '"food_check","","음식 판단 입력","브로콜리, 현미밥, 자몽 주스","로컬 음식 규칙 라벨"',
+    );
+    expect(csv).toContain("자몽: 약물 상호작용 확인 필요");
     expect(csv).toContain('"document","2026-06-03","검사 결과","lab","needs-review"');
   });
 

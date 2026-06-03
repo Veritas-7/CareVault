@@ -1,3 +1,6 @@
+import { exportSourceLabels, getLabRangeSourceLabel } from "./exportSourceLabels";
+import { assessCancerFood, assessLabValue } from "./healthRules";
+
 type CsvDocument = {
   date: string;
   title: string;
@@ -129,14 +132,21 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
   });
 
   state.labResults.forEach((lab) => {
+    const assessment = assessLabValue(
+      Number.parseFloat(lab.value),
+      lab.lower ? Number.parseFloat(lab.lower) : undefined,
+      lab.upper ? Number.parseFloat(lab.upper) : undefined,
+    );
+    const range = lab.lower || lab.upper ? `${lab.lower || "-"}~${lab.upper || "-"}` : "";
+    const rangeSource = getLabRangeSourceLabel(lab.lower, lab.upper);
     rows.push(
       row([
         "lab",
         lab.date,
         lab.name,
         `${lab.value}${lab.unit ? ` ${lab.unit}` : ""}`,
-        lab.lower || lab.upper ? `${lab.lower || "-"}~${lab.upper || "-"}` : "",
-        lab.note,
+        range ? `${rangeSource} ${range}` : rangeSource,
+        joinDetail([assessment.label, lab.note]),
       ]),
     );
   });
@@ -190,7 +200,18 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
   state.deletedDocuments.forEach((document) => pushDocument("deleted_document", document));
 
   if (state.foodQuery.trim()) {
-    rows.push(row(["food_check", "", "음식 판단 입력", state.foodQuery, "", ""]));
+    const food = assessCancerFood(state.foodQuery);
+    const matches = food.matches.map((match) => `${match.term}: ${match.reason}`).join("; ");
+    rows.push(
+      row([
+        "food_check",
+        "",
+        "음식 판단 입력",
+        state.foodQuery,
+        exportSourceLabels.foodLocalRules,
+        joinDetail([food.label, food.summary, matches ? `근거: ${matches}` : undefined]),
+      ]),
+    );
   }
 
   return `${rows.join("\n")}\n`;

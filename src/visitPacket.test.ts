@@ -94,11 +94,13 @@ describe("visit packet", () => {
     expect(markdown).toContain("혈압 132/84 mmHg");
     expect(markdown).toContain("혈당 181 mg/dL");
     expect(markdown).toContain("WBC 3.4 10^3/uL");
+    expect(markdown).toContain("[사용자 입력 기준 범위] 기준보다 낮음");
     expect(markdown).toContain("[확인 필요] 식사");
     expect(markdown).toContain("상태: 의료진 질문");
     expect(markdown).toContain("다음 조치: 백혈구 감소 시 식사 제한 기준 질문");
     expect(markdown).toContain("첨부: blood-test.pdf");
     expect(markdown).toContain("브로콜리, 베이컨, 자몽 주스");
+    expect(markdown).toContain("[로컬 음식 규칙 라벨] 의료진 확인 필요");
   });
 
   it("keeps local attachment paths out of the exported summary", () => {

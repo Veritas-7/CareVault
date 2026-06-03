@@ -1,3 +1,4 @@
+import { exportSourceLabels, getLabRangeSourceLabel } from "./exportSourceLabels";
 import { assessCancerFood, assessLabValue } from "./healthRules";
 
 export type CaregiverExportState = {
@@ -109,7 +110,7 @@ export function buildCaregiverExportHtml(
       `<strong>${escapeHtml(document.date)} ${escapeHtml(document.title)}</strong>`,
       `<span class="source-label">사용자 입력 서류 조치</span> ${escapeHtml(document.nextAction || document.category)}`,
       document.attachmentName
-        ? `<small><span class="source-label">첨부 파일명만 포함</span> ${escapeHtml(document.attachmentName)} ${escapeHtml(document.attachmentStatus)}</small>`
+        ? `<small><span class="source-label">${exportSourceLabels.attachmentFilenameOnly}</span> ${escapeHtml(document.attachmentName)} ${escapeHtml(document.attachmentStatus)}</small>`
         : "",
     ]
       .filter(Boolean)
@@ -126,14 +127,14 @@ export function buildCaregiverExportHtml(
         lab.lower ? Number.parseFloat(lab.lower) : undefined,
         lab.upper ? Number.parseFloat(lab.upper) : undefined,
       );
-      const rangeSource = lab.lower || lab.upper ? "사용자 입력 기준 범위" : "기준 범위 없음";
+      const rangeSource = getLabRangeSourceLabel(lab.lower, lab.upper);
       return `<strong>${escapeHtml(lab.date)} ${escapeHtml(lab.name)} ${escapeHtml(lab.value)}${lab.unit ? ` ${escapeHtml(lab.unit)}` : ""}</strong><br><span class="source-label">${rangeSource}</span> ${escapeHtml(assessment.label)}<br>기준 ${escapeHtml(lab.lower || "-")}~${escapeHtml(lab.upper || "-")} ${escapeHtml(lab.note)}`;
     },
   );
   const vitalItems = latestByDate(state.vitals, 5).map(vitalText);
   const foodItems = foodAssessment
     ? [
-        `<strong>${escapeHtml(foodQuery)}</strong><br><span class="source-label">로컬 음식 규칙 라벨</span> ${escapeHtml(foodAssessment.label)}<br>${escapeHtml(foodAssessment.summary)}${
+        `<strong>${escapeHtml(foodQuery)}</strong><br><span class="source-label">${exportSourceLabels.foodLocalRules}</span> ${escapeHtml(foodAssessment.label)}<br>${escapeHtml(foodAssessment.summary)}${
           foodAssessment.matches.length
             ? `<br><small>근거: ${foodAssessment.matches
                 .map((match) => `${escapeHtml(match.term)} - ${escapeHtml(match.reason)}`)

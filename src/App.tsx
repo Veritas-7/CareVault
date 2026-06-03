@@ -2751,7 +2751,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 내보내기 미리보기, Markdown·CSV 근거 라벨.
+            다음 개발 슬라이스: 다운로드 전 내보내기 미리보기.
           </p>
         </section>
       </section>
