@@ -48,6 +48,7 @@ import {
   getNextQuestionDate,
   type LabQuestionSource,
 } from "./labQuestionPrompts";
+import { buildCareActionQueue, type CareActionSource } from "./careActionQueue";
 import { labPresets, resolveLabPreset } from "./labPresets";
 import {
   loadPersistedState,
@@ -364,6 +365,13 @@ const labFlagLabel: Record<LabFlag, string> = {
   unknown: "기준 없음",
 };
 
+const careActionSourceLabel: Record<CareActionSource, string> = {
+  question: "질문",
+  lab: "검사",
+  document: "서류",
+  visit: "방문",
+};
+
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -490,6 +498,7 @@ function App() {
   const activeDocumentActionCount = state.documents.filter(
     (document) => document.reviewStatus !== "done",
   ).length;
+  const careActions = useMemo(() => buildCareActionQueue(state, today), [state, today]);
 
   const chartData = [...state.vitals]
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -1010,6 +1019,38 @@ function App() {
             <strong>{activeDocumentActionCount}개</strong>
             <small>{activeDocumentActionCount ? "검토/질문/대기" : "정리 완료"}</small>
           </article>
+        </section>
+
+        <section className="action-queue-panel" aria-label="진료 준비 큐">
+          <div className="section-title">
+            <h2>진료 준비 큐</h2>
+            <span>{careActions.length}개 확인 항목</span>
+          </div>
+          {careActions.length ? (
+            <div className="action-queue-list">
+              {careActions.map((action) => (
+                <article className={`action-row action-${action.tone}`} key={action.id}>
+                  <time>{action.date}</time>
+                  <div className="action-source">
+                    {action.source === "question" ? <MessageSquare aria-hidden="true" /> : null}
+                    {action.source === "lab" ? <ClipboardList aria-hidden="true" /> : null}
+                    {action.source === "document" ? <FileText aria-hidden="true" /> : null}
+                    {action.source === "visit" ? <Hospital aria-hidden="true" /> : null}
+                    <span>{careActionSourceLabel[action.source]}</span>
+                  </div>
+                  <div>
+                    <strong>{action.title}</strong>
+                    <p>{action.detail}</p>
+                  </div>
+                  <mark>{action.label}</mark>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="action-empty">
+              현재 열려 있는 질문, 기준 밖 검사, 서류 조치, 예정 방문이 없습니다.
+            </p>
+          )}
         </section>
 
         <section className="content-grid">

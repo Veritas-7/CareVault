@@ -282,7 +282,8 @@ h2 {
 .metric-card,
 .panel,
 .timeline-band,
-.next-steps {
+.next-steps,
+.action-queue-panel {
   border: 1px solid #d7e2e1;
   border-radius: 8px;
   background: #fbfdfc;
@@ -349,8 +350,86 @@ label,
 }
 
 .panel,
-.timeline-band {
+.timeline-band,
+.action-queue-panel {
   padding: 20px;
+}
+
+.action-queue-panel {
+  margin-bottom: 18px;
+}
+
+.action-queue-list {
+  display: grid;
+  gap: 10px;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 112px 104px minmax(0, 1fr) max-content;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid #dde8e6;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.action-row time {
+  color: #526066;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.action-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: #0f766e;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.action-source svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+}
+
+.action-row strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #1d2528;
+}
+
+.action-row p {
+  margin: 0;
+  color: #526066;
+  font-size: 0.9rem;
+}
+
+.action-row mark {
+  justify-self: end;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #1d2528;
+  background: #eef5f4;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.action-watch {
+  border-left: 4px solid #d97706;
+}
+
+.action-neutral {
+  border-left: 4px solid #8aa0a6;
+}
+
+.action-empty {
+  margin: 0;
+  color: #526066;
 }
 
 .section-title {
@@ -985,6 +1064,7 @@ textarea:focus {
 
   .question-item,
   .lab-item,
+  .action-row,
   .document-item,
   .document-filter-row,
   .document-update-controls {
