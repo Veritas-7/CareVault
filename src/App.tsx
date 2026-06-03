@@ -215,6 +215,12 @@ type LabResult = {
   note: string;
 };
 
+type CaregiverShareSettings = {
+  coverMemo: string;
+  redactProfile: boolean;
+  sections: CaregiverExportSections;
+};
+
 type AppState = {
   profile: Profile;
   foodQuery: string;
@@ -225,6 +231,7 @@ type AppState = {
   symptoms: SymptomEntry[];
   questions: CareQuestion[];
   labResults: LabResult[];
+  caregiverShareSettings: CaregiverShareSettings;
 };
 
 const today = new Date().toISOString().slice(0, 10);
@@ -333,6 +340,11 @@ const defaultState: AppState = {
       note: "면역저하 식품 안전 질문과 연결",
     },
   ],
+  caregiverShareSettings: {
+    coverMemo: "",
+    redactProfile: false,
+    sections: { ...caregiverExportSectionDefaults },
+  },
 };
 
 const emptyVital: VitalEntry = {
@@ -487,6 +499,19 @@ function extractFileName(path: string) {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path;
 }
 
+function normalizeCaregiverShareSettings(
+  input: Partial<CaregiverShareSettings> | undefined,
+): CaregiverShareSettings {
+  return {
+    coverMemo: input?.coverMemo ?? "",
+    redactProfile: input?.redactProfile ?? false,
+    sections: {
+      ...caregiverExportSectionDefaults,
+      ...(input?.sections ?? {}),
+    },
+  };
+}
+
 function normalizeAppState(input: Partial<AppState>): AppState {
   return {
     ...defaultState,
@@ -510,6 +535,7 @@ function normalizeAppState(input: Partial<AppState>): AppState {
     symptoms: input.symptoms ?? [],
     questions: input.questions ?? [],
     labResults: input.labResults ?? [],
+    caregiverShareSettings: normalizeCaregiverShareSettings(input.caregiverShareSettings),
   };
 }
 
@@ -583,10 +609,6 @@ function App() {
   );
   const [labPresetChoice, setLabPresetChoice] = useState("");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
-  const [caregiverExportSections, setCaregiverExportSections] =
-    useState<CaregiverExportSections>(() => ({ ...caregiverExportSectionDefaults }));
-  const [redactCaregiverProfile, setRedactCaregiverProfile] = useState(false);
-  const [caregiverCoverMemo, setCaregiverCoverMemo] = useState("");
   const [documentFilter, setDocumentFilter] = useState("");
   const [documentCategoryFilter, setDocumentCategoryFilter] =
     useState<DocumentCategoryFilter>("all");
@@ -1487,9 +1509,9 @@ function App() {
 
   const buildCaregiverExport = () =>
     buildCaregiverExportHtml(state, new Date().toISOString(), {
-      coverMemo: caregiverCoverMemo,
-      redactProfile: redactCaregiverProfile,
-      sections: caregiverExportSections,
+      coverMemo: state.caregiverShareSettings.coverMemo,
+      redactProfile: state.caregiverShareSettings.redactProfile,
+      sections: state.caregiverShareSettings.sections,
     });
 
   const showExportPreview = (preview: ExportPreviewState) => {
@@ -1610,8 +1632,36 @@ function App() {
     reader.readAsText(file);
   };
 
+  const updateCaregiverShareSettings = (updates: Partial<CaregiverShareSettings>) => {
+    setState((current) => ({
+      ...current,
+      caregiverShareSettings: normalizeCaregiverShareSettings({
+        ...current.caregiverShareSettings,
+        ...updates,
+      }),
+    }));
+  };
+
+  const updateCaregiverShareSection = (id: CaregiverExportSectionId, checked: boolean) => {
+    setState((current) => {
+      const currentSettings = normalizeCaregiverShareSettings(current.caregiverShareSettings);
+      return {
+        ...current,
+        caregiverShareSettings: {
+          ...currentSettings,
+          sections: {
+            ...currentSettings.sections,
+            [id]: checked,
+          },
+        },
+      };
+    });
+  };
+
   const showRenderedExportPreview = exportPreview ? isHtmlExportPreview(exportPreview) : false;
-  const activeCaregiverSectionCount = Object.values(caregiverExportSections).filter(Boolean).length;
+  const activeCaregiverSectionCount = Object.values(
+    state.caregiverShareSettings.sections,
+  ).filter(Boolean).length;
 
   return (
     <main className="app-shell">
@@ -1752,8 +1802,12 @@ function App() {
             <label className="caregiver-profile-redaction">
               <input
                 type="checkbox"
-                checked={redactCaregiverProfile}
-                onChange={(event) => setRedactCaregiverProfile(event.currentTarget.checked)}
+                checked={state.caregiverShareSettings.redactProfile}
+                onChange={(event) =>
+                  updateCaregiverShareSettings({
+                    redactProfile: event.currentTarget.checked,
+                  })
+                }
               />
               프로필 가리기
             </label>
@@ -1761,8 +1815,12 @@ function App() {
               className="caregiver-cover-memo"
               aria-label="보호자 공유본 전달 메모"
               rows={2}
-              value={caregiverCoverMemo}
-              onChange={(event) => setCaregiverCoverMemo(event.currentTarget.value)}
+              value={state.caregiverShareSettings.coverMemo}
+              onChange={(event) =>
+                updateCaregiverShareSettings({
+                  coverMemo: event.currentTarget.value,
+                })
+              }
               placeholder="보호자에게 전달할 메모"
             />
             <div className="caregiver-memo-presets" aria-label="보호자 공유본 메모 프리셋">
@@ -1771,7 +1829,7 @@ function App() {
                   key={preset.label}
                   type="button"
                   className="memo-preset-button"
-                  onClick={() => setCaregiverCoverMemo(preset.text)}
+                  onClick={() => updateCaregiverShareSettings({ coverMemo: preset.text })}
                 >
                   <MessageSquare aria-hidden="true" />
                   {preset.label}
@@ -1781,19 +1839,14 @@ function App() {
             <fieldset className="caregiver-section-options" aria-label="보호자 공유본 포함 섹션">
               <legend>공유본 포함</legend>
               {caregiverExportSectionOptions.map((option) => {
-                const checked = caregiverExportSections[option.id];
+                const checked = state.caregiverShareSettings.sections[option.id];
                 return (
                   <label key={option.id}>
                     <input
                       type="checkbox"
                       checked={checked}
                       disabled={checked && activeCaregiverSectionCount === 1}
-                      onChange={() =>
-                        setCaregiverExportSections((current) => ({
-                          ...current,
-                          [option.id]: !current[option.id],
-                        }))
-                      }
+                      onChange={() => updateCaregiverShareSection(option.id, !checked)}
                     />
                     {option.label}
                   </label>
@@ -2968,7 +3021,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 보호자 공유본 설정 저장.
+            다음 개발 슬라이스: 보호자 공유본 설정 초기화.
           </p>
         </section>
         {exportPreview ? (
