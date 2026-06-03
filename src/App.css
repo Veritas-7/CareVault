@@ -274,6 +274,32 @@ h2 {
   color: #7d8a8e;
 }
 
+.caregiver-memo-presets {
+  display: flex;
+  flex: 1 1 220px;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.top-actions .memo-preset-button {
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid #c7d8da;
+  color: #23494f;
+  background: #ffffff;
+  font-size: 0.82rem;
+}
+
+.top-actions .memo-preset-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.top-actions .memo-preset-button:hover {
+  background: #eaf5f4;
+}
+
 .caregiver-profile-redaction input,
 .caregiver-section-options input {
   width: 14px;

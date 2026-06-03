@@ -458,6 +458,21 @@ const caregiverExportSectionOptions: Array<{
   { id: "vitals", label: "혈압·혈당" },
 ];
 
+const caregiverMemoPresets = [
+  {
+    label: "식사",
+    text: "오늘은 식사량, 수분 섭취, 불편했던 음식을 중심으로 봐주세요.",
+  },
+  {
+    label: "증상",
+    text: "최근 증상 변화와 약 복용 후 반응을 같이 확인해주세요.",
+  },
+  {
+    label: "서류",
+    text: "다음 진료 전에 확인할 서류와 질문만 먼저 정리해주세요.",
+  },
+];
+
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -1750,6 +1765,19 @@ function App() {
               onChange={(event) => setCaregiverCoverMemo(event.currentTarget.value)}
               placeholder="보호자에게 전달할 메모"
             />
+            <div className="caregiver-memo-presets" aria-label="보호자 공유본 메모 프리셋">
+              {caregiverMemoPresets.map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  className="memo-preset-button"
+                  onClick={() => setCaregiverCoverMemo(preset.text)}
+                >
+                  <MessageSquare aria-hidden="true" />
+                  {preset.label}
+                </button>
+              ))}
+            </div>
             <fieldset className="caregiver-section-options" aria-label="보호자 공유본 포함 섹션">
               <legend>공유본 포함</legend>
               {caregiverExportSectionOptions.map((option) => {
@@ -2940,7 +2968,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 보호자 공유본 메모 프리셋.
+            다음 개발 슬라이스: 보호자 공유본 설정 저장.
           </p>
         </section>
         {exportPreview ? (
