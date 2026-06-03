@@ -17,6 +17,7 @@ type DocumentCategory =
   | "visit-note"
   | "insurance"
   | "other";
+type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
 type QuestionStatus = "open" | "answered" | "deferred";
 export type VisitPacketRange = "7d" | "30d" | "90d" | "all";
 
@@ -54,6 +55,8 @@ export type VisitPacketState = {
     category: DocumentCategory;
     body: string;
     tags: string;
+    reviewStatus?: DocumentReviewStatus;
+    nextAction?: string;
     attachmentName?: string;
     attachmentPath?: string;
   }>;
@@ -104,6 +107,13 @@ const documentLabel: Record<DocumentCategory, string> = {
   "visit-note": "진료 메모",
   insurance: "보험/행정",
   other: "기타",
+};
+
+const documentReviewStatusLabel: Record<DocumentReviewStatus, string> = {
+  "needs-review": "검토 필요",
+  "care-question": "의료진 질문",
+  "waiting-result": "결과 대기",
+  done: "정리 완료",
 };
 
 const questionStatusLabel: Record<QuestionStatus, string> = {
@@ -228,7 +238,10 @@ export function buildVisitPacketMarkdown(
     .slice(0, maxItems)
     .map((document) => {
       const attachment = document.attachmentName ? ` / 첨부: ${document.attachmentName}` : "";
-      return `- ${document.date}: [${documentLabel[document.category]}] ${document.title}${attachment}${optionalSuffix(document.tags, " / 태그: ")}${optionalSuffix(document.body, " / 메모: ")}`;
+      const reviewStatus = document.reviewStatus
+        ? ` / 상태: ${documentReviewStatusLabel[document.reviewStatus]}`
+        : "";
+      return `- ${document.date}: [${documentLabel[document.category]}] ${document.title}${reviewStatus}${optionalSuffix(document.nextAction ?? "", " / 다음 조치: ")}${attachment}${optionalSuffix(document.tags, " / 태그: ")}${optionalSuffix(document.body, " / 메모: ")}`;
     });
 
   const foodLines = options.foodQuery?.trim()

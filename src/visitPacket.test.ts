@@ -45,6 +45,8 @@ const sampleState: VisitPacketState = {
       category: "lab",
       body: "WBC 재확인",
       tags: "혈액검사",
+      reviewStatus: "care-question",
+      nextAction: "백혈구 감소 시 식사 제한 기준 질문",
       attachmentName: "blood-test.pdf",
     },
   ],
@@ -93,6 +95,8 @@ describe("visit packet", () => {
     expect(markdown).toContain("혈당 181 mg/dL");
     expect(markdown).toContain("WBC 3.4 10^3/uL");
     expect(markdown).toContain("[확인 필요] 식사");
+    expect(markdown).toContain("상태: 의료진 질문");
+    expect(markdown).toContain("다음 조치: 백혈구 감소 시 식사 제한 기준 질문");
     expect(markdown).toContain("첨부: blood-test.pdf");
     expect(markdown).toContain("브로콜리, 베이컨, 자몽 주스");
   });

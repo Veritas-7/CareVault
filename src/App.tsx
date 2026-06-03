@@ -65,6 +65,7 @@ type DocumentCategory =
   | "insurance"
   | "other";
 type AttachmentStorage = "tauri-sandbox" | "browser-reference";
+type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
 
 type Profile = {
   name: string;
@@ -105,6 +106,8 @@ type CareDocument = {
   category: DocumentCategory;
   body: string;
   tags: string;
+  reviewStatus: DocumentReviewStatus;
+  nextAction: string;
   attachmentName?: string;
   attachmentPath?: string;
   attachmentStorage?: AttachmentStorage;
@@ -211,6 +214,8 @@ const defaultState: AppState = {
       category: "lab",
       body: "백혈구 수치와 간수치 변화를 다음 진료 때 질문할 것.",
       tags: "혈액검사,종양내과",
+      reviewStatus: "care-question",
+      nextAction: "백혈구 수치가 낮을 때 식사 제한 기준 질문",
     },
   ],
   symptoms: [
@@ -276,6 +281,8 @@ const emptyDocument: CareDocument = {
   category: "lab",
   body: "",
   tags: "",
+  reviewStatus: "needs-review",
+  nextAction: "",
 };
 
 const emptySymptom: SymptomEntry = {
@@ -329,6 +336,13 @@ const attachmentStorageLabel: Record<AttachmentStorage, string> = {
   "browser-reference": "파일명 참조",
 };
 
+const documentReviewStatusLabel: Record<DocumentReviewStatus, string> = {
+  "needs-review": "검토 필요",
+  "care-question": "의료진 질문",
+  "waiting-result": "결과 대기",
+  done: "정리 완료",
+};
+
 const questionStatusLabel: Record<QuestionStatus, string> = {
   open: "확인 필요",
   answered: "답변 완료",
@@ -363,7 +377,11 @@ function normalizeAppState(input: Partial<AppState>): AppState {
     profile: { ...defaultState.profile, ...input.profile },
     vitals: input.vitals ?? [],
     visits: input.visits ?? [],
-    documents: input.documents ?? [],
+    documents: (input.documents ?? []).map((document) => ({
+      ...document,
+      reviewStatus: document.reviewStatus ?? "needs-review",
+      nextAction: document.nextAction ?? "",
+    })),
     symptoms: input.symptoms ?? [],
     questions: input.questions ?? [],
     labResults: input.labResults ?? [],
@@ -456,6 +474,9 @@ function App() {
   const abnormalLabCount = labAssessments.filter(({ assessment }) =>
     ["low", "high"].includes(assessment.flag),
   ).length;
+  const activeDocumentActionCount = state.documents.filter(
+    (document) => document.reviewStatus !== "done",
+  ).length;
 
   const chartData = [...state.vitals]
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -468,7 +489,7 @@ function App() {
 
   const filteredDocuments = state.documents.filter((document) => {
     const haystack =
-      `${document.title} ${document.body} ${document.tags} ${document.attachmentName ?? ""}`.toLowerCase();
+      `${document.title} ${document.body} ${document.tags} ${document.nextAction} ${documentReviewStatusLabel[document.reviewStatus]} ${document.attachmentName ?? ""}`.toLowerCase();
     return haystack.includes(documentFilter.toLowerCase());
   });
 
@@ -919,6 +940,12 @@ function App() {
             <strong>{abnormalLabCount}개</strong>
             <small>{abnormalLabCount ? "기준 밖 수치" : "기준 밖 수치 없음"}</small>
           </article>
+          <article className={`metric-card status-${activeDocumentActionCount ? "watch" : "ok"}`}>
+            <FileText aria-hidden="true" />
+            <span>서류 조치</span>
+            <strong>{activeDocumentActionCount}개</strong>
+            <small>{activeDocumentActionCount ? "검토/질문/대기" : "정리 완료"}</small>
+          </article>
         </section>
 
         <section className="content-grid">
@@ -1204,7 +1231,7 @@ function App() {
                 date: item.date,
                 icon: <FileText aria-hidden="true" />,
                 title: `${documentLabel[item.category]} · ${item.title}`,
-                detail: item.tags,
+                detail: `${documentReviewStatusLabel[item.reviewStatus]}${item.nextAction ? ` · ${item.nextAction}` : item.tags ? ` · ${item.tags}` : ""}`,
               })),
               ...state.symptoms.map((item) => ({
                 id: item.id,
@@ -1569,6 +1596,24 @@ function App() {
                   ))}
                 </select>
               </label>
+              <label>
+                서류 검토 상태
+                <select
+                  value={documentDraft.reviewStatus}
+                  onChange={(event) =>
+                    setDocumentDraft({
+                      ...documentDraft,
+                      reviewStatus: event.currentTarget.value as DocumentReviewStatus,
+                    })
+                  }
+                >
+                  {Object.entries(documentReviewStatusLabel).map(([value, label]) => (
+                    <option value={value} key={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
             <label className="wide-label">
               제목
@@ -1588,6 +1633,16 @@ function App() {
                   setDocumentDraft({ ...documentDraft, body: event.currentTarget.value })
                 }
                 placeholder="검사 수치, 의사 설명, 다음 질문을 그대로 입력"
+              />
+            </label>
+            <label className="wide-label">
+              다음 조치
+              <input
+                value={documentDraft.nextAction}
+                onChange={(event) =>
+                  setDocumentDraft({ ...documentDraft, nextAction: event.currentTarget.value })
+                }
+                placeholder="예: 다음 진료 때 간수치 변화 기준 질문"
               />
             </label>
             <label className="wide-label">
@@ -1661,8 +1716,17 @@ function App() {
                 <article className="document-item" key={document.id}>
                   <div>
                     <span>{document.date}</span>
+                    <div className="document-status-row">
+                      <mark>{documentLabel[document.category]}</mark>
+                      <small className={`status-chip review-${document.reviewStatus}`}>
+                        {documentReviewStatusLabel[document.reviewStatus]}
+                      </small>
+                    </div>
                     <strong>{document.title}</strong>
                     <p>{document.body}</p>
+                    {document.nextAction ? (
+                      <p className="document-next-action">다음 조치: {document.nextAction}</p>
+                    ) : null}
                     {document.attachmentName ? (
                       <div className="document-attachment">
                         <Paperclip aria-hidden="true" />
@@ -1676,7 +1740,6 @@ function App() {
                     ) : null}
                   </div>
                   <div className="document-actions">
-                    <mark>{documentLabel[document.category]}</mark>
                     {document.attachmentPath ? (
                       <button type="button" onClick={() => openDocumentAttachment(document)}>
                         <ExternalLink aria-hidden="true" />
