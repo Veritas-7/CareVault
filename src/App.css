@@ -217,6 +217,49 @@ h2 {
   outline-offset: 2px;
 }
 
+.caregiver-section-options {
+  display: flex;
+  align-items: center;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.caregiver-section-options legend {
+  margin-right: 4px;
+  color: #526066;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.caregiver-section-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid #c7d8da;
+  border-radius: 8px;
+  color: #23494f;
+  background: #ffffff;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.caregiver-section-options input {
+  width: 14px;
+  height: 14px;
+  accent-color: #0f766e;
+}
+
+.caregiver-section-options input:disabled {
+  cursor: not-allowed;
+}
+
 .secondary-inline-button,
 .text-icon-button,
 .document-actions button {

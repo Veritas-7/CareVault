@@ -85,7 +85,12 @@ import {
   type VisitPacketRange,
 } from "./visitPacket";
 import { buildCareVaultCsv } from "./csvExport";
-import { buildCaregiverExportHtml } from "./caregiverExport";
+import {
+  buildCaregiverExportHtml,
+  caregiverExportSectionDefaults,
+  type CaregiverExportSectionId,
+  type CaregiverExportSections,
+} from "./caregiverExport";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose";
@@ -440,6 +445,19 @@ const careActionSourceLabel: Record<CareActionSource, string> = {
   visit: "방문",
 };
 
+const caregiverExportSectionOptions: Array<{
+  id: CaregiverExportSectionId;
+  label: string;
+}> = [
+  { id: "visits", label: "진료" },
+  { id: "questions", label: "질문" },
+  { id: "documents", label: "서류" },
+  { id: "symptoms", label: "증상" },
+  { id: "labs", label: "검사" },
+  { id: "food", label: "음식" },
+  { id: "vitals", label: "혈압·혈당" },
+];
+
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -550,6 +568,8 @@ function App() {
   );
   const [labPresetChoice, setLabPresetChoice] = useState("");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
+  const [caregiverExportSections, setCaregiverExportSections] =
+    useState<CaregiverExportSections>(() => ({ ...caregiverExportSectionDefaults }));
   const [documentFilter, setDocumentFilter] = useState("");
   const [documentCategoryFilter, setDocumentCategoryFilter] =
     useState<DocumentCategoryFilter>("all");
@@ -1448,7 +1468,10 @@ function App() {
 
   const buildCsvExport = () => buildCareVaultCsv(state, new Date().toISOString());
 
-  const buildCaregiverExport = () => buildCaregiverExportHtml(state, new Date().toISOString());
+  const buildCaregiverExport = () =>
+    buildCaregiverExportHtml(state, new Date().toISOString(), {
+      sections: caregiverExportSections,
+    });
 
   const showExportPreview = (preview: ExportPreviewState) => {
     setExportPreview(preview);
@@ -1569,6 +1592,7 @@ function App() {
   };
 
   const showRenderedExportPreview = exportPreview ? isHtmlExportPreview(exportPreview) : false;
+  const activeCaregiverSectionCount = Object.values(caregiverExportSections).filter(Boolean).length;
 
   return (
     <main className="app-shell">
@@ -1706,6 +1730,28 @@ function App() {
               <Eye aria-hidden="true" />
               공유본 미리보기
             </button>
+            <fieldset className="caregiver-section-options" aria-label="보호자 공유본 포함 섹션">
+              <legend>공유본 포함</legend>
+              {caregiverExportSectionOptions.map((option) => {
+                const checked = caregiverExportSections[option.id];
+                return (
+                  <label key={option.id}>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      disabled={checked && activeCaregiverSectionCount === 1}
+                      onChange={() =>
+                        setCaregiverExportSections((current) => ({
+                          ...current,
+                          [option.id]: !current[option.id],
+                        }))
+                      }
+                    />
+                    {option.label}
+                  </label>
+                );
+              })}
+            </fieldset>
             <button
               type="button"
               className="secondary-button"
@@ -2874,7 +2920,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 보호자 공유본 섹션 포함 옵션.
+            다음 개발 슬라이스: 보호자 공유본 프로필 가리기 옵션.
           </p>
         </section>
         {exportPreview ? (

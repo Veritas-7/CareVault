@@ -60,6 +60,31 @@ export type CaregiverExportState = {
   foodQuery?: string;
 };
 
+export type CaregiverExportSectionId =
+  | "visits"
+  | "questions"
+  | "documents"
+  | "symptoms"
+  | "labs"
+  | "food"
+  | "vitals";
+
+export type CaregiverExportSections = Record<CaregiverExportSectionId, boolean>;
+
+export type CaregiverExportOptions = {
+  sections?: Partial<CaregiverExportSections>;
+};
+
+export const caregiverExportSectionDefaults: CaregiverExportSections = {
+  visits: true,
+  questions: true,
+  documents: true,
+  symptoms: true,
+  labs: true,
+  food: true,
+  vitals: true,
+};
+
 function escapeHtml(value: string | number | undefined) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -87,7 +112,12 @@ function vitalText(vital: CaregiverExportState["vitals"][number]) {
 export function buildCaregiverExportHtml(
   state: CaregiverExportState,
   exportedAt: string,
+  options: CaregiverExportOptions = {},
 ) {
+  const enabledSections = {
+    ...caregiverExportSectionDefaults,
+    ...options.sections,
+  };
   const activeQuestions = state.questions.filter((question) => question.status === "open");
   const activeDocuments = state.documents.filter((document) => document.reviewStatus !== "done");
   const foodQuery = state.foodQuery?.trim() ?? "";
@@ -143,6 +173,61 @@ export function buildCaregiverExportHtml(
         }`,
       ]
     : [];
+  const shareSectionItems: Array<{ id: CaregiverExportSectionId; html: string }> = [
+    {
+      id: "visits",
+      html: `<section>
+      <h2>다가오는 진료</h2>
+      ${listItems(visitItems, "다가오는 진료 기록이 없습니다.")}
+    </section>`,
+    },
+    {
+      id: "questions",
+      html: `<section>
+      <h2>열린 질문</h2>
+      ${listItems(questionItems, "열린 질문이 없습니다.")}
+    </section>`,
+    },
+    {
+      id: "documents",
+      html: `<section>
+      <h2>서류 조치</h2>
+      ${listItems(documentItems, "진행 중인 서류 조치가 없습니다.")}
+    </section>`,
+    },
+    {
+      id: "symptoms",
+      html: `<section>
+      <h2>최근 증상</h2>
+      ${listItems(symptomItems, "증상 기록이 없습니다.")}
+    </section>`,
+    },
+    {
+      id: "labs",
+      html: `<section>
+      <h2>최근 검사 수치</h2>
+      ${listItems(labItems, "검사 수치 기록이 없습니다.")}
+    </section>`,
+    },
+    {
+      id: "food",
+      html: `<section>
+      <h2>음식 확인 메모</h2>
+      ${listItems(foodItems, "음식 확인 입력이 없습니다.")}
+    </section>`,
+    },
+    {
+      id: "vitals",
+      html: `<section>
+      <h2>최근 혈압·혈당</h2>
+      ${listItems(vitalItems, "활력 기록이 없습니다.")}
+    </section>`,
+    },
+  ];
+  const shareSections = shareSectionItems
+    .filter((section) => enabledSections[section.id])
+    .map((section) => section.html)
+    .join("\n    ");
 
   return `<!doctype html>
 <html lang="ko">
@@ -185,34 +270,7 @@ export function buildCaregiverExportHtml(
       <h2>주의</h2>
       <p>이 파일은 진료 준비와 보호자 확인을 위한 읽기 전용 요약입니다. 진단, 처방, 치료 지시가 아니며 첨부 파일 내용과 로컬 파일 경로는 포함하지 않습니다.</p>
     </section>
-    <section>
-      <h2>다가오는 진료</h2>
-      ${listItems(visitItems, "다가오는 진료 기록이 없습니다.")}
-    </section>
-    <section>
-      <h2>열린 질문</h2>
-      ${listItems(questionItems, "열린 질문이 없습니다.")}
-    </section>
-    <section>
-      <h2>서류 조치</h2>
-      ${listItems(documentItems, "진행 중인 서류 조치가 없습니다.")}
-    </section>
-    <section>
-      <h2>최근 증상</h2>
-      ${listItems(symptomItems, "증상 기록이 없습니다.")}
-    </section>
-    <section>
-      <h2>최근 검사 수치</h2>
-      ${listItems(labItems, "검사 수치 기록이 없습니다.")}
-    </section>
-    <section>
-      <h2>음식 확인 메모</h2>
-      ${listItems(foodItems, "음식 확인 입력이 없습니다.")}
-    </section>
-    <section>
-      <h2>최근 혈압·혈당</h2>
-      ${listItems(vitalItems, "활력 기록이 없습니다.")}
-    </section>
+    ${shareSections}
   </main>
 </body>
 </html>`;

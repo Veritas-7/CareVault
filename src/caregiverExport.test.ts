@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildCaregiverExportHtml, type CaregiverExportState } from "./caregiverExport";
+import {
+  buildCaregiverExportHtml,
+  caregiverExportSectionDefaults,
+  type CaregiverExportState,
+} from "./caregiverExport";
 
 const state: CaregiverExportState = {
   profile: {
@@ -111,5 +115,25 @@ describe("caregiverExport", () => {
     expect(html).not.toContain("<b>자몽</b>");
     expect(html).not.toContain("/tmp/");
     expect(html).not.toContain("attachmentPath");
+  });
+
+  it("omits disabled caregiver share sections", () => {
+    const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z", {
+      sections: {
+        ...caregiverExportSectionDefaults,
+        questions: false,
+        food: false,
+        vitals: false,
+      },
+    });
+
+    expect(html).toContain("다가오는 진료");
+    expect(html).toContain("서울암센터");
+    expect(html).not.toContain("열린 질문");
+    expect(html).not.toContain("오심 조절을 어떻게 볼까요?");
+    expect(html).not.toContain("음식 확인 메모");
+    expect(html).not.toContain("자몽 주스");
+    expect(html).not.toContain("최근 혈압·혈당");
+    expect(html).not.toContain("혈압 132/84");
   });
 });
