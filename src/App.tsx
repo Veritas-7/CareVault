@@ -10,6 +10,7 @@ import {
   FileText,
   HeartPulse,
   Hospital,
+  Image as ImageIcon,
   LineChart as LineChartIcon,
   MessageSquare,
   Paperclip,
@@ -50,6 +51,7 @@ import {
   type LabQuestionSource,
 } from "./labQuestionPrompts";
 import { buildCareActionQueue, type CareActionSource } from "./careActionQueue";
+import { isPreviewableImageAttachment } from "./attachmentPreview";
 import {
   appendDocumentHistory,
   type DocumentHistoryEntry,
@@ -128,6 +130,14 @@ type CareDocument = {
   attachmentStorage?: AttachmentStorage;
   attachmentStatus?: string;
   history?: DocumentHistoryEntry[];
+};
+
+type AttachmentPreviewState = {
+  documentId: string;
+  title: string;
+  attachmentName: string;
+  previewUrl: string;
+  sourceLabel: string;
 };
 
 type SymptomEntry = {
@@ -452,9 +462,14 @@ function App() {
   const [documentStatusFilter, setDocumentStatusFilter] =
     useState<DocumentReviewStatusFilter>("all");
   const [savedAttachmentTargetId, setSavedAttachmentTargetId] = useState<string | null>(null);
+  const [attachmentPreview, setAttachmentPreview] = useState<AttachmentPreviewState | null>(null);
+  const [browserAttachmentPreviewUrls, setBrowserAttachmentPreviewUrls] = useState<
+    Record<string, string>
+  >({});
   const importInputRef = useRef<HTMLInputElement>(null);
   const documentAttachmentInputRef = useRef<HTMLInputElement>(null);
   const savedAttachmentInputRef = useRef<HTMLInputElement>(null);
+  const browserAttachmentPreviewUrlsRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     let active = true;
@@ -471,6 +486,15 @@ function App() {
       active = false;
     };
   }, []);
+
+  useEffect(
+    () => () => {
+      Object.values(browserAttachmentPreviewUrlsRef.current).forEach((url) =>
+        URL.revokeObjectURL(url),
+      );
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!hydrated) return;
@@ -808,6 +832,33 @@ function App() {
     }
   };
 
+  const clearBrowserAttachmentPreviewUrl = (documentId: string) => {
+    const currentUrl = browserAttachmentPreviewUrlsRef.current[documentId];
+    if (currentUrl) {
+      URL.revokeObjectURL(currentUrl);
+    }
+
+    delete browserAttachmentPreviewUrlsRef.current[documentId];
+    setBrowserAttachmentPreviewUrls((current) => {
+      const next = { ...current };
+      delete next[documentId];
+      return next;
+    });
+  };
+
+  const rememberBrowserAttachmentPreviewUrl = (documentId: string, file: File) => {
+    clearBrowserAttachmentPreviewUrl(documentId);
+
+    if (!isPreviewableImageAttachment(file.name)) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    browserAttachmentPreviewUrlsRef.current[documentId] = previewUrl;
+    setBrowserAttachmentPreviewUrls((current) => ({
+      ...current,
+      [documentId]: previewUrl,
+    }));
+  };
+
   const updateSavedDocumentAttachment = (
     documentId: string,
     attachment: Pick<
@@ -838,6 +889,7 @@ function App() {
   const attachBrowserReferenceToSavedDocument = (file?: File) => {
     if (!file || !savedAttachmentTargetId) return;
 
+    rememberBrowserAttachmentPreviewUrl(savedAttachmentTargetId, file);
     updateSavedDocumentAttachment(savedAttachmentTargetId, {
       attachmentName: file.name,
       attachmentPath: undefined,
@@ -876,6 +928,7 @@ function App() {
 
       const attachmentExists = await exists(selected).catch(() => false);
       const attachmentStatus = attachmentExists ? "파일 확인됨" : "앱 샌드박스 경로 저장됨";
+      clearBrowserAttachmentPreviewUrl(document.id);
       updateSavedDocumentAttachment(document.id, {
         attachmentName: extractFileName(selected),
         attachmentPath: selected,
@@ -886,6 +939,57 @@ function App() {
     } catch (error) {
       console.error("Saved document attachment replacement failed", error);
       setSaveLabel("저장된 서류 첨부 재연결 실패");
+    }
+  };
+
+  const previewDocumentAttachment = async (document: CareDocument) => {
+    if (!document.attachmentName || !isPreviewableImageAttachment(document.attachmentName)) {
+      setSaveLabel("이미지 첨부만 미리보기 가능");
+      return;
+    }
+
+    const browserPreviewUrl = browserAttachmentPreviewUrls[document.id];
+    if (browserPreviewUrl) {
+      setAttachmentPreview({
+        documentId: document.id,
+        title: document.title,
+        attachmentName: document.attachmentName,
+        previewUrl: browserPreviewUrl,
+        sourceLabel: "브라우저 세션 미리보기",
+      });
+      setSaveLabel("이미지 미리보기 열림");
+      return;
+    }
+
+    if (!document.attachmentPath || !canUseTauriRuntime()) {
+      setSaveLabel("저장된 경로가 있는 이미지 첨부만 미리보기 가능");
+      return;
+    }
+
+    try {
+      const [{ convertFileSrc }, { exists }] = await Promise.all([
+        import("@tauri-apps/api/core"),
+        import("@tauri-apps/plugin-fs"),
+      ]);
+      const attachmentExists = await exists(document.attachmentPath).catch(() => false);
+      if (!attachmentExists) {
+        const status = "파일 없음 - 재첨부 필요";
+        updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
+        setSaveLabel(status);
+        return;
+      }
+
+      setAttachmentPreview({
+        documentId: document.id,
+        title: document.title,
+        attachmentName: document.attachmentName,
+        previewUrl: convertFileSrc(document.attachmentPath),
+        sourceLabel: "앱 샌드박스 이미지 미리보기",
+      });
+      setSaveLabel("이미지 미리보기 열림");
+    } catch (error) {
+      console.error("Document attachment preview failed", error);
+      setSaveLabel("이미지 미리보기 실패");
     }
   };
 
@@ -920,6 +1024,11 @@ function App() {
     const removed = await removeSandboxAttachment(document);
     if (!removed) return;
 
+    clearBrowserAttachmentPreviewUrl(document.id);
+    if (attachmentPreview?.documentId === document.id) {
+      setAttachmentPreview(null);
+    }
+
     const historyEntry = createDocumentHistory(
       "attachment-removed",
       "첨부 제거",
@@ -946,6 +1055,11 @@ function App() {
   const deleteDocument = async (document: CareDocument) => {
     const confirmed = window.confirm(`"${document.title}" 서류 기록을 삭제 보관함으로 이동할까요?`);
     if (!confirmed) return;
+
+    clearBrowserAttachmentPreviewUrl(document.id);
+    if (attachmentPreview?.documentId === document.id) {
+      setAttachmentPreview(null);
+    }
 
     const historyEntry = createDocumentHistory(
       "archived",
@@ -2264,6 +2378,13 @@ function App() {
                         첨부 확인
                       </button>
                     ) : null}
+                    {document.attachmentName &&
+                    isPreviewableImageAttachment(document.attachmentName) ? (
+                      <button type="button" onClick={() => previewDocumentAttachment(document)}>
+                        <ImageIcon aria-hidden="true" />
+                        미리보기
+                      </button>
+                    ) : null}
                     {document.attachmentPath ? (
                       <button type="button" onClick={() => openDocumentAttachment(document)}>
                         <ExternalLink aria-hidden="true" />
@@ -2317,11 +2438,48 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 정규화된 SQLite 테이블, 첨부 파일 삭제/미리보기 관리, 검사 수치
-            사전, 증상 심각도 알림 규칙, 가족/보호자 공유용 내보내기.
+            다음 개발 슬라이스: 정규화된 SQLite 테이블, 첨부 장기 아카이브 관리, 검사 수치 사전,
+            증상 심각도 알림 규칙, 가족/보호자 공유용 내보내기.
           </p>
         </section>
       </section>
+      {attachmentPreview ? (
+        <div className="attachment-preview-backdrop" role="presentation">
+          <section
+            className="attachment-preview-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${attachmentPreview.title} 첨부 미리보기`}
+          >
+            <div className="attachment-preview-header">
+              <div>
+                <strong>{attachmentPreview.title}</strong>
+                <span>{attachmentPreview.attachmentName}</span>
+              </div>
+              <button
+                className="text-icon-button"
+                type="button"
+                onClick={() => setAttachmentPreview(null)}
+                aria-label="첨부 미리보기 닫기"
+              >
+                <X aria-hidden="true" />
+                닫기
+              </button>
+            </div>
+            <figure className="attachment-preview-frame">
+              <img
+                src={attachmentPreview.previewUrl}
+                alt={`${attachmentPreview.title} 첨부 이미지 미리보기`}
+                onError={() => {
+                  setAttachmentPreview(null);
+                  setSaveLabel("이미지 미리보기 실패");
+                }}
+              />
+              <figcaption>{attachmentPreview.sourceLabel}</figcaption>
+            </figure>
+          </section>
+        </div>
+      ) : null}
     </main>
   );
 }
