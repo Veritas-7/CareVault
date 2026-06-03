@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   buildNormalizedMirrorStatements,
+  buildNormalizedSearchStatements,
+  buildSqlLikePattern,
   type NormalizedCareVaultMirror,
   parseSqlCount,
 } from "./storage";
@@ -114,6 +116,32 @@ describe("storage normalized mirror", () => {
     expect(parseSqlCount(BigInt(5))).toBe(5);
     expect(parseSqlCount(null)).toBe(0);
     expect(parseSqlCount("not-a-count")).toBe(0);
+  });
+
+  it("builds escaped SQLite LIKE patterns", () => {
+    expect(buildSqlLikePattern(" WBC_100% ")).toBe("%WBC\\_100\\%%");
+    expect(buildSqlLikePattern("")).toBeNull();
+  });
+
+  it("builds normalized search count statements", () => {
+    const statements = buildNormalizedSearchStatements("혈액검사");
+
+    expect(statements.map((statement) => statement.key)).toEqual([
+      "vitalRows",
+      "visitRows",
+      "documentRows",
+      "symptomRows",
+      "questionRows",
+      "labResultRows",
+      "foodCheckRows",
+    ]);
+    expect(statements.every((statement) => statement.bindValues?.[0] === "%혈액검사%")).toBe(true);
+    expect(statements.find((statement) => statement.key === "documentRows")?.query).toContain(
+      "FROM care_documents",
+    );
+    expect(statements.find((statement) => statement.key === "labResultRows")?.query).toContain(
+      "FROM lab_results",
+    );
   });
 
   it("builds normalized table creation and mirror statements", () => {

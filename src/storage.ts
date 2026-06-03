@@ -100,6 +100,28 @@ export type NormalizedMirrorStatus = {
   latestUpdatedAt?: string;
 };
 
+export type NormalizedSearchSummary = {
+  query: string;
+  searchedAt: string;
+  vitalRows: number;
+  visitRows: number;
+  documentRows: number;
+  symptomRows: number;
+  questionRows: number;
+  labResultRows: number;
+  foodCheckRows: number;
+  totalRows: number;
+};
+
+type NormalizedSearchCountKey =
+  | "vitalRows"
+  | "visitRows"
+  | "documentRows"
+  | "symptomRows"
+  | "questionRows"
+  | "labResultRows"
+  | "foodCheckRows";
+
 type SaveOptions = {
   normalizedMirror?: NormalizedCareVaultMirror;
 };
@@ -116,6 +138,10 @@ type SqlDatabase = {
 export type SqlStatement = {
   query: string;
   bindValues?: unknown[];
+};
+
+export type NormalizedSearchStatement = SqlStatement & {
+  key: NormalizedSearchCountKey;
 };
 
 let dbPromise: Promise<SqlDatabase | null> | null = null;
@@ -277,8 +303,104 @@ export function parseSqlCount(value: unknown) {
   return 0;
 }
 
+export function buildSqlLikePattern(input: string) {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+  return `%${trimmed.replace(/[\\%_]/g, (character) => `\\${character}`)}%`;
+}
+
 function parseOptionalText(value: unknown) {
   return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+export function buildNormalizedSearchStatements(input: string): NormalizedSearchStatement[] {
+  const likePattern = buildSqlLikePattern(input);
+  if (!likePattern) return [];
+
+  const bindValues = [likePattern];
+  const like = "LIKE $1 ESCAPE '\\'";
+
+  return [
+    {
+      key: "vitalRows",
+      query: `SELECT COUNT(*) AS count FROM vitals
+        WHERE date ${like}
+          OR type ${like}
+          OR COALESCE(glucose_context, '') ${like}
+          OR note ${like}`,
+      bindValues,
+    },
+    {
+      key: "visitRows",
+      query: `SELECT COUNT(*) AS count FROM visits
+        WHERE date ${like}
+          OR hospital ${like}
+          OR reason ${like}
+          OR summary ${like}
+          OR plan ${like}
+          OR next_date ${like}`,
+      bindValues,
+    },
+    {
+      key: "documentRows",
+      query: `SELECT COUNT(*) AS count FROM care_documents
+        WHERE is_deleted = 0
+          AND (
+            date ${like}
+            OR title ${like}
+            OR category ${like}
+            OR body ${like}
+            OR tags ${like}
+            OR review_status ${like}
+            OR next_action ${like}
+            OR COALESCE(attachment_name, '') ${like}
+            OR COALESCE(attachment_status, '') ${like}
+          )`,
+      bindValues,
+    },
+    {
+      key: "symptomRows",
+      query: `SELECT COUNT(*) AS count FROM symptoms
+        WHERE date ${like}
+          OR symptom ${like}
+          OR medication ${like}
+          OR body ${like}
+          OR action ${like}`,
+      bindValues,
+    },
+    {
+      key: "questionRows",
+      query: `SELECT COUNT(*) AS count FROM questions
+        WHERE date ${like}
+          OR topic ${like}
+          OR question ${like}
+          OR status ${like}
+          OR answer ${like}`,
+      bindValues,
+    },
+    {
+      key: "labResultRows",
+      query: `SELECT COUNT(*) AS count FROM lab_results
+        WHERE date ${like}
+          OR name ${like}
+          OR value ${like}
+          OR unit ${like}
+          OR lower_bound ${like}
+          OR upper_bound ${like}
+          OR note ${like}`,
+      bindValues,
+    },
+    {
+      key: "foodCheckRows",
+      query: `SELECT COUNT(*) AS count FROM food_checks
+        WHERE query ${like}
+          OR level ${like}
+          OR label ${like}
+          OR summary ${like}
+          OR matches_json ${like}`,
+      bindValues,
+    },
+  ];
 }
 
 export function buildNormalizedMirrorStatements(
@@ -552,8 +674,8 @@ async function mirrorNormalizedState(
   }
 }
 
-async function selectCount(db: SqlDatabase, query: string) {
-  const rows = (await db.select(query)) as Array<{ count?: unknown }>;
+async function selectCount(db: SqlDatabase, query: string, bindValues?: unknown[]) {
+  const rows = (await db.select(query, bindValues)) as Array<{ count?: unknown }>;
   return parseSqlCount(rows[0]?.count);
 }
 
@@ -603,6 +725,47 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
     foodCheckRows,
     latestUpdatedAt: parseOptionalText(latestRows[0]?.latestUpdatedAt),
   };
+}
+
+export async function loadNormalizedSearchSummary(
+  query: string,
+): Promise<NormalizedSearchSummary | null> {
+  const db = await getDatabase();
+  const trimmedQuery = query.trim();
+  if (!db || !trimmedQuery) return null;
+
+  await ensureNormalizedTables(db);
+
+  const statements = buildNormalizedSearchStatements(trimmedQuery);
+  if (!statements.length) return null;
+
+  const counts = await Promise.all(
+    statements.map(async (statement) => ({
+      key: statement.key,
+      count: await selectCount(db, statement.query, statement.bindValues),
+    })),
+  );
+  const summary = counts.reduce(
+    (current, item) => ({
+      ...current,
+      [item.key]: item.count,
+      totalRows: current.totalRows + item.count,
+    }),
+    {
+      query: trimmedQuery,
+      searchedAt: new Date().toISOString(),
+      vitalRows: 0,
+      visitRows: 0,
+      documentRows: 0,
+      symptomRows: 0,
+      questionRows: 0,
+      labResultRows: 0,
+      foodCheckRows: 0,
+      totalRows: 0,
+    } satisfies NormalizedSearchSummary,
+  );
+
+  return summary;
 }
 
 function loadFromLocalStorage<T>(fallback: T): PersistedState<T> {

@@ -61,9 +61,11 @@ import {
 import { labPresets, resolveLabPreset } from "./labPresets";
 import {
   loadNormalizedMirrorStatus,
+  loadNormalizedSearchSummary,
   loadPersistedState,
   type NormalizedCareVaultMirror,
   type NormalizedMirrorStatus,
+  type NormalizedSearchSummary,
   savePersistedState,
   type PersistenceBackend,
 } from "./storage";
@@ -484,6 +486,8 @@ function App() {
   const [storageBackend, setStorageBackend] = useState<PersistenceBackend>("memory");
   const [normalizedMirrorStatus, setNormalizedMirrorStatus] =
     useState<NormalizedMirrorStatus | null>(null);
+  const [normalizedSearchSummary, setNormalizedSearchSummary] =
+    useState<NormalizedSearchSummary | null>(null);
   const [saveLabel, setSaveLabel] = useState("저장소 확인 중");
   const [vitalDraft, setVitalDraft] = useState<VitalEntry>(emptyVital);
   const [visitDraft, setVisitDraft] = useState<VisitEntry>(emptyVisit);
@@ -574,6 +578,29 @@ function App() {
 
     return () => window.clearTimeout(handle);
   }, [hydrated, normalizedMirror, state]);
+
+  useEffect(() => {
+    if (!hydrated || storageBackend !== "sqlite" || !documentFilter.trim()) {
+      setNormalizedSearchSummary(null);
+      return;
+    }
+
+    let active = true;
+    const handle = window.setTimeout(() => {
+      loadNormalizedSearchSummary(documentFilter)
+        .then((summary) => {
+          if (active) setNormalizedSearchSummary(summary);
+        })
+        .catch(() => {
+          if (active) setNormalizedSearchSummary(null);
+        });
+    }, 200);
+
+    return () => {
+      active = false;
+      window.clearTimeout(handle);
+    };
+  }, [documentFilter, hydrated, normalizedMirrorStatus?.checkedAt, storageBackend]);
 
   const bmi = useMemo(
     () =>
@@ -1254,6 +1281,11 @@ function App() {
       ? `정규화 mirror: 활력 ${normalizedMirrorStatus.vitalRows}개, 검사 ${normalizedMirrorStatus.labResultRows}개, 질문 ${normalizedMirrorStatus.questionRows}개, 서류 ${
           normalizedMirrorStatus.activeDocumentRows + normalizedMirrorStatus.deletedDocumentRows
         }개, 증상 ${normalizedMirrorStatus.symptomRows}개, 음식 ${normalizedMirrorStatus.foodCheckRows}개.`
+      : null;
+
+  const normalizedSearchText =
+    storageBackend === "sqlite" && normalizedSearchSummary
+      ? `SQLite 전체 검색: ${normalizedSearchSummary.totalRows}개 - 서류 ${normalizedSearchSummary.documentRows}, 검사 ${normalizedSearchSummary.labResultRows}, 질문 ${normalizedSearchSummary.questionRows}, 증상 ${normalizedSearchSummary.symptomRows}, 진료 ${normalizedSearchSummary.visitRows}, 활력 ${normalizedSearchSummary.vitalRows}, 음식 ${normalizedSearchSummary.foodCheckRows}`
       : null;
 
   const saveNow = () => {
@@ -2333,6 +2365,9 @@ function App() {
                 placeholder="날짜, 분류, 제목, 내용, 태그 검색"
               />
             </label>
+            {normalizedSearchText ? (
+              <p className="normalized-search-note">{normalizedSearchText}</p>
+            ) : null}
             <div className="document-filter-row">
               <label>
                 분류 필터
