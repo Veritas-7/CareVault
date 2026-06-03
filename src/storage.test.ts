@@ -64,6 +64,39 @@ const mirror: NormalizedCareVaultMirror = {
       isDeleted: true,
     },
   ],
+  symptoms: [
+    {
+      id: "symptom-1",
+      date: "2026-06-02",
+      symptom: "오심",
+      severity: 4,
+      medication: "항구토제",
+      body: "점심 이후 메스꺼움",
+      action: "다음 진료 때 질문",
+    },
+  ],
+  questions: [
+    {
+      id: "question-1",
+      date: "2026-06-17",
+      topic: "혈액검사",
+      question: "재검 필요성 확인",
+      status: "open",
+      answer: "",
+    },
+  ],
+  labResults: [
+    {
+      id: "lab-1",
+      date: "2026-06-03",
+      name: "WBC",
+      value: "3.4",
+      unit: "10^3/uL",
+      lower: "4.0",
+      upper: "10.0",
+      note: "낮음",
+    },
+  ],
   foodCheck: {
     id: "current",
     query: "브로콜리, 베이컨",
@@ -92,11 +125,17 @@ describe("storage normalized mirror", () => {
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS visits");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS care_documents");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS food_checks");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS symptoms");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS questions");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS lab_results");
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO vitals"))).toHaveLength(1);
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO visits"))).toHaveLength(1);
     expect(
       statements.filter((statement) => statement.query.includes("INSERT INTO care_documents")),
     ).toHaveLength(2);
+    expect(statements.filter((statement) => statement.query.includes("INSERT INTO symptoms"))).toHaveLength(1);
+    expect(statements.filter((statement) => statement.query.includes("INSERT INTO questions"))).toHaveLength(1);
+    expect(statements.filter((statement) => statement.query.includes("INSERT INTO lab_results"))).toHaveLength(1);
     expect(
       statements.find((statement) => statement.query.includes("INSERT INTO profile_snapshot"))
         ?.bindValues,

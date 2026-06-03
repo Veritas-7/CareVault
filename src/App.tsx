@@ -464,6 +464,9 @@ function buildNormalizedCareVaultMirror(
         isDeleted: true,
       })),
     ],
+    symptoms: state.symptoms,
+    questions: state.questions,
+    labResults: state.labResults,
     foodCheck: {
       id: "current",
       query: state.foodQuery,
@@ -1248,9 +1251,9 @@ function App() {
 
   const normalizedMirrorText =
     storageBackend === "sqlite" && normalizedMirrorStatus
-      ? `정규화 mirror: 활력 ${normalizedMirrorStatus.vitalRows}개, 진료 ${normalizedMirrorStatus.visitRows}개, 서류 ${
+      ? `정규화 mirror: 활력 ${normalizedMirrorStatus.vitalRows}개, 검사 ${normalizedMirrorStatus.labResultRows}개, 질문 ${normalizedMirrorStatus.questionRows}개, 서류 ${
           normalizedMirrorStatus.activeDocumentRows + normalizedMirrorStatus.deletedDocumentRows
-        }개, 음식 ${normalizedMirrorStatus.foodCheckRows}개.`
+        }개, 증상 ${normalizedMirrorStatus.symptomRows}개, 음식 ${normalizedMirrorStatus.foodCheckRows}개.`
       : null;
 
   const saveNow = () => {

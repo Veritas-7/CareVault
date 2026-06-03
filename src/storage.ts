@@ -49,6 +49,33 @@ export type NormalizedCareVaultMirror = {
     attachmentStatus?: string;
     isDeleted: boolean;
   }>;
+  symptoms: Array<{
+    id: string;
+    date: string;
+    symptom: string;
+    severity: number;
+    medication: string;
+    body: string;
+    action: string;
+  }>;
+  questions: Array<{
+    id: string;
+    date: string;
+    topic: string;
+    question: string;
+    status: string;
+    answer: string;
+  }>;
+  labResults: Array<{
+    id: string;
+    date: string;
+    name: string;
+    value: string;
+    unit: string;
+    lower: string;
+    upper: string;
+    note: string;
+  }>;
   foodCheck?: {
     id: string;
     query: string;
@@ -66,6 +93,9 @@ export type NormalizedMirrorStatus = {
   visitRows: number;
   activeDocumentRows: number;
   deletedDocumentRows: number;
+  symptomRows: number;
+  questionRows: number;
+  labResultRows: number;
   foodCheckRows: number;
   latestUpdatedAt?: string;
 };
@@ -183,6 +213,42 @@ const normalizedTableStatements: SqlStatement[] = [
       checked_at TEXT NOT NULL
     )`,
   },
+  {
+    query: `CREATE TABLE IF NOT EXISTS symptoms (
+      id TEXT PRIMARY KEY NOT NULL,
+      date TEXT NOT NULL,
+      symptom TEXT NOT NULL,
+      severity INTEGER NOT NULL,
+      medication TEXT NOT NULL,
+      body TEXT NOT NULL,
+      action TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`,
+  },
+  {
+    query: `CREATE TABLE IF NOT EXISTS questions (
+      id TEXT PRIMARY KEY NOT NULL,
+      date TEXT NOT NULL,
+      topic TEXT NOT NULL,
+      question TEXT NOT NULL,
+      status TEXT NOT NULL,
+      answer TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`,
+  },
+  {
+    query: `CREATE TABLE IF NOT EXISTS lab_results (
+      id TEXT PRIMARY KEY NOT NULL,
+      date TEXT NOT NULL,
+      name TEXT NOT NULL,
+      value TEXT NOT NULL,
+      unit TEXT NOT NULL,
+      lower_bound TEXT NOT NULL,
+      upper_bound TEXT NOT NULL,
+      note TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`,
+  },
 ];
 
 function boolToSql(value: boolean) {
@@ -191,6 +257,10 @@ function boolToSql(value: boolean) {
 
 function optionalNumber(value: number | undefined) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function requiredNumber(value: number) {
+  return Number.isFinite(value) ? value : 0;
 }
 
 function optionalText(value: string | undefined) {
@@ -258,6 +328,9 @@ export function buildNormalizedMirrorStatements(
     { query: "DELETE FROM visits" },
     { query: "DELETE FROM care_documents" },
     { query: "DELETE FROM food_checks" },
+    { query: "DELETE FROM symptoms" },
+    { query: "DELETE FROM questions" },
+    { query: "DELETE FROM lab_results" },
   ];
 
   mirror.vitals.forEach((vital) => {
@@ -374,6 +447,84 @@ export function buildNormalizedMirrorStatements(
     });
   }
 
+  mirror.symptoms.forEach((symptom) => {
+    statements.push({
+      query: `INSERT INTO symptoms (
+        id,
+        date,
+        symptom,
+        severity,
+        medication,
+        body,
+        action,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      bindValues: [
+        symptom.id,
+        symptom.date,
+        symptom.symptom,
+        requiredNumber(symptom.severity),
+        symptom.medication,
+        symptom.body,
+        symptom.action,
+        updatedAt,
+      ],
+    });
+  });
+
+  mirror.questions.forEach((question) => {
+    statements.push({
+      query: `INSERT INTO questions (
+        id,
+        date,
+        topic,
+        question,
+        status,
+        answer,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      bindValues: [
+        question.id,
+        question.date,
+        question.topic,
+        question.question,
+        question.status,
+        question.answer,
+        updatedAt,
+      ],
+    });
+  });
+
+  mirror.labResults.forEach((labResult) => {
+    statements.push({
+      query: `INSERT INTO lab_results (
+        id,
+        date,
+        name,
+        value,
+        unit,
+        lower_bound,
+        upper_bound,
+        note,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      bindValues: [
+        labResult.id,
+        labResult.date,
+        labResult.name,
+        labResult.value,
+        labResult.unit,
+        labResult.lower,
+        labResult.upper,
+        labResult.note,
+        updatedAt,
+      ],
+    });
+  });
+
   return statements;
 }
 
@@ -423,6 +574,9 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
     db,
     "SELECT COUNT(*) AS count FROM care_documents WHERE is_deleted = 1",
   );
+  const symptomRows = await selectCount(db, "SELECT COUNT(*) AS count FROM symptoms");
+  const questionRows = await selectCount(db, "SELECT COUNT(*) AS count FROM questions");
+  const labResultRows = await selectCount(db, "SELECT COUNT(*) AS count FROM lab_results");
   const foodCheckRows = await selectCount(db, "SELECT COUNT(*) AS count FROM food_checks");
   const latestRows = (await db.select(`SELECT MAX(mirror_updated_at) AS latestUpdatedAt
     FROM (
@@ -430,6 +584,9 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
       UNION ALL SELECT updated_at FROM vitals
       UNION ALL SELECT updated_at FROM visits
       UNION ALL SELECT updated_at FROM care_documents
+      UNION ALL SELECT updated_at FROM symptoms
+      UNION ALL SELECT updated_at FROM questions
+      UNION ALL SELECT updated_at FROM lab_results
       UNION ALL SELECT checked_at FROM food_checks
     )`)) as Array<{ latestUpdatedAt?: unknown }>;
 
@@ -440,6 +597,9 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
     visitRows,
     activeDocumentRows,
     deletedDocumentRows,
+    symptomRows,
+    questionRows,
+    labResultRows,
     foodCheckRows,
     latestUpdatedAt: parseOptionalText(latestRows[0]?.latestUpdatedAt),
   };
