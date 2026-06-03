@@ -15,6 +15,7 @@ import {
   Paperclip,
   Pill,
   Plus,
+  RotateCcw,
   Save,
   Search,
   ShieldCheck,
@@ -166,6 +167,7 @@ type AppState = {
   vitals: VitalEntry[];
   visits: VisitEntry[];
   documents: CareDocument[];
+  deletedDocuments: CareDocument[];
   symptoms: SymptomEntry[];
   questions: CareQuestion[];
   labResults: LabResult[];
@@ -242,6 +244,7 @@ const defaultState: AppState = {
       ],
     },
   ],
+  deletedDocuments: [],
   symptoms: [
     {
       id: "symptom-1",
@@ -409,6 +412,12 @@ function normalizeAppState(input: Partial<AppState>): AppState {
     vitals: input.vitals ?? [],
     visits: input.visits ?? [],
     documents: (input.documents ?? []).map((document) => ({
+      ...document,
+      reviewStatus: document.reviewStatus ?? "needs-review",
+      nextAction: document.nextAction ?? "",
+      history: document.history ?? [],
+    })),
+    deletedDocuments: (input.deletedDocuments ?? []).map((document) => ({
       ...document,
       reviewStatus: document.reviewStatus ?? "needs-review",
       nextAction: document.nextAction ?? "",
@@ -804,17 +813,48 @@ function App() {
   };
 
   const deleteDocument = async (document: CareDocument) => {
-    const confirmed = window.confirm(`"${document.title}" 서류 기록을 삭제할까요?`);
+    const confirmed = window.confirm(`"${document.title}" 서류 기록을 삭제 보관함으로 이동할까요?`);
     if (!confirmed) return;
 
-    const removed = await removeSandboxAttachment(document);
-    if (!removed) return;
+    const historyEntry = createDocumentHistory(
+      "archived",
+      "삭제 보관",
+      `${document.title} 기록을 삭제 보관함으로 이동`,
+    );
 
     setState((current) => ({
       ...current,
       documents: current.documents.filter((item) => item.id !== document.id),
+      deletedDocuments: [
+        {
+          ...document,
+          history: appendDocumentHistory(document.history, historyEntry),
+        },
+        ...current.deletedDocuments.filter((item) => item.id !== document.id),
+      ],
     }));
-    setSaveLabel("서류 기록 삭제됨");
+    setSaveLabel("서류 기록이 삭제 보관함으로 이동됨");
+  };
+
+  const restoreDocument = (document: CareDocument) => {
+    const historyEntry = createDocumentHistory(
+      "restored",
+      "서류 복구",
+      `${document.title} 기록을 저장된 서류로 복구`,
+    );
+
+    setState((current) => ({
+      ...current,
+      documents: [
+        {
+          ...document,
+          history: appendDocumentHistory(document.history, historyEntry),
+        },
+        ...current.documents.filter((item) => item.id !== document.id),
+      ],
+      deletedDocuments: current.deletedDocuments.filter((item) => item.id !== document.id),
+    }));
+    setSaveLabel("서류 기록 복구됨");
   };
 
   const addSymptom = () => {
@@ -2094,6 +2134,29 @@ function App() {
                 </article>
               ))}
             </div>
+            {state.deletedDocuments.length ? (
+              <div className="deleted-document-panel" aria-label="삭제 보관함">
+                <div className="deleted-document-title">
+                  <strong>삭제 보관함</strong>
+                  <span>{state.deletedDocuments.length}개 복구 가능</span>
+                </div>
+                <div className="deleted-document-list">
+                  {state.deletedDocuments.slice(0, 5).map((document) => (
+                    <article className="deleted-document-item" key={document.id}>
+                      <div>
+                        <span>{document.date}</span>
+                        <strong>{document.title}</strong>
+                        <small>{documentLabel[document.category]}</small>
+                      </div>
+                      <button type="button" onClick={() => restoreDocument(document)}>
+                        <RotateCcw aria-hidden="true" />
+                        복구
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </section>
         </section>
 

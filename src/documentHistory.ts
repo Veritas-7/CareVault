@@ -2,7 +2,9 @@ export type DocumentHistoryKind =
   | "created"
   | "review-status"
   | "next-action"
-  | "attachment-removed";
+  | "attachment-removed"
+  | "archived"
+  | "restored";
 
 export type DocumentHistoryEntry = {
   id: string;

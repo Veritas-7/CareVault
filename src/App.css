@@ -253,6 +253,7 @@ h2 {
 .secondary-inline-button svg,
 .text-icon-button svg,
 .document-actions button svg,
+.deleted-document-item button svg,
 .attachment-summary svg,
 .document-attachment svg {
   width: 16px;
@@ -921,6 +922,76 @@ textarea:focus {
   background: #ffe1db;
 }
 
+.deleted-document-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px dashed #cbd8d7;
+  border-radius: 8px;
+  background: #f7fbfa;
+}
+
+.deleted-document-title,
+.deleted-document-item,
+.deleted-document-item button {
+  display: flex;
+  align-items: center;
+}
+
+.deleted-document-title {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.deleted-document-title strong {
+  color: #1d2528;
+}
+
+.deleted-document-title span,
+.deleted-document-item span,
+.deleted-document-item small {
+  color: #526066;
+  font-size: 0.82rem;
+}
+
+.deleted-document-list {
+  display: grid;
+  gap: 8px;
+}
+
+.deleted-document-item {
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.deleted-document-item div {
+  display: grid;
+  min-width: 0;
+}
+
+.deleted-document-item strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #1d2528;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deleted-document-item button {
+  flex: 0 0 auto;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid #cbd8d7;
+  border-radius: 8px;
+  color: #0f4c5c;
+  background: #eef6f5;
+}
+
 .question-list {
   display: grid;
   gap: 10px;
@@ -1117,6 +1188,12 @@ textarea:focus {
   .document-history li {
     grid-template-columns: 1fr;
     gap: 2px;
+  }
+
+  .deleted-document-title,
+  .deleted-document-item {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .inline-actions {
