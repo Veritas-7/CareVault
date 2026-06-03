@@ -68,6 +68,7 @@ const state: CaregiverExportState = {
       note: "낮음",
     },
   ],
+  foodQuery: "브로콜리, 자몽 주스",
 };
 
 describe("caregiverExport", () => {
@@ -77,8 +78,20 @@ describe("caregiverExport", () => {
     expect(html).toContain("<title>CareVault 보호자 공유본</title>");
     expect(html).toContain("서울암센터");
     expect(html).toContain("오심 조절을 어떻게 볼까요?");
-    expect(html).toContain("첨부 파일명: result.pdf");
+    expect(html).toContain("첨부 파일명만 포함");
+    expect(html).toContain("result.pdf");
     expect(html).toContain("진단, 처방, 치료 지시가 아니며");
+  });
+
+  it("adds print styling and source labels for shared review", () => {
+    const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z");
+
+    expect(html).toContain("@media print");
+    expect(html).toContain("break-inside: avoid");
+    expect(html).toContain("사용자 입력 기준 범위");
+    expect(html).toContain("로컬 음식 규칙 라벨");
+    expect(html).toContain("의료진 확인 필요");
+    expect(html).toContain("자몽 - 약물 상호작용 확인 필요");
   });
 
   it("escapes HTML and excludes local file paths", () => {
@@ -86,13 +99,16 @@ describe("caregiverExport", () => {
       {
         ...state,
         profile: { ...state.profile, name: "<script>alert(1)</script>" },
+        foodQuery: "<b>자몽</b>",
       },
       "2026-06-03T10:00:00.000Z",
     );
 
     expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
+    expect(html).toContain("&lt;b&gt;자몽&lt;/b&gt;");
     expect(html).toContain("검사 결과 &quot;A&quot;");
     expect(html).not.toContain("<script>alert(1)</script>");
+    expect(html).not.toContain("<b>자몽</b>");
     expect(html).not.toContain("/tmp/");
     expect(html).not.toContain("attachmentPath");
   });

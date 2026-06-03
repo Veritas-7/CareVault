@@ -1,3 +1,5 @@
+import { assessCancerFood, assessLabValue } from "./healthRules";
+
 export type CaregiverExportState = {
   profile: {
     name: string;
@@ -54,6 +56,7 @@ export type CaregiverExportState = {
     upper: string;
     note: string;
   }>;
+  foodQuery?: string;
 };
 
 function escapeHtml(value: string | number | undefined) {
@@ -86,6 +89,8 @@ export function buildCaregiverExportHtml(
 ) {
   const activeQuestions = state.questions.filter((question) => question.status === "open");
   const activeDocuments = state.documents.filter((document) => document.reviewStatus !== "done");
+  const foodQuery = state.foodQuery?.trim() ?? "";
+  const foodAssessment = foodQuery ? assessCancerFood(foodQuery) : null;
   const upcomingVisits = state.visits
     .filter((visit) => visit.nextDate || visit.date)
     .sort((a, b) => (a.nextDate || a.date).localeCompare(b.nextDate || b.date))
@@ -102,9 +107,9 @@ export function buildCaregiverExportHtml(
   const documentItems = activeDocuments.map((document) =>
     [
       `<strong>${escapeHtml(document.date)} ${escapeHtml(document.title)}</strong>`,
-      escapeHtml(document.nextAction || document.category),
+      `<span class="source-label">사용자 입력 서류 조치</span> ${escapeHtml(document.nextAction || document.category)}`,
       document.attachmentName
-        ? `<small>첨부 파일명: ${escapeHtml(document.attachmentName)} ${escapeHtml(document.attachmentStatus)}</small>`
+        ? `<small><span class="source-label">첨부 파일명만 포함</span> ${escapeHtml(document.attachmentName)} ${escapeHtml(document.attachmentStatus)}</small>`
         : "",
     ]
       .filter(Boolean)
@@ -115,10 +120,28 @@ export function buildCaregiverExportHtml(
       `<strong>${escapeHtml(symptom.date)} ${escapeHtml(symptom.symptom)} ${escapeHtml(symptom.severity)}/10</strong><br>${escapeHtml(symptom.body)}${symptom.action ? `<br><small>${escapeHtml(symptom.action)}</small>` : ""}`,
   );
   const labItems = latestByDate(state.labResults, 5).map(
-    (lab) =>
-      `<strong>${escapeHtml(lab.date)} ${escapeHtml(lab.name)} ${escapeHtml(lab.value)}${lab.unit ? ` ${escapeHtml(lab.unit)}` : ""}</strong><br>기준 ${escapeHtml(lab.lower || "-")}~${escapeHtml(lab.upper || "-")} ${escapeHtml(lab.note)}`,
+    (lab) => {
+      const assessment = assessLabValue(
+        Number.parseFloat(lab.value),
+        lab.lower ? Number.parseFloat(lab.lower) : undefined,
+        lab.upper ? Number.parseFloat(lab.upper) : undefined,
+      );
+      const rangeSource = lab.lower || lab.upper ? "사용자 입력 기준 범위" : "기준 범위 없음";
+      return `<strong>${escapeHtml(lab.date)} ${escapeHtml(lab.name)} ${escapeHtml(lab.value)}${lab.unit ? ` ${escapeHtml(lab.unit)}` : ""}</strong><br><span class="source-label">${rangeSource}</span> ${escapeHtml(assessment.label)}<br>기준 ${escapeHtml(lab.lower || "-")}~${escapeHtml(lab.upper || "-")} ${escapeHtml(lab.note)}`;
+    },
   );
   const vitalItems = latestByDate(state.vitals, 5).map(vitalText);
+  const foodItems = foodAssessment
+    ? [
+        `<strong>${escapeHtml(foodQuery)}</strong><br><span class="source-label">로컬 음식 규칙 라벨</span> ${escapeHtml(foodAssessment.label)}<br>${escapeHtml(foodAssessment.summary)}${
+          foodAssessment.matches.length
+            ? `<br><small>근거: ${foodAssessment.matches
+                .map((match) => `${escapeHtml(match.term)} - ${escapeHtml(match.reason)}`)
+                .join("; ")}</small>`
+            : ""
+        }`,
+      ]
+    : [];
 
   return `<!doctype html>
 <html lang="ko">
@@ -137,6 +160,17 @@ export function buildCaregiverExportHtml(
     li { margin: 0 0 10px; }
     small, .meta, .empty { color: #5d6a70; }
     .notice { border-color: #f2c8a6; background: #fff8ee; }
+    .source-label { display: inline-block; margin: 2px 6px 2px 0; padding: 2px 7px; border-radius: 999px; background: #e9f3f0; color: #2f675c; font-size: 0.72rem; font-weight: 700; }
+    @media print {
+      @page { margin: 14mm; }
+      body { background: #fff; color: #111; }
+      main { max-width: none; padding: 0; }
+      header, section { border-color: #b6c4c2; break-inside: avoid; page-break-inside: avoid; }
+      h1 { font-size: 20pt; }
+      h2 { font-size: 12pt; }
+      .notice { background: #fff; border-color: #555; }
+      .source-label { border: 1px solid #8ba19d; background: #fff; color: #111; }
+    }
   </style>
 </head>
 <body>
@@ -169,6 +203,10 @@ export function buildCaregiverExportHtml(
     <section>
       <h2>최근 검사 수치</h2>
       ${listItems(labItems, "검사 수치 기록이 없습니다.")}
+    </section>
+    <section>
+      <h2>음식 확인 메모</h2>
+      ${listItems(foodItems, "음식 확인 입력이 없습니다.")}
     </section>
     <section>
       <h2>최근 혈압·혈당</h2>
