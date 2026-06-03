@@ -1,0 +1,118 @@
+import { describe, expect, it } from "vitest";
+import { buildVisitPacketMarkdown, type VisitPacketState } from "./visitPacket";
+
+const sampleState: VisitPacketState = {
+  profile: {
+    name: "테스트 사용자",
+    age: "58",
+    sex: "female",
+    heightCm: "164",
+    weightKg: "62",
+    cancerCareMode: true,
+    diabetes: true,
+    hypertension: true,
+  },
+  vitals: [
+    {
+      date: "2026-06-01",
+      type: "blood-pressure",
+      systolic: 132,
+      diastolic: 84,
+      note: "아침",
+    },
+    {
+      date: "2026-06-02",
+      type: "glucose",
+      glucoseMgDl: 181,
+      glucoseContext: "after-meal",
+      note: "점심 식후",
+    },
+  ],
+  visits: [
+    {
+      date: "2026-06-03",
+      hospital: "종양내과",
+      reason: "정기 추적",
+      summary: "검사 결과 확인",
+      plan: "2주 뒤 재검",
+      nextDate: "2026-06-17",
+    },
+  ],
+  documents: [
+    {
+      date: "2026-06-03",
+      title: "혈액검사 결과",
+      category: "lab",
+      body: "WBC 재확인",
+      tags: "혈액검사",
+      attachmentName: "blood-test.pdf",
+    },
+  ],
+  symptoms: [
+    {
+      date: "2026-06-02",
+      symptom: "오심",
+      severity: 5,
+      medication: "항구토제",
+      body: "점심 이후 심함",
+      action: "약 조절 질문",
+    },
+  ],
+  questions: [
+    {
+      date: "2026-06-17",
+      topic: "식사",
+      question: "날음식 제한 기준은?",
+      status: "open",
+      answer: "",
+    },
+  ],
+  labResults: [
+    {
+      date: "2026-06-03",
+      name: "WBC",
+      value: "3.4",
+      unit: "10^3/uL",
+      lower: "4.0",
+      upper: "10.0",
+      note: "면역저하 질문",
+    },
+  ],
+};
+
+describe("visit packet", () => {
+  it("builds a clinician-facing markdown summary from tracked records", () => {
+    const markdown = buildVisitPacketMarkdown(sampleState, {
+      exportedAt: "2026-06-03T08:00:00.000Z",
+      foodQuery: "브로콜리, 베이컨, 자몽 주스",
+    });
+
+    expect(markdown).toContain("# CareVault 진료 요약");
+    expect(markdown).toContain("## 최근 혈압/혈당");
+    expect(markdown).toContain("혈압 132/84 mmHg");
+    expect(markdown).toContain("혈당 181 mg/dL");
+    expect(markdown).toContain("WBC 3.4 10^3/uL");
+    expect(markdown).toContain("[확인 필요] 식사");
+    expect(markdown).toContain("첨부: blood-test.pdf");
+    expect(markdown).toContain("브로콜리, 베이컨, 자몽 주스");
+  });
+
+  it("keeps local attachment paths out of the exported summary", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        documents: [
+          {
+            ...sampleState.documents[0],
+            attachmentName: "scan.pdf",
+            attachmentPath: "/Users/wj/private/scan.pdf",
+          },
+        ],
+      },
+      { exportedAt: "2026-06-03T08:00:00.000Z" },
+    );
+
+    expect(markdown).toContain("첨부: scan.pdf");
+    expect(markdown).not.toContain("/Users/wj/private/scan.pdf");
+  });
+});

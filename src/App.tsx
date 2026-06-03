@@ -48,6 +48,7 @@ import {
   savePersistedState,
   type PersistenceBackend,
 } from "./storage";
+import { buildVisitPacketMarkdown } from "./visitPacket";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose";
@@ -728,6 +729,25 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
+  const exportVisitPacket = () => {
+    const markdown = buildVisitPacketMarkdown(state, {
+      exportedAt: new Date().toISOString(),
+      foodQuery,
+    });
+    const blob = new Blob([markdown], {
+      type: "text/markdown;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `carevault-visit-summary-${today}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setSaveLabel("진료 요약 내보냄");
+  };
+
   const importBackup = (file: File | undefined) => {
     if (!file) return;
 
@@ -804,6 +824,10 @@ function App() {
             <button type="button" className="secondary-button" onClick={exportBackup}>
               <Download aria-hidden="true" />
               내보내기
+            </button>
+            <button type="button" className="secondary-button" onClick={exportVisitPacket}>
+              <FileText aria-hidden="true" />
+              진료 요약
             </button>
             <button
               type="button"
