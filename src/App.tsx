@@ -42,6 +42,7 @@ import {
   assessCancerFood,
   assessLabValue,
   calculateBmi,
+  type FoodAssessment,
   type GlucoseContext,
   type LabFlag,
 } from "./healthRules";
@@ -60,6 +61,7 @@ import {
 import { labPresets, resolveLabPreset } from "./labPresets";
 import {
   loadPersistedState,
+  type NormalizedCareVaultMirror,
   savePersistedState,
   type PersistenceBackend,
 } from "./storage";
@@ -174,6 +176,7 @@ type LabResult = {
 
 type AppState = {
   profile: Profile;
+  foodQuery: string;
   vitals: VitalEntry[];
   visits: VisitEntry[];
   documents: CareDocument[];
@@ -196,6 +199,7 @@ const defaultState: AppState = {
     diabetes: true,
     hypertension: true,
   },
+  foodQuery: "브로콜리, 현미밥, 베이컨, 자몽 주스",
   vitals: [
     {
       id: "bp-1",
@@ -419,6 +423,7 @@ function normalizeAppState(input: Partial<AppState>): AppState {
     ...defaultState,
     ...input,
     profile: { ...defaultState.profile, ...input.profile },
+    foodQuery: input.foodQuery ?? defaultState.foodQuery,
     vitals: input.vitals ?? [],
     visits: input.visits ?? [],
     documents: (input.documents ?? []).map((document) => ({
@@ -439,6 +444,35 @@ function normalizeAppState(input: Partial<AppState>): AppState {
   };
 }
 
+function buildNormalizedCareVaultMirror(
+  state: AppState,
+  foodAssessment: FoodAssessment,
+): NormalizedCareVaultMirror {
+  return {
+    profile: state.profile,
+    vitals: state.vitals,
+    visits: state.visits,
+    documents: [
+      ...state.documents.map((document) => ({
+        ...document,
+        isDeleted: false,
+      })),
+      ...state.deletedDocuments.map((document) => ({
+        ...document,
+        isDeleted: true,
+      })),
+    ],
+    foodCheck: {
+      id: "current",
+      query: state.foodQuery,
+      level: foodAssessment.level,
+      label: foodAssessment.label,
+      summary: foodAssessment.summary,
+      matchesJson: JSON.stringify(foodAssessment.matches),
+    },
+  };
+}
+
 function App() {
   const [state, setState] = useState<AppState>(defaultState);
   const [hydrated, setHydrated] = useState(false);
@@ -454,7 +488,6 @@ function App() {
     {},
   );
   const [labPresetChoice, setLabPresetChoice] = useState("");
-  const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
   const [documentFilter, setDocumentFilter] = useState("");
   const [documentCategoryFilter, setDocumentCategoryFilter] =
@@ -496,11 +529,21 @@ function App() {
     [],
   );
 
+  const foodAssessment = useMemo(
+    () => assessCancerFood(state.foodQuery),
+    [state.foodQuery],
+  );
+
+  const normalizedMirror = useMemo(
+    () => buildNormalizedCareVaultMirror(state, foodAssessment),
+    [foodAssessment, state],
+  );
+
   useEffect(() => {
     if (!hydrated) return;
 
     const handle = window.setTimeout(() => {
-      savePersistedState(state)
+      savePersistedState(state, { normalizedMirror })
         .then((backend) => {
           setStorageBackend(backend);
           setSaveLabel(backend === "sqlite" ? "SQLite 자동 저장됨" : "브라우저 자동 저장됨");
@@ -509,7 +552,7 @@ function App() {
     }, 250);
 
     return () => window.clearTimeout(handle);
-  }, [state]);
+  }, [hydrated, normalizedMirror, state]);
 
   const bmi = useMemo(
     () =>
@@ -533,7 +576,6 @@ function App() {
   const glucoseStatus = latestGlucose?.glucoseMgDl
     ? assessBloodGlucose(latestGlucose.glucoseMgDl, latestGlucose.glucoseContext ?? "random")
     : undefined;
-  const foodAssessment = useMemo(() => assessCancerFood(foodQuery), [foodQuery]);
   const latestSymptom = [...state.symptoms].sort((a, b) => b.date.localeCompare(a.date))[0];
   const openQuestionCount = state.questions.filter((question) => question.status === "open").length;
   const symptomLevel =
@@ -1187,7 +1229,7 @@ function App() {
         : "현재 데이터는 임시 메모리에만 있습니다.";
 
   const saveNow = () => {
-    savePersistedState(state)
+    savePersistedState(state, { normalizedMirror })
       .then((backend) => {
         setStorageBackend(backend);
         setSaveLabel(backend === "sqlite" ? "SQLite 저장됨" : "브라우저 저장됨");
@@ -1218,7 +1260,7 @@ function App() {
   const exportVisitPacket = () => {
     const markdown = buildVisitPacketMarkdown(state, {
       exportedAt: new Date().toISOString(),
-      foodQuery,
+      foodQuery: state.foodQuery,
       range: visitPacketRange,
     });
     const blob = new Blob([markdown], {
@@ -2055,8 +2097,14 @@ function App() {
             <label className="wide-label">
               음식 또는 식단 입력
               <textarea
-                value={foodQuery}
-                onChange={(event) => setFoodQuery(event.currentTarget.value)}
+                value={state.foodQuery}
+                onChange={(event) => {
+                  const foodQuery = event.currentTarget.value;
+                  setState((current) => ({
+                    ...current,
+                    foodQuery,
+                  }));
+                }}
                 placeholder="예: 두부, 블루베리, 소시지, 술, 생굴"
               />
             </label>

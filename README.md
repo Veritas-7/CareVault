@@ -20,6 +20,7 @@ CareVault is a local-first health notebook for manually tracking:
 - attachment availability checks that mark saved files as found, missing, failed, or filename-reference-only
 - saved-document attachment and reattachment controls without recreating the manual note
 - saved-document image attachment preview without uploading or exporting medical files
+- normalized SQLite mirror tables for profile, vitals, visits, documents, and current food check
 - document attachment lifecycle controls with Tauri sandbox-copy selection and browser filename fallback
 - clinician visit summary export as a Markdown packet with selectable 7/30/90/all-record date range
 
@@ -41,6 +42,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - saved attachment status checks with document-history entries for found/missing/reference-only files
 - saved-document attachment replacement with document-history entries
 - saved-document image attachment preview for JPG, PNG, and WebP files
+- first normalized SQLite mirror for core health records while keeping JSON `app_state` compatibility
 - document attachment preparation, opening, removal, and document deletion through Tauri dialog/fs plugins
 - Markdown visit summary export for clinical conversations with a selectable date range
 - pure TypeScript health rule module in `src/healthRules.ts`
@@ -75,4 +77,6 @@ Saved documents can attach or reattach a file from the existing card. Tauri runt
 
 Saved image attachments can be previewed from the document card. Tauri runtime uses the app asset protocol for sandbox-copied JPG, PNG, and WebP files after file selection has placed them in scope. Browser preview uses a temporary object URL for image files selected in the current session only; it still does not persist file contents.
 
-The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add stronger long-term attachment archive management.
+Tauri SQLite saves still keep the compatible JSON `app_state` row, and now also mirror profile, vitals, visits, active/deleted documents, and the current food check into normalized tables. The mirror is snapshot-style and wrapped in a SQLite transaction; browser preview continues to use localStorage only.
+
+The next durable app slice should move more read paths toward the normalized tables, then add stronger long-term attachment archive management.
