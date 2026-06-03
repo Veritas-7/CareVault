@@ -32,6 +32,11 @@ import {
   calculateBmi,
   type GlucoseContext,
 } from "./healthRules";
+import {
+  loadPersistedState,
+  savePersistedState,
+  type PersistenceBackend,
+} from "./storage";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose";
@@ -91,8 +96,6 @@ type AppState = {
   visits: VisitEntry[];
   documents: CareDocument[];
 };
-
-const STORAGE_KEY = "carevault.v1";
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -205,18 +208,11 @@ const documentLabel: Record<DocumentCategory, string> = {
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
-function loadState(): AppState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultState;
-    return { ...defaultState, ...JSON.parse(raw) };
-  } catch {
-    return defaultState;
-  }
-}
-
 function App() {
-  const [state, setState] = useState<AppState>(() => loadState());
+  const [state, setState] = useState<AppState>(defaultState);
+  const [hydrated, setHydrated] = useState(false);
+  const [storageBackend, setStorageBackend] = useState<PersistenceBackend>("memory");
+  const [saveLabel, setSaveLabel] = useState("저장소 확인 중");
   const [vitalDraft, setVitalDraft] = useState<VitalEntry>(emptyVital);
   const [visitDraft, setVisitDraft] = useState<VisitEntry>(emptyVisit);
   const [documentDraft, setDocumentDraft] = useState<CareDocument>(emptyDocument);
@@ -224,7 +220,34 @@ function App() {
   const [documentFilter, setDocumentFilter] = useState("");
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    let active = true;
+
+    loadPersistedState(defaultState).then((result) => {
+      if (!active) return;
+      setState(result.state);
+      setStorageBackend(result.backend);
+      setSaveLabel(result.backend === "sqlite" ? "SQLite 저장 준비" : "브라우저 저장 준비");
+      setHydrated(true);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    const handle = window.setTimeout(() => {
+      savePersistedState(state)
+        .then((backend) => {
+          setStorageBackend(backend);
+          setSaveLabel(backend === "sqlite" ? "SQLite 자동 저장됨" : "브라우저 자동 저장됨");
+        })
+        .catch(() => setSaveLabel("저장 실패"));
+    }, 250);
+
+    return () => window.clearTimeout(handle);
   }, [state]);
 
   const bmi = useMemo(
@@ -307,6 +330,22 @@ function App() {
     setDocumentDraft({ ...emptyDocument, date: today });
   };
 
+  const storageText =
+    storageBackend === "sqlite"
+      ? "현재 데이터는 Tauri SQLite DB에 저장됩니다."
+      : storageBackend === "localStorage"
+        ? "현재 데이터는 이 기기의 브라우저 저장소에 보관됩니다."
+        : "현재 데이터는 임시 메모리에만 있습니다.";
+
+  const saveNow = () => {
+    savePersistedState(state)
+      .then((backend) => {
+        setStorageBackend(backend);
+        setSaveLabel(backend === "sqlite" ? "SQLite 저장됨" : "브라우저 저장됨");
+      })
+      .catch(() => setSaveLabel("저장 실패"));
+  };
+
   return (
     <main className="app-shell">
       <aside className="sidebar">
@@ -337,7 +376,7 @@ function App() {
         </nav>
         <div className="privacy-note">
           <ShieldCheck aria-hidden="true" />
-          <span>현재 데이터는 이 기기의 브라우저 저장소에만 보관됩니다.</span>
+          <span>{storageText}</span>
         </div>
       </aside>
 
@@ -349,7 +388,8 @@ function App() {
           </div>
           <div className="top-actions">
             <span>{state.profile.cancerCareMode ? "암환자 관리 모드" : "일반 관리 모드"}</span>
-            <button type="button" onClick={() => localStorage.setItem(STORAGE_KEY, JSON.stringify(state))}>
+            <span>{saveLabel}</span>
+            <button type="button" onClick={saveNow}>
               <Save aria-hidden="true" />
               저장
             </button>
@@ -827,7 +867,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: Tauri SQLite 저장소, 서류 첨부 파일 보관, 검사 수치 사전,
+            다음 개발 슬라이스: 정규화된 SQLite 테이블, 서류 첨부 파일 보관, 검사 수치 사전,
             병원 방문 전 질문 생성, 가족/보호자 공유용 내보내기.
           </p>
         </section>

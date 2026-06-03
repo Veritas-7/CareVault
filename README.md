@@ -16,6 +16,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 ## Current Slice
 
 - React dashboard with localStorage persistence
+- Tauri SQLite `app_state` persistence with browser localStorage fallback
 - Recharts trend chart for BP/glucose
 - pure TypeScript health rule module in `src/healthRules.ts`
 - Vitest coverage for BMI, BP, glucose, and cancer-food rules
@@ -33,4 +34,4 @@ npm run tauri dev
 
 ## Next Storage Slice
 
-The first implementation uses localStorage so the UI and health-rule surface are usable immediately. The next durable app slice should move records into Tauri SQLite and store document attachments under the app data directory.
+The app now uses SQLite when it runs inside Tauri and falls back to localStorage in a browser preview. The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables and store document attachments under the app data directory.
