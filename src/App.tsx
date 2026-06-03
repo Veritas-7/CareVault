@@ -56,6 +56,10 @@ import { isPreviewableImageAttachment } from "./attachmentPreview";
 import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
 import { needsAttachmentRecovery } from "./attachmentRecovery";
 import {
+  buildSymptomSupportQuestion,
+  findSymptomSupportTemplate,
+} from "./symptomSupportTemplates";
+import {
   appendDocumentHistory,
   type DocumentHistoryEntry,
   type DocumentHistoryKind,
@@ -663,6 +667,10 @@ function App() {
     (document) => document.reviewStatus !== "done",
   ).length;
   const careActions = useMemo(() => buildCareActionQueue(state, today), [state, today]);
+  const symptomSupportTemplate = useMemo(
+    () => findSymptomSupportTemplate(`${symptomDraft.symptom} ${symptomDraft.body}`),
+    [symptomDraft.body, symptomDraft.symptom],
+  );
 
   const chartData = [...state.vitals]
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -1278,6 +1286,25 @@ function App() {
       questions: [...current.questions, { ...questionDraft, id: createId("question") }],
     }));
     setQuestionDraft({ ...emptyQuestion, date: today });
+  };
+
+  const applySymptomSupportTemplate = () => {
+    if (!symptomSupportTemplate) return;
+
+    setQuestionDraft((current) => ({
+      ...current,
+      date: getNextQuestionDate(state.visits, today),
+      topic: `부작용: ${symptomSupportTemplate.label}`,
+      question: buildSymptomSupportQuestion(symptomSupportTemplate, symptomDraft.symptom),
+      status: "open",
+    }));
+    setSymptomDraft((current) => ({
+      ...current,
+      action: current.action.trim()
+        ? current.action
+        : `${symptomSupportTemplate.mealNote} ${symptomSupportTemplate.safetyNote}`,
+    }));
+    setSaveLabel("부작용 질문 초안 준비됨");
   };
 
   const applyLabPreset = (presetId: string) => {
@@ -2015,6 +2042,19 @@ function App() {
                 placeholder="예: 다음 진료 때 질문, 24시간 지속 시 전화"
               />
             </label>
+            {symptomSupportTemplate ? (
+              <div className="symptom-template-band" role="status">
+                <div>
+                  <span>{symptomSupportTemplate.label}</span>
+                  <p>{symptomSupportTemplate.mealNote}</p>
+                  <small>{symptomSupportTemplate.safetyNote}</small>
+                </div>
+                <button type="button" onClick={applySymptomSupportTemplate}>
+                  <MessageSquare aria-hidden="true" />
+                  질문 초안
+                </button>
+              </div>
+            ) : null}
             <button className="primary-button" type="button" onClick={addSymptom}>
               <Plus aria-hidden="true" />
               증상 기록 추가
@@ -2644,8 +2684,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 치료 부작용별 식사/질문 템플릿, 다음 예약 알림, CSV/JSON export,
-            가족/보호자 공유용 내보내기.
+            다음 개발 슬라이스: 다음 예약 알림, CSV/JSON export, 가족/보호자 공유용 내보내기.
           </p>
         </section>
       </section>

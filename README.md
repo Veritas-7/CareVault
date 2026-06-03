@@ -10,6 +10,7 @@ CareVault is a local-first health notebook for manually tracking:
 - diabetes and hypertension follow-up context
 - hospital visits and next appointments
 - treatment symptom and side-effect diary
+- side-effect meal-note and clinician-question templates for common cancer-treatment symptoms
 - pre-visit clinical question planner with lab-result follow-up prompts
 - care action queue that surfaces open questions, abnormal or reference-missing labs, active document actions, and upcoming visits
 - cancer-care nutrition checks
@@ -37,6 +38,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - Recharts trend chart for BP/glucose
 - full-state JSON backup export/import
 - dated cancer-care symptom and question tracking
+- local symptom support templates for nausea, mouth sores, diarrhea, constipation, and fatigue
 - lab value range tracking for manual cancer-care records with WBC, ANC, hemoglobin, platelet, A1C, and fasting-glucose presets
 - one-click follow-up question creation from out-of-range or reference-missing lab results
 - dashboard care action queue for pre-visit review of questions, labs, documents, and upcoming visits
@@ -76,6 +78,8 @@ Visit summaries are generated as local Markdown downloads. They include the sele
 
 The dashboard care action queue is a derived view only. It does not create new medical advice; it gathers open questions, low/high/reference-missing labs, unfinished document actions, and future visits into a short pre-visit checklist.
 
+Symptom support templates are local keyword prompts only. They suggest meal-note candidates and fill the question draft for clinician review; they do not save a question automatically or create treatment instructions.
+
 Document history is stored with each saved document and is used as an in-app audit trail for recent manual changes. It is not a legal medical record, but it helps users see how a document's review state, next action, attachment state, or archive/restore state changed over time.
 
 Document deletion is recoverable: deleting a saved note moves it to an in-app deleted-document archive and keeps its text, metadata, attachment reference, and history available for restore.
@@ -92,4 +96,4 @@ Saved image attachments can be previewed from the document card. Tauri runtime u
 
 Tauri SQLite saves still keep the compatible JSON `app_state` row, and now also mirror profile, vitals, visits, active/deleted documents, attachment metadata, document history, symptoms, questions, lab results, and the current food check into normalized tables. The mirror is snapshot-style and wrapped in a SQLite transaction. Attachment mirror rows intentionally store filename, storage mode, status, and deleted-state only, not local copied paths. After Tauri saves, the app reads normalized row counts back from SQLite and shows the mirror status in the sidebar. When a Tauri user searches saved documents, the same search term is also counted across normalized documents, labs, questions, symptoms, visits, vitals, food checks, attachment metadata, and document history as a read-path verification signal. Browser preview continues to use localStorage only.
 
-The next durable app slice should add treatment side-effect meal and clinician-question templates.
+The next durable app slice should add next-appointment reminders or CSV/JSON export.

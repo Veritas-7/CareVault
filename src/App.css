@@ -553,6 +553,56 @@ textarea:focus {
   background: #ffe9e5;
 }
 
+.symptom-template-band {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid #d7e3d8;
+  border-radius: 8px;
+  background: #f3faf2;
+}
+
+.symptom-template-band div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.symptom-template-band span {
+  color: #1d4f38;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.symptom-template-band p,
+.symptom-template-band small {
+  margin: 0;
+  color: #526066;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.symptom-template-band button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid #bfd4c4;
+  border-radius: 8px;
+  color: #145036;
+  background: #ffffff;
+}
+
+.symptom-template-band button svg {
+  width: 15px;
+  height: 15px;
+}
+
 .chart-box {
   height: 290px;
 }
@@ -1302,6 +1352,11 @@ textarea:focus {
   .document-history li {
     grid-template-columns: 1fr;
     gap: 2px;
+  }
+
+  .symptom-template-band {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .deleted-document-title,
