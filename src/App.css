@@ -906,6 +906,25 @@ textarea:focus {
   background: #eef5f4;
 }
 
+.attachment-recovery {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  padding: 9px 10px;
+  border: 1px solid #f2c8a6;
+  border-radius: 8px;
+  color: #7a3f10;
+  background: #fff7ed;
+  font-size: 0.82rem;
+}
+
+.attachment-recovery svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
 .attachment-empty {
   margin: 0;
   color: #657278;

@@ -53,6 +53,7 @@ import {
 } from "./labQuestionPrompts";
 import { buildCareActionQueue, type CareActionSource } from "./careActionQueue";
 import { isPreviewableImageAttachment } from "./attachmentPreview";
+import { needsAttachmentRecovery } from "./attachmentRecovery";
 import {
   appendDocumentHistory,
   type DocumentHistoryEntry,
@@ -883,12 +884,25 @@ function App() {
     }
 
     try {
-      const { openPath } = await import("@tauri-apps/plugin-opener");
+      const [{ openPath }, { exists }] = await Promise.all([
+        import("@tauri-apps/plugin-opener"),
+        import("@tauri-apps/plugin-fs"),
+      ]);
+      const attachmentExists = await exists(document.attachmentPath).catch(() => false);
+      if (!attachmentExists) {
+        const status = "파일 없음 - 재첨부 필요";
+        updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
+        setSaveLabel(status);
+        return;
+      }
+
       await openPath(document.attachmentPath);
       setSaveLabel("첨부 파일 열기 요청됨");
     } catch (error) {
       console.error("Document attachment open failed", error);
-      setSaveLabel("첨부 파일 열기 실패");
+      const status = "첨부 열기 실패 - 재첨부 필요";
+      updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
+      setSaveLabel(status);
     }
   };
 
@@ -2510,6 +2524,12 @@ function App() {
                         ) : null}
                       </div>
                     ) : null}
+                    {needsAttachmentRecovery(document.attachmentStatus) ? (
+                      <div className="attachment-recovery" role="status">
+                        <AlertTriangle aria-hidden="true" />
+                        <span>첨부 원본을 찾거나 열 수 없습니다. 재첨부로 새 복사본을 연결하세요.</span>
+                      </div>
+                    ) : null}
                   </div>
                   <div className="document-actions">
                     <button type="button" onClick={() => replaceSavedDocumentAttachment(document)}>
@@ -2582,8 +2602,8 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 정규화된 SQLite 테이블, 첨부 장기 아카이브 관리, 검사 수치 사전,
-            증상 심각도 알림 규칙, 가족/보호자 공유용 내보내기.
+            다음 개발 슬라이스: 첨부 장기 아카이브 관리, 치료 부작용별 식사/질문 템플릿, 다음 예약 알림,
+            가족/보호자 공유용 내보내기.
           </p>
         </section>
       </section>
