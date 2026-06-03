@@ -174,6 +174,10 @@ function escapePrintHtml(value: string) {
     .replace(/"/g, "&quot;");
 }
 
+function isHtmlExportPreview(preview: ExportPreviewState) {
+  return preview.mimeType.toLowerCase().startsWith("text/html");
+}
+
 type SymptomEntry = {
   id: string;
   date: string;
@@ -1474,7 +1478,10 @@ function App() {
       return;
     }
 
-    printWindow.document.write(`<!doctype html>
+    if (isHtmlExportPreview(exportPreview)) {
+      printWindow.document.write(exportPreview.content);
+    } else {
+      printWindow.document.write(`<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8">
@@ -1494,6 +1501,7 @@ function App() {
   <pre>${escapePrintHtml(exportPreview.content)}</pre>
 </body>
 </html>`);
+    }
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
@@ -1559,6 +1567,8 @@ function App() {
     };
     reader.readAsText(file);
   };
+
+  const showRenderedExportPreview = exportPreview ? isHtmlExportPreview(exportPreview) : false;
 
   return (
     <main className="app-shell">
@@ -2864,7 +2874,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 보호자 HTML 렌더 미리보기.
+            다음 개발 슬라이스: 보호자 공유본 섹션 포함 옵션.
           </p>
         </section>
         {exportPreview ? (
@@ -2899,7 +2909,23 @@ function App() {
                 </button>
               </div>
             </div>
-            <pre>{exportPreview.content}</pre>
+            {showRenderedExportPreview ? (
+              <>
+                <div className="export-preview-rendered" aria-label="보호자 공유본 렌더 미리보기">
+                  <iframe
+                    title={exportPreview.title}
+                    srcDoc={exportPreview.content}
+                    sandbox=""
+                  />
+                </div>
+                <details className="export-preview-source">
+                  <summary>원본 HTML 보기</summary>
+                  <pre>{exportPreview.content}</pre>
+                </details>
+              </>
+            ) : (
+              <pre>{exportPreview.content}</pre>
+            )}
           </section>
         ) : null}
       </section>

@@ -1378,6 +1378,34 @@ textarea:focus {
   gap: 8px;
 }
 
+.export-preview-rendered {
+  overflow: hidden;
+  border: 1px solid #dce6e5;
+  border-radius: 8px;
+  background: #f6f8f8;
+}
+
+.export-preview-rendered iframe {
+  display: block;
+  width: 100%;
+  height: 520px;
+  min-height: 360px;
+  max-height: 70vh;
+  border: 0;
+  background: #fff;
+}
+
+.export-preview-source {
+  display: grid;
+  gap: 8px;
+}
+
+.export-preview-source summary {
+  cursor: pointer;
+  color: #2f5357;
+  font-weight: 700;
+}
+
 .export-preview-panel pre {
   max-height: 360px;
   margin: 0;
