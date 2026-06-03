@@ -570,6 +570,7 @@ function App() {
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
   const [caregiverExportSections, setCaregiverExportSections] =
     useState<CaregiverExportSections>(() => ({ ...caregiverExportSectionDefaults }));
+  const [redactCaregiverProfile, setRedactCaregiverProfile] = useState(false);
   const [documentFilter, setDocumentFilter] = useState("");
   const [documentCategoryFilter, setDocumentCategoryFilter] =
     useState<DocumentCategoryFilter>("all");
@@ -1470,6 +1471,7 @@ function App() {
 
   const buildCaregiverExport = () =>
     buildCaregiverExportHtml(state, new Date().toISOString(), {
+      redactProfile: redactCaregiverProfile,
       sections: caregiverExportSections,
     });
 
@@ -1730,6 +1732,14 @@ function App() {
               <Eye aria-hidden="true" />
               공유본 미리보기
             </button>
+            <label className="caregiver-profile-redaction">
+              <input
+                type="checkbox"
+                checked={redactCaregiverProfile}
+                onChange={(event) => setRedactCaregiverProfile(event.currentTarget.checked)}
+              />
+              프로필 가리기
+            </label>
             <fieldset className="caregiver-section-options" aria-label="보호자 공유본 포함 섹션">
               <legend>공유본 포함</legend>
               {caregiverExportSectionOptions.map((option) => {
@@ -2920,7 +2930,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 보호자 공유본 프로필 가리기 옵션.
+            다음 개발 슬라이스: 보호자 공유본 커버 메모.
           </p>
         </section>
         {exportPreview ? (

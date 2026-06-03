@@ -72,6 +72,7 @@ export type CaregiverExportSectionId =
 export type CaregiverExportSections = Record<CaregiverExportSectionId, boolean>;
 
 export type CaregiverExportOptions = {
+  redactProfile?: boolean;
   sections?: Partial<CaregiverExportSections>;
 };
 
@@ -114,6 +115,12 @@ export function buildCaregiverExportHtml(
   exportedAt: string,
   options: CaregiverExportOptions = {},
 ) {
+  const profileTitle = options.redactProfile
+    ? "CareVault 보호자 공유본"
+    : `${escapeHtml(state.profile.name)} 보호자 공유본`;
+  const profileSummary = options.redactProfile
+    ? "프로필 식별정보 가림"
+    : `${escapeHtml(state.profile.age)}세 · ${escapeHtml(state.profile.sex)} · ${escapeHtml(state.profile.heightCm)}cm / ${escapeHtml(state.profile.weightKg)}kg`;
   const enabledSections = {
     ...caregiverExportSectionDefaults,
     ...options.sections,
@@ -263,8 +270,8 @@ export function buildCaregiverExportHtml(
   <main>
     <header>
       <p class="meta">생성 시각: ${escapeHtml(exportedAt)}</p>
-      <h1>${escapeHtml(state.profile.name)} 보호자 공유본</h1>
-      <p>${escapeHtml(state.profile.age)}세 · ${escapeHtml(state.profile.sex)} · ${escapeHtml(state.profile.heightCm)}cm / ${escapeHtml(state.profile.weightKg)}kg</p>
+      <h1>${profileTitle}</h1>
+      <p>${profileSummary}</p>
     </header>
     <section class="notice">
       <h2>주의</h2>

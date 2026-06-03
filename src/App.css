@@ -236,6 +236,7 @@ h2 {
   font-weight: 700;
 }
 
+.caregiver-profile-redaction,
 .caregiver-section-options label {
   display: inline-flex;
   align-items: center;
@@ -250,12 +251,18 @@ h2 {
   white-space: nowrap;
 }
 
+.caregiver-profile-redaction {
+  flex: 0 0 auto;
+}
+
+.caregiver-profile-redaction input,
 .caregiver-section-options input {
   width: 14px;
   height: 14px;
   accent-color: #0f766e;
 }
 
+.caregiver-profile-redaction input:disabled,
 .caregiver-section-options input:disabled {
   cursor: not-allowed;
 }

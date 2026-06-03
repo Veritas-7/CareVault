@@ -136,4 +136,17 @@ describe("caregiverExport", () => {
     expect(html).not.toContain("최근 혈압·혈당");
     expect(html).not.toContain("혈압 132/84");
   });
+
+  it("can redact profile details from the caregiver header", () => {
+    const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z", {
+      redactProfile: true,
+    });
+
+    expect(html).toContain("<h1>CareVault 보호자 공유본</h1>");
+    expect(html).toContain("프로필 식별정보 가림");
+    expect(html).not.toContain("QA 사용자 보호자 공유본");
+    expect(html).not.toContain("56세");
+    expect(html).not.toContain("164cm");
+    expect(html).toContain("서울암센터");
+  });
 });
