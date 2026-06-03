@@ -72,6 +72,7 @@ export type CaregiverExportSectionId =
 export type CaregiverExportSections = Record<CaregiverExportSectionId, boolean>;
 
 export type CaregiverExportOptions = {
+  coverMemo?: string;
   redactProfile?: boolean;
   sections?: Partial<CaregiverExportSections>;
 };
@@ -103,6 +104,10 @@ function listItems(items: string[], emptyText: string) {
   return `<ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
 }
 
+function multilineHtml(value: string) {
+  return escapeHtml(value).replace(/\n/g, "<br>");
+}
+
 function vitalText(vital: CaregiverExportState["vitals"][number]) {
   if (vital.type === "blood-pressure") {
     return `${escapeHtml(vital.date)} 혈압 ${escapeHtml(vital.systolic)}/${escapeHtml(vital.diastolic)} ${escapeHtml(vital.note)}`;
@@ -121,6 +126,7 @@ export function buildCaregiverExportHtml(
   const profileSummary = options.redactProfile
     ? "프로필 식별정보 가림"
     : `${escapeHtml(state.profile.age)}세 · ${escapeHtml(state.profile.sex)} · ${escapeHtml(state.profile.heightCm)}cm / ${escapeHtml(state.profile.weightKg)}kg`;
+  const coverMemo = options.coverMemo?.trim() ?? "";
   const enabledSections = {
     ...caregiverExportSectionDefaults,
     ...options.sections,
@@ -277,6 +283,14 @@ export function buildCaregiverExportHtml(
       <h2>주의</h2>
       <p>이 파일은 진료 준비와 보호자 확인을 위한 읽기 전용 요약입니다. 진단, 처방, 치료 지시가 아니며 첨부 파일 내용과 로컬 파일 경로는 포함하지 않습니다.</p>
     </section>
+    ${
+      coverMemo
+        ? `<section>
+      <h2>전달 메모</h2>
+      <p>${multilineHtml(coverMemo)}</p>
+    </section>`
+        : ""
+    }
     ${shareSections}
   </main>
 </body>

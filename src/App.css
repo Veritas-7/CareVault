@@ -255,6 +255,25 @@ h2 {
   flex: 0 0 auto;
 }
 
+.caregiver-cover-memo {
+  flex: 1 1 260px;
+  min-width: 220px;
+  max-width: 420px;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #c7d8da;
+  border-radius: 8px;
+  color: #1d2528;
+  background: #ffffff;
+  font: inherit;
+  line-height: 1.35;
+  resize: vertical;
+}
+
+.caregiver-cover-memo::placeholder {
+  color: #7d8a8e;
+}
+
 .caregiver-profile-redaction input,
 .caregiver-section-options input {
   width: 14px;

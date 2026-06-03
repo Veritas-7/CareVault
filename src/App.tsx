@@ -571,6 +571,7 @@ function App() {
   const [caregiverExportSections, setCaregiverExportSections] =
     useState<CaregiverExportSections>(() => ({ ...caregiverExportSectionDefaults }));
   const [redactCaregiverProfile, setRedactCaregiverProfile] = useState(false);
+  const [caregiverCoverMemo, setCaregiverCoverMemo] = useState("");
   const [documentFilter, setDocumentFilter] = useState("");
   const [documentCategoryFilter, setDocumentCategoryFilter] =
     useState<DocumentCategoryFilter>("all");
@@ -1471,6 +1472,7 @@ function App() {
 
   const buildCaregiverExport = () =>
     buildCaregiverExportHtml(state, new Date().toISOString(), {
+      coverMemo: caregiverCoverMemo,
       redactProfile: redactCaregiverProfile,
       sections: caregiverExportSections,
     });
@@ -1740,6 +1742,14 @@ function App() {
               />
               프로필 가리기
             </label>
+            <textarea
+              className="caregiver-cover-memo"
+              aria-label="보호자 공유본 전달 메모"
+              rows={2}
+              value={caregiverCoverMemo}
+              onChange={(event) => setCaregiverCoverMemo(event.currentTarget.value)}
+              placeholder="보호자에게 전달할 메모"
+            />
             <fieldset className="caregiver-section-options" aria-label="보호자 공유본 포함 섹션">
               <legend>공유본 포함</legend>
               {caregiverExportSectionOptions.map((option) => {
@@ -2930,7 +2940,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 보호자 공유본 커버 메모.
+            다음 개발 슬라이스: 보호자 공유본 메모 프리셋.
           </p>
         </section>
         {exportPreview ? (

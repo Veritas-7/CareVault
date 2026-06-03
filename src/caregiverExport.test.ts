@@ -149,4 +149,15 @@ describe("caregiverExport", () => {
     expect(html).not.toContain("164cm");
     expect(html).toContain("서울암센터");
   });
+
+  it("adds an escaped caregiver cover memo when provided", () => {
+    const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z", {
+      coverMemo: "오늘은 식사량만 봐주세요.\n<script>alert(1)</script>",
+    });
+
+    expect(html).toContain("<h2>전달 메모</h2>");
+    expect(html).toContain("오늘은 식사량만 봐주세요.<br>&lt;script&gt;alert(1)&lt;/script&gt;");
+    expect(html).not.toContain("<script>alert(1)</script>");
+    expect(html).toContain("서울암센터");
+  });
 });
