@@ -18,6 +18,8 @@ import {
   Save,
   Search,
   ShieldCheck,
+  Trash2,
+  Unlink,
   Upload,
   UserRound,
   X,
@@ -583,6 +585,68 @@ function App() {
       console.error("Document attachment open failed", error);
       setSaveLabel("첨부 파일 열기 실패");
     }
+  };
+
+  const removeSandboxAttachment = async (document: CareDocument) => {
+    if (
+      document.attachmentStorage !== "tauri-sandbox" ||
+      !document.attachmentPath ||
+      !canUseTauriRuntime()
+    ) {
+      return true;
+    }
+
+    try {
+      const { exists, remove } = await import("@tauri-apps/plugin-fs");
+      const attachmentExists = await exists(document.attachmentPath).catch(() => false);
+      if (attachmentExists) {
+        await remove(document.attachmentPath);
+      }
+      return true;
+    } catch (error) {
+      console.error("Document attachment removal failed", error);
+      setSaveLabel("첨부 파일 삭제 실패");
+      return false;
+    }
+  };
+
+  const removeSavedDocumentAttachment = async (document: CareDocument) => {
+    if (!document.attachmentName) return;
+    const confirmed = window.confirm(`"${document.title}" 첨부 파일 연결을 제거할까요?`);
+    if (!confirmed) return;
+
+    const removed = await removeSandboxAttachment(document);
+    if (!removed) return;
+
+    setState((current) => ({
+      ...current,
+      documents: current.documents.map((item) =>
+        item.id === document.id
+          ? {
+              ...item,
+              attachmentName: undefined,
+              attachmentPath: undefined,
+              attachmentStorage: undefined,
+              attachmentStatus: undefined,
+            }
+          : item,
+      ),
+    }));
+    setSaveLabel("첨부 제거됨");
+  };
+
+  const deleteDocument = async (document: CareDocument) => {
+    const confirmed = window.confirm(`"${document.title}" 서류 기록을 삭제할까요?`);
+    if (!confirmed) return;
+
+    const removed = await removeSandboxAttachment(document);
+    if (!removed) return;
+
+    setState((current) => ({
+      ...current,
+      documents: current.documents.filter((item) => item.id !== document.id),
+    }));
+    setSaveLabel("서류 기록 삭제됨");
   };
 
   const addSymptom = () => {
@@ -1576,6 +1640,20 @@ function App() {
                         열기
                       </button>
                     ) : null}
+                    {document.attachmentName ? (
+                      <button type="button" onClick={() => removeSavedDocumentAttachment(document)}>
+                        <Unlink aria-hidden="true" />
+                        첨부 제거
+                      </button>
+                    ) : null}
+                    <button
+                      className="danger-action"
+                      type="button"
+                      onClick={() => deleteDocument(document)}
+                    >
+                      <Trash2 aria-hidden="true" />
+                      삭제
+                    </button>
                   </div>
                 </article>
               ))}

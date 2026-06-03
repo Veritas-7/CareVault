@@ -11,6 +11,8 @@
     "sql:default",
     "sql:allow-execute",
     "dialog:default",
-    "fs:default"
+    "fs:default",
+    "fs:allow-exists",
+    "fs:allow-remove"
   ]
 }

@@ -13,7 +13,7 @@ CareVault is a local-first health notebook for manually tracking:
 - pre-visit clinical question planner
 - cancer-care nutrition checks
 - dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes
-- document attachment metadata with Tauri sandbox-copy selection and browser filename fallback
+- document attachment lifecycle controls with Tauri sandbox-copy selection and browser filename fallback
 
 This is not a diagnostic or treatment app. It is a structured personal record and dashboard for preparing better clinical conversations.
 
@@ -25,7 +25,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - full-state JSON backup export/import
 - dated cancer-care symptom and question tracking
 - lab value range tracking for manual cancer-care records
-- document attachment preparation through Tauri dialog/fs plugins
+- document attachment preparation, opening, removal, and document deletion through Tauri dialog/fs plugins
 - pure TypeScript health rule module in `src/healthRules.ts`
 - Vitest coverage for BMI, BP, glucose, and cancer-food rules
 - research archive:
@@ -42,6 +42,6 @@ npm run tauri dev
 
 ## Storage Notes
 
-The app now uses SQLite when it runs inside Tauri and falls back to localStorage in a browser preview. Document selection uses Tauri dialog `fileAccessMode: "copy"` in desktop runtime so the selected file is copied into the app sandbox and the copied path is stored as document metadata. Browser preview stores only a filename reference.
+The app now uses SQLite when it runs inside Tauri and falls back to localStorage in a browser preview. Document selection uses Tauri dialog `fileAccessMode: "copy"` in desktop runtime so the selected file is copied into the app sandbox and the copied path is stored as document metadata. Saved documents can remove an attachment or delete the whole document; Tauri runtime attempts to remove the copied sandbox file before clearing metadata. Browser preview stores only a filename reference.
 
-The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment deletion, preview, and per-document file lifecycle management.
+The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment preview, missing-file recovery, and per-document audit history.

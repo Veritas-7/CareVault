@@ -688,6 +688,15 @@ textarea:focus {
   background: #d7eef0;
 }
 
+.document-actions .danger-action {
+  color: #8a2d22;
+  background: #fff0ed;
+}
+
+.document-actions .danger-action:hover {
+  background: #ffe1db;
+}
+
 .question-list {
   display: grid;
   gap: 10px;
