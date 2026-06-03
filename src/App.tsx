@@ -18,6 +18,7 @@ import {
   Paperclip,
   Pill,
   Plus,
+  Printer,
   RotateCcw,
   Save,
   Search,
@@ -164,6 +165,14 @@ type ExportPreviewState = {
   mimeType: string;
   title: string;
 };
+
+function escapePrintHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 type SymptomEntry = {
   id: string;
@@ -1454,6 +1463,41 @@ function App() {
       .writeText(exportPreview.content)
       .then(() => setSaveLabel(`${exportPreview.format} 미리보기 복사됨`))
       .catch(() => setSaveLabel("미리보기 복사 실패"));
+  };
+
+  const printExportPreview = () => {
+    if (!exportPreview) return;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      setSaveLabel("미리보기 인쇄 창 열기 실패");
+      return;
+    }
+
+    printWindow.document.write(`<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapePrintHtml(exportPreview.title)}</title>
+  <style>
+    body { margin: 24px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #111; }
+    h1 { margin: 0 0 4px; font-size: 20px; }
+    p { margin: 0 0 14px; color: #526066; }
+    pre { white-space: pre-wrap; word-break: break-word; font: 12px/1.55 "SFMono-Regular", Consolas, monospace; }
+    @media print { body { margin: 14mm; } }
+  </style>
+</head>
+<body>
+  <h1>${escapePrintHtml(exportPreview.title)}</h1>
+  <p>${escapePrintHtml(exportPreview.filename)}</p>
+  <pre>${escapePrintHtml(exportPreview.content)}</pre>
+</body>
+</html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    setSaveLabel(`${exportPreview.format} 인쇄 준비`);
   };
 
   const exportBackup = () => {
@@ -2820,7 +2864,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 미리보기 인쇄 액션.
+            다음 개발 슬라이스: 보호자 HTML 렌더 미리보기.
           </p>
         </section>
         {exportPreview ? (
@@ -2835,6 +2879,10 @@ function App() {
                 <button type="button" className="secondary-inline-button" onClick={copyExportPreview}>
                   <Copy aria-hidden="true" />
                   복사
+                </button>
+                <button type="button" className="secondary-inline-button" onClick={printExportPreview}>
+                  <Printer aria-hidden="true" />
+                  인쇄
                 </button>
                 <button type="button" className="secondary-inline-button" onClick={downloadExportPreview}>
                   <Download aria-hidden="true" />
