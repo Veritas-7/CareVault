@@ -5,7 +5,7 @@ Tauri v2 + React + TypeScript personal health tracking app.
 CareVault is a local-first health notebook for manually tracking:
 
 - blood pressure and blood glucose readings
-- lab results with user-entered reference ranges
+- lab results with user-entered reference ranges and common CBC/diabetes presets
 - adult BMI from age/sex/height/weight profile data
 - diabetes and hypertension follow-up context
 - hospital visits and next appointments
@@ -26,7 +26,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - Recharts trend chart for BP/glucose
 - full-state JSON backup export/import
 - dated cancer-care symptom and question tracking
-- lab value range tracking for manual cancer-care records
+- lab value range tracking for manual cancer-care records with WBC, ANC, hemoglobin, platelet, A1C, and fasting-glucose presets
 - document review status and next-action tracking with in-list updates and category/status filtering
 - document attachment preparation, opening, removal, and document deletion through Tauri dialog/fs plugins
 - Markdown visit summary export for clinical conversations with a selectable date range
@@ -48,6 +48,6 @@ npm run tauri dev
 
 The app now uses SQLite when it runs inside Tauri and falls back to localStorage in a browser preview. Document selection uses Tauri dialog `fileAccessMode: "copy"` in desktop runtime so the selected file is copied into the app sandbox and the copied path is stored as document metadata. Saved documents can remove an attachment or delete the whole document; Tauri runtime attempts to remove the copied sandbox file before clearing metadata. Browser preview stores only a filename reference.
 
-Visit summaries are generated as local Markdown downloads. They include the selected 7/30/90-day or all-record range of vitals, labs, symptoms, questions, visits, document notes, document review status, next actions, attachment filenames, and the current food-check query, but they intentionally exclude local attachment paths.
+Visit summaries are generated as local Markdown downloads. They include the selected 7/30/90-day or all-record range of vitals, labs, symptoms, questions, visits, document notes, document review status, next actions, attachment filenames, and the current food-check query, but they intentionally exclude local attachment paths. Lab presets are input helpers only; the app keeps the entered range editable because medical labs can use different reference ranges.
 
 The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment preview, missing-file recovery, and per-document audit history.

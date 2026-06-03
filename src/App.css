@@ -406,6 +406,15 @@ textarea:focus {
   margin-top: 12px;
 }
 
+.lab-preset-control {
+  margin-bottom: 12px;
+}
+
+.lab-preset-control small {
+  color: #657278;
+  line-height: 1.35;
+}
+
 .toggle-row {
   display: flex;
   flex-wrap: wrap;

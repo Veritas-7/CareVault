@@ -43,6 +43,7 @@ import {
   type GlucoseContext,
   type LabFlag,
 } from "./healthRules";
+import { labPresets, resolveLabPreset } from "./labPresets";
 import {
   loadPersistedState,
   savePersistedState,
@@ -401,6 +402,7 @@ function App() {
   const [symptomDraft, setSymptomDraft] = useState<SymptomEntry>(emptySymptom);
   const [questionDraft, setQuestionDraft] = useState<CareQuestion>(emptyQuestion);
   const [labDraft, setLabDraft] = useState<LabResult>(emptyLabResult);
+  const [labPresetChoice, setLabPresetChoice] = useState("");
   const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
   const [documentFilter, setDocumentFilter] = useState("");
@@ -724,6 +726,21 @@ function App() {
     setQuestionDraft({ ...emptyQuestion, date: today });
   };
 
+  const applyLabPreset = (presetId: string) => {
+    setLabPresetChoice(presetId);
+    const preset = resolveLabPreset(presetId, state.profile.sex);
+    if (!preset) return;
+
+    setLabDraft((current) => ({
+      ...current,
+      name: preset.name,
+      unit: preset.unit,
+      lower: preset.lower,
+      upper: preset.upper,
+      note: current.note.trim() ? current.note : preset.note,
+    }));
+  };
+
   const addLabResult = () => {
     if (!labDraft.name.trim() || !labDraft.value.trim()) return;
     setState((current) => ({
@@ -731,6 +748,7 @@ function App() {
       labResults: [...current.labResults, { ...labDraft, id: createId("lab") }],
     }));
     setLabDraft({ ...emptyLabResult, date: today });
+    setLabPresetChoice("");
   };
 
   const updateQuestionStatus = (id: string, status: QuestionStatus) => {
@@ -1456,8 +1474,23 @@ function App() {
           <section className="panel">
             <div className="section-title">
               <h2>검사 수치 입력</h2>
-              <span>검사실 기준 범위를 함께 기록</span>
+              <span>검사실 기준 범위와 항암·당뇨 추적 항목을 함께 기록</span>
             </div>
+            <label className="wide-label lab-preset-control">
+              검사 항목 프리셋
+              <select
+                value={labPresetChoice}
+                onChange={(event) => applyLabPreset(event.currentTarget.value)}
+              >
+                <option value="">직접 입력</option>
+                {labPresets.map((preset) => (
+                  <option value={preset.id} key={preset.id}>
+                    {preset.label}
+                  </option>
+                ))}
+              </select>
+              <small>프리셋은 입력 보조값입니다. 실제 결과지의 검사실 기준을 우선하세요.</small>
+            </label>
             <div className="form-grid">
               <label>
                 날짜
