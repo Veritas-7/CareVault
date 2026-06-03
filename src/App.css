@@ -360,6 +360,68 @@ label,
   margin-bottom: 18px;
 }
 
+.appointment-reminder-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.appointment-reminder {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #dde8e6;
+  border-radius: 8px;
+  background: #f8fbfb;
+}
+
+.appointment-reminder svg {
+  width: 18px;
+  height: 18px;
+  color: #0f766e;
+}
+
+.appointment-reminder div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.appointment-reminder span,
+.appointment-reminder time {
+  color: #526066;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.appointment-reminder strong {
+  overflow: hidden;
+  color: #1d2528;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.appointment-reminder p {
+  overflow: hidden;
+  margin: 0;
+  color: #526066;
+  font-size: 0.84rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reminder-watch {
+  border-left: 4px solid #d97706;
+  background: #fffaf0;
+}
+
+.reminder-neutral {
+  border-left: 4px solid #1f7a8c;
+}
+
 .action-queue-list {
   display: grid;
   gap: 10px;

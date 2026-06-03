@@ -59,6 +59,7 @@ import {
   buildSymptomSupportQuestion,
   findSymptomSupportTemplate,
 } from "./symptomSupportTemplates";
+import { buildAppointmentReminders } from "./appointmentReminders";
 import {
   appendDocumentHistory,
   type DocumentHistoryEntry,
@@ -667,6 +668,10 @@ function App() {
     (document) => document.reviewStatus !== "done",
   ).length;
   const careActions = useMemo(() => buildCareActionQueue(state, today), [state, today]);
+  const appointmentReminders = useMemo(
+    () => buildAppointmentReminders(state.visits, today),
+    [state.visits],
+  );
   const symptomSupportTemplate = useMemo(
     () => findSymptomSupportTemplate(`${symptomDraft.symptom} ${symptomDraft.body}`),
     [symptomDraft.body, symptomDraft.symptom],
@@ -1618,8 +1623,28 @@ function App() {
         <section className="action-queue-panel" aria-label="진료 준비 큐">
           <div className="section-title">
             <h2>진료 준비 큐</h2>
-            <span>{careActions.length}개 확인 항목</span>
+            <span>
+              {careActions.length}개 확인 항목 · 예약 {appointmentReminders.length}개
+            </span>
           </div>
+          {appointmentReminders.length ? (
+            <div className="appointment-reminder-list" aria-label="다음 예약 알림">
+              {appointmentReminders.slice(0, 3).map((reminder) => (
+                <article
+                  className={`appointment-reminder reminder-${reminder.tone}`}
+                  key={reminder.id}
+                >
+                  <CalendarDays aria-hidden="true" />
+                  <div>
+                    <span>{reminder.label}</span>
+                    <strong>{reminder.title}</strong>
+                    <p>{reminder.detail}</p>
+                  </div>
+                  <time>{reminder.date}</time>
+                </article>
+              ))}
+            </div>
+          ) : null}
           {careActions.length ? (
             <div className="action-queue-list">
               {careActions.map((action) => (
@@ -2684,7 +2709,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 다음 예약 알림, CSV/JSON export, 가족/보호자 공유용 내보내기.
+            다음 개발 슬라이스: CSV companion export, 가족/보호자 공유용 내보내기.
           </p>
         </section>
       </section>
