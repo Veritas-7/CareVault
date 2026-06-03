@@ -452,20 +452,38 @@ function buildNormalizedCareVaultMirror(
   state: AppState,
   foodAssessment: FoodAssessment,
 ): NormalizedCareVaultMirror {
+  const documents = [
+    ...state.documents.map((document) => ({
+      ...document,
+      isDeleted: false,
+    })),
+    ...state.deletedDocuments.map((document) => ({
+      ...document,
+      isDeleted: true,
+    })),
+  ];
+
   return {
     profile: state.profile,
     vitals: state.vitals,
     visits: state.visits,
-    documents: [
-      ...state.documents.map((document) => ({
-        ...document,
-        isDeleted: false,
+    documents,
+    documentAttachments: documents
+      .filter((document) => document.attachmentName?.trim())
+      .map((document) => ({
+        documentId: document.id,
+        attachmentName: document.attachmentName ?? "",
+        attachmentStorage: document.attachmentStorage,
+        attachmentStatus: document.attachmentStatus,
+        isDeleted: document.isDeleted,
       })),
-      ...state.deletedDocuments.map((document) => ({
-        ...document,
-        isDeleted: true,
+    documentHistory: documents.flatMap((document) =>
+      (document.history ?? []).map((history) => ({
+        ...history,
+        documentId: document.id,
+        isDeleted: document.isDeleted,
       })),
-    ],
+    ),
     symptoms: state.symptoms,
     questions: state.questions,
     labResults: state.labResults,
@@ -1280,12 +1298,12 @@ function App() {
     storageBackend === "sqlite" && normalizedMirrorStatus
       ? `정규화 mirror: 활력 ${normalizedMirrorStatus.vitalRows}개, 검사 ${normalizedMirrorStatus.labResultRows}개, 질문 ${normalizedMirrorStatus.questionRows}개, 서류 ${
           normalizedMirrorStatus.activeDocumentRows + normalizedMirrorStatus.deletedDocumentRows
-        }개, 증상 ${normalizedMirrorStatus.symptomRows}개, 음식 ${normalizedMirrorStatus.foodCheckRows}개.`
+        }개, 이력 ${normalizedMirrorStatus.documentHistoryRows}개, 첨부 ${normalizedMirrorStatus.documentAttachmentRows}개, 증상 ${normalizedMirrorStatus.symptomRows}개, 음식 ${normalizedMirrorStatus.foodCheckRows}개.`
       : null;
 
   const normalizedSearchText =
     storageBackend === "sqlite" && normalizedSearchSummary
-      ? `SQLite 전체 검색: ${normalizedSearchSummary.totalRows}개 - 서류 ${normalizedSearchSummary.documentRows}, 검사 ${normalizedSearchSummary.labResultRows}, 질문 ${normalizedSearchSummary.questionRows}, 증상 ${normalizedSearchSummary.symptomRows}, 진료 ${normalizedSearchSummary.visitRows}, 활력 ${normalizedSearchSummary.vitalRows}, 음식 ${normalizedSearchSummary.foodCheckRows}`
+      ? `SQLite 전체 검색: ${normalizedSearchSummary.totalRows}개 - 서류 ${normalizedSearchSummary.documentRows}, 이력 ${normalizedSearchSummary.documentHistoryRows}, 첨부 ${normalizedSearchSummary.documentAttachmentRows}, 검사 ${normalizedSearchSummary.labResultRows}, 질문 ${normalizedSearchSummary.questionRows}, 증상 ${normalizedSearchSummary.symptomRows}, 진료 ${normalizedSearchSummary.visitRows}, 활력 ${normalizedSearchSummary.vitalRows}, 음식 ${normalizedSearchSummary.foodCheckRows}`
       : null;
 
   const saveNow = () => {

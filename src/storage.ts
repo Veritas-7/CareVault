@@ -49,6 +49,22 @@ export type NormalizedCareVaultMirror = {
     attachmentStatus?: string;
     isDeleted: boolean;
   }>;
+  documentAttachments: Array<{
+    documentId: string;
+    attachmentName: string;
+    attachmentStorage?: string;
+    attachmentStatus?: string;
+    isDeleted: boolean;
+  }>;
+  documentHistory: Array<{
+    id: string;
+    documentId: string;
+    at: string;
+    kind: string;
+    label: string;
+    detail: string;
+    isDeleted: boolean;
+  }>;
   symptoms: Array<{
     id: string;
     date: string;
@@ -93,6 +109,8 @@ export type NormalizedMirrorStatus = {
   visitRows: number;
   activeDocumentRows: number;
   deletedDocumentRows: number;
+  documentAttachmentRows: number;
+  documentHistoryRows: number;
   symptomRows: number;
   questionRows: number;
   labResultRows: number;
@@ -106,6 +124,8 @@ export type NormalizedSearchSummary = {
   vitalRows: number;
   visitRows: number;
   documentRows: number;
+  documentAttachmentRows: number;
+  documentHistoryRows: number;
   symptomRows: number;
   questionRows: number;
   labResultRows: number;
@@ -117,6 +137,8 @@ type NormalizedSearchCountKey =
   | "vitalRows"
   | "visitRows"
   | "documentRows"
+  | "documentAttachmentRows"
+  | "documentHistoryRows"
   | "symptomRows"
   | "questionRows"
   | "labResultRows"
@@ -224,6 +246,28 @@ const normalizedTableStatements: SqlStatement[] = [
       attachment_name TEXT,
       attachment_storage TEXT,
       attachment_status TEXT,
+      is_deleted INTEGER NOT NULL,
+      updated_at TEXT NOT NULL
+    )`,
+  },
+  {
+    query: `CREATE TABLE IF NOT EXISTS document_attachments (
+      document_id TEXT PRIMARY KEY NOT NULL,
+      attachment_name TEXT NOT NULL,
+      attachment_storage TEXT,
+      attachment_status TEXT,
+      is_deleted INTEGER NOT NULL,
+      updated_at TEXT NOT NULL
+    )`,
+  },
+  {
+    query: `CREATE TABLE IF NOT EXISTS document_history (
+      id TEXT PRIMARY KEY NOT NULL,
+      document_id TEXT NOT NULL,
+      at TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      label TEXT NOT NULL,
+      detail TEXT NOT NULL,
       is_deleted INTEGER NOT NULL,
       updated_at TEXT NOT NULL
     )`,
@@ -359,6 +403,24 @@ export function buildNormalizedSearchStatements(input: string): NormalizedSearch
       bindValues,
     },
     {
+      key: "documentAttachmentRows",
+      query: `SELECT COUNT(*) AS count FROM document_attachments
+        WHERE attachment_name ${like}
+          OR COALESCE(attachment_storage, '') ${like}
+          OR COALESCE(attachment_status, '') ${like}`,
+      bindValues,
+    },
+    {
+      key: "documentHistoryRows",
+      query: `SELECT COUNT(*) AS count FROM document_history
+        WHERE document_id ${like}
+          OR at ${like}
+          OR kind ${like}
+          OR label ${like}
+          OR detail ${like}`,
+      bindValues,
+    },
+    {
       key: "symptomRows",
       query: `SELECT COUNT(*) AS count FROM symptoms
         WHERE date ${like}
@@ -449,6 +511,8 @@ export function buildNormalizedMirrorStatements(
     { query: "DELETE FROM vitals" },
     { query: "DELETE FROM visits" },
     { query: "DELETE FROM care_documents" },
+    { query: "DELETE FROM document_attachments" },
+    { query: "DELETE FROM document_history" },
     { query: "DELETE FROM food_checks" },
     { query: "DELETE FROM symptoms" },
     { query: "DELETE FROM questions" },
@@ -540,6 +604,54 @@ export function buildNormalizedMirrorStatements(
         optionalText(document.attachmentStorage),
         optionalText(document.attachmentStatus),
         boolToSql(document.isDeleted),
+        updatedAt,
+      ],
+    });
+  });
+
+  mirror.documentAttachments.forEach((attachment) => {
+    statements.push({
+      query: `INSERT INTO document_attachments (
+        document_id,
+        attachment_name,
+        attachment_storage,
+        attachment_status,
+        is_deleted,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)`,
+      bindValues: [
+        attachment.documentId,
+        attachment.attachmentName,
+        optionalText(attachment.attachmentStorage),
+        optionalText(attachment.attachmentStatus),
+        boolToSql(attachment.isDeleted),
+        updatedAt,
+      ],
+    });
+  });
+
+  mirror.documentHistory.forEach((history) => {
+    statements.push({
+      query: `INSERT INTO document_history (
+        id,
+        document_id,
+        at,
+        kind,
+        label,
+        detail,
+        is_deleted,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      bindValues: [
+        history.id,
+        history.documentId,
+        history.at,
+        history.kind,
+        history.label,
+        history.detail,
+        boolToSql(history.isDeleted),
         updatedAt,
       ],
     });
@@ -696,6 +808,14 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
     db,
     "SELECT COUNT(*) AS count FROM care_documents WHERE is_deleted = 1",
   );
+  const documentAttachmentRows = await selectCount(
+    db,
+    "SELECT COUNT(*) AS count FROM document_attachments",
+  );
+  const documentHistoryRows = await selectCount(
+    db,
+    "SELECT COUNT(*) AS count FROM document_history",
+  );
   const symptomRows = await selectCount(db, "SELECT COUNT(*) AS count FROM symptoms");
   const questionRows = await selectCount(db, "SELECT COUNT(*) AS count FROM questions");
   const labResultRows = await selectCount(db, "SELECT COUNT(*) AS count FROM lab_results");
@@ -706,6 +826,8 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
       UNION ALL SELECT updated_at FROM vitals
       UNION ALL SELECT updated_at FROM visits
       UNION ALL SELECT updated_at FROM care_documents
+      UNION ALL SELECT updated_at FROM document_attachments
+      UNION ALL SELECT updated_at FROM document_history
       UNION ALL SELECT updated_at FROM symptoms
       UNION ALL SELECT updated_at FROM questions
       UNION ALL SELECT updated_at FROM lab_results
@@ -719,6 +841,8 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
     visitRows,
     activeDocumentRows,
     deletedDocumentRows,
+    documentAttachmentRows,
+    documentHistoryRows,
     symptomRows,
     questionRows,
     labResultRows,
@@ -757,6 +881,8 @@ export async function loadNormalizedSearchSummary(
       vitalRows: 0,
       visitRows: 0,
       documentRows: 0,
+      documentAttachmentRows: 0,
+      documentHistoryRows: 0,
       symptomRows: 0,
       questionRows: 0,
       labResultRows: 0,

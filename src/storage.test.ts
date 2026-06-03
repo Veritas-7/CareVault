@@ -66,6 +66,26 @@ const mirror: NormalizedCareVaultMirror = {
       isDeleted: true,
     },
   ],
+  documentAttachments: [
+    {
+      documentId: "doc-1",
+      attachmentName: "blood.png",
+      attachmentStorage: "tauri-sandbox",
+      attachmentStatus: "파일 확인됨",
+      isDeleted: false,
+    },
+  ],
+  documentHistory: [
+    {
+      id: "history-doc-1-created",
+      documentId: "doc-1",
+      at: "2026-06-03T00:00:00.000Z",
+      kind: "created",
+      label: "서류 저장",
+      detail: "혈액검사 기록 생성",
+      isDeleted: false,
+    },
+  ],
   symptoms: [
     {
       id: "symptom-1",
@@ -130,6 +150,8 @@ describe("storage normalized mirror", () => {
       "vitalRows",
       "visitRows",
       "documentRows",
+      "documentAttachmentRows",
+      "documentHistoryRows",
       "symptomRows",
       "questionRows",
       "labResultRows",
@@ -152,6 +174,8 @@ describe("storage normalized mirror", () => {
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS vitals");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS visits");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS care_documents");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS document_attachments");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS document_history");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS food_checks");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS symptoms");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS questions");
@@ -161,6 +185,12 @@ describe("storage normalized mirror", () => {
     expect(
       statements.filter((statement) => statement.query.includes("INSERT INTO care_documents")),
     ).toHaveLength(2);
+    expect(
+      statements.filter((statement) => statement.query.includes("INSERT INTO document_attachments")),
+    ).toHaveLength(1);
+    expect(
+      statements.filter((statement) => statement.query.includes("INSERT INTO document_history")),
+    ).toHaveLength(1);
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO symptoms"))).toHaveLength(1);
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO questions"))).toHaveLength(1);
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO lab_results"))).toHaveLength(1);

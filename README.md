@@ -20,7 +20,7 @@ CareVault is a local-first health notebook for manually tracking:
 - attachment availability checks that mark saved files as found, missing, failed, or filename-reference-only
 - saved-document attachment and reattachment controls without recreating the manual note
 - saved-document image attachment preview without uploading or exporting medical files
-- normalized SQLite mirror tables for profile, vitals, visits, documents, symptoms, questions, labs, and current food check
+- normalized SQLite mirror tables for profile, vitals, visits, documents, document attachments, document history, symptoms, questions, labs, and current food check
 - normalized SQLite mirror read status for runtime verification after saves
 - normalized SQLite search count readback across documents, labs, questions, symptoms, visits, vitals, and food checks
 - document attachment lifecycle controls with Tauri sandbox-copy selection and browser filename fallback
@@ -45,6 +45,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - saved-document attachment replacement with document-history entries
 - saved-document image attachment preview for JPG, PNG, and WebP files
 - expanded normalized SQLite mirror for core health records, symptoms, questions, and labs while keeping JSON `app_state` compatibility
+- normalized SQLite mirror tables for attachment metadata and document history without storing local attachment paths
 - SQLite mirror row-count readback shown in the app after Tauri saves
 - Tauri-only normalized SQLite search count readback for the saved-document search term
 - document attachment preparation, opening, removal, and document deletion through Tauri dialog/fs plugins
@@ -81,6 +82,6 @@ Saved documents can attach or reattach a file from the existing card. Tauri runt
 
 Saved image attachments can be previewed from the document card. Tauri runtime uses the app asset protocol for sandbox-copied JPG, PNG, and WebP files after file selection has placed them in scope. Browser preview uses a temporary object URL for image files selected in the current session only; it still does not persist file contents.
 
-Tauri SQLite saves still keep the compatible JSON `app_state` row, and now also mirror profile, vitals, visits, active/deleted documents, symptoms, questions, lab results, and the current food check into normalized tables. The mirror is snapshot-style and wrapped in a SQLite transaction. After Tauri saves, the app reads normalized row counts back from SQLite and shows the mirror status in the sidebar. When a Tauri user searches saved documents, the same search term is also counted across normalized documents, labs, questions, symptoms, visits, vitals, and food checks as a read-path verification signal. Browser preview continues to use localStorage only.
+Tauri SQLite saves still keep the compatible JSON `app_state` row, and now also mirror profile, vitals, visits, active/deleted documents, attachment metadata, document history, symptoms, questions, lab results, and the current food check into normalized tables. The mirror is snapshot-style and wrapped in a SQLite transaction. Attachment mirror rows intentionally store filename, storage mode, status, and deleted-state only, not local copied paths. After Tauri saves, the app reads normalized row counts back from SQLite and shows the mirror status in the sidebar. When a Tauri user searches saved documents, the same search term is also counted across normalized documents, labs, questions, symptoms, visits, vitals, food checks, attachment metadata, and document history as a read-path verification signal. Browser preview continues to use localStorage only.
 
-The next durable app slice should move attachment metadata/history toward normalized tables, then add stronger long-term attachment archive management.
+The next durable app slice should add stronger long-term attachment archive management and missing-file recovery.
