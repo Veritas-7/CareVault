@@ -81,6 +81,7 @@ import {
   visitPacketRangeLabels,
   type VisitPacketRange,
 } from "./visitPacket";
+import { buildCareVaultCsv } from "./csvExport";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose";
@@ -1439,6 +1440,22 @@ function App() {
     setSaveLabel(`진료 요약 내보냄 (${visitPacketRangeLabels[visitPacketRange]})`);
   };
 
+  const exportCsvCompanion = () => {
+    const csv = buildCareVaultCsv(state, new Date().toISOString());
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `carevault-records-${today}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setSaveLabel("CSV 내보냄");
+  };
+
   const importBackup = (file: File | undefined) => {
     if (!file) return;
 
@@ -1540,6 +1557,10 @@ function App() {
             <button type="button" className="secondary-button" onClick={exportVisitPacket}>
               <FileText aria-hidden="true" />
               진료 요약
+            </button>
+            <button type="button" className="secondary-button" onClick={exportCsvCompanion}>
+              <Download aria-hidden="true" />
+              CSV
             </button>
             <button
               type="button"
@@ -2709,7 +2730,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: CSV companion export, 가족/보호자 공유용 내보내기.
+            다음 개발 슬라이스: 가족/보호자 공유용 읽기 전용 내보내기.
           </p>
         </section>
       </section>

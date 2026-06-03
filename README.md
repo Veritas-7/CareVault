@@ -38,6 +38,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - Tauri SQLite `app_state` persistence with browser localStorage fallback
 - Recharts trend chart for BP/glucose
 - full-state JSON backup export/import
+- spreadsheet-friendly CSV companion export for local record review
 - dated cancer-care symptom and question tracking
 - local symptom support templates for nausea, mouth sores, diarrhea, constipation, and fatigue
 - lab value range tracking for manual cancer-care records with WBC, ANC, hemoglobin, platelet, A1C, and fasting-glucose presets
@@ -76,7 +77,7 @@ npm run tauri dev
 
 The app now uses SQLite when it runs inside Tauri and falls back to localStorage in a browser preview. Document selection uses Tauri dialog `fileAccessMode: "copy"` in desktop runtime so the selected file is copied into the app sandbox and the copied path is stored as document metadata. Saved documents can remove an attachment or delete the whole document; Tauri runtime attempts to remove the copied sandbox file before clearing metadata. Browser preview stores only a filename reference.
 
-Visit summaries are generated as local Markdown downloads. They include the selected 7/30/90-day or all-record range of vitals, labs, symptoms, questions, visits, document notes, document review status, next actions, attachment filenames, and the current food-check query, but they intentionally exclude local attachment paths. Lab presets are input helpers only; the app keeps the entered range editable because medical labs can use different reference ranges.
+Visit summaries are generated as local Markdown downloads. They include the selected 7/30/90-day or all-record range of vitals, labs, symptoms, questions, visits, document notes, document review status, next actions, attachment filenames, and the current food-check query, but they intentionally exclude local attachment paths. CSV companion export turns the same local record groups into one spreadsheet-friendly file and also excludes local attachment paths. Lab presets are input helpers only; the app keeps the entered range editable because medical labs can use different reference ranges.
 
 The dashboard care action queue is a derived view only. It does not create new medical advice; it gathers open questions, low/high/reference-missing labs, unfinished document actions, and future visits into a short pre-visit checklist.
 
@@ -100,4 +101,4 @@ Saved image attachments can be previewed from the document card. Tauri runtime u
 
 Tauri SQLite saves still keep the compatible JSON `app_state` row, and now also mirror profile, vitals, visits, active/deleted documents, attachment metadata, document history, symptoms, questions, lab results, and the current food check into normalized tables. The mirror is snapshot-style and wrapped in a SQLite transaction. Attachment mirror rows intentionally store filename, storage mode, status, and deleted-state only, not local copied paths. After Tauri saves, the app reads normalized row counts back from SQLite and shows the mirror status in the sidebar. When a Tauri user searches saved documents, the same search term is also counted across normalized documents, labs, questions, symptoms, visits, vitals, food checks, attachment metadata, and document history as a read-path verification signal. Browser preview continues to use localStorage only.
 
-The next durable app slice should add CSV companion export or caregiver read-only export.
+The next durable app slice should add caregiver read-only export.
