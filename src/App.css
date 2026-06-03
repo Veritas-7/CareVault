@@ -1087,6 +1087,14 @@ textarea:focus {
   white-space: nowrap;
 }
 
+.deleted-document-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .deleted-document-item button {
   flex: 0 0 auto;
   gap: 6px;
@@ -1300,6 +1308,10 @@ textarea:focus {
   .deleted-document-item {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .deleted-document-actions {
+    justify-content: flex-start;
   }
 
   .inline-actions {

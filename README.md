@@ -17,6 +17,7 @@ CareVault is a local-first health notebook for manually tracking:
 - per-document review status and next-action tracking with in-list updates for clinical follow-up
 - per-document audit history for saved records, review status changes, next-action edits, and attachment removal
 - recoverable document deletion through an in-app deleted-document archive
+- deleted-document archive attachment cleanup that preserves restorable text records while clearing retained file links
 - attachment availability checks that mark saved files as found, missing, failed, or filename-reference-only
 - attachment open-failure recovery guidance that records missing or failed sandbox copies and points users to reattach
 - saved-document attachment and reattachment controls without recreating the manual note
@@ -42,6 +43,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - document review status and next-action tracking with in-list updates and category/status filtering
 - document audit history shown on each saved record for recent review/action/attachment changes
 - deleted-document archive with restore controls so manual medical notes are not immediately lost
+- deleted-document archive attachment cleanup for clearing retained attachments without losing the archived note
 - saved attachment status checks with document-history entries for found/missing/reference-only files
 - saved attachment missing/open-failure recovery guidance with document-history entries and an in-card reattachment prompt
 - saved-document attachment replacement with document-history entries
@@ -78,6 +80,8 @@ Document history is stored with each saved document and is used as an in-app aud
 
 Document deletion is recoverable: deleting a saved note moves it to an in-app deleted-document archive and keeps its text, metadata, attachment reference, and history available for restore.
 
+Deleted-document archive cards can clear only the retained attachment link and sandbox copy while keeping the archived text note and history restorable. This gives long-term attachment cleanup a separate path from deleting or restoring the medical note itself.
+
 Saved attachment checks update the document card without reading or uploading medical file contents. Tauri runtime checks the sandbox copy path; browser preview keeps filename-reference-only status.
 
 Opening a saved Tauri attachment first verifies that the sandbox copy still exists. If the file is missing or the opener request fails, the app records a document-history entry, marks the card as needing reattachment, and leaves the saved note intact.
@@ -88,4 +92,4 @@ Saved image attachments can be previewed from the document card. Tauri runtime u
 
 Tauri SQLite saves still keep the compatible JSON `app_state` row, and now also mirror profile, vitals, visits, active/deleted documents, attachment metadata, document history, symptoms, questions, lab results, and the current food check into normalized tables. The mirror is snapshot-style and wrapped in a SQLite transaction. Attachment mirror rows intentionally store filename, storage mode, status, and deleted-state only, not local copied paths. After Tauri saves, the app reads normalized row counts back from SQLite and shows the mirror status in the sidebar. When a Tauri user searches saved documents, the same search term is also counted across normalized documents, labs, questions, symptoms, visits, vitals, food checks, attachment metadata, and document history as a read-path verification signal. Browser preview continues to use localStorage only.
 
-The next durable app slice should add stronger long-term attachment archive management.
+The next durable app slice should add treatment side-effect meal and clinician-question templates.

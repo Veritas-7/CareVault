@@ -53,6 +53,7 @@ import {
 } from "./labQuestionPrompts";
 import { buildCareActionQueue, type CareActionSource } from "./careActionQueue";
 import { isPreviewableImageAttachment } from "./attachmentPreview";
+import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
 import { needsAttachmentRecovery } from "./attachmentRecovery";
 import {
   appendDocumentHistory,
@@ -1139,7 +1140,7 @@ function App() {
   };
 
   const removeSavedDocumentAttachment = async (document: CareDocument) => {
-    if (!document.attachmentName) return;
+    if (!hasAttachmentMetadata(document)) return;
     const confirmed = window.confirm(`"${document.title}" 첨부 파일 연결을 제거할까요?`);
     if (!confirmed) return;
 
@@ -1161,17 +1162,47 @@ function App() {
       documents: current.documents.map((item) =>
         item.id === document.id
           ? {
-              ...item,
-              attachmentName: undefined,
-              attachmentPath: undefined,
-              attachmentStorage: undefined,
-              attachmentStatus: undefined,
+              ...clearAttachmentMetadata(item),
               history: appendDocumentHistory(item.history, historyEntry),
             }
           : item,
       ),
     }));
     setSaveLabel("첨부 제거됨");
+  };
+
+  const removeDeletedDocumentAttachment = async (document: CareDocument) => {
+    if (!hasAttachmentMetadata(document)) return;
+    const confirmed = window.confirm(
+      `"${document.title}" 삭제 보관함의 첨부 연결만 정리할까요? 서류 기록은 그대로 복구할 수 있습니다.`,
+    );
+    if (!confirmed) return;
+
+    const removed = await removeSandboxAttachment(document);
+    if (!removed) return;
+
+    clearBrowserAttachmentPreviewUrl(document.id);
+    if (attachmentPreview?.documentId === document.id) {
+      setAttachmentPreview(null);
+    }
+
+    const historyEntry = createDocumentHistory(
+      "attachment-removed",
+      "보관 첨부 정리",
+      `${document.attachmentName} 연결 제거`,
+    );
+    setState((current) => ({
+      ...current,
+      deletedDocuments: current.deletedDocuments.map((item) =>
+        item.id === document.id
+          ? {
+              ...clearAttachmentMetadata(item),
+              history: appendDocumentHistory(item.history, historyEntry),
+            }
+          : item,
+      ),
+    }));
+    setSaveLabel("삭제 보관함 첨부 정리됨");
   };
 
   const deleteDocument = async (document: CareDocument) => {
@@ -2586,11 +2617,22 @@ function App() {
                         <span>{document.date}</span>
                         <strong>{document.title}</strong>
                         <small>{documentLabel[document.category]}</small>
+                        {hasAttachmentMetadata(document) ? (
+                          <small>첨부 보관: {document.attachmentName}</small>
+                        ) : null}
                       </div>
-                      <button type="button" onClick={() => restoreDocument(document)}>
-                        <RotateCcw aria-hidden="true" />
-                        복구
-                      </button>
+                      <div className="deleted-document-actions">
+                        <button type="button" onClick={() => restoreDocument(document)}>
+                          <RotateCcw aria-hidden="true" />
+                          복구
+                        </button>
+                        {hasAttachmentMetadata(document) ? (
+                          <button type="button" onClick={() => removeDeletedDocumentAttachment(document)}>
+                            <Unlink aria-hidden="true" />
+                            첨부 정리
+                          </button>
+                        ) : null}
+                      </div>
                     </article>
                   ))}
                 </div>
@@ -2602,7 +2644,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 첨부 장기 아카이브 관리, 치료 부작용별 식사/질문 템플릿, 다음 예약 알림,
+            다음 개발 슬라이스: 치료 부작용별 식사/질문 템플릿, 다음 예약 알림, CSV/JSON export,
             가족/보호자 공유용 내보내기.
           </p>
         </section>
