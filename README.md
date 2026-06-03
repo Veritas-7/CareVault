@@ -5,6 +5,7 @@ Tauri v2 + React + TypeScript personal health tracking app.
 CareVault is a local-first health notebook for manually tracking:
 
 - blood pressure and blood glucose readings
+- lab results with user-entered reference ranges
 - adult BMI from age/sex/height/weight profile data
 - diabetes and hypertension follow-up context
 - hospital visits and next appointments
@@ -22,6 +23,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - Recharts trend chart for BP/glucose
 - full-state JSON backup export/import
 - dated cancer-care symptom and question tracking
+- lab value range tracking for manual cancer-care records
 - pure TypeScript health rule module in `src/healthRules.ts`
 - Vitest coverage for BMI, BP, glucose, and cancer-food rules
 - research archive:

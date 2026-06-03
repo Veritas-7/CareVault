@@ -17,6 +17,12 @@ export type FoodMatch = {
   reason: string;
 };
 
+export type LabFlag = "low" | "normal" | "high" | "unknown";
+
+export type LabAssessment = HealthAssessment & {
+  flag: LabFlag;
+};
+
 export type FoodAssessment = HealthAssessment & {
   matches: FoodMatch[];
 };
@@ -222,6 +228,54 @@ export function assessBloodGlucose(valueMgDl: number, context: GlucoseContext): 
     level: valueMgDl <= 180 ? "ok" : "watch",
     label: valueMgDl <= 180 ? "기록 범위 양호" : "추적 필요",
     summary: "측정 시점을 함께 남기면 해석 정확도가 올라갑니다.",
+  };
+}
+
+export function assessLabValue(value: number, lower?: number, upper?: number): LabAssessment {
+  if (!Number.isFinite(value)) {
+    return {
+      flag: "unknown",
+      level: "neutral",
+      label: "값 없음",
+      summary: "검사 수치를 숫자로 입력하세요.",
+    };
+  }
+
+  const hasLower = Number.isFinite(lower);
+  const hasUpper = Number.isFinite(upper);
+
+  if (!hasLower && !hasUpper) {
+    return {
+      flag: "unknown",
+      level: "neutral",
+      label: "기준 범위 없음",
+      summary: "검사실 기준 범위를 함께 입력하면 낮음/높음을 표시합니다.",
+    };
+  }
+
+  if (hasLower && lower !== undefined && value < lower) {
+    return {
+      flag: "low",
+      level: "watch",
+      label: "기준보다 낮음",
+      summary: "검사실 기준보다 낮습니다. 증상과 함께 진료 때 확인하세요.",
+    };
+  }
+
+  if (hasUpper && upper !== undefined && value > upper) {
+    return {
+      flag: "high",
+      level: "watch",
+      label: "기준보다 높음",
+      summary: "검사실 기준보다 높습니다. 추세와 관련 증상을 함께 기록하세요.",
+    };
+  }
+
+  return {
+    flag: "normal",
+    level: "ok",
+    label: "기준 범위 내",
+    summary: "입력한 검사실 기준 범위 안입니다.",
   };
 }
 

@@ -3,6 +3,7 @@ import {
   assessBloodGlucose,
   assessBloodPressure,
   assessCancerFood,
+  assessLabValue,
   calculateBmi,
 } from "./healthRules";
 
@@ -28,5 +29,12 @@ describe("healthRules", () => {
     expect(assessCancerFood("브로콜리와 현미").level).toBe("ok");
     expect(assessCancerFood("베이컨과 탄산음료").level).toBe("watch");
     expect(assessCancerFood("자몽 주스와 보충제").level).toBe("risk");
+  });
+
+  it("classifies lab values against user-entered reference ranges", () => {
+    expect(assessLabValue(4.2, 4, 10).flag).toBe("normal");
+    expect(assessLabValue(3.1, 4, 10).label).toBe("기준보다 낮음");
+    expect(assessLabValue(14, 4, 10).label).toBe("기준보다 높음");
+    expect(assessLabValue(14).flag).toBe("unknown");
   });
 });

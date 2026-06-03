@@ -33,8 +33,10 @@ import {
   assessBloodGlucose,
   assessBloodPressure,
   assessCancerFood,
+  assessLabValue,
   calculateBmi,
   type GlucoseContext,
+  type LabFlag,
 } from "./healthRules";
 import {
   loadPersistedState,
@@ -115,6 +117,17 @@ type CareQuestion = {
   answer: string;
 };
 
+type LabResult = {
+  id: string;
+  date: string;
+  name: string;
+  value: string;
+  unit: string;
+  lower: string;
+  upper: string;
+  note: string;
+};
+
 type AppState = {
   profile: Profile;
   vitals: VitalEntry[];
@@ -122,6 +135,7 @@ type AppState = {
   documents: CareDocument[];
   symptoms: SymptomEntry[];
   questions: CareQuestion[];
+  labResults: LabResult[];
 };
 
 const today = new Date().toISOString().slice(0, 10);
@@ -205,6 +219,18 @@ const defaultState: AppState = {
       answer: "",
     },
   ],
+  labResults: [
+    {
+      id: "lab-1",
+      date: "2026-06-01",
+      name: "WBC",
+      value: "3.4",
+      unit: "10^3/uL",
+      lower: "4.0",
+      upper: "10.0",
+      note: "면역저하 식품 안전 질문과 연결",
+    },
+  ],
 };
 
 const emptyVital: VitalEntry = {
@@ -256,6 +282,17 @@ const emptyQuestion: CareQuestion = {
   answer: "",
 };
 
+const emptyLabResult: LabResult = {
+  id: "",
+  date: today,
+  name: "",
+  value: "",
+  unit: "",
+  lower: "",
+  upper: "",
+  note: "",
+};
+
 const sexLabel: Record<Sex, string> = {
   female: "여성",
   male: "남성",
@@ -278,6 +315,13 @@ const questionStatusLabel: Record<QuestionStatus, string> = {
   deferred: "보류",
 };
 
+const labFlagLabel: Record<LabFlag, string> = {
+  low: "낮음",
+  normal: "범위 내",
+  high: "높음",
+  unknown: "기준 없음",
+};
+
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -291,6 +335,7 @@ function normalizeAppState(input: Partial<AppState>): AppState {
     documents: input.documents ?? [],
     symptoms: input.symptoms ?? [],
     questions: input.questions ?? [],
+    labResults: input.labResults ?? [],
   };
 }
 
@@ -304,6 +349,7 @@ function App() {
   const [documentDraft, setDocumentDraft] = useState<CareDocument>(emptyDocument);
   const [symptomDraft, setSymptomDraft] = useState<SymptomEntry>(emptySymptom);
   const [questionDraft, setQuestionDraft] = useState<CareQuestion>(emptyQuestion);
+  const [labDraft, setLabDraft] = useState<LabResult>(emptyLabResult);
   const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
   const [documentFilter, setDocumentFilter] = useState("");
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -366,6 +412,17 @@ function App() {
   const openQuestionCount = state.questions.filter((question) => question.status === "open").length;
   const symptomLevel =
     latestSymptom?.severity >= 7 ? "risk" : latestSymptom?.severity >= 4 ? "watch" : "ok";
+  const labAssessments = state.labResults.map((result) => ({
+    result,
+    assessment: assessLabValue(
+      Number.parseFloat(result.value),
+      result.lower ? Number.parseFloat(result.lower) : undefined,
+      result.upper ? Number.parseFloat(result.upper) : undefined,
+    ),
+  }));
+  const abnormalLabCount = labAssessments.filter(({ assessment }) =>
+    ["low", "high"].includes(assessment.flag),
+  ).length;
 
   const chartData = [...state.vitals]
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -446,6 +503,15 @@ function App() {
       questions: [...current.questions, { ...questionDraft, id: createId("question") }],
     }));
     setQuestionDraft({ ...emptyQuestion, date: today });
+  };
+
+  const addLabResult = () => {
+    if (!labDraft.name.trim() || !labDraft.value.trim()) return;
+    setState((current) => ({
+      ...current,
+      labResults: [...current.labResults, { ...labDraft, id: createId("lab") }],
+    }));
+    setLabDraft({ ...emptyLabResult, date: today });
   };
 
   const updateQuestionStatus = (id: string, status: QuestionStatus) => {
@@ -542,6 +608,10 @@ function App() {
             <Pill aria-hidden="true" />
             증상·질문
           </a>
+          <a href="#labs">
+            <ClipboardList aria-hidden="true" />
+            검사 수치
+          </a>
           <a href="#documents">
             <FileText aria-hidden="true" />
             서류 보관
@@ -630,6 +700,12 @@ function App() {
             <span>진료 질문</span>
             <strong>{openQuestionCount}개</strong>
             <small>{openQuestionCount ? "다음 진료 전 확인" : "열린 질문 없음"}</small>
+          </article>
+          <article className={`metric-card status-${abnormalLabCount ? "watch" : "ok"}`}>
+            <ClipboardList aria-hidden="true" />
+            <span>검사 추적</span>
+            <strong>{abnormalLabCount}개</strong>
+            <small>{abnormalLabCount ? "기준 밖 수치" : "기준 밖 수치 없음"}</small>
           </article>
         </section>
 
@@ -932,6 +1008,13 @@ function App() {
                 title: `질문 · ${item.topic}`,
                 detail: `${questionStatusLabel[item.status]}: ${item.question}`,
               })),
+              ...labAssessments.map(({ result, assessment }) => ({
+                id: result.id,
+                date: result.date,
+                icon: <ClipboardList aria-hidden="true" />,
+                title: `검사 ${result.name} · ${result.value}${result.unit ? ` ${result.unit}` : ""}`,
+                detail: `${assessment.label}: ${result.note}`,
+              })),
             ]
               .sort((a, b) => b.date.localeCompare(a.date))
               .slice(0, 8)
@@ -1103,6 +1186,104 @@ function App() {
                     </div>
                   </article>
                 ))}
+            </div>
+          </section>
+        </section>
+
+        <section id="labs" className="content-grid two-columns">
+          <section className="panel">
+            <div className="section-title">
+              <h2>검사 수치 입력</h2>
+              <span>검사실 기준 범위를 함께 기록</span>
+            </div>
+            <div className="form-grid">
+              <label>
+                날짜
+                <input
+                  type="date"
+                  value={labDraft.date}
+                  onChange={(event) => setLabDraft({ ...labDraft, date: event.currentTarget.value })}
+                />
+              </label>
+              <label>
+                항목
+                <input
+                  value={labDraft.name}
+                  onChange={(event) => setLabDraft({ ...labDraft, name: event.currentTarget.value })}
+                  placeholder="예: WBC, HbA1c, AST, ALT"
+                />
+              </label>
+              <label>
+                값
+                <input
+                  type="number"
+                  value={labDraft.value}
+                  onChange={(event) => setLabDraft({ ...labDraft, value: event.currentTarget.value })}
+                />
+              </label>
+              <label>
+                단위
+                <input
+                  value={labDraft.unit}
+                  onChange={(event) => setLabDraft({ ...labDraft, unit: event.currentTarget.value })}
+                  placeholder="예: mg/dL, 10^3/uL"
+                />
+              </label>
+              <label>
+                기준 하한
+                <input
+                  type="number"
+                  value={labDraft.lower}
+                  onChange={(event) => setLabDraft({ ...labDraft, lower: event.currentTarget.value })}
+                />
+              </label>
+              <label>
+                기준 상한
+                <input
+                  type="number"
+                  value={labDraft.upper}
+                  onChange={(event) => setLabDraft({ ...labDraft, upper: event.currentTarget.value })}
+                />
+              </label>
+            </div>
+            <label className="wide-label">
+              메모
+              <input
+                value={labDraft.note}
+                onChange={(event) => setLabDraft({ ...labDraft, note: event.currentTarget.value })}
+                placeholder="예: 다음 진료 때 질문, 약 변경 후 추적"
+              />
+            </label>
+            <button className="primary-button" type="button" onClick={addLabResult}>
+              <Plus aria-hidden="true" />
+              검사 수치 추가
+            </button>
+          </section>
+
+          <section className="panel">
+            <div className="section-title">
+              <h2>검사 수치 추적</h2>
+              <span>{state.labResults.length}개 기록</span>
+            </div>
+            <div className="lab-list">
+              {labAssessments.map(({ result, assessment }) => (
+                <article className="lab-item" key={result.id}>
+                  <div>
+                    <span>{result.date}</span>
+                    <strong>
+                      {result.name} {result.value}
+                      {result.unit ? ` ${result.unit}` : ""}
+                    </strong>
+                    <p>
+                      기준 {result.lower || "-"} - {result.upper || "-"} {result.unit}
+                    </p>
+                    {result.note ? <small>{result.note}</small> : null}
+                  </div>
+                  <mark className={`lab-${assessment.flag}`}>
+                    {labFlagLabel[assessment.flag]}
+                  </mark>
+                </article>
+              ))}
             </div>
           </section>
         </section>
