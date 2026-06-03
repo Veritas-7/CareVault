@@ -6,11 +6,13 @@ import {
   CalendarDays,
   ClipboardList,
   Download,
+  ExternalLink,
   FileText,
   HeartPulse,
   Hospital,
   LineChart as LineChartIcon,
   MessageSquare,
+  Paperclip,
   Pill,
   Plus,
   Save,
@@ -18,6 +20,7 @@ import {
   ShieldCheck,
   Upload,
   UserRound,
+  X,
 } from "lucide-react";
 import {
   CartesianGrid,
@@ -54,6 +57,7 @@ type DocumentCategory =
   | "visit-note"
   | "insurance"
   | "other";
+type AttachmentStorage = "tauri-sandbox" | "browser-reference";
 
 type Profile = {
   name: string;
@@ -94,6 +98,10 @@ type CareDocument = {
   category: DocumentCategory;
   body: string;
   tags: string;
+  attachmentName?: string;
+  attachmentPath?: string;
+  attachmentStorage?: AttachmentStorage;
+  attachmentStatus?: string;
 };
 
 type SymptomEntry = {
@@ -309,6 +317,11 @@ const documentLabel: Record<DocumentCategory, string> = {
   other: "기타",
 };
 
+const attachmentStorageLabel: Record<AttachmentStorage, string> = {
+  "tauri-sandbox": "앱 보관",
+  "browser-reference": "파일명 참조",
+};
+
 const questionStatusLabel: Record<QuestionStatus, string> = {
   open: "확인 필요",
   answered: "답변 완료",
@@ -324,6 +337,17 @@ const labFlagLabel: Record<LabFlag, string> = {
 
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+function canUseTauriRuntime() {
+  return (
+    typeof window !== "undefined" &&
+    ("__TAURI_INTERNALS__" in window || "__TAURI__" in window)
+  );
+}
+
+function extractFileName(path: string) {
+  return path.split(/[\\/]/).filter(Boolean).pop() ?? path;
+}
 
 function normalizeAppState(input: Partial<AppState>): AppState {
   return {
@@ -353,6 +377,7 @@ function App() {
   const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
   const [documentFilter, setDocumentFilter] = useState("");
   const importInputRef = useRef<HTMLInputElement>(null);
+  const documentAttachmentInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -434,7 +459,8 @@ function App() {
     }));
 
   const filteredDocuments = state.documents.filter((document) => {
-    const haystack = `${document.title} ${document.body} ${document.tags}`.toLowerCase();
+    const haystack =
+      `${document.title} ${document.body} ${document.tags} ${document.attachmentName ?? ""}`.toLowerCase();
     return haystack.includes(documentFilter.toLowerCase());
   });
 
@@ -478,6 +504,85 @@ function App() {
       documents: [...current.documents, { ...documentDraft, id: createId("doc") }],
     }));
     setDocumentDraft({ ...emptyDocument, date: today });
+  };
+
+  const attachDocumentFile = async () => {
+    if (!canUseTauriRuntime()) {
+      documentAttachmentInputRef.current?.click();
+      return;
+    }
+
+    try {
+      const [{ open }, { exists }] = await Promise.all([
+        import("@tauri-apps/plugin-dialog"),
+        import("@tauri-apps/plugin-fs"),
+      ]);
+      const selected = await open({
+        multiple: false,
+        directory: false,
+        fileAccessMode: "copy",
+        filters: [
+          {
+            name: "Medical documents",
+            extensions: ["pdf", "png", "jpg", "jpeg", "webp", "docx", "xlsx", "csv", "txt", "md"],
+          },
+        ],
+      });
+
+      if (typeof selected !== "string") return;
+
+      const attachmentExists = await exists(selected).catch(() => false);
+      setDocumentDraft((current) => ({
+        ...current,
+        attachmentName: extractFileName(selected),
+        attachmentPath: selected,
+        attachmentStorage: "tauri-sandbox",
+        attachmentStatus: attachmentExists ? "앱 샌드박스 복사됨" : "앱 샌드박스 경로 저장됨",
+      }));
+      setSaveLabel(attachmentExists ? "첨부 파일 앱 보관 준비" : "첨부 경로 저장 준비");
+    } catch (error) {
+      console.error("Document attachment selection failed", error);
+      setSaveLabel("첨부 선택 실패. 파일명 참조 가능");
+      documentAttachmentInputRef.current?.click();
+    }
+  };
+
+  const attachBrowserReference = (file?: File) => {
+    if (!file) return;
+    setDocumentDraft((current) => ({
+      ...current,
+      attachmentName: file.name,
+      attachmentPath: undefined,
+      attachmentStorage: "browser-reference",
+      attachmentStatus: "브라우저 파일명 참조",
+    }));
+    setSaveLabel("첨부 파일명 참조 준비");
+  };
+
+  const clearDocumentAttachment = () => {
+    setDocumentDraft((current) => ({
+      ...current,
+      attachmentName: undefined,
+      attachmentPath: undefined,
+      attachmentStorage: undefined,
+      attachmentStatus: undefined,
+    }));
+  };
+
+  const openDocumentAttachment = async (document: CareDocument) => {
+    if (!document.attachmentPath || !canUseTauriRuntime()) {
+      setSaveLabel("이 첨부는 파일명 참조만 저장됨");
+      return;
+    }
+
+    try {
+      const { openPath } = await import("@tauri-apps/plugin-opener");
+      await openPath(document.attachmentPath);
+      setSaveLabel("첨부 파일 열기 요청됨");
+    } catch (error) {
+      console.error("Document attachment open failed", error);
+      setSaveLabel("첨부 파일 열기 실패");
+    }
   };
 
   const addSymptom = () => {
@@ -1388,6 +1493,43 @@ function App() {
                 placeholder="예: 혈액검사,항암,부작용"
               />
             </label>
+            <div className="attachment-panel">
+              <input
+                ref={documentAttachmentInputRef}
+                className="visually-hidden"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"
+                onChange={(event) => {
+                  attachBrowserReference(event.currentTarget.files?.[0]);
+                  event.currentTarget.value = "";
+                }}
+              />
+              <div className="attachment-actions">
+                <button className="secondary-inline-button" type="button" onClick={attachDocumentFile}>
+                  <Paperclip aria-hidden="true" />
+                  첨부 파일 선택
+                </button>
+                {documentDraft.attachmentName ? (
+                  <button className="text-icon-button" type="button" onClick={clearDocumentAttachment}>
+                    <X aria-hidden="true" />
+                    제거
+                  </button>
+                ) : null}
+              </div>
+              {documentDraft.attachmentName ? (
+                <div className="attachment-summary">
+                  <FileText aria-hidden="true" />
+                  <span>{documentDraft.attachmentName}</span>
+                  <small>
+                    {documentDraft.attachmentStorage
+                      ? attachmentStorageLabel[documentDraft.attachmentStorage]
+                      : "첨부"}
+                  </small>
+                </div>
+              ) : (
+                <p className="attachment-empty">첨부 없음</p>
+              )}
+            </div>
             <button className="primary-button" type="button" onClick={addDocument}>
               <Plus aria-hidden="true" />
               서류 메모 저장
@@ -1414,8 +1556,27 @@ function App() {
                     <span>{document.date}</span>
                     <strong>{document.title}</strong>
                     <p>{document.body}</p>
+                    {document.attachmentName ? (
+                      <div className="document-attachment">
+                        <Paperclip aria-hidden="true" />
+                        <span>{document.attachmentName}</span>
+                        <small>
+                          {document.attachmentStorage
+                            ? attachmentStorageLabel[document.attachmentStorage]
+                            : "첨부"}
+                        </small>
+                      </div>
+                    ) : null}
                   </div>
-                  <mark>{documentLabel[document.category]}</mark>
+                  <div className="document-actions">
+                    <mark>{documentLabel[document.category]}</mark>
+                    {document.attachmentPath ? (
+                      <button type="button" onClick={() => openDocumentAttachment(document)}>
+                        <ExternalLink aria-hidden="true" />
+                        열기
+                      </button>
+                    ) : null}
+                  </div>
                 </article>
               ))}
             </div>
@@ -1425,8 +1586,8 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 정규화된 SQLite 테이블, 서류 첨부 파일 보관, 검사 수치 사전,
-            증상 심각도 알림 규칙, 가족/보호자 공유용 내보내기.
+            다음 개발 슬라이스: 정규화된 SQLite 테이블, 첨부 파일 삭제/미리보기 관리, 검사 수치
+            사전, 증상 심각도 알림 규칙, 가족/보호자 공유용 내보내기.
           </p>
         </section>
       </section>

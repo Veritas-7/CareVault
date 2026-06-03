@@ -13,6 +13,7 @@ CareVault is a local-first health notebook for manually tracking:
 - pre-visit clinical question planner
 - cancer-care nutrition checks
 - dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes
+- document attachment metadata with Tauri sandbox-copy selection and browser filename fallback
 
 This is not a diagnostic or treatment app. It is a structured personal record and dashboard for preparing better clinical conversations.
 
@@ -24,6 +25,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - full-state JSON backup export/import
 - dated cancer-care symptom and question tracking
 - lab value range tracking for manual cancer-care records
+- document attachment preparation through Tauri dialog/fs plugins
 - pure TypeScript health rule module in `src/healthRules.ts`
 - Vitest coverage for BMI, BP, glucose, and cancer-food rules
 - research archive:
@@ -38,6 +40,8 @@ npm run build
 npm run tauri dev
 ```
 
-## Next Storage Slice
+## Storage Notes
 
-The app now uses SQLite when it runs inside Tauri and falls back to localStorage in a browser preview. The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables and store document attachments under the app data directory.
+The app now uses SQLite when it runs inside Tauri and falls back to localStorage in a browser preview. Document selection uses Tauri dialog `fileAccessMode: "copy"` in desktop runtime so the selected file is copied into the app sandbox and the copied path is stored as document metadata. Browser preview stores only a filename reference.
+
+The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment deletion, preview, and per-document file lifecycle management.
