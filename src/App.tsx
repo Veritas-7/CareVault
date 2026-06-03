@@ -10,6 +10,8 @@ import {
   HeartPulse,
   Hospital,
   LineChart as LineChartIcon,
+  MessageSquare,
+  Pill,
   Plus,
   Save,
   Search,
@@ -92,11 +94,34 @@ type CareDocument = {
   tags: string;
 };
 
+type SymptomEntry = {
+  id: string;
+  date: string;
+  symptom: string;
+  severity: number;
+  medication: string;
+  body: string;
+  action: string;
+};
+
+type QuestionStatus = "open" | "answered" | "deferred";
+
+type CareQuestion = {
+  id: string;
+  date: string;
+  topic: string;
+  question: string;
+  status: QuestionStatus;
+  answer: string;
+};
+
 type AppState = {
   profile: Profile;
   vitals: VitalEntry[];
   visits: VisitEntry[];
   documents: CareDocument[];
+  symptoms: SymptomEntry[];
+  questions: CareQuestion[];
 };
 
 const today = new Date().toISOString().slice(0, 10);
@@ -159,6 +184,27 @@ const defaultState: AppState = {
       tags: "혈액검사,종양내과",
     },
   ],
+  symptoms: [
+    {
+      id: "symptom-1",
+      date: "2026-06-02",
+      symptom: "오심",
+      severity: 4,
+      medication: "처방받은 항구토제 복용",
+      body: "점심 이후 속이 메스꺼웠고 식사량이 줄었음.",
+      action: "다음 진료 때 항구토제 조절 질문",
+    },
+  ],
+  questions: [
+    {
+      id: "question-1",
+      date: "2026-06-15",
+      topic: "혈액검사",
+      question: "백혈구 수치가 낮을 때 외식이나 날음식을 어느 정도 제한해야 하나?",
+      status: "open",
+      answer: "",
+    },
+  ],
 };
 
 const emptyVital: VitalEntry = {
@@ -191,6 +237,25 @@ const emptyDocument: CareDocument = {
   tags: "",
 };
 
+const emptySymptom: SymptomEntry = {
+  id: "",
+  date: today,
+  symptom: "",
+  severity: 3,
+  medication: "",
+  body: "",
+  action: "",
+};
+
+const emptyQuestion: CareQuestion = {
+  id: "",
+  date: today,
+  topic: "",
+  question: "",
+  status: "open",
+  answer: "",
+};
+
 const sexLabel: Record<Sex, string> = {
   female: "여성",
   male: "남성",
@@ -207,8 +272,27 @@ const documentLabel: Record<DocumentCategory, string> = {
   other: "기타",
 };
 
+const questionStatusLabel: Record<QuestionStatus, string> = {
+  open: "확인 필요",
+  answered: "답변 완료",
+  deferred: "보류",
+};
+
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+function normalizeAppState(input: Partial<AppState>): AppState {
+  return {
+    ...defaultState,
+    ...input,
+    profile: { ...defaultState.profile, ...input.profile },
+    vitals: input.vitals ?? [],
+    visits: input.visits ?? [],
+    documents: input.documents ?? [],
+    symptoms: input.symptoms ?? [],
+    questions: input.questions ?? [],
+  };
+}
 
 function App() {
   const [state, setState] = useState<AppState>(defaultState);
@@ -218,6 +302,8 @@ function App() {
   const [vitalDraft, setVitalDraft] = useState<VitalEntry>(emptyVital);
   const [visitDraft, setVisitDraft] = useState<VisitEntry>(emptyVisit);
   const [documentDraft, setDocumentDraft] = useState<CareDocument>(emptyDocument);
+  const [symptomDraft, setSymptomDraft] = useState<SymptomEntry>(emptySymptom);
+  const [questionDraft, setQuestionDraft] = useState<CareQuestion>(emptyQuestion);
   const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
   const [documentFilter, setDocumentFilter] = useState("");
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -227,7 +313,7 @@ function App() {
 
     loadPersistedState(defaultState).then((result) => {
       if (!active) return;
-      setState(result.state);
+      setState(normalizeAppState(result.state));
       setStorageBackend(result.backend);
       setSaveLabel(result.backend === "sqlite" ? "SQLite 저장 준비" : "브라우저 저장 준비");
       setHydrated(true);
@@ -276,6 +362,10 @@ function App() {
     ? assessBloodGlucose(latestGlucose.glucoseMgDl, latestGlucose.glucoseContext ?? "random")
     : undefined;
   const foodAssessment = useMemo(() => assessCancerFood(foodQuery), [foodQuery]);
+  const latestSymptom = [...state.symptoms].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const openQuestionCount = state.questions.filter((question) => question.status === "open").length;
+  const symptomLevel =
+    latestSymptom?.severity >= 7 ? "risk" : latestSymptom?.severity >= 4 ? "watch" : "ok";
 
   const chartData = [...state.vitals]
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -333,6 +423,40 @@ function App() {
     setDocumentDraft({ ...emptyDocument, date: today });
   };
 
+  const addSymptom = () => {
+    if (!symptomDraft.symptom.trim()) return;
+    setState((current) => ({
+      ...current,
+      symptoms: [
+        ...current.symptoms,
+        {
+          ...symptomDraft,
+          id: createId("symptom"),
+          severity: Number(symptomDraft.severity),
+        },
+      ],
+    }));
+    setSymptomDraft({ ...emptySymptom, date: today });
+  };
+
+  const addQuestion = () => {
+    if (!questionDraft.topic.trim() || !questionDraft.question.trim()) return;
+    setState((current) => ({
+      ...current,
+      questions: [...current.questions, { ...questionDraft, id: createId("question") }],
+    }));
+    setQuestionDraft({ ...emptyQuestion, date: today });
+  };
+
+  const updateQuestionStatus = (id: string, status: QuestionStatus) => {
+    setState((current) => ({
+      ...current,
+      questions: current.questions.map((question) =>
+        question.id === id ? { ...question, status } : question,
+      ),
+    }));
+  };
+
   const storageText =
     storageBackend === "sqlite"
       ? "현재 데이터는 Tauri SQLite DB에 저장됩니다."
@@ -382,14 +506,7 @@ function App() {
           setSaveLabel("가져오기 실패");
           return;
         }
-        setState({
-          ...defaultState,
-          ...importedState,
-          profile: { ...defaultState.profile, ...importedState.profile },
-          vitals: importedState.vitals ?? [],
-          visits: importedState.visits ?? [],
-          documents: importedState.documents ?? [],
-        });
+        setState(normalizeAppState(importedState));
         setSaveLabel("백업 가져옴");
       } catch {
         setSaveLabel("가져오기 실패");
@@ -420,6 +537,10 @@ function App() {
           <a href="#nutrition">
             <Apple aria-hidden="true" />
             음식 판단
+          </a>
+          <a href="#care-plan">
+            <Pill aria-hidden="true" />
+            증상·질문
           </a>
           <a href="#documents">
             <FileText aria-hidden="true" />
@@ -497,6 +618,18 @@ function App() {
             <span>최근 혈당</span>
             <strong>{latestGlucose ? `${latestGlucose.glucoseMgDl} mg/dL` : "-"}</strong>
             <small>{glucoseStatus?.label ?? "입력 대기"}</small>
+          </article>
+          <article className={`metric-card status-${latestSymptom ? symptomLevel : "neutral"}`}>
+            <Pill aria-hidden="true" />
+            <span>최근 증상</span>
+            <strong>{latestSymptom ? `${latestSymptom.severity}/10` : "-"}</strong>
+            <small>{latestSymptom?.symptom ?? "입력 대기"}</small>
+          </article>
+          <article className={`metric-card status-${openQuestionCount ? "watch" : "ok"}`}>
+            <MessageSquare aria-hidden="true" />
+            <span>진료 질문</span>
+            <strong>{openQuestionCount}개</strong>
+            <small>{openQuestionCount ? "다음 진료 전 확인" : "열린 질문 없음"}</small>
           </article>
         </section>
 
@@ -785,6 +918,20 @@ function App() {
                 title: `${documentLabel[item.category]} · ${item.title}`,
                 detail: item.tags,
               })),
+              ...state.symptoms.map((item) => ({
+                id: item.id,
+                date: item.date,
+                icon: <Pill aria-hidden="true" />,
+                title: `증상 ${item.symptom} · ${item.severity}/10`,
+                detail: item.action || item.body,
+              })),
+              ...state.questions.map((item) => ({
+                id: item.id,
+                date: item.date,
+                icon: <MessageSquare aria-hidden="true" />,
+                title: `질문 · ${item.topic}`,
+                detail: `${questionStatusLabel[item.status]}: ${item.question}`,
+              })),
             ]
               .sort((a, b) => b.date.localeCompare(a.date))
               .slice(0, 8)
@@ -799,6 +946,165 @@ function App() {
                 </article>
               ))}
           </div>
+        </section>
+
+        <section id="care-plan" className="content-grid two-columns">
+          <section className="panel">
+            <div className="section-title">
+              <h2>증상·부작용 기록</h2>
+              <span>치료 중 몸 상태를 날짜별로 누적</span>
+            </div>
+            <div className="form-grid">
+              <label>
+                날짜
+                <input
+                  type="date"
+                  value={symptomDraft.date}
+                  onChange={(event) =>
+                    setSymptomDraft({ ...symptomDraft, date: event.currentTarget.value })
+                  }
+                />
+              </label>
+              <label>
+                증상
+                <input
+                  value={symptomDraft.symptom}
+                  onChange={(event) =>
+                    setSymptomDraft({ ...symptomDraft, symptom: event.currentTarget.value })
+                  }
+                  placeholder="예: 오심, 통증, 피로, 손발저림"
+                />
+              </label>
+            </div>
+            <label className="severity-control">
+              심한 정도
+              <input
+                type="range"
+                min="0"
+                max="10"
+                value={symptomDraft.severity}
+                onChange={(event) =>
+                  setSymptomDraft({ ...symptomDraft, severity: Number(event.currentTarget.value) })
+                }
+              />
+              <span className={`severity-value severity-${symptomDraft.severity >= 7 ? "risk" : symptomDraft.severity >= 4 ? "watch" : "ok"}`}>
+                {symptomDraft.severity}/10
+              </span>
+            </label>
+            <label className="wide-label">
+              약/대응
+              <input
+                value={symptomDraft.medication}
+                onChange={(event) =>
+                  setSymptomDraft({ ...symptomDraft, medication: event.currentTarget.value })
+                }
+                placeholder="예: 진통제 복용, 항구토제 복용, 휴식"
+              />
+            </label>
+            <label className="wide-label">
+              몸 상태 메모
+              <textarea
+                value={symptomDraft.body}
+                onChange={(event) =>
+                  setSymptomDraft({ ...symptomDraft, body: event.currentTarget.value })
+                }
+                placeholder="언제 시작됐는지, 식사/수면/활동과 관련이 있는지 입력"
+              />
+            </label>
+            <label className="wide-label">
+              다음 행동
+              <input
+                value={symptomDraft.action}
+                onChange={(event) =>
+                  setSymptomDraft({ ...symptomDraft, action: event.currentTarget.value })
+                }
+                placeholder="예: 다음 진료 때 질문, 24시간 지속 시 전화"
+              />
+            </label>
+            <button className="primary-button" type="button" onClick={addSymptom}>
+              <Plus aria-hidden="true" />
+              증상 기록 추가
+            </button>
+          </section>
+
+          <section className="panel">
+            <div className="section-title">
+              <h2>진료 전 질문</h2>
+              <span>놓치기 쉬운 질문을 상태별로 관리</span>
+            </div>
+            <div className="form-grid">
+              <label>
+                진료/확인일
+                <input
+                  type="date"
+                  value={questionDraft.date}
+                  onChange={(event) =>
+                    setQuestionDraft({ ...questionDraft, date: event.currentTarget.value })
+                  }
+                />
+              </label>
+              <label>
+                주제
+                <input
+                  value={questionDraft.topic}
+                  onChange={(event) =>
+                    setQuestionDraft({ ...questionDraft, topic: event.currentTarget.value })
+                  }
+                  placeholder="예: 식단, 검사수치, 부작용"
+                />
+              </label>
+            </div>
+            <label className="wide-label">
+              질문
+              <textarea
+                value={questionDraft.question}
+                onChange={(event) =>
+                  setQuestionDraft({ ...questionDraft, question: event.currentTarget.value })
+                }
+                placeholder="의료진에게 물어볼 내용을 그대로 입력"
+              />
+            </label>
+            <label className="wide-label">
+              답변 메모
+              <input
+                value={questionDraft.answer}
+                onChange={(event) =>
+                  setQuestionDraft({ ...questionDraft, answer: event.currentTarget.value })
+                }
+                placeholder="진료 후 답변을 여기에 남김"
+              />
+            </label>
+            <button className="primary-button" type="button" onClick={addQuestion}>
+              <Plus aria-hidden="true" />
+              질문 추가
+            </button>
+            <div className="question-list">
+              {[...state.questions]
+                .sort((a, b) => a.date.localeCompare(b.date))
+                .map((question) => (
+                  <article className="question-item" key={question.id}>
+                    <div>
+                      <span>{question.date}</span>
+                      <strong>{question.topic}</strong>
+                      <p>{question.question}</p>
+                      {question.answer ? <small>{question.answer}</small> : null}
+                    </div>
+                    <div className="inline-actions">
+                      {(["open", "answered", "deferred"] as QuestionStatus[]).map((status) => (
+                        <button
+                          type="button"
+                          className={question.status === status ? "active" : ""}
+                          onClick={() => updateQuestionStatus(question.id, status)}
+                          key={status}
+                        >
+                          {questionStatusLabel[status]}
+                        </button>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+            </div>
+          </section>
         </section>
 
         <section id="nutrition" className="panel nutrition-panel">
@@ -939,7 +1245,7 @@ function App() {
           <CalendarDays aria-hidden="true" />
           <p>
             다음 개발 슬라이스: 정규화된 SQLite 테이블, 서류 첨부 파일 보관, 검사 수치 사전,
-            병원 방문 전 질문 생성, 가족/보호자 공유용 내보내기.
+            증상 심각도 알림 규칙, 가족/보호자 공유용 내보내기.
           </p>
         </section>
       </section>

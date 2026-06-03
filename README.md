@@ -8,6 +8,8 @@ CareVault is a local-first health notebook for manually tracking:
 - adult BMI from age/sex/height/weight profile data
 - diabetes and hypertension follow-up context
 - hospital visits and next appointments
+- treatment symptom and side-effect diary
+- pre-visit clinical question planner
 - cancer-care nutrition checks
 - dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes
 
@@ -19,6 +21,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - Tauri SQLite `app_state` persistence with browser localStorage fallback
 - Recharts trend chart for BP/glucose
 - full-state JSON backup export/import
+- dated cancer-care symptom and question tracking
 - pure TypeScript health rule module in `src/healthRules.ts`
 - Vitest coverage for BMI, BP, glucose, and cancer-food rules
 - research archive:

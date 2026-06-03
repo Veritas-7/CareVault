@@ -369,6 +369,42 @@ textarea:focus {
   min-height: auto;
 }
 
+.severity-control {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.severity-control input {
+  grid-column: 1 / 2;
+  padding: 0;
+}
+
+.severity-value {
+  grid-column: 2 / 3;
+  min-width: 64px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.severity-ok {
+  color: #0b5c4b;
+  background: #e4f7ef;
+}
+
+.severity-watch {
+  color: #7a4a00;
+  background: #fff3d6;
+}
+
+.severity-risk {
+  color: #84261e;
+  background: #ffe9e5;
+}
+
 .chart-box {
   height: 290px;
 }
@@ -548,6 +584,60 @@ textarea:focus {
   background: #d7eef0;
 }
 
+.question-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  max-height: 340px;
+  overflow: auto;
+}
+
+.question-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #dce6e5;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.question-item span,
+.question-item small {
+  color: #526066;
+}
+
+.question-item strong {
+  display: block;
+  margin: 3px 0 4px;
+}
+
+.question-item p {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.inline-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inline-actions button {
+  min-height: 30px;
+  padding: 0 9px;
+  border-radius: 8px;
+  color: #526066;
+  background: #eef5f4;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.inline-actions button.active {
+  color: #ffffff;
+  background: #0f766e;
+}
+
 .next-steps {
   display: flex;
   gap: 12px;
@@ -573,7 +663,7 @@ textarea:focus {
   }
 
   .nav-stack {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .metrics-grid,
@@ -609,5 +699,14 @@ textarea:focus {
 
   .timeline-item {
     grid-template-columns: 78px 30px minmax(0, 1fr);
+  }
+
+  .question-item {
+    grid-template-columns: 1fr;
+  }
+
+  .inline-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
