@@ -18,6 +18,7 @@ CareVault is a local-first health notebook for manually tracking:
 - per-document audit history for saved records, review status changes, next-action edits, and attachment removal
 - recoverable document deletion through an in-app deleted-document archive
 - attachment availability checks that mark saved files as found, missing, failed, or filename-reference-only
+- saved-document attachment and reattachment controls without recreating the manual note
 - document attachment lifecycle controls with Tauri sandbox-copy selection and browser filename fallback
 - clinician visit summary export as a Markdown packet with selectable 7/30/90/all-record date range
 
@@ -37,6 +38,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - document audit history shown on each saved record for recent review/action/attachment changes
 - deleted-document archive with restore controls so manual medical notes are not immediately lost
 - saved attachment status checks with document-history entries for found/missing/reference-only files
+- saved-document attachment replacement with document-history entries
 - document attachment preparation, opening, removal, and document deletion through Tauri dialog/fs plugins
 - Markdown visit summary export for clinical conversations with a selectable date range
 - pure TypeScript health rule module in `src/healthRules.ts`
@@ -67,4 +69,6 @@ Document deletion is recoverable: deleting a saved note moves it to an in-app de
 
 Saved attachment checks update the document card without reading or uploading medical file contents. Tauri runtime checks the sandbox copy path; browser preview keeps filename-reference-only status.
 
-The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment preview/re-attachment recovery and stronger long-term archive management.
+Saved documents can attach or reattach a file from the existing card. Tauri runtime uses sandbox-copy selection again; browser preview refreshes the filename reference. The text note and document history stay intact.
+
+The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment preview and stronger long-term archive management.

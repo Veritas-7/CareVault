@@ -451,8 +451,10 @@ function App() {
     useState<DocumentCategoryFilter>("all");
   const [documentStatusFilter, setDocumentStatusFilter] =
     useState<DocumentReviewStatusFilter>("all");
+  const [savedAttachmentTargetId, setSavedAttachmentTargetId] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const documentAttachmentInputRef = useRef<HTMLInputElement>(null);
+  const savedAttachmentInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -803,6 +805,87 @@ function App() {
       const status = "첨부 확인 실패";
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
       setSaveLabel(status);
+    }
+  };
+
+  const updateSavedDocumentAttachment = (
+    documentId: string,
+    attachment: Pick<
+      CareDocument,
+      "attachmentName" | "attachmentPath" | "attachmentStorage" | "attachmentStatus"
+    >,
+  ) => {
+    const historyEntry = createDocumentHistory(
+      "attachment-replaced",
+      "첨부 재연결",
+      `${attachment.attachmentName ?? "첨부"}: ${attachment.attachmentStatus ?? "첨부 갱신"}`,
+    );
+
+    setState((current) => ({
+      ...current,
+      documents: current.documents.map((document) =>
+        document.id === documentId
+          ? {
+              ...document,
+              ...attachment,
+              history: appendDocumentHistory(document.history, historyEntry),
+            }
+          : document,
+      ),
+    }));
+  };
+
+  const attachBrowserReferenceToSavedDocument = (file?: File) => {
+    if (!file || !savedAttachmentTargetId) return;
+
+    updateSavedDocumentAttachment(savedAttachmentTargetId, {
+      attachmentName: file.name,
+      attachmentPath: undefined,
+      attachmentStorage: "browser-reference",
+      attachmentStatus: "브라우저 파일명 참조",
+    });
+    setSavedAttachmentTargetId(null);
+    setSaveLabel("저장된 서류 첨부 파일명 참조 갱신");
+  };
+
+  const replaceSavedDocumentAttachment = async (document: CareDocument) => {
+    if (!canUseTauriRuntime()) {
+      setSavedAttachmentTargetId(document.id);
+      savedAttachmentInputRef.current?.click();
+      return;
+    }
+
+    try {
+      const [{ open }, { exists }] = await Promise.all([
+        import("@tauri-apps/plugin-dialog"),
+        import("@tauri-apps/plugin-fs"),
+      ]);
+      const selected = await open({
+        multiple: false,
+        directory: false,
+        fileAccessMode: "copy",
+        filters: [
+          {
+            name: "Medical documents",
+            extensions: ["pdf", "png", "jpg", "jpeg", "webp", "docx", "xlsx", "csv", "txt", "md"],
+          },
+        ],
+      });
+
+      if (typeof selected !== "string") return;
+
+      const attachmentExists = await exists(selected).catch(() => false);
+      const attachmentStatus = attachmentExists ? "파일 확인됨" : "앱 샌드박스 경로 저장됨";
+      updateSavedDocumentAttachment(document.id, {
+        attachmentName: extractFileName(selected),
+        attachmentPath: selected,
+        attachmentStorage: "tauri-sandbox",
+        attachmentStatus,
+      });
+      setSaveLabel(attachmentExists ? "저장된 서류 첨부 재연결됨" : "첨부 경로 갱신됨");
+    } catch (error) {
+      console.error("Saved document attachment replacement failed", error);
+      setSaveLabel("저장된 서류 첨부 재연결 실패");
     }
   };
 
@@ -2027,6 +2110,16 @@ function App() {
                 {filteredDocuments.length}/{state.documents.length}개 기록
               </span>
             </div>
+            <input
+              ref={savedAttachmentInputRef}
+              className="visually-hidden"
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"
+              onChange={(event) => {
+                attachBrowserReferenceToSavedDocument(event.currentTarget.files?.[0]);
+                event.currentTarget.value = "";
+              }}
+            />
             <label className="search-field">
               <Search aria-hidden="true" />
               <input
@@ -2161,6 +2254,10 @@ function App() {
                     ) : null}
                   </div>
                   <div className="document-actions">
+                    <button type="button" onClick={() => replaceSavedDocumentAttachment(document)}>
+                      <Upload aria-hidden="true" />
+                      {document.attachmentName ? "재첨부" : "첨부"}
+                    </button>
                     {document.attachmentName ? (
                       <button type="button" onClick={() => checkDocumentAttachment(document)}>
                         <ShieldCheck aria-hidden="true" />

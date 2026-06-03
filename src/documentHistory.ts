@@ -3,6 +3,7 @@ export type DocumentHistoryKind =
   | "review-status"
   | "next-action"
   | "attachment-check"
+  | "attachment-replaced"
   | "attachment-removed"
   | "archived"
   | "restored";
