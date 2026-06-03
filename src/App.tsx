@@ -535,6 +535,19 @@ function App() {
     setDocumentDraft({ ...emptyDocument, date: today });
   };
 
+  const updateDocument = (
+    documentId: string,
+    patch: Partial<Pick<CareDocument, "reviewStatus" | "nextAction">>,
+  ) => {
+    setState((current) => ({
+      ...current,
+      documents: current.documents.map((document) =>
+        document.id === documentId ? { ...document, ...patch } : document,
+      ),
+    }));
+    setSaveLabel("서류 조치 업데이트됨");
+  };
+
   const attachDocumentFile = async () => {
     if (!canUseTauriRuntime()) {
       documentAttachmentInputRef.current?.click();
@@ -1724,9 +1737,40 @@ function App() {
                     </div>
                     <strong>{document.title}</strong>
                     <p>{document.body}</p>
-                    {document.nextAction ? (
-                      <p className="document-next-action">다음 조치: {document.nextAction}</p>
-                    ) : null}
+                    <div
+                      className="document-update-controls"
+                      aria-label={`${document.title} 서류 조치 수정`}
+                    >
+                      <label>
+                        상태
+                        <select
+                          aria-label={`${document.title} 검토 상태`}
+                          value={document.reviewStatus}
+                          onChange={(event) =>
+                            updateDocument(document.id, {
+                              reviewStatus: event.currentTarget.value as DocumentReviewStatus,
+                            })
+                          }
+                        >
+                          {Object.entries(documentReviewStatusLabel).map(([value, label]) => (
+                            <option value={value} key={value}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        다음 조치
+                        <input
+                          aria-label={`${document.title} 다음 조치`}
+                          value={document.nextAction}
+                          onChange={(event) =>
+                            updateDocument(document.id, { nextAction: event.currentTarget.value })
+                          }
+                          placeholder="다음 진료 때 확인할 내용"
+                        />
+                      </label>
+                    </div>
                     {document.attachmentName ? (
                       <div className="document-attachment">
                         <Paperclip aria-hidden="true" />
