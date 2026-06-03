@@ -115,4 +115,47 @@ describe("visit packet", () => {
     expect(markdown).toContain("첨부: scan.pdf");
     expect(markdown).not.toContain("/Users/wj/private/scan.pdf");
   });
+
+  it("filters dated records by the selected visit packet range", () => {
+    const rangedState: VisitPacketState = {
+      ...sampleState,
+      vitals: [
+        ...sampleState.vitals,
+        {
+          date: "2026-05-01",
+          type: "blood-pressure",
+          systolic: 142,
+          diastolic: 90,
+          note: "오래된 혈압",
+        },
+      ],
+      documents: [
+        ...sampleState.documents,
+        {
+          date: "2026-05-01",
+          title: "오래된 서류",
+          category: "visit-note",
+          body: "지난달 상담 메모",
+          tags: "과거",
+        },
+      ],
+    };
+
+    const recentMarkdown = buildVisitPacketMarkdown(rangedState, {
+      exportedAt: "2026-06-03T08:00:00.000Z",
+      range: "7d",
+    });
+    expect(recentMarkdown).toContain("범위: 최근 7일");
+    expect(recentMarkdown).toContain("2026-06-01");
+    expect(recentMarkdown).not.toContain("2026-05-01");
+    expect(recentMarkdown).not.toContain("오래된 서류");
+
+    const allMarkdown = buildVisitPacketMarkdown(rangedState, {
+      exportedAt: "2026-06-03T08:00:00.000Z",
+      range: "all",
+    });
+    expect(allMarkdown).toContain("범위: 전체");
+    expect(allMarkdown).toContain("2026-05-01");
+    expect(allMarkdown).toContain("오래된 서류");
+  });
 });

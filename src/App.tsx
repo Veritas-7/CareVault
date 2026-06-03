@@ -48,7 +48,11 @@ import {
   savePersistedState,
   type PersistenceBackend,
 } from "./storage";
-import { buildVisitPacketMarkdown } from "./visitPacket";
+import {
+  buildVisitPacketMarkdown,
+  visitPacketRangeLabels,
+  type VisitPacketRange,
+} from "./visitPacket";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose";
@@ -378,6 +382,7 @@ function App() {
   const [questionDraft, setQuestionDraft] = useState<CareQuestion>(emptyQuestion);
   const [labDraft, setLabDraft] = useState<LabResult>(emptyLabResult);
   const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
+  const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
   const [documentFilter, setDocumentFilter] = useState("");
   const importInputRef = useRef<HTMLInputElement>(null);
   const documentAttachmentInputRef = useRef<HTMLInputElement>(null);
@@ -733,6 +738,7 @@ function App() {
     const markdown = buildVisitPacketMarkdown(state, {
       exportedAt: new Date().toISOString(),
       foodQuery,
+      range: visitPacketRange,
     });
     const blob = new Blob([markdown], {
       type: "text/markdown;charset=utf-8",
@@ -745,7 +751,7 @@ function App() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    setSaveLabel("진료 요약 내보냄");
+    setSaveLabel(`진료 요약 내보냄 (${visitPacketRangeLabels[visitPacketRange]})`);
   };
 
   const importBackup = (file: File | undefined) => {
@@ -825,6 +831,19 @@ function App() {
               <Download aria-hidden="true" />
               내보내기
             </button>
+            <select
+              className="summary-range-select"
+              aria-label="진료 요약 범위"
+              value={visitPacketRange}
+              onChange={(event) =>
+                setVisitPacketRange(event.currentTarget.value as VisitPacketRange)
+              }
+            >
+              <option value="7d">요약 7일</option>
+              <option value="30d">요약 30일</option>
+              <option value="90d">요약 90일</option>
+              <option value="all">요약 전체</option>
+            </select>
             <button type="button" className="secondary-button" onClick={exportVisitPacket}>
               <FileText aria-hidden="true" />
               진료 요약

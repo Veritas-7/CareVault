@@ -18,6 +18,7 @@ type DocumentCategory =
   | "insurance"
   | "other";
 type QuestionStatus = "open" | "answered" | "deferred";
+export type VisitPacketRange = "7d" | "30d" | "90d" | "all";
 
 export type VisitPacketState = {
   profile: {
@@ -86,6 +87,7 @@ type VisitPacketOptions = {
   exportedAt?: string;
   foodQuery?: string;
   maxItems?: number;
+  range?: VisitPacketRange;
 };
 
 const sexLabel: Record<Sex, string> = {
@@ -118,8 +120,38 @@ const glucoseContextLabel: Record<GlucoseContext, string> = {
   random: "수시",
 };
 
+export const visitPacketRangeLabels: Record<VisitPacketRange, string> = {
+  "7d": "최근 7일",
+  "30d": "최근 30일",
+  "90d": "최근 90일",
+  all: "전체",
+};
+
+const visitPacketRangeDays: Partial<Record<VisitPacketRange, number>> = {
+  "7d": 7,
+  "30d": 30,
+  "90d": 90,
+};
+
 function latestFirst<T extends { date: string }>(items: T[]) {
   return [...items].sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function getRangeStartDate(exportedAt: string, range: VisitPacketRange) {
+  const days = visitPacketRangeDays[range];
+  if (!days) return null;
+
+  const asOf = new Date(exportedAt);
+  if (Number.isNaN(asOf.getTime())) return null;
+
+  const start = new Date(Date.UTC(asOf.getUTCFullYear(), asOf.getUTCMonth(), asOf.getUTCDate()));
+  start.setUTCDate(start.getUTCDate() - days + 1);
+  return start.toISOString().slice(0, 10);
+}
+
+function filterByRange<T extends { date: string }>(items: T[], startDate: string | null) {
+  if (!startDate) return items;
+  return items.filter((item) => item.date >= startDate);
 }
 
 function orNone(lines: string[]) {
@@ -137,12 +169,14 @@ export function buildVisitPacketMarkdown(
 ) {
   const exportedAt = options.exportedAt ?? new Date().toISOString();
   const maxItems = options.maxItems ?? 8;
+  const range = options.range ?? "all";
+  const rangeStartDate = getRangeStartDate(exportedAt, range);
   const bmi = calculateBmi(
     Number.parseFloat(state.profile.heightCm),
     Number.parseFloat(state.profile.weightKg),
   );
 
-  const vitalLines = latestFirst(state.vitals)
+  const vitalLines = latestFirst(filterByRange(state.vitals, rangeStartDate))
     .slice(0, maxItems)
     .map((vital) => {
       if (vital.type === "blood-pressure" && vital.systolic && vital.diastolic) {
@@ -157,7 +191,7 @@ export function buildVisitPacketMarkdown(
       return `- ${vital.date}: 미완성 활력 기록${optionalSuffix(vital.note, " / ")}`;
     });
 
-  const labLines = latestFirst(state.labResults)
+  const labLines = latestFirst(filterByRange(state.labResults, rangeStartDate))
     .slice(0, maxItems)
     .map((lab) => {
       const assessment = assessLabValue(
@@ -165,32 +199,32 @@ export function buildVisitPacketMarkdown(
         lab.lower ? Number.parseFloat(lab.lower) : undefined,
         lab.upper ? Number.parseFloat(lab.upper) : undefined,
       );
-      const range = lab.lower || lab.upper ? ` (기준 ${lab.lower || "-"}-${lab.upper || "-"})` : "";
-      return `- ${lab.date}: ${lab.name} ${lab.value} ${lab.unit}${range} - ${assessment.label}${optionalSuffix(lab.note, " / ")}`;
+      const labRange = lab.lower || lab.upper ? ` (기준 ${lab.lower || "-"}-${lab.upper || "-"})` : "";
+      return `- ${lab.date}: ${lab.name} ${lab.value} ${lab.unit}${labRange} - ${assessment.label}${optionalSuffix(lab.note, " / ")}`;
     });
 
-  const symptomLines = latestFirst(state.symptoms)
+  const symptomLines = latestFirst(filterByRange(state.symptoms, rangeStartDate))
     .slice(0, maxItems)
     .map(
       (symptom) =>
         `- ${symptom.date}: ${symptom.symptom} ${symptom.severity}/10${optionalSuffix(symptom.medication, " / 약: ")}${optionalSuffix(symptom.body, " / ")}${optionalSuffix(symptom.action, " / 다음 조치: ")}`,
     );
 
-  const questionLines = latestFirst(state.questions)
+  const questionLines = latestFirst(filterByRange(state.questions, rangeStartDate))
     .slice(0, maxItems)
     .map(
       (question) =>
         `- ${question.date}: [${questionStatusLabel[question.status]}] ${question.topic} - ${question.question}${optionalSuffix(question.answer, " / 답변: ")}`,
     );
 
-  const visitLines = latestFirst(state.visits)
+  const visitLines = latestFirst(filterByRange(state.visits, rangeStartDate))
     .slice(0, maxItems)
     .map(
       (visit) =>
         `- ${visit.date}: ${visit.hospital} / ${visit.reason}${optionalSuffix(visit.summary, " / 요약: ")}${optionalSuffix(visit.plan, " / 계획: ")}${optionalSuffix(visit.nextDate, " / 다음 일정: ")}`,
     );
 
-  const documentLines = latestFirst(state.documents)
+  const documentLines = latestFirst(filterByRange(state.documents, rangeStartDate))
     .slice(0, maxItems)
     .map((document) => {
       const attachment = document.attachmentName ? ` / 첨부: ${document.attachmentName}` : "";
@@ -209,6 +243,7 @@ export function buildVisitPacketMarkdown(
     "# CareVault 진료 요약",
     "",
     `생성 시각: ${exportedAt}`,
+    `범위: ${visitPacketRangeLabels[range]}`,
     "",
     "이 요약은 사용자가 입력한 기록을 진료 상담에 가져가기 위한 참고 메모입니다. 진단, 처방, 치료 지시가 아닙니다.",
     "",

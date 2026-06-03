@@ -201,6 +201,22 @@ h2 {
   background: #eaf5f4;
 }
 
+.summary-range-select {
+  min-height: 40px;
+  max-width: 150px;
+  padding: 0 12px;
+  border: 1px solid #c7d8da;
+  border-radius: 8px;
+  color: #0f4c5c;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.summary-range-select:focus-visible {
+  outline: 3px solid #98d6cf;
+  outline-offset: 2px;
+}
+
 .secondary-inline-button,
 .text-icon-button,
 .document-actions button {
@@ -854,6 +870,11 @@ textarea:focus {
 
   .top-actions {
     justify-content: flex-start;
+  }
+
+  .summary-range-select {
+    flex: 1 1 132px;
+    max-width: none;
   }
 
   .metrics-grid,
