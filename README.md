@@ -12,7 +12,7 @@ CareVault is a local-first health notebook for manually tracking:
 - treatment symptom and side-effect diary
 - pre-visit clinical question planner
 - cancer-care nutrition checks
-- dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes
+- dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes with text/category/status filtering
 - per-document review status and next-action tracking with in-list updates for clinical follow-up
 - document attachment lifecycle controls with Tauri sandbox-copy selection and browser filename fallback
 - clinician visit summary export as a Markdown packet with selectable 7/30/90/all-record date range
@@ -27,7 +27,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - full-state JSON backup export/import
 - dated cancer-care symptom and question tracking
 - lab value range tracking for manual cancer-care records
-- document review status and next-action tracking with in-list updates for clinical follow-up
+- document review status and next-action tracking with in-list updates and category/status filtering
 - document attachment preparation, opening, removal, and document deletion through Tauri dialog/fs plugins
 - Markdown visit summary export for clinical conversations with a selectable date range
 - pure TypeScript health rule module in `src/healthRules.ts`

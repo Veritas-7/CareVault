@@ -66,6 +66,8 @@ type DocumentCategory =
   | "other";
 type AttachmentStorage = "tauri-sandbox" | "browser-reference";
 type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
+type DocumentCategoryFilter = DocumentCategory | "all";
+type DocumentReviewStatusFilter = DocumentReviewStatus | "all";
 
 type Profile = {
   name: string;
@@ -402,6 +404,10 @@ function App() {
   const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
   const [documentFilter, setDocumentFilter] = useState("");
+  const [documentCategoryFilter, setDocumentCategoryFilter] =
+    useState<DocumentCategoryFilter>("all");
+  const [documentStatusFilter, setDocumentStatusFilter] =
+    useState<DocumentReviewStatusFilter>("all");
   const importInputRef = useRef<HTMLInputElement>(null);
   const documentAttachmentInputRef = useRef<HTMLInputElement>(null);
 
@@ -488,9 +494,13 @@ function App() {
     }));
 
   const filteredDocuments = state.documents.filter((document) => {
+    const categoryMatches =
+      documentCategoryFilter === "all" || document.category === documentCategoryFilter;
+    const statusMatches =
+      documentStatusFilter === "all" || document.reviewStatus === documentStatusFilter;
     const haystack =
-      `${document.title} ${document.body} ${document.tags} ${document.nextAction} ${documentReviewStatusLabel[document.reviewStatus]} ${document.attachmentName ?? ""}`.toLowerCase();
-    return haystack.includes(documentFilter.toLowerCase());
+      `${document.date} ${documentLabel[document.category]} ${document.title} ${document.body} ${document.tags} ${document.nextAction} ${documentReviewStatusLabel[document.reviewStatus]} ${document.attachmentName ?? ""}`.toLowerCase();
+    return categoryMatches && statusMatches && haystack.includes(documentFilter.toLowerCase());
   });
 
   const saveProfile = (field: keyof Profile, value: Profile[keyof Profile]) => {
@@ -1714,16 +1724,54 @@ function App() {
           <section className="panel document-list-panel">
             <div className="section-title">
               <h2>저장된 서류</h2>
-              <span>{state.documents.length}개 기록</span>
+              <span>
+                {filteredDocuments.length}/{state.documents.length}개 기록
+              </span>
             </div>
             <label className="search-field">
               <Search aria-hidden="true" />
               <input
                 value={documentFilter}
                 onChange={(event) => setDocumentFilter(event.currentTarget.value)}
-                placeholder="제목, 내용, 태그 검색"
+                placeholder="날짜, 분류, 제목, 내용, 태그 검색"
               />
             </label>
+            <div className="document-filter-row">
+              <label>
+                분류 필터
+                <select
+                  value={documentCategoryFilter}
+                  onChange={(event) =>
+                    setDocumentCategoryFilter(event.currentTarget.value as DocumentCategoryFilter)
+                  }
+                >
+                  <option value="all">전체 분류</option>
+                  {Object.entries(documentLabel).map(([value, label]) => (
+                    <option value={value} key={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                상태 필터
+                <select
+                  value={documentStatusFilter}
+                  onChange={(event) =>
+                    setDocumentStatusFilter(
+                      event.currentTarget.value as DocumentReviewStatusFilter,
+                    )
+                  }
+                >
+                  <option value="all">전체 상태</option>
+                  {Object.entries(documentReviewStatusLabel).map(([value, label]) => (
+                    <option value={value} key={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
             <div className="document-list">
               {filteredDocuments.map((document) => (
                 <article className="document-item" key={document.id}>

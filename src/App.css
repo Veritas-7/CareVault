@@ -612,6 +612,23 @@ textarea:focus {
   padding-left: 34px;
 }
 
+.document-filter-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.document-filter-row label {
+  min-width: 0;
+  font-size: 0.82rem;
+}
+
+.document-filter-row select {
+  min-height: 36px;
+  padding: 7px 9px;
+}
+
 .document-list {
   display: grid;
   gap: 10px;
@@ -953,6 +970,7 @@ textarea:focus {
   .question-item,
   .lab-item,
   .document-item,
+  .document-filter-row,
   .document-update-controls {
     grid-template-columns: 1fr;
   }
