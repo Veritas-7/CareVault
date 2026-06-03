@@ -43,6 +43,11 @@ import {
   type GlucoseContext,
   type LabFlag,
 } from "./healthRules";
+import {
+  buildLabQuestionPrompt,
+  getNextQuestionDate,
+  type LabQuestionSource,
+} from "./labQuestionPrompts";
 import { labPresets, resolveLabPreset } from "./labPresets";
 import {
   loadPersistedState,
@@ -749,6 +754,24 @@ function App() {
     }));
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
+  };
+
+  const addLabQuestion = (lab: LabQuestionSource, assessment: ReturnType<typeof assessLabValue>) => {
+    setState((current) => ({
+      ...current,
+      questions: [
+        ...current.questions,
+        {
+          id: createId("question"),
+          date: getNextQuestionDate(current.visits, today),
+          topic: "검사 수치",
+          question: buildLabQuestionPrompt(lab, assessment),
+          status: "open",
+          answer: "",
+        },
+      ],
+    }));
+    setSaveLabel("검사 질문 추가됨");
   };
 
   const updateQuestionStatus = (id: string, status: QuestionStatus) => {
@@ -1573,6 +1596,18 @@ function App() {
                       기준 {result.lower || "-"} - {result.upper || "-"} {result.unit}
                     </p>
                     {result.note ? <small>{result.note}</small> : null}
+                    {assessment.flag !== "normal" ? (
+                      <div className="lab-followup-actions">
+                        <button
+                          className="secondary-inline-button"
+                          type="button"
+                          onClick={() => addLabQuestion(result, assessment)}
+                        >
+                          <MessageSquare aria-hidden="true" />
+                          질문으로 추가
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                   <mark className={`lab-${assessment.flag}`}>
                     {labFlagLabel[assessment.flag]}
