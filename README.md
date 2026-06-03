@@ -15,6 +15,7 @@ CareVault is a local-first health notebook for manually tracking:
 - cancer-care nutrition checks
 - dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes with text/category/status filtering
 - per-document review status and next-action tracking with in-list updates for clinical follow-up
+- per-document audit history for saved records, review status changes, next-action edits, and attachment removal
 - document attachment lifecycle controls with Tauri sandbox-copy selection and browser filename fallback
 - clinician visit summary export as a Markdown packet with selectable 7/30/90/all-record date range
 
@@ -31,6 +32,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 - one-click follow-up question creation from out-of-range or reference-missing lab results
 - dashboard care action queue for pre-visit review of questions, labs, documents, and upcoming visits
 - document review status and next-action tracking with in-list updates and category/status filtering
+- document audit history shown on each saved record for recent review/action/attachment changes
 - document attachment preparation, opening, removal, and document deletion through Tauri dialog/fs plugins
 - Markdown visit summary export for clinical conversations with a selectable date range
 - pure TypeScript health rule module in `src/healthRules.ts`
@@ -55,4 +57,6 @@ Visit summaries are generated as local Markdown downloads. They include the sele
 
 The dashboard care action queue is a derived view only. It does not create new medical advice; it gathers open questions, low/high/reference-missing labs, unfinished document actions, and future visits into a short pre-visit checklist.
 
-The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment preview, missing-file recovery, and per-document audit history.
+Document history is stored with each saved document and is used as an in-app audit trail for recent manual changes. It is not a legal medical record, but it helps users see how a document's review state, next action, or attachment state changed over time.
+
+The next durable app slice should normalize vitals, visits, documents, and food checks into separate SQLite tables, then add attachment preview, missing-file recovery, and stronger archived-deletion recovery.

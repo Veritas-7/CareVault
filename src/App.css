@@ -808,6 +808,49 @@ textarea:focus {
   font-size: 0.86rem;
 }
 
+.document-history {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #e1e8e7;
+  border-radius: 8px;
+  background: #f8fbfa;
+}
+
+.document-history > span {
+  color: #526066;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.document-history ol {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.document-history li {
+  display: grid;
+  grid-template-columns: 86px 92px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  color: #526066;
+  font-size: 0.8rem;
+}
+
+.document-history time,
+.document-history strong {
+  color: #1d2528;
+}
+
+.document-history small {
+  min-width: 0;
+  color: #526066;
+}
+
 .attachment-panel {
   display: grid;
   gap: 8px;
@@ -1069,6 +1112,11 @@ textarea:focus {
   .document-filter-row,
   .document-update-controls {
     grid-template-columns: 1fr;
+  }
+
+  .document-history li {
+    grid-template-columns: 1fr;
+    gap: 2px;
   }
 
   .inline-actions {

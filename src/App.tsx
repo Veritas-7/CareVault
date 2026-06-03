@@ -49,6 +49,11 @@ import {
   type LabQuestionSource,
 } from "./labQuestionPrompts";
 import { buildCareActionQueue, type CareActionSource } from "./careActionQueue";
+import {
+  appendDocumentHistory,
+  type DocumentHistoryEntry,
+  type DocumentHistoryKind,
+} from "./documentHistory";
 import { labPresets, resolveLabPreset } from "./labPresets";
 import {
   loadPersistedState,
@@ -121,6 +126,7 @@ type CareDocument = {
   attachmentPath?: string;
   attachmentStorage?: AttachmentStorage;
   attachmentStatus?: string;
+  history?: DocumentHistoryEntry[];
 };
 
 type SymptomEntry = {
@@ -225,6 +231,15 @@ const defaultState: AppState = {
       tags: "혈액검사,종양내과",
       reviewStatus: "care-question",
       nextAction: "백혈구 수치가 낮을 때 식사 제한 기준 질문",
+      history: [
+        {
+          id: "history-doc-1-created",
+          at: "2026-06-01T09:00:00.000Z",
+          kind: "created",
+          label: "서류 저장",
+          detail: "혈액검사 메모 기록 생성",
+        },
+      ],
     },
   ],
   symptoms: [
@@ -397,6 +412,7 @@ function normalizeAppState(input: Partial<AppState>): AppState {
       ...document,
       reviewStatus: document.reviewStatus ?? "needs-review",
       nextAction: document.nextAction ?? "",
+      history: document.history ?? [],
     })),
     symptoms: input.symptoms ?? [],
     questions: input.questions ?? [],
@@ -415,6 +431,9 @@ function App() {
   const [symptomDraft, setSymptomDraft] = useState<SymptomEntry>(emptySymptom);
   const [questionDraft, setQuestionDraft] = useState<CareQuestion>(emptyQuestion);
   const [labDraft, setLabDraft] = useState<LabResult>(emptyLabResult);
+  const [documentActionBaselines, setDocumentActionBaselines] = useState<Record<string, string>>(
+    {},
+  );
   const [labPresetChoice, setLabPresetChoice] = useState("");
   const [foodQuery, setFoodQuery] = useState("브로콜리, 현미밥, 베이컨, 자몽 주스");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
@@ -552,26 +571,103 @@ function App() {
     setVisitDraft({ ...emptyVisit, date: today });
   };
 
+  const createDocumentHistory = (
+    kind: DocumentHistoryKind,
+    label: string,
+    detail: string,
+  ): DocumentHistoryEntry => ({
+    id: createId("history"),
+    at: new Date().toISOString(),
+    kind,
+    label,
+    detail,
+  });
+
   const addDocument = () => {
     if (!documentDraft.title.trim() || !documentDraft.body.trim()) return;
+    const documentId = createId("doc");
+    const createdEntry = createDocumentHistory(
+      "created",
+      "서류 저장",
+      `${documentDraft.title.trim()} 기록 생성`,
+    );
     setState((current) => ({
       ...current,
-      documents: [...current.documents, { ...documentDraft, id: createId("doc") }],
+      documents: [
+        ...current.documents,
+        {
+          ...documentDraft,
+          id: documentId,
+          history: appendDocumentHistory(documentDraft.history, createdEntry),
+        },
+      ],
     }));
     setDocumentDraft({ ...emptyDocument, date: today });
   };
 
-  const updateDocument = (
+  const updateDocumentReviewStatus = (
     documentId: string,
-    patch: Partial<Pick<CareDocument, "reviewStatus" | "nextAction">>,
+    reviewStatus: DocumentReviewStatus,
   ) => {
     setState((current) => ({
       ...current,
-      documents: current.documents.map((document) =>
-        document.id === documentId ? { ...document, ...patch } : document,
-      ),
+      documents: current.documents.map((document) => {
+        if (document.id !== documentId || document.reviewStatus === reviewStatus) {
+          return document;
+        }
+
+        const historyEntry = createDocumentHistory(
+          "review-status",
+          "상태 변경",
+          `${documentReviewStatusLabel[document.reviewStatus]} → ${documentReviewStatusLabel[reviewStatus]}`,
+        );
+        return {
+          ...document,
+          reviewStatus,
+          history: appendDocumentHistory(document.history, historyEntry),
+        };
+      }),
     }));
     setSaveLabel("서류 조치 업데이트됨");
+  };
+
+  const updateDocumentNextAction = (documentId: string, nextAction: string) => {
+    setState((current) => ({
+      ...current,
+      documents: current.documents.map((document) =>
+        document.id === documentId ? { ...document, nextAction } : document,
+      ),
+    }));
+  };
+
+  const recordDocumentNextActionBlur = (document: CareDocument, nextAction: string) => {
+    const previous = documentActionBaselines[document.id] ?? document.nextAction;
+    if (previous.trim() === nextAction.trim()) {
+      setDocumentActionBaselines((current) => {
+        const { [document.id]: _removed, ...rest } = current;
+        return rest;
+      });
+      return;
+    }
+
+    const historyEntry = createDocumentHistory(
+      "next-action",
+      "다음 조치 변경",
+      nextAction.trim() || "다음 조치 비움",
+    );
+    setState((current) => ({
+      ...current,
+      documents: current.documents.map((item) =>
+        item.id === document.id
+          ? { ...item, history: appendDocumentHistory(item.history, historyEntry) }
+          : item,
+      ),
+    }));
+    setDocumentActionBaselines((current) => {
+      const { [document.id]: _removed, ...rest } = current;
+      return rest;
+    });
+    setSaveLabel("서류 조치 이력 기록됨");
   };
 
   const attachDocumentFile = async () => {
@@ -684,6 +780,11 @@ function App() {
     const removed = await removeSandboxAttachment(document);
     if (!removed) return;
 
+    const historyEntry = createDocumentHistory(
+      "attachment-removed",
+      "첨부 제거",
+      `${document.attachmentName} 연결 제거`,
+    );
     setState((current) => ({
       ...current,
       documents: current.documents.map((item) =>
@@ -694,6 +795,7 @@ function App() {
               attachmentPath: undefined,
               attachmentStorage: undefined,
               attachmentStatus: undefined,
+              history: appendDocumentHistory(item.history, historyEntry),
             }
           : item,
       ),
@@ -1904,9 +2006,10 @@ function App() {
                           aria-label={`${document.title} 검토 상태`}
                           value={document.reviewStatus}
                           onChange={(event) =>
-                            updateDocument(document.id, {
-                              reviewStatus: event.currentTarget.value as DocumentReviewStatus,
-                            })
+                            updateDocumentReviewStatus(
+                              document.id,
+                              event.currentTarget.value as DocumentReviewStatus,
+                            )
                           }
                         >
                           {Object.entries(documentReviewStatusLabel).map(([value, label]) => (
@@ -1921,13 +2024,39 @@ function App() {
                         <input
                           aria-label={`${document.title} 다음 조치`}
                           value={document.nextAction}
+                          onFocus={() =>
+                            setDocumentActionBaselines((current) => ({
+                              ...current,
+                              [document.id]: document.nextAction,
+                            }))
+                          }
                           onChange={(event) =>
-                            updateDocument(document.id, { nextAction: event.currentTarget.value })
+                            updateDocumentNextAction(document.id, event.currentTarget.value)
+                          }
+                          onBlur={(event) =>
+                            recordDocumentNextActionBlur(document, event.currentTarget.value)
                           }
                           placeholder="다음 진료 때 확인할 내용"
                         />
                       </label>
                     </div>
+                    {document.history?.length ? (
+                      <div className="document-history" aria-label={`${document.title} 변경 이력`}>
+                        <span>변경 이력</span>
+                        <ol>
+                          {[...document.history]
+                            .slice(-3)
+                            .reverse()
+                            .map((entry) => (
+                              <li key={entry.id}>
+                                <time>{entry.at.slice(0, 10)}</time>
+                                <strong>{entry.label}</strong>
+                                <small>{entry.detail}</small>
+                              </li>
+                            ))}
+                        </ol>
+                      </div>
+                    ) : null}
                     {document.attachmentName ? (
                       <div className="document-attachment">
                         <Paperclip aria-hidden="true" />
