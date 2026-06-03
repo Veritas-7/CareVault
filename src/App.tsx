@@ -5,6 +5,7 @@ import {
   Apple,
   CalendarDays,
   ClipboardList,
+  Copy,
   Download,
   ExternalLink,
   Eye,
@@ -1447,6 +1448,14 @@ function App() {
     setSaveLabel(`${exportPreview.format} 내보냄`);
   };
 
+  const copyExportPreview = () => {
+    if (!exportPreview) return;
+    navigator.clipboard
+      .writeText(exportPreview.content)
+      .then(() => setSaveLabel(`${exportPreview.format} 미리보기 복사됨`))
+      .catch(() => setSaveLabel("미리보기 복사 실패"));
+  };
+
   const exportBackup = () => {
     const payload = {
       app: "CareVault",
@@ -2811,7 +2820,7 @@ function App() {
         <section className="next-steps">
           <CalendarDays aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 미리보기 복사·인쇄 액션.
+            다음 개발 슬라이스: 미리보기 인쇄 액션.
           </p>
         </section>
         {exportPreview ? (
@@ -2823,6 +2832,10 @@ function App() {
                 <span>{exportPreview.filename}</span>
               </div>
               <div className="export-preview-actions">
+                <button type="button" className="secondary-inline-button" onClick={copyExportPreview}>
+                  <Copy aria-hidden="true" />
+                  복사
+                </button>
                 <button type="button" className="secondary-inline-button" onClick={downloadExportPreview}>
                   <Download aria-hidden="true" />
                   다운로드
