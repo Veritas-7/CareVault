@@ -59,6 +59,17 @@ export type NormalizedCareVaultMirror = {
   };
 };
 
+export type NormalizedMirrorStatus = {
+  checkedAt: string;
+  profileRows: number;
+  vitalRows: number;
+  visitRows: number;
+  activeDocumentRows: number;
+  deletedDocumentRows: number;
+  foodCheckRows: number;
+  latestUpdatedAt?: string;
+};
+
 type SaveOptions = {
   normalizedMirror?: NormalizedCareVaultMirror;
 };
@@ -184,6 +195,20 @@ function optionalNumber(value: number | undefined) {
 
 function optionalText(value: string | undefined) {
   return value ?? null;
+}
+
+export function parseSqlCount(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "bigint") return Number(value);
+  if (typeof value === "string") {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function parseOptionalText(value: unknown) {
+  return typeof value === "string" && value.trim() ? value : undefined;
 }
 
 export function buildNormalizedMirrorStatements(
@@ -352,6 +377,12 @@ export function buildNormalizedMirrorStatements(
   return statements;
 }
 
+async function ensureNormalizedTables(db: SqlDatabase) {
+  for (const statement of normalizedTableStatements) {
+    await db.execute(statement.query, statement.bindValues);
+  }
+}
+
 async function mirrorNormalizedState(
   db: SqlDatabase,
   mirror: NormalizedCareVaultMirror,
@@ -368,6 +399,50 @@ async function mirrorNormalizedState(
     await db.execute("ROLLBACK").catch(() => undefined);
     throw error;
   }
+}
+
+async function selectCount(db: SqlDatabase, query: string) {
+  const rows = (await db.select(query)) as Array<{ count?: unknown }>;
+  return parseSqlCount(rows[0]?.count);
+}
+
+export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStatus | null> {
+  const db = await getDatabase();
+  if (!db) return null;
+
+  await ensureNormalizedTables(db);
+
+  const profileRows = await selectCount(db, "SELECT COUNT(*) AS count FROM profile_snapshot");
+  const vitalRows = await selectCount(db, "SELECT COUNT(*) AS count FROM vitals");
+  const visitRows = await selectCount(db, "SELECT COUNT(*) AS count FROM visits");
+  const activeDocumentRows = await selectCount(
+    db,
+    "SELECT COUNT(*) AS count FROM care_documents WHERE is_deleted = 0",
+  );
+  const deletedDocumentRows = await selectCount(
+    db,
+    "SELECT COUNT(*) AS count FROM care_documents WHERE is_deleted = 1",
+  );
+  const foodCheckRows = await selectCount(db, "SELECT COUNT(*) AS count FROM food_checks");
+  const latestRows = (await db.select(`SELECT MAX(mirror_updated_at) AS latestUpdatedAt
+    FROM (
+      SELECT updated_at AS mirror_updated_at FROM profile_snapshot
+      UNION ALL SELECT updated_at FROM vitals
+      UNION ALL SELECT updated_at FROM visits
+      UNION ALL SELECT updated_at FROM care_documents
+      UNION ALL SELECT checked_at FROM food_checks
+    )`)) as Array<{ latestUpdatedAt?: unknown }>;
+
+  return {
+    checkedAt: new Date().toISOString(),
+    profileRows,
+    vitalRows,
+    visitRows,
+    activeDocumentRows,
+    deletedDocumentRows,
+    foodCheckRows,
+    latestUpdatedAt: parseOptionalText(latestRows[0]?.latestUpdatedAt),
+  };
 }
 
 function loadFromLocalStorage<T>(fallback: T): PersistedState<T> {

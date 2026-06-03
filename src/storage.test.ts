@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildNormalizedMirrorStatements,
   type NormalizedCareVaultMirror,
+  parseSqlCount,
 } from "./storage";
 
 const mirror: NormalizedCareVaultMirror = {
@@ -74,6 +75,14 @@ const mirror: NormalizedCareVaultMirror = {
 };
 
 describe("storage normalized mirror", () => {
+  it("normalizes SQLite count return values", () => {
+    expect(parseSqlCount(3)).toBe(3);
+    expect(parseSqlCount("4")).toBe(4);
+    expect(parseSqlCount(BigInt(5))).toBe(5);
+    expect(parseSqlCount(null)).toBe(0);
+    expect(parseSqlCount("not-a-count")).toBe(0);
+  });
+
   it("builds normalized table creation and mirror statements", () => {
     const statements = buildNormalizedMirrorStatements(mirror, "2026-06-03T00:00:00.000Z");
     const sql = statements.map((statement) => statement.query).join("\n");

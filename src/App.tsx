@@ -60,8 +60,10 @@ import {
 } from "./documentHistory";
 import { labPresets, resolveLabPreset } from "./labPresets";
 import {
+  loadNormalizedMirrorStatus,
   loadPersistedState,
   type NormalizedCareVaultMirror,
+  type NormalizedMirrorStatus,
   savePersistedState,
   type PersistenceBackend,
 } from "./storage";
@@ -477,6 +479,8 @@ function App() {
   const [state, setState] = useState<AppState>(defaultState);
   const [hydrated, setHydrated] = useState(false);
   const [storageBackend, setStorageBackend] = useState<PersistenceBackend>("memory");
+  const [normalizedMirrorStatus, setNormalizedMirrorStatus] =
+    useState<NormalizedMirrorStatus | null>(null);
   const [saveLabel, setSaveLabel] = useState("저장소 확인 중");
   const [vitalDraft, setVitalDraft] = useState<VitalEntry>(emptyVital);
   const [visitDraft, setVisitDraft] = useState<VisitEntry>(emptyVisit);
@@ -512,6 +516,13 @@ function App() {
       setState(normalizeAppState(result.state));
       setStorageBackend(result.backend);
       setSaveLabel(result.backend === "sqlite" ? "SQLite 저장 준비" : "브라우저 저장 준비");
+      if (result.backend === "sqlite") {
+        loadNormalizedMirrorStatus()
+          .then(setNormalizedMirrorStatus)
+          .catch(() => setNormalizedMirrorStatus(null));
+      } else {
+        setNormalizedMirrorStatus(null);
+      }
       setHydrated(true);
     });
 
@@ -547,6 +558,13 @@ function App() {
         .then((backend) => {
           setStorageBackend(backend);
           setSaveLabel(backend === "sqlite" ? "SQLite 자동 저장됨" : "브라우저 자동 저장됨");
+          if (backend === "sqlite") {
+            return loadNormalizedMirrorStatus()
+              .then(setNormalizedMirrorStatus)
+              .catch(() => setNormalizedMirrorStatus(null));
+          }
+          setNormalizedMirrorStatus(null);
+          return undefined;
         })
         .catch(() => setSaveLabel("저장 실패"));
     }, 250);
@@ -1228,11 +1246,25 @@ function App() {
         ? "현재 데이터는 이 기기의 브라우저 저장소에 보관됩니다."
         : "현재 데이터는 임시 메모리에만 있습니다.";
 
+  const normalizedMirrorText =
+    storageBackend === "sqlite" && normalizedMirrorStatus
+      ? `정규화 mirror: 활력 ${normalizedMirrorStatus.vitalRows}개, 진료 ${normalizedMirrorStatus.visitRows}개, 서류 ${
+          normalizedMirrorStatus.activeDocumentRows + normalizedMirrorStatus.deletedDocumentRows
+        }개, 음식 ${normalizedMirrorStatus.foodCheckRows}개.`
+      : null;
+
   const saveNow = () => {
     savePersistedState(state, { normalizedMirror })
       .then((backend) => {
         setStorageBackend(backend);
         setSaveLabel(backend === "sqlite" ? "SQLite 저장됨" : "브라우저 저장됨");
+        if (backend === "sqlite") {
+          return loadNormalizedMirrorStatus()
+            .then(setNormalizedMirrorStatus)
+            .catch(() => setNormalizedMirrorStatus(null));
+        }
+        setNormalizedMirrorStatus(null);
+        return undefined;
       })
       .catch(() => setSaveLabel("저장 실패"));
   };
@@ -1337,7 +1369,15 @@ function App() {
         </nav>
         <div className="privacy-note">
           <ShieldCheck aria-hidden="true" />
-          <span>{storageText}</span>
+          <span>
+            {storageText}
+            {normalizedMirrorText ? (
+              <>
+                <br />
+                {normalizedMirrorText}
+              </>
+            ) : null}
+          </span>
         </div>
       </aside>
 
