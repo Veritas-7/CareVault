@@ -15960,3 +15960,33 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `6011a51` (`Refresh topbar after validation clears`); `git ls-remote origin refs/heads/main` returned `6011a5182c62d592d43a0f211f5e705ef6d66c26`.
+
+## 2026-06-05 18:38 KST - Caregiver Profile Toggle Next Action
+
+- Improvement target:
+  - `DESIGN.md` requires caregiver-share profile and section toggles to expose both current state and the next action.
+  - Source audit found section toggles already did this, but the profile redaction toggle only described the current on/off effect.
+- Change:
+  - Added `formatCaregiverShareProfileRedactionToggleLabel()` in `src/caregiverShareSettings.ts`.
+  - Updated the caregiver profile redaction checkbox `aria-label` and `title` to use the shared helper.
+  - The on state now says selecting off will show the name/basic profile, and the off state says selecting on will hide them.
+  - Added regression coverage for both toggle states.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - BLOCKED: same-surface navigation to `http://127.0.0.1:1420/` returned an empty document; `.caregiver-profile-redaction input` count was `0`, while `curl` returned HTTP `200`, and `errors list` plus `console list` returned no entries.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/caregiverShareSettings.test.ts`, 21 tests.
+  - PASS: `npm run test`, 58 files and 425 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `a933209` (`Clarify caregiver profile redaction toggle`); `git ls-remote origin refs/heads/main` returned `a93320963b7c51cbf49fa0cdbe87976e2eaca955`.
