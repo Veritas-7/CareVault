@@ -17990,3 +17990,35 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `ee84e20` (`Show document attachment removal local feedback`).
+
+## 2026-06-06 01:29 KST - Document Review Status Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires saved-document row actions and document-specific state changes to expose document-specific feedback in the constrained cmux right-pane layout.
+  - Real cmux QA found the saved-document review-status edit only updated the offscreen global save-status chip; the document row had no nearby local `role=status` confirmation.
+- Change:
+  - Updated `updateDocumentReviewStatus()` in `src/App.tsx` to reuse `formatDocumentReviewStatusUpdatedLabel()` for both the global save status and document-specific local action feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed cmux had switched to the `사업보고서` workspace, and a native select-keyboard attempt later moved focus to `블로그`; both states were rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#documents`.
+  - RED/IMPROVEMENT: changed `혈액검사 메모 검토 상태` from `의료진 질문` to `결과 대기` inside the same cmux surface and found the global status `혈액검사 메모 검사 서류 상태 결과 대기로 업데이트됨` with no local `.document-action-feedback`. Screenshot `/tmp/carevault-surface9-iter18-document-review-status-local-feedback-red.png` captured the missing local feedback.
+  - WEAK/REJECTED: a separate next-action text-edit RED attempt changed the text but did not trigger blur-history recording, so it was not used as evidence for this iteration.
+  - PASS after fix: repeated the saved-document review-status change in `암관리`; a visible local `role=status` row appeared beside the saved document with `혈액검사 메모 검사 서류 상태 결과 대기로 업데이트됨`. Screenshot `/tmp/carevault-surface9-iter18-document-review-status-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: restored the dev-browser localStorage snapshot, reloaded, and verified `reviewStatus=care-question`, no `결과 대기` history entry, and no stale `.document-action-feedback`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `226ecbf` (`Show document review status local feedback`).
