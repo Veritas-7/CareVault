@@ -18777,3 +18777,40 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `6a46b9b` (`Show vital save local feedback`).
+
+## 2026-06-06 05:09 KST - Document Save Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires add/save success feedback to render as a local visible `role=status` row next to the affected form action, not only in the global topbar.
+  - Real cmux QA found saving a document memo updated the global top status, export counts, document summary, and saved document list, but no local `.document-save-feedback` appeared below the `서류 메모 저장` action.
+- Change:
+  - Added transient `documentSaveFeedback` state in `src/App.tsx`.
+  - Added `updateDocumentDraft()` so user edits and attachment changes clear stale local save feedback while preserving existing draft behavior.
+  - Updated `addDocument()` to compute the saved status once and show it both in the global save chip and local `.document-save-feedback[role=status]`.
+  - Cleared stale document save feedback on document validation errors.
+  - Added `.document-save-feedback` to the compact wrapping save-feedback style in `src/App.css`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the visible cmux window was `working.md`; that evidence was rejected and the flow continued only after switching back to the visible `암관리` workspace.
+  - RED/IMPROVEMENT: in visible `암관리`, entered title `6월 복약 안내` and content `항암 후 복약 시간과 주의사항 확인 메모`, then clicked `서류 메모 저장`. The top status showed `6월 복약 안내 검사 서류 저장됨 · 상태 검토 필요 · 첨부 없음`, counts and document list updated, but local `.document-save-feedback` was absent. Screenshot `/tmp/carevault-surface9-iter41-document-save-local-feedback-red.png` captured the missing local feedback.
+  - PASS after fix: repeated the same visible `암관리` flow; the local status row below the document save action showed `6월 복약 안내 검사 서류 저장됨 · 상태 검토 필요 · 첨부 없음`, while the top status and saved document state matched. Screenshot `/tmp/carevault-surface9-iter41-document-save-local-feedback-pass.png` captured the local feedback.
+  - PASS DOM proof: `cmux browser surface:9 eval` returned `.document-save-feedback[role=status]` text `6월 복약 안내 검사 서류 저장됨 · 상태 검토 필요 · 첨부 없음`.
+  - CORRECTED: after browser-error capture and localStorage restore, Computer Use showed the visible cmux workspace had switched to `working.md`; post-switch evidence was rejected until `암관리` was selected and verified again.
+  - PASS cleanup in browser: restored `window.__carevaultBaselineDocument` localStorage and re-verified visible `암관리` had 8 total records, 1 saved document, no stale document save feedback, and the default `서류 메모 저장 · 제목과 내용 필요` action.
+  - PASS: `cmux browser surface:9 errors` returned `No browser errors`.
+  - PASS: Stitch project context remained `projects/10602093894318676839`, private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/entryValidation.test.ts src/documentMetric.test.ts src/documentHistory.test.ts src/documentActionLabels.test.ts src/documentFilterActions.test.ts src/documentAttachmentActions.test.ts src/exportPreviewSummary.test.ts`, 48 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `484e51f` (`Show document save local feedback`).
