@@ -14,6 +14,7 @@ const mirror: NormalizedCareVaultMirror = {
     sex: "female",
     heightCm: "164",
     weightKg: "62",
+    waistCm: "82",
     cancerCareMode: true,
     diabetes: true,
     hypertension: false,
@@ -26,6 +27,13 @@ const mirror: NormalizedCareVaultMirror = {
       systolic: 132,
       diastolic: 84,
       note: "아침",
+    },
+    {
+      id: "temp-1",
+      date: "2026-06-04",
+      type: "temperature",
+      temperatureC: 38.1,
+      note: "오한 동반",
     },
   ],
   visits: [
@@ -74,6 +82,13 @@ const mirror: NormalizedCareVaultMirror = {
       attachmentStatus: "파일 확인됨",
       isDeleted: false,
     },
+    {
+      documentId: "doc-2",
+      attachmentName: "saved-reconnect.png",
+      attachmentStorage: "browser-reference",
+      attachmentStatus: "브라우저 파일명 참조",
+      isDeleted: false,
+    },
   ],
   documentHistory: [
     {
@@ -83,6 +98,24 @@ const mirror: NormalizedCareVaultMirror = {
       kind: "created",
       label: "서류 저장",
       detail: "혈액검사 기록 생성",
+      isDeleted: false,
+    },
+    {
+      id: "history-doc-1-next-action",
+      documentId: "doc-1",
+      at: "2026-06-03T00:01:00.000Z",
+      kind: "next-action",
+      label: "다음 조치 변경",
+      detail: "cmux direct next action",
+      isDeleted: false,
+    },
+    {
+      id: "history-doc-2-reattached",
+      documentId: "doc-2",
+      at: "2026-06-03T00:02:00.000Z",
+      kind: "attachment-replaced",
+      label: "첨부 재연결",
+      detail: "saved-reconnect.png: 브라우저 파일명 참조",
       isDeleted: false,
     },
   ],
@@ -103,6 +136,7 @@ const mirror: NormalizedCareVaultMirror = {
       date: "2026-06-17",
       topic: "혈액검사",
       question: "재검 필요성 확인",
+      priority: "high",
       status: "open",
       answer: "",
     },
@@ -164,6 +198,9 @@ describe("storage normalized mirror", () => {
     expect(statements.find((statement) => statement.key === "labResultRows")?.query).toContain(
       "FROM lab_results",
     );
+    expect(statements.find((statement) => statement.key === "questionRows")?.query).toContain(
+      "OR priority",
+    );
   });
 
   it("builds normalized table creation and mirror statements", () => {
@@ -171,7 +208,9 @@ describe("storage normalized mirror", () => {
     const sql = statements.map((statement) => statement.query).join("\n");
 
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS profile_snapshot");
+    expect(sql).toContain("waist_cm TEXT NOT NULL DEFAULT ''");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS vitals");
+    expect(sql).toContain("temperature_c REAL");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS visits");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS care_documents");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS document_attachments");
@@ -179,25 +218,41 @@ describe("storage normalized mirror", () => {
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS food_checks");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS symptoms");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS questions");
+    expect(sql).toContain("priority TEXT NOT NULL DEFAULT 'next-visit'");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS lab_results");
-    expect(statements.filter((statement) => statement.query.includes("INSERT INTO vitals"))).toHaveLength(1);
+    expect(statements.filter((statement) => statement.query.includes("INSERT INTO vitals"))).toHaveLength(2);
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO visits"))).toHaveLength(1);
     expect(
       statements.filter((statement) => statement.query.includes("INSERT INTO care_documents")),
     ).toHaveLength(2);
     expect(
       statements.filter((statement) => statement.query.includes("INSERT INTO document_attachments")),
-    ).toHaveLength(1);
+    ).toHaveLength(2);
     expect(
       statements.filter((statement) => statement.query.includes("INSERT INTO document_history")),
-    ).toHaveLength(1);
+    ).toHaveLength(3);
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO symptoms"))).toHaveLength(1);
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO questions"))).toHaveLength(1);
+    expect(
+      statements.find((statement) => statement.query.includes("INSERT INTO questions"))
+        ?.bindValues,
+    ).toContain("high");
     expect(statements.filter((statement) => statement.query.includes("INSERT INTO lab_results"))).toHaveLength(1);
     expect(
       statements.find((statement) => statement.query.includes("INSERT INTO profile_snapshot"))
         ?.bindValues,
     ).toContain(1);
+    expect(
+      statements.find((statement) => statement.query.includes("INSERT INTO profile_snapshot"))
+        ?.bindValues,
+    ).toContain("82");
+    expect(
+      statements.find(
+        (statement) =>
+          statement.query.includes("INSERT INTO vitals") &&
+          statement.bindValues?.[0] === "temp-1",
+      )?.bindValues,
+    ).toContain(38.1);
     expect(
       statements.find(
         (statement) =>
@@ -205,5 +260,35 @@ describe("storage normalized mirror", () => {
           statement.bindValues?.[0] === "doc-2",
       )?.bindValues,
     ).toContain(1);
+    expect(
+      statements.find(
+        (statement) =>
+          statement.query.includes("INSERT INTO document_attachments") &&
+          statement.bindValues?.[0] === "doc-2",
+      )?.bindValues,
+    ).toEqual([
+      "doc-2",
+      "saved-reconnect.png",
+      "browser-reference",
+      "브라우저 파일명 참조",
+      0,
+      "2026-06-03T00:00:00.000Z",
+    ]);
+    expect(
+      statements.find(
+        (statement) =>
+          statement.query.includes("INSERT INTO document_history") &&
+          statement.bindValues?.[0] === "history-doc-1-next-action",
+      )?.bindValues,
+    ).toEqual([
+      "history-doc-1-next-action",
+      "doc-1",
+      "2026-06-03T00:01:00.000Z",
+      "next-action",
+      "다음 조치 변경",
+      "cmux direct next action",
+      0,
+      "2026-06-03T00:00:00.000Z",
+    ]);
   });
 });

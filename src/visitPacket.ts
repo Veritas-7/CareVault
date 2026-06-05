@@ -1,15 +1,63 @@
 import {
-  assessBloodGlucose,
-  assessBloodPressure,
   assessCancerFood,
   assessLabValue,
   calculateBmi,
+  formatFoodMatchEvidence,
   type GlucoseContext,
 } from "./healthRules";
-import { exportSourceLabels, getLabRangeSourceLabel } from "./exportSourceLabels";
+import {
+  exportSourceLabels,
+  formatLabReferenceRangeLabel,
+  getLabRangeSourceLabel,
+} from "./exportSourceLabels";
+import {
+  buildProfileSexStandardNotes,
+  buildHealthStandardCoverageLines,
+  buildVitalStandardRangeSections,
+  koreanHealthStandardApplicabilitySummary,
+  koreanHealthStandardUseBoundary,
+} from "./healthStandards";
+import {
+  buildCervicalCancerCarePromptQuestion,
+  cervicalCancerCareAlerts,
+  cervicalCancerCareAlertRecordFields,
+  cervicalCancerCareChecks,
+  cervicalCancerCarePreventionGuides,
+  cervicalCancerCarePriorityItems,
+  cervicalCancerCarePrompts,
+  cervicalCancerCareRecoveryGuides,
+  cervicalCancerCareSources,
+  buildCervicalCancerScreeningSummary,
+  formatCervicalCancerCareAlertRecordFieldEvidence,
+  formatCervicalCancerCareAlertEvidence,
+  formatCervicalCancerCareItemEvidence,
+  formatCervicalCancerCarePriorityEvidence,
+  formatCervicalCancerScreeningSummaryEvidence,
+} from "./cervicalCancerCare";
+import {
+  normalizeQuestionPriority,
+  questionPriorityLabel,
+  type QuestionPriority,
+} from "./questionPriority";
+import {
+  buildCareActionQueue,
+  formatCareActionQueueLabel,
+} from "./careActionQueue";
+import {
+  buildImmuneFoodSafetyContext,
+  formatImmuneFoodSafetyContextText,
+} from "./immuneFoodContext";
+import { formatLabNoteWithSourceEvidence } from "./labSourceEvidence";
+import { formatTextWithSourceEvidence } from "./sourceEvidence";
+import { formatSymptomRecordLabel } from "./symptomRecordLabels";
+import {
+  buildVitalAssessmentEvidence,
+  formatVitalAssessmentSource,
+  formatVitalAssessmentStatus,
+} from "./vitalAssessmentEvidence";
 
 type Sex = "female" | "male" | "other";
-type VitalType = "blood-pressure" | "glucose";
+type VitalType = "blood-pressure" | "glucose" | "temperature";
 type DocumentCategory =
   | "lab"
   | "imaging"
@@ -29,6 +77,7 @@ export type VisitPacketState = {
     sex: Sex;
     heightCm: string;
     weightKg: string;
+    waistCm?: string;
     cancerCareMode: boolean;
     diabetes: boolean;
     hypertension: boolean;
@@ -40,6 +89,7 @@ export type VisitPacketState = {
     diastolic?: number;
     glucoseMgDl?: number;
     glucoseContext?: GlucoseContext;
+    temperatureC?: number;
     note: string;
   }>;
   visits: Array<{
@@ -73,6 +123,7 @@ export type VisitPacketState = {
     date: string;
     topic: string;
     question: string;
+    priority?: QuestionPriority;
     status: QuestionStatus;
     answer: string;
   }>;
@@ -126,7 +177,7 @@ const questionStatusLabel: Record<QuestionStatus, string> = {
 const glucoseContextLabel: Record<GlucoseContext, string> = {
   fasting: "공복",
   "before-meal": "식전",
-  "after-meal": "식후",
+  "after-meal": "식후 2시간",
   bedtime: "취침 전",
   random: "수시",
 };
@@ -137,6 +188,47 @@ export const visitPacketRangeLabels: Record<VisitPacketRange, string> = {
   "90d": "최근 90일",
   all: "전체",
 };
+
+export function formatVisitPacketExportDescription(range: VisitPacketRange) {
+  return `진료 요약 내보내기 · 범위 ${visitPacketRangeLabels[range]}`;
+}
+
+export function formatVisitPacketExportStatus(range: VisitPacketRange) {
+  return `진료 요약 내보냄 · 범위 ${visitPacketRangeLabels[range]}`;
+}
+
+export function formatVisitPacketPreviewDescription(range: VisitPacketRange) {
+  return `진료 요약 미리보기 · 범위 ${visitPacketRangeLabels[range]}`;
+}
+
+export function formatVisitPacketPreviewStatus(range: VisitPacketRange) {
+  return `진료 요약 미리보기 생성 · 범위 ${visitPacketRangeLabels[range]}`;
+}
+
+export function buildVisitPacketExportFingerprint(
+  state: VisitPacketState,
+  foodQuery = "",
+) {
+  return JSON.stringify({
+    documents: state.documents.map((document) => ({
+      attachmentName: document.attachmentName,
+      body: document.body,
+      category: document.category,
+      date: document.date,
+      nextAction: document.nextAction,
+      reviewStatus: document.reviewStatus,
+      tags: document.tags,
+      title: document.title,
+    })),
+    foodQuery,
+    labResults: state.labResults,
+    profile: state.profile,
+    questions: state.questions,
+    symptoms: state.symptoms,
+    visits: state.visits,
+    vitals: state.vitals,
+  });
+}
 
 const visitPacketRangeDays: Partial<Record<VisitPacketRange, number>> = {
   "7d": 7,
@@ -191,13 +283,38 @@ export function buildVisitPacketMarkdown(
     .slice(0, maxItems)
     .map((vital) => {
       if (vital.type === "blood-pressure" && vital.systolic && vital.diastolic) {
-        const status = assessBloodPressure(vital.systolic, vital.diastolic);
-        return `- ${vital.date}: 혈압 ${vital.systolic}/${vital.diastolic} mmHg - ${status.label}${optionalSuffix(vital.note, " / ")}`;
+        const evidence = buildVitalAssessmentEvidence(vital, {
+          diabetes: state.profile.diabetes,
+        });
+        const source = evidence ? formatVitalAssessmentSource(evidence) : "";
+        const status = evidence ? formatVitalAssessmentStatus(evidence) : "판정 대기";
+        return `- ${vital.date}: 혈압 ${vital.systolic}/${vital.diastolic} mmHg - ${status}${optionalSuffix(
+          vital.note,
+          " / ",
+        )}${optionalSuffix(source, " / 근거: ")}`;
       }
       if (vital.type === "glucose" && vital.glucoseMgDl) {
         const context = vital.glucoseContext ?? "random";
-        const status = assessBloodGlucose(vital.glucoseMgDl, context);
-        return `- ${vital.date}: 혈당 ${vital.glucoseMgDl} mg/dL (${glucoseContextLabel[context]}) - ${status.label}${optionalSuffix(vital.note, " / ")}`;
+        const evidence = buildVitalAssessmentEvidence(vital, {
+          diabetes: state.profile.diabetes,
+        });
+        const source = evidence ? formatVitalAssessmentSource(evidence) : "";
+        const status = evidence ? formatVitalAssessmentStatus(evidence) : "판정 대기";
+        return `- ${vital.date}: 혈당 ${vital.glucoseMgDl} mg/dL (${glucoseContextLabel[context]}) - ${status}${optionalSuffix(
+          vital.note,
+          " / ",
+        )}${optionalSuffix(source, " / 근거: ")}`;
+      }
+      if (vital.type === "temperature" && vital.temperatureC) {
+        const evidence = buildVitalAssessmentEvidence(vital, {
+          diabetes: state.profile.diabetes,
+        });
+        const source = evidence ? formatVitalAssessmentSource(evidence) : "";
+        const status = evidence ? formatVitalAssessmentStatus(evidence) : "판정 대기";
+        return `- ${vital.date}: 체온 ${vital.temperatureC}℃ - ${status}${optionalSuffix(
+          vital.note,
+          " / ",
+        )}${optionalSuffix(source, " / 근거: ")}`;
       }
       return `- ${vital.date}: 미완성 활력 기록${optionalSuffix(vital.note, " / ")}`;
     });
@@ -210,23 +327,26 @@ export function buildVisitPacketMarkdown(
         lab.lower ? Number.parseFloat(lab.lower) : undefined,
         lab.upper ? Number.parseFloat(lab.upper) : undefined,
       );
-      const labRange = lab.lower || lab.upper ? ` (기준 ${lab.lower || "-"}-${lab.upper || "-"})` : "";
+      const labRangeLabel = formatLabReferenceRangeLabel(lab.lower, lab.upper, lab.unit);
+      const labRange = labRangeLabel ? ` (기준 ${labRangeLabel})` : "";
       const sourceLabel = getLabRangeSourceLabel(lab.lower, lab.upper);
-      return `- ${lab.date}: ${lab.name} ${lab.value} ${lab.unit}${labRange} - [${sourceLabel}] ${assessment.label}${optionalSuffix(lab.note, " / ")}`;
+      return `- ${lab.date}: ${lab.name} ${lab.value} ${lab.unit}${labRange} - [${sourceLabel}] ${assessment.label}${optionalSuffix(formatLabNoteWithSourceEvidence(lab.note, lab.name), " / ")}`;
     });
 
   const symptomLines = latestFirst(filterByRange(state.symptoms, rangeStartDate))
     .slice(0, maxItems)
     .map(
       (symptom) =>
-        `- ${symptom.date}: ${symptom.symptom} ${symptom.severity}/10${optionalSuffix(symptom.medication, " / 약: ")}${optionalSuffix(symptom.body, " / ")}${optionalSuffix(symptom.action, " / 다음 조치: ")}`,
+        `- ${symptom.date}: [${formatSymptomRecordLabel(symptom)}] ${symptom.symptom} ${symptom.severity}/10${optionalSuffix(symptom.medication, " / 약: ")}${optionalSuffix(formatTextWithSourceEvidence(symptom.body), " / ")}${optionalSuffix(formatTextWithSourceEvidence(symptom.action), " / 다음 조치: ")}`,
     );
 
   const questionLines = latestFirst(filterByRange(state.questions, rangeStartDate))
     .slice(0, maxItems)
     .map(
-      (question) =>
-        `- ${question.date}: [${questionStatusLabel[question.status]}] ${question.topic} - ${question.question}${optionalSuffix(question.answer, " / 답변: ")}`,
+      (question) => {
+        const priority = normalizeQuestionPriority(question.priority);
+        return `- ${question.date}: [${questionStatusLabel[question.status]} · ${questionPriorityLabel[priority]}] ${question.topic} - ${formatTextWithSourceEvidence(question.question)}${optionalSuffix(question.answer, " / 답변: ")}`;
+      },
     );
 
   const visitLines = latestFirst(filterByRange(state.visits, rangeStartDate))
@@ -249,11 +369,80 @@ export function buildVisitPacketMarkdown(
   const foodLines = options.foodQuery?.trim()
     ? (() => {
         const food = assessCancerFood(options.foodQuery ?? "");
-        const matches = food.matches.map((match) => `${match.term}: ${match.reason}`).join("; ");
+        const matches = food.matches.map(formatFoodMatchEvidence).join("; ");
+        const immuneFoodContext = buildImmuneFoodSafetyContext(
+          filterByRange(state.labResults, rangeStartDate),
+        );
         return [
-          `- ${options.foodQuery}: [${exportSourceLabels.foodLocalRules}] ${food.label} - ${food.summary}${optionalSuffix(matches, " / 근거: ")}`,
+          `- ${options.foodQuery}: [${exportSourceLabels.foodLocalRules}] ${food.label} - ${food.summary}${optionalSuffix(formatImmuneFoodSafetyContextText(immuneFoodContext), " / ")}${optionalSuffix(matches, " / 근거: ")}`,
         ];
       })()
+    : [];
+  const standardApplicabilityLines = koreanHealthStandardApplicabilitySummary.map(
+    (item) => `- ${item.label}: ${item.detail}`,
+  );
+  const profileSexStandardLines = buildProfileSexStandardNotes(state.profile.sex).map(
+    (item) => `- ${item.label}: ${item.detail}`,
+  );
+  const vitalStandardRangeLines = buildVitalStandardRangeSections().flatMap((section) => [
+    `- ${section.label} · 근거: ${section.sourceLabel}${
+      section.sourceUrl.startsWith("https://") ? ` (${section.sourceUrl})` : ""
+    }`,
+    ...section.lines.map((line) => `  - ${line.label}: ${line.detail}`),
+  ]);
+  const standardCoverageLines = buildHealthStandardCoverageLines().map((line) => `- ${line}`);
+  const careActionState = {
+    documents: filterByRange(state.documents, rangeStartDate),
+    labResults: filterByRange(state.labResults, rangeStartDate),
+    profile: state.profile,
+    questions: filterByRange(state.questions, rangeStartDate),
+    symptoms: filterByRange(state.symptoms, rangeStartDate),
+    vitals: filterByRange(state.vitals, rangeStartDate),
+    visits: filterByRange(state.visits, rangeStartDate),
+  };
+  const careActionLines = buildCareActionQueue(
+    careActionState,
+    exportedAt.slice(0, 10),
+    maxItems,
+  ).map(
+    (action) =>
+      `- ${action.date}: [${formatCareActionQueueLabel(action)}] ${action.title}${optionalSuffix(
+        action.detail,
+        " / ",
+      )}`,
+  );
+  const cervicalCareLines = state.profile.cancerCareMode
+    ? [
+        `- 우선 확인 체크리스트: ${cervicalCancerCarePriorityItems
+          .map(formatCervicalCancerCarePriorityEvidence)
+          .join(" / ")}`,
+        `- 검진 기준 빠른 확인: ${formatCervicalCancerScreeningSummaryEvidence(
+          buildCervicalCancerScreeningSummary(state.profile),
+        )}`,
+        `- 경고 신호 기록 항목: ${cervicalCancerCareAlertRecordFields
+          .map(formatCervicalCancerCareAlertRecordFieldEvidence)
+          .join(" / ")}`,
+        `- 진료팀에 확인할 신호: ${cervicalCancerCareAlerts
+          .map(formatCervicalCancerCareAlertEvidence)
+          .join(" / ")}`,
+        `- 진료 질문 초안: ${cervicalCancerCarePrompts
+          .map((prompt) =>
+            `${prompt.topic}: ${buildCervicalCancerCarePromptQuestion(prompt).replace(/\n/g, " ")}`,
+          )
+          .join(" / ")}`,
+        `- 기록 체크: ${cervicalCancerCareChecks
+          .map(formatCervicalCancerCareItemEvidence)
+          .join(" / ")}`,
+        `- 회복 일정 메모: ${cervicalCancerCareRecoveryGuides
+          .map(formatCervicalCancerCareItemEvidence)
+          .join(" / ")}`,
+        `- 검진·예방 메모: ${cervicalCancerCarePreventionGuides
+          .map(formatCervicalCancerCareItemEvidence)
+          .join(" / ")}`,
+        `- 공식 출처: ${Object.values(cervicalCancerCareSources)
+          .map((source) => `${source.label} (${source.url})`)
+          .join("; ")}`,
+      ]
     : [];
 
   return [
@@ -264,11 +453,30 @@ export function buildVisitPacketMarkdown(
     "",
     "이 요약은 사용자가 입력한 기록을 진료 상담에 가져가기 위한 참고 메모입니다. 진단, 처방, 치료 지시가 아닙니다.",
     "",
+    "## 기준 적용 범위",
+    "",
+    "CareVault가 자동 판정하는 항목과 입력 보조 항목을 구분합니다. 검사실 기준은 사용자가 입력한 결과지 기준을 우선합니다.",
+    `주의: ${koreanHealthStandardUseBoundary}`,
+    "",
+    "성별 기준 요약",
+    "",
+    ...standardApplicabilityLines,
+    "",
+    "현재 프로필 성별 적용",
+    "",
+    ...profileSexStandardLines,
+    "",
+    "신체계측·혈압·혈당·신기능·전해질·지질·간기능·단백·칼슘·인산·요산·혈액·체온 숫자 범위",
+    "",
+    ...vitalStandardRangeLines,
+    "",
+    ...standardCoverageLines,
+    "",
     "## 프로필",
     "",
     `- 이름: ${state.profile.name}`,
     `- 나이/성별: ${state.profile.age || "미입력"} / ${sexLabel[state.profile.sex]}`,
-    `- 키/몸무게: ${state.profile.heightCm || "미입력"} cm / ${state.profile.weightKg || "미입력"} kg`,
+    `- 키/몸무게/허리둘레: ${state.profile.heightCm || "미입력"} cm / ${state.profile.weightKg || "미입력"} kg / ${state.profile.waistCm || "미입력"} cm`,
     `- BMI: ${bmi.value === null ? "계산 불가" : bmi.value.toFixed(1)} - ${bmi.label}`,
     `- 관리 플래그: ${[
       state.profile.cancerCareMode ? "암환자 관리" : "",
@@ -277,6 +485,22 @@ export function buildVisitPacketMarkdown(
     ]
       .filter(Boolean)
       .join(", ") || "없음"}`,
+    "",
+    ...(cervicalCareLines.length
+      ? [
+          "## 자궁경부암 케어 참고",
+          "",
+          "진료 준비용 기록 참고입니다. 진단, 처방, 치료 지시가 아닙니다.",
+          "",
+          ...cervicalCareLines,
+          "",
+        ]
+      : []),
+    "## 진료 준비 큐",
+    "",
+    "저장된 기록에서 가져온 확인 항목입니다. 새 진단이나 치료 지시가 아닙니다.",
+    "",
+    ...orNone(careActionLines),
     "",
     "## 최근 혈압/혈당",
     "",

@@ -1,0 +1,49 @@
+import { describe, expect, it } from "vitest";
+import {
+  latestDatedItem,
+  latestDatedItemMatching,
+  sortDatedItemsNewestFirst,
+} from "./recordOrdering";
+
+describe("recordOrdering", () => {
+  it("selects the later inserted record when dates match", () => {
+    const first = { date: "2026-06-04", label: "증상 기록" };
+    const second = { date: "2026-06-04", label: "자궁경부암 기록 메모" };
+
+    expect(latestDatedItem([first, second])).toBe(second);
+  });
+
+  it("still prioritizes newer dates before same-date insertion order", () => {
+    const newest = { date: "2026-06-05", label: "최신 날짜" };
+    const laterInsertedOlderDate = { date: "2026-06-04", label: "나중에 입력된 과거 날짜" };
+
+    expect(latestDatedItem([newest, laterInsertedOlderDate])).toBe(newest);
+  });
+
+  it("selects the latest matching record by date before insertion order", () => {
+    const newerGlucose = { date: "2026-06-05", label: "최신 혈당", type: "glucose" };
+    const newerBp = { date: "2026-06-06", label: "최신 혈압", type: "blood-pressure" };
+    const laterInsertedOlderGlucose = {
+      date: "2026-06-01",
+      label: "나중에 입력된 과거 혈당",
+      type: "glucose",
+    };
+
+    expect(
+      latestDatedItemMatching(
+        [newerGlucose, newerBp, laterInsertedOlderGlucose],
+        (item) => item.type === "glucose",
+      ),
+    ).toBe(newerGlucose);
+  });
+
+  it("sorts timeline records by date and then newest insertion order", () => {
+    expect(
+      sortDatedItemsNewestFirst([
+        { date: "2026-06-04", label: "old same-day", order: 1 },
+        { date: "2026-06-05", label: "newer date", order: 0 },
+        { date: "2026-06-04", label: "new same-day", order: 2 },
+      ]).map((item) => item.label),
+    ).toEqual(["newer date", "new same-day", "old same-day"]);
+  });
+});

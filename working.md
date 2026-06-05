@@ -1,0 +1,13876 @@
+# CareVault Working Notes
+
+## 2026-06-03 21:48 KST - Resume Point
+
+- Correct app root: `/Users/wj/Ai/System/10_Projects/CareVault`
+- Stack: Tauri v2 + React + TypeScript + Vite.
+- Starting state:
+  - `git status --short --branch`: `## main...origin/main`
+  - No existing `working.md` in the project root.
+  - README next durable slice: caregiver-share settings reset.
+- Baseline verification:
+  - `npm run test` PASS: 14 test files, 42 tests.
+  - An earlier `npm run test -- --runInBand` attempt failed because Vitest does not support that option; it was a command-option failure, not a code failure.
+
+## Current Slice - Caregiver Share Settings Reset
+
+- Goal: let the user restore the protected caregiver-share export settings to defaults without touching health records.
+- Planned scope:
+  - Add a tested TypeScript helper for default/normalized caregiver-share settings.
+  - Add a reset button in the caregiver-share controls.
+  - Disable the reset button while settings are already default.
+  - Keep persistence through the existing `state` autosave path.
+- Files being touched:
+  - `src/caregiverShareSettings.ts`
+  - `src/caregiverShareSettings.test.ts`
+  - `src/App.tsx`
+  - `src/App.css`
+  - `README.md`
+  - `working.md`
+
+## 2026-06-03 21:52 KST - Implementation Update
+
+- Added `src/caregiverShareSettings.ts` with:
+  - `createDefaultCaregiverShareSettings()`
+  - `normalizeCaregiverShareSettings()`
+  - `hasCustomCaregiverShareSettings()`
+- Added `src/caregiverShareSettings.test.ts` to cover default map cloning, partial persisted normalization, and custom-setting detection.
+- Wired `src/App.tsx` reset button:
+  - label: `공유 설정 초기화`
+  - icon: `RotateCcw`
+  - disabled while caregiver-share settings are already default
+  - resets only `state.caregiverShareSettings`
+- Updated `src/App.css` for the compact reset button in the top action area.
+- Updated README current slice and moved the next durable slice to named caregiver-share presets.
+
+## Verification To Run
+
+- `npm run typecheck`
+- `npm run test`
+- `npm run build`
+- Browser/Tauri preview smoke for the reset control if the web build is green.
+
+## 2026-06-03 21:59 KST - Verification Result
+
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 45 tests.
+- `npm run build`: PASS.
+  - Vite emitted the existing chunk-size warning for a chunk over 500 kB.
+  - `dist/` is not tracked by git in this repo, so the build did not add source-control changes.
+- `git diff --check`: PASS.
+- Browser smoke on `http://127.0.0.1:5173/`: PASS.
+  - Started Vite with `npm run dev -- --host 127.0.0.1 --port 5173`.
+  - Verified default reset button disabled.
+  - Applied caregiver memo preset and confirmed reset button enabled.
+  - Checked profile redaction and unchecked the food section.
+  - Clicked `공유 설정 초기화`.
+  - Confirmed memo cleared, redaction unchecked, food section re-included, and reset button disabled again.
+
+## Resume Notes
+
+- Completed slice: caregiver-share settings reset.
+- Important files:
+  - `src/caregiverShareSettings.ts`
+  - `src/caregiverShareSettings.test.ts`
+  - `src/App.tsx`
+  - `src/App.css`
+  - `README.md`
+- Next durable app slice from README: named caregiver-share presets for common family-review scenarios.
+- Suggested next verification when resuming:
+  - `npm run typecheck`
+  - `npm run test`
+  - `npm run build`
+
+## 2026-06-03 22:04 KST - Next Slice Started
+
+- Next durable app slice from README: named caregiver-share presets for common family-review scenarios.
+- Planned scope:
+  - Add tested named presets in `src/caregiverShareSettings.ts`.
+  - Add a compact preset selector in the caregiver-share controls.
+  - Applying a preset should update only `state.caregiverShareSettings`.
+  - Keep existing reset behavior as the way back to defaults.
+- Files being touched:
+  - `src/caregiverShareSettings.ts`
+  - `src/caregiverShareSettings.test.ts`
+  - `src/App.tsx`
+  - `src/App.css`
+  - `README.md`
+  - `working.md`
+
+## 2026-06-03 22:12 KST - Named Presets Implementation
+
+- Added named caregiver-share presets in `src/caregiverShareSettings.ts`:
+  - `가족 요약`
+  - `식사·증상`
+  - `진료 준비`
+  - `정보 최소`
+- Added `getCaregiverShareSettingsPreset()` for UI lookup by preset id.
+- Extended `src/caregiverShareSettings.test.ts`:
+  - preset ids and labels are unique
+  - every preset is resettable/custom
+  - every preset keeps a complete section map
+  - meal/symptom and privacy-minimal preset behavior is pinned
+- Added `보호자 공유 설정 프리셋` selector in `src/App.tsx`.
+- Preset application updates only `state.caregiverShareSettings`; existing health records are untouched.
+- Existing reset button remains the way back to default share settings.
+- README updated to list named family-review presets and set the next durable app slice.
+
+## 2026-06-03 22:14 KST - Verification Result
+
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 47 tests.
+- `npm run build`: PASS.
+  - Vite emitted the existing chunk-size warning for a chunk over 500 kB.
+- `git diff --check`: PASS.
+- Browser smoke on `http://127.0.0.1:5173/`: PASS.
+  - Started Vite with `npm run dev -- --host 127.0.0.1 --port 5173`.
+  - Verified default reset button disabled.
+  - Applied `진료 준비` preset and confirmed memo text, visits/questions/documents/labs included, symptoms/food/vitals hidden.
+  - Applied `정보 최소` preset and confirmed profile redaction plus food/vitals hidden.
+  - Clicked `공유 설정 초기화`.
+  - Confirmed memo cleared, redaction unchecked, all share sections included, and reset disabled again.
+  - Stopped the Vite dev server after smoke.
+
+## Resume Notes After Named Presets
+
+- Completed slice: named caregiver-share presets for common family-review scenarios.
+- Current uncommitted source/doc changes include both:
+  - caregiver-share settings reset
+  - named caregiver-share presets
+- Next durable app slice from README: add caregiver-share preset labels to the rendered preview header so the chosen sharing intent is visible before download.
+- Suggested next verification when resuming:
+  - `npm run typecheck`
+  - `npm run test`
+  - `npm run build`
+  - Browser smoke for preview header label once that next slice is implemented.
+
+## 2026-06-03 22:18 KST - Next Slice Started
+
+- Next durable app slice from README: add caregiver-share preset labels to the rendered preview header so the chosen sharing intent is visible before download.
+- Planned scope:
+  - Store selected preset intent as `caregiverShareSettings.presetId`.
+  - Clear stale preset intent when the user manually edits memo/redaction/sections.
+  - Pass selected preset label/description into `buildCaregiverExportHtml`.
+  - Render escaped preset intent in the caregiver HTML header.
+  - Keep reset behavior clearing preset intent.
+- Files being touched:
+  - `src/caregiverShareSettings.ts`
+  - `src/caregiverShareSettings.test.ts`
+  - `src/caregiverExport.ts`
+  - `src/caregiverExport.test.ts`
+  - `src/App.tsx`
+  - `README.md`
+  - `working.md`
+
+## 2026-06-03 22:26 KST - Preset Intent Header Implementation
+
+- Added `presetId` to `CaregiverShareSettings`.
+- Presets now carry their own `presetId` through normalized settings.
+- Manual caregiver-share edits clear `presetId` so the rendered preview/export does not show stale sharing intent after custom edits.
+- `buildCaregiverExportHtml()` now accepts:
+  - `presetLabel`
+  - `presetDescription`
+- Caregiver HTML header now renders escaped `공유 의도:` metadata when a preset is active.
+- The rendered HTML style now includes `.share-intent`.
+- `src/caregiverExport.test.ts` covers escaped preset intent labels/descriptions.
+- App topbar preview/export path passes selected preset metadata to the caregiver HTML builder.
+- App `next-steps` copy and README were moved to the next durable slice: caregiver-share included-section preview summary.
+
+## 2026-06-03 22:28 KST - Verification Result
+
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 48 tests.
+- `npm run build`: PASS.
+  - Vite emitted the existing chunk-size warning for a chunk over 500 kB.
+- `git diff --check`: PASS.
+- Browser smoke on `http://127.0.0.1:5173/`: PASS.
+  - Started Vite with `npm run dev -- --host 127.0.0.1 --port 5173`.
+  - Applied `진료 준비` preset.
+  - Opened `공유본 미리보기`.
+  - Verified rendered iframe header includes `공유 의도:`, `진료 준비`, and `질문, 검사, 서류, 예약 확인 중심`.
+  - Manually edited the caregiver memo and verified preset selector cleared.
+  - Reopened preview and verified stale `공유 의도:` no longer appears.
+  - Applied `정보 최소` preset and verified rendered preview includes its label and description.
+  - Stopped the Vite dev server after smoke.
+
+## Resume Notes After Preset Intent Header
+
+- Completed slice: selected caregiver-share preset intent appears in rendered preview/export header.
+- Current uncommitted source/doc changes now include:
+  - caregiver-share settings reset
+  - named caregiver-share presets
+  - preset intent label/description in rendered caregiver share preview/export
+- Next durable app slice from README and in-app next-step copy: add a compact preview summary for which caregiver-share sections are included before download.
+- Suggested next verification when resuming:
+  - `npm run typecheck`
+  - `npm run test`
+  - `npm run build`
+  - Browser smoke for included-section preview summary once implemented.
+
+## 2026-06-03 22:10 KST - Included Section Summary Implementation
+
+- Started from the next durable app slice: show a compact preview summary for which caregiver-share sections are included before download.
+- Added shared section label metadata and summary helper in `src/caregiverShareSettings.ts`:
+  - `caregiverShareSectionOptions`
+  - `buildCaregiverShareSectionSummary()`
+- Extended `src/caregiverShareSettings.test.ts` to pin:
+  - display order for section labels
+  - `진료 준비` included/excluded summary text
+  - default all-included summary behavior
+  - imported all-disabled section settings rendering included text as `없음` safely
+- Updated `src/App.tsx`:
+  - replaces the local section-label array with shared metadata
+  - computes the active included/excluded section summary from current caregiver-share settings
+  - moves caregiver share preview/download buttons after the share settings and summary
+  - changes the in-app next durable slice to stale-preview detection after settings changes
+- Updated `src/App.css` for the compact summary chip in the top action area.
+- Updated README current slice and next durable app slice.
+
+## 2026-06-03 22:10 KST - Verification Result
+
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 51 tests.
+- `npm run build`: PASS.
+  - Vite emitted the existing chunk-size warning for a chunk over 500 kB.
+- `git diff --check`: PASS.
+- Browser smoke with `/Users/wj/.claude/skills/webapp-testing/scripts/with_server.py`: PASS.
+  - Started Vite with `npm run dev -- --host 127.0.0.1 --port 5173`.
+  - Verified default summary shows all caregiver share sections and `제외 없음`.
+  - Applied `진료 준비` preset and verified included summary `진료, 질문, 서류, 검사`.
+  - Verified excluded summary `증상, 음식, 혈압·혈당`.
+  - Manually re-enabled `증상` and verified the summary updated.
+  - Verified the summary DOM appears before the `공유본` download button.
+  - Clicked `공유 설정 초기화` and verified all sections returned with `제외 없음`.
+  - Dev server was stopped by the helper after smoke.
+
+## Resume Notes After Included Section Summary
+
+- Completed slice: compact caregiver-share included/excluded section summary before preview/download.
+- Current uncommitted source/doc changes now include:
+  - caregiver-share settings reset
+  - named caregiver-share presets
+  - preset intent label/description in rendered caregiver share preview/export
+  - included/excluded section summary before caregiver share preview/download
+- Next durable app slice after this verification: detect when caregiver-share settings changed after a caregiver preview was generated, so users do not download a stale preview by mistake.
+
+## 2026-06-03 22:16 KST - Stale Caregiver Preview Detection Started
+
+- Started from the next durable app slice: detect when caregiver-share settings changed after a caregiver preview was generated.
+- Goal: prevent users from downloading, copying, or printing a stale caregiver-share preview after changing cover memo, redaction, preset, or included sections.
+- Planned scope:
+  - Add a stable caregiver-share settings fingerprint helper.
+  - Store that fingerprint on caregiver HTML preview state only.
+  - Compare preview fingerprint against current caregiver-share settings.
+  - Show a stale-preview notice and a `새 미리보기` action.
+  - Disable stale copy/print/download actions as a safety guard.
+- Files expected to change:
+  - `src/caregiverShareSettings.ts`
+  - `src/caregiverShareSettings.test.ts`
+  - `src/App.tsx`
+  - `src/App.css`
+  - `README.md`
+  - `working.md`
+
+## 2026-06-03 22:18 KST - Stale Caregiver Preview Detection Implementation
+
+- Added `buildCaregiverShareSettingsFingerprint()` in `src/caregiverShareSettings.ts`.
+  - It normalizes caregiver-share settings first.
+  - It serializes cover memo, preset id, redaction, and section toggles in shared display order.
+- Extended `src/caregiverShareSettings.test.ts` to pin fingerprint stability and change detection.
+- Updated `src/App.tsx`:
+  - caregiver HTML preview state now stores `caregiverShareSettingsFingerprint`
+  - current caregiver settings are compared against the stored preview fingerprint
+  - stale caregiver previews show `공유 설정이 바뀌었습니다`
+  - stale preview copy, print, and download buttons are disabled
+  - stale copy/print/download functions also guard internally and ask for a fresh preview
+  - stale alert offers `새 미리보기`, which regenerates the caregiver HTML preview with current settings
+  - Markdown and CSV previews are unaffected because they do not carry a caregiver-share fingerprint
+- Updated `src/App.css` for the stale-preview alert and disabled preview actions.
+- Updated README and the in-app next durable slice.
+
+## 2026-06-03 22:18 KST - Verification Result
+
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 52 tests.
+- `npm run build`: PASS.
+  - Vite emitted the existing chunk-size warning for a chunk over 500 kB.
+- `git diff --check`: PASS.
+- First browser smoke attempt failed because the Playwright selector `getByLabel("내보내기 미리보기")` matched both the preview region and the close button. This was a smoke-script selector issue, not an app failure.
+- Browser smoke with the corrected region selector: PASS.
+  - Started Vite with `npm run dev -- --host 127.0.0.1 --port 5173`.
+  - Generated a caregiver share preview.
+  - Verified fresh preview copy, print, and download actions are enabled.
+  - Edited the caregiver share memo after preview generation.
+  - Verified stale alert appears with `공유 설정이 바뀌었습니다`.
+  - Verified stale copy, print, and download actions are disabled.
+  - Clicked `새 미리보기`.
+  - Verified the stale alert disappears and download is enabled again.
+  - Dev server was stopped by the helper after smoke.
+
+## Resume Notes After Stale Caregiver Preview Detection
+
+- Completed slice: caregiver share preview stale detection after share-setting changes.
+- Current uncommitted source/doc changes now include:
+  - caregiver-share settings reset
+  - named caregiver-share presets
+  - preset intent label/description in rendered caregiver share preview/export
+  - included/excluded section summary before caregiver share preview/download
+  - stale caregiver preview detection and fresh-preview regeneration
+- Next durable app slice from README and in-app next-step copy: show the caregiver-share settings summary captured when a caregiver preview was generated, so users can compare the preview snapshot with current settings.
+
+## 2026-06-03 22:21 KST - Caregiver Preview Snapshot Summary Started
+
+- Started from the next durable app slice: show the caregiver-share settings summary captured when a caregiver preview was generated.
+- Goal: make the preview panel show the share settings used to generate that exact caregiver HTML preview, so a stale preview can be compared against the current topbar settings.
+- Planned scope:
+  - Add a tested caregiver-share preview summary helper.
+  - Store that summary on caregiver HTML preview state only.
+  - Render the captured summary in the export preview panel.
+  - Keep Markdown and CSV previews unchanged.
+- Files expected to change:
+  - `src/caregiverShareSettings.ts`
+  - `src/caregiverShareSettings.test.ts`
+  - `src/App.tsx`
+  - `src/App.css`
+  - `README.md`
+  - `working.md`
+
+## 2026-06-03 22:23 KST - Caregiver Preview Snapshot Summary Implementation
+
+- Added `CaregiverShareSettingsPreviewSummary` and `buildCaregiverShareSettingsPreviewSummary()` in `src/caregiverShareSettings.ts`.
+  - Captures preset label/description or `직접 설정`.
+  - Captures profile visibility, cover memo presence, included sections, and excluded sections.
+- Extended `src/caregiverShareSettings.test.ts` to cover:
+  - default snapshot summary
+  - named preset snapshot summary for `정보 최소`
+- Updated `src/App.tsx`:
+  - caregiver HTML preview state now stores `caregiverShareSettingsSummary`
+  - the export preview panel renders `생성 시점 설정`
+  - Markdown and CSV preview state remains unchanged
+  - in-app next durable slice moved to caregiver-share setting difference highlights
+- Updated `src/App.css` for the preview snapshot summary row.
+- Updated README current-slice feature notes and next durable slice.
+
+## 2026-06-03 22:23 KST - Verification Result
+
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 54 tests.
+- `npm run build`: PASS.
+  - Vite emitted the existing chunk-size warning for a chunk over 500 kB.
+- `git diff --check`: PASS.
+- Browser smoke with `/Users/wj/.claude/skills/webapp-testing/scripts/with_server.py`: PASS.
+  - Started Vite with `npm run dev -- --host 127.0.0.1 --port 5173`.
+  - Applied `정보 최소` preset.
+  - Generated a caregiver share preview.
+  - Verified preview panel shows captured `생성 시점 설정`.
+  - Verified captured preset, profile redaction, memo presence, included sections, and excluded sections.
+  - Changed the current share section after preview generation.
+  - Verified the preview became stale while the captured snapshot kept the old section summary.
+  - Clicked `새 미리보기`.
+  - Verified the snapshot refreshed to the new direct-setting summary.
+  - Dev server was stopped by the helper after smoke.
+
+## Resume Notes After Caregiver Preview Snapshot Summary
+
+- Completed slice: caregiver HTML preview panel shows the share-setting summary captured when that preview was generated.
+- Current uncommitted source/doc changes now include:
+  - caregiver-share settings reset
+  - named caregiver-share presets
+  - preset intent label/description in rendered caregiver share preview/export
+  - included/excluded section summary before caregiver share preview/download
+  - stale caregiver preview detection and fresh-preview regeneration
+  - preview-generation settings snapshot in the caregiver preview panel
+- Next durable app slice from README and in-app next-step copy: highlight which caregiver-share settings changed between the preview snapshot and current settings when a caregiver preview is stale.
+
+## 2026-06-03 22:38 KST - Caregiver Preview Setting Difference Highlights Started
+
+- Started from the next durable app slice: highlight which caregiver-share settings changed between the preview snapshot and current settings when a caregiver preview is stale.
+- Goal: when a caregiver preview is stale, show a compact comparison of the exact share settings that changed so the user can decide whether to regenerate before copying, printing, or downloading.
+- AutoResearch / external research intake:
+  - NN/g visibility-of-system-status heuristic (`https://www.nngroup.com/articles/visibility-system-status/`): keep users informed about the system state and next steps before consequential actions.
+  - NN/g recognition-rather-than-recall heuristic (`https://www.nngroup.com/articles/recognition-and-recall/`): make comparison information visible instead of forcing users to remember previous settings.
+  - MDN/WAI-ARIA `role="status"` guidance (`https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role`): polite live regions fit advisory dynamic status changes that should not interrupt the user.
+- Planned scope:
+  - Add a tested caregiver-share settings difference helper.
+  - Store normalized caregiver-share settings on caregiver HTML preview state only.
+  - Compare preview snapshot settings against current settings when the preview is stale.
+  - Render changed preset/profile/memo/section settings in the preview panel.
+  - Keep Markdown and CSV previews unchanged.
+- Files expected to change:
+  - `src/caregiverShareSettings.ts`
+  - `src/caregiverShareSettings.test.ts`
+  - `src/App.tsx`
+  - `src/App.css`
+  - `README.md`
+  - `working.md`
+
+## 2026-06-03 22:41 KST - Caregiver Preview Setting Difference Highlights Implementation
+
+- Added `buildCaregiverShareSettingsDifferences()` in `src/caregiverShareSettings.ts`.
+  - Compares preview snapshot settings against current normalized settings.
+  - Reports changed sharing intent, profile visibility, cover memo content, and included/excluded section settings.
+  - Preserves exact memo-content detection instead of only comparing memo-present summary text.
+- Extended `src/caregiverShareSettings.test.ts`:
+  - no differences for matching settings
+  - exact differences for preset/profile/memo/section changes
+  - memo content changes are reported even when both old and current settings include a memo
+- Updated `src/App.tsx`:
+  - caregiver HTML preview state now stores a normalized `caregiverShareSettingsSnapshot`
+  - stale caregiver previews render a `바뀐 설정` comparison panel
+  - Markdown and CSV previews remain unchanged
+- Updated `src/App.css` for a compact stale-setting comparison layout that wraps on mobile.
+- Updated README current-slice copy and set the next durable app slice to bundle/chunk-size optimization.
+
+## 2026-06-03 22:41 KST - Verification Result
+
+- RED test: `npm run test -- src/caregiverShareSettings.test.ts` failed as expected before implementation because `buildCaregiverShareSettingsDifferences` was missing.
+- Focused GREEN test: `npm run test -- src/caregiverShareSettings.test.ts` PASS, 14 tests.
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 57 tests.
+- `npm run build`: PASS.
+  - Vite still emits the existing warning for one chunk over 500 kB; this is now the next durable optimization slice.
+- `git diff --check`: PASS before browser smoke.
+- Browser smoke with `/Users/wj/.claude/skills/webapp-testing/scripts/with_server.py`: PASS.
+  - Started Vite with `npm run dev -- --host 127.0.0.1 --port 5173`.
+  - Applied `정보 최소` preset and generated a caregiver share preview.
+  - Verified no changed-setting panel appears while preview is fresh.
+  - Edited caregiver memo and verified stale alert plus `바뀐 설정`.
+  - Verified changed sharing intent and memo difference text.
+  - Re-enabled `음식` and verified `공유 섹션` plus `변경된 섹션: 음식`.
+  - Verified stale download is disabled.
+  - Clicked `새 미리보기` and verified stale alert disappears and download is enabled.
+  - Dev server was stopped by the helper after smoke.
+
+## Resume Notes After Caregiver Preview Setting Difference Highlights
+
+- Completed slice: stale caregiver previews now show which caregiver-share settings changed between the generated preview snapshot and current settings.
+- Current uncommitted source/doc changes now include:
+  - caregiver-share settings reset
+  - named caregiver-share presets
+  - preset intent label/description in rendered caregiver share preview/export
+  - included/excluded section summary before caregiver share preview/download
+  - stale caregiver preview detection and fresh-preview regeneration
+  - preview-generation settings snapshot in the caregiver preview panel
+  - stale-preview changed-setting highlights
+- Temporary smoke script:
+  - `/Users/wj/Ai/System/06_Cache/carevault-stale-diff-smoke.cjs`
+- Next durable app slice from README: investigate and reduce the existing Vite production chunk-size warning without changing health-record behavior.
+
+## 2026-06-03 22:44 KST - Vite Chunk-Size Optimization Started
+
+- Started from the next durable app slice: investigate and reduce the existing Vite production chunk-size warning without changing health-record behavior.
+- Current build evidence:
+  - `npm run build` PASS but emits one `index-*.js` chunk at about 658 kB uncompressed.
+  - `dist/assets/index-BqeUBSLi.js`: about 643 KiB on disk.
+  - `src/App.tsx` imports Recharts directly for one trend chart.
+  - Installed package sizes point to likely vendor contributors: `recharts` 8.5M, `lucide-react` 39M, plus Recharts d3 dependencies.
+- AutoResearch / external research intake:
+  - Vite build output recommends dynamic import, `build.rollupOptions.output.manualChunks`, or warning-limit adjustment.
+  - Vite build options docs (`https://vite.dev/config/build-options/`) explain chunk warning limit and underlying bundler options.
+  - Rollup `output.manualChunks` docs (`https://rollupjs.org/configuration-options/#output-manualchunks`) support custom shared chunks, with a caution that manual chunks can affect side-effect timing.
+- Planned scope:
+  - Prefer a config-only vendor chunk split first, because it should not change React health-record logic.
+  - Split React, Recharts, and Lucide vendor surfaces into named chunks.
+  - Verify that production build no longer emits the 500 kB warning.
+  - Re-run typecheck/tests and a browser smoke path after build succeeds.
+
+## 2026-06-03 22:46 KST - Vite Chunk-Size Optimization Implementation
+
+- Updated `vite.config.ts` with production manual chunks:
+  - `vendor-recharts` for Recharts/chart dependencies
+  - `vendor-icons` for Lucide icons
+- First attempt also split `vendor-react`, but Vite generated an empty chunk, so that split was removed.
+- Final production build chunk evidence:
+  - `index-CsTSWe-f.js`: 287.64 kB uncompressed, 86.47 kB gzip
+  - `vendor-recharts-Cav7iZZy.js`: 353.28 kB uncompressed, 106.29 kB gzip
+  - `vendor-icons-C880VkfW.js`: 16.21 kB uncompressed, 6.43 kB gzip
+  - No 500 kB chunk-size warning in the final build output.
+- Updated README current-slice notes.
+- Updated in-app next durable slice to mobile-width QA for caregiver-share controls and the stale-preview panel.
+
+## 2026-06-03 22:46 KST - Vite Chunk-Size Verification Result
+
+- `npm run build`: PASS, no chunk-size warning after final Recharts/Lucide manual chunk split.
+- `npm run test`: PASS, 15 test files and 57 tests.
+- `git diff --check`: PASS.
+- Production browser smoke with `/Users/wj/.claude/skills/webapp-testing/scripts/with_server.py`: PASS.
+  - Started `npm run preview -- --host 127.0.0.1 --port 4173`.
+  - Reused `/Users/wj/Ai/System/06_Cache/carevault-stale-diff-smoke.cjs`.
+  - Verified optimized production chunks load and the caregiver stale setting-difference flow still works.
+  - Preview server was stopped by the helper after smoke.
+
+## Resume Notes After Vite Chunk-Size Optimization
+
+- Completed slice: production build chunk-size warning removed through Recharts/Lucide vendor chunk splitting.
+- Current uncommitted source/doc changes now include all caregiver-share UI slices plus the Vite production chunk split.
+- Temporary smoke script:
+  - `/Users/wj/Ai/System/06_Cache/carevault-stale-diff-smoke.cjs`
+- Next durable app slice from README and in-app next-step copy: QA caregiver-share controls and the stale-preview panel at mobile widths, then tighten spacing or wrapping where needed.
+
+## 2026-06-03 22:50 KST - Mobile Caregiver Share QA Started
+
+- Started from the next durable app slice: QA caregiver-share controls and the stale-preview panel at mobile widths, then tighten spacing or wrapping where needed.
+- Goal: keep the new caregiver-share topbar controls and stale-preview comparison usable on narrow screens without desktop-density regressions.
+- AutoResearch / external research intake:
+  - WCAG 2.2 target-size minimum (`https://www.w3.org/TR/WCAG22/#target-size-minimum`) sets a 24 CSS px minimum, but this app can target a more comfortable mobile control size.
+  - Apple HIG button guidance (`https://developer.apple.com/design/human-interface-guidelines/buttons`) recommends at least a 44x44 pt hit region for buttons.
+  - Material accessibility guidance (`https://m2.material.io/design/usability/accessibility.html`) recommends 48dp touch targets on mobile.
+  - MDN `overflow-wrap` (`https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow-wrap`) supports breaking long strings to prevent text overflow.
+- Baseline mobile audit:
+  - Added `/Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`.
+  - Ran it against Vite dev at 360px width.
+  - Result: no horizontal overflow (`documentScrollWidth` 360), but 19 interactive controls were below 44px height.
+  - Examples: topbar export/action buttons at 40px, memo preset/reset/preset select at 32px, export-preview actions at 36px.
+- Planned scope:
+  - Add mobile-only CSS to raise compact topbar and export-preview controls to at least 44px.
+  - Keep existing desktop compact controls unchanged.
+  - Re-run the mobile audit until it passes with no overflow and no sub-44px targets.
+
+## 2026-06-03 22:51 KST - Mobile Caregiver Share QA Implementation
+
+- Added mobile-only CSS under `@media (max-width: 760px)`:
+  - topbar buttons, memo preset buttons, reset button, export preview inline buttons, close buttons, range select, caregiver preset select, profile redaction label, and caregiver section labels now have at least 44px touch height.
+  - caregiver section labels get slightly more mobile padding and gap.
+  - caregiver preset select can grow wider on mobile instead of staying capped at 132px.
+- Kept desktop compact control heights unchanged.
+- Extended `/Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`:
+  - supports `CAREVAULT_AUDIT_WIDTH` and `CAREVAULT_AUDIT_HEIGHT`
+  - writes width-specific screenshots under `/Users/wj/Ai/System/06_Cache/`
+
+## 2026-06-03 22:51 KST - Mobile Caregiver Share QA Verification Result
+
+- Baseline RED audit at 360px before the CSS change:
+  - no horizontal overflow
+  - 19 interactive controls below 44px height
+- Dev mobile audit at 360px after the CSS change: PASS.
+  - `documentScrollWidth`: 360
+  - `targetIssues`: none
+  - `overflowIssues`: none
+- `npm run test`: PASS, 15 test files and 57 tests.
+- `npm run build`: PASS, no chunk-size warning.
+- Production preview mobile audits: PASS.
+  - 320px: `documentScrollWidth` 320, no target issues, no overflow issues
+  - 390px: `documentScrollWidth` 390, no target issues, no overflow issues
+
+## Resume Notes After Mobile Caregiver Share QA
+
+- Completed slice: caregiver-share controls and stale-preview panel now pass mobile target-size and horizontal-overflow audits at 320px, 360px, and 390px.
+- Current uncommitted source/doc changes now include all caregiver-share UI slices, Vite production chunk split, and mobile touch-target tightening.
+- Temporary smoke/audit scripts:
+  - `/Users/wj/Ai/System/06_Cache/carevault-stale-diff-smoke.cjs`
+  - `/Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`
+- Next durable app slice: keyboard/focus accessibility QA for caregiver-share controls and the export-preview panel.
+
+## 2026-06-03 22:54 KST - Keyboard/Focus Accessibility QA Started
+
+- Started from the next durable app slice: keyboard/focus accessibility QA for caregiver-share controls and the export-preview panel.
+- Goal: make keyboard focus visible and avoid hidden controls in the tab order around the newly dense caregiver-share workflow.
+- AutoResearch / external research intake:
+  - WCAG 2.2 focus-visible criterion (`https://www.w3.org/TR/WCAG22/#focus-visible`) requires a visible keyboard focus indicator.
+  - WCAG 2.2 focus-order criterion (`https://www.w3.org/TR/WCAG22/#focus-order`) requires focus order to preserve meaning and operability.
+  - MDN `:focus-visible` (`https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:focus-visible`) is the CSS selector for focus indication when the user agent determines focus should be visibly indicated.
+- Baseline keyboard audit:
+  - Added `/Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`.
+  - Ran it against Vite dev after generating a stale caregiver preview.
+  - Result: visible file input proxy buttons were keyboard reachable, but hidden `.visually-hidden` file inputs also entered the tab order.
+  - Button focus was mostly browser-default `outline: auto`; form focus had app styling. This was visible but inconsistent.
+- Implementation:
+  - Added app-level `:focus-visible` styling for buttons, links, summaries, inline buttons, document buttons, and checkbox label wrappers.
+  - Switched form focus styling from `:focus` to `:focus-visible` and added outline offset.
+  - Added `tabIndex={-1}` to the hidden file inputs that are triggered by visible buttons.
+
+## 2026-06-03 22:56 KST - Keyboard/Focus Accessibility QA Implementation Update
+
+- Tightened focus styling further:
+  - kept `:focus-visible` support
+  - also applied the same app focus ring on `:focus` as a fallback for direct/programmatic/native-control focus
+  - added `:has(input:focus)` wrapper rings for caregiver section/profile labels and toggle rows
+- Updated `/Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`:
+  - verifies the caregiver topbar Tab sequence from memo presets through save
+  - verifies hidden file inputs do not enter the Tab sequence
+  - directly verifies required focus targets: caregiver memo, caregiver preset select, share preview button, fresh-preview button, and preview close button
+  - verifies required focused controls have visible focus styles
+
+## 2026-06-03 22:56 KST - Keyboard/Focus Accessibility QA Verification Result
+
+- Dev keyboard focus audit: PASS.
+  - `hiddenFocusRows`: none
+  - `missingFocusStyle`: none
+  - `missingRequiredFocus`: none
+  - required focused controls all showed 3px focus outlines
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 57 tests.
+- `npm run build`: PASS, no chunk-size warning.
+- `git diff --check`: PASS.
+- Production preview focus/mobile audit with `/Users/wj/.claude/skills/webapp-testing/scripts/with_server.py`: PASS.
+  - `CAREVAULT_FOCUS_URL=http://127.0.0.1:4173/ node /Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`: PASS
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:4173/ CAREVAULT_AUDIT_WIDTH=320 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS
+  - Preview server was stopped by the helper after smoke.
+
+## Resume Notes After Keyboard/Focus Accessibility QA
+
+- Completed slice: caregiver-share controls and export-preview panel now have consistent visible keyboard focus; hidden file inputs are removed from Tab order.
+- Current uncommitted source/doc changes now include all caregiver-share UI slices, Vite production chunk split, mobile touch-target tightening, and keyboard/focus accessibility tightening.
+- Temporary smoke/audit scripts:
+  - `/Users/wj/Ai/System/06_Cache/carevault-stale-diff-smoke.cjs`
+  - `/Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`
+  - `/Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`
+- Next durable app slice: cmux in-app browser pre-build QA for caregiver-share preview/export and hidden file-input trigger behavior.
+
+## 2026-06-03 23:12 KST - cmux In-App Browser QA Pivot
+
+- User direction changed the runtime QA route: use cmux's right-side in-app browser and Computer Use for pre-build UI/UX and feature tests instead of continuing the Tauri desktop smoke.
+- Stopped the Tauri desktop smoke attempt and killed the leftover `tauri dev`, Vite, debug `carevault`, and stale release-bundle `CareVault.app` processes that were confusing GUI targeting.
+- cmux command intake:
+  - `cmux browser status`: `enabled`
+  - `cmux /Users/wj/Ai/System/10_Projects/CareVault`: opened the project in cmux.
+  - `cmux new-pane --type browser --direction right --url http://127.0.0.1:1420/ --focus true`: created `surface:13` in `pane:11`.
+  - Useful browser commands confirmed from `cmux --help`: `cmux browser snapshot`, `eval`, `click`, `fill`, `select`, `wait`, `screenshot`, `console list`, `errors list`, and `download wait`.
+- Started a single dev server for the cmux browser:
+  - `npm run dev -- --host 127.0.0.1 --port 1420`
+  - Vite served `http://127.0.0.1:1420/`.
+- cmux browser verification on `surface:13`:
+  - `cmux browser --surface surface:13 wait --selector '.app-shell' --timeout-ms 5000`: PASS.
+  - `cmux browser --surface surface:13 eval ...`: confirmed the app title is `CareVault`, URL is `http://127.0.0.1:1420/`, and the in-app next-step copy was loaded from current source.
+  - Generated caregiver HTML preview: preview panel appears, `생성 시점 설정` appears, and fresh `복사`/`인쇄`/`다운로드` actions are enabled.
+  - Changed caregiver memo through a native input event: stale alert appears with `공유 설정이 바뀌었습니다`, `바뀐 설정`, and `전달 메모`.
+  - Stale caregiver preview locks `복사`, `인쇄`, and `다운로드`.
+  - Clicked `새 미리보기`: stale alert disappears and preview actions are enabled again.
+  - Monkey-patched `input[type=file].click` before clicking visible proxy buttons, avoiding real file selection/upload:
+    - `가져오기` triggered the backup file input (`accept="application/json"`, `tabIndex=-1`).
+    - `첨부 파일 선택` triggered the document attachment file input (`accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"`, `tabIndex=-1`).
+    - All 3 hidden file inputs have `tabIndex=-1`.
+  - `cmux browser --surface surface:13 console list`: no console entries.
+  - `cmux browser --surface surface:13 errors list`: no browser errors.
+  - Screenshot saved: `/Users/wj/Ai/System/06_Cache/carevault-cmux-caregiver-preview-20260603.png`.
+- Additional audit against the same local URL:
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=390 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS, no overflow and no target-size issues.
+  - `CAREVAULT_FOCUS_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`: PASS, no hidden file inputs in Tab order and all required focus targets have visible focus styles.
+- Updated next-slice direction in `README.md` and in-app copy:
+  - Next durable app slice: cmux in-app browser QA for saved-document attachment/reattachment flows without exposing local attachment paths.
+
+## 2026-06-03 23:16 KST - cmux Saved-Document Attachment QA
+
+- Started the next durable slice from the cmux QA pivot:
+  - cmux in-app browser QA for saved-document attachment/reattachment flows without exposing local attachment paths.
+- Test safety:
+  - Did not select or upload any user file.
+  - Saved and restored `localStorage["carevault.v1"]` during the synthetic-file smoke.
+  - Monkey-patched hidden file input `click()` during the smoke so no native file picker opened.
+  - Used browser-created synthetic files only:
+    - `cmux-first-preview.png`
+    - `cmux-second-note.txt`
+- cmux browser synthetic attachment smoke on `surface:13`:
+  - Existing saved document `혈액검사 메모` was found.
+  - Saved-document `첨부` action triggered the hidden saved-document file input without exposing it in Tab order.
+  - Synthetic PNG attach result:
+    - filename shown
+    - `브라우저 파일명 참조` shown
+    - `재첨부`, `첨부 확인`, and `미리보기` shown
+    - no `열기` button, because browser-reference attachments have no local path
+    - no `/Users/`, `attachmentPath`, or `tauri-sandbox` text surfaced
+  - Synthetic image preview opened a preview image element.
+  - `첨부 확인` on browser-reference attachment produced `파일명 참조만 저장됨` and did not show the reattachment recovery warning.
+  - Synthetic TXT reattach result:
+    - current filename changed to `cmux-second-note.txt`
+    - `브라우저 파일명 참조` stayed visible
+    - image preview button disappeared for non-image attachment
+    - no `열기` button
+    - document history includes `첨부 재연결`
+    - no local path text surfaced
+  - Caregiver preview/export safety after synthetic reattach:
+    - `첨부 파일명만 포함` label present
+    - synthetic filename present
+    - no `/Users/`, `attachmentPath`, or `tauri-sandbox` leakage.
+- UI/UX fix from cmux QA:
+  - Added a visible `이미지 미리보기` kicker in the attachment preview dialog header.
+  - This makes the preview purpose visible in the UI, not just in the dialog `aria-label`.
+  - Re-verified with cmux synthetic PNG preview:
+    - header text includes `이미지 미리보기`
+    - header text includes `cmux-preview-label.png`
+    - `.attachment-preview-dialog` exists.
+
+## 2026-06-03 23:17 KST - Verification After cmux Attachment QA
+
+- `cmux browser --surface surface:13`:
+  - next-step HMR text now shows `다음 개발 슬라이스: cmux 인앱브라우저 기준 서류 첨부·재첨부 흐름 QA.`
+  - console list after HMR: only Vite debug connection messages
+  - browser errors: none
+- `npm run typecheck`: PASS.
+- `npm run test`: PASS, 15 test files and 57 tests.
+- `npm run build`: PASS, no chunk-size warning.
+  - largest chunks remain split:
+    - `vendor-recharts-Cav7iZZy.js`: 353.28 kB, gzip 106.29 kB
+    - `index-kRzSrOFU.js`: 287.71 kB, gzip 86.48 kB
+    - `vendor-icons-C880VkfW.js`: 16.21 kB, gzip 6.43 kB
+- `git diff --check`: PASS.
+- cmux URL audit:
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=390 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS, no overflow and no target-size issues.
+  - `CAREVAULT_FOCUS_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`: PASS, no hidden file inputs in Tab order and all required focus targets have visible focus styles.
+
+## Resume Notes After cmux Attachment QA
+
+- Completed slice: cmux in-app browser QA for browser-reference saved-document attach/reattach and image preview dialog context.
+- Current dev server remains running for cmux surface `surface:13`:
+  - `npm run dev -- --host 127.0.0.1 --port 1420`
+  - URL: `http://127.0.0.1:1420/`
+- Current cmux pre-build QA surface:
+  - previous surface `surface:13` became `about:blank` and stopped returning usable DOM.
+  - current active cmux browser surface: `surface:23`
+  - `pane:11`
+  - URL: `http://127.0.0.1:1420/`
+- Current uncommitted source/doc changes include:
+  - caregiver-share stale preview and settings-difference flow
+  - Vite vendor chunk split
+  - mobile touch-target tightening
+  - keyboard/focus tightening
+  - cmux QA pivot docs and in-app next-step copy
+  - attachment preview visible `이미지 미리보기` dialog kicker
+- Next durable app slice: cmux in-app browser visual QA for saved-document cards after attachment status/history changes, especially mobile layout density around `첨부 확인`, `미리보기`, `첨부 제거`, and deletion/archive controls.
+
+## 2026-06-03 23:29 KST - Korean Health Standards Calibration
+
+- User concern:
+  - Verify whether CareVault already had Korean male/female health standards for data-entry interpretation.
+  - Specific examples: fasting/pre-meal glucose, post-meal glucose, body weight/BMI Korean criteria.
+- Finding before patch:
+  - `src/healthRules.ts` had BMI and vitals logic, but BMI used a 25 normal upper boundary and tests described it as `CDC categories`.
+  - Blood pressure tests described `AHA-style ranges`, where 130/80 was labeled `고혈압 1단계`.
+  - Glucose logic used diabetes care targets globally, without separating non-diabetes screening thresholds from diabetes tracking targets.
+  - Sex-specific support existed only for hemoglobin lab presets.
+- External standards checked:
+  - Korean Society for the Study of Obesity 2022 summary PDF:
+    - BMI normal 18.5-22.9, pre-obesity 23-24.9, obesity class 1 25-29.9, class 2 30-34.9, class 3 >=35.
+    - Abdominal obesity: male waist >=90cm, female waist >=85cm.
+  - KDCA 2026 cardiovascular prevention appendix citing Korean hypertension/diabetes guidelines:
+    - BP normal <120/<80, caution 120-129/<80, prehypertension 130-139 or 80-89, hypertension stage 1 140-159 or 90-99, stage 2 >=160 or >=100.
+    - Diabetes diagnosis/prediabetes thresholds: FPG 100-125 impaired fasting glucose, FPG >=126 diabetes criteria, 2h OGTT 140-199 impaired glucose tolerance, 2h >=200 diabetes criteria, HbA1c 5.7-6.4 prediabetes and >=6.5 diabetes criteria.
+  - Korean Diabetes Association patient target page:
+    - Diabetes-care glucose target: pre-meal 80-130 mg/dL, 2h post-meal <180 mg/dL, HbA1c <6.5%.
+    - HDL helper target: male >=40 mg/dL, female >=50 mg/dL.
+- Implemented:
+  - `src/healthRules.ts`
+    - Recalibrated BMI labels to Korean adult categories.
+    - Recalibrated BP labels to Korean adult categories.
+    - Split glucose interpretation:
+      - `profile.diabetes === true`: diabetes-care targets.
+      - otherwise: screening/diagnostic threshold labels.
+    - Added sex-specific Korean waist circumference assessment.
+    - Added `koreanHealthStandardSummary` strings for visible UI context.
+  - `src/App.tsx`
+    - Added `profile.waistCm` with default `82`.
+    - Added waist input in the basic profile form.
+    - Added dashboard `허리둘레` card.
+    - Passed `state.profile.diabetes` into glucose assessment.
+    - Added a compact `한국 성인 기준` note in the profile panel.
+  - `src/visitPacket.ts`, `src/caregiverExport.ts`, `src/csvExport.ts`
+    - Included waist circumference in profile export summaries when available.
+    - Visit packet glucose labels now use the diabetes-care/screening split from profile state.
+  - `src/labPresets.ts`
+    - Updated A1C/FPG notes from CDC/ADA wording to Korean guideline wording.
+    - Added post-meal glucose, total cholesterol, LDL, HDL, and triglyceride helper presets.
+    - Added sex-specific HDL helper lower bounds.
+  - `README.md`
+    - Updated current slice and storage notes to describe Korean adult health standards and expanded presets.
+  - `/Users/wj/Ai/System/06_Cache/carevault-document-action-density-audit.cjs`
+    - Added a reusable synthetic-file 390px audit for saved-document action density and deleted archive controls.
+- cmux in-app browser verification:
+  - Reopened browser surface because `surface:13` was stuck at `about:blank`.
+  - New current surface: `surface:23`, pane `pane:11`, URL `http://127.0.0.1:1420/`.
+  - `cmux browser --surface surface:23 wait --selector '.app-shell' --timeout-ms 15000`: PASS.
+  - `cmux browser --surface surface:23 get count --selector '.metric-card'`: `9`.
+  - `cmux browser --surface surface:23 get text --selector '.standards-note'`: showed Korean adult BMI/BP/glucose/waist standards.
+  - `cmux browser --surface surface:23 eval ...`: PASS:
+    - `hasWaistCard: true`
+    - `hasKoreanBmi: true`
+    - `hasKoreanBp: true`
+    - `hasDiabetesCareGlucose: true`
+    - `hasKoreanStandards: true`
+    - `profileHasWaistInput: true`
+    - `pathLeak: false`
+  - `cmux browser --surface surface:23 console list`: only Vite debug connection messages.
+  - `cmux browser --surface surface:23 errors list`: no browser errors.
+- Supplemental browser verification:
+  - Playwright desktop render against `http://127.0.0.1:1420/`: PASS.
+  - Confirmed dashboard cards:
+    - BMI `23.1` -> `비만전단계`
+    - waist `82 cm` -> `복부비만 기준 미만`
+    - BP `126/78` -> `주의혈압 범위`
+    - glucose `146 mg/dL` with diabetes tracking -> `식후 목표 범위`
+    - no path leak.
+- Regression verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 15 files and 60 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=390 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS, no overflow and no target-size issues.
+  - `CAREVAULT_FOCUS_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`: PASS.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-document-action-density-audit.cjs`: PASS.
+    - saved-document buttons `재첨부`, `첨부 확인`, `미리보기`, `첨부 제거`, `삭제`: all 44px.
+    - deleted archive buttons `복구`, `첨부 정리`: all 44px.
+    - no `/Users/`, `attachmentPath`, or `tauri-sandbox` leak.
+
+## Resume Notes After Korean Health Standards Calibration
+
+- Completed slice:
+  - Korean adult BMI/BP/glucose calibration.
+  - Sex-specific waist circumference input and dashboard card.
+  - Expanded diabetes/lipid lab presets including sex-specific HDL helper.
+  - cmux in-app browser verification on `surface:23`.
+  - Mobile document action density verification.
+- Current dev server remains running:
+  - `npm run dev -- --host 127.0.0.1 --port 1420`
+  - URL: `http://127.0.0.1:1420/`
+- Current cmux pre-build QA surface:
+  - `surface:23`
+  - `pane:11`
+  - URL: `http://127.0.0.1:1420/`
+- Next durable app slice:
+  - Follow-up below closes source-level normalized SQLite support for `profile.waistCm`; live Tauri SQLite readback remains separate.
+
+## 2026-06-03 23:31 KST - Waist Circumference SQLite Mirror Follow-Up
+
+- Closed the caveat from the prior section in source-level mirror generation:
+  - `src/storage.ts`
+    - `NormalizedCareVaultMirror.profile` now accepts `waistCm`.
+    - `profile_snapshot` table DDL includes `waist_cm TEXT NOT NULL DEFAULT ''`.
+    - `INSERT INTO profile_snapshot` writes and upserts `waist_cm`.
+    - `ensureNormalizedTables()` now runs `ensureProfileSnapshotColumns()`.
+    - `ensureProfileSnapshotColumns()` uses `PRAGMA table_info(profile_snapshot)` and only runs `ALTER TABLE profile_snapshot ADD COLUMN waist_cm TEXT NOT NULL DEFAULT ''` when the column is missing.
+    - `mirrorNormalizedState()` calls `ensureNormalizedTables()` before the transaction so older SQLite DBs get the column before the waist-aware insert.
+  - `src/storage.test.ts`
+    - Mirror fixture includes `waistCm: "82"`.
+    - Statement tests assert `waist_cm` DDL and the `"82"` bind value.
+  - `README.md`
+    - Updated normalized mirror notes to include waist circumference and the migration-safe column check.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 15 files and 60 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - Supplemental Playwright 390px render after the storage-only follow-up: PASS.
+    - `.app-shell` present.
+    - Korean standards note present.
+    - waist/abdominal-obesity UI present.
+    - no horizontal overflow.
+    - no `/Users/`, `attachmentPath`, or `tauri-sandbox` leak.
+- Scope note:
+  - This follow-up verifies SQL generation and migration-path code.
+  - A live Tauri SQLite readback pass is still a separate desktop-runtime verification task, because cmux/browser preview uses localStorage only.
+  - After the storage-only change, cmux `surface:23` and a new `cmux browser new` call began timing out. Last successful cmux in-app browser evidence remains the Korean health-standard verification on `surface:23` before this storage-only follow-up.
+
+## Resume Notes After Waist Mirror Follow-Up
+
+- Completed source-level waist mirror support:
+  - JSON `app_state` profile has `waistCm`.
+  - normalized SQLite `profile_snapshot` statement path has `waist_cm`.
+  - older local DB migration path is guarded by `PRAGMA table_info`.
+- Current dev server remains running:
+  - `npm run dev -- --host 127.0.0.1 --port 1420`
+  - URL: `http://127.0.0.1:1420/`
+- Current cmux pre-build QA surface:
+  - Last successful surface: `surface:23`, pane `pane:11`, URL `http://127.0.0.1:1420/`.
+  - Current cmux browser commands are timing out; reopen a fresh cmux browser pane before the next cmux QA pass.
+- Next durable app slice:
+  - When desktop-runtime verification is allowed/in scope, run a Tauri SQLite readback pass to confirm `profile_snapshot.waist_cm` persists in the actual app DB.
+  - Otherwise continue cmux browser QA around Korean health-standard display and saved-document attachment density.
+
+## 2026-06-03 23:37 KST - Export Coverage Tests and cmux Recovery Attempt
+
+- Added explicit export coverage assertions after the Korean standards slice:
+  - `src/caregiverExport.test.ts`
+    - fixture now includes `waistCm: "82"`.
+    - caregiver HTML test asserts `허리 82cm`.
+  - `src/csvExport.test.ts`
+    - fixture now includes `waistCm: "82"`.
+    - CSV test asserts `"56세 / 164cm / 62kg / 허리 82cm"`.
+  - `src/visitPacket.test.ts`
+    - fixture now includes `waistCm: "82"`.
+    - visit packet test asserts `키/몸무게/허리둘레: 164 cm / 62 kg / 82 cm`.
+    - visit packet test asserts new Korean BP label `고혈압 전단계 범위`.
+    - visit packet test asserts diabetes-care post-meal glucose label `식후 목표 초과`.
+- Updated in-app next-step copy:
+  - From: `cmux 인앱브라우저 기준 서류 첨부·재첨부 흐름 QA.`
+  - To: `cmux 인앱브라우저 기준 한국 건강기준 표시와 서류 액션 밀도 QA.`
+- Verification:
+  - `npm run test`: PASS, 15 files and 60 tests.
+  - `npm run typecheck`: PASS.
+  - Supplemental Playwright 390px render:
+    - `.next-steps` contains `한국 건강기준 표시` and `서류 액션 밀도`.
+    - no horizontal overflow.
+- cmux recovery attempt:
+  - `cmux browser status`: `enabled`.
+  - `cmux ping && cmux version`: `PONG`, `cmux 0.64.12 (92) [ac60b2cd7]`.
+  - `cmux capabilities`: PASS; socket and method registry are reachable.
+  - Surface/pane/browser commands timed out:
+    - `cmux surface-health`
+    - `cmux tree`
+    - `cmux list-panes`
+    - `cmux list-pane-surfaces --pane pane:11`
+    - `cmux refresh-surfaces`
+    - `cmux list-log --limit 20`
+    - `cmux new-pane --type browser --direction right --url http://127.0.0.1:1420/ --focus true`
+  - Current conclusion:
+    - cmux socket is reachable, but surface-management/browser-pane RPCs are timing out.
+    - Last successful cmux in-app browser evidence remains `surface:23` from the Korean standards verification.
+    - Use Playwright/browser preview only as a temporary fallback while cmux surface RPCs are unavailable; restore cmux before claiming new cmux QA evidence.
+
+## Resume Notes After Export Coverage Tests
+
+- Completed:
+  - Korean standards export coverage tests for caregiver HTML, CSV, and visit packet.
+  - In-app next-step copy now matches the current cmux QA target.
+- Current dev server remains running:
+  - `npm run dev -- --host 127.0.0.1 --port 1420`
+  - URL: `http://127.0.0.1:1420/`
+- Current blocker:
+  - cmux browser/surface management commands are timing out despite `cmux ping` and `cmux capabilities` succeeding.
+- Next durable app slice:
+  - Add a standards coverage matrix so the app and worklog distinguish implemented Korean health standards from intentionally not-yet-covered standards.
+
+## 2026-06-03 23:39 KST - Korean Standards Coverage Matrix
+
+- Added an explicit coverage matrix so CareVault does not imply every possible health/lab standard is fully implemented:
+  - `src/healthStandards.ts`
+    - Defines `koreanHealthStandardCoverage`.
+    - Status categories:
+      - `implemented`: actual app assessment rule.
+      - `input-helper`: preset/reference helper only.
+      - `user-range-required`: result-sheet or user-entered lab range remains authoritative.
+    - Current rows:
+      - BMI
+      - waist circumference
+      - blood pressure
+      - diabetes-care glucose
+      - glucose screening
+      - A1C/FPG/post-meal glucose presets
+      - lipid presets
+      - CBC/cancer-care presets
+      - other lab ranges
+  - `src/healthStandards.test.ts`
+    - Verifies row order, status categories, implemented count, and sex-specific rows.
+  - `src/App.tsx`
+    - Profile standards panel now has an `적용 범위` details section.
+    - UI labels show `판정 적용`, `입력 보조`, or `사용자 기준 우선`.
+  - `src/App.css`
+    - Added compact details/list styling for standards coverage.
+  - `README.md`
+    - Current slice now mentions the visible Korean health-standard coverage matrix.
+- Verification:
+  - `npm run test`: PASS, 16 files and 63 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=390 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS.
+    - no horizontal overflow.
+    - no target-size issues.
+    - no console errors.
+  - Supplemental Playwright 390px render:
+    - opened `.standards-coverage summary`.
+    - `coverageItems: 9`.
+    - `hasCoverage: true`.
+    - no horizontal overflow.
+
+## Resume Notes After Standards Coverage Matrix
+
+- Completed:
+  - Korean health-standard coverage matrix in code, tests, and UI.
+  - The app now separates true assessment rules from helper presets and user-entered lab ranges.
+- Current dev server remains running:
+  - `npm run dev -- --host 127.0.0.1 --port 1420`
+  - URL: `http://127.0.0.1:1420/`
+- Current blocker:
+  - cmux browser/surface management commands still need recovery before new evidence can be called cmux QA.
+- Next durable app slice:
+  - Re-run final mobile audit/build after this coverage UI change.
+  - Recover cmux browser surface or document the cmux blocker with exact commands before ending a handoff.
+
+## 2026-06-03 23:42 KST - cmux Workspace Recovery and Standards QA
+
+- Root cause of the cmux timeout confusion:
+  - `cmux current-workspace` first pointed at `workspace:5 "사업보고서"`.
+  - That workspace had browser surfaces on `http://127.0.0.1:1435/`, not CareVault's `1420`.
+  - Broad/default cmux surface/browser commands were operating against the wrong selected workspace and timing out.
+- Recovery:
+  - `cmux /Users/wj/Ai/System/10_Projects/CareVault`: selected/opened CareVault as `workspace:8`.
+  - `cmux new-pane --workspace workspace:8 --type browser --direction right --url http://127.0.0.1:1420/ --focus true`: PASS.
+  - New active CareVault cmux browser surface:
+    - `surface:40`
+    - `pane:19`
+    - `workspace:8`
+    - URL: `http://127.0.0.1:1420/`
+- cmux in-app browser verification on `surface:40`:
+  - `cmux browser --surface surface:40 wait --selector '.app-shell' --timeout-ms 15000`: PASS.
+  - `cmux browser --surface surface:40 get count --selector '.metric-card'`: `9`.
+  - `cmux browser --surface surface:40 get text --selector '.standards-note'`: Korean BMI/BP/glucose/waist standards visible, with `적용 범위`.
+  - Opened `.standards-coverage summary` and evaluated:
+    - `coverageItems: 9`
+    - `hasImplemented: true`
+    - `hasInputHelper: true`
+    - `hasUserRange: true`
+    - `hasNextStep: true`
+    - `pathLeak: false`
+    - `overflow: false`
+  - First visible coverage rows:
+    - `판정 적용 / 한국 성인 BMI`
+    - `판정 적용 / 한국 성인 허리둘레`
+    - `판정 적용 / 한국 성인 혈압`
+- Saved-document density recheck:
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-document-action-density-audit.cjs`: PASS.
+  - Uses browser-created synthetic file only; no user file selection.
+  - Saved-document buttons `재첨부`, `첨부 확인`, `미리보기`, `첨부 제거`, `삭제`: all 44px.
+  - Deleted archive buttons `복구`, `첨부 정리`: all 44px.
+  - no `/Users/`, `attachmentPath`, or `tauri-sandbox` leak.
+
+## Resume Notes After cmux Recovery
+
+- cmux blocker is resolved for CareVault by using explicit `workspace:8`.
+- Current CareVault cmux pre-build QA surface:
+  - `surface:40`
+  - `pane:19`
+  - `workspace:8`
+  - URL: `http://127.0.0.1:1420/`
+- Current dev server remains running:
+  - `npm run dev -- --host 127.0.0.1 --port 1420`
+  - URL: `http://127.0.0.1:1420/`
+- Next durable app slice:
+  - Run final typecheck/test/build/diff gates after this cmux recovery note.
+  - Then continue with a small standards/reporting polish slice or Tauri SQLite waist readback if desktop-runtime verification is in scope.
+
+## 2026-06-03 23:42 KST - Final Gates After cmux Recovery
+
+- Verification after cmux recovery note:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 16 files and 63 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+- Current status:
+  - cmux CareVault browser surface remains `surface:40` in `workspace:8`.
+  - Dev server remains running at `http://127.0.0.1:1420/`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:41 KST - Dashboard Metric Standard Copy Iteration Note
+
+- Improvement target:
+  - BMI, waist, latest blood-pressure, and latest glucose dashboard cards already showed linked official-source `근거:` labels.
+  - Users still had to copy those four visible metric standards one by one or use the larger Korean standards panel.
+  - The dashboard needed a compact copy affordance that preserved the same metric-standard scope, official-source summary, and source URLs.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added dashboard metric-standard compact summary, copy description, copy status, and clipboard text formatters.
+    - Added the metric card context label to `DashboardMetricStandardEvidence` so copied rows keep `BMI 대시보드 기준`, `허리둘레 대시보드 기준`, `최근 혈압 기준`, and `최근 혈당 기준`.
+  - Updated `src/App.tsx`.
+    - Added a dashboard metric-standard summary chip and `대시보드 기준 복사` button to the profile metric card.
+    - The button copies BMI/waist/BP/glucose standard notes plus official source labels and URLs, then reports `대시보드 건강 기준 복사됨 · 4개 기준 · 근거 3개`.
+  - Updated `src/App.css`.
+    - Added wrapping-safe styles for the dashboard metric-standard summary/action row.
+  - Updated `src/healthStandards.test.ts`, `README.md`, and `DESIGN.md`.
+    - Added regression coverage and documented that the visible summary, accessible label/title, copied text, and copy status share the same criteria/source summary.
+- Verification:
+  - PASS: `npm run test -- src/healthStandards.test.ts` (1 file, 27 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (37 files, 287 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser only:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Verified `surface:513` at `http://127.0.0.1:1420/`.
+    - DOM check found button text `대시보드 기준 복사`, aria-label/title `대시보드 건강 기준 복사 · 4개 기준 · 근거 3개`, visible summary `4개 기준 · 근거 3개`, and a copy icon.
+    - Body, new action row, summary chip, and button had no horizontal overflow.
+    - Clipboard capture after clicking found `[대시보드 건강 기준]`, `요약: 4개 기준 · 근거 3개`, BMI/waist/BP/glucose rows, and official source labels plus URLs.
+    - Post-copy status text was `대시보드 건강 기준 복사됨 · 4개 기준 · 근거 3개`.
+    - Browser errors were empty; console only had normal Vite connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:43 KST - Saved Question Copied Summary Iteration Note
+
+- Improvement target:
+  - Saved-question copy buttons and post-copy status already exposed date, priority, answer status, source-evidence presence, and answer-memo presence.
+  - The copied question body itself still jumped from `[진료 질문]` to field rows, so clinic-prep text could lose the same compact scope summary after leaving the UI.
+- Code/docs changes:
+  - Updated `src/questionClipboard.ts`.
+    - `formatQuestionClipboardText()` now inserts `요약: ...` immediately after `[진료 질문]`.
+    - The summary reuses `formatQuestionClipboardActionSummary()` so copied text, button aria-label/title, and post-copy status stay aligned.
+  - Updated `src/questionClipboard.test.ts`.
+    - Added fixed copied-text expectations for answer-memo, blank-answer, and source-backed question cases.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that saved-question copied text preserves the same date/priority/status/evidence/answer-memo scope summary as the visible copy affordance and status.
+- Verification:
+  - PASS: `npm run test -- src/questionClipboard.test.ts` (1 file, 7 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/questionClipboard.ts src/questionClipboard.test.ts src/App.tsx src/App.css src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (37 files, 287 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser only:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Verified `surface:513` at `http://127.0.0.1:1420/`.
+    - DOM check found the saved-question copy button aria-label/title `혈액검사 질문 복사 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음` with no button overflow.
+    - Clipboard capture after clicking found `[진료 질문]`, `요약: 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`, date, priority, answer status, and question text.
+    - Post-copy status was `혈액검사 질문 복사됨 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+    - Browser errors were empty; console only had normal Vite connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:47 KST - Saved Question Answer Memo Label Iteration Note
+
+- Improvement target:
+  - Saved question cards already split source-backed question text into body plus `근거:` evidence.
+  - Saved answer memos still rendered as an unlabeled small note under the question, making it easy to confuse the answer with the question body or evidence row.
+- Code/docs changes:
+  - Updated `src/questionDisplay.ts`.
+    - Added `formatQuestionAnswerMemoDisplay()` to trim answer memo display text and suppress blank memo rows.
+  - Updated `src/App.tsx`.
+    - Saved question cards now render answer memos as a labeled `.question-answer-memo` row with `답변 메모` label, wrapped memo text, and an item-specific aria label.
+  - Updated `src/App.css`.
+    - Added compact chip-like styling for `.question-answer-memo` with wrapped text to avoid horizontal overflow.
+  - Updated `src/questionDisplay.test.ts`, `README.md`, and `DESIGN.md`.
+    - Added helper regressions and documented the labeled saved-answer memo row contract.
+- Verification:
+  - PASS: `npm run test -- src/questionDisplay.test.ts` (1 file, 4 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/questionDisplay.ts src/questionDisplay.test.ts src/questionClipboard.ts src/questionClipboard.test.ts src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (37 files, 288 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser only:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Verified `surface:513` at `http://127.0.0.1:1420/`.
+    - Backed up `localStorage["carevault.v1"]`, added a temporary saved question with answer memo through the live UI, and verified `.question-answer-memo` rendered label `답변 메모`, value `진료실에서 확인한 답변을 다음 방문 전 다시 보기`, aria label `임시 QA 답변 질문 답변 메모`, and no row/body overflow.
+    - Restored the backed-up `carevault.v1`, reloaded the app, and verified the temporary question/answer were absent and only the original saved question copy button remained.
+    - Browser errors were empty; console only had normal Vite connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:05 KST - Saved Question Source Evidence Display Iteration Note
+
+- Improvement target:
+  - Saved question copy/export paths split generated `출처:` lines into `근거:` evidence, but the dashboard question card still rendered the raw question string.
+  - Source-backed cervical/lab/vital questions needed a cleaner visible card: question body first, then a compact official-source evidence row.
+- Code/docs changes:
+  - Added `src/questionDisplay.ts` and `src/questionDisplay.test.ts`.
+    - The helper splits saved question text into display body, source label, source URL, and `근거:` evidence text.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Saved question cards now render the parsed question body separately from a compact `question-source-evidence` row with an official-source link when a URL is present.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-backed saved question card evidence splitting.
+- Verification so far:
+  - PASS: `npm run test -- src/questionDisplay.test.ts src/questionClipboard.test.ts` (2 files, 9 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (35 files, 277 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Backed up `localStorage["carevault.v1"]`, injected a temporary source-backed saved question, reloaded, then restored the original state and removed the QA backup key.
+    - The temporary source-backed question card rendered body text as `성생활 재개 시점을 어떻게 상담할까요?` with no raw `출처:` text in the paragraph.
+    - The separate evidence row rendered `근거: 국가암정보센터 자궁경부암 성생활 (...)`, linked to the official `cancer.go.kr` URL, and exposed an item-specific evidence `aria-label`.
+    - The same question copy button kept the new copy scope summary with `근거 포함`.
+    - Body and question-list horizontal overflow: false. Browser errors: none. Console: Vite connect logs only.
+    - Restore proof: temporary question absent from storage and rendered DOM, original question count back to 1, QA backup key removed.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:02 KST - Saved Question Copy Scope Summary Iteration Note
+
+- Improvement target:
+  - Saved visit-question copy buttons still exposed only the question topic and generic copy success even though the copied packet includes date, priority, status, source evidence, and answer memo.
+  - Users needed the same scope summary before copying and in the post-copy status, especially for source-backed cervical/lab/vital questions.
+- Code/docs changes:
+  - Updated `src/questionClipboard.ts`.
+    - Added copy action summary, copy description, and copy status formatters that include date, priority, status, source-evidence presence, and answer-memo presence.
+  - Updated `src/App.tsx`.
+    - Saved question copy buttons now use the summary for `aria-label`/`title`, and copy-success status preserves the same summary.
+  - Updated `src/questionClipboard.test.ts`.
+    - Added regression coverage for source-backed questions and answered questions with answer memos.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented saved-question copy action summaries and audit expectations.
+- Verification so far:
+  - PASS: `npm run test -- src/questionClipboard.test.ts` (1 file, 7 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (34 files, 275 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - The saved `혈액검사` question copy button `aria-label` and `title` both showed `혈액검사 질문 복사 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+    - Temporary clipboard capture verified one copied `[진료 질문]` payload containing `날짜: 2026-06-15`, `주제: 혈액검사`, `우선순위: 다음 진료`, and `상태: 확인 필요`.
+    - Post-copy status showed `혈액검사 질문 복사됨 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+    - Source-backed saved-question behavior is covered by `src/questionClipboard.test.ts`, including `근거 포함` copy description/status expectations.
+    - Browser errors: none. Console: Vite connect logs only. Body and question-list horizontal overflow: false.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:58 KST - Cervical Care Source Count Heading Iteration Note
+
+- Improvement target:
+  - The cervical care copy summary exposed `출처 17개`, but the visible source-list heading and copied source-list heading still showed only `출처` or `출처 목록`.
+  - Users needed the same source-count cue when scanning the source list itself and when reviewing copied clinic-prep text.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCareClipboard.ts`.
+    - The copied care-note source section now emits `출처 목록 (17개)` from the existing source registry count.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - The cervical care visible source-list heading now shows a compact `17개` count with an accessible source-count label and stable wrapping.
+  - Updated `src/cervicalCancerCareClipboard.test.ts`.
+    - Tightened copied-note expectations to require `출처 목록 (17개)`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented visible and copied official-source list count headings.
+- Verification so far:
+  - PASS: `npm run test -- src/cervicalCancerCareClipboard.test.ts` (1 file, 4 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (34 files, 274 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - The visible cervical care source heading rendered as `출처 17개` with `aria-label="자궁경부암 케어 노트 공식 출처 17개"`.
+    - Temporary clipboard capture verified one copied payload and confirmed the copied source heading includes `출처 목록 (17개)`.
+    - Post-copy status still preserved `자궁경부암 케어 노트 복사됨 · 총 40개 항목 · 우선 3개 · 검진요약 1개 · 경고 4개 · 질문 10개 · 기록/회복/예방 22개 · 출처 17개`.
+    - Browser errors: none. Console: Vite connect logs only. Body and cervical-care panel horizontal overflow: false.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:55 KST - Cervical Care Note Copy Scope Summary Iteration Note
+
+- Improvement target:
+  - The cervical cancer care note copy action included a large source-backed clinic-prep packet, but the visible helper, button label/title, and copy-success status did not expose how many care items or official sources were included.
+  - This made the copy action less inspectable than the recently improved care queue, standards, and export preview copy surfaces.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCareClipboard.ts`.
+    - Added copied-note summary builders and copy description/status formatters derived from the existing cervical-care arrays and source registry.
+  - Updated `src/App.tsx`.
+    - The cervical care note visible copy helper now shows total item/source scope, and the `노트 복사` button `aria-label`/`title` plus copy-success status use the same summary.
+  - Updated `src/cervicalCancerCareClipboard.test.ts`.
+    - Added regression expectations for profile-specific and generic copied-note summaries.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that the cervical care note copy surface preserves copied item/source-count summaries.
+- Verification so far:
+  - PASS: `npm run test -- src/cervicalCancerCareClipboard.test.ts` (1 file, 4 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (34 files, 274 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - The cervical care note helper text showed `총 40개 항목 · 우선 3개 · 검진요약 1개 · 경고 4개 · 질문 10개 · 기록/회복/예방 22개 · 출처 17개`.
+    - The `노트 복사` button `aria-label` and `title` both included the same copied-item/source-count summary.
+    - Temporary clipboard capture verified one copied payload starting with `[자궁경부암 케어 노트]`, length 11,656, with `우선 확인 체크리스트`, `검진 기준 빠른 확인`, `출처 목록`, and official `cancer.go.kr` URLs.
+    - Post-copy status showed `자궁경부암 케어 노트 복사됨 · 총 40개 항목 · 우선 3개 · 검진요약 1개 · 경고 4개 · 질문 10개 · 기록/회복/예방 22개 · 출처 17개`.
+    - Browser errors: none. Console: Vite connect logs only. Body and cervical-care panel horizontal overflow: false.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:50 KST - Saved Vital Timeline Assessment Iteration
+
+- Improvement target:
+  - The BP/glucose form now showed a save-preview assessment before `측정값 추가`, but after saving the recent timeline still rendered vital rows as plain values such as `혈압 132/82` or `혈당 191 mg/dL`.
+  - This dropped the visible assessment label, `mmHg`, and glucose measurement context that users need when scanning recent records.
+- Code/docs changes:
+  - Added `src/vitalRecordLabels.ts` and `src/vitalRecordLabels.test.ts`.
+    - Shared helper formats saved vital timeline titles with `mmHg` and Korean glucose contexts such as `식후 2시간`.
+    - Shared helper returns the same BP/glucose assessment label used by the existing Korean adult common standards.
+    - Incomplete legacy vital records avoid misleading numeric titles.
+  - Updated `src/App.tsx`.
+    - Recent timeline vital rows now show a compact assessment chip, plus BP units or glucose measurement context.
+    - The chip uses the current diabetes-tracking profile context for glucose interpretation.
+  - Updated `src/App.css`.
+    - Added restrained ok/watch/risk/neutral chip tones for vital assessment labels.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that saved BP/glucose timeline rows retain assessment, units, and glucose context after save.
+- Verification to run:
+  - `npm run test -- src/vitalRecordLabels.test.ts src/healthRules.test.ts`
+  - `npm run typecheck`
+  - `git diff --check`
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`
+  - `npm run test`
+  - `npm run build`
+  - cmux `surface:513` only, after `cmux select-workspace --workspace workspace:11`, with saved BP/glucose timeline rows checked for assessment labels, units/context, and no overflow.
+
+## 2026-06-04 23:44 KST - BP/Glucose Save Preview Iteration
+
+- Improvement target:
+  - The BP/glucose form showed the active Korean standard, official source, numeric ranges, and question-draft shortcut, but the entered reading itself did not show a save-preview assessment immediately before `측정값 추가`.
+  - Users had to infer whether the saved reading would be stored as 정상/주의/고혈압 전단계 or a glucose target/screening label from the static range helper.
+- Code/docs changes:
+  - Added `formatVitalSavePreviewLabel()` to `src/healthStandards.ts`.
+    - The helper composes the entered measurement, assessment label, and active standard applicability/label.
+  - Updated `src/App.tsx`.
+    - Valid BP/glucose drafts now show `저장 전 기준 확인` before `측정값 추가`.
+    - The preview uses the existing `assessBloodPressure()` and `assessBloodGlucose()` results, the current diabetes-tracking profile context, and the active Korean standard metadata.
+    - Blank or invalid drafts do not show a premature warning preview; the existing save validation still handles add attempts.
+  - Updated `src/App.css`.
+    - Added wrapping-safe preview strip styles with watch/risk emphasis mapped to the existing assessment level.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the BP/glucose save-preview assessment contract.
+- Verification to run:
+  - `npm run test -- src/healthRules.test.ts src/healthStandards.test.ts`
+  - `npm run typecheck`
+  - `git diff --check`
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`
+  - `npm run test`
+  - `npm run build`
+  - cmux `surface:513` only, after `cmux select-workspace --workspace workspace:11`, with BP and glucose draft values checked for visible preview text and no browser errors.
+
+## 2026-06-04 23:40 KST - Markerless Cervical Warning Export Regression Iteration
+
+- Improvement target:
+  - Source-labeled cervical warning records now classify correctly in the dashboard, but the direct export surfaces needed explicit regression coverage for markerless records.
+  - The vulnerable path was a saved symptom that keeps `출처: 국가암정보센터 자궁경부암 일반적 증상 ...` but does not contain the older explicit `자궁경부암 경고 신호 기록 초안` marker.
+- Code/docs changes:
+  - Updated `src/visitPacket.test.ts`.
+    - Added a direct Markdown symptom-row regression for markerless source-backed cervical general-warning records.
+  - Updated `src/csvExport.test.ts`.
+    - Added a direct CSV `symptom` row regression for the same markerless source-backed cervical warning record.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added a caregiver recent-symptom regression that checks the visible source label is `자궁경부암 경고 기록`.
+  - Updated `DESIGN.md`.
+    - Documented the Markdown, CSV, and caregiver HTML regression coverage for markerless source-backed cervical warning record labels.
+- Verification:
+  - `npm run test -- src/symptomRecordLabels.test.ts src/sourceEvidence.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 73 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 32 files and 261 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - DOM check confirmed the saved `비정상 질출혈` timeline row still shows `자궁경부암 경고 기록` plus `근거 포함`.
+    - Opened `CSV 미리보기`; the direct `symptom` row for `비정상 질출혈` contained status `자궁경부암 경고 기록` and source-separated `근거: 국가암정보센터 자궁경부암 일반적 증상`.
+    - Opened `요약 미리보기`; the direct Markdown symptom row contained `[자궁경부암 경고 기록] 비정상 질출혈 3/10` and source-separated evidence.
+    - Body and checked preview surfaces had no horizontal overflow.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:36 KST - Source-Labeled Cervical Warning Record Iteration
+
+- Improvement target:
+  - Older or template-filled cervical warning symptom records could keep a National Cancer Center cervical warning source line but lack the explicit `자궁경부암 경고 신호 기록 초안` marker.
+  - Those records still showed `근거 포함`, but their record type could remain `증상 기록`, which under-described saved abnormal bleeding/discharge/pelvic-pain warning rows.
+- Code/docs changes:
+  - Updated `src/symptomRecordLabels.ts`.
+    - `formatSymptomRecordLabel()` now classifies records with source labels containing `자궁경부암 일반적 증상` or `자궁경부암 치료의 부작용` as `자궁경부암 경고 기록`.
+    - HPV prevention sources remain separate and do not become warning records unless the generated memo marker is present.
+  - Updated `src/symptomRecordLabels.test.ts`.
+    - Added coverage for source-labeled cervical general-warning and treatment-side-effect records without an explicit draft marker.
+    - Added coverage that non-warning cervical prevention sources stay generic when no memo marker is present.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-labeled cervical warning record classification for older or markerless saved records.
+- Verification:
+  - `npm run test -- src/symptomRecordLabels.test.ts src/sourceEvidence.test.ts`: PASS, 2 files and 11 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 32 files and 258 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - DOM check confirmed the existing saved `비정상 질출혈` timeline row now has `timeline-record-label = 자궁경부암 경고 기록`.
+    - The same row kept `timeline-record-evidence-label = 근거 포함`.
+    - Existing HPV memo rows stayed `자궁경부암 기록 메모`.
+    - Body, metric card, and checked timeline rows had no horizontal overflow.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:34 KST - Saved Symptom Source-Evidence Label Iteration
+
+- Improvement target:
+  - Source-backed symptom drafts now showed `근거 포함` before save, but after saving the latest-symptom metric and recent timeline only showed the record type.
+  - Users could therefore lose the visual confirmation that a saved cervical memo or warning symptom still carried parseable official-source evidence.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Latest-symptom metric now shows `근거 포함` when the saved latest symptom has parseable source evidence.
+    - Recent timeline symptom rows now include the same `근거 포함` chip for source-backed saved symptoms.
+    - Timeline record chips are wrapped in a dedicated `timeline-record-badges` row so record type and evidence hint do not visually run together.
+  - Updated `src/App.css`.
+    - Added metric/timeline evidence chip selectors.
+    - Added a wrapping, 4px-gap timeline badge row with no horizontal overflow.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that source-evidence hints are visible both before and after saving symptom records.
+- Verification:
+  - `npm run test -- src/symptomRecordLabels.test.ts src/sourceEvidence.test.ts`: PASS, 2 files and 9 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 32 files and 256 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Saved a fresh `HPV 백신 가족 안내` cervical memo record through the dynamic `자궁경부암 기록 메모 추가` button.
+    - DOM check confirmed save status `자궁경부암 기록 메모 추가됨 · 브라우저 자동 저장됨`.
+    - DOM check confirmed latest-symptom metric text included `HPV 백신 가족 안내`, `자궁경부암 기록 메모`, and `근거 포함`.
+    - DOM check confirmed timeline HPV rows exposed `timeline-record-label = 자궁경부암 기록 메모`, `timeline-record-evidence-label = 근거 포함`, and `timeline-record-badges` CSS gap `4px`.
+    - Body, latest metric, and timeline rows had no horizontal overflow.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:30 KST - Symptom Source-Evidence Preview Iteration
+
+- Improvement target:
+  - The symptom form now showed the record type and dynamic save action, but a generated source-backed cervical memo draft did not visibly confirm before save that a parseable official source line would be retained.
+  - For HPV prevention memos and other official-source drafts, users needed that confirmation before committing the record.
+- Code/docs changes:
+  - Updated `src/symptomRecordLabels.ts` and `src/symptomRecordLabels.test.ts`.
+    - Added `hasSymptomRecordSourceEvidence()` using the shared `parseSourceEvidence()` helper.
+    - Added regression coverage for source-backed and direct-entry symptom drafts.
+  - Updated `src/App.tsx`.
+    - The symptom record preview now shows a compact `근거 포함` chip when the draft body or action contains parseable `출처:` evidence.
+    - The preview `aria-label` includes `근거 포함` for source-backed drafts.
+  - Updated `src/App.css`.
+    - Reused the compact chip dimensions for the evidence hint and added a restrained green evidence style.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the source-evidence hint as part of the symptom record-label preview contract.
+- Verification:
+  - `npm run test -- src/symptomRecordLabels.test.ts src/sourceEvidence.test.ts`: PASS, 2 files and 9 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 32 files and 256 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Clicked `HPV 백신 가족 안내 자궁경부암 기록 메모 초안 만들기`.
+    - DOM check confirmed preview text `저장될 기록 종류 / 자궁경부암 기록 메모 / 근거 포함`.
+    - DOM check confirmed `.symptom-record-evidence-label` text `근거 포함`.
+    - DOM check confirmed preview `aria-label` was `저장될 기록 종류 자궁경부암 기록 메모 근거 포함`.
+    - The dynamic save button still showed `자궁경부암 기록 메모 추가`.
+    - Body, preview, and evidence chip had no horizontal overflow.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:27 KST - Symptom Save Action Label Iteration
+
+- Improvement target:
+  - The symptom form showed the saved record type before saving, but the primary save button still always said `증상 기록 추가`.
+  - For generated cervical memo drafts, the final action target and saved-status feedback therefore under-described the record type at the point of commit.
+- Code/docs changes:
+  - Updated `src/symptomRecordLabels.ts` and `src/symptomRecordLabels.test.ts`.
+    - Added shared helpers for save-button text and saved-status text.
+    - Added regression coverage that the new labels use the same generic/warning/memo rule as exports and in-app labels.
+  - Updated `src/App.tsx`.
+    - The symptom primary save button now changes from `증상 기록 추가` to `자궁경부암 기록 메모 추가` or `자궁경부암 경고 기록 추가` when the draft type changes.
+    - The button `aria-label` and hover title use the same dynamic text.
+    - Saved-status feedback now says the exact record type, such as `자궁경부암 기록 메모 추가됨`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that the preview, primary save action, saved-status feedback, latest card, timeline, Markdown, CSV, and caregiver exports share one symptom record-label rule.
+- Verification:
+  - `npm run test -- src/symptomRecordLabels.test.ts`: PASS, 1 file and 5 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 32 files and 255 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Clicked `HPV 백신 가족 안내 자궁경부암 기록 메모 초안 만들기`.
+    - DOM check confirmed preview text `저장될 기록 종류 / 자궁경부암 기록 메모`.
+    - DOM check confirmed the primary save button text, `aria-label`, and title were all `자궁경부암 기록 메모 추가`.
+    - The button and page had no horizontal overflow.
+    - Clicked the dynamic save button and confirmed body status `자궁경부암 기록 메모 추가됨 · 브라우저 자동 저장됨`.
+    - After save, the form reset to the default `증상 기록 추가` button and the latest-symptom metric showed `HPV 백신 가족 안내 / 자궁경부암 기록 메모`.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:23 KST - Symptom Save Preview Label Iteration
+
+- Improvement target:
+  - In-app saved symptom rows now showed the shared record-label rule, but the symptom input form did not tell the user which record type would be saved until after adding the record.
+  - Generated cervical memo drafts such as HPV prevention guidance could therefore look like a generic symptom draft at the exact save decision point.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added a symptom-form save preview that appears when the symptom draft has user-entered or generated content.
+    - The preview uses `formatSymptomRecordLabel(symptomDraft)` so it shares the exact `증상 기록` / `자궁경부암 경고 기록` / `자궁경부암 기록 메모` rule used by metric, timeline, Markdown, CSV, and caregiver exports.
+    - Added a concise `role="status"` region with `aria-label` naming the saved record type.
+  - Updated `src/App.css`.
+    - Reused the compact record-label chip style for the preview label.
+    - Added wrapping-safe `.symptom-record-preview` layout so narrow surfaces do not overflow.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the symptom-form save preview as part of the shared record-label contract.
+    - Added a QA question for pre-save label parity with post-save/export labels.
+- Verification:
+  - `npm run test -- src/recordOrdering.test.ts src/symptomRecordLabels.test.ts`: PASS, 2 files and 6 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 32 files and 253 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Clicked the existing `HPV 백신 가족 안내 자궁경부암 기록 메모 초안 만들기` button.
+    - DOM check confirmed `.symptom-record-preview` text `저장될 기록 종류 / 자궁경부암 기록 메모`.
+    - DOM check confirmed preview `aria-label` was `저장될 기록 종류 자궁경부암 기록 메모`.
+    - The symptom draft kept the HPV memo body, KDCA source URL line, and follow-up action.
+    - Browser errors were empty; console only had normal Vite debug connection logs; body and preview had no horizontal overflow at 1094x859.
+  - No git staging or commit was performed.
+
+## Resume Notes After Final Gates
+
+- Current completed slice:
+  - Korean health standards calibration.
+  - Health standards coverage matrix.
+  - Export coverage tests.
+  - cmux workspace recovery and in-app browser QA evidence.
+  - saved-document action density audit.
+- Current cmux surface:
+  - `surface:40`, `pane:19`, `workspace:8`, URL `http://127.0.0.1:1420/`.
+- Next durable app slice:
+  - Tauri SQLite live readback for `profile_snapshot.waist_cm`, if desktop-runtime verification is in scope.
+  - Otherwise continue with small standards/reporting polish while preserving the explicit coverage matrix.
+
+## 2026-06-03 23:47 KST - Korean Standards Sex/Export Coverage QA
+
+- User concern addressed:
+  - Korean adult BMI, waist circumference, blood pressure, and glucose standards must be visible and test-backed for accurate data entry.
+  - Sex-specific standards must be explicit where Korean criteria differ by sex.
+- Code polish:
+  - `src/caregiverExport.ts`: caregiver header now displays `여성`, `남성`, `기타/미지정` instead of raw internal sex values.
+  - `src/csvExport.ts`: profile row now exports Korean sex labels instead of `female`/`male`.
+  - `src/caregiverExport.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`: added assertions that exports include `기준 적용 범위`, `[판정 적용] 한국 성인 BMI`, male/female waist criteria, glucose target wording, and `[사용자 기준 우선] 기타 검사실 기준`.
+- Standards coverage now represented as:
+  - automatic assessment: Korean adult BMI, male/female waist circumference, Korean adult BP, diabetes-care glucose targets, diabetes-screening glucose thresholds.
+  - input helper: A1C/FPG/postprandial glucose, lipids with sex-specific HDL, CBC with sex-specific hemoglobin.
+  - user range required: other lab values, because hospital/lab/treatment-state ranges can vary.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 16 files and 65 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-document-action-density-audit.cjs`: PASS.
+- cmux in-app browser verification on `surface:40`:
+  - `.app-shell` wait: PASS.
+  - metric cards: 9.
+  - standards coverage rows: 9.
+  - visible text includes `한국 성인 기준`, `한국 성인 BMI`, `남성 90cm, 여성 85cm`, `식전`, `식후`, `입력 보조`, and `사용자 기준 우선`.
+  - boundary input QA:
+    - female, 170cm, 73kg, waist 85cm -> BMI `25.3 / 1단계 비만`, waist `복부비만 기준 해당`.
+    - male, waist 89cm -> `복부비만 기준 미만`.
+    - male, waist 90cm -> `복부비만 기준 해당`.
+    - Restored browser values to default `56세 · 여성`, `164cm / 62kg · 허리 82cm`.
+- Current cmux surface remains:
+  - `surface:40`, `pane:19`, `workspace:8`, URL `http://127.0.0.1:1420/`.
+- No git staging or commit was performed.
+
+## 2026-06-05 01:34 KST - Symptom Timeline Source Evidence Display Iteration Note
+
+- Improvement target:
+  - Saved source-backed symptom records already showed `근거 포함` badges and exported separated evidence, but the recent timeline detail could still display a raw generated `출처:` line from template-filled action/body notes.
+  - Users needed the same readable body-plus-evidence split in the dashboard timeline before exporting or sharing.
+- Code/docs changes:
+  - Added `src/symptomDisplay.ts`.
+    - `buildSymptomDisplayParts()` parses source-backed symptom action/body text into a visible body and source evidence.
+    - It removes raw `출처:` from the timeline detail when the primary visible field has evidence, and still surfaces source evidence from the secondary field when the visible action lacks a source line.
+  - Added `src/symptomDisplay.test.ts`.
+    - Covers action-source splitting, body-source fallback, and ordinary symptom notes.
+  - Updated `src/App.tsx`.
+    - Recent timeline symptom rows now render the parsed body and a separate linked `근거:` row with item-specific accessible label/title.
+  - Updated `src/App.css`.
+    - Added compact wrapping `.timeline-source-evidence` styling aligned with existing lab/question evidence rows.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the saved symptom timeline evidence split and added it to the DESIGN audit checklist.
+- Verification so far:
+  - PASS: `npm run test -- src/symptomDisplay.test.ts src/symptomRecordLabels.test.ts` (2 files, 11 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/symptomDisplay.ts src/symptomDisplay.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (36 files, 280 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser QA on `workspace:11`, `surface:513`, `http://127.0.0.1:1420/`.
+    - Backed up `carevault.v1` to `carevault.qa.backup`.
+    - Injected temporary source-backed symptom `qa-symptom-source`.
+    - Confirmed the timeline row title was `성교 후 출혈 · 6/10`.
+    - Confirmed the detail paragraph was `발생 시점과 양을 기록해 진료팀에 확인` and did not include raw `출처:`.
+    - Confirmed the separated evidence row linked to `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5370` with `aria-label` `성교 후 출혈 · 6/10 기록 근거 국가암정보센터 자궁경부암 일반적 증상`.
+    - Confirmed body, timeline item, and evidence row horizontal overflow were all false.
+    - Restored the original `carevault.v1`, removed `carevault.qa.backup`, reloaded, and confirmed `qa-symptom-source` no longer existed in storage or rendered DOM.
+    - Browser errors were empty; console contained only normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:46 KST - Question Timeline Source Evidence Display Iteration Note
+
+- Improvement target:
+  - Saved question cards, copy, care queue, and exports already split generated `출처:` lines into `근거:` evidence.
+  - The recent timeline question row still used `확인 필요: ${question.question}`, so source-backed saved questions could show a raw generated `출처:` line in the timeline detail paragraph.
+- Code/docs changes:
+  - Updated `src/questionDisplay.ts`.
+    - Added `buildQuestionTimelineDisplayParts()` to preserve the answer-status prefix while splitting question body/source evidence.
+  - Updated `src/questionDisplay.test.ts`.
+    - Added regression coverage that a source-backed timeline question detail keeps `확인 필요:` and removes raw `출처:` from the visible paragraph.
+  - Updated `src/App.tsx`.
+    - Recent timeline question rows now render `상태: 질문 본문` plus a separate linked `근거:` row.
+    - Timeline source evidence accessible labels/titles now distinguish `기록 근거` for symptoms from `질문 근거` for questions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented recent-timeline question evidence splitting and added it to the DESIGN audit checklist/changelog.
+- Verification so far:
+  - PASS: `npm run test -- src/questionDisplay.test.ts src/questionClipboard.test.ts` (2 files, 10 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/questionDisplay.ts src/questionDisplay.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (36 files, 281 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser QA on `workspace:11`, `surface:513`, `http://127.0.0.1:1420/`.
+    - Backed up `carevault.v1` to `carevault.qa.backup`.
+    - Injected temporary source-backed question `qa-question-timeline-source`.
+    - Confirmed the timeline row title was `질문 · 혈당 목표`.
+    - Confirmed the detail paragraph was `확인 필요: 식전 혈당 목표를 어떻게 조정할까요?`, kept the answer-status prefix, and did not include raw `출처:`.
+    - Confirmed the separated evidence row linked to `https://www.diabetes.or.kr/general/info/treat/treat_01.php` with `aria-label` `질문 · 혈당 목표 질문 근거 대한당뇨병학회 당뇨병 관리 목표`.
+    - Confirmed body, timeline item, and evidence row horizontal overflow were all false.
+    - Restored the original `carevault.v1`, removed `carevault.qa.backup`, reloaded, and confirmed `qa-question-timeline-source` no longer existed in storage or rendered DOM.
+    - Browser errors were empty; console contained only normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:55 KST - Latest Symptom Metric Source Link Iteration Note
+
+- Improvement target:
+  - Recent timeline symptom rows now split generated `출처:` text into linked `근거:` evidence, but the top latest-symptom metric card still showed only a generic `근거 포함` chip.
+  - Users scanning the dashboard needed the official source label visible before scrolling to the timeline or exports.
+- Code/docs changes:
+  - Updated `src/symptomDisplay.ts`.
+    - Added `compactSourceEvidence` so compact surfaces can show `근거: 출처명` without the full URL text.
+  - Updated `src/symptomDisplay.test.ts`.
+    - Added compact evidence expectations for action-source, body-source fallback, and ordinary symptoms.
+  - Updated `src/App.tsx`.
+    - The latest-symptom metric now renders a compact linked `근거:` source label for source-backed records.
+  - Updated `src/App.css`.
+    - Added wrapping `.metric-source-evidence` styling with hover/focus states.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that latest-symptom metric cards show linked source labels rather than only `근거 포함`.
+- Verification so far:
+  - PASS: `npm run test -- src/symptomDisplay.test.ts src/symptomRecordLabels.test.ts` (2 files, 11 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/symptomDisplay.ts src/symptomDisplay.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (36 files, 281 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser QA on `workspace:11`, `surface:513`, `http://127.0.0.1:1420/`.
+    - Backed up `carevault.v1` to `carevault.qa.backup`.
+    - Injected temporary source-backed latest symptom `qa-metric-symptom-source`.
+    - Confirmed the latest-symptom metric card showed `5/10`, `림프부종 악화 신호`, `증상 기록`, and linked text `근거: 국가암정보센터 림프부종 치료 전후관리`.
+    - Confirmed the link href was `https://www.cancer.go.kr/lay1/S1T429C431/contents.do`.
+    - Confirmed `aria-label` was `최근 증상 근거 국가암정보센터 림프부종 치료 전후관리` and hover title was `최근 증상 근거: 국가암정보센터 림프부종 치료 전후관리`.
+    - Confirmed the old generic `.metric-record-evidence-label` chip was absent for that card.
+    - Confirmed body, metric card, and evidence row horizontal overflow were all false.
+    - Restored the original `carevault.v1`, removed `carevault.qa.backup`, reloaded, and confirmed `qa-metric-symptom-source` no longer existed in storage or rendered DOM.
+    - Browser errors were empty; console contained only normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:04 KST - Open Question Metric Summary Iteration Note
+
+- Improvement target:
+  - The top `진료 질문` metric showed only an open-question count and generic `다음 진료 전 확인` text.
+  - Users could not tell from the dashboard whether open questions included `이번 진료 우선` items or source-backed questions without scrolling to the full question list.
+- Code/docs changes:
+  - Added `src/questionMetric.ts`.
+    - `buildQuestionMetricSummary()` counts open questions by priority and counts source-backed open questions via the shared source-evidence parser.
+  - Added `src/questionMetric.test.ts`.
+    - Covers mixed open priorities, source-backed counts, ignored answered questions, and empty-open state.
+  - Updated `src/App.tsx`.
+    - The `진료 질문` metric now shows priority-mix and `근거 포함` chips under the open count.
+  - Updated `src/App.css`.
+    - Added compact wrapping `.metric-question-summary` chips with source-backed tone styling.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented dashboard open-question priority/source-evidence chips and added them to the DESIGN audit checklist/changelog.
+- Verification so far:
+  - PASS: `npm run test -- src/questionMetric.test.ts src/questionDisplay.test.ts src/questionClipboard.test.ts` (3 files, 12 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/questionMetric.ts src/questionMetric.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (37 files, 283 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser QA on `workspace:11`, `surface:513`, `http://127.0.0.1:1420/`.
+    - Backed up `carevault.v1` to `carevault.qa.backup`.
+    - Injected three temporary open questions covering high, next-visit, and routine priorities, with two source-backed `출처:` entries.
+    - Confirmed the `진료 질문` metric card showed `4개`, status `다음 진료 전 확인`, priority chip `이번 진료 1 · 다음 진료 2 · 일반 1`, and source chip `근거 포함 2`.
+    - Confirmed summary `aria-label` was `진료 질문 요약 이번 진료 1 · 다음 진료 2 · 일반 1 · 근거 포함 2`.
+    - Confirmed body, metric card, and question-summary row horizontal overflow were all false.
+    - Restored the original `carevault.v1`, removed `carevault.qa.backup`, reloaded, and confirmed no `qa-question-metric-*` rows remained in storage or rendered DOM.
+    - Browser errors were empty; console contained only normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:25 KST - Dashboard Standard Source Link Iteration Note
+
+- Improvement target:
+  - BMI, waist, latest blood-pressure, and latest glucose metric cards showed active Korean standard context notes, but those top dashboard cards did not expose the official source link that the input helper and standards matrix already showed.
+  - Users had to scroll to the standards panel to verify which Korean source backed the metric note.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `buildDashboardMetricStandardEvidence()` so metric cards reuse the shared coverage matrix, official source label, URL, and accessible source-link naming.
+  - Updated `src/healthStandards.test.ts`.
+    - Added regression coverage for blood-pressure and glucose-care metric source evidence.
+  - Updated `src/App.tsx`.
+    - BMI, waist, latest-BP, and latest-glucose metric cards now render the active standard note plus a linked compact `근거:` official-source label.
+  - Updated `src/App.css`.
+    - Dashboard metric standard notes now wrap their note/source-link pieces and keep focus-visible outlines for source links.
+  - Updated `README.md`, `DESIGN.md`, and `working.md`.
+    - Documented linked official-source evidence in dashboard metric standard notes.
+- Verification so far:
+  - PASS: `npm run test -- src/healthStandards.test.ts src/vitalRecordLabels.test.ts` (2 files, 27 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (37 files, 284 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser QA on `workspace:11`, `surface:513`, `http://127.0.0.1:1420/`.
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reloaded `surface:513` and waited for `.metrics-grid`.
+    - Confirmed BMI, waist, latest-BP, and latest-glucose metric cards all had `.metric-standard-evidence` text with linked `근거:` labels.
+    - Confirmed source hrefs were the existing coverage-matrix URLs for 대한비만학회 BMI/waist, KDCA blood pressure, and KDA glucose-care.
+    - Confirmed accessible link labels and hover titles used the card-specific context, such as `최근 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기`.
+    - Confirmed body, each metric card, each evidence row, and each source link had no horizontal overflow.
+    - Browser errors were empty; console contained only normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:28 KST - Dashboard Profile Sex Standard Chips Iteration Note
+
+- Improvement target:
+  - Current-profile sex standard notes were visible in the Korean standards panel and exports, but the top `프로필` metric card only showed age/sex/height/weight/waist.
+  - Users could not see the active sex-specific waist, HDL, GGT, and hemoglobin helper criteria from the dashboard without scrolling.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `buildProfileMetricSexStandardChips()` to reuse `buildProfileSexStandardNotes()` while omitting the adult common standards that are already represented by other metric cards.
+  - Updated `src/healthStandards.test.ts`.
+    - Added regression coverage for female, male, and unspecified profile metric sex-standard chips.
+  - Updated `src/App.tsx`.
+    - The `프로필` metric now shows compact current-sex standard chips for waist, HDL-C, GGT, and hemoglobin.
+  - Updated `src/App.css`.
+    - Added wrapping chip styles for the profile metric standard strip.
+  - Updated `README.md`, `DESIGN.md`, and `working.md`.
+    - Documented the dashboard profile-card sex-standard chips.
+- Verification so far:
+  - PASS: `npm run test -- src/healthStandards.test.ts` (1 file, 25 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (37 files, 285 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser QA on `workspace:11`, `surface:513`, `http://127.0.0.1:1420/`.
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reloaded `surface:513` and waited for `.metrics-grid`.
+    - Confirmed the `프로필` metric card showed heading `현재 성별 기준`.
+    - Confirmed four current female-profile chips: `허리둘레·여성 85cm 이상이면 복부비만 기준 해당`, `HDL-C·여성 프리셋은 50 mg/dL 이상`, `GGT·여성 프리셋은 8-35 IU/L, 결과지 기준 우선`, and `헤모글로빈·여성 프리셋은 12.0-16.0 g/dL, 결과지 기준 우선`.
+    - Confirmed per-chip accessible labels use colon-separated text, such as `허리둘레: 여성 85cm 이상이면 복부비만 기준 해당`.
+    - Confirmed body, profile metric card, profile standard strip, and chips had no horizontal overflow.
+    - Browser errors were empty; console contained only normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:32 KST - Profile Sex Standard Chip Source Evidence Iteration Note
+
+- Improvement target:
+  - The dashboard `프로필` metric now showed current-sex waist, HDL-C, GGT, and hemoglobin chips, but the chip itself did not expose which official source backed each criterion.
+  - Adding visible full `근거:` text to every chip would make the top card too dense, so the improvement keeps the visual chip compact while making source evidence available through accessibility labels and hover titles.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - `buildProfileMetricSexStandardChips()` now attaches `standardId`, `sourceLabel`, and `sourceUrl` from the shared Korean standards coverage matrix.
+  - Updated `src/healthStandards.test.ts`.
+    - Added expectations that female profile chips map to 대한비만학회, 대한당뇨병학회, KDCA clinical chemistry, and 서울아산병원 Hgb sources.
+  - Updated `src/App.tsx`.
+    - Profile metric sex-standard chips now include source-backed `aria-label` and hover `title` text plus a compact shield source icon.
+  - Updated `src/App.css`.
+    - Added source-icon sizing for profile metric standard chips.
+  - Updated `README.md`, `DESIGN.md`, and `working.md`.
+    - Documented source-backed accessible labels/titles for dashboard profile sex-standard chips.
+- Verification so far:
+  - PASS: `npm run test -- src/healthStandards.test.ts` (1 file, 25 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (37 files, 285 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser QA on `workspace:11`, `surface:513`, `http://127.0.0.1:1420/`.
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reloaded `surface:513` and waited for `.metrics-grid`.
+    - Confirmed the `프로필` metric retained four current female-profile chips and each chip had a `.metric-profile-standard-source-icon`.
+    - Confirmed source-backed accessible labels/titles:
+      - `허리둘레: 여성 85cm 이상이면 복부비만 기준 해당. 근거: 대한비만학회 비만 진료지침 2022`.
+      - `HDL-C: 여성 프리셋은 50 mg/dL 이상. 근거: 대한당뇨병학회 당뇨병 관리 목표`.
+      - `GGT: 여성 프리셋은 8-35 IU/L, 결과지 기준 우선. 근거: 질병관리청 국가건강정보포털 임상 화학 검사`.
+      - `헤모글로빈: 여성 프리셋은 12.0-16.0 g/dL, 결과지 기준 우선. 근거: 서울아산병원 혈색소 검사 참고치`.
+    - Confirmed body, profile metric card, profile standard strip, and chips had no horizontal overflow.
+    - Browser errors were empty; console contained only normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:35 KST - Profile Sex Standard Chip Copy Iteration Note
+
+- Improvement target:
+  - The dashboard `프로필` metric showed source-backed current-sex standard chips, but users still had to scroll to the full standards panel to copy that small current-profile criteria set.
+  - The copy action should preserve exactly the visible chip scope and official-source evidence without copying the whole standards matrix.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added profile metric sex-standard copy description, status, and clipboard-text formatters.
+    - Copied text includes sex label, summary count, each visible criterion, and source label/URL.
+  - Updated `src/healthStandards.test.ts`.
+    - Added regression coverage for the copy label, status, clipboard heading, four current female criteria, and four source labels.
+  - Updated `src/App.tsx`.
+    - Added `성별 기준 복사` to the `프로필` metric card.
+    - The button `aria-label`/title and post-copy status use the same compact summary.
+  - Updated `src/App.css`.
+    - Added compact sizing for the profile metric copy button.
+  - Updated `README.md`, `DESIGN.md`, and `working.md`.
+    - Documented one-click source-backed copy for dashboard profile sex-standard chips.
+- Verification so far:
+  - PASS: `npm run test -- src/healthStandards.test.ts` (1 file, 26 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (37 files, 286 tests).
+  - PASS: `npm run build`.
+  - PASS: cmux right-side in-app browser QA on `workspace:11`, `surface:513`, `http://127.0.0.1:1420/`.
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reloaded `surface:513` and waited for `.metrics-grid`.
+    - Confirmed the `성별 기준 복사` button in the `프로필` metric had `aria-label` and title `프로필 성별 기준 복사 · 여성 · 4개 기준 · 근거 4개`, included a copy icon, and had no horizontal overflow.
+    - Installed a temporary browser-side clipboard capture, clicked `성별 기준 복사`, and verified the copied text included `[프로필 성별 적용 기준]`, `성별: 여성`, `요약: 여성 · 4개 기준 · 근거 4개`, the four current female criteria, and all four source labels/URLs.
+    - Confirmed post-copy status text `프로필 성별 기준 복사됨 · 여성 · 4개 기준 · 근거 4개`.
+    - Confirmed body, profile metric card, profile standard strip, and copy button had no horizontal overflow.
+    - Browser errors were empty; console contained only normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-04 16:15 KST - Caregiver Queue Evidence Link Iteration
+
+- Improvement target:
+  - Caregiver HTML already rendered source-backed saved-question evidence as clickable official-source links, but the derived care queue and direct lab-note evidence still showed `근거: 출처명 (URL)` as plain text.
+  - Make the family/clinic share HTML easier to scan by linking official evidence labels while preserving escaped user-entered medical memo text.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - Added grounded-text rendering for `근거: 출처명 (https://...)` citation segments.
+    - Caregiver care-queue details now link official source labels for source-backed fever/chills, lymphedema, cervical urinary/bowel/bleeding, bowel-obstruction, vital, lab, and cervical quick-check evidence when URLs are present.
+    - Direct caregiver lab-note evidence now uses the same link rendering.
+    - Non-evidence text still goes through HTML escaping.
+  - Updated `src/caregiverExport.test.ts`.
+    - Strengthened caregiver HTML assertions for linked infection, cervical treatment-side-effect, and lab evidence.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented linked source-backed question, care-queue, and lab-note evidence in caregiver HTML.
+- Verification:
+  - `npm run test -- src/caregiverExport.test.ts`: PASS, 1 file and 18 tests.
+  - `npm run test -- src/caregiverExport.test.ts src/careActionQueue.test.ts src/sourceEvidence.test.ts`: PASS, 3 files and 36 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 29 files and 184 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed caregiver/share surfaces, cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:26 KST - Lipid Standard Applicability Split Iteration
+
+- Improvement target:
+  - `healthStandards` grouped total cholesterol, LDL, HDL, and triglyceride helpers into one `지질 검사 프리셋` row with the HDL-specific KDA source.
+  - This blurred the distinction between common lipid input helpers and HDL male/female-specific helper thresholds.
+- Official source recheck:
+  - Rechecked KDCA 국가건강정보포털 이상지질혈증 source for common dyslipidemia/lipid context:
+    `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=6054`
+  - Rechecked KDA diabetes target source used for HDL male/female helper thresholds:
+    `https://old.diabetes.or.kr/general/class/medical.php?idx=6&mode=view&number=322`
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Split `lipids` into `lipids-common` and `hdl`.
+    - `lipids-common` now covers total cholesterol, LDL, and triglyceride as adult common input helpers with KDCA 이상지질혈증 source.
+    - `hdl` now covers HDL male 40 mg/dL and female 50 mg/dL helper thresholds with KDA diabetes target source.
+    - Expanded the `남녀 공통` applicability summary to mention A1C/FPG/PP2 and total cholesterol/LDL/TG helper presets.
+  - Updated tests:
+    - `src/healthStandards.test.ts`: ids, source labels, sex applicability, sex-specific ids, and exported coverage-line counts.
+    - `src/caregiverExport.test.ts`: caregiver HTML standards section now shows both common lipid and HDL rows.
+    - `src/csvExport.test.ts`: CSV standards rows now preserve both common lipid and HDL rows.
+    - `src/visitPacket.test.ts`: Markdown visit summary standards rows now preserve both common lipid and HDL rows.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that common lipid helpers and HDL sex-specific helper thresholds are separate standards rows with distinct official sources.
+- Verification:
+  - First targeted run exposed one stale CSV expectation for the expanded `남녀 공통` summary text.
+  - Fixed the CSV expectation to include `A1C/FPG/PP2·총콜레스테롤/LDL/TG 프리셋`.
+  - `npm run test -- src/healthStandards.test.ts src/caregiverExport.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/labPresets.test.ts`: PASS, 5 files and 58 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 29 files and 187 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: `cmux browser --surface surface:513 eval 'document.body.innerText.includes("다음 개발 슬라이스")'` reports `false`.
+    - PASS: `cmux browser --surface surface:513 eval 'document.body.innerText.includes("기록과 내보내기는 로컬 기기 기준으로 준비되며, 진료 판단은 의료진 기준을 우선하세요.")'` reports `true`.
+    - PASS: `cmux browser --surface surface:513 eval 'document.querySelector(".care-boundary-strip")?.innerText || "MISSING"'` reports the new boundary note.
+    - PASS: `cmux browser --surface surface:513 eval 'document.querySelector(".next-steps") === null'` reports `true`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving Korean standards/export clarity, source-backed caregiver/share surfaces, cervical-cancer patient workflows, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:30 KST - Care Boundary Strip Naming Iteration
+
+- Improvement target:
+  - After replacing the internal roadmap footer copy, the source still used the `.next-steps` class name and a calendar icon.
+  - Align source semantics with the new patient-facing local-record/clinician-priority boundary note.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Renamed the footer strip class from `next-steps` to `care-boundary-strip`.
+    - Replaced the calendar icon with `ShieldCheck`.
+  - Updated `src/App.css`.
+    - Renamed `.next-steps` selectors to `.care-boundary-strip`.
+    - Changed the strip icon color from the old purple accent to the clinical primary teal.
+- Verification:
+  - `rg -n "next-steps|다음 개발 슬라이스|UX gap|개발 슬라이스" src/App.tsx src/App.css || true`: PASS, no matches.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 29 files and 187 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving Korean standards/export clarity, source-backed caregiver/share surfaces, cervical-cancer patient workflows, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:28 KST - User-Facing Roadmap Copy Removal Iteration
+
+- Improvement target:
+  - The live app footer still exposed an internal roadmap sentence: `다음 개발 슬라이스: ... UX gap 개선.`
+  - That belongs in `working.md`, not in a patient/caregiver-facing health record UI.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Replaced the internal development-slice footer copy with a patient-facing local-record and clinician-priority boundary note:
+      `기록과 내보내기는 로컬 기기 기준으로 준비되며, 진료 판단은 의료진 기준을 우선하세요.`
+  - Updated `DESIGN.md`.
+    - Added an audit checklist item requiring internal roadmap/development-slice notes to stay out of user-facing UI.
+    - Added a decision-log entry for the footer copy replacement.
+- Verification:
+  - `rg -n "다음 개발 슬라이스|UX gap|개발 슬라이스" src/App.tsx || true`: PASS, no matches.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 29 files and 187 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving Korean standards/export clarity, source-backed caregiver/share surfaces, cervical-cancer patient workflows, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:22 KST - Cervical Screening Evidence Link Iteration
+
+- Improvement target:
+  - Caregiver HTML already had linked source chips in the cervical screening quick-check, but the adjacent screening-summary evidence line could still show `근거: 출처명 (URL)` as plain text.
+  - Keep the source-backed caregiver export consistently clickable for official cervical-screening evidence.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - The cervical screening-summary evidence line now uses the same grounded-text HTML renderer as queue/lab evidence.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added assertions that the national-screening eligibility source appears as a linked official-source label and not as raw `근거: 출처명 (URL)` text.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented linked caregiver HTML cervical screening-summary evidence.
+- Verification:
+  - `npm run test -- src/caregiverExport.test.ts src/sourceEvidence.test.ts`: PASS, 2 files and 22 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 29 files and 187 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed caregiver/share surfaces, cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:19 KST - Inline Symptom Evidence Link Iteration
+
+- Improvement target:
+  - Symptom-support action notes generated inline citations like `... 출처: 출처명 - URL`.
+  - Recent symptom caregiver HTML and cervical-warning queue rows could still expose that generated inline citation as raw `출처:` text instead of separated `근거:` evidence.
+- Code/docs changes:
+  - Updated `src/sourceEvidence.ts`.
+    - Added support for inline generated source citations at the end of a note, while preserving the existing line-based `출처:` parser.
+  - Updated `src/caregiverExport.ts`.
+    - Recent symptom body and action text now use the shared source-evidence formatter.
+    - Source-backed recent symptom evidence becomes separated `근거:` text with linked official-source labels when URLs are present.
+  - Updated `src/careActionQueue.ts`.
+    - Non-template cervical-warning and high-severity symptom queue details now pass through shared source-evidence formatting.
+    - This prevents inline `출처:` citations from leaking into caregiver queue rows.
+  - Updated tests:
+    - `src/sourceEvidence.test.ts`: inline source citation parse/format coverage.
+    - `src/caregiverExport.test.ts`: recent-symptom linked evidence coverage and updated disabled cancer-care export expectation.
+    - `src/careActionQueue.test.ts`: inline source-backed cervical warning queue detail coverage.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented linked source-backed recent-symptom evidence in caregiver HTML.
+- Verification:
+  - First targeted run exposed a failure: recent symptom text was linked, but the derived caregiver queue row still contained raw inline `출처:` text.
+  - Fixed by routing non-template symptom queue details through `formatTextWithSourceEvidence()`.
+  - `npm run test -- src/sourceEvidence.test.ts src/caregiverExport.test.ts src/careActionQueue.test.ts src/questionClipboard.test.ts src/csvExport.test.ts src/visitPacket.test.ts`: PASS, 6 files and 58 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 29 files and 187 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed caregiver/share surfaces, cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-03 23:52 KST - Health Standard Source Labels and Export QA
+
+- AutoResearch slice:
+  - Reduce medical-standards ambiguity by making each Korean health-standard coverage row carry a concise source label.
+  - Keep the existing fail-closed split: automatic assessment vs input helper vs user-entered lab range.
+- External sources rechecked/used for source labels:
+  - 대한비만학회 비만 진료지침 2022 summary/PDF for Korean BMI and waist thresholds.
+  - 질병관리청 국가건강정보포털 고혈압 page for Korean BP threshold wording.
+  - 질병관리청 국가건강정보포털 당뇨병 page for screening/diagnostic glucose thresholds.
+  - 대한당뇨병학회 당뇨병 관리 목표 page for diabetes-care glucose targets and HDL sex-specific target.
+- Code changes:
+  - `src/healthStandards.ts`: added `sourceLabel` and `sourceUrl` to every coverage row, and export line formatting now appends `근거: ...`.
+  - `src/App.tsx`: standards coverage details now render `근거: ...` below each row.
+  - `src/App.css`: added compact styling for the new standards source label line.
+  - `src/caregiverExport.ts`: caregiver HTML standards coverage rows now include source labels.
+  - `src/healthStandards.test.ts`: added a source-label coverage test and export formatter assertion.
+  - `src/caregiverExport.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`: now assert Korean-standard source labels in exports/previews.
+  - `README.md`: updated current slice/storage notes/next durable slice to mention source labels and export-preview QA.
+  - `src/App.tsx` next-step copy now says: `cmux 인앱브라우저 기준 건강기준 근거 표시와 내보내기 출처 QA`.
+- cmux recovery:
+  - Prior `surface:40` was `about:blank` during this pass.
+  - `curl -I --max-time 5 http://127.0.0.1:1420/`: PASS, dev server returned `200 OK`.
+  - `cmux /Users/wj/Ai/System/10_Projects/CareVault`: PASS; current workspace became `workspace:9`.
+  - `cmux new-pane --workspace workspace:9 --type browser --direction right --url http://127.0.0.1:1420/ --focus true`: PASS.
+  - New current CareVault cmux QA surface:
+    - `surface:54`
+    - `pane:21`
+    - `workspace:9`
+    - URL: `http://127.0.0.1:1420/`
+- cmux in-app browser verification on `surface:54`:
+  - `.app-shell` wait: PASS.
+  - page title: `CareVault`.
+  - metric cards: 9.
+  - standards coverage rows: 9.
+  - visible source labels include:
+    - `근거: 대한비만학회 비만 진료지침 2022`
+    - `근거: 대한당뇨병학회 당뇨병 관리 목표`
+    - `근거: 질병관리청 국가건강정보포털 당뇨병`
+  - Export preview clicks:
+    - `요약 미리보기`: PASS, includes `기준 적용 범위`, KSSO source label, and `[사용자 기준 우선] 기타 검사실 기준`.
+    - `CSV 미리보기`: PASS, includes `standard_coverage`, KSSO source label, and `[사용자 기준 우선] 기타 검사실 기준`.
+    - `공유본 미리보기`: PASS in iframe `srcDoc` and raw HTML details, includes `기준 적용 범위`, KSSO/KDCA source labels, and `사용자 기준 우선`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 16 files and 66 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=390 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS.
+    - no console errors.
+    - no horizontal overflow.
+    - no touch-target issues.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- No git staging or commit was performed.
+
+## 2026-06-04 00:03 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - JSON backup/import roundtrip QA.
+  - Backup export/import now strips local `attachmentPath` values, preserves attachment filenames, and marks restored attachments as `백업에서 복원됨 - 재첨부 필요`.
+  - cmux synthetic import and intercepted backup Blob export both passed with no `/Users/wj` or `attachmentPath` leak.
+- Current verification:
+  - `npm run typecheck && npm run test`: PASS, 17 files and 70 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - 390px mobile layout audit: PASS.
+- Current cmux QA surface:
+  - `surface:73`
+  - `pane:25`
+  - `workspace:4`
+  - URL: `http://127.0.0.1:1420/`
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current next durable slice:
+  - cmux invalid JSON backup failure UX and state-preservation checks.
+- Current in-app next-step copy:
+  - `다음 개발 슬라이스: cmux 인앱브라우저 기준 잘못된 백업 파일 실패 UX와 상태 보존 QA.`
+- No git staging or commit was performed.
+
+## 2026-06-04 01:39 KST - AutoResearch Caregiver Direct Edit Feedback
+
+- Reason for this iteration:
+  - Recent slices preserved action labels for caregiver-share preset/reset, but direct caregiver-share edits still collapsed to generic autosave feedback.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Clicked `식사` memo preset.
+    - PASS for data change: cover memo became `오늘은 식사량, 수분 섭취, 불편했던 음식을 중심으로 봐주세요.`
+    - Weakness: visible status after autosave was only `브라우저 자동 저장됨`.
+    - Clicked `프로필 가리기`.
+    - PASS for data change: `redactProfile: true`.
+    - Weakness: visible status after autosave was only `브라우저 자동 저장됨`.
+    - Clicked the first caregiver section checkbox.
+    - PASS for data change: `visits: false` and summary excluded `진료`.
+    - Weakness: visible status after autosave was only `브라우저 자동 저장됨`.
+- Code change:
+  - `src/App.tsx`:
+    - Added `getCaregiverShareSectionLabel()`.
+    - Extended `updateCaregiverShareSettings()` with an optional action label.
+    - Added autosave-preserved labels for caregiver memo textarea edits, memo preset buttons, profile redaction toggle, and section include/exclude toggles.
+    - Changed successful backup import from plain `setSaveLabel("백업 가져옴")` to `setActionSaveLabel("백업 가져옴")` so autosave preserves the import result.
+  - `README.md`:
+    - Updated the action-feedback slice description to include caregiver direct edits and backup import.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before testing.
+  - Clicked `식사` memo preset:
+    - PASS: cover memo changed.
+    - PASS: status `전달 메모 프리셋 적용: 식사 · 브라우저 자동 저장됨`.
+  - Clicked `프로필 가리기`:
+    - PASS: `redactProfile: true`.
+    - PASS: status `보호자 공유 프로필 가림 · 브라우저 자동 저장됨`.
+  - Clicked caregiver section `진료` off:
+    - PASS: `visits: false`.
+    - PASS: status `공유 섹션 제외: 진료 · 브라우저 자동 저장됨`.
+  - Filled the caregiver memo textarea directly:
+    - PASS: cover memo `cmux caregiver direct memo label`.
+    - PASS: status `보호자 전달 메모 수정됨 · 브라우저 자동 저장됨`.
+  - Clicked section checkboxes until only `혈압·혈당` remained:
+    - PASS: remaining checked checkbox was disabled.
+    - PASS: status `공유 섹션 제외: 음식 · 브라우저 자동 저장됨`.
+  - Synthetic backup import through the real hidden file input change path:
+    - PASS: imported profile heading `cmux import label proof`.
+    - PASS: import feedback `백업 가져오기 완료`.
+    - PASS: status `백업 가져옴 · 브라우저 자동 저장됨`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:146`.
+    - PASS: heading returned to `나의 건강 기록`.
+    - PASS: caregiver memo empty, redaction false, all caregiver sections included.
+    - PASS: no `cmux import label` or `cmux caregiver direct memo label` residue remained.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS immediately after the patch.
+  - `npm run test`: PASS, 19 files and 80 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check:
+    - PASS: seed counts returned to vitals `3`, visits/documents/symptoms/questions/labs `1`.
+    - PASS: caregiver memo empty, redaction false, all caregiver sections included.
+    - PASS: no cmux QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagent retry failed again with the account usage-limit message and reset window `Jun 8th, 2026 12:20 AM`.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 00:36 KST - Invalid Backup Failure UX and Single-Surface Function Sweep
+
+- Resume target:
+  - Continued from the current next durable slice: cmux invalid JSON backup failure UX and state-preservation checks.
+  - Active broader objective remains direct cmux in-app browser QA plus Codex in-app Browser-use where available, with durable continuation notes.
+- Subagent attempt:
+  - Spawned two read-only explorer agents for invalid-backup audit and all-function QA inventory.
+  - Both failed immediately with account usage-limit errors, so no subagent findings were used.
+  - Main agent completed the audit/implementation/verification directly.
+- Codex in-app Browser-use status:
+  - Loaded the Browser skill and attempted `agent.browsers.get("iab")`.
+  - Result: `Browser is not available: iab`.
+  - `agent.browsers.list()` returned `[]`.
+  - This is recorded as a current environment blocker for Codex in-app Browser-use evidence, not an app failure.
+- cmux setup:
+  - Dev server started: `npm run dev -- --host 127.0.0.1 --port 1420`.
+  - `cmux /Users/wj/Ai/System/10_Projects/CareVault`: PASS.
+  - `cmux browser open-split http://127.0.0.1:1420/ --workspace $(cmux current-workspace) --focus true`: PASS.
+  - Current cmux QA surface:
+    - `surface:84`
+    - `pane:29`
+    - URL: `http://127.0.0.1:1420/`
+  - `cmux browser --surface surface:84 wait --selector '.app-shell' --timeout-ms 15000`: PASS.
+  - `cmux browser --surface surface:84 get title`: `CareVault`.
+  - Metric cards: `9`.
+- Implementation:
+  - `src/backupState.ts`:
+    - Added `CareVaultBackupImportFailureReason`.
+    - Added `describeCareVaultBackupImportFailure()`.
+  - `src/backupState.test.ts`:
+    - Added failure-message coverage for rejected backup payloads.
+  - `src/App.tsx`:
+    - Added `BackupImportFeedback` state.
+    - Invalid JSON, unreadable files, and malformed backup objects now show a dedicated failure panel.
+    - Failure paths keep existing health records, export preview, and attachment preview intact.
+    - Successful import now shows a dedicated success panel.
+    - In-app next-step moved to a broader single-surface all-function click QA/Tauri readback target.
+  - `src/App.css`:
+    - Added error/success styling for `.backup-import-feedback`.
+  - `README.md`:
+    - Current slice/storage notes now state invalid JSON or malformed backup import leaves current records unchanged.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 17 files and 72 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS before this note.
+- cmux invalid backup QA on `surface:84`:
+  - Clicked `공유본 미리보기` and `요약 미리보기` through cmux browser click commands before import failure checks.
+  - Synthetic invalid JSON file import:
+    - Failure panel title: `백업 가져오기 실패`.
+    - Detail: `JSON 파일 형식을 확인하세요. 기존 건강 기록은 그대로 유지되었습니다.`
+    - Header/profile/BMI state preserved.
+    - Existing preview panel stayed open.
+    - File input reset to empty string.
+  - Synthetic malformed CareVault JSON import:
+    - Failure panel title: `백업 가져오기 실패`.
+    - Detail: `프로필과 기록 배열이 있는 CareVault 백업 구조가 아닙니다. 기존 건강 기록은 그대로 유지되었습니다.`
+    - Attempted replacement text `침투 QA 교체` did not appear.
+    - Header/profile/BMI state preserved.
+    - Existing preview panel stayed open.
+    - File input reset to empty string.
+  - Synthetic valid backup import regression:
+    - Success panel title: `백업 가져오기 완료`.
+    - Title changed to `백업 성공 QA`.
+    - Profile metric changed to `61세 · 남성`, `170cm / 73kg · 허리 90cm`.
+    - Local browser state then restored by clearing localStorage and reloading.
+- cmux single-surface function sweep on `surface:84`:
+  - PASS:
+    - `visit_summary_preview`
+    - `csv_preview`
+    - `caregiver_preview`
+    - `stale_guard`
+    - `fresh_preview_after_stale`
+    - `vital_add`
+    - `visit_add`
+    - `symptom_add`
+    - `question_add`
+    - `food_assessment`
+    - `lab_add`
+  - Initial `document_add_and_filter` failed due to test-selector index error, not app behavior.
+  - Retested document add/filter with corrected title/body fields:
+    - `added: true`
+    - `filtered: true`
+    - `allPassed: true`
+  - Browser state restored to default after the sweep.
+- Supplemental audits:
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=390 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS.
+    - no console errors.
+    - no horizontal overflow.
+    - no target-size issues.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=320 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS.
+    - no console errors.
+    - no horizontal overflow.
+    - no target-size issues.
+  - `CAREVAULT_FOCUS_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`: PASS.
+    - required focus targets reached.
+    - no hidden file input in tab order.
+    - no missing visible focus styles.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-document-action-density-audit.cjs`: PASS.
+    - saved-document actions all 44px.
+    - deleted-document actions all 44px.
+    - no `/Users/`, `attachmentPath`, or `tauri-sandbox` leak.
+  - `CAREVAULT_SMOKE_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-stale-diff-smoke.cjs`: PASS.
+- Tauri desktop-runtime readback:
+  - `cargo test --manifest-path src-tauri/Cargo.toml`: PASS, 0 Rust tests but debug/test build succeeded.
+  - Located SQLite DB: `/Users/wj/Library/Application Support/app.veritas.carevault/carevault.db`.
+  - Before launching the current debug binary, the existing DB lacked `profile_snapshot.waist_cm`, so stale DB state alone could not prove current runtime readiness.
+  - Ran `./src-tauri/target/debug/carevault` against the live Vite dev server, then read SQLite again.
+  - `PRAGMA table_info(profile_snapshot)`: PASS, `waist_cm TEXT NOT NULL DEFAULT ''` now present.
+  - `app_state`: row `main`, `length(value)=1778`, `updated_at=2026-06-03T15:38:12.808Z`.
+  - Normalized row counts after runtime save:
+    - `profile_snapshot`: 1
+    - `vitals`: 3
+    - `visits`: 1
+    - `care_documents`: 1
+    - `document_history`: 1
+    - `symptoms`: 1
+    - `questions`: 1
+    - `lab_results`: 1
+    - `food_checks`: 1
+  - Profile readback:
+    - `나의 건강 기록`, `56`, `female`, `164`, `62`, `waist_cm=82`, `diabetes=1`, `hypertension=1`.
+  - Vitals readback:
+    - `bp-1`: `132/84`
+    - `glu-1`: `146`, `after-meal`
+    - `bp-2`: `126/78`
+  - Tauri debug process was stopped after the DB check.
+- Final cmux state check after restore:
+  - Title: `나의 건강 기록`.
+  - Profile metric: `56세 · 여성`, `164cm / 62kg · 허리 82cm`.
+  - Metric cards: `9`.
+  - No import feedback panel visible.
+  - Next-step text: `다음 개발 슬라이스: 단일 cmux 인앱브라우저 기준 전수 기능 클릭 QA와 Tauri SQLite readback.`
+  - `cmux browser --surface surface:84 console list`: only Vite debug connection messages.
+  - `cmux browser --surface surface:84 errors list`: `No browser errors`.
+- Current next durable slice:
+  - If Codex in-app Browser-use becomes available, rerun the same single-browser click checklist through that backend.
+  - Otherwise continue with Tauri desktop runtime SQLite readback for profile/waist/vitals/imported backup state.
+- No git staging or commit was performed.
+
+## 2026-06-04 00:59 KST - DOM-Control Coverage Sweep and Document Attachment Fix
+
+- Resume target:
+  - Continued the active broader objective after the 00:36 invalid-backup and all-function sweep.
+  - Main gap addressed: prove coverage against the live DOM control list, not only the earlier feature checklist.
+- Subagent attempt:
+  - Spawned one read-only explorer for remaining UI-control coverage audit.
+  - It failed with the same account usage-limit error, so the main agent continued directly.
+- Codex in-app Browser-use status:
+  - No new Browser-use backend became available in this slice.
+  - Existing blocker remains: earlier `agent.browsers.get("iab")` failed and `agent.browsers.list()` returned `[]`.
+- cmux surfaces:
+  - `surface:84` became blank after a long eval/reload recovery path; opened `surface:91`.
+  - `surface:91` later became unresponsive after a long document eval path; opened `surface:99`.
+  - `surface:99` proved saved browser-image preview could open after the first patch, then became unresponsive during a multi-action document script.
+  - Final active QA surface for this slice: `surface:102`.
+  - Lesson: keep cmux eval scripts short; document deletion and attachment-removal paths use `window.confirm()` and need explicit dialog handling or confirm override.
+- DOM/control coverage additions on cmux:
+  - Extracted the visible DOM control list: 105 interactive controls before later preview-panel controls.
+  - Download buttons: PASS.
+    - `내보내기`: captured `carevault-backup-2026-06-03.json`.
+    - `진료 요약`: captured `carevault-visit-summary-2026-06-03.md`.
+    - `CSV`: captured `carevault-records-2026-06-03.csv`.
+    - `공유본`: captured `carevault-caregiver-share-2026-06-03.html`.
+  - Preview-panel actions: PASS.
+    - `CSV 미리보기` opens.
+    - `복사` writes clipboard.
+    - `인쇄` writes the fake print window.
+    - `다운로드` captures the preview CSV download.
+    - `닫기` closes the preview panel.
+  - Caregiver-share controls: PASS.
+    - Memo preset buttons `식사`, `증상`, `서류` update the memo.
+    - Profile redaction checkbox toggles.
+    - Share presets `family-overview`, `meal-symptom`, `clinic-prep`, `privacy-minimal` apply.
+    - Section checkboxes update the included/excluded summary.
+    - Reset returns preset/memo/sections to default.
+    - Native textarea change after caregiver preview shows stale alert, disables copy/print/download, and `새 미리보기` clears the stale state.
+  - Profile/vital/question/lab controls: PASS after selector correction.
+    - Profile name/age/sex/height/weight/waist and mode toggles update header/metrics.
+    - Glucose branch adds an after-meal glucose record.
+    - Symptom support `질문 초안` appears and populates question draft context.
+    - Question status buttons `답변 완료`, `보류`, `확인 필요` activate.
+    - Lab preset `wbc` fills the lab item.
+    - Abnormal lab result exposes `질문으로 추가` and increases the question list.
+  - Document status/filter/delete/restore controls: PASS with confirm handling.
+    - Seed document review status changed to `정리 완료`.
+    - Category/status/search filters isolated the expected document.
+    - `삭제` moved the record to `삭제 보관함`.
+    - `복구` restored the record.
+- Bugs found and fixed:
+  - Saved browser-reference image documents showed a `미리보기` button but did not open the preview dialog.
+    - Root cause: draft file selection stored only attachment metadata in `documentDraft`; `browserAttachmentPreviewUrls[document.id]` was never populated for the newly created document.
+    - Fix in `src/App.tsx`: added `documentDraftAttachmentFileRef`; `addDocument()` now remembers a browser-preview URL for a browser-reference draft file using the new document ID, then clears the ref.
+    - cmux proof on `surface:102`: `첨부 QA 이미지` with `cmux-proof.png` saved, `미리보기` opened `.attachment-preview-dialog`, dialog text included `브라우저 세션 미리보기`, and save label included `이미지 미리보기 열림`.
+  - Direct next-action fill could update `nextAction` without recording a `다음 조치 변경` history entry if focus baseline was missing.
+    - Root cause: blur fallback compared against `document.nextAction`, which may already be the changed value after the controlled input re-rendered.
+    - Fix in `src/App.tsx`: added `documentActionBaselinesRef`; `updateDocumentNextAction()` now captures the pre-change baseline on first change as well as focus.
+    - cmux proof on `surface:102`: `cmux direct next action` persisted and, after explicit blur, localStorage history included `다음 조치 변경:cmux direct next action`.
+- Current verification after code patches:
+  - `npm run typecheck`: PASS after the attachment-preview patch and again after the next-action baseline patch.
+  - `npm run test`: PASS, 17 files and 72 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - Final `surface:102` seed-state check: PASS.
+    - title `나의 건강 기록`.
+    - no `첨부 QA 이미지` QA document left in the browser state.
+    - `.app-shell` present.
+    - `cmux browser --surface surface:102 errors list`: `No browser errors`.
+- Current state:
+  - Dev server remains running at `http://127.0.0.1:1420/`.
+  - Active cmux QA surface: `surface:102`.
+  - Browser localStorage was cleared and reloaded to seed state after QA document checks.
+  - No git staging or commit was performed.
+
+## 2026-06-04 01:02 KST - Saved-Document Reattachment Coverage
+
+- Reason for this slice:
+  - The 00:59 pass proved new draft document image preview and seed document delete/restore.
+  - Remaining weak DOM path: attaching or reattaching a file from an already-saved document card.
+- cmux QA on `surface:102`:
+  - Reset browser storage to seed state before the check.
+  - Clicked the saved seed document `첨부` path and injected a browser `File` named `saved-reconnect.png`.
+  - PASS: saved document card showed `saved-reconnect.png`.
+  - PASS: saved document card exposed `미리보기`.
+  - PASS: `미리보기` opened the attachment preview dialog for `saved-reconnect.png`.
+  - PASS after allowing React/localStorage update time: `첨부 제거` removed the filename from the card.
+  - PASS: localStorage document history contained both `첨부 재연결:saved-reconnect.png: 브라우저 파일명 참조` and `첨부 제거:saved-reconnect.png 연결 제거`.
+- Current state:
+  - Browser localStorage was cleared and reloaded to seed state after this QA path.
+  - Codex Browser-use backend recheck through Node REPL: `agent.browsers.list()` returned `[]`.
+  - No git staging or commit was performed.
+
+## 2026-06-04 01:04 KST - Storage Mirror Regression Coverage
+
+- Reason for this slice:
+  - The saved-document reattachment and next-action history fixes were proven through cmux.
+  - Added automatic storage-mirror assertions so the normalized SQLite statement builder keeps those fields visible.
+- Code change:
+  - `src/storage.test.ts` now includes a `browser-reference` attachment row for `saved-reconnect.png`.
+  - `src/storage.test.ts` now includes a `next-action` history row with detail `cmux direct next action`.
+  - The mirror statement test now asserts exact bind values for:
+    - `INSERT INTO document_attachments` with `browser-reference`.
+    - `INSERT INTO document_history` with `다음 조치 변경`.
+- Verification:
+  - `npm run test -- storage.test.ts`: PASS, 1 file and 4 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 17 files and 72 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:07 KST - Next-Action Baseline Cleanup and Final Surface Refresh
+
+- Code cleanup:
+  - `src/App.tsx` now routes the saved-document next-action `onFocus` path through `captureDocumentActionBaseline(document)` instead of separately writing only React state.
+  - This keeps focus-driven and direct-change-driven baseline capture on the same ref-backed path.
+- cmux recheck:
+  - Reset `surface:102` to seed and filled saved-document next action with `cmux unified baseline action`.
+  - Explicit blur wrote localStorage history entry `다음 조치 변경:cmux unified baseline action`.
+  - `surface:102` later showed the same long-running automation timeout pattern as earlier heavily used cmux surfaces, so the final clean-state check moved to `surface:108`.
+  - `surface:108` final clean-state check: PASS.
+    - `.app-shell` present.
+    - localStorage cleared and reloaded to seed.
+    - h1 `나의 건강 기록`.
+    - no `saved-reconnect.png` and no `첨부 QA 이미지` left in browser state.
+    - `cmux browser --surface surface:108 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test -- storage.test.ts`: PASS, 1 file and 4 tests.
+  - `npm run test`: PASS, 17 files and 72 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+- Current active cmux QA surface:
+  - `surface:108`.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:12 KST - Tauri UI to SQLite Readback and DB Restore
+
+- Desktop-runtime target:
+  - Verified the saved-document next-action baseline fix through the Tauri app, not only the cmux/localStorage surface.
+  - App window: `app.veritas.carevault`, URL `tauri://localhost`.
+  - Existing desktop DB path: `/Users/wj/Library/Application Support/app.veritas.carevault/carevault.db`.
+- Safety step before mutation:
+  - Backed up the desktop DB to `/tmp/carevault-db-backup-20260604010916.sqlite`.
+  - Backup `PRAGMA integrity_check`: `ok`.
+  - Backup original document state:
+    - `doc-1|혈액검사 메모|백혈구 수치가 낮을 때 식사 제한 기준 질문`
+    - history only `doc-1|서류 저장|혈액검사 메모 기록 생성`.
+- Computer Use interaction:
+  - Set saved document `혈액검사 메모 다음 조치` to `Tauri SQLite QA next action 2026-06-04`.
+  - Pressed `Tab` to blur the field.
+  - UI then showed a new history row:
+    - `2026-06-03 다음 조치 변경 Tauri SQLite QA next action 2026-06-04`.
+- SQLite proof while app state was mutated:
+  - `sqlite3 "$HOME/Library/Application Support/app.veritas.carevault/carevault.db" "SELECT id,title,next_action FROM care_documents; SELECT document_id,label,detail FROM document_history ORDER BY at;"`
+  - Result:
+    - `doc-1|혈액검사 메모|Tauri SQLite QA next action 2026-06-04`
+    - `doc-1|서류 저장|혈액검사 메모 기록 생성`
+    - `doc-1|다음 조치 변경|Tauri SQLite QA next action 2026-06-04`
+- Restore:
+  - Closed the Tauri window and terminated exact leftover debug process `96875`.
+  - First restore attempt was replayed by SQLite sidecar files, so preserved them under:
+    - `/tmp/carevault-db-shm-after-qa-202606040112`
+    - `/tmp/carevault-db-wal-after-qa-202606040112`
+  - Copied the clean backup DB again.
+  - Final restored DB check:
+    - `PRAGMA integrity_check`: `ok`.
+    - `doc-1|혈액검사 메모|백혈구 수치가 낮을 때 식사 제한 기준 질문`
+    - history only `doc-1|서류 저장|혈액검사 메모 기록 생성`.
+- Current blockers still not app failures:
+  - Codex Browser-use backend remains unavailable: `agent.browsers.list()` returned `[]`.
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+- No code changes were made in this slice, and no git staging or commit was performed.
+
+## 2026-06-04 01:18 KST - AutoResearch Invalid Vital Guard
+
+- Reason for this iteration:
+  - Control inventory showed the `측정값 추가` path was less guarded than visit/document/symptom/question/lab add paths.
+  - Reproduced a real cmux bug before patching: clearing `수축기` and `이완기`, then clicking `측정값 추가`, created a timeline row `혈압 0/0`.
+- Code change:
+  - Added `src/vitalValidation.ts`.
+    - `parseOptionalNumberInput()` keeps cleared number fields as `undefined` instead of coercing `""` to `0`.
+    - `validateVitalDraft()` rejects missing or non-positive BP/glucose drafts with Korean status messages.
+  - Added `src/vitalValidation.test.ts` for blank parsing plus BP/glucose invalid/valid validation.
+  - Updated `src/App.tsx` BP/glucose draft `onChange` handlers to use `parseOptionalNumberInput()`.
+  - Updated `addVital()` to block invalid drafts and set:
+    - `혈압 수축기와 이완기를 0보다 크게 입력해주세요.`
+    - `혈당 값을 0보다 크게 입력해주세요.`
+  - Updated `README.md` to include vital draft validation behavior.
+- cmux in-app browser proof:
+  - `surface:108` degraded after heavy automation, so opened a fresh CareVault browser pane:
+    - `cmux browser open-split http://127.0.0.1:1420/ --workspace $(cmux current-workspace) --focus true`
+    - new surface: `surface:131`.
+  - Reset `surface:131` to seed and confirmed seed vital count `3`.
+  - Invalid BP proof:
+    - Cleared `수축기` and `이완기`.
+    - Clicked the real `측정값 추가` button.
+    - PASS: vital count stayed `3`.
+    - PASS: no `혈압 0/0` timeline row.
+    - PASS: status text `혈압 수축기와 이완기를 0보다 크게 입력해주세요.`.
+  - Invalid glucose proof:
+    - Switched `종류` to `혈당`.
+    - Cleared `혈당 mg/dL`.
+    - Clicked the real `측정값 추가` button.
+    - PASS: vital count stayed `3`.
+    - PASS: status text `혈당 값을 0보다 크게 입력해주세요.`.
+  - Valid glucose regression proof:
+    - Entered `155` and memo `cmux valid glucose guard`.
+    - Clicked `측정값 추가`.
+    - PASS after autosave: vital count became `4`, latest stored record had `glucoseMgDl: 155`.
+  - Manual save proof:
+    - Clicked the real topbar `저장` button.
+    - PASS: status text changed to `브라우저 저장됨`.
+    - PASS: localStorage key remained `carevault.v1` and seed vital count stayed `3`.
+  - Visit-summary range proof:
+    - Added a temporary old BP row dated `2026-05-01` with memo `cmux old range guard`.
+    - Selected `요약 7일` and clicked `요약 미리보기`.
+    - PASS: preview title `진료 요약 미리보기 (최근 7일)`.
+    - PASS: Markdown line `범위: 최근 7일`.
+    - PASS: old memo excluded and recent `2026-06-02` symptom included.
+    - Selected `요약 전체` and clicked `요약 미리보기`.
+    - PASS: Markdown line `범위: 전체`.
+    - PASS: old memo included.
+  - Stale vital type cleanup proof:
+    - Found during range setup: switching from glucose back to BP could leave a stale `glucoseContext` on the BP draft.
+    - Updated `addVital()` to construct type-specific vital entries instead of spreading the whole draft.
+    - cmux proof: after switching `혈당 -> 혈압`, adding BP `124/77` with memo `cmux bp context cleanup` produced a stored BP row with `hasGlucoseContext: false`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:131`.
+    - PASS: seed vital count back to `3`.
+    - PASS: no `cmux valid glucose guard` QA data remained.
+    - PASS: no `cmux old range guard` or `cmux bp context cleanup` QA data remained.
+    - `cmux browser --surface surface:131 errors list`: `No browser errors`.
+- Verification:
+  - `npm run test -- vitalValidation.test.ts`: PASS, 1 file and 5 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 18 files and 77 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+- Current active cmux QA surface:
+  - `surface:131`.
+- Current unresolved external blockers:
+  - Codex Browser-use backend still unavailable from prior `agent.browsers.list() -> []` checks.
+  - Native subagents still account-limited from prior attempts.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:24 KST - AutoResearch Required-Field Feedback
+
+- Reason for this iteration:
+  - After the vital guard, the remaining add flows had required-field guards but failed silently.
+  - Reproduced in cmux before patching: clicking empty `방문 기록 추가`, `증상 기록 추가`, `질문 추가`, `검사 수치 추가`, and `서류 메모 저장` kept counts unchanged but left status at `브라우저 자동 저장됨`.
+- Code change:
+  - Added `src/entryValidation.ts`.
+    - `hasRequiredTextValues()` checks trimmed required text inputs.
+    - `recordRequiredFieldMessages` centralizes Korean guidance for visit/document/symptom/question/lab add flows.
+  - Added `src/entryValidation.test.ts`.
+  - Updated `src/App.tsx` to set visible status messages instead of silently returning:
+    - visit: `병원/과와 방문 이유를 입력해주세요.`
+    - symptom: `증상을 입력해주세요.`
+    - question: `질문 주제와 내용을 입력해주세요.`
+    - lab: `검사 항목과 값을 입력해주세요.`
+    - document: `서류 제목과 내용을 입력해주세요.`
+  - Updated `README.md` current-slice feature notes.
+- cmux in-app browser proof on `surface:131`:
+  - Reset to seed and confirmed counts:
+    - visits `1`, documents `1`, symptoms `1`, questions `1`, labs `1`.
+  - Empty add clicks:
+    - PASS: each of the five empty add buttons showed the expected status message.
+    - PASS: counts stayed at seed values after each click.
+  - Valid add regression:
+    - Added valid visit, symptom, question, and document records with term `cmux required guard valid`.
+    - PASS: counts for visits/documents/symptoms/questions increased from `1` to `2`.
+    - The first lab attempt hit the preset selector in the test script, not the item field, so lab was tested separately with exact label selection.
+    - Added valid lab `cmux required guard valid lab`, value `7.7`.
+    - PASS: lab count increased from `1` to `2`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:131`.
+    - PASS: counts returned to seed values.
+    - PASS: no `cmux required guard valid` or `cmux required guard valid lab` QA data remained.
+    - `cmux browser --surface surface:131 errors list`: `No browser errors`.
+- Verification:
+  - `npm run test -- entryValidation.test.ts vitalValidation.test.ts`: PASS, 2 files and 8 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 19 files and 80 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+- Current active cmux QA surface:
+  - `surface:131`.
+- Current unresolved external blockers:
+  - Codex Browser-use backend still unavailable from prior `agent.browsers.list() -> []` checks.
+  - Native subagents still account-limited from prior attempts.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:28 KST - AutoResearch Question Status Feedback
+
+- Reason for this iteration:
+  - Question status buttons changed state but did not leave durable visible feedback.
+  - Reproduced in cmux before patching:
+    - Clicked `답변 완료`.
+    - PASS for existing behavior: stored status became `answered` and active button moved to `답변 완료`.
+    - Weakness: after autosave, topbar status was only `브라우저 자동 저장됨`.
+- Code change:
+  - Added `pendingActionLabelRef` and `setActionSaveLabel()` in `src/App.tsx`.
+  - Autosave now merges a pending explicit action label with the backend save status.
+  - `updateQuestionStatus()` now sets:
+    - `질문 상태: 답변 완료`
+    - `질문 상태: 보류`
+    - `질문 상태: 확인 필요`
+  - Updated `README.md` current-slice notes.
+- cmux in-app browser proof on `surface:131`:
+  - Reset to seed before testing.
+  - Clicked `답변 완료`.
+    - PASS after autosave: stored status `answered`.
+    - PASS: active button `답변 완료`.
+    - PASS: visible status `질문 상태: 답변 완료 · 브라우저 자동 저장됨`.
+  - Clicked `보류`.
+    - PASS after autosave: stored status `deferred`.
+    - PASS: active button `보류`.
+    - PASS: visible status `질문 상태: 보류 · 브라우저 자동 저장됨`.
+  - Clicked `확인 필요`.
+    - PASS after autosave: stored status `open`.
+    - PASS: active button `확인 필요`.
+    - PASS: visible status `질문 상태: 확인 필요 · 브라우저 자동 저장됨`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:131`.
+    - PASS: seed question status returned to `open`.
+    - `cmux browser --surface surface:131 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 19 files and 80 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+- Current active cmux QA surface:
+  - `surface:131`.
+- Current unresolved external blockers:
+  - Codex Browser-use backend still unavailable from prior `agent.browsers.list() -> []` checks.
+  - Native subagents still account-limited from prior attempts.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:31 KST - AutoResearch Autosave-Preserved Action Labels
+
+- Reason for this iteration:
+  - The question-status patch exposed the same pattern in other state-changing controls: action labels could render immediately, then get overwritten by the autosave completion label.
+  - Reproduced in cmux before patching:
+    - Changed saved document review status to `정리 완료`.
+    - Existing behavior persisted the status and appended history, but visible status after autosave returned to only `브라우저 자동 저장됨`.
+- Code change:
+  - Extended `pendingActionLabelRef` / `setActionSaveLabel()` usage to representative state-changing action groups:
+    - saved document review-status updates
+    - saved document next-action history
+    - attachment status/removal/archive/restore updates
+    - saved-document reattachment updates
+    - lab `질문으로 추가`
+    - caregiver-share preset application and reset
+  - Left validation, draft-only, export, preview, import-feedback, and non-state messages on regular `setSaveLabel()`.
+  - Updated `README.md` current-slice notes.
+- cmux in-app browser proof on `surface:131`:
+  - Reset to seed before testing.
+  - Saved-document review status:
+    - Changed `혈액검사 메모` status to `정리 완료`.
+    - PASS: stored `reviewStatus` became `done`.
+    - PASS: history appended `상태 변경:의료진 질문 → 정리 완료`.
+    - PASS after autosave: visible status `서류 조치 업데이트됨 · 브라우저 자동 저장됨`.
+  - Lab follow-up question:
+    - Clicked `질문으로 추가`.
+    - PASS: question count increased from `1` to `2`.
+    - PASS: latest question topic `검사 수치`.
+    - PASS after autosave: visible status `검사 질문 추가됨 · 브라우저 자동 저장됨`.
+  - Caregiver share preset/reset:
+    - Applied `clinic-prep`.
+    - PASS after autosave: stored preset `clinic-prep`.
+    - PASS: visible status `보호자 공유 프리셋 적용: 진료 준비 · 브라우저 자동 저장됨`.
+    - Clicked `공유 설정 초기화`.
+    - PASS after autosave: stored preset reset to empty string.
+    - PASS: visible status `보호자 공유 설정 초기화 · 브라우저 자동 저장됨`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:131`.
+    - PASS: document status returned to `care-question`.
+    - PASS: question count returned to `1`.
+    - PASS: caregiver preset returned to empty string.
+    - `cmux browser --surface surface:131 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 19 files and 80 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+- Current active cmux QA surface:
+  - `surface:131`.
+- Current unresolved external blockers:
+  - Codex Browser-use backend still unavailable from prior `agent.browsers.list() -> []` checks.
+  - Native subagents still account-limited from prior attempts.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:33 KST - AutoResearch Successful Add Feedback
+
+- Reason for this iteration:
+  - Empty add paths now show validation messages, but successful add paths still collapsed to the generic autosave label.
+  - Reproduced in cmux before patching:
+    - Added valid symptom `cmux success add feedback`.
+    - PASS for existing data behavior: symptom count increased from `1` to `2`.
+    - Weakness: visible status after autosave was only `브라우저 자동 저장됨`.
+- Code change:
+  - Updated successful add paths in `src/App.tsx` to use `setActionSaveLabel()`:
+    - vital: `측정값 추가됨`
+    - visit: `방문 기록 추가됨`
+    - symptom: `증상 기록 추가됨`
+    - question: `질문 추가됨`
+    - lab: `검사 수치 추가됨`
+    - document: `서류 메모 저장됨`
+  - Updated `README.md` current-slice notes.
+- cmux in-app browser proof on `surface:131`:
+  - Reset to seed before testing.
+  - Added six valid records with unique QA terms.
+  - PASS after autosave:
+    - vital count `3 -> 4`, status `측정값 추가됨 · 브라우저 자동 저장됨`
+    - visit count `1 -> 2`, status `방문 기록 추가됨 · 브라우저 자동 저장됨`
+    - symptom count `1 -> 2`, status `증상 기록 추가됨 · 브라우저 자동 저장됨`
+    - question count `1 -> 2`, status `질문 추가됨 · 브라우저 자동 저장됨`
+    - lab count `1 -> 2`, status `검사 수치 추가됨 · 브라우저 자동 저장됨`
+    - document count `1 -> 2`, status `서류 메모 저장됨 · 브라우저 자동 저장됨`
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:131`.
+    - PASS: seed counts returned to vitals `3`, visits/documents/symptoms/questions/labs `1`.
+    - PASS: no `cmux add feedback ...` QA terms remained.
+    - `cmux browser --surface surface:131 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 19 files and 80 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+- Current active cmux QA surface:
+  - `surface:131`.
+- Current unresolved external blockers:
+  - Codex Browser-use backend still unavailable from prior `agent.browsers.list() -> []` checks.
+  - Native subagents still account-limited from prior attempts.
+- No git staging or commit was performed.
+
+## 2026-06-04 00:02 KST - JSON Backup Import Roundtrip and Path Sanitization
+
+- AutoResearch slice:
+  - Current target from README/in-app next-step was cmux JSON backup/import roundtrip QA.
+  - Risk found: JSON backup previously serialized `state` directly, which could include Tauri `attachmentPath` values such as local app-sandbox or user paths.
+  - Adopted fail-closed backup behavior: preserve attachment filename/status context, strip local paths, and mark restored attachments as needing reattachment.
+- Code changes:
+  - Added `src/backupState.ts`.
+    - `sanitizeCareVaultBackupState()` strips `attachmentPath` from active and deleted documents.
+    - documents with an attachment filename and removed path become `attachmentStorage: "browser-reference"` and `attachmentStatus: "백업에서 복원됨 - 재첨부 필요"`.
+    - `extractCareVaultBackupState()` accepts wrapped CareVault backup payloads or raw state payloads and sanitizes stale paths before import.
+  - Added `src/backupState.test.ts`.
+    - verifies active/deleted document path stripping.
+    - verifies wrapped backup extraction.
+    - verifies invalid non-object payload rejection.
+  - `src/App.tsx`:
+    - backup export now writes `sanitizeCareVaultBackupState(state)`.
+    - backup export now sets save label `백업 내보냄`.
+    - backup import now uses `extractCareVaultBackupState()`.
+    - successful import clears stale export and attachment preview panels.
+    - file input value is reset after import selection so the same synthetic/user file can be retried.
+  - `README.md`:
+    - current slice now mentions JSON backup/import with health profile fields, caregiver-share settings, and attachment-path sanitization.
+    - storage notes now state JSON backups strip local attachment paths and mark restored attachments as needing reattachment.
+  - in-app next-step moved to invalid backup failure/state-preservation QA.
+- cmux recovery:
+  - `surface:54` became unstable after a browser download interception timeout.
+  - `cmux browser open-split http://127.0.0.1:1420/ --workspace workspace:4 --focus true`: PASS.
+  - New current CareVault cmux QA surface:
+    - `surface:73`
+    - `pane:25`
+    - `workspace:4`
+    - URL: `http://127.0.0.1:1420/`
+- cmux in-app browser synthetic import QA on `surface:73`:
+  - Used browser-created `File` and `DataTransfer`; no user file selection.
+  - Imported a wrapped JSON backup with:
+    - profile `61세 · 남성`, `170cm / 73kg`, `waistCm: "90"`.
+    - caregiver share `presetId: "clinic-prep"`, redacted profile, custom cover memo.
+    - active and deleted documents containing `/Users/wj/private/...` attachment paths.
+  - Results:
+    - profile card: `61세 · 남성`, `170cm / 73kg · 허리 90cm`.
+    - BMI card: `25.3`, `1단계 비만`.
+    - waist card: `90 cm`, `복부비만 기준 해당`.
+    - caregiver preset select: `clinic-prep`.
+    - caregiver memo: `라운드트립 전달 메모`.
+    - profile redaction checkbox: checked.
+    - imported visit/question visible.
+    - attachment status: `백업에서 복원됨 - 재첨부 필요`.
+    - recovery notice visible.
+    - file input value reset to empty string.
+    - no `/Users/wj` or `attachmentPath` text leak in rendered app.
+- cmux backup export Blob QA on `surface:73`:
+  - Temporarily blocked the anchor download click and intercepted the generated Blob.
+  - Parsed backup JSON:
+    - `app: "CareVault"`.
+    - `schemaVersion: 1`.
+    - profile name `라운드트립 QA`.
+    - `waistCm: "90"`.
+    - caregiver preset `clinic-prep`.
+    - caregiver redaction true.
+    - attachment filename `roundtrip.pdf` retained.
+    - attachment storage `browser-reference`.
+    - attachment status `백업에서 복원됨 - 재첨부 필요`.
+    - no `/Users/wj` or `attachmentPath` in exported JSON.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 17 files and 70 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=390 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS.
+    - no console errors.
+    - no horizontal overflow.
+    - no touch-target issues.
+  - Final post-next-step check:
+    - `cmux browser --surface surface:73 eval ...`: next-step text is `다음 개발 슬라이스: cmux 인앱브라우저 기준 잘못된 백업 파일 실패 UX와 상태 보존 QA.`
+    - `npm run typecheck && npm run test`: PASS, 17 files and 70 tests.
+    - `git diff --check`: PASS.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current cmux QA surface is `surface:73`, `pane:25`, `workspace:4`.
+- No git staging or commit was performed.
+
+## 2026-06-03 23:55 KST - Health Standard Source URL Links
+
+- Follow-up improvement:
+  - Source labels were useful, but the stored `sourceUrl` values were not visible to users.
+  - Official-source rows now expose clickable links in the profile standards panel and full URLs in Markdown/CSV export lines.
+  - User-entered/local lab-range rows remain label-only because they are not external standards.
+- Code changes:
+  - `src/healthStandards.ts`: added `isExternalHealthStandardSource()` and `formatHealthStandardSource()`.
+  - `src/App.tsx`: standards coverage source rows now render external source labels as links with `target="_blank"` and `rel="noreferrer"`.
+  - `src/App.css`: added compact link styling for standards source rows.
+  - `src/caregiverExport.ts`: caregiver HTML standards rows now render external source labels as links.
+  - `src/healthStandards.test.ts`: added external-vs-local source formatting coverage.
+  - `src/caregiverExport.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`: now verify official URLs or caregiver HTML links.
+- cmux in-app browser verification on `surface:54`:
+  - `.app-shell` wait: PASS.
+  - standards coverage links found: 7.
+  - first source links include:
+    - `대한비만학회 비만 진료지침 2022` -> `https://general.kosso.or.kr/html/user/core/view/reaction/main/kosso/inc/data/guideline2022_vol8.pdf`
+    - `질병관리청 국가건강정보포털 고혈압` -> `https://health.kdca.go.kr/...thtimt_cntnts_sn=28`
+    - `대한당뇨병학회 당뇨병 관리 목표` -> `https://old.diabetes.or.kr/general/class/medical.php?idx=6&mode=view&number=322`
+  - `요약 미리보기`: PASS, contains KSSO URL.
+  - `CSV 미리보기`: PASS, contains KSSO URL.
+  - `공유본 미리보기`: PASS, iframe `srcDoc` contains KSSO and KDCA links.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 16 files and 67 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ CAREVAULT_AUDIT_WIDTH=390 node /Users/wj/Ai/System/06_Cache/carevault-mobile-layout-audit.cjs`: PASS.
+- Additional regression audits after source-label work:
+  - `CAREVAULT_FOCUS_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-keyboard-focus-audit.cjs`: PASS, no missing visible focus styles and no hidden file input focus.
+  - `CAREVAULT_AUDIT_URL=http://127.0.0.1:1420/ node /Users/wj/Ai/System/06_Cache/carevault-document-action-density-audit.cjs`: PASS, 44px saved/deleted document actions, no path leak, no horizontal overflow.
+- Updated next durable slice:
+  - `README.md` and in-app `.next-steps` now point to cmux JSON backup/import roundtrip QA.
+  - Current next-step copy: `다음 개발 슬라이스: cmux 인앱브라우저 기준 백업·가져오기 라운드트립 QA.`
+- Current cmux QA surface remains:
+  - `surface:54`, `pane:21`, `workspace:9`, URL `http://127.0.0.1:1420/`.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- No git staging or commit was performed.
+
+## 2026-06-04 00:03 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - JSON backup/import roundtrip QA.
+  - Backup export/import now strips local `attachmentPath` values, preserves attachment filenames, and marks restored attachments as `백업에서 복원됨 - 재첨부 필요`.
+  - cmux synthetic import and intercepted backup Blob export both passed with no `/Users/wj` or `attachmentPath` leak.
+- Current verification:
+  - `npm run typecheck && npm run test`: PASS, 17 files and 70 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - 390px mobile layout audit: PASS.
+- Current cmux QA surface:
+  - `surface:73`
+  - `pane:25`
+  - `workspace:4`
+  - URL: `http://127.0.0.1:1420/`
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current next durable slice:
+  - cmux invalid JSON backup failure UX and state-preservation checks.
+- Current in-app next-step copy:
+  - `다음 개발 슬라이스: cmux 인앱브라우저 기준 잘못된 백업 파일 실패 UX와 상태 보존 QA.`
+- No git staging or commit was performed.
+
+## 2026-06-04 01:40 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch caregiver direct edit feedback.
+  - Caregiver memo textarea, memo preset buttons, profile redaction toggle, caregiver section toggles, and backup import success now preserve action-specific labels through autosave.
+  - Direct cmux clicks on `surface:146` proved the caregiver memo preset, profile redaction toggle, section exclusion, direct memo fill, and last-section disabled guard.
+  - Synthetic backup import through the real hidden file input change path proved `백업 가져옴 · 브라우저 자동 저장됨`.
+- Current verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 19 files and 80 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, seed counts vitals `3`, visits/documents/symptoms/questions/labs `1`, caregiver memo empty, redaction false, all sections included.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:19 KST - Final Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch cmux all-function click-through sweep plus browser-reference image-preview robustness.
+  - The broad single-surface cmux sweep passed across record add flows, symptom/question/lab follow-up, food, document browser-reference image preview, document update history, attachment removal, delete, and restore.
+  - Browser-reference image preview URL transfer is deterministic for current-session saved documents.
+  - README and in-app next-step copy now both point to the remaining Tauri SQLite readback slice.
+- Current verification:
+  - `npm run typecheck`: PASS after browser-reference image-preview patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs and in-app next-step update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check: PASS, heading `나의 건강 기록`, status `브라우저 자동 저장됨`, next-step text `다음 개발 슬라이스: 데스크톱 런타임 범위에서 Tauri SQLite readback.`, no QA residue, one seed document item, zero deleted-document items, and no browser errors.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, status `브라우저 자동 저장됨`, no QA residue, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Next durable slice:
+  - Tauri SQLite readback pass in the desktop runtime.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:17 KST - AutoResearch cmux All-Function Click-Through Sweep
+
+- Reason for this iteration:
+  - README/in-app next durable slice called for a single cmux in-app browser session as the pre-build QA surface for a broader all-function click-through sweep.
+  - Native Codex subagents remain externally blocked, so this was main-agent cmux verification.
+- Code robustness change:
+  - `src/App.tsx`:
+    - Added a draft browser-reference attachment preview URL ref.
+    - Browser image attachments now create the draft object URL at attachment time and transfer it to the saved-document preview map when the document is saved.
+    - Draft object URLs are revoked on draft-clear, failed transfer, or unmount; transferred saved-document URLs still use the existing saved-preview cleanup path.
+    - This keeps blob URLs out of persisted localStorage/backup state while making current-session saved image preview deterministic.
+  - `README.md`:
+    - Added the completed cmux all-function click-through sweep to the current slice.
+    - Moved the next durable slice to Tauri SQLite readback when desktop-runtime verification is explicitly in scope.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before the final sweep.
+  - Final sweep PASS results:
+    - Initial seed counts: vitals `3`, visits `1`, documents `1`, symptoms `1`, questions `1`, labs `1`.
+    - Vital add PASS: status `측정값 추가됨 · 브라우저 자동 저장됨`.
+    - Visit add PASS: status `방문 기록 추가됨 · 브라우저 자동 저장됨`.
+    - Symptom template + symptom add PASS: status `증상 기록 추가됨 · 브라우저 자동 저장됨`.
+    - Question add + answered status PASS: status `질문 상태: 답변 완료 · 브라우저 자동 저장됨`.
+    - Lab preset + abnormal lab add + follow-up question PASS: status `검사 질문 추가됨 · 브라우저 자동 저장됨`.
+    - Food query PASS: status `음식 판단 업데이트됨 · 브라우저 자동 저장됨`, verdict included `의료진 확인 필요`.
+    - Document flow PASS:
+      - Browser-reference valid PNG attached and saved.
+      - Saved image preview opened and rendered `naturalWidth: 1`.
+      - Review status updated to `done`.
+      - Saved next-action focus/change/blur recorded `다음 조치 변경` history.
+      - Attachment removed.
+      - Document moved to deleted archive.
+      - Document restored from archive.
+      - Final document-flow status `서류 기록 복구됨 · 브라우저 자동 저장됨`.
+    - Final counts after sweep: vitals `4`, visits `2`, documents `2`, deletedDocuments `0`, symptoms `2`, questions `3`, labs `2`.
+  - Cleanup:
+    - Cleared localStorage and reloaded after the sweep.
+    - Final cleanup check: heading `나의 건강 기록`, status `브라우저 자동 저장됨`, no `QA 서류 메모` residue, one seed document item, zero deleted-document items.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check: PASS, seed state and no browser errors.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:17 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch cmux all-function click-through sweep.
+  - The broad single-surface cmux sweep passed across record add flows, symptom/question/lab follow-up, food, document browser-reference image preview, document update history, attachment removal, delete, and restore.
+  - Browser-reference image preview URL transfer is now deterministic for current-session saved documents.
+- Current verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check: PASS, heading `나의 건강 기록`, status `브라우저 자동 저장됨`, no QA residue, one seed document item, zero deleted-document items, and no browser errors.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, status `브라우저 자동 저장됨`, no QA residue, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Next durable slice from README:
+  - Tauri SQLite readback pass when desktop-runtime verification is explicitly in scope.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:07 KST - AutoResearch Visit Summary Preview Stale Range Guard
+
+- Reason for this iteration:
+  - A generated visit-summary Markdown preview captured the selected date range, but changing the range afterward left the old preview active with no warning.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Generated a `진료 요약 미리보기 (최근 30일)` preview.
+    - Changed `select.summary-range-select` to `7d`.
+    - Weakness: preview title stayed `진료 요약 미리보기 (최근 30일)` and no stale alert appeared.
+- Code change:
+  - `src/App.tsx`:
+    - Added `visitPacketRangeSnapshot` to `ExportPreviewState`.
+    - Added visit-summary preview stale detection when the selected range no longer matches the preview snapshot.
+    - Copy/print/download preview actions are disabled for either caregiver-share staleness or visit-summary range staleness.
+    - Added a visit-summary stale alert with a `새 미리보기` action.
+  - `README.md`:
+    - Added stale-preview detection for visit-summary Markdown previews.
+- cmux in-app browser proof on `surface:146`:
+  - Generated a `30d` visit-summary preview:
+    - PASS: preview title `진료 요약 미리보기 (최근 30일)`.
+    - PASS: copy/print/download were enabled.
+  - Changed the range to `7d`:
+    - PASS: stale alert text appeared: `진료 요약 범위가 바뀌었습니다`.
+    - PASS: copy/print/download were disabled.
+    - PASS: old preview title still showed `최근 30일`, proving the alert covers the stale content.
+  - Clicked stale-alert `새 미리보기`:
+    - PASS: preview regenerated as `진료 요약 미리보기 (최근 7일)`.
+    - PASS: stale alert cleared and copy/print/download were enabled.
+  - Cleanup:
+    - Closed the preview and restored the range to `30d`.
+    - Final check: heading `나의 건강 기록`, summary range `30d`, no export preview panel, no visit stale alert, and no browser errors.
+- Verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:07 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch visit-summary preview stale range guard.
+  - Visit-summary Markdown previews now detect when their selected range snapshot is stale.
+  - cmux direct flow on `surface:146` proved stale warning/disabled actions, fresh preview regeneration, and cleanup.
+- Current verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check: PASS, heading `나의 건강 기록`, summary range `30d`, no export preview panel, no visit stale alert, and no browser errors.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, summary range `30d`, no export preview panel, no visit stale alert, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:04 KST - AutoResearch Visit Summary Range Feedback
+
+- Reason for this iteration:
+  - The visit-summary range selector changes the scope of exported Markdown and preview content, but before the patch it left the visible status at the prior generic browser autosave label.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Changed `select.summary-range-select` from `30d` to `all`.
+    - PASS for state behavior: selected value became `all`.
+    - Weakness: visible status stayed `브라우저 자동 저장됨`.
+- Code change:
+  - `src/App.tsx`:
+    - Added `updateVisitPacketRange(range)` so the selector updates state and shows `진료 요약 범위: <label>`.
+  - `README.md`:
+    - Added visit-summary range changes to the action-feedback feature notes.
+    - Added visible feedback for visit-summary export range changes to the current slice.
+- cmux in-app browser proof on `surface:146`:
+  - Changed the summary range to `7d`.
+    - PASS: selected value became `7d`.
+    - PASS: visible status became `진료 요약 범위: 최근 7일`.
+  - Cleanup:
+    - Restored the selector to `30d`.
+    - PASS: visible status became `진료 요약 범위: 최근 30일`.
+    - Final check: heading `나의 건강 기록`, summary range `30d`, no export preview panel, and no browser errors.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:04 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch visit-summary range feedback.
+  - The visit-summary range selector now shows visible feedback when export scope changes.
+  - cmux direct select on `surface:146` proved `7d` feedback, then cleanup restored `30d`.
+- Current verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check: PASS, heading `나의 건강 기록`, summary range `30d`, no export preview panel, and no browser errors.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, summary range `30d`, no export preview panel, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:44 KST - AutoResearch Profile Edit Feedback
+
+- Reason for this iteration:
+  - `saveProfile()` persisted profile changes, but direct profile edits had no action-specific feedback after autosave.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Filled the profile name field with `cmux profile label proof`.
+    - PASS for data change: heading and persisted profile name changed.
+    - Weakness: visible status after autosave was only `브라우저 자동 저장됨`.
+    - Clicked `당뇨 추적`.
+    - PASS for data change: `diabetes: false`.
+    - Weakness: visible status after autosave was only `브라우저 자동 저장됨`.
+- Code change:
+  - `src/App.tsx`:
+    - Added `getProfileActionLabel()`.
+    - Updated `saveProfile()` to call `setActionSaveLabel()`.
+    - Text/number/select profile fields now show `<field> 수정됨`.
+    - `암환자 관리`, `당뇨 추적`, and `혈압 추적` toggles now show `켜짐`/`꺼짐`.
+  - `README.md`:
+    - Updated the autosave-preserved feedback description to include profile edits.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before testing.
+  - Filled profile name:
+    - PASS: heading `cmux profile label proof`.
+    - PASS: status `프로필 이름 수정됨 · 브라우저 자동 저장됨`.
+  - Changed sex selector to `male`:
+    - PASS: persisted `sex: "male"`.
+    - PASS: status `성별 기준 수정됨 · 브라우저 자동 저장됨`.
+  - Filled waist circumference `91`:
+    - PASS: persisted `waistCm: "91"`.
+    - PASS: status `허리둘레 수정됨 · 브라우저 자동 저장됨`.
+  - Clicked `당뇨 추적` off:
+    - PASS: persisted `diabetes: false`.
+    - PASS: status `당뇨 추적 꺼짐 · 브라우저 자동 저장됨`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:146`.
+    - PASS: profile returned to seed values: `나의 건강 기록`, age `56`, sex `female`, height `164`, weight `62`, waist `82`, all three tracking toggles true.
+    - PASS: no `cmux profile label proof` residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 19 files and 80 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check:
+    - PASS: seed counts returned to vitals `3`, visits/documents/symptoms/questions/labs `1`.
+    - PASS: seed profile restored.
+    - PASS: caregiver settings still default.
+    - PASS: no cmux QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:44 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch profile edit feedback.
+  - Profile text, select, number, and Boolean toggle changes now preserve action-specific labels through autosave.
+  - cmux direct interactions on `surface:146` proved name, sex, waist, and diabetes toggle feedback, then cleanup returned the app to seed profile state.
+- Current verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 19 files and 80 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, seed profile restored, no profile QA residue, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:47 KST - AutoResearch Profile Number Guard
+
+- Reason for this iteration:
+  - Profile calculation helpers already returned `정보 부족` for non-positive values, but the profile input layer still persisted and displayed invalid values in the dashboard profile card.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Filled height with `-1`.
+    - Weakness: persisted `heightCm: "-1"`.
+    - Weakness: profile card displayed `-1cm / 62kg · 허리 82cm`.
+    - BMI card fell back to `정보 부족`, proving the display/data layer was inconsistent.
+    - Filled waist circumference with `0`.
+    - Weakness: persisted `waistCm: "0"`.
+    - Weakness: profile card displayed `허리 0cm`.
+- Code change:
+  - Added `src/profileValidation.ts`:
+    - `isProfileNumberField()`.
+    - `validateProfileNumberInput()`.
+    - Allows blank draft values while users are editing.
+    - Rejects malformed, zero, and negative values with field-specific Korean feedback.
+  - Added `src/profileValidation.test.ts`.
+  - Updated `src/App.tsx`:
+    - `saveProfile()` now blocks invalid numeric profile values before they enter persisted state.
+    - Profile number inputs now carry `min="1"` as a browser-level hint.
+  - Updated `README.md` to list profile number validation.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before testing.
+  - Filled height with `-1`:
+    - PASS: status `키는 0보다 크게 입력해주세요.`
+    - PASS: input reverted to `164`.
+    - PASS: persisted `heightCm: "164"`.
+    - PASS: profile card stayed `164cm / 62kg · 허리 82cm`.
+  - Filled waist circumference with `0`:
+    - PASS: status `허리둘레는 0보다 크게 입력해주세요.`
+    - PASS: input reverted to `82`.
+    - PASS: persisted `waistCm: "82"`.
+    - PASS: waist card stayed `82 cm`, `복부비만 기준 미만`.
+  - Filled weight with valid `63.5`:
+    - PASS: persisted `weightKg: "63.5"`.
+    - PASS: status `몸무게 수정됨 · 브라우저 자동 저장됨`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:146`.
+    - PASS: profile returned to seed values.
+    - PASS: counts returned to vitals `3`, visits/documents/symptoms/questions/labs `1`.
+    - PASS: no `profile numeric`, `63.5kg`, `-1cm`, or `허리 0cm` residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run test -- src/profileValidation.test.ts`: PASS, 1 file and 5 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 20 files and 85 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check:
+    - PASS: seed profile restored.
+    - PASS: seed counts returned to vitals `3`, visits/documents/symptoms/questions/labs `1`.
+    - PASS: no profile numeric QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:47 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch profile number guard.
+  - Non-positive age, height, weight, and waist profile values are blocked before persistence, while blank draft edits remain possible.
+  - cmux direct input on `surface:146` proved invalid height/waist are blocked and a valid weight update still saves.
+- Current verification:
+  - `npm run test -- src/profileValidation.test.ts`: PASS, 1 file and 5 tests.
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 85 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, seed profile/counts restored, no profile numeric QA residue, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:50 KST - AutoResearch Profile Blank Display
+
+- Reason for this iteration:
+  - The profile number guard intentionally allowed blank draft values while users edit, but the dashboard profile card still rendered dangling units for blank fields.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Cleared height.
+    - Weakness: profile card displayed `cm / 62kg · 허리 82cm`.
+    - Cleared age.
+    - Weakness: profile card displayed `세 · 여성`.
+- Code change:
+  - Extended `src/profileValidation.ts` with `formatProfileNumberDisplay()`.
+  - Extended `src/profileValidation.test.ts` to cover positive, blank, zero, and negative display formatting.
+  - Updated `src/App.tsx` dashboard profile card:
+    - blank age now shows `나이 미입력`.
+    - blank height now shows `키 미입력`.
+    - blank weight now shows `몸무게 미입력`.
+    - blank or invalid waist display is omitted instead of showing `허리 cm`.
+  - Updated `README.md`.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before testing.
+  - Cleared height:
+    - PASS: persisted `heightCm: ""`.
+    - PASS: status `키 수정됨 · 브라우저 자동 저장됨`.
+    - PASS: profile card displayed `키 미입력 / 62kg · 허리 82cm`.
+  - Cleared age:
+    - PASS: persisted `age: ""`.
+    - PASS: status `나이 수정됨 · 브라우저 자동 저장됨`.
+    - PASS: profile card displayed `나이 미입력 · 여성`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:146`.
+    - PASS: profile card returned to `56세 · 여성`, `164cm / 62kg · 허리 82cm`.
+    - PASS: no `키 미입력` or `나이 미입력` QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run test -- src/profileValidation.test.ts`: PASS, 1 file and 6 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 20 files and 86 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check:
+    - PASS: profile card returned to `56세 · 여성`, `164cm / 62kg · 허리 82cm`.
+    - PASS: seed counts returned to vitals `3`, visits/documents/symptoms/questions/labs `1`.
+    - PASS: no profile blank-display QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:50 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch profile blank display.
+  - Blank profile age/height/weight values no longer render dangling units in the dashboard profile card.
+  - cmux direct input on `surface:146` proved blank height and age display correctly, then cleanup returned the app to seed profile state.
+- Current verification:
+  - `npm run test -- src/profileValidation.test.ts`: PASS, 1 file and 6 tests.
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 86 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, seed profile restored, no profile blank-display QA residue, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:52 KST - AutoResearch Imported Profile Number Sanitization
+
+- Reason for this iteration:
+  - Direct profile input blocked non-positive profile numbers, but JSON backup import could still bypass `saveProfile()` and persist invalid profile numbers through `normalizeAppState()`.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Imported a synthetic backup with profile `heightCm: "-1"`, `weightKg: "-5"`, `age: "0"`, and `waistCm: "0"`.
+    - Weakness: import succeeded and persisted all invalid values.
+    - Display layer hid dangling units, but stored state remained invalid.
+- Code change:
+  - Extended `src/profileValidation.ts` with `sanitizeProfileNumberInput()`.
+  - Extended `src/profileValidation.test.ts` to cover imported invalid fallback, blank preservation, and numeric coercion.
+  - Updated `src/App.tsx` `normalizeAppState()`:
+    - age, height, weight, and waist are sanitized on app load/import.
+    - malformed/zero/negative values fall back to current defaults.
+    - blank values remain blank so user draft edits and explicit missing data are preserved.
+  - Updated `README.md`.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before testing.
+  - Imported the same invalid profile backup through the real hidden file input change path:
+    - PASS: import feedback `백업 가져오기 완료`.
+    - PASS: status `백업 가져옴 · 브라우저 자동 저장됨`.
+    - PASS: heading used imported name `invalid profile import proof`.
+    - PASS: persisted profile numeric fields sanitized to seed defaults: age `56`, height `164`, weight `62`, waist `82`.
+    - PASS: profile card displayed `56세 · 여성`, `164cm / 62kg · 허리 82cm`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:146`.
+    - PASS: heading returned to `나의 건강 기록`.
+    - PASS: profile seed values restored.
+    - PASS: no `invalid profile import proof`, `-5`, `허리 0cm`, `heightCm: "-1"`, or `weightKg: "-5"` residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run test -- src/profileValidation.test.ts`: PASS, 1 file and 7 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check:
+    - PASS: seed profile restored.
+    - PASS: seed counts returned to vitals `3`, visits/documents/symptoms/questions/labs `1`.
+    - PASS: no invalid-profile import QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:52 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch imported profile number sanitization.
+  - Imported malformed, zero, or negative profile number values now fall back during `normalizeAppState()`.
+  - cmux synthetic backup import on `surface:146` proved invalid imported profile numbers are sanitized before persistence.
+- Current verification:
+  - `npm run test -- src/profileValidation.test.ts`: PASS, 1 file and 7 tests.
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, seed profile restored, no invalid-profile import QA residue, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:55 KST - AutoResearch Food Check Feedback
+
+- Reason for this iteration:
+  - The nutrition textarea updated `foodQuery` and the cancer-food verdict correctly, but the top save label collapsed to generic autosave feedback.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Filled food query with `자몽 주스, 생굴, 두부`.
+    - PASS for data behavior: persisted `foodQuery`.
+    - PASS for verdict behavior: verdict `의료진 확인 필요`.
+    - PASS for chips: `두부`, `자몽`, `생굴` matched with their local reasons.
+    - Weakness: visible status after autosave was only `브라우저 자동 저장됨`.
+- Code change:
+  - `src/App.tsx`:
+    - Nutrition textarea `onChange` now calls `setActionSaveLabel("음식 판단 업데이트됨")`.
+  - `README.md`:
+    - Updated autosave-preserved feedback coverage to include food checks.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before testing.
+  - Filled food query with `자몽 주스, 생굴, 두부`:
+    - PASS: persisted `foodQuery`.
+    - PASS: verdict `의료진 확인 필요`.
+    - PASS: chips `두부: 식물성 단백질`, `자몽: 약물 상호작용 확인 필요`, `생굴: 면역저하 시 식품 안전 주의`.
+    - PASS: status `음식 판단 업데이트됨 · 브라우저 자동 저장됨`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:146`.
+    - PASS: default food query restored to `브로콜리, 현미밥, 베이컨, 자몽 주스`.
+    - PASS: no `자몽 주스, 생굴, 두부` QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check:
+    - PASS: default food query restored.
+    - PASS: seed counts returned to vitals `3`, visits/documents/symptoms/questions/labs `1`.
+    - PASS: no food-check QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:55 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch food check feedback.
+  - Nutrition textarea changes now preserve `음식 판단 업데이트됨` through autosave.
+  - cmux direct input on `surface:146` proved the verdict/chips still update and cleanup restored the seed food query.
+- Current verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, default food query restored, no food-check QA residue, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:58 KST - AutoResearch Document Filter Empty State
+
+- Reason for this iteration:
+  - Document search/category/status filters changed the count correctly, but a no-match filter left the document list visually blank.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Search `혈액검사`: PASS, count `1/1개 기록`, item visible.
+    - Search `없는검색어`: PASS for data behavior, count `0/1개 기록`.
+    - Weakness: document list rendered no explanation (`text: null`).
+- Code change:
+  - `src/App.tsx`:
+    - `document-list` now renders a `document-empty` status message when `filteredDocuments.length` is `0`.
+  - `src/App.css`:
+    - Added dashed empty-state styling aligned with the existing panel tone.
+  - `README.md`:
+    - Documented search/category/status filters with explicit no-match empty state.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before testing.
+  - Search no-match:
+    - PASS: count `0/1개 기록`.
+    - PASS: item count `0`.
+    - PASS: empty text `검색어나 필터 조건에 맞는 저장된 서류가 없습니다.`
+  - Category filter match `lab`:
+    - PASS: count `1/1개 기록`.
+    - PASS: item count `1`.
+    - PASS: no empty text.
+  - Category filter no-match `imaging`:
+    - PASS: count `0/1개 기록`.
+    - PASS: item count `0`.
+    - PASS: empty text visible.
+  - Status filter match `care-question`:
+    - PASS: count `1/1개 기록`.
+    - PASS: item count `1`.
+    - PASS: no empty text.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:146`.
+    - PASS: search value empty, category/status filters reset to `all`.
+    - PASS: count `1/1개 기록`, item count `1`, no empty text.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check:
+    - PASS: search value empty, category/status filters reset to `all`.
+    - PASS: count `1/1개 기록`, item count `1`, no empty text.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 01:58 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch document filter empty state.
+  - Document search/category/status no-match filters now show an explicit empty-state message.
+  - cmux direct filter inputs on `surface:146` proved no-match/match behavior for search, category, and status filters, then cleanup restored filter UI.
+- Current verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, default document filter UI restored, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:01 KST - AutoResearch Lab Preset Feedback
+
+- Reason for this iteration:
+  - Lab helper presets populated draft lab fields correctly, but selecting a preset left the top status at the prior generic autosave label.
+  - Reproduced in cmux before patching on `surface:146`:
+    - Selected `HDL 콜레스테롤`.
+    - PASS for draft behavior: `name: "HDL-C"`, `unit: "mg/dL"`, lower `50`, upper blank.
+    - Weakness: visible status stayed `브라우저 자동 저장됨`.
+- Code change:
+  - `src/App.tsx`:
+    - `applyLabPreset()` now shows `검사 프리셋 적용: <label>` after populating helper fields.
+    - This uses plain `setSaveLabel()` because it is a draft helper, not a persisted record save.
+  - `README.md`:
+    - Added visible feedback for lab helper presets.
+- cmux in-app browser proof on `surface:146`:
+  - Reset localStorage and reloaded before testing.
+  - Selected `hdl-cholesterol`:
+    - PASS: preset select value `hdl-cholesterol`.
+    - PASS: draft fields `HDL-C`, `mg/dL`, lower `50`, upper blank.
+    - PASS: status `검사 프리셋 적용: HDL 콜레스테롤`.
+  - Cleanup:
+    - Cleared localStorage and reloaded `surface:146`.
+    - PASS: preset select returned to blank.
+    - PASS: lab draft name/unit/lower/upper returned to blank.
+    - PASS: no `HDL-C` QA residue.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check: PASS, heading `나의 건강 기록`, blank lab preset and draft fields, no `HDL-C` residue, and no browser errors.
+- Current active cmux QA surface:
+  - `surface:146`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:01 KST - Current Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch lab preset feedback.
+  - Lab helper preset selection now shows visible feedback after populating draft ranges.
+  - cmux direct select on `surface:146` proved HDL preset fields and feedback, then cleanup restored the blank lab draft.
+- Current verification:
+  - `npm run typecheck`: PASS after code patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check: PASS, heading `나의 건강 기록`, blank lab preset and draft fields, no `HDL-C` residue, and no browser errors.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, blank lab draft restored, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:19 KST - End-of-File Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch cmux all-function click-through sweep plus browser-reference image-preview robustness.
+  - The broad single-surface cmux sweep passed across record add flows, symptom/question/lab follow-up, food, document browser-reference image preview, document update history, attachment removal, delete, and restore.
+  - Browser-reference image preview URL transfer is deterministic for current-session saved documents.
+  - README and in-app next-step copy now both point to the remaining Tauri SQLite readback slice.
+- Current verification:
+  - `npm run typecheck`: PASS after browser-reference image-preview patch.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS, no chunk-size warning.
+  - `git diff --check`: PASS after docs and in-app next-step update.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - Final `surface:146` cleanup check: PASS, heading `나의 건강 기록`, status `브라우저 자동 저장됨`, next-step text `다음 개발 슬라이스: 데스크톱 런타임 범위에서 Tauri SQLite readback.`, no QA residue, one seed document item, zero deleted-document items, and no browser errors.
+- Current cmux QA surface:
+  - `surface:146`
+  - URL: `http://127.0.0.1:1420/`
+  - Cleanup state: heading `나의 건강 기록`, status `브라우저 자동 저장됨`, no QA residue, no browser errors.
+- Current dev server remains running at `http://127.0.0.1:1420/`.
+- Next durable slice:
+  - Tauri SQLite readback pass in the desktop runtime.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:26 KST - AutoResearch Tauri SQLite Readback
+
+- Latest completed slice:
+  - Desktop-runtime Tauri SQLite readback pass.
+  - The stale release bundle issue was confirmed first: Computer Use initially attached to an old bundled `CareVault.app` that still showed the prior next-step copy. Rebuilding the release bundle fixed it.
+  - `npm run tauri -- build`: PASS. The rebuilt app at `src-tauri/target/release/bundle/macos/CareVault.app` showed the current in-app next-step text: `다음 개발 슬라이스: 데스크톱 런타임 범위에서 Tauri SQLite readback.`
+- Runtime DB safety:
+  - Pre-test DB backup: `/tmp/carevault-db-backup-20260604022106`.
+  - Backed up all live Tauri DB files: `carevault.db`, `carevault.db-shm`, and `carevault.db-wal`.
+- Computer Use desktop proof:
+  - App: `app.veritas.carevault`, release process pid `51228` during the pass.
+  - Before write, the sidebar reported Tauri SQLite mirror counts with `활력 3개`.
+  - Filled the desktop vital form with systolic `141`, diastolic `92`, note `Tauri SQLite readback 2026-06-04 0225`.
+  - Clicked `측정값 추가`.
+  - PASS: status changed to `측정값 추가됨 · SQLite 자동 저장됨`.
+  - PASS: sidebar mirror count changed to `활력 4개`.
+  - PASS: timeline showed `2026-06-03 혈압 141/92 Tauri SQLite readback 2026-06-04 0225`.
+  - PASS: current indicators updated to `최근 혈압 141/92 고혈압 1단계 범위`.
+- SQLite readback proof:
+  - Runtime DB path: `~/Library/Application Support/app.veritas.carevault/carevault.db`.
+  - Actual normalized table name is `vitals` in the desktop DB.
+  - `SELECT id,date,type,systolic,diastolic,note FROM vitals WHERE note='Tauri SQLite readback 2026-06-04 0225';`
+    - Returned `date=2026-06-03`, `type=blood-pressure`, `systolic=141.0`, `diastolic=92.0`, matching the desktop UI write.
+  - `SELECT COUNT(*) FROM vitals;`: `4` before restore.
+  - `app_state` JSON readback also returned last vital note `Tauri SQLite readback 2026-06-04 0225`, systolic `141`, diastolic `92`.
+  - `profile_snapshot` still retained waist mirror data: `name=나의 건강 기록`, `age=59`, `sex=female`, `height_cm=164`, `weight_kg=62`, `waist_cm=82`.
+- Restore proof:
+  - Closed the desktop app before restore.
+  - Restored the DB files from `/tmp/carevault-db-backup-20260604022106`.
+  - PASS: no CareVault desktop runtime remained after closing.
+  - PASS after restore: `SELECT COUNT(*) FROM vitals WHERE note='Tauri SQLite readback 2026-06-04 0225';` returned `0`.
+  - PASS after restore: `SELECT COUNT(*) FROM vitals;` returned `3`.
+  - PASS after restore: `app_state` last vital note returned to `저녁 산책 후`.
+- Current verification:
+  - `npm run tauri -- build`: PASS after current source and docs changes.
+  - Prior same-source gates before the desktop readback remained green: `npm run typecheck`, `npm run test`, `npm run build`, `curl http://127.0.0.1:1420/`, and cmux cleanup/browser-error checks.
+  - `git diff --check`: PASS after this EOF pointer update.
+- Current active cmux QA surface:
+  - `surface:146`.
+  - URL: `http://127.0.0.1:1420/`.
+- Current runtime state:
+  - Desktop `CareVault.app` is closed after DB restore.
+  - Dev server remains running at `http://127.0.0.1:1420/`.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:26 KST - End-of-File Resume Pointer
+
+- Latest completed slice:
+  - AutoResearch desktop-runtime Tauri SQLite readback.
+  - Rebuilt the stale release bundle, launched the current desktop app, inserted a QA vital through Computer Use, proved the normalized SQLite row and serialized `app_state` readback, then restored the user's pre-test DB backup.
+- Current verification:
+  - `npm run tauri -- build`: PASS.
+  - Runtime SQLite readback before restore: PASS, `vitals` count `4`, QA note present, `app_state` last vital `141/92`.
+  - Runtime DB restore: PASS, QA note count `0`, `vitals` count `3`, `app_state` last vital returned to `저녁 산책 후`.
+  - Prior same-source gates before the desktop readback remained green: `npm run typecheck`, `npm run test`, `npm run build`, `curl http://127.0.0.1:1420/`, final cmux cleanup check, and no browser errors.
+  - `git diff --check`: PASS after this EOF pointer update.
+- Current cmux QA surface:
+  - `surface:146`.
+  - URL: `http://127.0.0.1:1420/`.
+- Current runtime state:
+  - Dev server remains running at `http://127.0.0.1:1420/`.
+  - Desktop `CareVault.app` is closed after DB restore.
+- Current unresolved external blockers:
+  - Native subagents remain blocked by account usage-limit errors until the external reset window.
+  - Codex Browser-use backend remains unavailable from prior checks, so cmux is the active in-app browser verifier.
+- No git staging or commit was performed.
+
+## 2026-06-04 02:31 KST - Completion Audit Against Active Goal
+
+- Objective restated as concrete deliverables:
+  - Use `$autoresearch` for iterative improvement and completion auditing.
+  - Use cmux in-app browser as the main single browser QA surface.
+  - Use Codex in-app/Computer Use where available for runtime verification.
+  - Directly click/test every detailed CareVault user function, not only unit-test helpers.
+  - Fix or strengthen weak functionality found during testing.
+  - Keep `working.md` current with resume truth and the active objective.
+  - Use subagents where possible without losing main-context ownership.
+- Prompt-to-artifact checklist:
+  - `$autoresearch` active:
+    - PASS: `$autoresearch` skill was loaded and the loop used repeated reproduce -> patch -> cmux proof -> cleanup -> gates cycles.
+    - PASS: this completion audit follows the skill's prompt-to-artifact rule.
+  - cmux single-browser QA:
+    - PASS: current active surface is `surface:146` at `http://127.0.0.1:1420/`.
+    - PASS: prior cmux sweep on the same surface covered topbar exports/previews/import triggers, caregiver controls, profile edits/validation, vitals, visits, symptoms/templates, questions/status, labs/presets/follow-up, food, document filters, document add/update/history, attachment/re-attachment/preview/removal, delete/restore, and stale-preview actions.
+    - PASS: fresh cmux live state shows ready app shell, heading `나의 건강 기록`, seed counts `vitals=3`, `visits=1`, `symptoms=1`, `questions=1`, `labs=1`, `documents=1`, `deleted=0`, no preview dialogs open, and no browser errors.
+  - Direct click/download/import evidence:
+    - PASS: direct download captures recorded for `내보내기`, `진료 요약`, `CSV`, and `공유본`.
+    - PASS: preview actions recorded for `CSV 미리보기` copy/print/download and caregiver/visit stale preview guards.
+    - PASS: backup import success, invalid JSON failure, malformed backup failure, and invalid imported profile-number sanitization were tested through the hidden file-input path.
+  - Add/update/delete/restore evidence:
+    - PASS: direct cmux add flows recorded for vital, visit, symptom, question, lab, and document records.
+    - PASS: required-field guards recorded for empty visit/symptom/question/lab/document add buttons and invalid vital/profile numeric inputs.
+    - PASS: document status/action edits, history append, attachment replacement/removal, delete archive, restore, and deleted-archive attachment cleanup were tested.
+  - Weak-functionality fixes from testing:
+    - PASS: added/fixed visible autosave-preserved feedback across adds, status updates, caregiver edits, food checks, lab presets, visit range changes, and backup import.
+    - PASS: fixed vital blank/non-positive validation, required-field no-op feedback, profile number validation/blank display, invalid backup-import failure UX, stale caregiver and visit-summary preview guards, document preview URL transfer, and stale release-bundle desktop validation gap.
+  - Codex in-app/Computer Use runtime proof:
+    - PASS: Computer Use drove rebuilt desktop `CareVault.app`, inserted a Tauri SQLite vital, and SQLite readback proved both normalized `vitals` and JSON `app_state` persistence.
+    - PASS: user DB was backed up before the desktop write and restored after verification; final DB check shows QA note count `0`, vitals count `3`, last vital note `저녁 산책 후`.
+    - External limitation recorded: Codex Browser-use backend remained unavailable, so cmux CLI was the browser verifier and Computer Use was used for the desktop runtime.
+  - Subagent requirement:
+    - Attempted/blocked: native Codex subagents hit account usage-limit errors earlier in this goal. Main agent continued with source-derived inventory, cmux automation, and Computer Use instead of fabricating subagent evidence.
+  - Working log:
+    - PASS: `working.md` contains durable per-slice evidence and this final prompt-to-artifact audit at EOF.
+  - Fresh gates:
+    - `npm run typecheck`: PASS.
+    - `npm run test`: PASS, 20 files and 87 tests.
+    - `npm run build`: PASS, Vite built successfully with split chunks and no 500 kB chunk warning.
+    - `git diff --check`: PASS.
+    - `curl http://127.0.0.1:1420/`: `200`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+    - Desktop `CareVault.app` process check: no process running after DB restore.
+- Audit conclusion:
+  - No uncovered local CareVault user-control requirement remains in the current source inventory.
+  - The only unmet-by-execution items are external tool availability constraints already recorded: native subagents account limit and unavailable Codex Browser-use backend.
+  - Local app functionality, cmux direct testing, desktop SQLite readback, cleanup, and fresh code gates are complete.
+- Git state:
+  - No git staging or commit was performed.
+
+## 2026-06-04 02:31 KST - Final End-of-File Resume Pointer
+
+- Active goal audit result:
+  - CareVault all-function cmux/browser QA plus desktop Tauri SQLite readback is complete for the current source state.
+  - Completion evidence is in the `2026-06-04 02:31 KST - Completion Audit Against Active Goal` section immediately above.
+- Current runtime state:
+  - Dev server remains running at `http://127.0.0.1:1420/`.
+  - cmux QA surface remains `surface:146`.
+  - Desktop `CareVault.app` is closed.
+  - Tauri SQLite DB was restored to pre-readback state.
+- Fresh verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 20 files and 87 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - `curl http://127.0.0.1:1420/`: `200`.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current external limitations:
+  - Native subagents were attempted earlier but blocked by account usage-limit errors.
+  - Codex Browser-use backend stayed unavailable, so cmux CLI plus Computer Use were used as the actual verifiers.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:06 KST - AutoResearch Cervical-Cancer Care + Design Contract Iteration
+
+- Active user objective for this iteration:
+  - Keep using the single right-side cmux in-app browser.
+  - Continue `$autoresearch` self-improvement.
+  - Improve UI/UX and design using `design.md`/DESIGN.md project guidance.
+  - Add stronger Korean medical information, especially for cervical-cancer patients.
+  - Make Korean male/female applicability for blood pressure, glucose, waist, and related standards clearer.
+- Skills used:
+  - `$autoresearch`: loaded `/Users/wj/.codex/skills/autoresearch/SKILL.md` and authoritative `/Users/wj/.claude/skills/autoresearch/SKILL.md`.
+  - `frontend-design`: loaded `/Users/wj/.codex/skills/frontend-design/SKILL.md` and authoritative `/Users/wj/.claude/skills/frontend-design/SKILL.md`.
+  - `design-md-master`: loaded `/Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/SKILL.md` and `references/house-format.md`.
+- Design contract:
+  - Searched CareVault for `DESIGN.md`/`design.md`: none existed.
+  - Added `DESIGN.md` for CareVault as a calm Korean health-record dashboard contract.
+  - Validator first failed because the file lacked house-format frontmatter/sections.
+  - Rewrote `DESIGN.md` with required house-format keys and sections.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+- Official medical sources checked and used:
+  - 국가암정보센터 자궁경부암 일반적 증상:
+    - `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888`
+  - 국가암정보센터 자궁경부암 치료 후 생활:
+    - `https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4898`
+  - 국가암정보센터 림프부종 운동 관리:
+    - `https://www.cancer.go.kr/lay1/S1T429C433/contents.do`
+  - KDCA 국가건강정보포털 자궁경부암 백신:
+    - `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=3987`
+  - KDCA 고혈압 기준 source remained in health-standard coverage.
+- Code changes:
+  - Added `src/cervicalCancerCare.ts`:
+    - Official-source data for cervical-cancer warning signs, care-team check actions, question draft topics, recovery/lymphedema checks, and source links.
+    - Data wording stays record/preparation-focused and points to the care team instead of giving treatment instructions.
+  - Added `src/cervicalCancerCare.test.ts`:
+    - Pins official Korean sources.
+    - Pins warning signs: abnormal vaginal bleeding, discharge changes, pelvic/back/leg pain, urinary/bowel changes.
+    - Pins clinician-question draft topics.
+    - Pins observation guidance boundaries.
+  - Updated `src/App.tsx`:
+    - Added `자궁경부암 케어 노트` panel when cancer-care mode is active.
+    - Panel includes four warning cards, four question-draft buttons, recovery/recording checks, and official source links.
+    - Clicking a care topic fills the existing `진료 전 질문` draft instead of saving automatically.
+    - Korean standard coverage now shows `성별 적용: ...`.
+  - Updated `src/App.css`:
+    - Font stack now prefers Pretendard before Inter/system.
+    - Added responsive styles for the cervical-cancer care panel.
+    - Confirmed new panel folds without horizontal overflow at the current cmux width.
+  - Updated `src/healthStandards.ts`:
+    - Added `sexApplicability` to every Korean standard row.
+    - Blood pressure, diabetes-care glucose, and screening glucose now explicitly show `성인 남녀 공통`.
+    - Waist, HDL, and hemoglobin helper rows explicitly show male/female-specific applicability.
+  - Updated `src/healthStandards.test.ts` and `src/caregiverExport.ts`:
+    - Tests pin sex-applicability labels.
+    - Caregiver HTML standard coverage now includes applicability text.
+  - Updated `README.md`:
+    - Documents the cervical-cancer care panel, sex-applicability labels, and project `DESIGN.md`.
+- cmux in-app browser proof on `surface:146`:
+  - URL: `http://127.0.0.1:1420/`.
+  - Width: `647`.
+  - PASS: `.cervical-care-panel` visible.
+  - PASS: heading `자궁경부암 케어 노트`.
+  - PASS: warning cards visible: `비정상 질출혈`, `분비물 변화`, `골반통·요통·다리 통증`, `배뇨·배변 변화`.
+  - PASS: official links visible for 국가암정보센터/KDCA sources.
+  - PASS: standards coverage shows `성별 적용: 성인 남녀 공통` for blood pressure/glucose and sex-specific text for waist.
+  - PASS: clicked real `림프부종` care-topic button.
+    - Status changed to `자궁경부암 질문 초안 준비됨: 림프부종`.
+    - Question draft topic became `림프부종`.
+    - Question draft body became the lymphedema care-team question.
+  - Cleanup:
+    - Reloaded `surface:146`.
+    - PASS: question draft topic/body cleared.
+    - PASS: panel still visible.
+    - PASS: no horizontal overflow at width `647` (`scrollWidth=647`).
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Verification:
+  - `python3 .../validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 92 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux browser errors: PASS, no browser errors.
+- Current runtime state:
+  - Dev server remains running at `http://127.0.0.1:1420/`.
+  - cmux QA surface remains `surface:146`.
+  - Desktop `CareVault.app` remains closed.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` iteration from this state.
+  - Good next target: visual density/scroll ergonomics for the new cervical-cancer panel on narrower mobile widths, plus checking whether the cervical-care question draft should optionally auto-scroll to the question form after a button click.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:06 KST - Current Resume Pointer
+
+- Latest completed iteration:
+  - Added validated `DESIGN.md`.
+  - Added official-source cervical-cancer care panel.
+  - Added sex-applicability labels for Korean health standards.
+  - Verified in the right-side cmux browser `surface:146`.
+- Current verification:
+  - `DESIGN.md` validator: PASS.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 92 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux no-horizontal-overflow at width `647`: PASS.
+  - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current cmux QA surface:
+  - `surface:146`.
+  - URL: `http://127.0.0.1:1420/`.
+- Next concrete step:
+  - Continue UI/UX autoresearch on the right-side cmux browser, focusing on mobile/narrow ergonomics and optional auto-scroll from cervical-care question buttons to the question form.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:11 KST - Cervical-Care Question Draft Focus Iteration
+
+- Improvement target:
+  - Reduce friction after clicking a `자궁경부암 케어 노트` question-topic button.
+  - Make the resulting `진료 전 질문` draft immediately visible and editable instead of leaving the user above the form.
+- Code changes:
+  - Updated `src/App.tsx`.
+  - Added `questionDraftTextareaRef`.
+  - Added `questionDraftFocusRequest` state and an effect that runs after render.
+  - Clicking a cervical-cancer prompt now fills the existing draft, focuses the question textarea, and scrolls it into the center of the current viewport.
+- First implementation note:
+  - A direct handler-time `requestAnimationFrame` attempt filled the draft but did not reliably preserve scroll/focus in cmux.
+  - Reworked it to a render-after effect; this passed the real browser check.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 92 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux right-side browser:
+    - Restored `workspace:11` and `surface:146` as the live CareVault surface after it measured as hidden/width 0 while another workspace was selected.
+    - URL: `http://127.0.0.1:1420/`.
+    - Width: `647`.
+    - PASS: clicked `.cervical-prompt-list button:nth-child(3)` (`림프부종`).
+    - PASS: question topic became `림프부종`.
+    - PASS: question body became `골반 림프절 치료 이력이 있는 경우 다리 부종을 어떻게 관찰하고 어떤 운동/압박/진료 기준을 적용해야 하나요?`.
+    - PASS: active element became the question textarea with placeholder `의료진에게 물어볼 내용을 그대로 입력`.
+    - PASS: after scroll, textarea viewport top/bottom were `382`/`476` in an `859` px viewport.
+    - PASS: no horizontal overflow at width `647`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+  - Cleanup reload:
+    - PASS: draft cleared after reload.
+    - PASS: `.cervical-care-panel` still visible.
+    - PASS: no horizontal overflow remained.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with narrow/mobile density checks for the cervical-care panel and the standards coverage area.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:14 KST - Cervical-Care Narrow Density Iteration
+
+- Improvement target:
+  - Reduce excessive vertical height in the `자궁경부암 케어 노트` area on narrow/right-pane layouts.
+  - Keep true phone-width safety while improving tablet/right-pane density.
+- Code changes:
+  - Updated `src/App.css`.
+  - At `max-width: 760px`, the overall cervical-care layout still becomes one column, but warning cards and prompt buttons now use two compact columns when there is enough width.
+  - Added compact padding/gap/line-height rules for the cervical-care panel at narrow widths.
+  - Added a new `max-width: 520px` safety rule that returns warning cards and prompt buttons to one column for very narrow screens.
+- cmux note:
+  - Attempted `cmux browser --surface surface:146 viewport 390 844`.
+  - WKWebView returned `not_supported: browser.viewport.set is not supported on WKWebView`.
+  - Continued verification on the same live right-side `surface:146` instead of opening another browser.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 92 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - Current live cmux measurement after workspace/pane state settled:
+    - Surface: `surface:146`.
+    - URL: `http://127.0.0.1:1420/`.
+    - Width: `1062`.
+    - PASS: `.cervical-care-panel` visible.
+    - PASS: no horizontal overflow (`scrollWidth=1062`).
+    - PASS: current panel height `694` px at this width.
+    - PASS: click `림프부종` still fills the question draft and focuses the question textarea.
+    - PASS: cleanup reload clears the draft.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with standards coverage readability and caregiver/export clarity for Korean sex-specific applicability.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:17 KST - Korean Sex-Applicability Summary Iteration
+
+- Improvement target:
+  - Make Korean male/female applicability visible before opening the detailed `적용 범위` list.
+  - Keep caregiver exports aligned with the same summary language.
+- Code changes:
+  - Updated `src/healthStandards.ts`.
+    - Added reusable `koreanHealthStandardApplicabilitySummary`.
+    - Summary now separates `남녀 공통`, `성별 분리`, and `결과지 우선`.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `성별 기준 요약` chips inside the `한국 성인 기준` note.
+    - Chips show:
+      - `남녀 공통`: `BMI·혈압·혈당 기준`.
+      - `성별 분리`: `허리둘레 남성 90cm/여성 85cm · HDL·헤모글로빈 프리셋`.
+      - `결과지 우선`: `기타 검사실 수치는 병원 결과지 입력값`.
+  - Updated `src/caregiverExport.ts`.
+    - Caregiver HTML `기준 적용 범위` section now includes the same applicability summary before the detailed list.
+  - Updated tests and README.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 93 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: `.standards-applicability-strip` rendered.
+    - PASS: rendered text includes `남녀 공통`, `성별 분리`, and `결과지 우선`.
+    - PASS: no horizontal overflow at current width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with caregiver-share preview ergonomics and validation of exported standard/cervical-care wording.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:19 KST - Caregiver Export Cervical-Care Reference Iteration
+
+- Improvement target:
+  - Make the source-backed cervical-cancer care guidance available in the caregiver HTML export, not only inside the live dashboard.
+  - Keep it clearly framed as record/pre-visit support, not diagnosis or treatment instruction.
+- Code changes:
+  - Updated `src/caregiverExport.ts`.
+    - `profile.cancerCareMode` is now accepted as optional export input.
+    - When cancer-care mode is enabled, caregiver HTML includes `자궁경부암 케어 참고`.
+    - The section includes warning-signal titles, recovery/recording checks, and official source links from `src/cervicalCancerCare.ts`.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added coverage for enabled cancer-care exports.
+    - Added coverage proving the cervical-care section is omitted when cancer-care mode is disabled.
+  - Updated `README.md`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 95 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - Restored the CareVault workspace/pane when the surface briefly read as hidden `about:blank`.
+    - Clicked the real `공유본 미리보기` button.
+    - PASS: preview panel opened with title `보호자 공유본 미리보기`.
+    - PASS: preview iframe `srcdoc` and source HTML both include `자궁경부암 케어 참고`.
+    - PASS: preview HTML includes `비정상 질출혈`.
+    - PASS: preview HTML includes `국가암정보센터 자궁경부암 일반적 증상`.
+    - Cleanup: clicked `닫기`.
+    - PASS: preview panel closed.
+    - PASS: no horizontal overflow at current width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with visit-summary/CSV export wording parity for the new standard applicability and cervical-care context.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:22 KST - Visit Summary and CSV Parity Iteration
+
+- Improvement target:
+  - Keep Markdown visit summaries and CSV exports aligned with the new Korean sex-applicability summary and cervical-cancer care context.
+  - Avoid making the caregiver export the only export surface with the new context.
+- Code changes:
+  - Updated `src/visitPacket.ts`.
+    - Added `성별 기준 요약` under `기준 적용 범위`.
+    - Added a conditional `자궁경부암 케어 참고` section when cancer-care mode is enabled.
+    - The section uses `src/cervicalCancerCare.ts` alerts, record checks, and official sources.
+  - Updated `src/csvExport.ts`.
+    - Added `standard_applicability` rows for the sex-applicability summary.
+    - Added `cervical_care_reference` rows for warning signals, record checks, and official sources when cancer-care mode is enabled.
+  - Updated `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `README.md`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 95 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - Clicked real `요약 미리보기`.
+    - PASS: `진료 요약 미리보기 (최근 30일)` includes `성별 기준 요약`.
+    - PASS: Markdown preview includes `남녀 공통: BMI·혈압·혈당 기준`.
+    - PASS: Markdown preview includes `자궁경부암 케어 참고` and `비정상 질출혈`.
+    - Closed preview.
+    - Clicked real `CSV 미리보기`.
+    - PASS: CSV preview includes `standard_applicability`, `성별 기준 요약`, and `BMI·혈압·혈당 기준`.
+    - PASS: CSV preview includes `cervical_care_reference`, `자궁경부암 케어 참고`, and `비정상 질출혈`.
+    - Closed preview.
+    - PASS: no horizontal overflow at current width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with dashboard scanability and reducing repeated long source/link text where it slows the main workflow.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:24 KST - Cervical-Care Source Link Scanability Iteration
+
+- Improvement target:
+  - Reduce repeated long source names inside the cervical-cancer warning cards.
+  - Preserve full source traceability and accessibility.
+- Code changes:
+  - Updated `src/App.tsx`.
+  - Card-level source links now render as short `출처` links.
+  - Each short card link keeps the full source name in `aria-label` and `title`.
+  - The bottom `출처` list still renders the full official source names.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 95 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - PASS: `.cervical-alert-card a` text is `출처`.
+    - PASS: card links retain `aria-label` and `title` with `국가암정보센터 자궁경부암 일반적 증상`.
+    - PASS: `.cervical-source-list` still includes all full official source labels.
+    - PASS: no horizontal overflow at current width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with final diff review, source safety check, and deciding the next high-value CareVault slice.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:28 KST - Cervical-Cancer Recovery Timing Notes Iteration
+
+- Improvement target:
+  - Add more patient-relevant cervical-cancer recovery information without turning CareVault into a treatment-instruction app.
+  - Keep the copy framed as `퇴원 안내서와 진료팀 지시로 대조할 기록 메모`.
+- Fresh official-source check:
+  - Re-opened 국가암정보센터 `자궁경부암 치료 후 생활`.
+    - Source lines showed conization aftercare around `6~8주` and broad hysterectomy aftercare around `최소 6주`.
+  - Re-opened 국가암정보센터 `림프부종 운동 관리`.
+    - Source lines showed that patients with pelvic lymph-node impact, e.g. uterine cancer patients, should be educated on leg/foot exercises, and that swelling should be compared before/after exercise with worsening as a stop signal.
+- Code changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `CervicalCancerCareRecoveryGuide`.
+    - Added `cervicalCancerCareRecoveryGuides` with:
+      - `원추절제술 후 생활 제한`.
+      - `광범위 자궁절제술 후 회복`.
+      - `골반 림프절 영향 운동`.
+  - Updated `src/App.tsx`.
+    - Added `회복 일정 메모` to the dashboard `자궁경부암 케어 노트`.
+  - Updated `src/caregiverExport.ts`, `src/visitPacket.ts`, and `src/csvExport.ts`.
+    - Caregiver HTML, Markdown visit summaries, and CSV exports now include the same recovery timing notes when cancer-care mode is enabled.
+  - Updated tests and README.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 96 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - Recovered the same surface to `http://127.0.0.1:1420/` after it briefly read as `about:blank`.
+    - PASS: dashboard cervical-care panel includes `회복 일정 메모`.
+    - PASS: panel includes `원추절제술 후 생활 제한`, `광범위 자궁절제술 후 회복`, and `골반 림프절 영향 운동`.
+    - PASS: `요약 미리보기` includes `회복 일정 메모` and the recovery-guide labels.
+    - PASS: `CSV 미리보기` includes a `cervical_care_reference` row for `회복 일정 메모`.
+    - Cleanup: preview panel closed.
+    - PASS: no horizontal overflow at current width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with compacting the expanded cervical-care panel or adding a source-backed quick note for post-treatment question prioritization.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:30 KST - Cervical-Care Recovery Disclosure Density Iteration
+
+- Improvement target:
+  - Keep the new recovery timing notes available without making the main cervical-care panel too tall on first scan.
+- Code changes:
+  - Updated `src/App.tsx`.
+    - Converted `회복 일정 메모` into a `<details>` disclosure.
+    - Closed state shows `회복 일정 메모` and `3개 항목`.
+    - Expanded state shows the three source-backed recovery guide items.
+  - Updated `src/App.css`.
+    - Added compact disclosure styling aligned with the existing calm dashboard panel language.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 96 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - PASS: closed disclosure summary shows `회복 일정 메모3개 항목`.
+    - PASS: closed panel height measured `770` px at current width `1062`.
+    - PASS: opening the disclosure reveals `원추절제술 후 생활 제한`, `광범위 자궁절제술 후 회복`, and `골반 림프절 영향 운동`.
+    - PASS: open panel height measured `976` px at current width `1062`.
+    - Cleanup: disclosure closed again.
+    - PASS: no horizontal overflow.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with a source-safety/diff audit or question-prioritization improvements.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:36 KST - Question Priority Planning Iteration
+
+- Improvement target:
+  - Make `진료 전 질문` easier to triage before appointments.
+  - Surface high-priority questions in the `진료 준비 큐` and exports without adding medical-risk auto-triage.
+- Code changes:
+  - Added `src/questionPriority.ts`.
+    - `high`: `이번 진료 우선`.
+    - `next-visit`: `다음 진료`.
+    - `routine`: `일반 확인`.
+    - Includes normalization and sort-rank helpers.
+  - Updated `src/App.tsx`.
+    - `CareQuestion` now has `priority`.
+    - Existing persisted questions without priority normalize to `다음 진료`.
+    - The question draft form now has a priority select.
+    - Question cards show date plus priority.
+    - Symptom and cervical-cancer prompt drafts default to `다음 진료`.
+    - Lab follow-up questions default to `이번 진료 우선`.
+  - Updated `src/careActionQueue.ts`.
+    - Open questions include priority in the action label.
+    - `이번 진료 우선` questions sort ahead of other same-tone items.
+    - `일반 확인` open questions use neutral tone.
+  - Updated `src/storage.ts`.
+    - Normalized mirror questions include `priority`.
+    - `questions.priority` column is included in table creation.
+    - Existing SQLite question tables get `ALTER TABLE ... ADD COLUMN priority TEXT NOT NULL DEFAULT 'next-visit'`.
+    - Search statements include priority text.
+  - Updated caregiver HTML, Markdown visit summary, and CSV exports to include question priority labels.
+  - Updated tests and README.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 21 files and 96 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - PASS: priority select rendered with `이번 진료 우선`, `다음 진료`, `일반 확인`.
+    - PASS: existing migrated question card rendered `2026-06-15 · 다음 진료`.
+    - PASS: care queue rendered question action label `질문 · 다음 진료`.
+    - PASS: `요약 미리보기` includes question priority in the question line.
+    - PASS: `CSV 미리보기` includes question priority in the question row detail.
+    - Cleanup: preview panel closed.
+    - PASS: no horizontal overflow at current width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with source-safety/diff audit, especially checking that new health guidance remains framed as record support rather than treatment advice.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:40 KST - Saved Question Priority Edit Iteration
+
+- Improvement target:
+  - Complete the question-priority workflow by allowing saved questions to be reprioritized without recreating them.
+  - Keep appointment-triage priority user-controlled rather than auto-medical-risk scoring.
+- Code changes:
+  - Updated `src/App.tsx`.
+    - Added `updateQuestionPriority`.
+    - Saved question cards now include an inline `우선순위` select.
+    - Priority changes update state and show `질문 우선순위: ...` feedback through the existing autosave label path.
+  - Updated `src/App.css`.
+    - Added compact `question-card-controls` and `question-priority-control` styling.
+  - Added `src/questionPriority.test.ts`.
+    - Pins labels, default normalization, and sort rank behavior.
+  - Updated `README.md`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 22 files and 99 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - PASS: saved question card priority select rendered.
+    - PASS: changing saved question from `다음 진료` to `이번 진료 우선` changed select value to `high`.
+    - PASS: question card text changed to `2026-06-15 · 이번 진료 우선`.
+    - PASS: care queue moved the question to the first action and showed `질문 · 이번 진료 우선`.
+    - PASS: UI feedback included `질문 우선순위: 이번 진료 우선`.
+    - PASS: `요약 미리보기` included `[확인 필요 · 이번 진료 우선]`.
+    - PASS: `CSV 미리보기` included the changed question priority.
+    - Cleanup: preview panel closed.
+    - Cleanup: saved question priority changed back to `다음 진료`.
+    - PASS: final question card shows `2026-06-15 · 다음 진료`.
+    - PASS: final care queue contains `질문 · 다음 진료`.
+    - PASS: no horizontal overflow at current width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with source-safety/diff audit and a compact completion checklist before considering whether any explicit objective remains uncovered.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:45 KST - Cervical-Care Source Safety Boundary Iteration
+
+- Improvement target:
+  - Make the cancer-care panel's medical boundary explicit in the UI.
+  - Add source-safety tests so patient-visible cervical-cancer guidance stays source-backed, question/record oriented, and not framed as treatment instructions.
+- Code changes:
+  - Updated `src/App.tsx`.
+    - Added a visible cervical-care note: this panel supports pre-visit records/questions and is not diagnosis, prescription, or treatment instruction.
+  - Updated `src/App.css`.
+    - Styled the boundary note as low-emphasis supporting copy inside the existing panel rhythm.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Every alert, prompt, self-check, and recovery guide must reference a known official source ID.
+    - Clinician-question prompts stay question-form.
+    - Care copy avoids direct treatment-order phrases such as `복용하세요`, `중단하세요`, `치료하세요`, `운동하세요`, `투약하세요`, and `처방하세요`.
+    - Recovery timing notes must keep clinician/record framing through terms such as `진료팀`, `퇴원 안내서`, `기록`, `확인`, or `대조`.
+  - Updated `README.md`.
+    - Documented the explicit non-diagnosis/treatment-instruction boundary note.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 22 files and 101 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: `.cervical-care-note` rendered `진단·처방·치료 지시가 아니라 진료 전 기록과 질문 준비를 돕는 공식 출처 기반 메모입니다.`
+    - PASS: no horizontal overflow at width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with a compact objective-coverage audit, then choose the next feature improvement from remaining gaps rather than broad refactoring.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:48 KST - Current-Profile Sex Standard Notes Iteration
+
+- Improvement target:
+  - Make Korean male/female standard applicability clearer at the point of use.
+  - Avoid implying that all Korean health standards are sex-specific: BMI, blood pressure, and blood glucose stay adult common; waist circumference, HDL-C helper ranges, and hemoglobin helper ranges are sex-specific.
+- Code changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `buildProfileSexStandardNotes(sex)`.
+    - Female notes: common BMI/BP/glucose, waist 85cm, HDL-C 50 mg/dL, hemoglobin 12-16 g/dL with result-sheet priority.
+    - Male notes: common BMI/BP/glucose, waist 90cm, HDL-C 40 mg/dL, hemoglobin 13-18 g/dL with result-sheet priority.
+    - Other/unspecified notes show both male/female threshold choices until a sex is selected.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added a compact `현재 성별 적용` strip inside the Korean standards panel.
+  - Updated `src/caregiverExport.ts`, `src/visitPacket.ts`, and `src/csvExport.ts`.
+    - Added the same profile-specific sex standard notes to caregiver HTML, Markdown visit summaries, and CSV rows.
+  - Updated tests and README.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 22 files and 102 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: `.standards-profile-strip` rendered female profile notes for common BMI/BP/glucose, waist 85cm, HDL-C 50 mg/dL, and hemoglobin 12-16 g/dL.
+    - PASS: no horizontal overflow at width `1062`.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with objective-coverage audit and look for the next high-value usability improvement that can be implemented without adding unverified medical claims.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:50 KST - Current-Profile Sex Notes Export Preview QA
+
+- Improvement target:
+  - Verify that the new current-profile sex standard notes are not only present in code/export tests but visible through actual preview paths on the required cmux browser surface.
+- cmux `surface:146` checks:
+  - Markdown visit-summary preview:
+    - Opened `요약 미리보기`.
+    - PASS: preview title `진료 요약 미리보기 (최근 30일)`.
+    - PASS: text includes `현재 프로필 성별 적용`.
+    - PASS: text includes `여성 85cm 이상이면 복부비만 기준 해당`.
+    - PASS: text includes `여성 프리셋은 50 mg/dL 이상`.
+    - PASS: text includes `성인 남녀 공통 기준으로 표시`.
+  - CSV preview:
+    - Opened `CSV 미리보기`.
+    - PASS: preview title `CSV 미리보기`.
+    - PASS: text includes `standard_profile_sex`.
+    - PASS: text includes female waist and HDL-C notes.
+    - PASS: no horizontal overflow.
+  - Caregiver HTML preview:
+    - Opened `공유본 미리보기`.
+    - PASS: source HTML `srcdoc` includes `현재 성별 적용`.
+    - PASS: source HTML `srcdoc` includes `여성 85cm 이상이면 복부비만 기준 해당`.
+    - Note: sandboxed iframe `contentDocument.body.textContent` was empty through cmux eval, so the reliable check was the actual `srcdoc` attached to the preview iframe plus the visible source panel text.
+  - Cleanup:
+    - Preview panel closed.
+    - PASS: app heading `나의 건강 기록`.
+    - PASS: no horizontal overflow.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` by improving clinician-prep usability around question review, without adding new medical claims.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:52 KST - Visit Question Copy Iteration
+
+- Improvement target:
+  - Improve clinician-prep usability without adding medical claims.
+  - Let a patient copy a saved visit question with date, topic, priority, status, question text, and answer memo.
+- Code changes:
+  - Added `src/questionClipboard.ts`.
+    - `formatQuestionClipboardText()` formats saved questions as a paste-ready clinical conversation note.
+    - Unknown priority normalizes through the existing `questionPriority` module.
+    - Blank answer memos are omitted.
+  - Added `src/questionClipboard.test.ts`.
+  - Updated `src/App.tsx`.
+    - Added `copyQuestionForVisit`.
+    - Saved question cards now include a `복사` button.
+    - Clipboard success/failure uses visible save-label feedback.
+  - Updated `src/App.css`.
+    - Added compact `question-copy-button` styling inside the question-card control column.
+  - Updated `README.md`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 104 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - Stubbed `navigator.clipboard.writeText` inside the browser to avoid modifying the OS clipboard.
+    - PASS: `.question-copy-button` rendered as `복사`.
+    - PASS: click produced paste text beginning with `[진료 질문]`.
+    - PASS: copied text included date `2026-06-15`, topic `혈액검사`, priority `다음 진료`, status `확인 필요`, and question text.
+    - PASS: visible status updated to `진료 질문 복사됨`.
+    - PASS: no horizontal overflow.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with a focused final objective audit and then pick the next smallest gap if one remains.
+- No git staging or commit was performed.
+
+## 2026-06-04 10:55 KST - Sex-Specific Lab Preset Refresh Iteration
+
+- Improvement target:
+  - Keep the current-profile sex standard notes aligned with lab-helper input values.
+  - Avoid silently overwriting user-edited lab result ranges.
+- Code changes:
+  - Updated `src/labPresets.ts`.
+    - Added `resolveLabPresetSexChange()`.
+    - It returns the next sex-specific preset only when the current draft still matches the previous preset's name, unit, lower, and upper values.
+    - It returns `null` when the user has already edited the draft range.
+  - Updated `src/labPresets.test.ts`.
+    - Hgb female 12-16 refreshes to male 13-18 when still preset-backed.
+    - A manually edited lower value prevents automatic refresh.
+  - Updated `src/App.tsx`.
+    - `saveProfile("sex", ...)` now refreshes selected Hgb/HDL-style lab preset ranges only when safe.
+    - The visible status becomes `성별 기준 수정됨 · 검사 프리셋 범위 갱신` when the helper range updates.
+    - Lab preset help text now explains the behavior.
+  - Updated `README.md`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 105 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - Set profile sex to female, selected `hemoglobin` preset.
+    - PASS: draft range became `12` to `16`.
+    - Changed profile sex to male.
+    - PASS: draft range refreshed to `13` to `18`.
+    - PASS: status text became `성별 기준 수정됨 · 검사 프리셋 범위 갱신`.
+    - PASS: lab preset help text explains sex-specific auto-refresh only before manual range edits.
+    - Cleanup: profile sex restored to female.
+    - PASS: no horizontal overflow.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with objective-coverage audit focused on remaining cmux-testable UX gaps.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:03 KST - Cervical Screening and Prevention Memo Iteration
+
+- Improvement target:
+  - Add more Korean official-source cervical-cancer context without turning the app into treatment advice.
+  - Keep the main panel compact by using a disclosure section.
+- Source check:
+  - National Cancer Center/National Cancer Information Center screening method page:
+    - `https://www.cancer.go.kr/lay1/S1T553C555/contents.do`
+    - Verified: 자궁경부암 검진 주기 `2년 간격`; 기본검사 `자궁경부세포검사(Pap smear test)`; final modified date `2024년 02월 07일`.
+  - National Cancer Center screening eligibility page:
+    - `https://www.cancer.go.kr/lay1/S1T553C554/contents.do`
+    - Verified: 자궁경부암 검진 대상 `20세 이상 여성`; same page notes 해당 암종 진료 중 환자는 산정특례기간 기준 검진 대상 유예.
+  - KDCA cervical-cancer vaccine page:
+    - `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=3987`
+    - Verified: 만 12세 접종 권장, 접종 후 20-30분 관찰, HPV 백신은 예방용이고 치료 효과 확인 용도가 아님.
+- Code changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccScreeningSchedule` and `nccScreeningEligibility` sources.
+    - Added `cervicalCancerCarePreventionGuides`.
+    - Guides cover 검진 대상 확인, 검진 주기·방법, and HPV 백신 가족 안내.
+  - Updated `src/App.tsx`.
+    - Added a compact `검진·예방 메모` disclosure under the cervical-care panel.
+  - Updated caregiver HTML, Markdown visit summary, and CSV exports with the same prevention guides.
+  - Updated tests and README.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 106 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: cervical panel disclosure labels include `회복 일정 메모` and `검진·예방 메모`.
+    - PASS: dashboard text includes `20세 이상 여성`, `자궁경부세포검사`, and `HPV 백신은 예방용`.
+    - PASS: Markdown preview includes `검진·예방 메모`, `20세 이상 여성`, and `HPV 백신은 예방용`.
+    - PASS: CSV preview includes the same prevention memo row/content.
+    - PASS: caregiver HTML preview `srcdoc` includes the same prevention memo content.
+    - Cleanup: preview panel closed.
+    - PASS: no horizontal overflow.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with objective-coverage audit and cmux-testable UX refinements; avoid adding new medical facts without fresh official-source verification.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:06 KST - Dashboard Metric Standard Context Iteration
+
+- Improvement target:
+  - Make Korean standard applicability visible directly on the dashboard metric cards, not only inside the detailed `한국 성인 기준` panel.
+  - Clarify at first glance that BMI, blood pressure, and glucose are adult common criteria while waist circumference is sex-specific.
+- Code changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `getHealthStandardCoverage(id)`.
+    - Added `formatDashboardMetricStandardNote(id)`.
+  - Updated `src/healthStandards.test.ts`.
+    - Verifies short dashboard notes for `blood-pressure`, `waist`, and unknown IDs.
+  - Updated `src/App.tsx`.
+    - BMI, waist, blood-pressure, and glucose metric cards now show compact standard context notes.
+    - Glucose card switches between `glucose-care` and `glucose-screening` based on the diabetes-tracking profile flag.
+  - Updated `src/App.css`.
+    - Added `metric-standard-note` styling and raised metric-card min-height for stable card heights.
+  - Updated `README.md`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 107 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: metric notes rendered:
+      - `성인 남녀 공통 · 한국 성인 BMI`
+      - `남성 90cm, 여성 85cm 분리 · 한국 성인 허리둘레`
+      - `성인 남녀 공통 · 한국 성인 혈압`
+      - `성인 남녀 공통 · 당뇨 추적 혈당`
+    - PASS: first four metric cards rendered at equal height `174`.
+    - PASS: no horizontal overflow.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with cmux-testable UX refinements and source-bound medical copy only.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:11 KST - Lab Preset Preview UX Iteration
+
+- Improvement target:
+  - Make Hgb/HDL and other lab helper presets understandable before saving a lab record.
+  - Keep lab presets clearly labeled as input helpers and preserve result-sheet/user-entered range priority.
+- Code changes:
+  - Updated `src/labPresets.ts`.
+    - Added `LabPresetPreview`.
+    - Added `formatLabPresetRangeLabel()`.
+    - Added `formatLabPresetApplicabilityLabel()`.
+    - Added `buildLabPresetPreview()`.
+  - Updated `src/labPresets.test.ts`.
+    - Verifies female Hgb preview as `여성 기준 적용` and `12-16 g/dL`.
+    - Verifies male HDL preview as `남성 기준 적용` and `40 mg/dL 이상`.
+    - Verifies WBC preview as a common adult input helper.
+  - Updated `src/App.tsx`.
+    - The lab preset selector now shows a compact preview with selected preset label, sex applicability, resolved item name, range, unit, and helper note.
+    - Direct-input mode shows a reminder to copy the lab report's own unit and range.
+  - Updated `src/App.css`.
+    - Added calm clinical preview styling and wrapped long Korean labels/ranges.
+    - Preview grid collapses to one column under the existing mobile breakpoint.
+  - Updated `README.md`.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts`: PASS, 1 file and 6 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 108 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: direct-input preview rendered with no horizontal overflow.
+    - PASS: selecting Hgb under female profile rendered `여성 기준 적용` and `12-16 g/dL`, and filled lower/upper as `12`/`16`.
+    - PASS: switching profile sex to male while the draft still matched the preset rendered `남성 기준 적용` and `13-18 g/dL`, and filled lower/upper as `13`/`18`.
+    - Cleanup: profile sex restored to female; lab preset choice and lab draft fields restored to direct-input/blank state.
+    - PASS: current right-side browser width had no horizontal overflow.
+    - NOTE: `cmux browser viewport 360 800` is not supported on this WKWebView surface, so mobile behavior was verified by CSS rule plus current-width overflow instead of forced viewport resizing.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with another cmux-testable workflow improvement, ideally around copying or batching care-prep items without adding unsourced medical facts.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:15 KST - Care Queue Copy Iteration
+
+- Improvement target:
+  - Make the dashboard `진료 준비 큐` immediately useful in clinic prep or family review by copying the current queue as plain text.
+  - Avoid adding new medical facts; this iteration only formats already-derived queue items.
+- Code changes:
+  - Updated `src/careActionQueue.ts`.
+    - Added `formatCareActionQueueClipboardText()`.
+    - Formats queue header, generated date, count, sorted items, source labels, status labels, title, and detail.
+    - Includes a deterministic empty-queue message.
+  - Updated `src/careActionQueue.test.ts`.
+    - Verifies sorted clipboard output for question, document, lab, and visit items.
+    - Verifies the empty queue clipboard message.
+  - Updated `src/App.tsx`.
+    - Added a `큐 복사` button to the dashboard care queue header.
+    - Writes the formatted queue text with `navigator.clipboard.writeText`.
+    - Shows success/failure feedback in the existing save-status region.
+  - Updated `src/App.css`.
+    - Added compact section-title copy controls.
+    - Keeps the copy control left-aligned under the mobile section-title breakpoint.
+  - Updated `README.md`.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts`: PASS, 1 file and 4 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 110 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - Recovered the same surface after a reload snapshot temporarily showed an empty document; did not open a new browser surface.
+    - PASS: `큐 복사` button rendered in the care queue header.
+    - PASS: queue header text rendered `4개 확인 항목 · 예약 1개`.
+    - PASS: clicking `큐 복사` set status text to `진료 준비 큐 복사됨`.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - NOTE: clipboard `readText` is blocked by this WKWebView surface, so copied payload content is verified by unit tests and write success status.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with another UI/UX refinement that is testable in the same right-side cmux browser and does not require new medical-source claims.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:20 KST - Care Queue Breakdown Iteration
+
+- Improvement target:
+  - Make the dashboard care queue faster to scan by showing source counts before the user reads each row.
+  - Preserve the existing queue sorting and copy behavior.
+- Code changes:
+  - Updated `src/careActionQueue.ts`.
+    - Added `CareActionQueueSourceCounts`.
+    - Added `countCareActionQueueSources()`.
+  - Updated `src/careActionQueue.test.ts`.
+    - Verifies source counts for question, lab, document, and visit queue items.
+    - Verifies empty queues return zero counts for every source.
+  - Updated `src/App.tsx`.
+    - Computes source counts from the current derived `careActions`.
+    - Renders `질문`, `검사`, `서류`, and `방문` scan chips under the care queue header.
+  - Updated `src/App.css`.
+    - Added compact wrapping chip styling for the queue breakdown row.
+  - Updated `README.md`.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts`: PASS, 1 file and 5 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 111 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: breakdown chips rendered as `질문1`, `검사1`, `서류1`, `방문1`.
+    - PASS: queue header still rendered `4개 확인 항목 · 예약 1개` and `큐 복사`.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with focused cmux-testable improvements; candidate areas are vital-entry helper context, export-preview affordances, or tighter no-data/empty-state guidance.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:22 KST - Vital Input Standard Helper Iteration
+
+- Improvement target:
+  - Show Korean standard context at the moment a user enters blood pressure or glucose, not only after the value appears on dashboard cards.
+  - Reuse existing health-standard labels; no new medical facts were added.
+- Code changes:
+  - Updated `src/App.tsx`.
+    - Added `vitalDraftStandardNote` derived from `formatDashboardMetricStandardNote()`.
+    - Added `vitalDraftHelperText` for blood-pressure, diabetes-care glucose, and screening glucose contexts.
+    - Added a `혈압 기준`/`혈당 기준` helper under the vital input field group.
+  - Updated `src/App.css`.
+    - Added compact `vital-standard-helper` styling.
+  - Updated `README.md`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 111 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - NOTE: the same surface briefly showed `about:blank`/empty body after navigation; recovered by navigating the same `surface:146` again, without opening a new browser surface.
+    - PASS: blood-pressure input helper rendered `성인 남녀 공통 · 한국 성인 혈압`.
+    - PASS: glucose input helper rendered `성인 남녀 공통 · 당뇨 추적 혈당` while diabetes tracking was on.
+    - Cleanup: input type restored to blood-pressure.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; candidate next slices are export-preview affordances or tighter empty-state guidance.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:25 KST - Document Filter Empty-State Reset Iteration
+
+- Improvement target:
+  - Make the saved-document no-match state directly recoverable.
+  - Avoid changing saved medical records; only reset the current search/category/status filters.
+- Code changes:
+  - Updated `src/App.tsx`.
+    - Added `hasActiveDocumentFilters`.
+    - Added `resetDocumentFilters()`.
+    - The saved-document empty state now distinguishes between no saved documents and no filter matches.
+    - When saved documents exist and filters are active, the empty state shows `필터 초기화`.
+  - Updated `src/App.css`.
+    - Converted `document-empty` into a small grid container.
+    - Added `document-empty-reset` button styling.
+  - Updated `README.md`.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 23 files and 111 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - Set saved-document category filter to `영상`.
+    - PASS: no-match state showed `검색어나 필터 조건에 맞는 저장된 서류가 없습니다.` and `필터 초기화`.
+    - PASS: count showed `0/1개 기록`, category filter was `imaging`, status filter stayed `all`.
+    - Clicked `필터 초기화`.
+    - PASS: search value empty, category/status filters restored to `all`, count returned to `1/1개 기록`, one document item rendered, empty state disappeared.
+    - PASS: status text showed `서류 필터 초기화됨`.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; candidate next slice is export-preview affordance polish or a focused completion audit to discover the next weak requirement.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:27 KST - Export Preview Summary Iteration
+
+- Improvement target:
+  - Improve export-preview confidence before copy, print, or download.
+  - Show the preview's format, line count, character count, and UTF-8 byte size in the preview panel.
+- Code changes:
+  - Added `src/exportPreviewSummary.ts`.
+    - `buildExportPreviewSummary()` computes line count, character count, and byte count.
+    - Labels use Korean number formatting.
+  - Added `src/exportPreviewSummary.test.ts`.
+    - Verifies multiline Korean/English content count.
+    - Verifies empty preview content count.
+  - Updated `src/App.tsx`.
+    - Builds an export-preview summary whenever `exportPreview` is active.
+    - Renders `형식`, `분량`, `문자`, and `크기` chips under the preview header.
+  - Updated `src/App.css`.
+    - Added compact wrapping `export-preview-summary` styling.
+  - Updated `README.md`.
+- Verification:
+  - `npm run test -- src/exportPreviewSummary.test.ts`: PASS, 1 file and 2 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 24 files and 113 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - Triggered the real `요약 미리보기` handler.
+    - PASS: preview title rendered `진료 요약 미리보기 (최근 30일)`.
+    - PASS: summary strip rendered `형식진료 요약분량82줄문자4,777자크기8,787B`.
+    - PASS: preview actions remained `복사`, `인쇄`, `다운로드`, `닫기`.
+    - Cleanup: preview panel closed.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; next useful slice can inspect completion coverage against the original objective and pick the next weakly verified area.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:31 KST - Profile Waist Standard Helper Iteration
+
+- Improvement target:
+  - Make the sex-specific Korean waist-circumference threshold visible at the input field, not only in the downstream standards panel or dashboard card.
+  - Reuse existing source-labeled health-standard data; no new medical facts were added.
+- Code changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `formatProfileWaistStandardNote()`.
+    - Female profile note: `여성 85cm 이상`.
+    - Male profile note: `남성 90cm 이상`.
+    - Unspecified profile note: `남성 90cm/여성 85cm`.
+  - Updated `src/healthStandards.test.ts`.
+    - Verifies female, male, and other/unspecified waist helper notes with the source label.
+  - Updated `src/App.tsx`.
+    - Computes `profileWaistStandardNote` from the selected profile sex.
+    - Shows it under the `허리둘레(cm)` input.
+  - Updated `src/App.css`.
+    - Added compact `profile-field-helper` styling.
+  - Updated `README.md`.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 11 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 24 files and 114 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: female profile helper rendered `여성 85cm 이상 · 대한비만학회 비만 진료지침 2022`.
+    - PASS: switching to male rendered `남성 90cm 이상 · 대한비만학회 비만 진료지침 2022`.
+    - PASS: switching to other/unspecified rendered `남성 90cm/여성 85cm · 대한비만학회 비만 진료지침 2022`.
+    - Cleanup: profile sex restored to female.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; likely next best step is a lightweight completion-coverage audit to select the next weakly verified objective area before editing again.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:32 KST - DESIGN.md Contract Refresh Iteration
+
+- Improvement target:
+  - Keep the project design contract aligned with the UI improvements added during the current `$autoresearch` loop.
+  - Make future UI changes check against current helper surfaces, empty-state recovery, and preview affordances.
+- Documentation changes:
+  - Updated `DESIGN.md` front matter component map:
+    - `careQueue` now includes source chips and copy affordance.
+    - Added `profileHelpers`.
+    - Added `labPresetPreview`.
+    - Added `exportPreview`.
+  - Updated Components section:
+    - Profile waist helper.
+    - Care queue source-count chips and copy button.
+    - Lab preset preview.
+    - Vital input helper.
+    - Document empty-state reset.
+    - Export preview line/character/byte summary.
+  - Updated Audit Checklist for:
+    - sex-specific helper fallback behavior
+    - filter-caused empty-state recovery
+  - Updated Decisions Log with the compact helper surfaces added on 2026-06-04.
+- Verification:
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS after this iteration.
+  - cmux `surface:146` remained the active browser target at `http://127.0.0.1:1420/` from the preceding UI verification.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with a focused objective-coverage audit or another small cmux-testable UI refinement.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:34 KST - Cervical Care Note Copy Iteration
+
+- Improvement target:
+  - Make the source-backed cervical-cancer care panel reusable as clinic-prep text.
+  - Use only existing cervical-care data; no new medical facts were added.
+- Code changes:
+  - Added `src/cervicalCancerCareClipboard.ts`.
+    - Formats warning signs, recording checks, recovery notes, screening/prevention notes, and source list into plain text.
+    - Keeps the note framed as record/clinician-confirmation support.
+  - Added `src/cervicalCancerCareClipboard.test.ts`.
+    - Verifies all major care-note sections and source labels are included.
+    - Verifies direct treatment-order phrasing is not introduced.
+  - Updated `src/App.tsx`.
+    - Added `copyCervicalCancerCareNote()`.
+    - Added `노트 복사` button to the cervical-care panel header.
+    - Shows existing save-status feedback on success/failure.
+  - Updated `src/App.css`.
+    - Added compact `cervical-copy-button` styling.
+  - Updated `README.md` and `DESIGN.md`.
+- Verification:
+  - `npm run test -- src/cervicalCancerCareClipboard.test.ts`: PASS, 1 file and 2 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 25 files and 116 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: `노트 복사` button rendered in the cervical-care panel header.
+    - PASS: clicking `노트 복사` set status text to `자궁경부암 케어 노트 복사됨`.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; next useful slice can audit objective coverage or add another small, source-preserving workflow affordance.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:39 KST - Korean Health Standards Copy Iteration
+
+- Improvement target:
+  - Make the Korean adult health-standard explanation easy to reuse outside the dashboard.
+  - Keep sex-specific guidance explicit for profile context without adding new medical facts beyond the existing source-backed project data.
+- Code changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `formatHealthStandardsClipboardText(profileSex)`.
+    - Clipboard text includes Korean adult standard summary, current-profile sex notes, coverage lines, and source labels.
+  - Updated `src/healthStandards.test.ts`.
+    - Verifies female, male, and unspecified-profile clipboard output.
+    - Checks waist, HDL-C, hemoglobin, shared blood-pressure coverage, and KDCA source labeling.
+  - Updated `src/App.tsx`.
+    - Added `copyHealthStandards()`.
+    - Added `기준 복사` button to the Korean adult standards panel.
+    - Reuses existing save-status feedback for success/failure.
+  - Updated `src/App.css`.
+    - Added compact standards header and copy-button styling that wraps safely in the right-side browser pane.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented one-click Korean health-standard copy.
+    - Refreshed the design contract for source-backed standards copy affordance.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 12 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 25 files and 117 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:146`:
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: `기준 복사` button rendered in the Korean adult standards panel.
+    - PASS: clicking `기준 복사` set status text to `한국 건강 기준 복사됨`.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with a focused coverage audit before choosing the next small UI or clinical-prep affordance.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:43 KST - Cervical Warning Symptom Draft Iteration
+
+- Improvement target:
+  - Reduce friction between source-backed 자궁경부암 warning signs and the user's actual symptom log.
+  - Keep the feature as record support only; do not add new medical facts or treatment instructions.
+- Code changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `buildCervicalCancerAlertSymptomDraft(alert)`.
+    - Drafts include symptom title, warning detail, source label, and clinician-confirmation action.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added coverage for warning-card symptom draft text and source labeling.
+    - Keeps the direct-treatment-order guard in place.
+  - Updated `src/App.tsx`.
+    - Added `증상 초안` buttons to each cervical warning card.
+    - Clicking a warning card fills the symptom draft fields and focuses the symptom input.
+    - Existing typed symptom draft content is preserved; warning details append to the body only when not already present.
+  - Updated `src/App.css`.
+    - Added compact wrapping styles for warning-card action rows.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented warning-to-symptom draft behavior and refreshed the design audit checklist.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts`: PASS, 1 file and 9 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 25 files and 118 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - cmux `surface:146`:
+    - Recovered same `surface:146` from `about:blank` through `workspace:11`, `pane:58`, then `http://127.0.0.1:1420/`.
+    - URL: `http://127.0.0.1:1420/`.
+    - PASS: 4 `증상 초안` buttons rendered.
+    - PASS: clicking the first warning filled symptom `비정상 질출혈`.
+    - PASS: body included `출처: 국가암정보센터 자궁경부암 일반적 증상`.
+    - PASS: next action became `발생 시기·양·유발 상황을 적고 진료팀 확인`.
+    - PASS: focus moved to the symptom input.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; likely next step is to make visit/export outputs surface the new cervical warning symptom drafts without creating duplicate medical advice.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:46 KST - Symptom-Aware Care Queue Iteration
+
+- Improvement target:
+  - Make saved 자궁경부암 warning symptom drafts visible in the dashboard's 진료 준비 큐.
+  - Also surface high-severity symptoms as clinic-review items without inventing new advice.
+- Code changes:
+  - Updated `src/careActionQueue.ts`.
+    - Added `symptom` as a care action source.
+    - Queues saved symptoms when they contain the official 자궁경부암 source label or have severity `7/10` or higher.
+    - Labels sourced cervical symptoms as `자궁경부암 경고 기록`.
+    - Labels high-severity unsourced symptoms as `고위험 증상`.
+  - Updated `src/careActionQueue.test.ts`.
+    - Added cervical warning symptom queue coverage.
+    - Added high-severity symptom queue coverage.
+    - Updated source-count expectations to include `symptom`.
+  - Updated `src/App.tsx`.
+    - Added `증상` source chip/count and alert icon in the care queue.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented symptom-aware queue behavior and the record-derived source guard.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts`: PASS, 1 file and 7 tests.
+  - `npm run typecheck`: PASS.
+  - cmux `surface:146`:
+    - Clicked `증상 기록 추가` using the previously prepared cervical warning draft.
+    - PASS: status `증상 기록 추가됨 · 브라우저 자동 저장됨`.
+    - PASS: source chips showed `증상1`, `질문1`, `검사1`, `서류1`, `방문1`.
+    - PASS: first queue row showed `비정상 질출혈 3/10` with label `자궁경부암 경고 기록`.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+  - `npm run test`: PASS, 25 files and 120 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - `npm run build`: PASS.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` by checking export/readout parity for the new symptom-aware queue and saved warning symptom records.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:49 KST - Visit Packet Care Queue Parity Iteration
+
+- Improvement target:
+  - Make the Markdown 진료 요약 export carry the same record-derived care queue that the dashboard shows.
+  - Preserve the selected visit-summary date range and avoid creating medical advice in the export.
+- Code changes:
+  - Updated `src/careActionQueue.ts`.
+    - Exported `formatCareActionQueueLabel(action)` for reuse in export text.
+    - Made record `id` fields optional for export builders that operate on plain record shapes.
+    - Treats missing document `reviewStatus` as not queueable to avoid `undefined` labels.
+  - Updated `src/visitPacket.ts`.
+    - Added `## 진료 준비 큐` to Markdown visit summaries.
+    - Queue lines are built from range-filtered visits, questions, labs, documents, and symptoms.
+    - Added explicit boundary copy: saved records only, no new diagnosis or treatment instruction.
+  - Updated `src/visitPacket.test.ts`.
+    - Verifies the queue section includes `[증상 · 자궁경부암 경고 기록]`.
+    - Added regression coverage for selected date range filtering after an initial RED failure exposed an old document leak.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented visit-summary care queue parity and range/label audit checks.
+- Verification:
+  - Initial `npm run test -- src/visitPacket.test.ts src/careActionQueue.test.ts`: RED.
+    - Failure: range-limited visit summary included an old `2026-05-01` document in the new queue.
+    - Typecheck also caught optional `reviewStatus` incompatibility.
+  - Fixed by range-filtering the care queue state inside `buildVisitPacketMarkdown()` and excluding documents without active review status.
+  - `npm run test -- src/visitPacket.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 10 tests.
+  - `npm run typecheck`: PASS.
+  - cmux `surface:146`:
+    - Recovered same surface from a wrong local preview URL back to `http://127.0.0.1:1420/`.
+    - PASS: dashboard still showed `증상1`, `질문1`, `검사1`, `서류1`, `방문1`.
+    - Clicked topbar `요약 미리보기`.
+    - PASS: export preview title `진료 요약 미리보기 (최근 30일)`.
+    - PASS: preview text included `## 진료 준비 큐`.
+    - PASS: preview text included `[증상 · 자궁경부암 경고 기록]`.
+    - PASS: preview text included `저장된 기록에서 가져온 확인 항목입니다. 새 진단이나 치료 지시가 아닙니다.`
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser --surface surface:146 errors list`: `No browser errors`.
+  - `npm run test`: PASS, 25 files and 120 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - `npm run build`: PASS.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; next useful audit is caregiver/CSV parity for symptom-aware queue or a narrow mobile visual sweep after the queue chip count increased to five.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:54 KST - Caregiver and CSV Care Queue Parity Iteration
+
+- Improvement target:
+  - Carry the dashboard's symptom-aware care queue into caregiver HTML and CSV exports.
+  - Preserve caregiver share privacy settings by not leaking excluded sections through derived queue rows.
+- Code changes:
+  - Updated `src/careActionQueue.ts`.
+    - Relaxed export-builder input shapes for optional document body/tags and optional symptom medication.
+  - Updated `src/caregiverExport.ts`.
+    - Added `진료 준비 큐` section to caregiver HTML.
+    - Queue is built only from enabled share sections: visits, questions, documents, symptoms, labs.
+    - Added explicit boundary copy: stored records only, no new diagnosis, prescription, or treatment instruction.
+  - Updated `src/csvExport.ts`.
+    - Added `care_queue` rows with dashboard queue source labels, title, tone, and detail.
+  - Updated `src/caregiverExport.test.ts`.
+    - Verifies caregiver queue includes symptom/question/lab entries.
+    - Verifies disabled share sections are excluded from the derived queue.
+    - Adjusted cancer-care-disabled expectation so saved symptom source traces are preserved while the reference section is omitted.
+  - Updated `src/csvExport.test.ts`.
+    - Verifies `care_queue` rows for cervical warning symptoms, questions, and labs.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented caregiver share-section-scoped queue and CSV `care_queue` rows.
+- Verification:
+  - Initial `npm run test -- src/caregiverExport.test.ts src/csvExport.test.ts`: RED.
+    - Failure: old test expected the saved cervical symptom source trace to disappear when cancer-care mode was disabled.
+    - Typecheck also caught caregiver document shape mismatch for queue inputs.
+  - Fixed by preserving saved source traces while omitting only the cervical reference section, and making queue document body/tags optional.
+  - `npm run test -- src/caregiverExport.test.ts src/csvExport.test.ts`: PASS, 2 files and 14 tests.
+  - `npm run typecheck`: PASS.
+  - cmux:
+    - Previous `surface:146` was gone; `workspace:11` contained only terminal `surface:82`.
+    - Created one new right-side browser pane: `surface:513`, `pane:223`, URL `http://127.0.0.1:1420/`.
+    - PASS: CareVault rendered on `surface:513` with chips `증상1`, `질문1`, `검사1`, `서류1`, `방문1`.
+    - PASS: caregiver preview included `진료 준비 큐`, `증상 · 자궁경부암 경고 기록`, and the enabled-share-section boundary note.
+    - PASS: CSV preview included `care_queue` and `증상 · 자궁경부암 경고 기록`.
+    - PASS: no horizontal overflow at current right-side browser width.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+  - `npm run test`: PASS, 25 files and 122 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - `npm run build`: PASS.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; next useful slice is a narrow visual/accessibility sweep on `surface:513` after adding the caregiver/CSV queue surfaces, especially preview panel text fit and source-label wrapping.
+- No git staging or commit was performed.
+
+## 2026-06-04 11:57 KST - Export Preview Text-Fit Hardening Iteration
+
+- Improvement target:
+  - Prevent long Korean source labels, filenames, and preview summary chips from creating horizontal overflow after adding care queue rows to caregiver/CSV exports.
+  - Keep the current right-side cmux browser target stable.
+- Code changes:
+  - Updated `src/App.css`.
+    - Added `min-width: 0` and `overflow-wrap: anywhere` to export preview header text.
+    - Added wrapping guards to export preview summary chips and caregiver preview settings snapshot chips.
+  - Updated `src/caregiverExport.ts`.
+    - Added generated HTML CSS for `.source-label`: `max-width: 100%`, `overflow-wrap: anywhere`, `line-height`, and middle alignment.
+  - Updated `DESIGN.md`.
+    - Added a decision log entry for export preview and generated source-label wrapping.
+- Verification:
+  - `npm run test -- src/caregiverExport.test.ts`: PASS, 1 file and 12 tests.
+  - `npm run typecheck`: PASS.
+  - cmux `surface:513`:
+    - WKWebView does not support `browser viewport`; forced 320px viewport testing was unavailable.
+    - Current measured width: `1094px`, no horizontal overflow.
+    - PASS: caregiver preview `srcdoc` includes `max-width: 100%` and `overflow-wrap: anywhere` for source labels.
+    - PASS: caregiver preview retained `진료 준비 큐` and `증상 · 자궁경부암 경고 기록`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+  - `npm run test`: PASS, 25 files and 122 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS after the DESIGN update.
+  - `git diff --check`: PASS after the DESIGN update.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; next useful slice is a small accessibility audit for the new export queue surfaces and copy/download controls on `surface:513`.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:00 KST - Export Preview Action Accessibility Iteration
+
+- Improvement target:
+  - Make export preview copy, print, download, and close controls understandable to screen-reader and mouse users.
+  - Explain why stale preview actions are disabled instead of leaving disabled buttons silent.
+- Code changes:
+  - Updated `src/App.tsx`.
+    - Added `exportPreviewDisabledReason`.
+    - Added format-specific `aria-label` and `title` to preview copy, print, and download buttons.
+    - Added title text to the close button.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented accessible export action labels and stale-preview disabled reasons.
+- Verification:
+  - cmux `surface:513` fresh caregiver preview:
+    - PASS: copy button `aria-label/title` = `보호자 공유본 미리보기 복사`.
+    - PASS: print button `aria-label/title` = `보호자 공유본 미리보기 인쇄`.
+    - PASS: download button `aria-label/title` = `보호자 공유본 미리보기 다운로드`.
+    - PASS: close button title = `내보내기 미리보기 닫기`.
+    - PASS: no horizontal overflow.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+  - cmux stale caregiver preview:
+    - Toggled `진료` share section off to create stale preview state, then restored it afterward.
+    - PASS: copy, print, and download disabled.
+    - PASS: each disabled action title = `공유 설정이 바뀌어 새 미리보기가 필요합니다.`
+    - PASS: stale alert text rendered.
+    - PASS: no horizontal overflow.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 25 files and 122 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - `npm run build`: PASS.
+- Current next durable improvement direction:
+  - Continue `$autoresearch`; next useful slice is an explicit completion-coverage audit against the original prompt before choosing the next gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:03 KST - Goal Coverage Metadata Refresh
+
+- Improvement target:
+  - Remove stale completion-audit evidence after the right-side cmux browser was replaced from `surface:146` to visible `surface:513`.
+  - Keep the in-app next-step copy aligned with the current `$autoresearch` goal-coverage audit instead of an already completed desktop-runtime readback slice.
+- Code/docs changes:
+  - Updated `DESIGN.md`.
+    - Runtime evidence now points to `cmux surface:513 at http://127.0.0.1:1420/`.
+    - Export preview contract now includes action labels, stale-disabled reasons, text-fit guards, and size summary.
+    - Added a decision-log entry for the runtime evidence refresh.
+  - Updated `src/App.tsx`.
+    - Next-step copy now reads `다음 개발 슬라이스: 단일 cmux 인앱브라우저 기준 목표 커버리지 감사와 남은 UX gap 개선.`
+- Verification:
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 25 files and 122 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - cmux `surface:513`:
+    - PASS: `workspace:11` still contains right-side browser `pane:223` / `surface:513`.
+    - PASS: CareVault rendered at `http://127.0.0.1:1420/` with heading `나의 건강 기록`.
+    - PASS: next-step text is `다음 개발 슬라이스: 단일 cmux 인앱브라우저 기준 목표 커버리지 감사와 남은 UX gap 개선.`
+    - PASS: current visible viewport `1094px`, scroll width `1094px`, no horizontal overflow.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with the explicit prompt-to-artifact coverage audit before choosing the next UX or medical-info gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:07 KST - Vital Standards Numeric Range Iteration
+
+- Improvement target:
+  - Prompt-to-artifact audit found the standards surface said blood pressure and glucose are adult common criteria, but the vital input helper did not show the actual numeric ranges before saving a reading.
+  - Add compact Korean numeric range rows for blood pressure and blood glucose without turning the app into diagnosis or treatment advice.
+- Source check:
+  - Rechecked KDCA National Health Information Portal hypertension content for normal/caution/prehypertension/hypertension thresholds.
+  - Rechecked Korean Diabetes Association public treatment/management content for general blood glucose control targets.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `buildVitalStandardRangeLines`.
+    - Updated the diabetes-care source URL to the current Korean Diabetes Association public page.
+    - Added compact rows for blood pressure, diabetes-care glucose targets, and non-diabetes glucose screening ranges.
+  - Updated `src/healthStandards.test.ts`.
+    - Added coverage for the displayed numeric vital range rows and current source URL.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Blood pressure and glucose input helpers now render compact numeric range rows below the source/context note.
+    - Rows wrap long Korean labels and keep the helper compact.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented compact numeric range display for vital input helpers.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 13 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 123 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - cmux `surface:513`:
+    - PASS: blood pressure helper shows `남녀 공통 · <120/<80 mmHg`, `주의 120-129/<80`, `전단계 130-139 또는 80-89`, and `1기 140/90 이상`.
+    - PASS: glucose helper shows `남녀 공통 · 80-130 mg/dL` and `남녀 공통 · 180 mg/dL 미만`.
+    - PASS: restored vital draft type to blood pressure after glucose-helper verification.
+    - PASS: no horizontal overflow at visible `1094px` width.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` with the prompt-to-artifact coverage audit; next likely gap is whether cervical-care copy/export surfaces should expose any more source trace or patient-safe follow-up actions without medical advice.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:09 KST - Cervical Care Visible Source Label Iteration
+
+- Improvement target:
+  - Prompt-to-artifact audit found cervical warning cards linked to official sources but showed only generic `출처` text inside each card.
+  - Make the official source trace visible directly on every warning card without adding treatment advice.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `formatCervicalCancerCareSourceLinkLabel`.
+    - Reused the same visible source-label formatter in symptom drafts.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added visible source-label coverage for known and fallback source IDs.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Cervical warning-card source links now render `출처: 국가암정보센터 자궁경부암 일반적 증상`.
+    - Source links wrap inside the warning card instead of relying on tooltip-only labels.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented visible official source labels on cervical warning cards.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts`: PASS, 1 file and 10 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 124 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - cmux `surface:513`:
+    - Current workspace had drifted away from `workspace:11`; reselected `workspace:11` and reloaded the same right-side `surface:513`, no new browser surface.
+    - PASS: 4 warning-card links show `출처: 국가암정보센터 자궁경부암 일반적 증상`.
+    - PASS: visible viewport `1094px`, scroll width `1094px`, no horizontal overflow.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue `$autoresearch` prompt-to-artifact coverage; next gap should come from a fresh screen/source audit rather than broad refactoring.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:11 KST - Cervical Care Item Source Chip Iteration
+
+- Improvement target:
+  - After visible source labels were added to cervical warning cards, the right-side check/recovery/prevention notes still relied on the shared source list instead of item-adjacent source labels.
+  - Add item-level official source chips so each patient-facing note carries its own trace without adding treatment advice.
+- Code/docs changes:
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `cervical-item-source` chips to 기록 체크, 회복 일정 메모, and 검진·예방 메모 list items.
+    - Chips use the shared `formatCervicalCancerCareSourceLinkLabel` formatter and wrap inside the side panel.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented visible official source labels on both cervical warning cards and side-list care notes.
+- Verification:
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 124 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - cmux `surface:513`:
+    - PASS: reselected `workspace:11`, navigated the same right-side `surface:513`, and rendered CareVault.
+    - PASS: 9 side-list source chips rendered across 기록 체크, 회복 일정, and 검진·예방 notes.
+    - PASS: 4 warning-card source links still show `출처: 국가암정보센터 자궁경부암 일반적 증상`.
+    - PASS: visible viewport `1094px`, scroll width `1094px`, no horizontal overflow.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue from a fresh prompt-to-artifact audit if more improvements are needed; do not mark the active goal complete without a formal completion audit.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:21 KST - Food Guidance Official Source Iteration
+
+- Improvement target:
+  - Prompt-to-artifact audit found that food judgment matched supportive/limit/clinician-check terms, but dashboard/export source trace still used a generic local-rule label.
+  - Upgrade food matches to carry official Korean source labels near each matched food without changing the verdict behavior or adding treatment instructions.
+- Source check:
+  - Checked National Cancer Center cancer-prevention diet material for vegetables, fruits, whole grains, processed meat, and general cancer-prevention food framing.
+  - Checked KDCA nutrition material for sweetened drinks and grapefruit/medication interaction caution.
+  - Checked KDCA risk-drinking material for alcohol cancer-risk framing.
+  - Checked National Cancer Center complementary-therapy consultation material for supplement/herbal disclosure to the care team.
+- Code/docs changes:
+  - Updated `src/healthRules.ts`.
+    - Added `foodGuidanceSources`.
+    - Added `sourceId`, `sourceLabel`, and `sourceUrl` to each `FoodMatch`.
+    - Kept the existing support/watch/risk matching behavior intact.
+  - Updated `src/exportSourceLabels.ts`, `src/App.tsx`, `src/App.css`, `src/csvExport.ts`, `src/caregiverExport.ts`, and `src/visitPacket.ts`.
+    - Dashboard food chips now show the matched term, local reason, and official Korean source label.
+    - CSV, caregiver HTML, and visit packet food rows now include the same official source labels.
+  - Updated `src/healthRules.test.ts`, `src/csvExport.test.ts`, `src/caregiverExport.test.ts`, and `src/visitPacket.test.ts`.
+    - Added coverage for official source labels and export propagation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-backed food judgment chips and export labels.
+- Verification:
+  - `npm run test -- src/healthRules.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 25 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 125 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog update.
+  - cmux `surface:513`:
+    - The previous `surface:513` webview was blank/width 0 after workspace drift; `refresh-surfaces` restored it to `in_window=true`.
+    - A transient extra browser surface created during recovery was closed; final `pane:223` surface list shows only `surface:513`.
+    - PASS: dashboard food chips show `국가암정보센터 암예방 식이` for 브로콜리/현미/베이컨 and `질병관리청 국가건강정보포털 식이영양` for 자몽.
+    - PASS: visible browser width `547px`, scroll width `547px`, no horizontal overflow.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the completion audit from the source-backed food surface; remaining work should be selected from concrete prompt-to-artifact gaps, not broad restyling.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:28 KST - Food Guidance Source Link Iteration
+
+- Improvement target:
+  - The previous food-source slice made official labels visible, but dashboard chips and text exports still did not expose the source URL at the matched-food level.
+  - Promote each matched food's existing official `sourceUrl` into the visible dashboard chip, caregiver HTML link, and Markdown/CSV evidence text without changing food verdict behavior.
+- Code/docs changes:
+  - Updated `src/healthRules.ts`.
+    - Added `formatFoodMatchEvidence` so text exports share one source-label-plus-URL format.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Food chips now render official source labels as external links with an icon and wrapping-safe styling.
+  - Updated `src/csvExport.ts`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - CSV and visit-packet food evidence now includes source URLs.
+    - Caregiver HTML food evidence now renders official sources as links.
+  - Updated `src/healthRules.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added checks for URL-bearing evidence and caregiver HTML links.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented clickable dashboard food sources and URL-bearing export evidence.
+- Verification:
+  - `npm run test -- src/healthRules.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 25 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 125 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog verification update.
+  - cmux `surface:513`:
+    - PASS: `pane:223` surface list shows only selected `surface:513`.
+    - PASS after same-surface reload: 4 `.food-chip` items and 4 `.food-chip a[href]` source links rendered.
+    - PASS: food links include National Cancer Center cancer-prevention diet and KDCA nutrition URLs.
+    - PASS: visible browser width `547px`, scroll width `547px`, no horizontal overflow.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the completion audit from a concrete prompt-to-artifact gap; symptom-support templates are a likely next source-trace candidate if more work continues.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:31 KST - Symptom Support Source Link Iteration
+
+- Improvement target:
+  - Prompt-to-artifact audit found that common cancer-treatment symptom templates had useful meal-note and clinician-question prompts, but the template band did not show item-level official source trace.
+  - Add official Korean source links to each symptom template while keeping the feature as record/question preparation, not treatment instructions.
+- Source check:
+  - Checked National Cancer Center symptom-by-diet pages for 메스꺼움, 입과 목의 통증, 설사, 변비, and 피로감과 우울.
+  - Checked National Cancer Center symptom-management pages for 구내염 and 설사 to confirm the source framing remains clinician-review oriented.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `sourceLabel` and `sourceUrl` to all five symptom templates.
+    - Added `formatSymptomSupportSource`.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Template bands now show an official source link with an external-link icon.
+    - The generated symptom action fallback includes the source label.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added coverage that every template has an official National Cancer Center URL and that 변비 source text is formatted.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-backed symptom support templates and the audit expectation.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: PASS, 1 file and 4 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 126 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog verification update.
+  - cmux `surface:513`:
+    - PASS: `pane:223` surface list still shows only selected `surface:513`.
+    - PASS: entered QA symptom draft `오심`; `.symptom-template-band a[href]` rendered one source link to `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`.
+    - PASS: clicking `질문 초안` filled the action fallback with `출처: 국가암정보센터 증상별 식생활 - 메스꺼움` and filled the clinician-question draft.
+    - PASS: QA symptom/action/question draft fields were cleared afterward; no saved record was created.
+    - PASS: after cmux surface refresh, body/main width and scroll width were both `320px`; no content overflow by rendered body width. `documentElement.clientWidth` and `window.innerWidth` reported `0`, so they were not usable for this hidden-surface measurement.
+    - PASS: food source links remained rendered, 4 `.food-chip a[href]`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the completion audit from another concrete gap, or do a formal objective-coverage audit before considering completion.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:35 KST - Symptom Question Source Persistence Iteration
+
+- Improvement target:
+  - The symptom-template source link was visible in the live template band, but the generated question draft could lose source trace if saved/copied/exported later.
+  - Preserve the official source label and URL inside the generated clinician-question draft without automatically saving a question.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - `buildSymptomSupportQuestion` now appends `출처: <label> - <url>` to generated question text.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added coverage that the 변비 generated question includes the National Cancer Center source URL.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that symptom-support question drafts retain source label plus URL.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/questionClipboard.test.ts`: PASS, 2 files and 6 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 126 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `pane:223` surface list still shows only selected `surface:513`.
+    - PASS: entering QA symptom `오심` rendered the National Cancer Center source link.
+    - PASS: clicking `질문 초안` filled the question textarea with the source label and URL line:
+      `출처: 국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+    - PASS: QA draft fields were cleared afterward; no saved record was created.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit and select the next weakly covered user-facing path.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:37 KST - Cervical Question Source Persistence Iteration
+
+- Improvement target:
+  - Cervical-care prompt buttons showed source context in the care panel, but the generated question draft itself could lose the official source trace after leaving the panel.
+  - Preserve official source labels and URLs inside generated cervical-care question drafts without changing the underlying prompt data or auto-saving questions.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `formatCervicalCancerCareSourceEvidence`.
+    - Added `buildCervicalCancerCarePromptQuestion` to append `출처: <label> - <url>` to generated prompt text.
+  - Updated `src/App.tsx`.
+    - `applyCervicalCancerCarePrompt` now uses the source-retaining question builder.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added coverage for prompt question source URL retention and source evidence formatting.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-retaining cervical follow-up question drafts and the audit expectation.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts`: PASS, 2 files and 12 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 126 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog verification update.
+  - cmux `surface:513`:
+    - PASS: clicking the `치료 후 회복` cervical prompt filled the question draft with source label and URL:
+      `출처: 국가암정보센터 자궁경부암 치료 후 생활 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4898`
+    - PASS: QA topic/question draft fields were cleared afterward; no saved question was created.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the completion audit from another concrete source-trace or usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:39 KST - Cervical Prompt Visible Source Iteration
+
+- Improvement target:
+  - Cervical-care prompt buttons retained source labels/URLs after generating a question draft, but the buttons themselves still showed only the topic before click.
+  - Make source trace visible before the user clicks a cervical-care question prompt.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Cervical prompt buttons now render the topic plus `formatCervicalCancerCareSourceLinkLabel(prompt.sourceId)`.
+  - Updated `src/App.css`.
+    - Prompt buttons now use a two-line topic/source layout with wrapping-safe small source labels.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-labeled and source-retaining cervical question prompts.
+- Verification:
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before worklog verification update.
+  - `npm run test`: PASS, 25 files and 126 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: 4 cervical prompt buttons rendered.
+    - PASS: 4 prompt source labels rendered before click:
+      `국가암정보센터 자궁경부암 일반적 증상`, `국가암정보센터 자궁경부암 치료 후 생활`, `국가암정보센터 림프부종 운동 관리`, `질병관리청 국가건강정보포털 자궁경부암 백신`.
+    - PASS: body width and scroll width both `320px`; no rendered body overflow.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Run full repo verification and continue the audit from the next weakly covered path.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:42 KST - Cervical Export Item Source Evidence Iteration
+
+- Improvement target:
+  - Caregiver, Markdown, and CSV exports included a final official source list for cervical-care references, but individual warning/check/recovery/prevention items did not carry their own source label and URL.
+  - Preserve item-level source evidence directly beside each exported cervical-care item.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `formatCervicalCancerCareAlertEvidence`.
+    - Added `formatCervicalCancerCareItemEvidence`.
+  - Updated `src/caregiverExport.ts`, `src/visitPacket.ts`, and `src/csvExport.ts`.
+    - Cervical warning, check, recovery, and prevention export lines now include `출처: <label> - <url>` at item level.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/caregiverExport.test.ts`, `src/visitPacket.test.ts`, and `src/csvExport.test.ts`.
+    - Added checks for item-level source URL propagation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented item-level cervical-care source URLs in CSV/Markdown/caregiver exports.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/caregiverExport.test.ts src/visitPacket.test.ts src/csvExport.test.ts`: PASS, 4 files and 28 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 127 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog verification update.
+  - cmux `surface:513`:
+    - PASS: clicked only `요약 미리보기`, `CSV 미리보기`, and `공유본 미리보기`; no downloads were triggered.
+    - PASS: generated preview content includes `자궁경부암 케어 참고`.
+    - PASS: generated preview content includes item-level `출처: 국가암정보센터 자궁경부암 치료 후 생활 - https://www.cancer.go.kr/`.
+    - PASS: generated preview content includes `menu_seq=4898`.
+    - PASS: generated preview content does not include `/Users/wj`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete export, source-trace, or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:44 KST - Cervical Caregiver Item Source Link Iteration
+
+- Improvement target:
+  - The previous export slice added item-level source labels and URLs to cervical-care caregiver/Markdown/CSV exports, but caregiver HTML still rendered item-level URLs as text while the final source list used links.
+  - Make caregiver-share item-level cervical-care source evidence clickable without exposing local paths or losing print-friendly source text.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - Added `formatCervicalCareSourceLink`, `formatCervicalAlertEvidenceHtml`, and `formatCervicalItemEvidenceHtml`.
+    - Cervical-care caregiver items now escape user-visible text and render each item source as `<a target="_blank" rel="noreferrer">`.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added checks for item-level linked `자궁경부암 치료 후 생활` and `림프부종 운동 관리` sources.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented item-level linked cervical-care references in caregiver HTML.
+- Verification:
+  - `npm run test -- src/caregiverExport.test.ts`: PASS, 1 file and 12 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 127 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog verification update.
+  - cmux `surface:513`:
+    - PASS: clicked `공유본 미리보기` only.
+    - PASS: caregiver iframe `srcdoc` includes `자궁경부암 케어 참고`.
+    - PASS: item-level links for `국가암정보센터 자궁경부암 치료 후 생활` and `국가암정보센터 림프부종 운동 관리` include `target="_blank"` and `rel="noreferrer"`.
+    - PASS: raw item-level recovery URL text is no longer duplicated next to the source label.
+    - PASS: caregiver iframe `srcdoc` does not include `/Users/wj`.
+    - PASS: body width and scroll width both `320px`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete source-link, export parity, or narrow-width control gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:46 KST - Cervical Copy Note Item Source URL Iteration
+
+- Improvement target:
+  - The cervical-care dashboard and exports now preserve item-level source URLs, but the `노트 복사` clinic-prep text still kept item-level source labels only and placed URLs in the final source list.
+  - Make copied cervical-care clinic-prep text retain item-level source labels and URLs beside each warning/check/recovery/prevention item.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCareClipboard.ts`.
+    - Reused `formatCervicalCancerCareAlertEvidence` and `formatCervicalCancerCareItemEvidence` for copied text.
+    - Removed the clipboard-only label-only source suffix helper.
+  - Updated `src/cervicalCancerCareClipboard.test.ts`.
+    - Added checks for item-level National Cancer Center symptom and recovery URLs in copied text.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-retaining cervical-care copy text.
+- Verification:
+  - `npm run test -- src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCare.test.ts`: PASS, 2 files and 13 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 127 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog verification update.
+  - cmux `surface:513`:
+    - PASS: monkeypatched `navigator.clipboard.writeText`, clicked `노트 복사`, and captured copied text.
+    - PASS: copied text includes item-level `출처: 국가암정보센터 자궁경부암 치료 후 생활 - https://www.cancer.go.kr/`.
+    - PASS: copied text includes item-level `출처: 국가암정보센터 림프부종 운동 관리 - https://www.cancer.go.kr/`.
+    - PASS: copied text includes `출처 목록`.
+    - PASS: copied text does not include `/Users/wj`.
+    - PASS: status text includes `자궁경부암 케어 노트 복사됨`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete copy/export/source-trace or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:48 KST - Health Standards Copy Numeric Range Iteration
+
+- Improvement target:
+  - The dashboard vital input helper showed compact blood-pressure and glucose numeric ranges, but `기준 복사` exported only standards/source coverage and current sex notes.
+  - Make copied Korean health-standard text include the actual blood-pressure and glucose numeric ranges that users need outside the dashboard.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - `formatHealthStandardsClipboardText` now adds a `혈압·혈당 숫자 범위` section.
+    - The copied section reuses `buildVitalStandardRangeLines` for blood pressure, diabetes-care glucose targets, and non-diabetes glucose screening.
+  - Updated `src/healthStandards.test.ts`.
+    - Added checks for copied BP normal range, diabetes-care target, and screening fasting range.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented numeric BP/glucose ranges in copied Korean health-standard text.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 13 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 25 files and 127 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before worklog verification update.
+  - cmux `surface:513`:
+    - PASS: monkeypatched `navigator.clipboard.writeText`, clicked `기준 복사`, and captured copied text.
+    - PASS: copied text includes `혈압·혈당 숫자 범위`.
+    - PASS: copied text includes `정상: 남녀 공통 · <120/<80 mmHg`.
+    - PASS: copied text includes `식전/공복 목표: 남녀 공통 · 80-130 mg/dL`.
+    - PASS: copied text includes `공복: 남녀 공통 · 정상 <100`.
+    - PASS: copied text includes `현재 프로필 성별 적용`.
+    - PASS: copied text does not include `/Users/wj`.
+    - PASS: status text includes `한국 건강 기준 복사됨`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete copy/export/source-trace or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:54 KST - Health Standards Visible Numeric Source Cards Iteration
+
+- Improvement target:
+  - `기준 복사` now exports blood-pressure and glucose numeric ranges, but the profile standards panel still required users to open the detailed coverage disclosure to connect those ranges to official sources.
+  - Make the BP/glucose numeric ranges visible in the Korean standards panel itself, keep the data shared with copy text, and give the standards-copy button a specific accessible name/title.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `VitalStandardRangeSection` and `buildVitalStandardRangeSections()`.
+    - `formatHealthStandardsClipboardText` now reuses the source-backed range sections and includes section-level official source labels/URLs.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added three source-backed numeric range cards for blood pressure, diabetes-care glucose targets, and glucose screening.
+    - Added `aria-label` and `title` to the `기준 복사` button.
+  - Updated `src/healthStandards.test.ts`.
+    - Added source-backed range-section coverage and copied-text source assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented visible source-backed BP/glucose numeric range cards and copy-button accessibility.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 14 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run build`: PASS.
+  - `npm run test`: PASS, 25 files and 128 tests.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - Recovered the same selected right-side browser surface after it briefly reported `about:blank`/0-width.
+    - PASS: `.standards-range-strip section` count is 3.
+    - PASS: visible range text includes `정상 · 남녀 공통 · <120/<80 mmHg`, `식전/공복 목표 · 남녀 공통 · 80-130 mg/dL`, and `공복 · 남녀 공통 · 정상 <100`.
+    - PASS: visible source links include `질병관리청 국가건강정보포털 고혈압`, `대한당뇨병학회 당뇨병 관리 목표`, and `질병관리청 국가건강정보포털 당뇨병`.
+    - PASS: `기준 복사` accessible name is `한국 성인 건강 기준과 혈압 혈당 숫자 범위 복사`; title is `한국 성인 건강 기준과 혈압·혈당 숫자 범위 복사`.
+    - PASS: range card grid rendered as two 216px columns inside a 440px panel on the current right-side surface with no browser errors.
+    - PASS: monkeypatched `navigator.clipboard.writeText`, clicked `기준 복사`, and copied text includes section-level BP/glucose official sources plus numeric ranges.
+    - PASS: copied text does not include `/Users/wj`.
+    - PASS: status text includes `한국 건강 기준 복사됨`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete source-trace, accessibility-label, or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:56 KST - Copy Button Accessible Label Iteration
+
+- Improvement target:
+  - The standards copy button now had a specific accessible name/title, but other high-frequency copy actions still exposed only generic visible text such as `큐 복사`, `노트 복사`, or `복사`.
+  - Make clinic-prep copy actions easier to distinguish for keyboard, screen-reader, and hover users without changing their visible compact labels.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added dynamic `aria-label` and `title` to the care action queue copy button, including the current item count.
+    - Added specific `aria-label` and `title` to the cervical-care note copy button.
+    - Added matching `title` to saved visit-question copy buttons, which already had topic-specific `aria-label`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented specific accessible labels for copy controls and added this to the DESIGN audit checklist/decision log.
+- Verification:
+  - `npm run test -- src/cervicalCancerCareClipboard.test.ts src/careActionQueue.test.ts src/questionClipboard.test.ts`: PASS, 3 files and 11 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 128 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `.queue-copy-button` aria-label and title both read `진료 준비 큐 5개 항목 복사`.
+    - PASS: `.cervical-copy-button` aria-label and title both read `자궁경부암 케어 노트 공식 출처 포함 복사`.
+    - PASS: `.question-copy-button` count is 1; aria-label and title both read `혈액검사 질문 복사`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete source-trace, accessibility-label, or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 12:58 KST - Korean Standards Safety Boundary Iteration
+
+- Improvement target:
+  - The profile standards panel and copied Korean standards now make BP/glucose numbers and official sources clear, but the standards surface needed an equally visible boundary that these are adult reference standards and that special clinical contexts must defer to results and the care team.
+  - Add the boundary once in shared data so UI and copy text cannot drift.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `koreanHealthStandardUseBoundary`.
+    - `formatHealthStandardsClipboardText` now includes the boundary immediately after the copied text purpose line.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added a compact warning-style boundary note in the Korean adult standards panel.
+  - Updated `src/healthStandards.test.ts`.
+    - Added assertions for the boundary text and copied standards warning line.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the adult-standard/clinician-priority boundary and added it to the design audit checklist.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 15 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 129 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `.standards-boundary-note` text is `성인 기준 참고용입니다. 임신·소아·투석·항암 중 특수 기준이나 증상이 있으면 결과지와 진료팀 기준을 우선합니다.`
+    - PASS: boundary note renders inside a 440px panel as a 48px-high wrapped note.
+    - PASS: monkeypatched `navigator.clipboard.writeText`, clicked `기준 복사`, and copied text includes `주의: 성인 기준 참고용`.
+    - PASS: copied text still includes `혈압·혈당 숫자 범위`.
+    - PASS: copied text does not include `/Users/wj`.
+    - PASS: status text includes `한국 건강 기준 복사됨`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete source-trace, safety-boundary, accessibility-label, or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:02 KST - Health Standards Export Boundary Propagation Iteration
+
+- Improvement target:
+  - The Korean standards panel and copied standards text now include the adult-standard/clinician-priority boundary, but Markdown, CSV, and caregiver HTML exports still shared Korean standards without the same boundary.
+  - Propagate the same shared boundary into every generated export surface that includes Korean health standards.
+- Code/docs changes:
+  - Updated `src/visitPacket.ts`.
+    - Added `주의: ${koreanHealthStandardUseBoundary}` to the `기준 적용 범위` section.
+  - Updated `src/csvExport.ts`.
+    - Added a `standard_boundary` row with `기준 사용 경계`, `성인 기준 참고`, and the shared boundary text.
+  - Updated `src/caregiverExport.ts`.
+    - Added `기준 사용 경계` metadata to the caregiver HTML `기준 적용 범위` section.
+  - Updated `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added boundary assertions for Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented health-standard boundary preservation across exports.
+- Verification:
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 3 files and 17 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 25 files and 129 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: clicked `요약 미리보기`; preview title is `진료 요약 미리보기 (최근 30일)`, includes `기준 적용 범위`, `성인 기준 참고용입니다`, and `진료팀 기준을 우선합니다`; no `/Users/wj`.
+    - PASS: clicked `CSV 미리보기`; preview title is `CSV 미리보기`, includes `standard_boundary`, `성인 기준 참고용입니다`, and `진료팀 기준을 우선합니다`; no `/Users/wj`.
+    - PASS: clicked `공유본 미리보기`; rendered iframe exists and `srcdoc` includes `성인 기준 참고용입니다` and `진료팀 기준을 우선합니다`; no `/Users/wj`.
+    - `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete export, source-trace, safety-boundary, accessibility-label, or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:06 KST - Care Queue Empty Recovery Links Iteration
+
+- Improvement target:
+  - The document filter no-match empty state already had a direct reset action, but the care action queue true-empty state only displayed passive text.
+  - Add direct recovery links back to the forms that can create queue items: symptom/question records, lab values, and document actions.
+- Code/docs changes:
+  - Added `src/careActionQueueEmptyState.ts`.
+    - Defines `careActionQueueEmptyRecoveryLinks` with `#care-plan`, `#labs`, and `#documents`.
+  - Added `src/careActionQueueEmptyState.test.ts`.
+    - Locks the empty-queue recovery link labels and anchors.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Replaced the passive empty queue paragraph with a status box and recovery links.
+    - Added compact dashed empty-state styling and wrap-safe link buttons.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented empty care-queue recovery links and added the item to the design audit checklist.
+- Verification:
+  - `npm run test -- src/careActionQueueEmptyState.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 8 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 130 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - Constraint: current saved state has active queue items, and the WebView eval/storage context raised `SecurityError: The operation is insecure` for localStorage access, so I did not mutate or delete user/browser data to force an empty queue state.
+    - PASS: same selected surface remains `surface:513  CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue the prompt-to-artifact audit from another concrete empty-state, export, source-trace, safety-boundary, accessibility-label, or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:08 KST - Health Standards Export Numeric Range Iteration
+
+- Improvement target:
+  - The profile panel and copied Korean standards text include source-backed BP/glucose numeric ranges, but Markdown, CSV, and caregiver HTML exports still had only standards coverage and applicability text.
+  - Propagate the same source-backed BP/glucose numeric range sections into all export formats.
+- Code/docs changes:
+  - Updated `src/visitPacket.ts`.
+    - Added a `혈압·혈당 숫자 범위` section to the Markdown visit packet.
+    - The section reuses `buildVitalStandardRangeSections()` and includes source labels/URLs.
+  - Updated `src/csvExport.ts`.
+    - Added `standard_numeric_range` rows for BP normal/watch/hypertension, diabetes-care glucose targets, and glucose screening ranges.
+  - Updated `src/caregiverExport.ts`.
+    - Added `혈압·혈당 숫자 범위` and `적용 범위와 근거` subheadings in caregiver HTML standards.
+    - Added linked source labels and source-label chips for each numeric range line.
+  - Updated `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added assertions for BP normal, diabetes-care fasting/pre-meal target, and glucose-screening fasting range.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented BP/glucose numeric range preservation across Markdown, CSV, and caregiver HTML exports.
+- Verification:
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 3 files and 17 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 130 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` still reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: the WebView eval context currently reports `about:blank` with empty body despite the surface metadata URL, so this slice relies on export unit tests/build rather than DOM preview inspection.
+- Current next durable improvement direction:
+  - Recover a reliable cmux DOM context if possible, then continue prompt-to-artifact audit from another concrete export, source-trace, safety-boundary, accessibility-label, or narrow-width usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:16 KST - Cervical Screening Profile Summary Iteration
+
+- Improvement target:
+  - The cervical-care panel had national screening/prevention notes, but users still had to infer whether the current profile age/sex matched the national cervical-cancer screening table.
+  - Add a profile-based quick-check that stays source-backed, exportable, and clinician-confirmation oriented.
+- Source check:
+  - Rechecked National Cancer Information Center pages for the national screening target and schedule before adding patient-visible copy.
+  - Confirmed cervical-cancer screening target as `20세 이상 여성`, schedule as `2년 간격`, method as `자궁경부세포검사(Pap smear test)`, and the note that patients treated for the same cancer can have national screening deferred during the 산정특례 period.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `buildCervicalCancerScreeningSummary()` for profile age/sex status.
+    - Added `formatCervicalCancerScreeningSummaryEvidence()` so text exports reuse the same source-backed evidence.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added a compact `검진 기준 빠른 확인` card in the cervical-care side panel.
+    - The card shows current profile status, detail, clinician-confirmation action, and linked official sources.
+  - Updated `src/visitPacket.ts`, `src/csvExport.ts`, and `src/caregiverExport.ts`.
+    - Propagated the same screening quick-check into Markdown, CSV, and caregiver HTML exports.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added female 20+, female under 20, missing-age, and non-female profile coverage plus export propagation assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the profile-based cervical screening quick-check and added it to the design audit checklist.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 32 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 134 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `curl -I --max-time 3 http://127.0.0.1:1420/` returns HTTP 200.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval`, `snapshot`, and wait checks still report `about:blank`/empty body after `cmux refresh-surfaces`, `navigate`, and `reload`, so this slice relies on unit/export/type/build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue prompt-to-artifact audit from another concrete profile-aware export, source-trace, safety-boundary, or cmux DOM recovery gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:18 KST - Cervical Screening Copy Propagation Iteration
+
+- Improvement target:
+  - The profile-based cervical screening quick-check was visible in the dashboard and included in Markdown/CSV/caregiver exports, but the `노트 복사` clinic-prep text still used the generic cervical-care note.
+  - Propagate the current profile screening quick-check into copied cervical-care text without breaking the generic formatter path.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCareClipboard.ts`.
+    - `formatCervicalCancerCareClipboardText()` now accepts an optional age/sex profile.
+    - When a profile is provided, copied text includes `검진 기준 빠른 확인` with source-backed summary evidence.
+  - Updated `src/App.tsx`.
+    - The cervical-care copy action now passes the current profile into the clipboard formatter.
+  - Updated `src/cervicalCancerCareClipboard.test.ts`.
+    - Added profile-based copied-text assertions and retained coverage for the generic no-profile formatter path.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that copied cervical-care clinic-prep text includes the current profile screening quick-check.
+- Verification:
+  - `npm run test -- src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCare.test.ts`: PASS, 2 files and 18 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 135 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `eval` still reports `about:blank`/empty body, so copied payload content is verified by unit tests rather than live clipboard capture in the current WebView context.
+- Current next durable improvement direction:
+  - Continue prompt-to-artifact audit from another profile-aware export/copy gap, source-trace gap, or same-surface cmux DOM recovery gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:21 KST - Cervical Screening Question Draft Iteration
+
+- Improvement target:
+  - The profile-based `검진 기준 빠른 확인` card showed status, action, and official links, but it still required manual copy into the question planner.
+  - Add a direct screening-to-question draft action so the current profile status can become a source-retaining clinician question without auto-saving a question.
+- Source check:
+  - Rechecked National Cancer Information Center pages before adding the question draft copy.
+  - Confirmed target `20세 이상 여성`, treatment-related national screening deferment note, schedule `2년 간격`, and method `자궁경부세포검사(Pap smear test)`.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `buildCervicalCancerScreeningQuestion()` to turn the summary into a clinician-confirmation question with embedded source evidence.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added a `질문 초안` button inside the screening quick-check card.
+    - The button fills the question draft with topic `자궁경부암 검진`, priority `next-visit`, and source-retaining question text.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added assertions that the generated screening question keeps status, numeric/method details, source URLs, and avoids treatment-order text.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented one-click screening-to-question behavior and added it to the design audit checklist.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts`: PASS, 2 files and 19 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 136 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before and after this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `eval` still reports `about:blank`/empty body, so the button behavior is verified by unit/type/build evidence rather than live DOM click-through in the current WebView context.
+- Current next durable improvement direction:
+  - Continue prompt-to-artifact audit from another profile-aware question/copy/export gap or recover the same-surface cmux DOM context.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:27 KST - Care Queue Vital Alerts Iteration
+
+- Improvement target:
+  - Blood pressure and glucose standards were visible at entry time, but out-of-range vital readings were not consistently promoted into the derived `진료 준비 큐` across dashboard, copy, Markdown, CSV, and caregiver-share surfaces.
+  - Make threshold-out BP/glucose records visible as clinic-prep `활력` items without changing the app's non-diagnostic boundary.
+- Source check:
+  - Rechecked KDCA National Health Information Portal material for adult BP and glucose thresholds before keeping patient-visible queue language.
+  - BP remains adult common criteria in the app: normal under 120/80, prehypertension/elevated ranges, and hypertension at 140/90 or higher are record-review cues, not diagnoses.
+  - Glucose remains split between diabetes-care targets and screening thresholds, with profile diabetes state selecting the queue assessment context.
+- Code/docs changes:
+  - Updated `src/careActionQueue.ts`.
+    - Added `vital` as a queue source and count bucket.
+    - Added blood-pressure and glucose queue actions from saved vitals.
+    - Made all non-ok vital assessments `watch` so elevated BP/glucose does not sort behind neutral administrative rows.
+    - Updated empty clipboard copy to mention `기준 밖 활력·검사`.
+  - Updated `src/App.tsx`.
+    - Added the `활력` source chip and vital icon in queue rows.
+    - Updated empty queue copy and recovery links to include BP/glucose entry.
+  - Updated `src/visitPacket.ts`, `src/csvExport.ts`, and `src/caregiverExport.ts`.
+    - Passed profile/vital records into the shared queue builder so Markdown, CSV, and caregiver HTML preserve out-of-range vital rows.
+    - Kept caregiver queue scoped to enabled share sections, including the vitals toggle.
+  - Updated queue/export tests plus `README.md` and `DESIGN.md`.
+    - Documented out-of-range BP/glucose queue behavior and added it to the design audit checklist.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/careActionQueueEmptyState.test.ts`: PASS, 2 files and 8 tests.
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 3 files and 17 tests.
+  - `npm run test -- src/careActionQueue.test.ts src/careActionQueueEmptyState.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 25 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 136 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on unit/export/type/build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue prompt-to-artifact audit from another profile-aware queue/export/source-trace gap or recover the same-surface cmux DOM context.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:29 KST - Cervical Warning Symptom Source URL Iteration
+
+- Improvement target:
+  - The cervical warning cards showed official source links and generated symptom drafts, but the generated symptom draft body retained only the source label.
+  - Preserve the official source URL inside the symptom draft so saved symptom records, derived care queue rows, and exports keep durable source trace.
+- Source check:
+  - Rechecked the National Cancer Information Center cervical-cancer general symptoms page.
+  - Confirmed patient-visible warning categories already represented in the app: abnormal vaginal bleeding, increased discharge, pelvic/back pain, urinary/bowel changes, and the page's non-substitution medical disclaimer.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - `buildCervicalCancerAlertSymptomDraft()` now writes full `출처: label - URL` evidence into the generated symptom body.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added URL-retention assertion for warning-card symptom drafts.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-URL-retaining cervical symptom drafts.
+    - Tightened the design audit checklist around warning-card symptom drafts.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/careActionQueue.test.ts`: PASS, 6 files and 43 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 136 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on unit/export/type/build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue prompt-to-artifact audit from another cervical source-trace, caregiver-share scope, or health-standard boundary gap, while preserving the single cmux surface constraint.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:31 KST - Vital Queue Standard Evidence Detail Iteration
+
+- Improvement target:
+  - Out-of-range BP/glucose records were now present in the care queue, but a user note could replace the assessment summary in the queue detail.
+  - Preserve user note, local assessment summary, and Korean standard source label/URL together in copied/exported vital queue rows.
+- Code/docs changes:
+  - Updated `src/careActionQueue.ts`.
+    - Added a shared detail joiner for source-backed vital queue rows.
+    - Added Korean health-standard source evidence from `src/healthStandards.ts` for blood pressure, diabetes-care glucose, and screening glucose rows.
+  - Updated `src/careActionQueue.test.ts` and `src/csvExport.test.ts`.
+    - Asserted source-backed vital detail in queue actions, clipboard text, and CSV care-queue rows.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-backed vital queue detail and added it to the design audit checklist.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 24 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 136 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on unit/export/type/build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue prompt-to-artifact audit from another export/source-trace, Korean standard detail, or same-surface cmux DOM recovery gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:33 KST - Caregiver Vital Context Labels Iteration
+
+- Improvement target:
+  - Caregiver HTML recent vital rows showed blood glucose values without the measurement context, even though glucose interpretation depends on 공복/식전/식후/취침 전/수시 timing.
+  - Preserve BP units and glucose context labels in caregiver-share rows so family review does not lose measurement meaning.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - Added caregiver glucose context labels for 공복, 식전, 식후, 취침 전, and 수시.
+    - Added `mmHg` to blood-pressure recent-vital rows.
+    - Added `(식후)`-style context labels to glucose recent-vital rows.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added a caregiver HTML assertion for `혈압 132/84 mmHg` and `혈당 181 mg/dL (식후)`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented caregiver-share vital context preservation and added it to the design audit checklist.
+- Verification:
+  - `npm run test -- src/caregiverExport.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts`: PASS, 4 files and 25 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 137 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on unit/export/type/build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue prompt-to-artifact audit from another caregiver-share/export detail, Korean standard clarity, or cmux DOM recovery gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:34 KST - CSV Vital Context Labels Iteration
+
+- Improvement target:
+  - Caregiver HTML vital rows had Korean units and glucose measurement context, but CSV `vital` rows still exposed raw internal glucose context values such as `after-meal` and omitted `mmHg` on blood-pressure values.
+  - Make spreadsheet-friendly exports preserve Korean vital context for family and clinic review.
+- Code/docs changes:
+  - Updated `src/csvExport.ts`.
+    - Added Korean glucose context labels for 공복, 식전, 식후, 취침 전, and 수시.
+    - Added `mmHg` to CSV blood-pressure value cells.
+    - Converted CSV glucose context status cells from raw internal IDs to Korean labels.
+  - Updated `src/csvExport.test.ts`.
+    - Added assertions for `혈압 132/84 mmHg` and `혈당 181 mg/dL` with `식후`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented Korean-labeled CSV vital units/context and added it to the design audit checklist.
+- Verification:
+  - `npm run test -- src/csvExport.test.ts src/caregiverExport.test.ts src/careActionQueue.test.ts src/visitPacket.test.ts`: PASS, 4 files and 26 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 138 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on unit/export/type/build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue prompt-to-artifact audit from another CSV/caregiver/export detail, Korean standard clarity, or same-surface cmux DOM recovery gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:37 KST - Care Queue Text Wrap Hardening Iteration
+
+- Improvement target:
+  - Care queue detail text now carries source-backed Korean medical-standard summaries and long source URLs.
+  - The action row needed explicit text-wrapping constraints so source URLs cannot widen the dashboard or collide with labels.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Added `min-width: 0` to direct action-row content columns.
+    - Added `overflow-wrap: anywhere` and tighter line-height to care queue detail text.
+    - Constrained action-row labels with `max-width: 100%`, centered text, and `overflow-wrap: anywhere`.
+  - Updated `DESIGN.md`.
+    - Documented long source-backed care-queue detail wrapping as a text-fit requirement.
+    - Added the same condition to the design audit checklist and decision log.
+- Verification:
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test -- src/careActionQueue.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/visitPacket.test.ts`: PASS, 4 files and 26 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 26 files and 138 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on CSS/source, test, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue from another Korean medical-standard clarity gap, cervical-cancer patient artifact gap, or export/caregiver-share detail that can be verified without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:41 KST - Cervical Screening Care Queue Iteration
+
+- Improvement target:
+  - Cancer-care mode already showed the profile-based cervical national-screening quick-check in the dedicated panel and exports, but the dashboard `진료 준비 큐` could still omit that current-profile check.
+  - Add the quick-check to the queue as a neutral, source-backed reminder so it supports clinic preparation without implying a risk diagnosis or treatment instruction.
+- Code/docs changes:
+  - Updated `src/careActionQueue.ts`.
+    - Added a `cervical` care action source.
+    - Added a neutral `자궁경부암 검진 기준 빠른 확인` queue row when `profile.cancerCareMode` is active.
+    - Reused `buildCervicalCancerScreeningSummary()` and `formatCervicalCancerScreeningSummaryEvidence()` so the row keeps official source labels and URLs.
+  - Updated `src/App.tsx`.
+    - Added the `자궁경부` queue source chip/order and a shield icon for cervical queue rows.
+  - Updated `src/caregiverExport.ts`.
+    - Raised caregiver queue output to 8 items and clarified that the queue can include enabled-section records plus the profile-based cervical quick-check.
+  - Updated `src/careActionQueue.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted the source-backed cervical quick-check in queue data, clipboard text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented cervical quick-check queue behavior and added it to the design audit checklist.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 27 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 139 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on source, tests, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue from another cervical-cancer patient artifact gap, Korean standards copy/export detail, or same-surface cmux DOM recovery limitation.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:44 KST - Cervical Screening Deferment Wording Iteration
+
+- Improvement target:
+  - The cervical screening quick-check said treatment/follow-up may require national screening deferment confirmation, but it did not name the official `산정특례기간` condition.
+  - Make the wording more useful for cervical-cancer patients already being treated for the same cancer, while keeping it framed as a clinician-confirmation prompt.
+- Official source recheck:
+  - Rechecked National Cancer Information Center `국가암검진사업 > 대상자 선정 및 통보`.
+  - Confirmed the table lists cervical-cancer screening as `20세 이상 여성`, and the same page states that patients being treated for each cancer can have that cancer's screening target deferred through the health-insurance special-calculation period rule.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `건강보험 산정특례기간` wording to the prevention guide.
+    - Added `산정특례기간 기준 국가암검진 유예 여부` to the profile screening quick-check action.
+    - Added `산정특례기간` to the generated screening-to-question draft.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/careActionQueue.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted that 산정특례기간 wording is preserved in direct care data, copied text, care queue detail, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented 산정특례기간-based deferral confirmation in the cervical screening quick-check.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 6 files and 46 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 139 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on official-source recheck, source, tests, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue from another cervical-cancer patient artifact gap, Korean standards copy/export detail, or same-surface cmux DOM recovery limitation.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:45 KST - Care Queue Profile Recovery Link Iteration
+
+- Improvement target:
+  - The empty care queue now can be resolved by adding records or by enabling cancer-care mode, because cancer-care mode creates the profile-based cervical screening quick-check.
+  - The empty-state recovery links still pointed only to record forms and had no profile anchor.
+- Code/docs changes:
+  - Updated `src/careActionQueueEmptyState.ts`.
+    - Added a `#profile` recovery link labeled `암 관리 모드 켜기`.
+  - Updated `src/App.tsx`.
+    - Added `id="profile"` to the profile panel so the empty-state link has a real target.
+  - Updated `src/careActionQueueEmptyState.test.ts`.
+    - Asserted the new profile recovery link.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented empty queue recovery back to profile cancer-care mode as well as record forms.
+- Verification:
+  - `npm run test -- src/careActionQueueEmptyState.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 9 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 139 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on source, tests, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue from another cervical-cancer patient artifact gap, Korean standards copy/export detail, or same-surface cmux DOM recovery limitation.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:47 KST - Cervical Queue Missing-Age Boundary Test Iteration
+
+- Improvement target:
+  - The new profile-based cervical screening queue item should remain useful when cancer-care mode is active but the profile age is missing.
+  - Lock the boundary behavior so the queue asks for age before deciding national screening status rather than silently dropping the item.
+- Code/docs changes:
+  - Updated `src/careActionQueue.test.ts`.
+    - Added coverage for `profile.cancerCareMode: true`, `sex: female`, and blank `age`.
+    - Asserted the queue row label is `나이 입력 필요`, remains `neutral`, and retains the `20세 이상 여성` source-backed detail.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/cervicalCancerCare.test.ts`: PASS, 2 files and 25 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS before full regression.
+  - `npm run test`: PASS, 26 files and 140 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on source, tests, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue from another cervical-cancer patient artifact gap, Korean standards copy/export detail, or same-surface cmux DOM recovery limitation.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:48 KST - Care Queue Empty Message Cervical Source Iteration
+
+- Improvement target:
+  - After adding the `cervical` queue source, the empty queue copy/dashboard message still listed only questions, vitals/labs, documents, and visits.
+  - Keep the empty-state language consistent with the current queue sources by naming the missing cervical screening quick-check too.
+- Code/docs changes:
+  - Updated `src/careActionQueue.ts`.
+    - Empty queue clipboard text now says there is no current `자궁경부암 검진 확인` item.
+  - Updated `src/App.tsx`.
+    - Dashboard empty queue message now uses the same cervical-aware wording.
+  - Updated `src/careActionQueue.test.ts`.
+    - Asserted the revised empty queue clipboard text.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/careActionQueueEmptyState.test.ts`: PASS, 2 files and 10 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS before full regression.
+  - `npm run test`: PASS, 26 files and 140 tests.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on source, tests, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue from another cervical-cancer patient artifact gap, Korean standards copy/export detail, or same-surface cmux DOM recovery limitation.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:52 KST - Glucose Context Two-Hour Label Iteration
+
+- Improvement target:
+  - 대한당뇨병학회 일반 조절목표는 식후 혈당을 `식후 2시간` 기준으로 설명하지만, 일부 queue/export labels still showed a generic `식후`.
+  - Make the Korean glucose context label precise across queue, Markdown, CSV, and caregiver artifacts so users do not confuse immediate post-meal with 2-hour post-meal.
+- Source check:
+  - Reused the official Korean Diabetes Association target page checked in this session: `https://www.diabetes.or.kr/general/info/treat/treat_01.php`.
+- Code/docs changes:
+  - Updated `src/careActionQueue.ts`, `src/visitPacket.ts`, `src/csvExport.ts`, and `src/caregiverExport.ts`.
+    - Changed `after-meal` glucose context output from `식후` to `식후 2시간`.
+  - Updated `src/careActionQueue.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted the precise `식후 2시간` label in care queue titles, clipboard text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the export-label precision and added it to the design audit checklist/decisions log.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 28 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 140 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on source, tests, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue from Korean medical source clarity, cervical-cancer patient workflow artifacts, or a same-surface cmux DOM recovery limitation.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:55 KST - Adult Common Vital Summary Iteration
+
+- Improvement target:
+  - The standards matrix already distinguishes sex-specific waist/HDL/Hgb helpers from adult common BMI, blood-pressure, and glucose rules.
+  - Some blood-pressure and glucose assessment summaries that flow into care queue and export details still said only `한국 성인 기준` or gave an action sentence without saying the applied BP/glucose rule is adult common.
+  - Make the most frequently copied/exported vital details clearer for Korean male/female/common standard interpretation.
+- Official source recheck:
+  - Rechecked KDCA hypertension page: `https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=28`.
+  - Rechecked Korean Diabetes Association diabetes target page: `https://www.diabetes.or.kr/general/info/treat/treat_01.php`.
+- Code/docs changes:
+  - Updated `src/healthRules.ts`.
+    - Added `성인 남녀 공통` wording to blood-pressure summaries for normal, watch, stage, and crisis-range results.
+    - Added adult-common wording to diabetes-care 식전/식후 2시간 targets and screening glucose normal summaries.
+  - Updated `src/healthRules.test.ts`.
+    - Added regression coverage that BP and glucose summaries expose `성인 남녀 공통`.
+  - Updated `src/careActionQueue.test.ts` and `src/csvExport.test.ts`.
+    - Updated queue/CSV detail expectations for the clearer adult-common summaries.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented adult-common vital detail behavior and added it to the design audit checklist/decisions log.
+- Verification:
+  - `npm run test -- src/healthRules.test.ts src/careActionQueue.test.ts src/csvExport.test.ts`: PASS, 3 files and 21 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on source, tests, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue with another cervical-cancer patient workflow artifact, Korean standards export clarity, or same-surface cmux DOM recovery limitation.
+- No git staging or commit was performed.
+
+## 2026-06-04 13:58 KST - Cervical Follow-Up Schedule Check Iteration
+
+- Improvement target:
+  - The cervical-care panel had warning-sign, recovery, lymphedema, and screening notes, but the record-check list did not explicitly separate hospital follow-up schedules/results from the national 2-year screening cycle.
+  - Add a source-backed recording prompt that helps cervical-cancer patients bring follow-up dates, cytology due dates, and result-explanation dates to clinic without implying treatment instructions.
+- Official source recheck:
+  - Rechecked National Cancer Information Center national cancer screening schedule page: `https://www.cancer.go.kr/lay1/S1T553C555/contents.do`.
+  - Confirmed the cervical-cancer row lists a 2-year cycle and cervical cytology as the basic screening test.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `추적검사 일정·결과` to the cervical-care record checks.
+    - The new detail asks users to record next visit date, cervical cytology due date, and result-explanation date, then confirm how hospital follow-up differs from the national 2-year screening cycle.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted that the new check appears in source data, copied clinic-prep text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented follow-up schedule/result checks and added them to the design audit checklist/decisions log.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `eval` still reports `{"href":"about:blank","title":"","bodyText":"","width":0,"height":0}`, so this slice relies on source, tests, typecheck, and build evidence rather than live DOM inspection.
+- Current next durable improvement direction:
+  - Continue with another cervical-cancer patient workflow artifact, Korean standards export clarity, or same-surface cmux DOM recovery limitation.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:01 KST - Cervical Screening Result Cost Note Iteration
+
+- Improvement target:
+  - The cervical screening notes covered target age, cycle, method, 산정특례기간 deferment, and hospital follow-up separation, but not result-notification timing or Korean national-screening cost guidance.
+  - Add official result/cost information that cervical-cancer patients can use when checking how they will receive screening results and whether the national cervical screening itself is free.
+- Official source recheck:
+  - Rechecked National Cancer Information Center national cancer screening result/cost page: `https://www.cancer.go.kr/lay1/S1T553C556/contents.do`.
+  - Confirmed the page says screening results are notified within 15 days after completion and that cervical-cancer screening is fully free.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccScreeningResultCost` source.
+    - Added `결과통보·비용 확인` to cervical screening/prevention guides with 15-day result notification and free national cervical-screening guidance.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted that the new result/cost note appears in source data, copied clinic-prep text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented national screening result/cost notes and added them to the design audit checklist/decisions log.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: same-surface `eval` returned `{"href":"http://127.0.0.1:1420/","title":"CareVault",...,"width":1094,"height":859}`.
+    - PASS: same-surface DOM text check reports `hasResultCost`, `hasFifteenDays`, `hasFree`, and `hasCervicalPanel` all true.
+- Current next durable improvement direction:
+  - Continue with another cervical-cancer patient workflow artifact, Korean standards export clarity, or same-surface cmux visual/DOM UX checks.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:04 KST - Cervical Draft Button Accessible Label Iteration
+
+- Improvement target:
+  - Cervical warning-card `증상 초안` buttons and cervical clinician-question draft buttons had useful visible labels, but their accessible names/hover titles were still generic.
+  - Make the buttons easier to scan and verify with assistive technology by naming the exact warning sign or question topic in `aria-label` and `title`.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added item-specific `aria-label` and `title` to cervical warning symptom draft buttons.
+    - Added topic-specific `aria-label` and `title` to cervical clinician-question draft buttons.
+  - Updated `DESIGN.md`.
+    - Added the item-specific cervical draft-button label requirement to the audit checklist and decisions log.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run build`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: same-surface DOM check reports `symptomAria: true` for `비정상 질출혈 자궁경부암 증상 초안 만들기` and `questionAria: true` for `자궁경부암 추적 자궁경부암 질문 초안 만들기`.
+- Current next durable improvement direction:
+  - Continue with another UI/UX accessibility gap, Korean standards export clarity, or cervical-cancer patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:07 KST - Cervical Recurrence Follow-Up Interval Iteration
+
+- Improvement target:
+  - The cervical recovery notes covered treatment-life timing and lymphedema checks, but did not expose the National Cancer Information Center's general recurrence/follow-up interval explanation.
+  - Add a source-backed, clinician-confirmation memo so cervical-cancer patients can ask whether their hospital follow-up plan matches or differs from the general interval guidance.
+- Official source recheck:
+  - Rechecked National Cancer Information Center cervical-cancer recurrence/metastasis page: `https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4895`.
+  - Confirmed the page describes follow-up intervals generally as first 2 years every 3 months, until 5 years every 6 months, then yearly, while noting tests vary by patient condition and hospital.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccRecurrenceFollowUp`.
+    - Added `재발·추적검사 주기 메모` to recovery guides, framed as clinician confirmation rather than treatment instruction.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted that the memo and interval phrases appear in source data, copied clinic-prep text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented recurrence/follow-up interval memos and added them to the design audit checklist/decisions log.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: `curl -I http://127.0.0.1:1420/` reports `200 OK`.
+    - Limitation: same-surface `eval` and `snapshot` report an empty `about:blank`/`0x0` document after same-surface reload/navigate attempts, while cmux metadata still reports the CareVault URL/title. `focus-webview` reports `invalid_state: WebView is not in a window` and `is-webview-focused` reports true, so live DOM proof for this latest text is unavailable in the current cmux state.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux recovery/visual checks or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:11 KST - Cervical Sex-Life Consultation Memo Iteration
+
+- Improvement target:
+  - The cervical recovery notes covered surgery timing, lymphedema, and recurrence follow-up, but did not help patients prepare sensitive post-treatment sex-life questions.
+  - Add a source-backed memo that lets cervical-cancer patients ask about restart timing, pain, vaginal dryness/stenosis, condom guidance, and local hormone-ointment consultation without turning the app into treatment advice.
+- Official source recheck:
+  - Rechecked National Cancer Information Center cervical-cancer sex-life page: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5373`.
+  - Confirmed the page says surgery restart timing still needs the doctor's examination, radiation-treatment sex-life timing has a treatment-during and post-treatment caution window, and post-treatment pain/dryness/stenosis or local hormone ointment questions should be discussed with the clinician.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccSexLife`.
+    - Added `성생활 재개·통증 상담` to recovery guides, framed as clinician confirmation rather than treatment instruction.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted that the memo, radiation timing, dryness/stenosis wording, and official source label flow into source data, copied clinic-prep text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented sex-life pain/dryness consultation memos and added them to the design audit checklist/decisions log.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux list-pane-surfaces --workspace workspace:11 --pane pane:223` reports `* surface:513  CareVault  [selected]`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: same-surface `textContent` DOM check reports `hasSexLife`, `hasDryness`, `hasRadiationTiming`, and `hasCervicalPanel` all true.
+- Current next durable improvement direction:
+  - Continue with another source-backed cervical patient workflow artifact or run a same-surface cmux visual scan of the expanded recovery disclosure.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:13 KST - Cervical Item Source Chip Link Iteration
+
+- Improvement target:
+  - Cervical warning cards already exposed official source links, but the side-list record checks, recovery notes, and screening/prevention notes showed adjacent source chips as text only.
+  - Promote those chips to item-level official-source links so patients can open the exact evidence page from the note they are reading.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `renderCervicalCareItemSourceLink`.
+    - Replaced text-only side-list source chips in record checks, recovery notes, and screening/prevention notes with item-level official-source links.
+  - Updated `src/App.css`.
+    - Preserved the compact source-chip look for anchors, added external-link icon sizing, hover state, and keyboard-visible focus outline.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented visible clickable official source chips and added an audit checklist/decision-log line.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: same-surface DOM check after opening cervical disclosures reports `chipCount: 13`.
+    - PASS: `allChipsAreLinks: true`.
+    - PASS: `hasSexLifeLink: true` for `menu_seq=5373`.
+    - PASS: `overflow: false`, `scrollWidth: 1094`, `clientWidth: 1094`.
+- Current next durable improvement direction:
+  - Continue with another source-backed cervical patient workflow artifact, same-surface cmux keyboard/focus checks, or Korean standards/export clarity.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:14 KST - Cervical Urinary Bowel Bleeding Change Memo Iteration
+
+- Improvement target:
+  - The cervical care panel had warning signs and recovery notes, but did not explicitly preserve the official post-treatment urinary, bowel, blood-in-stool, and blood-in-urine complication context as a record check.
+  - Add a source-backed observation memo that helps patients record symptoms by date and treatment timing, then confirm with the care team.
+- Official source recheck:
+  - Rechecked National Cancer Information Center cervical-cancer treatment side effects page: `https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894`.
+  - Confirmed the page describes bladder/rectal dysfunction after extensive hysterectomy, diarrhea or cystitis-like symptoms after radiation treatment, and possible blood in stool or urine after 6+ months.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccTreatmentSideEffects`.
+    - Added `배뇨·배변·출혈 변화 메모` to record checks, framed as observation and clinician confirmation.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted that the memo, `혈변·혈뇨`, and official source label flow into source data, copied clinic-prep text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented urinary/bowel/bleeding change memos and added them to the design audit checklist/decisions log.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: same-surface DOM check reports `hasSideEffectMemo: true` and `hasHematuria: true`.
+    - PASS: `chipCount: 14`, `allChipsAreLinks: true`, and `hasSideEffectLink: true` for `menu_seq=4894`.
+    - PASS: `overflow: false`, `scrollWidth: 1094`, `clientWidth: 1094`.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux keyboard/focus checks, another source-backed cervical patient workflow artifact, or Korean standards/export clarity.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:17 KST - Cervical Source Chip Accessible Name Iteration
+
+- Improvement target:
+  - The cervical side-list source chips had become real links, but repeated source-only accessible names could be ambiguous because several care items point to the same official page.
+  - Add item-specific accessible names and hover titles so screen-reader and tooltip users know which care-note item each official-source chip belongs to.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed `renderCervicalCareItemSourceLink` to receive the item label.
+    - Added item-specific `aria-label` and `title` text for cervical record-check, recovery, and screening/prevention source chips.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented item-specific accessible source labels and added them to the design audit checklist/decisions log.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: after same-surface navigate/wait, one DOM check reported `linkCount: 14`, `allHaveItemAria: true`, `allHaveTitles: true`, and item-specific labels for `성생활 재개·통증 상담` and `배뇨·배변·출혈 변화 메모`.
+    - Limitation: subsequent same-surface eval calls intermittently returned `innerWidth: 0` or blank `about:blank` context even while URL/title/errors stayed healthy, so this slice keeps cmux as partial runtime evidence plus source/tests/typecheck/build.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, another source-backed cervical patient workflow artifact, or Korean standards/export clarity.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:19 KST - Cervical Pregnancy Birth Planning Iteration
+
+- Improvement target:
+  - The cervical cancer care panel covered screening, recovery, sex-life consultation, side effects, and recurrence follow-up, but did not help patients prepare fertility, pregnancy, or birth-planning questions.
+  - Add source-backed pregnancy/birth planning guidance as a clinician-confirmation memo and a one-click question-draft topic.
+- Official source recheck:
+  - Rechecked National Cancer Information Center cervical-cancer pregnancy/birth page: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5374`.
+  - Confirmed the page describes pregnancy/birth possibility after early-stage treatment such as loop electrosurgical treatment or radical trachelectomy, plus antenatal-care attention, cervical-length/preterm-birth context, and miscarriage/preterm-birth risk after radical trachelectomy.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccPregnancyBirth`.
+    - Added `임신·출산 계획 상담` to recovery guides.
+    - Added `임신·출산 계획` to clinician-question drafts.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted that the memo, official source label, pregnancy/birth risk wording, Markdown, CSV, caregiver HTML, and prompt flow are preserved.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented pregnancy/birth planning consultation memos and added them to the design audit checklist/decisions log.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: same-surface navigate/wait/eval reports `hasPregnancyMemo: true`, `hasAntenatal: true`, and `hasMiscarriagePreterm: true`.
+    - PASS: `hasPregnancyPrompt: true`, `promptCount: 5`, `linkCount: 15`, and `hasPregnancySourceLink: true`.
+    - PASS: item-specific pregnancy source `aria-label` is `임신·출산 계획 상담 공식 출처 국가암정보센터 자궁경부암 임신과 출산 열기`.
+- Current next durable improvement direction:
+  - Continue with Korean standards/export clarity, same-surface cmux focus checks, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:23 KST - BP Glucose Row-Level Common Applicability Iteration
+
+- Improvement target:
+  - The Korean standards matrix already marked BP and glucose standards as adult common at the section/summary level, but some numeric range rows did not repeat row-level `남녀 공통` wording.
+  - Make copied standards, Markdown, CSV, caregiver HTML, and helper cards consistently show that every BP/glucose numeric range row is adult male/female common.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added row-level `남녀 공통` wording to BP warning/prehypertension, BP hypertension, diabetes-care caution, and random glucose screening rows.
+  - Updated `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted the added row-level common-applicability wording in shared standards, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-backed BP/glucose numeric range cards with row-level male/female/common applicability.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 34 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 141 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface `wait` reported OK, but immediate eval intermittently returned blank `about:blank`/body 0 context, so this slice relies on source/tests/typecheck/build and cmux URL/title/errors rather than DOM text proof.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:18 KST - HPV Vaccine Screening-Continuation Iteration
+
+- Improvement target:
+  - The cervical screening/prevention note said HPV vaccination is prevention-only, but did not explicitly say cervical screening continues unchanged after vaccination.
+  - Clarify the patient-facing Korean copy so vaccination guidance does not get confused with treatment, cure confirmation, or a reason to skip regular cervical screening.
+- Official source recheck:
+  - Rechecked KDCA National Health Information Portal cervical-cancer vaccine page:
+    `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=3987`
+  - Used the official framing that HPV vaccination is preventive and does not replace cervical cancer screening.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - The HPV family guidance now says HPV vaccine is preventive, has no treatment-confirmation purpose, and regular cervical screening continues after vaccination.
+    - Added `정기검진 유지` to the family explanation checklist.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added assertions that the HPV note includes prevention-only and screening-continuation wording across care data, copied clinic-prep text, CSV, Markdown, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented HPV vaccine versus screening-continuation notes in the feature list and design contract.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 41 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 154 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: same-surface snapshot shows `HPV 백신 가족 안내`, `선별검사는 변경 없이`, and the KDCA source link label `질병관리청 국가건강정보포털 자궁경부암 백신`.
+    - Limitation: cmux `eval` still has intermittent encode or JS-context failures, so the browser proof used URL/title/errors plus snapshot evidence.
+- Current next durable improvement direction:
+  - Continue source-backed cervical patient workflows, Korean standards/export clarity, or same-surface runtime resilience checks.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:26 KST - Lymphedema Infection/Worsening Signal Iteration
+
+- Improvement target:
+  - The cervical-care panel had a lymphedema exercise note, but not a direct record/check prompt for skin redness, heat, pain, wound, sudden hardening, or other infection/worsening signals after pelvic lymph-node treatment.
+  - Add source-backed recording and clinician-contact prompts without turning them into self-treatment instructions.
+- Official source recheck:
+  - Rechecked National Cancer Information Center lymphedema symptom/diagnosis page:
+    `https://www.cancer.go.kr/lay1/S1T426C428/contents.do`
+  - Rechecked National Cancer Information Center lymphedema treatment before/after management page:
+    `https://www.cancer.go.kr/lay1/S1T429C431/contents.do`
+  - Used the official framing around skin redness, inflammation/wound checks, heat, pain, and medical-team treatment/management.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccLymphedemaSymptoms` and `nccLymphedemaCare` sources.
+    - Clarified the `림프부종` clinician-question draft around skin redness, heat, pain, wounds, and when to contact clinicians.
+    - Added `림프부종 감염·악화 신호` to record checks.
+    - Added `림프부종 피부·감염 관리` to recovery notes.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added assertions that the new lymphedema warning/skin-care content and official source labels flow into data, copied clinic-prep text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented lymphedema infection/worsening-signal memos and added a design-audit guard against self-treatment framing.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 41 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 154 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface snapshot still reports an empty `about:blank` DOM context, so this runtime proof remains limited to URL/title/error state.
+- Current next durable improvement direction:
+  - Connect lymphedema infection/worsening source evidence into symptom-entry support templates, continue Korean standards/export clarity, or keep monitoring same-surface runtime recovery.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:27 KST - Lymphedema Symptom Support Template Iteration
+
+- Improvement target:
+  - The cervical-care notes now include lymphedema infection/worsening signals, but the symptom-entry support template system still only covered nausea, mouth sores, diarrhea, constipation, and fatigue.
+  - Add a source-backed lymphedema keyword template so typing swelling, heat, skin redness, wounds, or lymphedema-like symptoms can surface observation notes and a clinician contact-threshold question draft.
+- Source basis:
+  - Used the rechecked National Cancer Information Center lymphedema treatment before/after management source:
+    `https://www.cancer.go.kr/lay1/S1T429C431/contents.do`
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `lymphedema` template with Korean/English keywords for lymphedema, leg swelling, edema, heat, and skin redness.
+    - Added an observation note for side-to-side difference, skin redness, heat, pain, wounds, and before/after activity changes.
+    - Added a clinician question about when to contact the care team after pelvic lymph-node treatment.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added keyword-match, question-draft, source URL, and no-treatment-instruction assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented symptom-observation templates and added a design-audit guard for lymphedema contact-threshold prompts.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: PASS, 1 file and 5 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 155 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface snapshot still reports an empty `about:blank` DOM context, so runtime proof remains limited to URL/title/error state.
+- Current next durable improvement direction:
+  - Continue Korean standards/export clarity, source-backed cervical survivorship workflows, or same-surface runtime recovery checks.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:29 KST - Fever/Chills Infection Symptom Support Iteration
+
+- Improvement target:
+  - Symptom-entry support covered lymphedema, GI/mouth symptoms, and fatigue, but not the high-risk cancer-patient pattern of fever, chills, or suspected infection.
+  - Add a source-backed symptom template so fever/chills/temperature/infection keywords create an observation note and clinician contact-threshold question draft.
+- Official source recheck:
+  - Rechecked National Cancer Information Center infection symptoms page:
+    `https://www.cancer.go.kr/lay1/S1T435C437/contents.do`
+  - Rechecked National Cancer Information Center infection clinician-consultation page:
+    `https://www.cancer.go.kr/lay1/S1T435C439/contents.do`
+  - Used the official framing around oral temperature 38℃ or higher, chills, urinary symptoms, respiratory symptoms, catheter-site redness/swelling/discharge, and clinician/emergency contact thresholds.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `infection-fever` template with Korean/English keywords for fever, chills, temperature, infection, and night sweats.
+    - Added observation text for temperature/time, chills duration, urinary symptoms, respiratory symptoms, and catheter-site changes.
+    - Added a clinician question about contact or emergency-room thresholds.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added keyword-match, source URL, observation-note, question-draft, and no-treatment-instruction assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented fever/chills infection contact-threshold prompts and added a design-audit guard against self-treatment framing.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: PASS, 1 file and 6 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 156 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface snapshot still reports an empty `about:blank` DOM context, so runtime proof remains limited to URL/title/error state.
+- Current next durable improvement direction:
+  - Continue Korean standards/export clarity, source-backed cervical survivorship workflows, or same-surface runtime recovery checks.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:22 KST - Cervical Side-List Accessibility Label Iteration
+
+- Improvement target:
+  - Same-surface snapshots showed cervical side-list items could be exposed as concatenated accessibility text, for example title plus detail and `출처` reading without clear separators.
+  - Add item-level accessible labels that separate the care-note title, detail, and source as sentences while leaving visible source chips in place.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Imported cervical check/recovery/prevention item types.
+    - Added `formatCervicalCareListItemAriaLabel`.
+    - Added `aria-label` to cervical check, recovery, and prevention `li` items.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented spaced list-item accessible labels and added a design-audit guard so title/detail/source do not regress into one concatenated phrase.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 28 files and 154 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface snapshot again returned an `about:blank` DOM context after the runtime reset, so visual/accessibility tree proof for this specific `aria-label` patch is limited to source plus type/build checks.
+- Current next durable improvement direction:
+  - Continue source-backed cervical patient workflows, Korean standards/export clarity, or same-surface runtime resilience checks.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:20 KST - HPV Screening-Continuation Question Draft Iteration
+
+- Improvement target:
+  - The HPV prevention note now said cervical screening continues after vaccination, but the collapsible `HPV·검진` clinician-question draft still asked about vaccine and screening in generic terms.
+  - Make the actual question draft ask how to explain continued cervical screening after vaccination, so copied clinic-prep text and exports carry the same prevention-vs-screening distinction.
+- Source basis:
+  - Continued to use the same rechecked KDCA National Health Information Portal cervical-cancer vaccine source from the previous iteration:
+    `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=3987`
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - The `HPV·검진` question now asks how to explain that HPV vaccine is preventive and cervical screening should continue after vaccination, personalized to age and treatment history.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added assertions that the updated question draft and its KDCA source evidence flow into copied clinic-prep text, CSV, Markdown, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented HPV vaccine versus screening-continuation question drafts and added a design-audit guard.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 41 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 154 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS before runtime reset: snapshot showed the `HPV·검진 자궁경부암 질문 초안 만들기` button.
+    - PASS: clicked the HPV question draft button on the same surface with no save action.
+    - PASS: snapshot showed the question textbox filled with `HPV 백신은 예방용이고 접종 후에도 자궁경부암 선별검사를 계속 받아야 한다는 점...` plus KDCA source evidence.
+    - PASS: after navigating the same surface back to `http://127.0.0.1:1420/#dashboard`, `get url` reports the dashboard URL and `get title` reports `CareVault`.
+    - PASS: final `errors list` reports `No browser errors`.
+    - Limitation: after the final same-surface navigate, snapshot again reported an `about:blank` DOM context despite correct URL/title; this matches the earlier intermittent cmux eval/snapshot-context issue.
+- Current next durable improvement direction:
+  - Continue source-backed cervical patient workflows, Korean standards/export clarity, or same-surface runtime resilience checks.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:52 KST - Lab Source Evidence Queue Propagation Iteration
+
+- Improvement target:
+  - Saved lab-result cards now split `출처:` evidence from ordinary memo text, but the derived `진료 준비 큐` still used the raw lab note as the first available detail.
+  - This could hide the lab assessment summary when a memo exists and could carry source evidence into dashboard copy, Markdown, CSV, and caregiver HTML as ordinary memo text.
+- Code/docs changes:
+  - Updated `src/careActionQueue.ts`.
+    - Reuses `parseLabSourceEvidence()` for lab queue items.
+    - Formats abnormal lab queue detail as `memo / assessment summary / 근거: source label (URL)` when source evidence exists.
+    - Keeps local result-sheet evidence as a label without inventing a URL.
+  - Updated `src/careActionQueue.test.ts`.
+    - Existing WBC queue expectations now require memo plus lab assessment summary.
+    - Added source-backed HDL-C regression coverage for queue detail and clipboard text.
+  - Updated `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Verifies source-backed lab queue evidence propagates through CSV `care_queue`, visit packet Markdown, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-separated lab queue details in copied and exported checklist text.
+- Verification:
+  - Initial targeted test run was RED because the existing CSV WBC expectation still assumed note-only queue detail.
+  - Updated the expectation to the new memo-plus-assessment contract.
+  - `npm run test -- src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/labSourceEvidence.test.ts`: PASS, 5 files and 35 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 27 files and 151 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: `cmux browser --surface surface:513 eval ...` reports app DOM state with body length 6535.
+    - PASS: `cmux browser --surface surface:513 snapshot` returned the CareVault accessibility tree.
+    - PASS: `cmux browser --surface surface:513 screenshot --out /tmp/carevault-surface-513-lab-queue-evidence.png`.
+- Current next durable improvement direction:
+  - Continue improving source separation in individual lab export rows, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:57 KST - Direct Lab Export Source Evidence Split Iteration
+
+- Improvement target:
+  - The derived `care_queue` now separates lab note source evidence, but direct lab rows in CSV, visit packet Markdown, and caregiver HTML could still render a preset-saved `출처:` line as ordinary note text.
+  - Make direct lab export rows use the same memo/evidence split as saved lab cards and queue details.
+- Code/docs changes:
+  - Updated `src/labSourceEvidence.ts`.
+    - Added `formatLabSourceEvidence()`.
+    - Added `formatLabNoteWithSourceEvidence()` for shared export/detail formatting.
+  - Updated `src/careActionQueue.ts`.
+    - Reused the shared evidence formatter instead of local queue-only source formatting.
+  - Updated `src/csvExport.ts`.
+    - Direct `lab` rows now format notes as memo plus `근거:` evidence, not raw `출처:` lines.
+  - Updated `src/visitPacket.ts`.
+    - `## 검사 수치` lines now use the same source-separated lab note text.
+  - Updated `src/caregiverExport.ts`.
+    - Caregiver recent lab items now render range/assessment separately from source-separated note evidence.
+  - Updated `src/labSourceEvidence.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added direct lab row assertions and `not.toContain("출처: 대한당뇨병학회 당뇨병 관리 목표")` checks for source-backed HDL-C fixtures.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that direct lab rows share the same memo-plus-`근거:` source evidence pattern.
+- Verification:
+  - `npm run test -- src/labSourceEvidence.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 36 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 27 files and 152 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: `cmux browser --surface surface:513 eval ...` reports body length 6535 and `hasLabHeading: true`.
+- Current next durable improvement direction:
+  - Improve lower-only/upper-only lab reference range display in direct exports, e.g. `50 이상` instead of `50~-` or `50--`, then keep cycling through Korean standards/export clarity.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:00 KST - Direct Lab Range Label Polish Iteration
+
+- Improvement target:
+  - The direct lab source-evidence tests exposed an older export readability issue: lower-only HDL style ranges could appear as `50~-` in CSV or `50--` in Markdown.
+  - Replace placeholder dash formatting with Korean range labels such as `50 mg/dL 이상` and `139 mg/dL 이하`.
+- Code/docs changes:
+  - Updated `src/exportSourceLabels.ts`.
+    - Added `formatLabReferenceRangeLabel(lower, upper, unit)`.
+    - Keeps both-sided ranges as `lower~upper unit`.
+    - Formats lower-only ranges as `lower unit 이상`.
+    - Formats upper-only ranges as `upper unit 이하`.
+  - Added `src/exportSourceLabels.test.ts`.
+    - Covers both-sided, lower-only, upper-only, and missing lab ranges.
+  - Updated `src/csvExport.ts`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Direct lab export rows now share the range formatter.
+    - CSV status now includes the unit in the range label.
+    - Markdown and caregiver HTML no longer render lower-only ranges with dash placeholders.
+  - Updated `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - HDL-C source-backed fixtures now assert `50 mg/dL 이상`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented single-sided range display as `이상`/`이하` labels.
+- Verification:
+  - `npm run test -- src/exportSourceLabels.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/labSourceEvidence.test.ts src/careActionQueue.test.ts`: PASS, 6 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 154 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - First check found the same surface had been navigated to `http://127.0.0.1:1432/` with title `Worklog Tracker`, so that was not accepted as CareVault runtime proof.
+    - Used the same surface only: `cmux browser --surface surface:513 navigate http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - PASS: `cmux browser --surface surface:513 eval ...` reports body length 6535 and `hasLabHeading: true`.
+- Current next durable improvement direction:
+  - Continue with Korean standards/export clarity, source-backed cervical patient workflows, or a direct browser interaction pass on the lab preset/export preview flow now that surface 513 is back on CareVault.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:03 KST - Saved Lab Card Range Label Polish Iteration
+
+- Improvement target:
+  - Read-only cmux text proof on `surface:513` showed the saved WBC lab card still used older range text: `기준 4.0 - 10.0 10^3/uL`.
+  - Align saved lab cards with the new direct export range formatter so lower-only/upper-only lab cards do not show dash placeholders.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Imports `formatLabReferenceRangeLabel()`.
+    - Saved lab cards now render `기준 ${formattedRange}` or `기준 직접 확인`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that saved lab cards and direct lab rows share the same range label and source-evidence split.
+- Verification:
+  - `npm run test -- src/exportSourceLabels.test.ts`: PASS, 1 file and 2 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 28 files and 154 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: URL is `http://127.0.0.1:1420/#nutrition`.
+    - PASS: title is `CareVault`.
+    - PASS: `errors list` reports `No browser errors`.
+    - PASS: DOM eval reports `hasFormattedWbcRange: true` for `기준 4.0~10.0 10^3/uL`.
+    - PASS: DOM eval reports `hasOldWbcRange: false` for `기준 4.0 - 10.0 10^3/uL`.
+- Current next durable improvement direction:
+  - Continue with direct browser interaction on lab preset/export preview flows, or add a non-mutating source/range preview check for HDL-C before saving.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:04 KST - Same-Surface HDL Preset Preview Browser Pass
+
+- Runtime target:
+  - Used the existing cmux browser surface only: `surface:513`.
+  - No lab record was saved.
+- Browser actions:
+  - Confirmed `#labs select` option values and selected `hdl-cholesterol`.
+  - Verified the HDL-C preset preview text showed `50 mg/dL 이상`.
+  - Verified the HDL-C source text showed `대한당뇨병학회 당뇨병 관리 목표`.
+  - Verified the source link href was `https://old.diabetes.or.kr/general/class/medical.php?idx=6&mode=view&number=322`.
+  - Attempted `cmux browser --surface surface:513 select --selector '#labs select' --value ''`; cmux rejected the empty value as `invalid_params: Missing value`.
+  - Reverted the select with same-surface DOM eval by setting `value=""` and dispatching a bubbling `change` event.
+- Verification:
+  - PASS: after revert, DOM eval reported `presetValue: ""`.
+  - PASS: after revert, DOM eval reported `hasHdlSource: false`.
+  - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with export preview browser checks or another source-backed Korean/cervical-care workflow improvement.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:05 KST - Same-Surface CSV Preview Browser Pass
+
+- Runtime target:
+  - Used the existing cmux browser surface only: `surface:513`.
+  - No download was triggered and no record was saved.
+- Browser actions:
+  - Clicked the existing `CSV 미리보기` button by DOM index after confirming button text.
+  - Verified preview text includes `사용자 입력 기준 범위 4.0~10.0 10^3/uL`.
+  - Verified preview text includes the WBC care queue detail `면역저하 식품 안전 질문과 연결 / 검사실 기준보다 낮습니다`.
+  - Verified preview text no longer includes the older WBC lab row pattern without the unit-bearing range label.
+  - Closed the preview with the `내보내기 미리보기 닫기` button.
+- Verification:
+  - PASS: preview open check reported `hasPreview: true`.
+  - PASS: direct CSV range check reported `hasLabRange: true`.
+  - PASS: queue detail check reported `hasCareQueueSummary: true`.
+  - PASS: old-range check reported `hasOldRange: false`.
+  - PASS: after close, DOM eval reported `hasExportPreview: false`.
+  - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with caregiver/Markdown preview browser checks or another source-backed Korean/cervical-care workflow improvement.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:06 KST - Same-Surface Markdown And Caregiver Preview Browser Pass
+
+- Runtime target:
+  - Used the existing cmux browser surface only: `surface:513`.
+  - No download was triggered and no record was saved.
+- Markdown preview actions:
+  - Clicked `요약 미리보기`.
+  - Verified preview text includes `WBC 3.4 10^3/uL (기준 4.0~10.0 10^3/uL)`.
+  - Verified preview text includes the WBC care queue detail `면역저하 식품 안전 질문과 연결 / 검사실 기준보다 낮습니다`.
+  - Verified preview text no longer includes `기준 4.0 - 10.0 10^3/uL`.
+  - Closed the preview with `내보내기 미리보기 닫기`.
+- Caregiver preview actions:
+  - Clicked `공유본 미리보기`.
+  - Verified preview text includes `기준 4.0~10.0 10^3/uL`.
+  - Verified preview text includes the WBC care queue detail `면역저하 식품 안전 질문과 연결 / 검사실 기준보다 낮습니다`.
+  - Verified preview text no longer includes `기준 4.0 - 10.0 10^3/uL`.
+  - Closed the preview with `내보내기 미리보기 닫기`.
+- Verification:
+  - PASS: both previews opened with `hasPreview: true`.
+  - PASS: both previews reported the new range/checklist text.
+  - PASS: both previews reported old range text absent.
+  - PASS: after each close, DOM eval reported `hasExportPreview: false`.
+  - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with source-backed Korean/cervical-care workflow improvements or another non-mutating preview/browser QA pass.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:10 KST - Cervical Screening Source Citation Cleanup Iteration
+
+- Improvement target:
+  - The profile-based cervical screening quick-check preserved official source URLs, but the UI/export detail could read as `근거: 출처: ...` because screening summary evidence wrapped item-level `출처:` evidence inside a `근거:` label.
+  - Keep the URLs and source labels while removing the duplicated source prefix.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added a screening-summary-only citation formatter that emits `출처명 (URL)`.
+    - `formatCervicalCancerScreeningSummaryEvidence()` now renders `근거: 국가암정보센터 ... (URL); ... (URL)`.
+    - Other item-level cervical-care evidence still keeps the existing `출처: label - URL` format.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Verifies screening summary evidence and generated clinician question no longer contain `근거: 출처:`.
+  - Updated `src/careActionQueue.test.ts`.
+    - Verifies the care queue screening row no longer contains `근거: 출처:`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented non-duplicated source citations for cervical screening quick-check rows.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/careActionQueue.test.ts src/cervicalCancerCareClipboard.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 6 files and 51 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 154 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `get url` reported `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `get title` reported `CareVault`.
+    - PASS: `errors list` reported `No browser errors`.
+    - Limitation: DOM/snapshot/eval context regressed to empty `about:blank` even after same-surface navigate and wait, so direct DOM proof for the cleaned screening text was unavailable in this cmux state.
+- Current next durable improvement direction:
+  - Continue with tests/build-backed Korean/cervical content cleanup while monitoring whether `surface:513` DOM access recovers, or use URL/title/errors-only browser checks until the same surface reconnects.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:13 KST - Export-Level Screening Citation Regression Coverage Iteration
+
+- Improvement target:
+  - The cervical screening summary formatter was cleaned, but export-level tests only checked presence of screening content and URLs.
+  - Add explicit regression coverage so CSV, Markdown, and caregiver HTML outputs cannot reintroduce `근거: 출처:` nested source labels.
+- Code/docs changes:
+  - Updated `src/csvExport.test.ts`.
+    - Asserts generated CSV does not contain `근거: 출처:`.
+  - Updated `src/visitPacket.test.ts`.
+    - Asserts generated Markdown does not contain `근거: 출처:`.
+  - Updated `src/caregiverExport.test.ts`.
+    - Asserts generated caregiver HTML does not contain `근거: 출처:`.
+- Verification:
+  - `npm run test -- src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/cervicalCancerCare.test.ts src/careActionQueue.test.ts`: PASS, 5 files and 48 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 154 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `get url` reported `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `get title` reported `CareVault`.
+    - PASS: `errors list` reported `No browser errors`.
+    - Limitation: DOM eval still reports empty `about:blank` with body length 0, so browser proof remains limited to URL/title/errors for this iteration.
+- Current next durable improvement direction:
+  - Continue with Korean/cervical content cleanup or focused browser/runtime recovery checks on the same surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:33 KST - Cervical Treatment Selection Question Iteration
+
+- Improvement target:
+  - The cervical-care prompt list covered follow-up, recovery, lymphedema, HPV/screening, and pregnancy/birth planning, but did not help patients prepare the first-order treatment-choice conversation.
+  - Add a source-backed clinician-question draft for asking how treatment selection is explained from patient-specific context, without recommending surgery, radiation, or chemotherapy.
+- Official source recheck:
+  - Rechecked National Cancer Information Center cervical-cancer treatment-methods page:
+    - `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893`
+  - Confirmed the page describes treatment selection by stage, cancer size, age, whole-body condition, and future childbirth hopes, with surgery, radiation therapy, and chemotherapy as treatment categories.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccTreatmentMethods`.
+    - Added `치료 선택 기준` as a clinician-question prompt that asks what to clarify with the care team based on stage, tumor size, whole-body condition, age, and childbirth plans.
+  - Updated `src/cervicalCancerCare.test.ts` and `src/cervicalCancerCareClipboard.test.ts`.
+    - Asserted the new source key, prompt order/count, source-retaining prompt text, and copied note source-list preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented treatment-selection consultation prompts and added the no-treatment-recommendation audit check.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts`: PASS, 2 files and 19 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 144 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `eval` and `snapshot` still reported an `about:blank` document with body length 0 after same-surface navigation, so DOM proof for the new prompt is unavailable in this cmux state.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:35 KST - Cervical Copy Question Draft Section Iteration
+
+- Improvement target:
+  - The cervical-care panel exposed source-retaining clinician-question draft buttons, but the `노트 복사` clinic-prep text omitted those prompt questions.
+  - Make the copied note preserve the same question prompts and source evidence so a pasted clinic-prep note can carry both records and planned questions.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCareClipboard.ts`.
+    - Added a `진료 질문 초안` section after the warning-signal section.
+    - Reused `cervicalCancerCarePrompts` and `buildCervicalCancerCarePromptQuestion()` so copied prompts keep source labels and URLs.
+  - Updated `src/cervicalCancerCareClipboard.test.ts`.
+    - Asserted the copied note includes the treatment-selection prompt, patient-context wording, and official treatment-methods source evidence.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-retaining question drafts in copied cervical-care clinic-prep text.
+- Verification:
+  - `npm run test -- src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCare.test.ts`: PASS, 2 files and 19 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 144 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `eval` still reported an `about:blank` document with body length 0, so DOM proof for copied-note content is unavailable in this cmux state.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:38 KST - Cervical Question Draft Export Propagation Iteration
+
+- Improvement target:
+  - The copied cervical-care clinic-prep note now includes source-retaining question drafts, but Markdown, CSV, and caregiver HTML exports still omitted those prompt questions.
+  - Keep cancer-care exports aligned with the dashboard and copied note so treatment-selection and recovery questions survive when users prepare a visit packet or family review file.
+- Code/docs changes:
+  - Updated `src/visitPacket.ts`.
+    - Added `진료 질문 초안` to the `자궁경부암 케어 참고` Markdown section.
+    - Reused `buildCervicalCancerCarePromptQuestion()` so source labels and URLs are preserved.
+  - Updated `src/csvExport.ts`.
+    - Added a `cervical_care_reference` row for source-retaining question drafts.
+  - Updated `src/caregiverExport.ts`.
+    - Added a linked `진료 질문 초안` item to caregiver HTML, using the existing cervical source-link helper.
+  - Updated `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted the treatment-selection prompt and official treatment-methods source are present in all three exports.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-retaining cervical question drafts in Markdown, CSV, and caregiver HTML exports.
+- Verification:
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts`: PASS, 5 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 144 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `eval` still reported an `about:blank` document with body length 0, so DOM proof for export UI text is unavailable in this cmux state.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:41 KST - Cervical Food Supplement Consultation Iteration
+
+- Improvement target:
+  - The cervical-care panel and exports covered treatment selection, recovery, sex life, pregnancy/birth, side effects, recurrence, screening, and prevention, but did not expose the official cervical-cancer dietary-life page.
+  - Add a source-backed food/supplement consultation prompt and recovery memo without turning it into a fixed diet prescription.
+- Official source recheck:
+  - Rechecked National Cancer Information Center cervical-cancer dietary-life page:
+    - `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899`
+  - Confirmed the page frames cervical-cancer diet as no special recommended/forbidden food, adequate nutrition/rest support, irritating-food caution during radiation/chemotherapy, and caution around folk remedies or health supplements during chemotherapy.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccDiet`.
+    - Added `식생활·보조식품` as a clinician-question prompt.
+    - Added `식생활·보조식품 확인` as a recovery memo framed around care-team confirmation.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Asserted the dietary-life source key, prompt, copied note, Markdown, CSV, and caregiver HTML evidence.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented food/supplement consultation prompts and added the no-diet-prescription audit check.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 38 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 144 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `eval` still reported an `about:blank` document with body length 0, so DOM proof for the dietary-life prompt is unavailable in this cmux state.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:43 KST - Cervical Prompt Disclosure Density Iteration
+
+- Improvement target:
+  - The cervical-care prompt list now has more official-source questions after treatment-selection and dietary-life additions.
+  - Keep the right-side care panel easier to scan by making the prompt list a compact disclosure with a source-count summary.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed `다음 진료 질문 초안` from an always-expanded block to a `details` disclosure.
+    - The summary shows the prompt count and `출처 포함`.
+  - Updated `src/App.css`.
+    - Reused existing cervical disclosure styling and added prompt-list spacing inside the disclosure.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented collapsible clinician-question draft buttons and added a first-scan density audit check.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 144 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `eval` still reported an `about:blank` document with body length 0, so DOM proof for `.cervical-prompt-disclosure` is unavailable in this cmux state.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:46 KST - Lab Source Evidence Card Split Iteration
+
+- Improvement target:
+  - Lab preset source evidence is preserved in the default memo and generated lab questions, but saved lab-result cards showed `출처:` evidence as ordinary memo text.
+  - Split source-bearing saved lab notes into regular memo text plus a visible source evidence chip/link so official or result-sheet evidence is easier to scan.
+- Code/docs changes:
+  - Added `src/labSourceEvidence.ts`.
+    - `parseLabSourceEvidence()` extracts a first `출처: <label> - <https URL>` line while preserving ordinary memo text.
+    - Local evidence like `출처: 검사실 결과지 기준 우선` is retained as a label without a URL.
+  - Added `src/labSourceEvidence.test.ts`.
+    - Covers official URL evidence, local result-sheet evidence, and ordinary notes.
+  - Updated `src/App.tsx`.
+    - Saved lab-result cards now render ordinary memo text separately from `근거:` source evidence.
+    - Official evidence renders as a link with item-specific `aria-label`/`title`; local evidence renders as text.
+  - Updated `src/App.css`.
+    - Added compact wrapping/focus styles for `.lab-source-evidence`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented saved lab-result source evidence separation.
+- Verification:
+  - `npm run test -- src/labSourceEvidence.test.ts src/labPresets.test.ts src/labQuestionPrompts.test.ts`: PASS, 3 files and 15 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 27 files and 147 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `eval` still reported an `about:blank` document with body length 0, so DOM proof for `.lab-source-evidence` is unavailable in this cmux state.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:47 KST - cmux Surface 513 Capture Limitation Recheck
+
+- Runtime target:
+  - Rechecked the current right-side cmux browser surface only: `surface:513`.
+- Result:
+  - `cmux browser --surface surface:513 get url`: PASS, `http://127.0.0.1:1420/`.
+  - `cmux browser --surface surface:513 get title`: PASS, `CareVault`.
+  - `cmux browser --surface surface:513 errors list`: PASS, `No browser errors`.
+  - `cmux browser --surface surface:513 snapshot`: still returns an empty `about:blank` document.
+  - `cmux browser --surface surface:513 screenshot --out /tmp/carevault-surface-513.png`: FAIL, `Failed to capture snapshot`.
+  - `cmux browser --surface surface:513 is-webview-focused`: `false`.
+  - `cmux browser --surface surface:513 focus-webview`: FAIL, `WebView is not in a window`.
+- Interpretation:
+  - The surface still proves URL/title/browser-error state, but DOM/screenshot/focus evidence is unavailable from this cmux state.
+  - Continue using tests/typecheck/build plus cmux URL/title/errors until the user provides or permits a fresh browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:29 KST - Lab Question Source Evidence Label Iteration
+
+- Improvement target:
+  - Lab preset source evidence can now be preserved in the default lab memo, but generated follow-up questions still labeled source-bearing notes as generic `기존 메모`.
+  - Make generated lab follow-up questions expose source-bearing notes as `기존 메모/근거` so the clinician question keeps the evidence context visible.
+- Code/docs changes:
+  - Updated `src/labQuestionPrompts.ts`.
+    - Detects `출처:` in lab notes and labels the appended question context as `기존 메모/근거`.
+    - Keeps ordinary notes labeled as `기존 메모`.
+  - Updated `src/labQuestionPrompts.test.ts`, `README.md`, and `DESIGN.md`.
+    - Added coverage for source-bearing lab question prompts and documented the evidence-preserving question flow.
+- Verification:
+  - `npm run test -- src/labQuestionPrompts.test.ts`: PASS, 1 file and 4 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 144 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with Korean standards/export clarity, same-surface cmux runtime checks, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:25 KST - Lab Preset Source Preview Iteration
+
+- Improvement target:
+  - Lab preset previews showed sex applicability, range, unit, and helper note, but did not show the official or local source behind the preset-derived range before saving.
+  - Add source labels and links to selected lab preset previews so Hgb/HDL/diabetes/lipid helper ranges are visibly traceable before they fill or save a lab record.
+- Official source recheck:
+  - Rechecked KDCA dyslipidemia search result for lipid criteria and existing KDCA diabetes/KDA target sources already used by the standards matrix.
+  - Kept CBC-style ranges as `검사실 결과지 기준 우선` rather than pretending there is one universal source.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `sourceLabel` and `sourceUrl` to lab presets and resolved/preview types.
+    - Attached KDCA diabetes, KDCA dyslipidemia, KDA diabetes target, and local result-sheet-priority sources.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `lab-preset-source` display below the preview note.
+    - External sources render as links with item-specific `aria-label` and `title`; local result-sheet-priority ranges render as text.
+  - Updated `src/labPresets.test.ts`, `README.md`, and `DESIGN.md`.
+    - Asserted every preset preview keeps source labels/URLs and documented source label/link display before saving.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts`: PASS, 1 file and 7 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 142 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: same-surface navigate/wait/select/eval selected `hdl-cholesterol` in the lab preset control.
+    - PASS: DOM check reported `hasPreset: true`, `hasSourceText: true`, and the external source href `https://old.diabetes.or.kr/general/class/medical.php?idx=6&mode=view&number=322`.
+    - PASS: source `aria-label` is `HDL 콜레스테롤 프리셋 근거 대한당뇨병학회 당뇨병 관리 목표 열기`; source `title` is `HDL 콜레스테롤 프리셋 근거: 대한당뇨병학회 당뇨병 관리 목표`; no alert-role errors.
+- Current next durable improvement direction:
+  - Continue with Korean standards/export clarity, same-surface cmux runtime checks, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 14:27 KST - Lab Preset Source Memo Preservation Iteration
+
+- Improvement target:
+  - The selected lab preset preview now exposed source labels/links, but applying a preset still filled an empty lab memo with the helper note only.
+  - Preserve the same source evidence in the default draft memo so saved lab records and downstream exports keep the preset source unless the user has already written a custom memo.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `formatLabPresetSourceEvidence`.
+    - Added `formatLabPresetNoteWithSource`.
+  - Updated `src/App.tsx`.
+    - `applyLabPreset` now fills an empty lab memo with note plus source evidence, while preserving user-written notes.
+  - Updated `src/labPresets.test.ts`, `README.md`, and `DESIGN.md`.
+    - Asserted official-source and local-result-sheet source formatting, and documented default memo source preservation.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts`: PASS, 1 file and 8 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 26 files and 143 tests.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: same-surface DOM selection for the lab memo was blocked by intermittent `about:blank`/empty document eval context after navigation, so runtime proof for the textarea value is unavailable in this cmux state.
+- Current next durable improvement direction:
+  - Continue with same-surface cmux runtime recovery, Korean standards/export clarity, or another source-backed cervical patient workflow artifact.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:34 KST - Source-Backed Infection/Lymphedema Symptom Queue Iteration
+
+- Improvement target:
+  - Fever/chills infection and lymphedema symptom-support templates could create source-backed clinician questions, but saved low-severity symptom records did not enter the care action queue unless they were cervical-source warnings or severity 7+.
+  - Promote saved fever/chills and lymphedema contact-threshold records into the pre-visit queue with official source labels/URLs, while keeping the row as record review rather than medical advice.
+- Official source context used:
+  - 국가암정보센터 감염 의료진 상담 기준: `https://www.cancer.go.kr/lay1/S1T435C439/contents.do`
+  - 국가암정보센터 림프부종 치료 전후관리: `https://www.cancer.go.kr/lay1/S1T429C431/contents.do`
+- Code/docs changes:
+  - Updated `src/careActionQueue.ts`.
+    - Matches saved symptoms against source-backed contact-threshold templates for `infection-fever` and `lymphedema`.
+    - Adds queue labels `감염 의심 기록` and `림프부종 확인 기록`.
+    - Adds `근거: 출처명 (URL)` detail text for those symptom rows.
+  - Updated `src/careActionQueue.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added low-severity fever/chills and lymphedema queue coverage.
+    - Added CSV, Markdown visit packet, and caregiver HTML export coverage for the source-backed infection queue row.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented infection/lymphedema contact-threshold symptom records as source-backed care queue inputs.
+    - Added a DESIGN audit check for National Cancer Center source labels/URLs in those rows.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/symptomSupportTemplates.test.ts`: PASS, 5 files and 43 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/designmd_release_gate.py --mode extend --workdir . --input DESIGN.md --input-type source_project --out /tmp/carevault-design-release-gate.json --json`: FAIL because full `extend` harness artifacts `DESIGN_EXTEND_BRIEF.md` and `DESIGN_EXTEND_BRIEF.json` were not generated for this inline `DESIGN.md` contract edit.
+  - `npm run test`: PASS, 28 files and 161 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:09 KST - Caregiver Question Evidence Link Iteration
+
+- Improvement target:
+  - Source-backed saved questions now render generated `출처:` lines as `근거:` evidence across copy/export surfaces.
+  - Caregiver HTML can go one step further because it is an HTML surface: when a source URL is present, render the source label as a clickable official-source link instead of plain text plus URL.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - Added `formatTextWithSourceEvidenceHtml()` for saved question text.
+    - Source-backed caregiver question evidence now renders as:
+      `근거: <a href="sourceUrl">sourceLabel</a>`.
+    - Plain non-URL source labels still render as escaped text.
+  - Updated `src/caregiverExport.test.ts`.
+    - Changed the source-backed sexual-health question fixture expectation to assert a linked official-source label with escaped query parameters.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented linked source-backed question evidence in caregiver HTML.
+- Verification:
+  - `npm run test -- src/sourceEvidence.test.ts src/caregiverExport.test.ts`: PASS, 2 files and 20 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 29 files and 184 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:07 KST - Source-Backed Question Evidence Formatting Iteration
+
+- Improvement target:
+  - Source-backed symptom and cervical-care question drafts intentionally retain `출처: <label> - <url>` inside saved question text.
+  - Copy/export/care-queue surfaces could then show `출처:` as ordinary question text instead of separating it as evidence.
+  - Match the existing lab/source-evidence UX by rendering question body plus normalized `근거:` evidence in downstream surfaces while preserving the saved source trace.
+- Code changes:
+  - Added `src/sourceEvidence.ts`.
+    - Provides `parseSourceEvidence()`, `formatSourceEvidence()`, and `formatTextWithSourceEvidence()` for any saved text with a generated `출처:` line.
+  - Updated `src/labSourceEvidence.ts`.
+    - Kept the existing lab-facing API as a compatibility wrapper over the shared source-evidence parser.
+  - Updated `src/questionClipboard.ts`.
+    - Question copy text now formats generated source lines as `근거:`.
+  - Updated `src/careActionQueue.ts`.
+    - Open-question care queue details now use body plus `근거:` evidence instead of raw `출처:` lines.
+  - Updated `src/csvExport.ts`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Source-backed question rows now render question body and evidence separately/readably across CSV, Markdown, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-backed question evidence formatting and added an audit checklist item.
+- Test changes:
+  - Added `src/sourceEvidence.test.ts`.
+  - Updated `src/questionClipboard.test.ts`, `src/careActionQueue.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+  - Added source-backed sexual-health question fixtures using the official National Cancer Center source URL.
+- Verification:
+  - `npm run test -- src/sourceEvidence.test.ts src/labSourceEvidence.test.ts src/questionClipboard.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 7 files and 59 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 29 files and 184 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:02 KST - Symptom Support Accessible Label Iteration
+
+- Improvement target:
+  - The symptom-support band showed a visible official source link and `질문 초안` button, but their accessible names did not include the matched template label.
+  - Make the link and button clearer for keyboard/screen-reader users without changing the compact visual layout.
+- UI/docs changes:
+  - Updated `src/App.tsx`.
+    - Symptom-support official-source links now expose:
+      `${templateLabel} 공식 출처 ${sourceLabel} 열기`
+      as both `aria-label` and hover `title`.
+    - Symptom-support question-draft buttons now expose:
+      `${templateLabel} 질문 초안 채우기`
+      as both `aria-label` and hover `title`.
+  - Updated `DESIGN.md`.
+    - Added an audit checklist item for template-specific accessible names and hover titles on symptom-support source links and question-draft buttons.
+    - Added a decisions-log entry for this accessibility refinement.
+- Verification:
+  - `rg -n "공식 출처 .* 열기|질문 초안 채우기|template-specific accessible" src/App.tsx DESIGN.md`: PASS.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run build`: PASS.
+  - `npm run test`: PASS, 28 files and 177 tests.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:01 KST - Symptom Queue Citation Deduplication Iteration
+
+- Improvement target:
+  - Symptom-support templates now preserve source label plus URL in the symptom `다음 행동` note when that field is blank.
+  - Contact-threshold care queue rows also append a normalized `근거:` citation, so template-filled symptom action notes could show the same official source twice in queue and export details.
+  - Keep the symptom action note source-retaining for saved records, but deduplicate queue details so pre-visit checklist text stays readable.
+- RED baseline:
+  - Added `src/careActionQueue.test.ts` coverage for a source-backed `장폐색과 복부팽만` symptom whose action text already contained:
+    `출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894`
+  - `npm run test -- src/careActionQueue.test.ts`: FAIL before the fix because queue detail contained both raw `출처:` and appended `근거:`.
+- Code changes:
+  - Updated `src/careActionQueue.ts`.
+    - Added `stripSymptomTemplateCitation()` for exact template citation removal.
+    - Added `formatSymptomActionDetail()` so contact-threshold queue rows keep the user-facing action/body/medication text and append normalized `근거:` once.
+    - Kept non-template high-severity and cervical warning symptom details unchanged.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 46 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 177 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:59 KST - Bowel-Obstruction Queue Export Coverage Iteration
+
+- Improvement target:
+  - The cervical bowel-obstruction contact-threshold symptom row was verified in the core care queue, but CSV, Markdown visit packet, and caregiver HTML exports did not yet have dedicated regression coverage for preserving that row and its official source URL.
+  - Close the export evidence gap without adding new medical claims or UI surface area.
+- Official source recheck:
+  - Rechecked 국가암정보센터 자궁경부암 치료의 부작용:
+    `https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894`
+  - Used the official framing around 장폐색 and late radiation-treatment complications as source evidence only.
+- Test changes:
+  - Updated `src/csvExport.test.ts`.
+    - Added a `care_queue` export assertion for low-severity `장폐색과 복부팽만` records with label `증상 · 장폐색 확인 기록`.
+    - Verifies the exported row preserves `국가암정보센터 자궁경부암 치료의 부작용` and its query-string URL.
+  - Updated `src/visitPacket.test.ts`.
+    - Added the same source-backed bowel-obstruction row in Markdown visit-summary care queue output.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added caregiver HTML coverage for the same row, including escaped query parameters in the source URL.
+- Verification:
+  - `npm run test -- src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/careActionQueue.test.ts src/symptomSupportTemplates.test.ts`: PASS, 5 files and 58 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 176 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:56 KST - Cervical Bowel-Obstruction Symptom Template Iteration
+
+- Improvement target:
+  - The cervical urinary/bowel/bleeding symptom template covered 혈변 and 혈뇨, but did not separately catch 장폐색 or 복부팽만 language from the same official cervical-treatment side-effect page.
+  - Add a source-backed contact-threshold template that frames 장폐색 and 복부팽만 as observation and clinician-contact-threshold questions, not self-treatment instructions.
+- Official source recheck:
+  - Rechecked 국가암정보센터 자궁경부암 치료의 부작용:
+    `https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894`
+  - Used the official framing around radiation-treatment late complications including 장폐색 and blood-in-stool/blood-in-urine after 6 months or more.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `cervical-bowel-obstruction` for 장폐색, 복부팽만, 복부 팽만, 배가 빵빵, 가스가 안 나옴, and 가스 배출 keywords.
+    - Limited priority keywords to 장폐색 and 복부팽만 so ordinary nausea/vomiting records are not overclassified.
+    - The template records timing, 복부팽만, 복통, 구토, 배변·가스 배출 changes, and 혈변·혈뇨 co-occurrence.
+    - The template asks the care team what symptom combination and timing should trigger contact.
+  - Updated `src/careActionQueue.ts`.
+    - Added the low-severity source-backed queue label `장폐색 확인 기록`.
+  - Updated `src/symptomSupportTemplates.test.ts` and `src/careActionQueue.test.ts`.
+    - Added keyword, question, source URL, queue-hint, template-count, and care-queue row assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented cervical bowel-obstruction contact-threshold prompts and added an audit checklist item.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 27 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 173 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:54 KST - Symptom Action Source-URL Retention UX Iteration
+
+- Improvement target:
+  - Symptom-support question drafts retained source label plus URL, but the template-filled symptom `다음 행동` note only retained the source label.
+  - Preserve the same official source URL in the symptom action note when the action field is blank, so later saved symptom records and exports can carry the source trace.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `formatSymptomSupportCitation()` and `buildSymptomSupportActionNote()`.
+    - `buildSymptomSupportQuestion()` now shares the same citation formatter.
+  - Updated `src/App.tsx`.
+    - `applySymptomSupportTemplate()` now fills a blank symptom action note with meal note, safety boundary, source label, and source URL.
+    - The question draft focus request now increments after the symptom-support button is used.
+    - The save-label feedback now includes the matched template label.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added source-citation and action-note assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented URL-retaining symptom action notes and added an audit checklist item.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: PASS, 1 file and 12 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 171 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:52 KST - Cervical Fertility/Pregnancy Symptom Template Iteration
+
+- Improvement target:
+  - Cervical-care recovery notes already included pregnancy/birth planning and antenatal-risk checks, but the symptom-support matcher did not create a source-backed clinician-question draft for terms like 임신 계획, 가임력, 조산, or 유산.
+  - Add a question-draft-only fertility/pregnancy template that preserves the source URL and keeps the content framed as clinic-confirmation prompts, not pregnancy guidance.
+- Official source recheck:
+  - Rechecked 국가암정보센터 자궁경부암 임신과 출산:
+    `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5374`
+  - Used the official framing around early-stage fertility-preserving procedures, pregnancy possibility depending on treatment, antenatal management, cervical-length checks, miscarriage risk, and preterm-birth risk.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `cervical-fertility-pregnancy` for 임신 계획, 출산 계획, 가임력, 임신 가능, 자궁경부절제술, 조산, and 유산 keywords.
+    - The template records treatment/procedure history, pregnancy-planning timing, and antenatal-care check items.
+    - It asks the patient to confirm pregnancy possibility, 산전관리, 자궁경관 길이, and 유산·조산 risk with the obstetrics and cancer-care teams.
+    - It remains question-draft-only, so `buildSymptomSupportQueueHint()` shows the source-retaining question-draft hint rather than the care-queue evidence hint.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added keyword, question, source URL, queue-hint, and template-count assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented cervical pregnancy/fertility symptom support and added an audit checklist item.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: RED before test update, 1 expected failure because template count was still 9 after adding the new template.
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 24 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 170 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:39 KST - Cervical Urinary/Bowel/Bleeding Symptom Template Iteration
+
+- Improvement target:
+  - Cervical-care notes already covered urinary, bowel, blood-in-stool, and blood-in-urine changes after surgery or radiation therapy, but the symptom-support template list did not offer a dedicated source-backed clinician-question prompt for those saved symptoms.
+  - Add a cervical-treatment urinary/bowel/bleeding template and let saved low-severity records enter the care action queue as contact-threshold review rows.
+- Official source recheck:
+  - Rechecked 국가암정보센터 자궁경부암 치료의 부작용:
+    `https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894`
+  - Used the official framing about broad hysterectomy-related bladder/rectal dysfunction, radiation-related diarrhea/bladder-cystitis-like symptoms, and possible blood in stool/urine after 6+ months.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `cervical-urinary-bowel-bleeding` for 배뇨곤란, 배변 장애, 혈뇨, 혈변, 직장출혈, 방광염, and related pain keywords.
+    - Added priority keywords for 혈뇨, 혈변, and 직장출혈 so mixed entries such as `혈변과 변비` route to the source-backed cervical-treatment contact-threshold template instead of the generic constipation template.
+    - The generated question asks for care-team contact criteria, not self-treatment steps, and keeps the National Cancer Center source label/URL.
+  - Updated `src/careActionQueue.ts`.
+    - Added the queue label `배뇨·배변 변화 기록`.
+    - Changed contact-threshold matching to prefer symptom name/body/medication before action text, so action wording like `발열 동반 여부` does not incorrectly reclassify a 혈뇨/혈변 record as infection.
+  - Updated `src/symptomSupportTemplates.test.ts` and `src/careActionQueue.test.ts`.
+    - Added keyword, priority-matching, question, source URL, template count, and low-severity queue coverage.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented cervical-treatment urinary/bowel/bleeding symptom templates and queue contact-threshold rows.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 21 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 164 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:42 KST - Care Queue Empty-State Symptom Wording Iteration
+
+- Improvement target:
+  - The care action queue now has several symptom-derived routes, but the dashboard and clipboard empty-state text still omitted `증상 경고`.
+  - Align the empty-state copy with the queue sources so users understand symptom records can also create clinic-prep queue rows.
+- Code changes:
+  - Updated `src/careActionQueue.ts`.
+    - Clipboard empty-state text now says there are no cervical screening checks, symptom warnings, open questions, out-of-range vitals/labs, document actions, or upcoming visits.
+  - Updated `src/App.tsx`.
+    - Dashboard empty-state text now includes `증상 경고`.
+  - Updated `src/careActionQueue.test.ts`.
+    - Exact clipboard empty-state assertion now matches the dashboard wording.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/careActionQueueEmptyState.test.ts`: PASS, 2 files and 14 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 164 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:44 KST - Urinary/Bowel Symptom Export Coverage Iteration
+
+- Improvement target:
+  - The new cervical urinary/bowel/bleeding contact-threshold queue row was verified at the core queue level, but CSV, Markdown visit packet, and caregiver HTML export paths did not yet have dedicated regression coverage for preserving that row and its official source URL.
+- Test changes:
+  - Updated `src/csvExport.test.ts`.
+    - Added a `care_queue` export assertion for low-severity `혈뇨와 혈변` records with label `증상 · 배뇨·배변 변화 기록`.
+    - Verifies the exported row preserves `국가암정보센터 자궁경부암 치료의 부작용` and its query-string URL.
+  - Updated `src/visitPacket.test.ts`.
+    - Added the same source-backed urinary/bowel symptom row in Markdown visit-summary care queue output.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added caregiver HTML coverage for the same row, including escaped query parameters in the source URL.
+- Verification:
+  - `npm run test -- src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/careActionQueue.test.ts src/symptomSupportTemplates.test.ts`: PASS, 5 files and 49 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 167 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:46 KST - Symptom Support Queue-Hint UX Iteration
+
+- Improvement target:
+  - The symptom support band showed the matched template, source, and question-draft action, but did not tell users whether saving that symptom can also create a source-backed care queue review row.
+  - Add a compact Korean hint so contact-threshold templates are easier to understand without adding new medical advice.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `buildSymptomSupportQueueHint()`.
+    - Contact-threshold templates return `저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.`
+    - General symptom templates return `질문 초안에는 이 출처와 URL이 함께 남습니다.`
+  - Updated `src/App.tsx` and `src/App.css`.
+    - The symptom support band now renders the queue/source retention hint between the safety boundary and official source link.
+    - The hint uses the existing compact band layout and wraps with the rest of the source text.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added assertions for both care-queue-capable and question-draft-only hints.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the visible queue-evidence hint in the symptom-support flow and design checklist.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 22 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 168 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 15:48 KST - Cervical Sexual-Health Symptom Template Iteration
+
+- Improvement target:
+  - Cervical-care recovery notes already covered sex-life restart, pain, dryness, and radiation-treatment timing, but the symptom-support matcher did not create a source-backed clinician-question draft for symptoms like 질건조, 질협착, or 성교통.
+  - Add a question-draft-only sexual-health template that keeps the source URL and avoids turning local UI copy into treatment instructions.
+- Official source recheck:
+  - Rechecked 국가암정보센터 자궁경부암 성생활:
+    `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5373`
+  - Used the official framing around surgery type, sexual activity restart after clinician check, radiation-related dryness/stenosis/pain, and discussing local hormone treatment or other measures with the treating physician.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `cervical-sexual-health` for 질건조, 질협착, 성교통, 성생활, 부부관계, and 성관계 통증 keywords.
+    - The template records surgery/radiation timing, restart attempt timing, dryness/stenosis/pain/bleeding, and asks how to discuss restart timing and local treatment or lubricant options with the care team.
+    - It remains question-draft-only, so `buildSymptomSupportQueueHint()` shows the source-retaining question-draft hint rather than the care-queue evidence hint.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added keyword, question, source URL, queue-hint, and template-count assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented cervical post-treatment sexual-health symptom support and added an audit checklist item.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 23 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog update.
+  - `npm run test`: PASS, 28 files and 169 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 snapshot --selector body --compact` still reports an empty `about:blank` document, so DOM proof is unavailable in this surface state.
+- Current next durable improvement direction:
+  - Continue improving source-backed cervical-cancer patient workflows, Korean standards/export clarity, and same-surface runtime QA without opening a new browser surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:40 KST - Lab Preset Sex-Applicability Preview Note Iteration
+
+- Improvement target:
+  - The standards matrix already separated common lipid helpers from HDL sex-specific thresholds, but the lab preset picker only showed a short applicability badge.
+  - Make the selected preset preview explicitly say whether profile sex changes can alter that preset range before the user saves a lab record.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `applicabilityDetail` to `LabPresetPreview`.
+    - Added `formatLabPresetApplicabilityDetail()` with separate copy for adult common presets, female/male sex-specific presets, and unspecified-sex fallback.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - The selected lab preset preview now renders a compact note explaining common-versus-sex-specific refresh behavior.
+  - Updated `src/labPresets.test.ts`.
+    - Added regression coverage for total cholesterol common lipid helper, female HDL helper, male HDL helper, and unspecified HDL fallback.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that lab preset previews must show source, range, and whether profile sex changes can alter the selected helper range.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts`: PASS, 1 file and 9 tests.
+  - `npm run test`: PASS, 29 files and 188 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`:
+    - PASS: `reload --snapshot-after` recovered the CareVault document on the same surface.
+    - PASS: total cholesterol preview showed `성인 공통 입력 보조값` and `성별과 관계없이 같은 참고 범위를 채웁니다...프로필 성별을 바꿔도 자동 범위가 달라지지 않습니다.`
+    - PASS: HDL preview on female profile showed `여성 기준 적용`, `50 mg/dL 이상`, `대한당뇨병학회 당뇨병 관리 목표`, and `현재 프로필의 여성 기준을 채웁니다...성별 변경이 그 값을 덮어쓰지 않습니다.`
+    - PASS: final cleanup left the lab preset select blank, lab draft fields blank except today's date, URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:44 KST - Lab Preset Applicability Memo Preservation Iteration
+
+- Improvement target:
+  - The selected lab preset preview now explained common-versus-sex-specific refresh behavior, but the preset-filled default lab memo still needed to carry that applicability context into saved notes and export surfaces.
+  - Browser verification also exposed that a single-line lab memo input visually collapsed generated newline-separated source text.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - `formatLabPresetNoteWithSource()` now accepts an applicability label and writes `적용 기준: ...` before the source evidence line.
+  - Updated `src/App.tsx`.
+    - `applyLabPreset()` passes the current preview applicability label into the default memo when the user has not already typed a custom memo.
+    - Changed the lab memo control from `input` to `textarea` so generated helper note, applicability, and source evidence remain readable on separate lines.
+  - Updated `src/labPresets.test.ts` and `src/labSourceEvidence.test.ts`.
+    - Added coverage for the applicability memo line and source splitting with that line present.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented readable multiline lab preset draft memos that preserve sex-applicability and source evidence.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts src/labSourceEvidence.test.ts src/labQuestionPrompts.test.ts`: PASS, 3 files and 18 tests.
+  - `npm run test`: PASS, 29 files and 189 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`:
+    - PASS: HDL preview on female profile filled `lower=50`, source `대한당뇨병학회 당뇨병 관리 목표`, and the sex-specific preview note.
+    - PASS: lab memo control is `TEXTAREA`.
+    - PASS: `textarea.value` preserves three lines: helper note, `적용 기준: 여성 기준 적용`, and KDA source URL line.
+    - PASS: final cleanup left the lab preset select blank, lab draft fields blank except today's date, URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:48 KST - Lab Applicability Export Preservation Test Iteration
+
+- Improvement target:
+  - After adding `적용 기준: ...` to preset-filled lab memos, make sure the saved/exported rows preserve that applicability line while still converting the `출처:` line into `근거:` evidence.
+- Code/docs changes:
+  - Updated `src/caregiverExport.test.ts`, `src/csvExport.test.ts`, and `src/visitPacket.test.ts`.
+    - The source-backed HDL fixtures now include `적용 기준: 여성 기준 적용`.
+    - Expectations assert caregiver HTML, CSV, and Markdown visit packets retain that applicability line and still remove raw `출처:` text from export output.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that saved lab cards and export rows preserve preset `적용 기준` text while keeping source evidence separated.
+- Verification:
+  - `npm run test -- src/caregiverExport.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/careActionQueue.test.ts`: PASS, 4 files and 52 tests.
+  - `npm run test`: PASS, 29 files and 189 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: `reload` OK, URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:50 KST - Saved Lab Multiline Memo Display Iteration
+
+- Improvement target:
+  - Preset-filled lab memos now preserve helper note, `적용 기준`, and source evidence as separate lines, but saved lab cards rendered the ordinary memo body as a plain `<small>` that could visually collapse line breaks.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `className="lab-note-body"` to saved lab memo body text.
+  - Updated `src/App.css`.
+    - Added `.lab-note-body { display: block; white-space: pre-line; overflow-wrap: anywhere; }`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented saved lab-result cards as separating source evidence from ordinary multiline memo text.
+- Verification:
+  - `npm run test`: PASS, 29 files and 189 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - `rg -n "lab-note-body" src/App.css dist/assets/*.css`: PASS; source and built CSS include the rule.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+  - cmux limitation: this check's `eval`/CSSOM context again saw a blank document after reload, so browser CSS proof stayed limited to URL/title/errors plus build-artifact CSS verification.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:50 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 189 tests.
+  - `npm run build`: PASS.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, errors `No browser errors`.
+  - cmux `surface:513` DOM eval proof:
+    - `document.body.innerText.includes("다음 개발 슬라이스")` -> `false`.
+    - `document.body.innerText.includes("기록과 내보내기는 로컬 기기 기준으로 준비되며, 진료 판단은 의료진 기준을 우선하세요.")` -> `true`.
+    - `document.querySelector(".care-boundary-strip")?.innerText || "MISSING"` -> boundary note text.
+    - `document.querySelector(".next-steps") === null` -> `true`.
+    - Total cholesterol lab preset preview shows adult common behavior and KDCA dyslipidemia source.
+    - HDL lab preset preview shows female-specific `50 mg/dL 이상` behavior and KDA diabetes target source.
+    - HDL lab preset default memo uses a `TEXTAREA` and preserves helper note, `적용 기준: 여성 기준 적용`, and source URL as separate lines.
+    - Caregiver, CSV, and visit-packet export tests preserve `적용 기준: 여성 기준 적용` while converting raw `출처:` source lines into `근거:` evidence.
+    - Built CSS includes `.lab-note-body` with multiline preservation for saved lab card memo text.
+  - cmux snapshot note:
+    - During these slices the surface intermittently returned stale `about:blank` or blank eval/CSSOM context, while `get url`, `get title`, and `errors list` stayed correct for `surface:513`.
+- Current next durable improvement direction:
+  - Continue with same `surface:513`, using `eval` for DOM proof when snapshot remains blank.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:54 KST - Caregiver HTML Multiline Lab Memo Export Iteration
+
+- Improvement target:
+  - Saved lab cards now preserved multiline preset memos, but caregiver HTML still routed normalized lab-note text through plain escaped HTML, which can visually collapse `적용 기준` onto the helper note in print/share views.
+  - Reuse the existing HTML newline helper so source-backed lab memo body text keeps visible line breaks before linked `근거:` evidence.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - `formatTextWithSourceEvidenceHtml()` now renders parsed body text through `multilineHtml()`.
+    - `formatGroundedTextHtml()` now renders non-evidence text and text before `근거:` through `multilineHtml()`.
+  - Updated `src/caregiverExport.test.ts`.
+    - Changed the source-backed HDL fixture expectations to assert `<br>적용 기준: 여성 기준 적용` before linked KDA evidence.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented caregiver HTML multiline lab memo rendering and added a design audit checklist item.
+- Verification:
+  - `npm run test -- src/caregiverExport.test.ts src/careActionQueue.test.ts src/labSourceEvidence.test.ts`: PASS, 3 files and 41 tests.
+  - `npm run test -- src/caregiverExport.test.ts --reporter=verbose`: PASS, 1 file and 19 tests.
+  - `npm run test`: PASS, 29 files and 189 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - `rg -n "multilineHtml|formatGroundedTextHtml|formatTextWithSourceEvidenceHtml|<br>" src/caregiverExport.ts dist/assets/*.js dist/assets/*.css`: PASS; source and built JS include the multiline helper path.
+  - cmux `surface:513`:
+    - PASS: `cmux browser --surface surface:513 get url` reports `http://127.0.0.1:1420/#dashboard`.
+    - PASS: `cmux browser --surface surface:513 get title` reports `CareVault`.
+    - PASS: `cmux browser --surface surface:513 errors list`: `No browser errors`.
+    - Limitation: `cmux browser --surface surface:513 eval ...` again returned a blank `about:blank` context with empty title/body, so DOM proof stayed unavailable without opening a new surface.
+- No git staging or commit was performed.
+
+## 2026-06-04 16:55 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+  - Caregiver HTML now preserves multiline lab memo body line breaks before linked `근거:` evidence.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 189 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, errors `No browser errors`.
+  - cmux snapshot/eval note:
+    - `surface:513` still intermittently returns stale `about:blank` or blank DOM/eval context, while URL/title/errors commands point at CareVault.
+- Current next durable improvement direction:
+  - Continue with same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:11 KST - Lab Follow-up Export Evidence And Spacing Iteration
+
+- Improvement target:
+  - Generated lab follow-up questions now preserve source-backed lab memo evidence through copy and care-queue paths, but CSV, Markdown visit packets, and caregiver HTML needed export-specific coverage using the actual `buildLabQuestionPrompt()` output shape.
+  - While adding those tests, the generated Korean question copy also exposed a small spacing issue: `...가  기준 ...` could render with a doubled space before `기준`.
+- Code/docs changes:
+  - Updated `src/labQuestionPrompts.ts`.
+    - Removed the leading space from formatted lab reference ranges so generated question sentences render as `...가 기준 ...보다...` instead of `...가  기준 ...보다...`.
+  - Updated `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added generated HDL-C follow-up question fixtures built through `buildLabQuestionPrompt()`.
+    - Verified CSV, Markdown, and caregiver HTML separate the body from 대한당뇨병학회 `근거:` evidence and do not leak raw `출처:` text.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented normalized Korean spacing in generated lab follow-up questions.
+- Verification:
+  - `npm run test -- src/labQuestionPrompts.test.ts src/questionClipboard.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 6 files and 69 tests.
+  - `npm run test`: PASS, 29 files and 200 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog append.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:11 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+  - Caregiver HTML now preserves multiline lab memo body line breaks before linked `근거:` evidence.
+  - Cervical general-warning symptom template now covers abnormal vaginal bleeding, suspicious discharge changes, pelvic pain, and radiating leg pain with source-retaining queue evidence.
+  - CSV, Markdown visit packet, and caregiver HTML now have dedicated regression coverage for the cervical general-warning queue row and NCC source URL.
+  - Lab-generated follow-up questions now have downstream regression coverage for question-copy, care-queue, CSV, Markdown, and caregiver HTML source evidence separation.
+  - Generated lab follow-up question Korean spacing is normalized before `기준`.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 200 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog append; rerun after the append before continuing.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, errors `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+  - Good next candidates: same-surface visual/text-fit checks for generated question/export previews, another official-source cervical patient-support gap, or export preview coverage for generated lab questions.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:15 KST - Export Preview Source-Marker Summary Iteration
+
+- Improvement target:
+  - Export previews showed format, line count, character count, and byte size, but did not give a quick pre-download signal that medical evidence/source markers were present in the packet.
+  - Add a compact `근거:`/`출처:` marker count so source-backed Markdown/CSV/HTML previews are easier to audit before copy, print, or download.
+- RED baseline:
+  - Added `src/exportPreviewSummary.test.ts` expectations for `sourceMarkerCount` and `sourceMarkerLabel`.
+  - `npm run test -- src/exportPreviewSummary.test.ts`: FAIL as expected before implementation, because summary objects lacked the source-marker fields.
+- Code/docs changes:
+  - Updated `src/exportPreviewSummary.ts`.
+    - Counts `근거:` and `출처:` markers and exposes `sourceMarkerLabel` such as `근거/출처 2개`.
+  - Updated `src/App.tsx`.
+    - Renders an export-preview summary chip labeled `출처 표식` with the marker count.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented export preview source-marker counts and added a DESIGN changelog entry.
+- Verification:
+  - `npm run test -- src/exportPreviewSummary.test.ts`: PASS, 1 file and 3 tests.
+  - `npm run test`: PASS, 29 files and 201 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog append.
+  - cmux `surface:513`:
+    - PASS: reused the same surface only.
+    - PASS: generated `요약 미리보기` without saving data.
+    - PASS: `.export-preview-summary` rendered `출처 표식` and `근거/출처 50개`.
+    - PASS: preview panel was closed afterward.
+    - PASS: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:15 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+  - Caregiver HTML now preserves multiline lab memo body line breaks before linked `근거:` evidence.
+  - Cervical general-warning symptom template now covers abnormal vaginal bleeding, suspicious discharge changes, pelvic pain, and radiating leg pain with source-retaining queue evidence.
+  - CSV, Markdown visit packet, and caregiver HTML now have dedicated regression coverage for the cervical general-warning queue row and NCC source URL.
+  - Lab-generated follow-up questions now have downstream regression coverage for question-copy, care-queue, CSV, Markdown, and caregiver HTML source evidence separation.
+  - Generated lab follow-up question Korean spacing is normalized before `기준`.
+  - Export previews now show a compact `근거:`/`출처:` marker count before copy, print, or download.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 201 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog append; rerun after append before continuing.
+  - cmux `surface:513`: `요약 미리보기` rendered `출처 표식` / `근거/출처 50개`; panel closed; browser errors `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+  - Good next candidates: mobile-width text-fit check for the new preview-summary chip, another official-source cervical patient-support gap, or export preview coverage for caregiver HTML source markers.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:08 KST - Lab-Generated Question Downstream Evidence Regression Iteration
+
+- Improvement target:
+  - Lab preset notes can now preserve multiline `적용 기준` and source URL lines, and `buildLabQuestionPrompt()` compacts those notes into readable clinician-question drafts.
+  - Add downstream regressions proving that a question generated from a source-backed lab note still renders parseable evidence in the question copy and care queue, instead of leaking raw `출처:` text into patient-facing summaries.
+- Code/test changes:
+  - Updated `src/questionClipboard.test.ts`.
+    - Added a generated HDL-C follow-up question built through `buildLabQuestionPrompt()`.
+    - Verified the clipboard output separates `기존 메모/근거` from linked `근거:` evidence and does not retain raw `출처:` text.
+  - Updated `src/careActionQueue.test.ts`.
+    - Added a generated HDL-C follow-up question in the care-action queue path.
+    - Verified queue detail preserves the compacted memo body and separate 대한당뇨병학회 evidence URL without exposing raw `출처:`.
+- Verification:
+  - `npm run test -- src/labQuestionPrompts.test.ts src/questionClipboard.test.ts src/careActionQueue.test.ts`: PASS, 3 files and 28 tests.
+  - `npm run test`: PASS, 29 files and 197 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog append.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:08 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+  - Caregiver HTML now preserves multiline lab memo body line breaks before linked `근거:` evidence.
+  - Cervical general-warning symptom template now covers abnormal vaginal bleeding, suspicious discharge changes, pelvic pain, and radiating leg pain with source-retaining queue evidence.
+  - CSV, Markdown visit packet, and caregiver HTML now have dedicated regression coverage for the cervical general-warning queue row and NCC source URL.
+  - Lab-generated follow-up questions now have downstream regression coverage for question-copy and care-queue source evidence separation.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 197 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this worklog append; rerun after the append before continuing.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, errors `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+  - Good next candidates: source-backed export-specific lab question rows, same-surface visual/text-fit checks, or a small UI helper explaining source-bearing lab notes in generated questions.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:05 KST - Lab Follow-Up Question Memo Normalization Iteration
+
+- Improvement target:
+  - Lab follow-up question drafts preserved source-backed preset notes, but multiline memo bodies were copied directly into the generated question. This made `적용 기준` and ordinary note lines harder to scan.
+  - Improve readability while preserving the parseable `출처:` line that downstream saved-question copy, queue, CSV, Markdown, and caregiver HTML paths use for source evidence splitting.
+- RED baseline:
+  - Updated `src/labQuestionPrompts.test.ts` first.
+    - Expected source-backed HDL notes to become `기존 메모/근거: ... / 적용 기준: 여성 기준 적용` plus a separate `출처:` line.
+    - Expected ordinary multiline WBC notes to become `기존 메모: 면역저하 질문 / 발열 여부 관찰`.
+  - `npm run test -- src/labQuestionPrompts.test.ts`: FAIL before implementation on both new expectations.
+- Code/docs changes:
+  - Updated `src/labQuestionPrompts.ts`.
+    - Added `formatExistingLabNote()` using `parseLabSourceEvidence()`.
+    - Compact multiline note bodies with ` / `.
+    - Keep source label and URL on a separate `출처: <label> - <url>` line when evidence exists.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented readable lab follow-up question drafts that preserve parseable source URL lines.
+- Verification:
+  - `npm run test -- src/labQuestionPrompts.test.ts src/labSourceEvidence.test.ts src/sourceEvidence.test.ts src/questionClipboard.test.ts src/careActionQueue.test.ts`: PASS, 5 files and 34 tests.
+  - `npm run test`: PASS, 29 files and 195 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+  - Browser note: avoided clicking `질문으로 추가` because that would create persistent local records; this slice is covered by focused function and downstream source-evidence tests.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:05 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+  - Caregiver HTML now preserves multiline lab memo body line breaks before linked `근거:` evidence.
+  - Cervical general-warning symptom template now covers abnormal vaginal bleeding, suspicious discharge changes, pelvic pain, and radiating leg pain with source-retaining queue evidence.
+  - CSV, Markdown visit packet, and caregiver HTML now have dedicated regression coverage for the cervical general-warning queue row and NCC source URL.
+  - Lab follow-up question drafts now compact multiline memo bodies while preserving parseable `출처:` source URL lines.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 195 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, errors `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:01 KST - Cervical General-Warning Export Regression Iteration
+
+- Improvement target:
+  - The new `cervical-general-warning` template was verified in core queue and UI, but CSV, Markdown visit packet, and caregiver HTML needed dedicated regression coverage to prove the derived queue row preserves the official source URL.
+- Code changes:
+  - Updated `src/csvExport.test.ts`.
+    - Added `성교 후 출혈과 악취 분비물` as a low-severity `care_queue` row with label `증상 · 자궁경부암 증상 변화 기록` and NCC general-symptoms URL evidence.
+  - Updated `src/visitPacket.test.ts`.
+    - Added the same source-backed row in Markdown visit-summary care queue output.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added caregiver HTML coverage for the same row, including escaped query parameters in the linked official-source evidence.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts src/caregiverExport.test.ts src/csvExport.test.ts src/visitPacket.test.ts`: PASS, 5 files and 70 tests.
+  - `npm run test`: PASS, 29 files and 194 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:01 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+  - Caregiver HTML now preserves multiline lab memo body line breaks before linked `근거:` evidence.
+  - Cervical general-warning symptom template now covers abnormal vaginal bleeding, suspicious discharge changes, pelvic pain, and radiating leg pain with source-retaining queue evidence.
+  - CSV, Markdown visit packet, and caregiver HTML now have dedicated regression coverage for the cervical general-warning queue row and NCC source URL.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 194 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, errors `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:00 KST - Cervical General-Warning Symptom Template Iteration
+
+- Improvement target:
+  - The cervical-care panel already surfaced warning cards for 비정상 질출혈, 분비물 변화, 골반통/요통, and 배뇨·배변 변화, but symptom input keyword support did not yet offer a direct source-backed template for vaginal bleeding/discharge/pelvic-pain warning records.
+  - Add a record-review/clinician-question template that keeps official source evidence and can enter the care queue without becoming treatment advice.
+- Official source recheck:
+  - Reopened 국가암정보센터 자궁경부암 일반적 증상:
+    `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888`
+  - Used the page's warning framing for 비정상 질출혈, 성관계 후 출혈, 분비물 증가/악취, 골반통, 하지 방사통, and related records.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `cervical-general-warning` for 비정상 질출혈, 폐경 후 출혈, 성교/성관계 후 출혈, 질 분비물 변화, 악취/붉은 분비물, 골반통, and 하지 방사통.
+    - The template frames the content as observation and care-team contact criteria, not treatment instructions.
+    - Added it to the source-retaining care-queue eligible template set.
+  - Updated `src/careActionQueue.ts`.
+    - Added queue label `자궁경부암 증상 변화 기록`.
+  - Updated `src/symptomSupportTemplates.test.ts` and `src/careActionQueue.test.ts`.
+    - Added keyword, queue-hint, question, source URL, template count, and low-severity queue coverage.
+    - Tightened the existing cervical warning-card queue test so the general-symptoms source URL is retained in queue detail.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the new cervical general-warning symptom support and audit checklist requirements.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 32 tests.
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts src/caregiverExport.test.ts src/csvExport.test.ts src/visitPacket.test.ts`: PASS, 5 files and 67 tests.
+  - `npm run test`: PASS, 29 files and 191 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`:
+    - PASS: `reload --snapshot-after` recovered the CareVault document on the same surface.
+    - PASS: entering `성교 후 출혈과 악취 분비물` showed template `질출혈·분비물/골반통 확인`.
+    - PASS: the template band showed the official source link text `출처: 국가암정보센터 자궁경부암 일반적 증상`.
+    - PASS: the band showed queue hint `저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.`
+    - PASS: clicking the template question draft filled topic `부작용: 질출혈·분비물/골반통 확인` and a question ending with the NCC source URL.
+    - PASS: cleanup left symptom name, symptom action, question topic, and question text draft fields blank; `.symptom-template-band` count was `0`.
+    - PASS: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:00 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+  - Caregiver HTML now preserves multiline lab memo body line breaks before linked `근거:` evidence.
+  - Cervical general-warning symptom template now covers abnormal vaginal bleeding, suspicious discharge changes, pelvic pain, and radiating leg pain with source-retaining queue evidence.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 191 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, errors `No browser errors`.
+  - Latest cmux proof:
+    - `성교 후 출혈과 악취 분비물` shows `질출혈·분비물/골반통 확인`.
+    - The template band includes the NCC general-symptoms source label and queue-retention hint.
+    - The generated question draft preserves the NCC source URL.
+    - Temporary draft values were cleared afterward.
+- Current next durable improvement direction:
+  - Continue with same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:11 KST - Lab Follow-up Export Evidence And Spacing Iteration
+
+- Improvement target:
+  - Generated lab follow-up questions now preserve source-backed lab memo evidence through copy and care-queue paths, but CSV, Markdown visit packets, and caregiver HTML needed export-specific coverage using the actual `buildLabQuestionPrompt()` output shape.
+  - While adding those tests, the generated Korean question copy also exposed a small spacing issue: `...가  기준 ...` could render with a doubled space before `기준`.
+- Code/docs changes:
+  - Updated `src/labQuestionPrompts.ts`.
+    - Removed the leading space from formatted lab reference ranges so generated question sentences render as `...가 기준 ...보다...` instead of `...가  기준 ...보다...`.
+  - Updated `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added generated HDL-C follow-up question fixtures built through `buildLabQuestionPrompt()`.
+    - Verified CSV, Markdown, and caregiver HTML separate the body from 대한당뇨병학회 `근거:` evidence and do not leak raw `출처:` text.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented normalized Korean spacing in generated lab follow-up questions.
+- Verification:
+  - `npm run test -- src/labQuestionPrompts.test.ts src/questionClipboard.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 6 files and 69 tests.
+  - `npm run test`: PASS, 29 files and 200 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:11 KST - Latest Resume Index
+
+- Latest verified implementation slices in this continuation:
+  - Caregiver queue/lab evidence links.
+  - Inline symptom evidence parsing and caregiver recent-symptom links.
+  - Caregiver cervical screening-summary evidence links.
+  - Health-standard coverage split for common lipid helpers versus HDL male/female-specific helper thresholds.
+  - Removal of user-facing internal roadmap copy and rename of the footer strip to `care-boundary-strip`.
+  - Lab preset preview note for common-versus-sex-specific helper refresh behavior.
+  - Lab preset default memo preservation for sex-applicability and source evidence, with a readable multiline textarea.
+  - Caregiver, CSV, and visit-packet export regression coverage for preserving lab preset `적용 기준` lines.
+  - Saved lab cards now render ordinary source-backed memo bodies as multiline text before the source evidence chip/link.
+  - Caregiver HTML now preserves multiline lab memo body line breaks before linked `근거:` evidence.
+  - Cervical general-warning symptom template now covers abnormal vaginal bleeding, suspicious discharge changes, pelvic pain, and radiating leg pain with source-retaining queue evidence.
+  - CSV, Markdown visit packet, and caregiver HTML now have dedicated regression coverage for the cervical general-warning queue row and NCC source URL.
+  - Lab-generated follow-up questions now have downstream regression coverage for question-copy, care-queue, CSV, Markdown, and caregiver HTML source evidence separation.
+  - Generated lab follow-up question Korean spacing is normalized before `기준`.
+- Latest verification state:
+  - `npm run test`: PASS, 29 files and 200 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, errors `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+  - Good next candidates: same-surface visual/text-fit checks for generated question/export previews, another official-source cervical patient-support gap, or export preview coverage for generated lab questions.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:16 KST - EOF Resume Pointer
+
+- Latest durable state:
+  - Export preview source-marker summary slice is complete and verified.
+  - `npm run test`: PASS, 29 files and 201 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `DESIGN.md` validation: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: CareVault URL/title OK, `No browser errors`, preview panel closed.
+- Continue with the same `surface:513` only; no git staging or commit was performed.
+
+## 2026-06-04 17:21 KST - Export Preview Source-Marker Mobile Wrap Iteration
+
+- Improvement target:
+  - The new export-preview `출처 표식` chip needed a text-fit rule for narrow screens so it does not crowd the format/line/character/size chips.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `export-preview-source-marker` class to the source-marker summary chip.
+  - Updated `src/App.css`.
+    - Under `max-width: 760px`, export-preview summary chips wrap into two-column rows.
+    - The source-marker chip spans a full row for better Korean label/readout fit.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the narrow-screen wrapping behavior.
+- Verification:
+  - `npm run test`: PASS, 29 files and 201 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: `요약 미리보기` rendered `export-preview-source-marker`, loaded the `max-width: 760px` flex-basis rule, had no horizontal overflow at the current surface width, and panel was closed afterward.
+  - Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 20:35 KST - AST/ALT Liver Function Standards Iteration
+
+- Improvement target:
+  - The Korean standards panel already covered sex-specific GGT, HDL, and Hgb helpers, but common liver-function AST/ALT ranges were still missing from lab presets, visible standards, copy text, and exports.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal liver-function testing page.
+  - Used the KDCA AST and ALT reference range of `0-40 IU/L`.
+  - Kept the app language restrained: AST/ALT are helper ranges for clinic preparation and should be interpreted with symptoms, medication, imaging, other tests, and the hospital result sheet.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `AST 간기능` and `ALT 간기능` presets with common adult `0-40 IU/L` ranges and source-backed notes.
+    - Added common applicability copy explaining AST/ALT do not change when the profile sex changes.
+  - Updated `src/healthStandards.ts`.
+    - Added `AST/ALT 간기능 프리셋` coverage and the `AST/ALT 간기능 기준` range section.
+    - Added AST, ALT, and elevated-result interpretation rows with row-level `남녀 공통` copy and a risk-emphasis row for clinical follow-up.
+  - Updated `src/App.tsx`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Included `간기능` in standards copy labels and export range headings.
+  - Updated `src/labPresets.test.ts`, `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered AST/ALT preset ranges, source labels, common applicability, visible standards rows, copied standards text, Markdown, CSV, and caregiver HTML export preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the liver-function presets and the standards-panel/export contract.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 74 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused the existing `surface:513`; no new browser surface was opened.
+    - `.standards-range-strip section` count was 14.
+    - Labels included `GGT 성별 기준`, `AST/ALT 간기능 기준`, and `헤모글로빈 입력 보조` in that order.
+    - AST and ALT rows showed `남녀 공통 · 0-40 IU/L, 병원 결과지 기준 우선`.
+    - The elevated-result row said AST/ALT should be checked with symptoms, medication, imaging, other tests, and the care-team standard, and it had risk-row styling.
+    - The AST/ALT source aria label was `AST/ALT 간기능 기준 공식 기준 출처 질병관리청 국가건강정보포털 간기능검사 열기`.
+    - The standards copy button aria label included `간기능`.
+    - AST and ALT lab-preset previews each showed `0-40 IU/L`, common applicability, and the KDCA liver-function source.
+    - The lab preset select was restored to direct input mode after the check.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:01 KST - Phosphate Bone/Kidney/Electrolyte Standards Iteration
+
+- Improvement target:
+  - After adding Ca, the adjacent KDCA clinical chemistry phosphate/P helper was still missing even though phosphate is commonly interpreted with calcium, vitamin D/parathyroid, kidney function, medicines, and nutrition context.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal clinical chemistry page.
+  - Used KDCA adult phosphate reference range `인산 2.5-4.5 mg/dL`.
+  - Preserved the app boundary: phosphate is an input helper for clinic preparation, not a diagnosis. The UI text says kidney failure, parathyroid function, calcium/vitamin D balance, diuretics/antacids, nutrition, the hospital result sheet, and the care team should be checked together.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `P 인산` as an adult common lab preset.
+    - Filled range `2.5-4.5 mg/dL`, KDCA clinical chemistry source, and non-diagnostic helper note.
+    - Added a separate common preset preview explanation for bone, kidney, electrolyte, calcium, vitamin D, parathyroid, and nutrition context.
+  - Updated `src/healthStandards.ts`.
+    - Added `인산 프리셋` coverage.
+    - Added `인산 기준` visible range card with `P`, `상승 확인`, and `감소 확인` rows.
+    - Added phosphate to the `검사` quick-filter category.
+    - Updated the `검사` quick-filter detail to include `인산`.
+    - Updated current-profile common-standard notes to include `P`.
+  - Updated `src/App.tsx`.
+    - Added `P` to the direct lab-input placeholder and standards aria summary.
+  - Updated `src/visitPacket.ts` and `src/caregiverExport.ts`.
+    - Updated the standard numeric range section heading to include protein, calcium, phosphate, and uric acid.
+  - Updated `src/healthStandards.test.ts`, `src/labPresets.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered source labels, section order, copied standards text, lab preset preview, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented P/phosphate in Korean standards, exports, and lab preset preview contracts.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 76 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface.
+    - The `검사` standards filter showed `검사 · 16/22개 표시`.
+    - The visible standards strip included `인산 기준` and `2.5-4.5 mg/dL`.
+    - The phosphate source aria label existed: `인산 기준 공식 기준 출처 질병관리청 국가건강정보포털 임상 화학 검사 열기`.
+    - The standards copy button aria label was `한국 성인 건강 기준 검사 범위 16/22개 복사`.
+    - Copied text included `선택 범위: 검사 · 16/22개 표시`, `인산 기준`, `2.5-4.5 mg/dL`, high-phosphate kidney/parathyroid context, and low-phosphate antacid/nutrition context, while excluding `체온·감염 연락 기준`.
+    - The lab preset selector included and selected `P 인산`.
+    - Selecting P preview showed `2.5-4.5 mg/dL`, KDCA source, adult-common applicability, calcium, vitamin D, parathyroid, kidney, and nutrition context.
+    - The lab draft populated `Phosphate`, then `검사 입력 초기화` restored direct input, blank lab name, direct preview, and feedback `검사 입력 초기화됨`.
+    - Restored the standards filter to `전체 · 22/22개 표시`.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 21:54 KST - Calcium Bone/Kidney/Nutrition Standards Iteration
+
+- Improvement target:
+  - After albumin and uric acid, the lab standards still lacked a common calcium helper despite KDCA listing a clinical chemistry reference range and cancer-care relevance through bone metastasis, kidney, vitamin D/parathyroid, albumin, and nutrition context.
+- Source verification:
+  - Used the KDCA National Health Information Portal clinical chemistry page.
+  - Used KDCA reference range `칼슘 8.8-10.5 mg/dL`.
+  - Preserved the app boundary: calcium is an input helper for clinic preparation, not a diagnosis. The UI text says bone metastasis/cancer context, thyroid/parathyroid, vitamin D, kidney failure, nutrition, albumin, the hospital result sheet, and the care team should be checked together.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `Ca 칼슘` as an adult common lab preset.
+    - Filled range `8.8-10.5 mg/dL`, KDCA clinical chemistry source, and non-diagnostic helper note.
+    - Added a separate common preset preview explanation for bone, kidney, nutrition, albumin, vitamin D, and bone-metastasis context.
+  - Updated `src/healthStandards.ts`.
+    - Added `칼슘 프리셋` coverage.
+    - Added `칼슘 기준` visible range card with `Ca`, `상승 확인`, and `감소 확인` rows.
+    - Added calcium to the `검사` quick-filter category.
+    - Updated the `검사` quick-filter detail to include `칼슘`.
+    - Updated current-profile common-standard notes to include `Ca`.
+  - Updated `src/App.tsx`.
+    - Added `Ca` to the direct lab-input placeholder and standards aria summary.
+  - Updated `src/visitPacket.ts` and `src/caregiverExport.ts`.
+    - Updated the standard numeric range section heading to include protein, calcium, and uric acid.
+  - Updated `src/healthStandards.test.ts`, `src/labPresets.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered source labels, section order, copied standards text, lab preset preview, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented Ca/calcium in Korean standards, exports, and lab preset preview contracts.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 76 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface.
+    - The `검사` standards filter showed `검사 · 15/21개 표시`.
+    - The visible standards strip included `칼슘 기준` and `8.8-10.5 mg/dL`.
+    - The calcium source aria label existed: `칼슘 기준 공식 기준 출처 질병관리청 국가건강정보포털 임상 화학 검사 열기`.
+    - The standards copy button aria label was `한국 성인 건강 기준 검사 범위 15/21개 복사`.
+    - Copied text included `선택 범위: 검사 · 15/21개 표시`, `칼슘 기준`, `8.8-10.5 mg/dL`, bone-metastasis context, and low-calcium context, while excluding `체온·감염 연락 기준`.
+    - The lab preset selector included and selected `Ca 칼슘`.
+    - Selecting Ca preview showed `8.8-10.5 mg/dL`, KDCA source, adult-common applicability, bone metastasis, albumin, and kidney context.
+    - The lab draft populated `Calcium`, then `검사 입력 초기화` restored direct input, blank lab name, direct preview, and feedback `검사 입력 초기화됨`.
+    - Restored the standards filter to `전체 · 21/21개 표시`.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 21:45 KST - Uric Acid Standards Iteration
+
+- Improvement target:
+  - The lab standards covered kidney function, albuminuria, albumin/protein, electrolytes, lipids, liver enzymes, and blood counts, but still lacked a source-backed UA/uric-acid helper.
+  - This left a gap for cancer-care and kidney/metabolic review contexts where 요산 can matter alongside tumor burden, blood-cancer context, chemotherapy, hydration, and renal excretion.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal clinical chemistry page.
+  - Used KDCA reference wording that lists 요산(Uric acid), gives the reference range `3-7 mg/dL`, states men can be about `0.5-1.5 mg/dL` higher than women, and names metastatic cancer, multiple myeloma, leukemia, and chemotherapy as contexts where uric-acid production can increase.
+  - Preserved the app boundary: UA is an input helper for clinic preparation, not a diagnosis. The UI text keeps result-sheet sex-specific ranges and the care team standard as priority.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `UA 요산` as a source-backed adult input-helper preset.
+    - Filled range `3-7 mg/dL`, KDCA clinical chemistry source, and cancer-treatment/kidney excretion context.
+    - Added a specific preview explanation that profile sex changes do not auto-alter the helper value and that result-sheet sex references should be prioritized.
+  - Updated `src/healthStandards.ts`.
+    - Added `요산 프리셋` coverage.
+    - Added visible `요산 기준` range rows for reference range, high-context review, and result-sheet priority.
+    - Added 요산 to the `검사` quick-filter category and profile sex/common-standard summaries.
+  - Updated `src/App.tsx`.
+    - Added `UA` to the direct lab-input placeholder.
+  - Updated `src/labPresets.test.ts`, `src/healthStandards.test.ts`, and `src/csvExport.test.ts`.
+    - Covered preset order, source labels, preview copy, range rows, filter counts, copied standards text, and CSV preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented UA/uric-acid in standards, exports, lab preset preview, and design audit contracts.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 76 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing right-side browser surface after selecting `workspace:11`.
+    - The `검사` standards filter showed `검사 · 14/20개 표시`, with accessible detail `신기능·전해질·간기능·단백·요산·혈액`.
+    - The visible standards strip included `요산 기준`, `3-7 mg/dL`, and the KDCA clinical chemistry source link with aria label `요산 기준 공식 기준 출처 질병관리청 국가건강정보포털 임상 화학 검사 열기`.
+    - The lab preset selector included `UA 요산`.
+    - Selecting `UA 요산` preview showed range `3-7 mg/dL`, KDCA clinical chemistry source label, cancer-treatment/kidney context, and result-sheet sex-reference boundary.
+    - The selector was restored to direct-input mode afterward.
+    - The `검사 기준 복사` button had aria label `한국 성인 건강 기준 검사 범위 14/20개 복사`; copied text included `선택 범위: 검사 · 14/20개 표시`, `요산 기준`, `3-7 mg/dL`, and the metastatic cancer/blood-cancer/chemotherapy context while excluding the cancer fever section.
+    - Restoring `전체` showed `전체 · 20/20개 표시`.
+    - Browser errors were empty and there was no horizontal overflow.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 21:36 KST - Lab Draft Reset UX Iteration
+
+- Improvement target:
+  - After selecting a lab preset such as Alb, the user had no explicit way to clear the preset-derived name, unit, range, memo, and selected preset without manually clearing several fields or saving a record.
+  - This made the lab form less forgiving during clinic-prep data entry, especially when users compare several Korean lab helpers before choosing what to record.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `resetLabDraft()` to return the lab draft to direct-input mode while keeping the date at today.
+    - Added a secondary `검사 입력 초기화` action beside `검사 수치 추가`.
+    - Added a specific `aria-label` and `title`: `검사 입력 프리셋과 값 초기화`.
+  - Updated `src/App.css`.
+    - Added a wrapping `.form-actions` layout for lab form actions.
+    - Matched the secondary reset button height to the primary add button at 40px on desktop, with existing mobile 44px controls still preserved.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that selected lab preset previews include an explicit reset action for clearing preset-derived drafts.
+    - Added a DESIGN audit checklist item and decision-log entry for the reset behavior.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing right-side browser surface after selecting `workspace:11`.
+    - Selected the `Alb 알부민` preset and entered value `4.1`.
+    - Before reset, the draft had `Albumin`, `g/dL`, `3.3`, `5.2`, source-backed albumin memo text, and the selected preset value `albumin`.
+    - Clicking `검사 입력 초기화` returned the selector to `직접 입력`, cleared name/value/unit/lower/upper/note, kept date `2026-06-04`, and restored the direct-input preview.
+    - Reset feedback showed `검사 입력 초기화됨`.
+    - Reset button exposed the expected `aria-label` and `title`, rendered at 40px like the primary add button, used flex wrapping, and caused no horizontal overflow.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 20:43 KST - BUN/Cr Kidney Function Standards Iteration
+
+- Improvement target:
+  - The Korean standards panel covered liver, lipid, CBC, glucose, and cancer-patient infection/bleeding helpers, but common kidney-function BUN/Cr ranges were still missing from lab presets, visible standards, copy text, and exports.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal clinical chemistry page.
+  - Used KDCA reference ranges `BUN 10-26 mg/dL` and adult `Cr 0.7-1.4 mg/dL`.
+  - Kept the app language restrained: BUN/Cr are helper ranges for clinic preparation and should be interpreted with hydration, muscle mass, medication, urine testing, eGFR, the hospital result sheet, and the care team.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `BUN 요소질소` and `Cr 크레아티닌` presets with common adult ranges and KDCA clinical-chemistry source-backed notes.
+    - Added common applicability copy explaining BUN/Cr do not change when the profile sex changes.
+  - Updated `src/healthStandards.ts`.
+    - Added `BUN/Cr 신기능 프리셋` coverage and the `BUN/Cr 신기능 기준` range section.
+    - Added BUN, Cr, and elevated-result interpretation rows with row-level `남녀 공통` copy and a risk-emphasis row for clinical follow-up.
+    - Included `신기능` in the copied standards heading and current-profile common standard note.
+  - Updated `src/App.tsx`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Included `신기능` in standards copy labels, the standards range aria label, the lab placeholder, and export range headings.
+  - Updated `src/labPresets.test.ts`, `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered BUN/Cr preset ranges, source labels, common applicability, visible standards rows, copied standards text, Markdown, CSV, and caregiver HTML export preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the kidney-function presets and the standards-panel/export contract.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 74 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before appending this log.
+  - cmux `surface:513` browser proof:
+    - Reused the existing `surface:513`; no new browser surface was opened.
+    - Reattached the existing surface with `cmux browser --surface surface:513 open http://127.0.0.1:1420/ --focus false` after `navigate` left the document context blank.
+    - `.standards-range-strip section` count was 15.
+    - Labels included `A1C 검사 기준`, `BUN/Cr 신기능 기준`, `지질 검사 기준`, `GGT 성별 기준`, and `AST/ALT 간기능 기준` in that order.
+    - BUN row showed `남녀 공통 · 10-26 mg/dL, 병원 결과지 기준 우선`.
+    - Cr row showed `남녀 공통 · 성인 0.7-1.4 mg/dL, 병원 결과지 기준 우선`.
+    - The elevated-result row said BUN/Cr should be checked with dehydration, muscle mass, medication, urine testing, eGFR, and the care-team standard, and it had risk-row styling.
+    - The BUN/Cr source aria label was `BUN/Cr 신기능 기준 공식 기준 출처 질병관리청 국가건강정보포털 임상 화학 검사 열기`.
+    - The standards copy button aria label included `신기능`.
+    - BUN and Cr lab-preset previews each showed their ranges, common applicability, and the KDCA clinical-chemistry source.
+    - The lab preset select was restored to direct input mode after the check.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 20:49 KST - Na/K Electrolyte Standards Iteration
+
+- Improvement target:
+  - The Korean standards panel now covered kidney and liver helpers, but common electrolyte Na/K ranges were still missing from lab presets, visible standards, copy text, and exports. This is useful for cancer-care records involving vomiting, diarrhea, dehydration, kidney status, or medication questions.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal clinical chemistry page.
+  - Used KDCA reference ranges `Na 135-145 mmol/L` and `K 3.5-5.5 mmol/L`.
+  - Kept the app language restrained: Na/K are helper ranges for clinic preparation and should be interpreted with symptoms, hydration, kidney state, medication, the hospital result sheet, and the care team.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `Na 나트륨` and `K 칼륨` presets with common adult ranges and KDCA clinical-chemistry source-backed notes.
+    - Added common applicability copy explaining Na/K do not change when the profile sex changes.
+  - Updated `src/healthStandards.ts`.
+    - Added `Na/K 전해질 프리셋` coverage and the `Na/K 전해질 기준` range section.
+    - Added Na, K, and electrolyte-change interpretation rows with row-level `남녀 공통` copy and a risk-emphasis row for clinical follow-up.
+    - Included `전해질` in the copied standards heading and current-profile common standard note.
+  - Updated `src/App.tsx`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Included `전해질` in standards copy labels, the standards range aria label, the lab placeholder, and export range headings.
+  - Updated `src/labPresets.test.ts`, `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered Na/K preset ranges, source labels, common applicability, visible standards rows, copied standards text, Markdown, CSV, and caregiver HTML export preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the electrolyte presets and the standards-panel/export contract.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 74 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before appending this log.
+  - cmux `surface:513` browser proof:
+    - Reused the existing `surface:513`; no new browser surface was opened.
+    - `.standards-range-strip section` count was 16.
+    - Labels included `BUN/Cr 신기능 기준`, `Na/K 전해질 기준`, `지질 검사 기준`, `GGT 성별 기준`, and `AST/ALT 간기능 기준` in that order.
+    - Na row showed `남녀 공통 · 135-145 mmol/L, 병원 결과지 기준 우선`.
+    - K row showed `남녀 공통 · 3.5-5.5 mmol/L, 병원 결과지 기준 우선`.
+    - The electrolyte-change row said Na/K should be checked with vomiting, diarrhea, dehydration, kidney status, heart symptoms, medication, and the care-team standard, and it had risk-row styling.
+    - The Na/K source aria label was `Na/K 전해질 기준 공식 기준 출처 질병관리청 국가건강정보포털 임상 화학 검사 열기`.
+    - The standards copy button aria label included `전해질`.
+    - Na and K lab-preset previews each showed their ranges, common applicability, and the KDCA clinical-chemistry source.
+    - The lab preset select was restored to direct input mode after the check.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 20:25 KST - GGT Sex-Specific Standards Iteration
+
+- Improvement target:
+  - The standards matrix and lab preset picker covered several Korean male/female criteria, but GGT was still absent even though KDCA clinical chemistry publishes sex-specific reference ranges useful for liver, medication, alcohol, and cancer-care lab review.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal clinical chemistry page.
+  - Used GGT reference ranges: male `11-63 IU/L`, female `8-35 IU/L`.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `GGT 감마지티피` as a sex-specific lab preset with KDCA source label and URL.
+    - Added preview note explaining male/female ranges and result-sheet/care-team priority.
+  - Updated `src/healthStandards.ts`.
+    - Added `GGT 감마지티피 프리셋` to standards coverage.
+    - Added visible `GGT 성별 기준` rows between HDL and hemoglobin.
+    - Added female, male, and unspecified profile notes for GGT.
+  - Updated `src/labPresets.test.ts` and `src/healthStandards.test.ts`.
+    - Verified female/male GGT ranges, source evidence, preview labels, sex-change refresh, coverage row, section order, copied standards text, and risk emphasis for elevated-check wording.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented HDL/GGT/Hgb sex-specific helper coverage and added a DESIGN decisions-log entry.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 74 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused the existing `surface:513`; no new browser surface was opened.
+    - Re-selected `workspace:11` and focused the existing browser pane after the automation context briefly reported `about:blank`.
+    - `.standards-range-strip section` count was 13.
+    - Section order included `HDL 성별 기준`, `GGT 성별 기준`, `헤모글로빈 입력 보조`, `ANC 감염 위험 기준`, `혈소판 출혈 위험 기준`, and `체온·감염 연락 기준`.
+    - GGT rows rendered `남성 GGT: 11-63 IU/L`, `여성 GGT: 8-35 IU/L`, and `상승 확인`; the elevated-check row had `standard-range-risk-row`.
+    - GGT source link text was `질병관리청 국가건강정보포털 임상 화학 검사` with aria label `GGT 성별 기준 공식 기준 출처 질병관리청 국가건강정보포털 임상 화학 검사 열기`.
+    - Standards summary included `HDL·GGT·헤모글로빈 프리셋`.
+    - GGT preset preview on female profile showed `여성 기준 적용`, `8-35 IU/L`, and the KDCA clinical chemistry source.
+    - Restored the lab preset select to direct-input mode; direct-input preview text was visible.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 20:12 KST - PLT Bleeding-Risk Standards Iteration
+
+- AutoResearch hypothesis:
+  - The same official National Cancer Information Center chemotherapy side-effect guideline used for ANC includes platelet-decrease and bleeding-risk thresholds. Adding a separate PLT bleeding-risk standard card should improve cancer-patient usefulness without changing result-sheet-first PLT normal-range entry.
+- Source verification:
+  - Reused the official `국가암정보센터 항암 부작용 증상 관리 지침` PDF.
+  - Confirmed platelet-decrease context, `<75,000/mm³` prevention threshold, `<50,000/mm³` serious bleeding-risk range, bleeding signals such as persistent nosebleed, black stool, hematuria, abnormal vaginal bleeding, and urgent red flags such as bleeding that continues after pressure, dyspnea, or mental-status change.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `혈소판 출혈 위험 기준` as a source-backed cancer-patient common input-helper standard.
+    - Added visible rows for prevention threshold, clinician-contact review threshold, and emergency red-flag recording.
+    - Kept PLT normal lab range behavior result-sheet-first instead of pretending the official guideline is a normal reference range.
+  - Updated `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Verified PLT source labels, numeric/risk rows, copy text, Markdown, CSV, and caregiver HTML exports.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented PLT bleeding-risk threshold coverage and added a DESIGN changelog entry.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 65 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing `surface:513`.
+    - `.standards-range-strip section` count was 12.
+    - The section order included `ANC 감염 위험 기준`, then `혈소판 출혈 위험 기준`, then `체온·감염 연락 기준`.
+    - PLT rows showed `<75,000/mm³`, `<50,000/mm³`, persistent bleeding signals, and 10-minute-pressure/dyspnea/mental-status red flags.
+    - All PLT rows had `standard-range-risk-row`.
+    - The PLT source link aria label was `혈소판 출혈 위험 기준 공식 기준 출처 국가암정보센터 항암 부작용 증상 관리 지침 열기`.
+    - The common standards summary and coverage text included `ANC/PLT 위험 기준` and the PLT bleeding-signal summary.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 20:08 KST - ANC Infection-Risk Standards Iteration
+
+- Improvement target:
+  - The ANC lab preset existed as an input helper, but its visible source and the shared Korean standards/export surfaces did not yet preserve the official chemotherapy infection-risk thresholds patients need during neutropenia.
+- Source verification:
+  - Added the National Cancer Information Center chemotherapy side-effect guideline as the official ANC source.
+  - Used it for ANC `<500 cells/mm²`, fever `38.3℃` once or `38.0℃` for at least one hour, the common 7-14 day post-chemo high-fever window, and companion symptom recording prompts.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Changed ANC from a local result-sheet-priority-only source to `국가암정보센터 항암 부작용 증상 관리 지침`.
+    - Kept ANC as an input helper and strengthened the note around ANC 0.5 below with fever.
+  - Updated `src/healthStandards.ts`.
+    - Added `ANC 감염 위험 프리셋` to the standards coverage matrix.
+    - Added a visible `ANC 감염 위험 기준` numeric section between Hgb and fever/infection contact thresholds.
+    - Added restrained risk emphasis for ANC fever and companion symptom rows.
+  - Updated `src/healthStandards.test.ts`, `src/labPresets.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Verified ANC source labels, numeric rows, copy text, Markdown, CSV, and caregiver HTML exports.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-backed ANC infection-risk helper coverage and added a DESIGN changelog entry.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/labPresets.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 74 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing `surface:513`.
+    - Required `frame main` because cmux URL metadata briefly disagreed with the active JS context.
+    - `.standards-range-strip section` count was 11.
+    - The section order included `헤모글로빈 입력 보조`, then `ANC 감염 위험 기준`, then `체온·감염 연락 기준`.
+    - ANC rows showed `ANC <500 cells/mm²`, `38.3℃` once or `38.0℃` for one hour, the 7-14 day post-chemo window, and cough/dyspnea/chills/dehydration/wound change prompts.
+    - ANC fever and companion symptom rows had `standard-range-risk-row`.
+    - The ANC source link aria label was `ANC 감염 위험 기준 공식 기준 출처 국가암정보센터 항암 부작용 증상 관리 지침 열기`.
+    - ANC lab preset preview showed `1.5 10^3/uL 이상`, the official source, and no old `검사실 결과지 기준 우선` source text.
+    - Restored the lab preset selector to direct input mode.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:57 KST - Hgb Sex-Specific Numeric Helper Iteration
+
+- Improvement target:
+  - Hemoglobin already existed as a sex-specific lab preset and profile note, but the shared Korean standards panel, copy text, and exports did not show a visible Hgb numeric helper card.
+  - The existing male Hgb preset used `13-18 g/dL`; source recheck showed 서울아산병원 혈색소 검사 참고치 lists male `13.0-17.0 g/dL` and female `12.0-16.0 g/dL`.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added 서울아산병원 혈색소 검사 참고치 as the Hgb preset source.
+    - Changed the male Hgb preset to `13-17 g/dL`.
+    - Kept result-sheet-priority wording in the helper note.
+  - Updated `src/healthStandards.ts`.
+    - Split `헤모글로빈 성별 프리셋` from the broader CBC helper coverage so CBC does not imply every CBC field is sex-specific.
+    - Added the visible `헤모글로빈 입력 보조` range section after HDL and before fever/infection.
+    - Added male, female, and result-sheet-priority rows with no risk styling.
+    - Renamed the shared range heading to `신체계측·혈압·혈당·지질·혈액·체온 숫자 범위`.
+  - Updated `src/App.tsx`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Propagated the new heading to copy labels, range-strip aria labels, Markdown, and caregiver HTML.
+  - Updated tests in `src/healthStandards.test.ts`, `src/labPresets.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered Hgb section order, rows, source labels, clipboard text, CSV rows, Markdown rows, caregiver HTML rows, and lab preset refresh behavior.
+    - Added a regression assertion that saved Hgb lab draft notes retain the 서울아산병원 source URL and male applicability label.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented Hgb numeric helper coverage in standards copy/export surfaces.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/labPresets.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 74 tests.
+  - `npm run test -- src/labPresets.test.ts`: PASS after saved-source regression assertion, 1 file and 9 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before and after log append.
+  - `rg -n "신체계측·혈압·혈당·지질·체온|신체계측 혈압 혈당 지질 체온|13-18|13\"\\s*,\\s*upper:\\s*\"18|toHaveLength\\(11\\)" src README.md DESIGN.md`: PASS, no matches.
+  - cmux `surface:513` browser proof:
+    - Reused and reloaded only the existing `surface:513`; no new browser surface was opened.
+    - `.standards-range-strip section` count was `10`.
+    - Labels included `헤모글로빈 입력 보조` between `HDL 성별 기준` and `체온·감염 연락 기준`.
+    - Hgb rows showed `남성 입력 보조 · 13.0-17.0 g/dL`, `여성 입력 보조 · 12.0-16.0 g/dL`, and result-sheet-priority wording.
+    - Hgb rows had no `standard-range-risk-row`.
+    - Hgb source link aria label was `헤모글로빈 입력 보조 공식 기준 출처 서울아산병원 혈색소 검사 참고치 열기`.
+    - Copy button and range-strip aria labels included `혈액`.
+    - Old heading and old `13-18 g/dL` text were absent.
+    - Selecting male + Hgb in the lab preset UI showed `13-17 g/dL` and 서울아산병원 source; the browser state was restored to female + direct input afterward.
+    - Browser errors remained empty; console showed only Vite connection debug logs.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:27 KST - Cancer Fever Infection Standards Iteration
+
+- Improvement target:
+  - The standards panel and export surfaces already carried BMI, waist, blood-pressure, glucose, and A1C numeric rows, but the source-backed cancer-patient infection/fever threshold existed only in symptom templates.
+  - Added a restrained `체온·감염 연락 기준` standards section so cervical-cancer and other cancer-care users can see the contact/recording threshold beside the other Korean health standards.
+- Source verification:
+  - Rechecked the official National Cancer Center page: `https://www.cancer.go.kr/lay1/S1T435C439/contents.do`.
+  - Used the fever/infection content only as a record/contact threshold: chills or temperature `38℃ 이상`, plus nausea/vomiting/diarrhea, chest pain/dyspnea, urination changes, and catheter-site changes to record and confirm with the clinical team.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `infection-fever` coverage as `암환자 남녀 공통` and `input-helper`.
+    - Added `체온·감염 연락 기준` range rows for fever/chills contact, companion symptoms, and record fields.
+    - Expanded the common applicability summary and clipboard heading from BP/glucose to BP/glucose/temperature.
+  - Updated `src/App.tsx`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Propagated the `신체계측·혈압·혈당·체온 숫자 범위` wording to visible copy/export labels and accessible copy text.
+  - Updated `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered the new standards coverage row, numeric range section order, Markdown, CSV, and caregiver HTML export preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the cancer-patient fever/infection contact-threshold rows in visible standards and export surfaces.
+- Verification:
+  - `rg -n "신체계측·혈압·혈당 숫자|혈압 혈당 숫자|BMI·혈압·혈당 기준" src README.md DESIGN.md`: PASS, no stale code/docs strings.
+  - `npm run test -- src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 65 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log append.
+  - cmux `surface:513` browser proof:
+    - Re-selected `workspace:11`, reloaded only the existing `surface:513`, and waited for CareVault.
+    - `.standards-range-strip section` count was 7.
+    - Labels included `BMI 기준`, `허리둘레 기준`, `혈압 기준`, `당뇨 추적 혈당 목표`, `혈당 선별 기준`, `A1C 검사 기준`, and `체온·감염 연락 기준`.
+    - `체온·감염 연락 기준` rendered rows for `발열·오한 연락`, `동반 증상`, and `기록 항목`.
+    - Fever/chills and companion-symptom rows had `standard-range-risk-row`; the recording-fields row did not.
+    - Source link text was `국가암정보센터 감염 의료진 상담 기준`.
+    - Source link aria label was `체온·감염 연락 기준 공식 기준 출처 국가암정보센터 감염 의료진 상담 기준 열기`.
+    - Copy button aria label was `한국 성인 건강 기준과 신체계측 혈압 혈당 체온 숫자 범위 복사`.
+    - Treatment-order phrase check for `복용하세요`, `중단하세요`, `치료하세요`, `투약하세요`, `처방하세요` returned `false`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Add the next source-backed Korean/cervical-cancer usability improvement after choosing a fresh gap from the current UI and tests.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:31 KST - Fever Infection Standards Draft Shortcut Iteration
+
+- Improvement target:
+  - The new `체온·감염 연락 기준` standards card was source-backed and exportable, but still passive. A cancer-care user who sees the 38℃/오한 threshold should be able to prepare a symptom record draft without retyping the source-backed template.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `applyInfectionFeverStandardDraft`, reusing the existing `infection-fever` symptom-support template.
+    - The draft shortcut preserves existing symptom text, fills only empty symptom/body/action fields, raises a blank draft to `5/10`, retains the NCC source URL in the action note, and focuses the symptom input.
+    - Rendered a `증상 기록 초안` button only inside the `체온·감염 연락 기준` standards card.
+    - Added specific `aria-label` and `title`: `체온·감염 연락 기준 증상 기록 초안 만들기`.
+  - Updated `src/App.css`.
+    - Added compact `.standard-range-action-button` sizing so the button fits inside the standards card without shifting the card grid.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the standards-card symptom-record draft shortcut and added an audit check for source retention and non-overwrite behavior.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/healthStandards.test.ts`: PASS, 2 files and 36 tests.
+  - `rg -n "치료하세요|복용하세요|중단하세요|투약하세요|처방하세요" src/App.tsx README.md DESIGN.md`: PASS, no treatment-order phrases in the changed surfaces.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this log append.
+  - cmux `surface:513` browser proof:
+    - Reused and reloaded only existing `surface:513`; no new browser surface was opened.
+    - Button text was `증상 기록 초안`.
+    - Button aria label and title were both `체온·감염 연락 기준 증상 기록 초안 만들기`.
+    - Clicking the button filled symptom draft `발열·오한/감염 의심`.
+    - Severity showed `5/10` for a blank draft.
+    - Body text contained `체온, 측정 시간, 오한 지속 시간, 소변 통증·빈뇨, 기침·흉통·숨참, 카테터 부위 발적·부종·분비물 여부를 함께 기록하세요.`
+    - Action text retained `출처: 국가암정보센터 감염 의료진 상담 기준 - https://www.cancer.go.kr/lay1/S1T435C439/contents.do`.
+    - Focus moved to the symptom input placeholder `예: 오심, 통증, 피로, 손발저림`.
+    - Treatment-order phrase check returned `false`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Consider whether the generated draft should also offer a follow-up question draft shortcut from the same standards card without adding treatment advice.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:33 KST - Fever Infection Standards Question Shortcut Iteration
+
+- Improvement target:
+  - After adding the standards-card symptom record draft shortcut, the same source-backed fever/infection threshold still required a second step to prepare a clinician question. The standards card should support both record and question preparation without adding treatment advice.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `applyInfectionFeverStandardQuestion`, reusing the existing `infection-fever` symptom-support template and `buildSymptomSupportQuestion`.
+    - The question draft uses the next visit date, `next-visit` priority, `open` status, and topic `부작용: 발열·오한/감염 의심`.
+    - Rendered a second standards-card button `질문 초안` with `aria-label` and `title` set to `체온·감염 연락 기준 진료 질문 초안 만들기`.
+  - Updated `src/App.css`.
+    - Added `.standard-range-actions` flex wrapping so symptom and question shortcut buttons fit together inside the standards card.
+  - Updated `README.md` and `DESIGN.md`.
+    - Expanded the contract from a symptom-record shortcut to paired symptom-record and clinician-question draft shortcuts.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/healthStandards.test.ts`: PASS, 2 files and 36 tests.
+  - `rg -n "치료하세요|복용하세요|중단하세요|투약하세요|처방하세요" src/App.tsx README.md DESIGN.md`: PASS, no treatment-order phrases in the changed surfaces.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `git diff --check`: PASS before this log append.
+  - cmux `surface:513` browser proof:
+    - Reused and reloaded only existing `surface:513`; no new browser surface was opened.
+    - Standards-card buttons rendered as `증상 기록 초안` and `질문 초안`.
+    - Button aria labels/titles were `체온·감염 연락 기준 증상 기록 초안 만들기` and `체온·감염 연락 기준 진료 질문 초안 만들기`.
+    - Clicking `질문 초안` filled topic `부작용: 발열·오한/감염 의심`.
+    - Priority value was `next-visit`.
+    - Question text included `연락 또는 응급실 기준`.
+    - Question text retained `출처: 국가암정보센터 감염 의료진 상담 기준 - https://www.cancer.go.kr/lay1/S1T435C439/contents.do`.
+    - Focus moved to the question textarea placeholder `의료진에게 물어볼 내용을 그대로 입력`.
+    - Treatment-order phrase check returned `false`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Re-scan UI/export surfaces for the next source-backed Korean cancer-care usability gap.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:36 KST - Fever Infection Question Non-Overwrite Fix
+
+- Improvement target:
+  - The DESIGN audit checklist now required fever/infection standards-card shortcuts to avoid overwriting unrelated in-progress text.
+  - The symptom shortcut already preserved existing symptom text, but the new question shortcut still replaced the current question draft.
+- Code change:
+  - Updated `src/App.tsx`.
+    - `applyInfectionFeverStandardQuestion` now builds the source-backed generated question once, preserves existing topic/date/priority when the user has already started a question draft, and appends the generated fever/infection question below existing question text.
+    - Empty drafts still receive the default topic `부작용: 발열·오한/감염 의심`, next-visit date, `next-visit` priority, `open` status, and source-retaining question text.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/healthStandards.test.ts`: PASS, 2 files and 36 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS before this log append.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused and reloaded only existing `surface:513`; no new browser surface was opened.
+    - Seeded the question draft with topic `기존 질문 주제`, question `이미 작성 중인 질문입니다.`, and priority `routine` using native input setters.
+    - Clicking `체온·감염 연락 기준 진료 질문 초안 만들기` kept topic `기존 질문 주제`.
+    - Priority remained `routine`.
+    - Question text still started with `이미 작성 중인 질문입니다.` and appended the generated fever/infection question below it.
+    - Appended text included `체온 38℃ 이상 또는 오한 기록과 관련해`, `연락 또는 응급실 기준`, and `출처: 국가암정보센터 감염 의료진 상담 기준 - https://www.cancer.go.kr/lay1/S1T435C439/contents.do`.
+    - Treatment-order phrase check returned `false`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - The next scan should look for another DESIGN checklist item where implementation evidence is weaker than the written contract.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:41 KST - Common Lipid Numeric Standards Iteration
+
+- Improvement target:
+  - The standards coverage list already separated common lipid helper presets from sex-specific HDL, but BMI/BP/glucose/A1C-style numeric range cards did not show total cholesterol, LDL-C, or triglyceride ranges.
+  - Added source-backed common lipid numeric rows to the shared standards panel, copied standards text, Markdown, CSV, and caregiver HTML exports.
+- Source verification:
+  - Rechecked official KDCA `지질 검사` search result/page evidence: `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5361`.
+  - Used the KDCA table values:
+    - Total cholesterol: appropriate `<200`, borderline `200-239`, high `240 이상`.
+    - LDL-C: appropriate `<100`, borderline `130-159`, high `160-189`, very high `190 이상`.
+    - Triglyceride: appropriate `<150`, borderline `150-199`, high `200-499`, very high `500 이상`.
+    - LDL calculated value and triglyceride interpretation need fasting context, generally 12 hours and at least 9 hours if 12 hours is difficult.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Changed the common lipid standards source to `질병관리청 국가건강정보포털 지질 검사`.
+    - Added `지질 검사 기준` numeric section after `A1C 검사 기준` and before `체온·감염 연락 기준`.
+    - Added rows for `적정`, `경계`, `높음`, and `금식 확인`; marked `높음` as restrained risk emphasis.
+  - Updated `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered section order, source URL, risk row, copied text, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Expanded the standards contract from BMI/waist/BP/glucose/A1C to BMI/waist/BP/glucose/A1C/lipid ranges.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 65 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused only existing `surface:513`; no new browser surface was opened.
+    - `#dashboard` route briefly returned `about:blank`, so the same surface was reloaded at the root URL where the app rendered normally.
+    - `.standards-range-strip section` count was 8.
+    - Labels included `지질 검사 기준` between `A1C 검사 기준` and `체온·감염 연락 기준`.
+    - `지질 검사 기준` rows rendered `적정`, `경계`, `높음`, and `금식 확인`.
+    - `높음` row had `standard-range-risk-row`.
+    - Source link text was `질병관리청 국가건강정보포털 지질 검사`.
+    - Source link aria label was `지질 검사 기준 공식 기준 출처 질병관리청 국가건강정보포털 지질 검사 열기`.
+    - Existing infection standards-card shortcut buttons remained present, count `2`.
+    - Treatment-order phrase check returned `false`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Consider whether HDL sex-specific numeric ranges should also have a visible standards card distinct from common lipid ranges, without collapsing their different sources.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:44 KST - HDL Sex-Specific Numeric Standards Iteration
+
+- Improvement target:
+  - Common lipid numeric rows were now visible, but HDL remained only in coverage/preset text even though it is one of the explicit male/female standard gaps.
+  - Added HDL as a separate sex-specific standards card instead of merging it into the common lipid card, preserving the distinct source and applicability.
+- Source verification:
+  - Rechecked the official Korean Diabetes Association diabetes-management target page: `https://old.diabetes.or.kr/general/class/medical.php?idx=6&mode=view&number=322`.
+  - Confirmed the cholesterol target section states good HDL cholesterol targets: male `40 mg/dL 이상`, female `50 mg/dL 이상`.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `HDL 성별 기준` range section after `지질 검사 기준` and before `체온·감염 연락 기준`.
+    - Added rows for `남성 HDL`, `여성 HDL`, and `낮음 확인`; marked the low-check row as restrained risk emphasis.
+  - Updated `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered section order, source label, risk row, copied text, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Expanded the standards contract from lipid ranges to lipid/HDL ranges and documented sex-specific HDL numeric rows.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 65 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log append.
+  - cmux `surface:513` browser proof:
+    - Reused only existing `surface:513`; no new browser surface was opened.
+    - `.standards-range-strip section` count was 9.
+    - Labels included `HDL 성별 기준` between `지질 검사 기준` and `체온·감염 연락 기준`.
+    - `HDL 성별 기준` rows rendered `남성 HDL`, `여성 HDL`, and `낮음 확인`.
+    - Row details showed `남성 기준 · 40 mg/dL 이상` and `여성 기준 · 50 mg/dL 이상`.
+    - `낮음 확인` row had `standard-range-risk-row`.
+    - Source link text was `대한당뇨병학회 당뇨병 관리 목표`.
+    - Source link aria label was `HDL 성별 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기`.
+    - Treatment-order phrase check returned `false`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Next likely standards gap: hemoglobin sex-specific helper visibility, while keeping result-sheet priority clear.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:46 KST - Standards Range Label Consistency Iteration
+
+- Improvement target:
+  - After adding lipid and HDL numeric sections, the shared range heading and accessible labels still said `신체계측·혈압·혈당·체온 숫자 범위`, which no longer described all visible sections.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`, `src/visitPacket.ts`, `src/caregiverExport.ts`, and `src/App.tsx`.
+    - Renamed the shared heading to `신체계측·혈압·혈당·지질·체온 숫자 범위`.
+    - Updated the standards copy button aria label/title and range-strip aria label to include `지질`.
+    - Updated caregiver empty-state text for the same section.
+  - Updated `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered the new heading text in copied standards, Markdown, and caregiver HTML.
+- Verification:
+  - `rg -n "신체계측·혈압·혈당·체온|신체계측 혈압 혈당 체온" src README.md DESIGN.md`: PASS, no stale current code/docs labels.
+  - `npm run test -- src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 65 tests.
+  - `git diff --check`: PASS before this log append.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused only existing `surface:513`; no new browser surface was opened.
+    - Copy button aria label was `한국 성인 건강 기준과 신체계측 혈압 혈당 지질 체온 숫자 범위 복사`.
+    - Copy button title was `한국 성인 건강 기준과 신체계측·혈압·혈당·지질·체온 숫자 범위 복사`.
+    - Range strip aria label was `신체계측 혈압 혈당 지질 체온 숫자 범위 요약`.
+    - Old visible text `신체계측·혈압·혈당·체온 숫자 범위` was absent.
+    - Standards section count remained 9 with BMI, waist, BP, glucose care, glucose screening, A1C, lipid, HDL, and fever/infection labels.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Hemoglobin sex-specific helper visibility remains a possible next slice, but it should stay clearly framed as a result-sheet-priority input helper rather than a universal standard.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:18 KST - Cervical Priority Checklist Iteration
+
+- Improvement target:
+  - The cervical-care copy note contained many source-backed sections, but the visible panel and copied clinic-prep note did not start with a short "what to review first" checklist. This made a long official-source note harder to scan for cervical-cancer patients and caregivers.
+- Autoresearch loop note:
+  - Objective: improve measurable cervical-care usability without adding unsourced treatment advice.
+  - Experiment: add a three-item priority checklist for today's symptoms, next-visit questions, and treatment-aftercare topics, sourced only from existing NCC/KDCA source IDs.
+  - Keep decision: retained because tests, build, design validation, and `surface:513` DOM evidence passed.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `cervicalCancerCarePriorityItems` and `formatCervicalCancerCarePriorityEvidence()`.
+    - Checklist items cover `오늘 증상 기록`, `다음 진료 질문`, and `치료 후 생활 상담`.
+    - Each item keeps official source IDs and formats `근거:` citations with source URLs.
+  - Updated `src/cervicalCancerCareClipboard.ts`.
+    - Inserted `우선 확인 체크리스트` near the top of copied cervical-care text before the longer screening, alert, question, recovery, and prevention sections.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added a visible `우선 확인 체크리스트` heading and three responsive cards to the cervical-care panel.
+    - Added source chips with context-specific official-source aria labels.
+    - Cards use 3 columns on desktop, 2 on tablet, and 1 on mobile.
+  - Updated `src/cervicalCancerCare.test.ts` and `src/cervicalCancerCareClipboard.test.ts`.
+    - Verified checklist labels, source coverage, `근거:` citations, copied-note inclusion, and absence of direct treatment-order phrases.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the priority record/question/recovery checklist and added a DESIGN QA check/changelog entry.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts`: PASS, 2 files and 21 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected `workspace:11`, reloaded only the existing `surface:513`, and waited for CareVault.
+    - `.cervical-priority-card` count was 3.
+    - Visible heading text included `우선 확인 체크리스트`.
+    - Card labels were `오늘 증상 기록`, `다음 진료 질문`, and `치료 후 생활 상담`.
+    - Source link counts were 2, 3, and 5.
+    - First source aria labels were context-specific for each priority card.
+    - The panel did not include direct treatment-order phrases such as `치료하세요`, `투약하세요`, or `처방하세요`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Consider propagating the same priority checklist into Markdown, CSV, and caregiver HTML cervical-care reference exports so family-review packets preserve the new scan-first structure.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:21 KST - Cervical Priority Checklist Export Propagation
+
+- Improvement target:
+  - The new cervical-care priority checklist was visible and copied, but Markdown, CSV, and caregiver HTML exports still started their cervical-care reference with the screening summary. Family-review packets needed to preserve the same scan-first priority structure.
+- Code/docs changes:
+  - Updated `src/visitPacket.ts`.
+    - Added a `우선 확인 체크리스트` line before screening, alerts, questions, checks, recovery, prevention, and source rows.
+  - Updated `src/csvExport.ts`.
+    - Added a `cervical_care_reference` row with title `우선 확인 체크리스트`.
+  - Updated `src/caregiverExport.ts`.
+    - Added a caregiver HTML `우선 확인 체크리스트` item that uses linked `근거:` citations via the existing grounded-text formatter.
+  - Updated `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Verified the priority checklist appears in Markdown, CSV, and caregiver HTML with today-symptom, next-visit-question, and aftercare topics.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that the priority checklist is preserved in copied note, Markdown, CSV, and caregiver HTML exports.
+- Verification:
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts`: PASS, 5 files and 68 tests.
+  - `npm run test`: PASS, 30 files and 225 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected `workspace:11`, reloaded only the existing `surface:513`, and waited for CareVault.
+    - The visible app text still included dashboard and cervical-care content.
+    - `.cervical-priority-card` count was 3.
+    - Visible heading text included `우선 확인 체크리스트`.
+    - `.standards-range-strip` still contained 6 `SECTION` children for BMI, waist, BP, glucose-care, glucose-screening, and A1C.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep looking for patient/caregiver-facing places where source-backed content is present but not scan-friendly enough.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:13 KST - BMI and Waist Numeric Korean Standards Iteration
+
+- Improvement target:
+  - The Korean standards panel and exports showed BP/glucose/A1C numeric ranges, while already-implemented BMI and sex-specific waist rules were only visible as coverage/source labels. Users needed the BMI and waist thresholds in the same visible/copy/export numeric standards surface.
+- Source verification:
+  - Rechecked the 대한비만학회 비만 진료지침 2022 8판 요약본.
+  - Confirmed adult BMI categories: underweight `<18.5`, normal `18.5-22.9`, pre-obesity `23-24.9`, class 1 obesity `25-29.9`, class 2 obesity `30-34.9`, class 3 obesity `35 이상 kg/m²`.
+  - Confirmed adult abdominal-obesity waist criteria: male `90cm 이상`, female `85cm 이상`.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added source-backed `BMI 기준` and `허리둘레 기준` sections before BP/glucose/A1C sections.
+    - Added row-level applicability text: BMI rows use `남녀 공통`, waist rows use `남성 기준` and `여성 기준`.
+    - Marked obesity and abdominal-obesity rows with restrained risk emphasis.
+    - Renamed copied/exported section wording to `신체계측·혈압·혈당 숫자 범위`.
+  - Updated `src/App.tsx`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Aligned copy button title/aria text and Markdown/caregiver HTML section names with the expanded standards surface.
+  - Updated `src/healthStandards.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Verified BMI and waist numeric rows, source labels, section order, risk emphasis, copied standards text, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented BMI/waist/BP/glucose/A1C numeric standard rows and added a DESIGN changelog entry.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 65 tests.
+  - `npm run test`: PASS, 30 files and 224 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected `workspace:11`, reloaded only the existing `surface:513`, and waited for CareVault.
+    - `.standards-range-strip section` count was 6.
+    - Labels were `BMI 기준`, `허리둘레 기준`, `혈압 기준`, `당뇨 추적 혈당 목표`, `혈당 선별 기준`, and `A1C 검사 기준`.
+    - BMI rows showed `<18.5`, `18.5-22.9`, `23-24.9`, and `1단계 25-29.9, 2단계 30-34.9, 3단계 35 이상 kg/m²`.
+    - Waist rows showed `남성 기준 · 90cm 이상` and `여성 기준 · 85cm 이상`.
+    - BMI obesity, male waist, female waist, and A1C diagnostic rows had `standard-range-risk-row`.
+    - BMI and waist source links used context-specific aria labels for 대한비만학회 비만 진료지침 2022.
+    - Copy button aria/title used the expanded `신체계측·혈압·혈당 숫자 범위` wording.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:13 KST - Current Resume Pointer
+
+- Latest completed iterations are recorded earlier in this file due to a repeated insertion anchor:
+  - `2026-06-04 18:01 KST - Cervical Pelvic Radiation Recovery Memo Iteration`.
+  - `2026-06-04 18:04 KST - Cervical Pelvic Radiation Symptom Template Iteration`.
+  - `2026-06-04 18:07 KST - Cervical Pelvic Radiation Question Draft Iteration`.
+  - `2026-06-04 18:12 KST - Pelvic Radiation Export Evidence Coverage Iteration`.
+- Current verified state:
+  - `npm run test`: PASS, 30 files and 217 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` only; latest retry returned `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:12 KST - Pelvic Radiation Export Evidence Coverage Iteration
+
+- Improvement target:
+  - The pelvic-radiation menopause question and recovery memo were visible in the dashboard, but export-specific regression tests did not explicitly lock that the same official source survives copied clinic-prep text, Markdown, CSV, and caregiver HTML.
+- Test/docs changes:
+  - Updated `src/cervicalCancerCareClipboard.test.ts`.
+    - Asserts copied cervical-care text includes `골반 방사선 후 폐경`, 난소부전/폐경 증상/질협착/골다공증 wording, and `https://www.cancer.go.kr/lay1/S1T292C294/contents.do`.
+  - Updated `src/visitPacket.test.ts`.
+    - Asserts Markdown visit summaries keep the same question draft, recovery memo, source label, and URL.
+  - Updated `src/csvExport.test.ts`.
+    - Asserts CSV cervical-care reference rows keep the same question draft, recovery memo, source label, and URL.
+  - Updated `src/caregiverExport.test.ts`.
+    - Asserts caregiver HTML keeps the same question/recovery content and renders `국가암정보센터 방사선치료의 부작용` as a linked official source.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented pelvic-radiation menopause question draft preservation in copied, Markdown, CSV, and caregiver export surfaces.
+- Verification:
+  - `npm run test -- src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 47 tests.
+  - `npm run test`: PASS, 30 files and 217 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Same surface only; no new browser surface was opened.
+    - Surface DOM briefly returned empty/about:blank through `snapshot`, so the same surface was reloaded and reused.
+    - PASS: Markdown `요약 미리보기` generated in the app.
+    - PASS: `.export-preview-panel pre` included `골반 방사선 후 폐경`, `국가암정보센터 방사선치료의 부작용`, and `https://www.cancer.go.kr/lay1/S1T292C294/contents.do`.
+    - PASS: preview also included `골반 방사선치료 난소기능·폐경 증상 상담` in the recovery memo section.
+    - One `cmux ... errors list` call timed out, then retry returned `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:07 KST - Cervical Pelvic Radiation Question Draft Iteration
+
+- Improvement target:
+  - Pelvic-radiation recovery notes and symptom templates were present, but the cervical-care panel's one-click clinician-question prompt list did not yet have a dedicated topic for pelvic radiation, ovarian function, and menopause symptoms.
+- RED check:
+  - Updated `src/cervicalCancerCare.test.ts` to expect:
+    - `cervicalCancerCarePrompts` length `8`.
+    - a new `골반 방사선 후 폐경` topic between treatment-selection and lymphedema prompts.
+    - question text containing 난소부전, 폐경 증상, 질협착.
+    - source citation `국가암정보센터 방사선치료의 부작용`.
+  - `npm run test -- src/cervicalCancerCare.test.ts`: FAIL before implementation because the prompt list still had 7 items.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `골반 방사선 후 폐경` clinician-question prompt.
+    - Source ID is `nccRadiationSideEffects`.
+    - Question copy asks how to record and discuss ovarian failure, hot flashes/amenorrhea-like menopause symptoms, vaginal stenosis, sexual desire changes, and osteoporosis risk by treatment scope and age; it does not recommend a treatment.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented pelvic-radiation menopause/ovarian-function question drafts in the cervical-care panel and added DESIGN component/audit/changelog entries.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts`: PASS, 1 file and 17 tests.
+  - `npm run test`: PASS, 30 files and 217 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Same surface only; no new browser surface was opened.
+    - PASS: panel text included `다음 진료 질문 초안 8개 · 출처 포함`.
+    - PASS: panel text included `골반 방사선 후 폐경`.
+    - PASS: button selector `button[aria-label="골반 방사선 후 폐경 자궁경부암 질문 초안 만들기"]` matched exactly 1 element.
+    - PASS: button title was `골반 방사선 후 폐경 자궁경부암 질문 초안 만들기`.
+    - PASS: button visible text included `골반 방사선 후 폐경` and `출처: 국가암정보센터 방사선치료의 부작용`.
+    - PASS: clicking the button filled topic `골반 방사선 후 폐경`.
+    - PASS: question draft included 난소부전, 폐경 증상, 질협착, 골다공증, and `https://www.cancer.go.kr/lay1/S1T292C294/contents.do`.
+    - Cleared the temporary topic/question draft fields afterward.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:04 KST - Cervical Pelvic Radiation Symptom Template Iteration
+
+- Improvement target:
+  - The new pelvic-radiation recovery memo was visible in the cervical-care panel, but symptom entry did not yet recognize `무월경`, `안면홍조`, `난소부전`, or `폐경 증상` as a source-backed clinician-question prompt.
+- RED check:
+  - Updated `src/symptomSupportTemplates.test.ts` to expect:
+    - `무월경과 안면홍조` -> `cervical-radiation-menopause`.
+    - `골반 방사선 후 질협착과 무월경` prefers the menopause/radiation template.
+    - `질협착만 있음` still stays with the existing `cervical-sexual-health` template.
+    - new template count `14`.
+    - source URL `https://www.cancer.go.kr/lay1/S1T292C294/contents.do`.
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: FAIL before implementation because the template and priority boundary were absent.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `cervical-radiation-menopause`.
+    - Matched 골반 방사선, 난소부전, 폐경 증상, 무월경, 안면홍조, 홍조, 성욕 감소, 골다공증, 질협착, and 질 협착.
+    - Priority keywords intentionally include menopause/ovarian-function terms but not bare `질협착`, so `질협착` alone continues to use the sexual-health template.
+    - Question draft is framed as care-team confirmation of ovarian failure, menopause symptoms, vaginal stenosis possibility, and whether hormone consultation is relevant; it is not treatment advice.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the source-backed cervical pelvic-radiation menopause-symptom question template and added a DESIGN audit/changelog entry.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: PASS, 1 file and 18 tests.
+  - `npm run test`: PASS, 30 files and 217 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Same surface only; no new browser surface was opened.
+    - Entered `무월경과 안면홍조` in the symptom input.
+    - PASS: symptom template band showed `골반 방사선/폐경 증상 상담`, menopause-symptom record copy, and `질문 초안에는 이 출처와 URL이 함께 남습니다.`
+    - PASS: source link `aria-label` was `골반 방사선/폐경 증상 상담 공식 출처 국가암정보센터 방사선치료의 부작용 열기`.
+    - PASS: source link URL was `https://www.cancer.go.kr/lay1/S1T292C294/contents.do`.
+    - PASS: question button `aria-label` was `골반 방사선/폐경 증상 상담 질문 초안 채우기`.
+    - PASS: clicking the button filled the question draft with `난소부전`, `폐경 증상`, `여성호르몬 상담 필요 여부`, and the National Cancer Center source URL.
+    - Cleared the temporary symptom/topic/question draft fields afterward; `.symptom-template-band` count returned `0`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:01 KST - Cervical Pelvic Radiation Recovery Memo Iteration
+
+- Improvement target:
+  - 자궁경부암 환자의 회복 메모가 수술·성생활·임신/출산 중심으로 충분히 확장됐지만, 골반 방사선치료 후 난소기능·폐경 증상·질협착 변화를 따로 기록/상담하는 항목은 없었다.
+- Official source checked:
+  - 국가암정보센터 `방사선치료의 부작용`
+    - URL: `https://www.cancer.go.kr/lay1/S1T292C294/contents.do`
+    - Relevant source scope: 골반 방사선치료 후 여성의 난소부전, 홍조, 무월경, 성욕 감소, 골다공증 같은 폐경 증상, 질협착.
+- RED check:
+  - Updated `src/cervicalCancerCare.test.ts` to expect:
+    - new `nccRadiationSideEffects` official source.
+    - `cervicalCancerCareRecoveryGuides` length `9`.
+    - `골반 방사선치료 난소기능·폐경 증상 상담` detail text with 홍조, 무월경, 성욕 감소, 골다공증, 질협착.
+  - `npm run test -- src/cervicalCancerCare.test.ts`: FAIL before implementation because the source and ninth recovery guide were absent.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccRadiationSideEffects` with the National Cancer Center radiation-side-effects URL.
+    - Added a recovery guide for pelvic-radiation ovarian-function/menopause-symptom recording, framed as treatment-timing record and care-team confirmation, not treatment advice.
+  - Updated `README.md`.
+    - Documented the new 골반 방사선치료 후 난소기능·폐경 증상 상담 메모 in the current cervical-care surface.
+  - Updated `DESIGN.md`.
+    - Added an audit checklist item and decisions-log entry for source-backed pelvic-radiation recovery notes.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts`: PASS, 1 file and 17 tests.
+  - `npm run test`: PASS, 30 files and 216 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Same surface only; no new browser surface was opened.
+    - After `cmux browser identify --surface surface:513`, DOM inspection recovered for the existing surface.
+    - PASS: page text included `회복 일정 메모`, `9개 항목`, and `골반 방사선치료 난소기능·폐경 증상 상담`.
+    - PASS: recovery item accessible label included the record-focused detail and `출처: 국가암정보센터 방사선치료의 부작용`.
+    - PASS: official source link had `aria-label` `골반 방사선치료 난소기능·폐경 증상 상담 공식 출처 국가암정보센터 방사선치료의 부작용 열기`.
+    - PASS: official source link `title` was `골반 방사선치료 난소기능·폐경 증상 상담 공식 출처: 국가암정보센터 방사선치료의 부작용`.
+    - PASS: official source link URL was `https://www.cancer.go.kr/lay1/S1T292C294/contents.do`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:40 KST - Pain Symptom Direct Export Evidence Iteration
+
+- Improvement target:
+  - The new `pain-management` template converted generated `출처:` lines into `근거:` evidence in care queue rows, but CSV and Markdown direct symptom rows still preserved raw `출처:` text.
+- Code/test changes:
+  - Updated `src/csvExport.ts`.
+    - Direct `symptom` rows now format `body` and `action` through `formatTextWithSourceEvidence()`.
+  - Updated `src/visitPacket.ts`.
+    - Direct symptom lines now format `body` and `action` through `formatTextWithSourceEvidence()`.
+  - Updated `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Added cancer-pain export regressions for CSV, Markdown visit packet, and caregiver HTML.
+    - Confirmed source-backed pain care queue evidence is shown as `근거: 국가암정보센터 통증평가 항목 (...)`.
+    - Confirmed raw generated `출처:` text is not leaked in the pain export paths.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-evidence conversion for direct symptom rows, not only care queue rows.
+- Verification:
+  - `npm run test -- src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`: PASS, 3 files and 44 tests.
+  - `npm run test`: PASS, 29 files and 211 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+  - cmux DOM check: export preview panel is closed and the temporary pain-template draft is no longer visible.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:22 KST - Caregiver HTML Preview Source-Marker Regression Iteration
+
+- Improvement target:
+  - The generic export-preview source-marker summary worked for Markdown previews; verify and regress the caregiver HTML preview path where evidence is inside rendered/source HTML.
+- Code/test changes:
+  - Updated `src/exportPreviewSummary.test.ts`.
+    - Added HTML-shaped preview content with `<small>근거: ...</small>` and `출처:` text.
+    - Verified `buildExportPreviewSummary()` counts those markers as `근거/출처 2개`.
+- Verification:
+  - `npm run test -- src/exportPreviewSummary.test.ts`: PASS, 1 file and 4 tests.
+  - `npm run test`: PASS, 29 files and 202 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: `공유본 미리보기` rendered `보호자 공유본`, `출처 표식` / `근거/출처 51개`, iframe and source details were present, no horizontal overflow, panel closed afterward, `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:26 KST - Lab Follow-up Button Accessibility Iteration
+
+- Improvement target:
+  - Lab follow-up question generation preserves memo/source evidence, but the visible `질문으로 추가` label alone did not tell assistive tech or hover users whether the resulting question includes the lab memo/evidence.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Lab follow-up buttons now use item-specific `aria-label` and `title`.
+    - Source-backed lab notes say `${검사항목} 검사 질문 추가, 메모와 근거 포함`.
+    - Non-source lab notes say `${검사항목} 검사 질문 추가, 메모 포함`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented item-specific accessible lab follow-up button labels and hover titles.
+    - Added a DESIGN audit checklist item and changelog entry.
+- Verification:
+  - `npm run test`: PASS, 29 files and 202 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - Static evidence: `rg` found the new source-backed and non-source label/title strings in `src/App.tsx`, plus README/DESIGN contract entries.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+  - cmux limitation: during this sub-slice, detailed DOM evaluation on `surface:513` repeatedly returned an `about:blank` JS context even while URL/title remained CareVault, so the exact button attribute was not browser-DOM-read in this pass.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - If the same-surface DOM context recovers, recheck `.lab-followup-actions button` attributes directly.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:29 KST - Lab Follow-up Button Label Regression Iteration
+
+- Improvement target:
+  - The lab follow-up button accessibility labels were added in JSX, but cmux DOM inspection stayed unstable. Move the label/title construction into a pure tested helper so the contract is not only static evidence.
+- Code/test changes:
+  - Updated `src/labQuestionPrompts.ts`.
+    - Added `buildLabFollowupQuestionButtonLabels(labName, includesSourceEvidence)`.
+    - Named lab rows produce labels such as `HDL-C 검사 질문 추가, 메모와 근거 포함`.
+    - Blank names fall back to `검사 수치 질문 추가, ...`.
+  - Updated `src/App.tsx`.
+    - Lab follow-up buttons now consume the helper output for `aria-label` and `title`.
+  - Updated `src/labQuestionPrompts.test.ts`.
+    - Added source-backed, non-source, and blank-name fallback coverage.
+- Verification:
+  - `npm run test -- src/labQuestionPrompts.test.ts`: PASS, 1 file and 7 tests.
+  - `npm run test`: PASS, 29 files and 204 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+  - cmux limitation persists: JS eval on the same surface still reports `about:blank` with empty body text, so direct DOM attribute inspection remains blocked in this pass.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - If cmux DOM context recovers, recheck `.lab-followup-actions button` attributes directly.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:33 KST - Cervical Source Link Accessibility Regression Iteration
+
+- Improvement target:
+  - Cervical-care official source links were visible, but warning-card, screening-summary, and all-source-list anchors did not all share one tested item/context-specific accessible-name contract.
+- Code/test changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `buildCervicalCancerCareSourceLinkLabels(sourceId, contextLabel)`.
+    - The helper returns `visibleLabel`, `ariaLabel`, and `title` for official source links.
+  - Updated `src/App.tsx`.
+    - Warning-card source links, side-list source chips, screening-summary source links, and the full cervical source list now use the helper for accessible names and hover titles.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added source-link label coverage for warning-card, screening-summary, and missing-source fallback contexts.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented item/context-specific cervical official-source link labels.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts`: PASS, 1 file and 17 tests.
+  - `npm run test`: PASS, 29 files and 205 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+  - cmux limitation persists: JS eval on the same surface still reports `about:blank` with empty body text, so direct DOM attribute inspection remains blocked in this pass.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - If cmux DOM context recovers, recheck cervical source link attributes and `.lab-followup-actions button` attributes directly.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:37 KST - Cancer Pain Template And DOM Recovery Iteration
+
+- Improvement target:
+  - Add a broadly useful cancer-pain recording prompt from an official Korean source while preventing generic pain matching from stealing cervical pelvic-pain, sexual-health pain, or urinary-pain workflows.
+- Source used:
+  - 국가암정보센터 통증평가 항목: `https://www.cancer.go.kr/lay1/S1T378C380/contents.do`
+- Code/test changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Added `pain-management` for pain location, 0-10 intensity, timing, worsening/easing factors, and analgesic-effect recording.
+    - Added priority keywords so cervical pelvic-pain and sexual-health pain wording stays with the cervical templates.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added generic pain matching, cervical-over-generic priority, queue-hint, source URL, and no-treatment-instruction coverage.
+  - Updated `src/careActionQueue.test.ts`.
+    - Verified high-severity source-backed pain notes enter the care queue with `근거:` evidence separated from generated `출처:` text.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the cancer-pain template and cervical pain keyword priority.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 36 tests.
+  - `npm run test`: PASS, 29 files and 208 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+  - cmux DOM recovered:
+    - Cervical warning-card source links expose item-specific `aria-label` and `title`.
+    - Cervical screening and full-source-list links expose context-specific `aria-label` and `title`.
+    - Previously blocked lab follow-up button attribute check now reads `WBC 검사 질문 추가, 메모 포함` and matching hover title from the live DOM.
+    - Entered `통증점수와 진통제 효과` into the symptom draft without saving; the live UI showed `암성 통증 기록`, the official `국가암정보센터 통증평가 항목` link, and `암성 통증 기록 질문 초안 채우기` button label/title. The draft was cleared afterward and the template card disappeared.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:43 KST - Saved Document Search Accessibility Browser Proof
+
+- Improvement target:
+  - The saved-document search field visually used an icon-only label and placeholder. Preserve the compact UI while giving assistive tech and hover users a stable non-placeholder name.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added a screen-reader label inside the `.search-field`.
+    - Added explicit `aria-label="저장된 서류 검색어"` and `title="저장된 서류 검색어"` to the saved-document search input.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the saved-document search accessible-name contract and added a DESIGN audit checklist/changelog entry.
+- Verification:
+  - `npm run test`: PASS, 29 files and 211 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513`: URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `No browser errors`.
+  - cmux browser proof:
+    - `find placeholder --exact '날짜, 분류, 제목, 내용, 태그 검색'`: PASS.
+    - `.search-field input[placeholder="날짜, 분류, 제목, 내용, 태그 검색"]` has `aria-label` = `저장된 서류 검색어`.
+    - `.search-field input[aria-label="저장된 서류 검색어"]` has `title` = `저장된 서류 검색어`.
+    - Exactly one `.search-field input[aria-label="저장된 서류 검색어"][title="저장된 서류 검색어"]` is present.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:46 KST - Fatigue And Mood Symptom Template Iteration
+
+- Improvement target:
+  - The existing fatigue symptom template used the official `피로감과 우울` source, but `우울` or `불면` wording did not trigger any source-backed symptom-support card.
+- Source used:
+  - 국가암정보센터 증상별 식생활 - 피로감과 우울: `https://www.cancer.go.kr/lay1/S1T479C490/contents.do`
+  - Source page states that fatigue can be related to cancer/treatment and factors such as poor intake, lower activity, blood counts, depressed mood, insomnia, and medication side effects, and frames discussion with the clinician as necessary.
+- RED check:
+  - Added `우울과 불면이 계속됨` expectations to `src/symptomSupportTemplates.test.ts`.
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: FAIL before implementation because the template was not matched.
+- Code/docs changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Renamed the visible fatigue template label to `피로감·우울`.
+    - Added `우울`, `기분 저하`, `불면`, and related sleep wording to the fatigue keywords.
+    - Expanded the meal-note and clinician-question copy to record intake, sleep/rest, mood, insomnia, blood-count/nutrition context, medication side effects, and treatment schedule without giving treatment instructions.
+  - Updated `src/symptomSupportTemplates.test.ts`.
+    - Added mood/insomnia keyword, label, source, and no-treatment-instruction coverage.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented fatigue/depressed-mood/insomnia symptom-support coverage and added a DESIGN audit/changelog entry.
+- Verification:
+  - `npm run test -- src/symptomSupportTemplates.test.ts`: PASS, 1 file and 17 tests.
+  - `npm run test`: PASS, 29 files and 212 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Entered `우울과 불면이 계속됨` into the symptom draft without saving.
+    - The live template card showed `피로감·우울`, the official `국가암정보센터 증상별 식생활 - 피로감과 우울` source, and the question-only queue hint.
+    - The source link exposed `피로감·우울 공식 출처 국가암정보센터 증상별 식생활 - 피로감과 우울 열기` as both `aria-label` and `title`.
+    - The question button exposed `피로감·우울 질문 초안 채우기` as both `aria-label` and `title`.
+    - The draft was cleared afterward; `.symptom-template-band` count returned 0 and browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:49 KST - Immune-Low Food Safety Source Iteration
+
+- Improvement target:
+  - Food-safety matches such as `생굴`, `회`, `날계란`, and `비살균` were source-backed, but they used the broad treatment-side-effect diet overview rather than the more specific National Cancer Center immune-function diet page.
+- Source used:
+  - 국가암정보센터 증상별 식생활 - 면역기능의 저하: `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+  - Source page frames lower white blood cell count after chemotherapy/radiation as requiring special infection caution, and lists food handling, full cooking, raw food, raw egg, and pasteurized-product precautions.
+- RED check:
+  - Added `src/healthRules.test.ts` coverage requiring raw/unpasteurized food-safety matches to cite `국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+  - `npm run test -- src/healthRules.test.ts`: FAIL before implementation because `nccImmuneLowDiet` did not exist.
+- Code/docs changes:
+  - Updated `src/healthRules.ts`.
+    - Added `nccImmuneLowDiet` as a food guidance source.
+    - Repointed `생굴`, `회`, `날계란`, and `비살균` care-team food terms to that source.
+    - Clarified each reason as immune-low food-safety context rather than generic diet guidance.
+  - Updated `src/healthRules.test.ts`.
+    - Added source-label, source-URL, and formatted-evidence coverage for immune-low food safety matches.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the separate immune-function food-safety source and added a DESIGN audit/changelog entry.
+- Verification:
+  - `npm run test -- src/healthRules.test.ts`: PASS, 1 file and 10 tests.
+  - `npm run test`: PASS, 29 files and 213 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Entered `생굴, 회, 날계란, 비살균 우유` into the food checker.
+    - The live food chips showed each term with `국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+    - The source link URL was `https://cancer.go.kr/lay1/S1T479C489/contents.do`.
+    - Browser errors remained empty.
+    - The food checker input was restored to `브로콜리, 현미밥, 베이컨, 자몽 주스` afterward.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:51 KST - Food Source Link Accessibility Iteration
+
+- Improvement target:
+  - Dashboard food chips showed official source links, but repeated source names alone did not tell assistive tech or hover users which food term and local reason each source supported.
+- RED check:
+  - Added `src/healthRules.test.ts` coverage for `buildFoodMatchSourceLinkLabels(match)`.
+  - `npm run test -- src/healthRules.test.ts`: FAIL before implementation because the helper did not exist.
+- Code/docs changes:
+  - Updated `src/healthRules.ts`.
+    - Added `FoodMatchSourceLinkLabels`.
+    - Added `buildFoodMatchSourceLinkLabels(match)` with `ariaLabel`, `title`, and `visibleLabel`.
+  - Updated `src/App.tsx`.
+    - Dashboard food-chip official-source links now expose item-specific `aria-label` and hover `title` including food term and reason.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented item-specific cancer-food source-link accessible labels and added a DESIGN audit/changelog entry.
+- Verification:
+  - `npm run test -- src/healthRules.test.ts`: PASS, 1 file and 11 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 29 files and 214 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - `브로콜리` source link `aria-label`: `브로콜리 음식 판단 근거 국가암정보센터 암예방 식이 열기 - 채소 중심 식단에 적합`.
+    - `브로콜리` source link `title`: `브로콜리 음식 판단 근거: 국가암정보센터 암예방 식이 - 채소 중심 식단에 적합`.
+    - `베이컨` source link `aria-label`: `베이컨 음식 판단 근거 국가암정보센터 암예방 식이 열기 - 가공육`.
+    - `베이컨` source link `title`: `베이컨 음식 판단 근거: 국가암정보센터 암예방 식이 - 가공육`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 17:53 KST - Saved Question Status Button Accessibility Iteration
+
+- Improvement target:
+  - Saved-question cards can repeat `확인 필요`, `답변 완료`, and `보류` buttons. The visible labels alone do not identify which question's status will change when multiple questions exist.
+- Code/test changes:
+  - Added `src/questionStatus.ts`.
+    - Shared `questionStatusLabel`.
+    - Added `buildQuestionStatusButtonLabels(topic, status)` returning `ariaLabel`, `title`, and `visibleLabel`.
+  - Added `src/questionStatus.test.ts`.
+    - Covered topic-specific labels and blank-topic fallback.
+  - Updated `src/App.tsx`.
+    - Saved-question status buttons now expose item-specific `aria-label` and hover `title` while preserving compact visible labels.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the saved-question status-button accessible-name contract and added a DESIGN audit/changelog entry.
+- Verification:
+  - `npm run test -- src/questionStatus.test.ts`: PASS, 1 file and 2 tests.
+  - `npm run test`: PASS, 30 files and 216 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Existing `혈액검사` question status buttons exposed `혈액검사 질문 상태를 확인 필요(으)로 변경`, `혈액검사 질문 상태를 답변 완료(으)로 변경`, and `혈액검사 질문 상태를 보류(으)로 변경` as `aria-label`.
+    - Matching hover titles were `혈액검사 질문 상태 변경: 확인 필요`, `혈액검사 질문 상태 변경: 답변 완료`, and `혈액검사 질문 상태 변경: 보류`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:13 KST - Current Resume Pointer
+
+- Latest completed iterations are recorded earlier in this file due to a repeated insertion anchor:
+  - `2026-06-04 18:01 KST - Cervical Pelvic Radiation Recovery Memo Iteration`.
+  - `2026-06-04 18:04 KST - Cervical Pelvic Radiation Symptom Template Iteration`.
+  - `2026-06-04 18:07 KST - Cervical Pelvic Radiation Question Draft Iteration`.
+  - `2026-06-04 18:12 KST - Pelvic Radiation Export Evidence Coverage Iteration`.
+- Current verified state:
+  - `npm run test`: PASS, 30 files and 217 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` only; latest retry returned `No browser errors`.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:20 KST - High-Risk Vital Queue Standard Retention Iteration
+
+- Improvement target:
+  - The app already labeled BP/glucose as Korean adult common standards, but the highest-risk vital queue rows needed explicit regression coverage so `고혈압 위기 가능 범위` and `저혈당 범위` retain user notes, adult-common wording, clinician-contact framing, and official source URLs.
+- RED check:
+  - Added `src/careActionQueue.test.ts` coverage for a BP 182/121 row and glucose 66 mg/dL row in the care queue.
+  - `npm run test -- src/careActionQueue.test.ts`: FAIL before implementation because the low-glucose queue detail did not include `성인 남녀 공통 혈당 기준`.
+- Code/docs changes:
+  - Updated `src/healthRules.ts`.
+    - Clarified low-glucose assessment summary as `성인 남녀 공통 혈당 기준에서 70 mg/dL 미만 저혈당 범위`.
+    - Kept the wording as clinician-contact/confirmation framing, not self-treatment instruction.
+  - Updated `src/healthRules.test.ts`.
+    - Added adult-common and `70 mg/dL 미만 저혈당 범위` assertions.
+  - Updated `src/careActionQueue.test.ts`.
+    - Added high-risk BP/low-glucose queue row assertions for note retention, sort rank, source labels, and KDCA/KDA URLs.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented high-risk vital queue rows preserving adult-common standard wording and official source URLs.
+- Verification:
+  - `npm run test -- src/healthRules.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 32 tests.
+  - `npm run test`: PASS, 30 files and 218 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Same surface only; after stale `about:blank` recovery, `surface:513` loaded `http://127.0.0.1:1420/#dashboard`.
+    - Profile standards panel text included `남녀 공통 · 1기 140/90 이상, 2기 160/100 이상, 위기 가능 180/120 이상`.
+    - Diabetes-care glucose range text included `남녀 공통 · 70 미만은 저혈당, 240 이상은 아픈 날/케톤/진료팀 확인`.
+    - Adult-standard boundary text included `성인 기준 참고용입니다`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:25 KST - High-Risk Vital Export Evidence Coverage Iteration
+
+- Improvement target:
+  - The dashboard care queue preserved high-risk BP/low-glucose source evidence, but Markdown visit packets, CSV, and caregiver HTML needed dedicated regression coverage for the same rows.
+- Test/docs changes:
+  - Updated `src/visitPacket.test.ts`.
+    - Added BP 182/121 and glucose 66 mg/dL care-queue assertions in Markdown output.
+  - Updated `src/csvExport.test.ts`.
+    - Added matching `care_queue` row assertions for high-risk BP and low-glucose CSV output.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added caregiver HTML assertions that high-risk vital queue evidence renders with linked official source labels.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented Markdown, CSV, and caregiver HTML preservation for high-risk BP/low-glucose queue rows.
+- Verification:
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 3 files and 47 tests.
+  - `npm run test`: PASS, 30 files and 221 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Same surface loaded `http://127.0.0.1:1420/#dashboard`.
+    - Screen text still included `위기 가능 180/120 이상`, `70 미만은 저혈당`, and `성인 기준 참고용입니다`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:27 KST - Health Standard Source Link Accessibility Iteration
+
+- Improvement target:
+  - The Korean standards panel showed official source links, but repeated source labels alone did not tell assistive tech whether a link supported 혈압 기준, 당뇨 추적 혈당 목표, 혈당 선별 기준, or a specific coverage row.
+- Code/test changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `buildHealthStandardSourceLinkLabels(sourceLabel, contextLabel)`.
+  - Updated `src/healthStandards.test.ts`.
+    - Added context-specific `ariaLabel`, `title`, and visible-label coverage.
+  - Updated `src/App.tsx`.
+    - Standards range links and detailed coverage links now use context-specific `aria-label` and hover `title`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented context-specific health-standard source-link accessible names.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 16 tests.
+  - `npm run test`: PASS, 30 files and 222 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - `.standards-range-strip a` for BP exposed `혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기` and matching title.
+    - Glucose range links exposed `당뇨 추적 혈당 목표 ...` and `혈당 선별 기준 ...` context labels.
+    - `.standards-coverage a` exposed row-specific contexts such as `한국 성인 혈압` and `당뇨 추적 혈당`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:29 KST - Vital Input Helper Source Link Iteration
+
+- Improvement target:
+  - The profile standards panel had official source links, but the BP/glucose input helper showed only the active context and numeric ranges while the user was entering a reading.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Reused `getHealthStandardCoverage()` and `buildHealthStandardSourceLinkLabels()` to show the current official source beside the input-helper heading.
+    - The source switches between blood-pressure, diabetes-care glucose, and glucose-screening standards based on the vital type and diabetes profile flag.
+  - Updated `src/App.css`.
+    - Added compact wrapping styles for the input-helper source link.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented official source links inside the BP/glucose input helper.
+- Verification:
+  - `npm run test`: PASS, 30 files and 222 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - BP input helper source link exposed `혈압 입력 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기`.
+    - After temporarily switching the draft type to 혈당, the helper source link exposed `혈당 입력 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기`.
+    - The glucose helper still showed `70 미만은 저혈당`.
+    - The draft type was restored to 혈압 and browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:32 KST - High-Risk Standard Row Emphasis Iteration
+
+- Improvement target:
+  - High-risk BP/glucose numeric ranges were present, but they looked identical to normal/helper ranges in both the standards panel and vital input helper.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Marked `bp-hypertension` and `glucose-care-alert` numeric range rows with `tone: "risk"`.
+  - Updated `src/healthStandards.test.ts`.
+    - Added coverage that the high-risk BP and glucose-care alert rows keep `risk` tone.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Rendered risk-toned rows with a restrained warning border/background in both the profile standards panel and vital input helper.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented restrained high-risk BP/glucose row emphasis.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 16 tests.
+  - `npm run test`: PASS, 30 files and 222 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected CareVault `workspace:11` after cmux had focused another workspace; no new browser surface was opened.
+    - `.standard-range-risk-row` count was 3: standards-panel BP high-risk row, standards-panel glucose alert row, and current BP input-helper high-risk row.
+    - Risk rows used warning border `rgb(217, 119, 6)` and background `rgb(255, 248, 235)`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:37 KST - Cervical Late Bowel/Bladder Question Draft Iteration
+
+- Improvement target:
+  - The cervical care panel already had urinary/bowel/bleeding record checks and symptom-support templates, but the proactive clinician-question list did not include a direct late bowel/bladder change question for post-surgery urinary/bowel dysfunction or post-radiation 장폐색, 혈변, and 혈뇨 clarification.
+- Source verification:
+  - Rechecked the National Cancer Center cervical-cancer treatment side-effects page.
+  - Confirmed it describes post-surgery bladder/rectal dysfunction, urinary/bowel difficulties after radical hysterectomy, acute radiation diarrhea/bladder-cystitis-like symptoms, and late effects after 6+ months including bowel obstruction, blood in stool, and blood in urine.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `장·방광 후기 변화` to `cervicalCancerCarePrompts`.
+    - The question asks what to record and what contact standard to clarify with the care team for surgery/radiation timing, 장폐색, 혈변, 혈뇨, and 복부팽만·구토·배변/가스 변화.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Bumped prompt count to 9 and verified the new topic order, source label/URL, and key patient-facing terms.
+  - Updated `src/cervicalCancerCareClipboard.test.ts`.
+    - Verified copied cervical clinic-prep text includes the new topic, 6-month late-effect wording, blood terms, gas-change wording, and NCC treatment-side-effects source.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the new source-backed 장·방광 후기 변화 question draft and added a design QA check that it remains clinician-confirmation guidance rather than self-treatment instruction.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts`: PASS, 2 files and 20 tests.
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 3 files and 47 tests.
+  - `npm run test`: PASS, 30 files and 222 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Same surface only; current workspace `workspace:11`, URL `http://127.0.0.1:1420/#dashboard`.
+    - Prompt disclosure showed `promptCount: 9`.
+    - New button text: `장·방광 후기 변화 출처: 국가암정보센터 자궁경부암 치료의 부작용`.
+    - New button `aria-label` and `title`: `장·방광 후기 변화 자궁경부암 질문 초안 만들기`.
+    - Clicking the button filled the question draft topic `장·방광 후기 변화`.
+    - Filled question text included `장폐색`, `혈변`, `혈뇨`, `배변/가스 변화`, the NCC source label, and `menu_seq=4894` URL evidence.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:41 KST - Cervical Late Bowel/Bladder Export Coverage Iteration
+
+- Improvement target:
+  - The new `장·방광 후기 변화` clinician-question draft flowed through shared cervical-care data, but Markdown, CSV, and caregiver HTML exports needed explicit regression coverage for the same source label and URL.
+- Test/docs changes:
+  - Updated `src/visitPacket.test.ts`.
+    - Asserts Markdown visit summaries include `장·방광 후기 변화`, 6-month late-effect wording, `장폐색`, `혈변`, `혈뇨`, `배변/가스 변화`, and the NCC treatment-side-effects URL.
+  - Updated `src/csvExport.test.ts`.
+    - Adds the same regression coverage for CSV `cervical_care_reference` rows.
+  - Updated `src/caregiverExport.test.ts`.
+    - Verifies caregiver HTML includes the new question text and escaped linked `menu_seq=4894` source URL.
+  - Updated `README.md` and `DESIGN.md`.
+    - Clarified that copied/exported cervical-care question drafts preserve both pelvic-radiation menopause and 장·방광 후기 변화 questions.
+- Verification:
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 3 files and 47 tests.
+  - `npm run test`: PASS, 30 files and 222 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Same surface only; Markdown preview panel contained `장·방광 후기 변화` and `menu_seq=4894` in the raw preview.
+    - CSV preview contained `장·방광 후기 변화` and `menu_seq=4894`.
+    - Caregiver HTML preview contained `장·방광 후기 변화` and escaped linked `menu_seq=4894` source evidence.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:44 KST - Vital Input Common-Sex Helper Copy Iteration
+
+- Improvement target:
+  - Standards panels and exports already made BP/glucose common-sex applicability explicit, but the short BP/glucose input helper text still said only "한국 성인" or "식전·식후 목표" without repeating that the active BP/glucose standard is adult common-sex.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `formatVitalInputStandardHelp()` for blood pressure, diabetes-care glucose, and glucose-screening helper text.
+    - Each helper string now says `성인 남녀 공통`.
+  - Updated `src/App.tsx`.
+    - Replaced inline vital helper copy with the shared formatter.
+  - Updated `src/healthStandards.test.ts`.
+    - Added regression coverage for blood-pressure, glucose-care, glucose-screening, and unknown standard IDs.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented explicit adult common-sex applicability inside the BP/glucose input helper.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 17 tests.
+  - `npm run test`: PASS, 30 files and 223 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected CareVault `workspace:11`; no new browser surface was opened.
+    - BP helper text included `혈압 입력값은 한국 성인 남녀 공통 혈압 기준으로 표시됩니다.`
+    - Switching the same input to glucose showed `당뇨 추적이 켜져 있어 성인 남녀 공통 식전·식후 목표 기준으로 표시됩니다.`
+    - Glucose range rows still included `남녀 공통 · 70 미만은 저혈당`.
+    - Draft type was restored to blood pressure.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:49 KST - Standards Sex-Applicability Badge Iteration
+
+- Improvement target:
+  - The standards coverage list already described sex applicability in text, but `남녀 공통` versus `성별 분리` was not scannable enough for users comparing BP/glucose with waist, HDL, and hemoglobin criteria.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `HealthStandardSexApplicabilityBadge` and `buildHealthStandardSexApplicabilityBadge()`.
+  - Updated `src/App.tsx`.
+    - Added per-standard `남녀 공통`/`성별 분리` badges before the standard label in the `적용 범위` disclosure.
+  - Updated `src/App.css`.
+    - Added common/specific badge styles and adjusted the coverage grid to fit status, sex-applicability badge, and label without overlap.
+  - Updated `src/healthStandards.test.ts`.
+    - Verified blood pressure and glucose standards are `남녀 공통`, while waist, HDL, and CBC helpers are `성별 분리`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented scan-friendly sex-applicability badges in the standards coverage matrix.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 18 tests.
+  - `npm run test`: PASS, 30 files and 224 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected CareVault `workspace:11`; no new browser surface was opened.
+    - Opened `details.standards-coverage`.
+    - `.standard-sex-badge` count was 10.
+    - Badge counts: `남녀 공통` 7, `성별 분리` 3.
+    - `한국 성인 혈압` was present with a common badge, and `한국 성인 허리둘레` was present with a specific badge.
+    - Badge computed styles used distinct common/specific foreground and background colors.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:54 KST - Cervical Prompt Source Link Split Iteration
+
+- Improvement target:
+  - The `다음 진료 질문 초안` cervical-care prompt list showed official source labels, but each row behaved as a single question-draft button. Users needed a clearer separation between "make this question draft" and "open the official source".
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Split each cervical prompt row into a draft button plus a separate official source link.
+    - Kept button actions focused on filling the topic/question draft, with no nested anchor inside the button.
+    - Reused `getCervicalCancerCareSource()` and `buildCervicalCancerCareSourceLinkLabels()` for per-prompt source href, title, and aria copy.
+  - Updated `src/App.css`.
+    - Added a two-part `.cervical-prompt-row` layout and compact `.cervical-prompt-source-link` styles that align with the existing source-link treatment.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the item-level official source links and added a design QA check that prompt rows keep source links outside the action button.
+- Verification:
+  - `npm run test`: PASS, 30 files and 224 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected CareVault `workspace:11`; no new browser surface was opened.
+    - `.cervical-prompt-row` count was 9 and `.cervical-prompt-source-link` count was 9.
+    - Nested anchor count inside prompt buttons was 0.
+    - First source link opened the NCC general-symptoms source with `menu_seq=4888` and had the expected Korean `aria-label` and `title`.
+    - Clicking `치료 선택 기준` filled topic `치료 선택 기준` and question text preserving `국가암정보센터 자궁경부암 치료방법` plus `menu_seq=4893`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 18:58 KST - Cervical Warning Structured Symptom Draft Iteration
+
+- Improvement target:
+  - Cervical warning cards could already create source-retaining symptom drafts, but the generated body was paragraph-style and did not give patients clear blanks for timing, amount, triggers, accompanied symptoms, and clinician-contact criteria.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Changed `buildCervicalCancerAlertSymptomDraft()` to fill a structured `자궁경부암 경고 신호 기록 초안`.
+    - The generated memo now includes official symptom basis, occurrence timing, amount/color/odor or pain, trigger, accompanied-symptom, clinician-contact-criterion, and source URL lines.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added regression coverage for the structured blanks and preserved source URL.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented structured warning-to-symptom recording drafts and added a design QA check for the required blanks and source URL.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/careActionQueue.test.ts`: PASS, 2 files and 38 tests.
+  - `npm run test`: PASS, 30 files and 224 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected CareVault `workspace:11`; no new browser surface was opened.
+    - Cleared the symptom draft fields through the existing controlled inputs.
+    - Clicking the `비정상 질출혈` warning-card `증상 초안` button filled symptom `비정상 질출혈`.
+    - The memo started with `자궁경부암 경고 신호 기록 초안`, did not keep the old paragraph as a leading block, and included `발생 시점`, `양·색·냄새/통증 정도`, `유발 상황`, `동반 증상`, clinician-contact criteria, and `menu_seq=4888`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:00 KST - Cervical Warning Draft Button Label Iteration
+
+- Improvement target:
+  - After the warning-card action started filling a structured symptom-recording template, the visible button text still said `증상 초안`, which under-described the action.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Renamed cervical warning-card action buttons from `증상 초안` to `기록 초안`.
+    - Updated each button's `aria-label` and `title` from `증상 초안 만들기` to `증상 기록 초안 만들기`.
+  - Updated `DESIGN.md`.
+    - Documented that the warning-card action button label must match the structured recording-template behavior.
+- Verification:
+  - `npm run test`: PASS, 30 files and 224 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused and reloaded the same `surface:513` URL; no new browser surface was opened.
+    - Four cervical warning-card buttons rendered visible text `기록 초안`.
+    - Old visible copy `증상 초안` was absent.
+    - First button `aria-label` and `title` were `비정상 질출혈 자궁경부암 증상 기록 초안 만들기`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:02 KST - Structured Cervical Warning Export Coverage Iteration
+
+- Improvement target:
+  - The structured cervical warning-card symptom draft needed explicit coverage across Markdown, CSV, and caregiver HTML exports so the recording blanks and official source URL cannot silently disappear after saving.
+- Test/docs changes:
+  - Updated `src/visitPacket.test.ts`.
+    - The shared sample symptom now uses `buildCervicalCancerAlertSymptomDraft(cervicalCancerCareAlerts[0])`.
+    - Asserts Markdown output preserves the structured header, `양·색·냄새/통증 정도`, `동반 증상`, and `menu_seq=4888`.
+  - Updated `src/csvExport.test.ts`.
+    - Uses the same generated cervical warning draft and asserts CSV output preserves the structured blanks and official source URL.
+  - Updated `src/caregiverExport.test.ts`.
+    - Uses the same generated draft and asserts caregiver HTML preserves the structured blanks and linked NCC general-symptoms source.
+    - Updated one disabled-cancer-care assertion to the current linked evidence format.
+  - Updated `DESIGN.md`.
+    - Added a QA check and changelog entry for structured cervical warning draft preservation across Markdown, CSV, and caregiver HTML.
+- Verification:
+  - `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 3 files and 47 tests after updating the linked caregiver evidence assertion.
+  - `npm run test`: PASS, 30 files and 224 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser check:
+    - Reused the current surface only.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 19:06 KST - A1C Numeric Korean Standards Iteration
+
+- Improvement target:
+  - The Korean standards panel and exports already showed blood-pressure and glucose numeric ranges, but the A1C helper was only described in the coverage list. Users needed source-backed A1C numeric ranges in the same visible/copy/export surfaces.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal diabetes page.
+  - Confirmed A1C normal `<5.7%`, prediabetes `5.7-6.4%`, diabetes diagnostic criterion `6.5% 이상`, and adult type-2 general control target `6.5% 미만` with individualization caveat.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added an `A1C 검사 기준` range section under shared standard range data.
+    - Added rows for `A1C 정상`, `A1C 전단계`, `A1C 진단 기준`, and `A1C 관리 목표`, all marked `남녀 공통`.
+    - Marked the diagnostic-threshold row as restrained risk emphasis.
+  - Updated `src/healthStandards.test.ts`.
+    - Added regression coverage for A1C range lines, section order, source label, risk tone, and copied standards text.
+  - Updated `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Verified Markdown, CSV, and caregiver HTML exports preserve source-backed A1C numeric rows.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented BP/glucose/A1C numeric standard rows and added a DESIGN changelog entry.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 4 files and 65 tests.
+  - `npm run test`: PASS, 30 files and 224 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - cmux `surface:513` browser proof:
+    - Re-selected `workspace:11`, reloaded only the existing `surface:513`, and waited for CareVault.
+    - `.standards-range-strip section` count was 4.
+    - The new labels included `A1C 검사 기준`.
+    - A1C rows showed normal `<5.7%`, prediabetes `5.7-6.4%`, diagnostic threshold `6.5% 이상`, and adult type-2 general target `6.5% 미만`.
+    - Every A1C row included `남녀 공통`.
+    - The A1C diagnostic row had `standard-range-risk-row`.
+    - The A1C source link aria label was `A1C 검사 기준 공식 기준 출처 질병관리청 국가건강정보포털 당뇨병 열기`.
+    - Browser errors remained empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 20:50 KST - Latest Standards Work Index
+
+- Detailed latest iterations are recorded above:
+  - `2026-06-04 20:35 KST - AST/ALT Liver Function Standards Iteration`
+  - `2026-06-04 20:43 KST - BUN/Cr Kidney Function Standards Iteration`
+  - `2026-06-04 20:49 KST - Na/K Electrolyte Standards Iteration`
+- Verified current state:
+  - Lab presets include sex-specific GGT plus common AST/ALT, BUN/Cr, and Na/K helpers.
+  - Korean standards range strip has 16 sections and includes `GGT 성별 기준`, `AST/ALT 간기능 기준`, `BUN/Cr 신기능 기준`, and `Na/K 전해질 기준`.
+  - Markdown, CSV, caregiver HTML, copy labels, README, and DESIGN.md were updated for these helper standards.
+  - Targeted tests, full tests, typecheck, build, DESIGN validator, `git diff --check`, and cmux `surface:513` browser proof all passed.
+- No git staging or commit was performed.
+
+## 2026-06-04 20:58 KST - Standards Quick Filter UI Iteration
+
+- Improvement target:
+  - The Korean standards strip now has 16 source-backed sections. A dense always-on list made quick review slower, especially when a patient or caregiver only needs lifestyle, diabetes/lipid, lab, or cancer-care thresholds.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added typed quick-filter options for `전체`, `생활지표`, `당뇨·지질`, `검사`, and `암환자`.
+    - Added `filterVitalStandardRangeSections` so the visible strip can narrow by category while full copy/export standards stay unchanged.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added the `기준 빠른 보기` control with visible count feedback, `aria-pressed` state, and category-specific buttons.
+    - Kept the standards range cards in the original source-backed order inside each filter.
+    - Added responsive CSS so the filter panel collapses to one column at the existing mobile breakpoint.
+  - Updated `src/healthStandards.test.ts`, `README.md`, and `DESIGN.md`.
+    - Added regression coverage and documentation for quick filters and count feedback.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 19 tests.
+  - `npm run test`: PASS, 30 files and 226 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing right-side browser surface.
+    - Re-selected `workspace:11` so `surface:513` was in-window, then verified CareVault at `http://127.0.0.1:1420/`.
+    - Default filter state showed `전체 · 16/16개 표시` with all 16 standard sections visible.
+    - `검사` showed 10/16 sections, including A1C, BUN/Cr, Na/K, lipids, HDL, GGT, AST/ALT, hemoglobin, ANC, and platelet thresholds.
+    - `암환자` showed 3/16 sections: ANC infection risk, platelet bleeding risk, and fever/infection contact guidance.
+    - `생활지표` showed 5/16 sections: BMI, waist, blood pressure, diabetes tracking glucose, and glucose screening.
+    - Re-selecting `전체` restored all 16 sections.
+    - Current actual surface width was 1094px, no horizontal overflow, all filter buttons had 44px minimum height, and browser errors were empty.
+    - WKWebView did not support forced viewport resizing, so mobile behavior was checked from the source CSS breakpoint instead of a live viewport emulation.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 21:03 KST - Standards Filter-Aware Copy Iteration
+
+- Improvement target:
+  - After adding quick filters, the standards copy button still copied the full standards payload even when the user was reviewing only `검사` or `암환자`. That created a mismatch between the visible scan state and the copied clinic-prep text.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `getHealthStandardRangeFilterOption`.
+    - Extended `formatHealthStandardsClipboardText` with a defaulted quick-filter argument.
+    - Preserved full copy behavior for `전체`.
+    - Narrowed range lines and matching coverage lines when a specific quick filter is selected.
+  - Updated `src/App.tsx`.
+    - The standards copy button now passes the current filter.
+    - Button text and accessible label change from `전체 기준 복사` to the selected scope such as `암환자 기준 복사`.
+    - Save feedback now names the copied scope.
+  - Updated `src/healthStandards.test.ts`, `README.md`, and `DESIGN.md`.
+    - Added regression coverage and documentation for filter-aware copy.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 20 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing right-side browser surface.
+    - Verified the app source was current on `http://127.0.0.1:1420/src/App.tsx`.
+    - Default state showed `전체 기준 복사`, aria label `한국 성인 건강 기준 전체 범위 복사`, and `전체 · 16/16개 표시`.
+    - With `암환자` selected, the button changed to `암환자 기준 복사`, aria label `한국 성인 건강 기준 암환자 범위 3/16개 복사`, and copied text contained `선택 범위: 암환자 · 3/16개 표시`.
+    - The copied text contained ANC, platelet bleeding-risk, and fever/infection contact standards.
+    - The copied text did not contain A1C range lines or BMI coverage.
+    - Re-loaded the same surface afterward and restored `전체 · 16/16개 표시`; browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 21:12 KST - eGFR Kidney Function Standards Iteration
+
+- Improvement target:
+  - BUN/Cr and Na/K were already present, but eGFR was missing from the Korean standards matrix and lab preset picker even though it is a common health-check kidney-function value. This left kidney review less useful for diabetes, hypertension, cancer-care medication, contrast imaging, dehydration, or electrolyte discussions.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal chronic kidney disease page.
+  - Preserved the app boundary: eGFR is an input helper for clinic preparation, not a diagnosis. The UI text says 60 mL/min/1.73m² 미만 needs 3-month persistence and should be checked with albuminuria, hematuria, urine tests, serum Cr, imaging, electrolytes, and the care team.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `eGFR 추정 사구체여과율` as an adult common lab preset.
+    - Filled lower bound `60`, unit `mL/min/1.73m²`, KDCA chronic kidney disease source, and non-diagnostic helper note.
+    - Included eGFR in the common kidney-function preset preview explanation so profile sex changes do not alter the range.
+  - Updated `src/healthStandards.ts`.
+    - Added `eGFR 신장여과율 프리셋` coverage.
+    - Added `eGFR 신장여과율 기준` visible range card with `보존 범위`, `60 미만 지속`, and `동반 확인` rows.
+    - Added eGFR to the `검사` quick-filter category.
+    - Updated current-profile common-standard notes to `BUN/Cr·eGFR·Na/K`.
+  - Updated `src/App.tsx`.
+    - Added `eGFR` to the direct lab-input placeholder.
+  - Updated `src/healthStandards.test.ts`, `src/labPresets.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered source labels, section order, copied standards text, lab preset preview, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented eGFR in Korean standards, exports, and lab preset preview contracts.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/labPresets.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 76 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing right-side browser surface.
+    - Default standards state showed `전체 · 17/17개 표시`.
+    - The visible standards strip included `eGFR 신장여과율 기준`.
+    - eGFR rows included 60 mL/min/1.73m² persistence wording, albuminuria/hematuria/urine-test confirmation, and KDCA chronic kidney disease source aria label.
+    - The lab preset selector included `eGFR 추정 사구체여과율`.
+    - Selecting eGFR preview showed range `60 mL/min/1.73m² 이상`, unit `mL/min/1.73m²`, adult-common applicability, BUN/Cr/eGFR common refresh wording, KDCA chronic kidney disease source label, and source link aria label.
+    - The lab preset selector was restored to direct-input mode afterward.
+    - The `검사` standards filter showed `검사 · 11/17개 표시`, `검사 기준 복사`, included eGFR, excluded the cancer fever/contact section, and copied standards text included `선택 범위: 검사 · 11/17개 표시` plus eGFR source text.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 21:20 KST - UACR Albuminuria Kidney Function Standards Iteration
+
+- Improvement target:
+  - The new eGFR kidney-function helper still lacked its paired albuminuria/UACR review context. That made chronic-kidney-risk clinic prep incomplete for diabetes, hypertension, cancer-care medication, dehydration, contrast imaging, and electrolyte discussions.
+- Source verification:
+  - Reused the KDCA National Health Information Portal chronic kidney disease page.
+  - Preserved the app boundary: UACR is an input helper for clinic preparation, not a diagnosis. The UI text keeps albuminuria stages at 30 mg/g 미만, 30-300 mg/g, and 300 mg/g 이상, and says repeat quantitative urine testing, eGFR, serum Cr, hematuria, and care-team standards should be checked together.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `UACR 소변 알부민/Cr 비` as an adult common lab preset.
+    - Filled upper bound `29`, unit `mg/g`, KDCA chronic kidney disease source, and non-diagnostic helper note.
+    - Included UACR in the common kidney-function preset preview explanation so profile sex changes do not alter the range.
+  - Updated `src/healthStandards.ts`.
+    - Added `UACR 알부민뇨 프리셋` coverage.
+    - Added `UACR 알부민뇨 기준` visible range card with `A1 낮음`, `A2 증가`, and `A3 고도 증가` rows.
+    - Added UACR to the `검사` quick-filter category.
+    - Updated current-profile common-standard notes to `BUN/Cr·eGFR·UACR·Na/K`.
+  - Updated `src/App.tsx`.
+    - Added `UACR` to the direct lab-input placeholder.
+  - Updated `src/healthStandards.test.ts`, `src/labPresets.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered source labels, section order, copied standards text, lab preset preview, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented UACR in Korean standards, exports, and lab preset preview contracts.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/labPresets.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 76 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing right-side browser surface.
+    - Default standards state showed `전체 · 18/18개 표시`.
+    - The visible standards strip included `UACR 알부민뇨 기준`.
+    - UACR rows included 30 mg/g 미만, 30-300 mg/g, and 300 mg/g 이상 wording plus KDCA chronic kidney disease source aria label.
+    - The lab preset selector included `UACR 소변 알부민/Cr 비`.
+    - Selecting UACR preview showed range `29 mg/g 이하`, unit `mg/g`, adult-common applicability, BUN/Cr/eGFR/UACR common refresh wording, KDCA chronic kidney disease source label, and source link aria label.
+    - The lab preset selector was restored to direct-input mode afterward.
+    - The `검사` standards filter showed `검사 · 12/18개 표시`, `검사 기준 복사`, included UACR, excluded the cancer fever/contact section, and copied standards text included `선택 범위: 검사 · 12/18개 표시` plus UACR source text.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 21:27 KST - Albumin Protein/Nutrition Standards Iteration
+
+- Improvement target:
+  - After eGFR and UACR, the lab standards still lacked a common serum albumin helper even though albumin is a frequent cancer-care, nutrition, liver, kidney, inflammation, and hydration discussion value.
+- Source verification:
+  - Rechecked the KDCA National Health Information Portal clinical chemistry page.
+  - Used KDCA reference ranges `알부민 3.3-5.2 g/dL` and `총단백 6.0-8.0 g/dL`.
+  - Preserved the app boundary: albumin is an input helper for clinic preparation, not a diagnosis. The UI text says liver disease, kidney disease, nutrition deficiency, protein loss, chronic inflammation, dehydration, the hospital result sheet, and the care team should be checked together.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `Alb 알부민` as an adult common lab preset.
+    - Filled range `3.3-5.2 g/dL`, KDCA clinical chemistry source, and non-diagnostic helper note.
+    - Added a separate common preset preview explanation for protein/nutrition and liver-related helper values.
+  - Updated `src/healthStandards.ts`.
+    - Added `알부민/총단백 프리셋` coverage.
+    - Added `알부민/총단백 기준` visible range card with `알부민`, `총단백`, and `낮음 확인` rows.
+    - Added albumin to the `검사` quick-filter category.
+    - Updated the `검사` quick-filter detail to include `단백` so the accessible button label matches the new albumin range.
+    - Updated current-profile common-standard notes to include `Alb`.
+  - Updated `src/App.tsx`.
+    - Added `Alb` to the direct lab-input placeholder.
+  - Updated `src/healthStandards.test.ts`, `src/labPresets.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered source labels, section order, copied standards text, lab preset preview, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented Alb/total-protein in Korean standards, exports, and lab preset preview contracts.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/labPresets.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 76 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Reused only the existing right-side browser surface.
+    - Default standards state showed `전체 · 19/19개 표시`.
+    - The visible standards strip included `알부민/총단백 기준`.
+    - Albumin rows included `3.3-5.2 g/dL`, total protein `6.0-8.0 g/dL`, low-result confirmation wording, and KDCA clinical chemistry source aria label.
+    - The lab preset selector included `Alb 알부민`.
+    - Selecting Alb preview showed range `3.3-5.2 g/dL`, unit `g/dL`, adult-common applicability, protein/nutrition/liver helper wording, KDCA clinical chemistry source label, and source link aria label.
+    - The lab preset selector was restored to direct-input mode afterward.
+    - The `검사` standards filter showed `검사 · 13/19개 표시`, `검사 기준 복사`, included albumin, excluded the cancer fever/contact section, and copied standards text included `선택 범위: 검사 · 13/19개 표시` plus albumin source text.
+    - The `검사` filter accessible label read `신기능·전해질·간기능·단백·혈액`.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:05 KST - Total Protein Lab Preset Consistency Iteration
+
+- Improvement target:
+  - The visible `알부민/총단백 기준` card already showed total protein, but the lab preset selector only exposed albumin. This made users manually type a value that was already supported by the source-backed standards surface.
+- Source verification:
+  - Reused the KDCA National Health Information Portal clinical chemistry page already checked in this session.
+  - Used KDCA total protein reference range `총단백 6.0-8.0 g/dL`.
+  - Preserved the app boundary: total protein is an input helper for clinic preparation, not a diagnosis. The UI text says albumin, liver/kidney context, nutrition, inflammation, dehydration, the hospital result sheet, and the care team should be checked together.
+- Code/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `TP 총단백` as an adult common lab preset.
+    - Filled range `6.0-8.0 g/dL`, KDCA clinical chemistry source, and non-diagnostic helper note.
+    - Added a separate common preset preview explanation for protein/nutrition and liver/kidney context.
+  - Updated `src/App.tsx`.
+    - Added `TP` to the direct lab-input placeholder.
+  - Updated `src/labPresets.test.ts`.
+    - Covered preset order, range, source label, preview copy, common applicability wording, and saved-note source evidence.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented Alb/TP protein/nutrition helpers in lab preset and design contracts.
+- Verification:
+  - `npm run test -- src/labPresets.test.ts`: PASS, 1 file and 9 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS before this log entry.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface.
+    - The lab preset selector included and selected `TP 총단백`.
+    - The direct lab-input placeholder included `Alb, TP, Ca, P, UA`.
+    - Selecting TP preview showed `6.0-8.0 g/dL`, KDCA source, adult-common applicability, albumin, liver/kidney, nutrition, inflammation, and dehydration context.
+    - The TP source aria label existed: `TP 총단백 프리셋 근거 질병관리청 국가건강정보포털 임상 화학 검사 열기`.
+    - `검사 입력 초기화` restored direct input, blank lab name, direct preview, and feedback `검사 입력 초기화됨`.
+    - The standards filter remained restored to `전체 · 22/22개 표시`.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving Korean standards/export clarity, source-backed caregiver/share surfaces, and cervical-cancer patient workflows.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:11 KST - Cervical Diagnostic-Test Prep Iteration Final Verification
+
+- Improvement target:
+  - Added a source-backed cervical-care path for distinguishing asymptomatic national screening from suspected-symptom diagnostic workups.
+  - The new flow is framed as clinic-prep and clinician-confirmation text, not diagnosis, prescription, or a fixed test order.
+- Source verification:
+  - Used the National Cancer Center PDF `자궁경부암 조기 진단과 예방법`.
+  - Preserved patient-facing facts as prompts/checks:
+    - Suspected symptoms can require consultation plus cervical cytology and other needed tests.
+    - Diagnostic-test names include pelvic exam, Pap/cervical cytology, HPV test, colposcopy, biopsy, transvaginal ultrasound, and pelvic MRI.
+    - Cervical cytology is better scheduled outside menstruation; HPV co-testing may add cost; no sexual experience or hysterectomy history should be discussed with the clinician before deciding the test path.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `nccEarlyDiagnosisPrevention`.
+    - Added `검진·진단검사 구분`, `의심 증상 진단검사 준비`, and `자궁경부세포검사 전 확인`.
+    - Added the diagnostic-test source to the next-visit priority checklist.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered source order, copied clinic-prep text, Markdown, CSV, and caregiver HTML preservation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the screening-versus-diagnostic-test workflow and export preservation contract.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts`: PASS, 2 files and 21 tests.
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 68 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Reload snapshot showed `다음 진료 질문 초안 10개 · 출처 포함`.
+    - Snapshot showed `검진·진단검사 구분`, `의심 증상 진단검사 준비`, `자궁경부세포검사 전 확인`, and `국립암센터 자궁경부암 조기 진단과 예방법` source links.
+    - Clicking `검진·진단검사 구분 자궁경부암 질문 초안 만들기` filled the topic field with `검진·진단검사 구분`.
+    - The question draft included 국가암검진/진단검사 distinction, Pap/HPV, 질확대경/조직검사, 골반 MRI, and the National Cancer Center source line.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving source-backed cervical patient workflows, Korean health standards/export clarity, and caregiver-share review surfaces.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:17 KST - Cervical Stage Explanation Note Iteration
+
+- Improvement target:
+  - After adding suspected-symptom diagnostic-test preparation, the app still lacked a simple patient-facing note for asking what the user's recorded stage means.
+  - Added a visible record check for 0-4 stage explanation that stays framed as care-team confirmation, not self-staging.
+- Source verification:
+  - Reused the National Cancer Center PDF `자궁경부암 조기 진단과 예방법`.
+  - Preserved the stage wording as a note to confirm the user's own diagnosis and test basis:
+    - 0기: 자궁경부 상피내암.
+    - 1기: 자궁경부에 국한.
+    - 2기: 질 상부 2/3 또는 주위 조직 침윤.
+    - 3기: 골반벽 또는 질 하부 1/3 침범.
+    - 4기: 방광·직장점막 침범 또는 원격전이.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `병기 설명 메모` to visible cervical-care record checks.
+  - Updated `src/cervicalCancerCare.test.ts`, `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts`.
+    - Covered visible record-check count and preservation in copied clinic-prep text, Markdown, CSV, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the stage-explanation note and its self-staging boundary.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 68 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Reload snapshot showed the `병기 설명 메모` source link with accessible label `병기 설명 메모 공식 출처 국립암센터 자궁경부암 조기 진단과 예방법 열기`.
+    - DOM text included `0기는 자궁경부 상피내암` and `방광·직장점막 침범 또는 원격전이`.
+    - DOM text still included the adjacent `의심 증상 진단검사 준비` and `자궁경부세포검사 전 확인` entries.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving source-backed cervical patient workflows, Korean health standards/export clarity, and caregiver-share review surfaces.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:19 KST - Cervical Record-Check Count UI Iteration
+
+- Improvement target:
+  - The cervical-care `기록 체크` list grew to 8 source-backed items, but unlike the adjacent question/recovery/prevention sections it did not show an item count.
+  - Added a small `8개 항목` count beside the visible heading to improve scanning on the narrow cmux browser surface.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Wrapped the `기록 체크` heading in `cervical-list-heading`.
+    - Rendered `{cervicalCancerCareChecks.length}개 항목` beside the heading.
+  - Updated `src/App.css`.
+    - Added a grid-based heading style with non-overflowing count text.
+  - Updated `DESIGN.md`.
+    - Documented the record-check item-count contract and narrow-width overflow guard.
+- Verification:
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - `npm run test`: PASS, 30 files and 227 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Reload snapshot still showed cervical-care source links including `병기 설명 메모`.
+    - DOM check found `.cervical-list-heading` text `기록 체크8개 항목`.
+    - The heading width was 458px inside a 458px parent and did not overflow.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving source-backed cervical patient workflows, Korean health standards/export clarity, and caregiver-share review surfaces.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:31 KST - BP/Glucose Input-Helper Question Draft Iteration
+
+- Improvement target:
+  - The BP/glucose input helper showed source links, adult-common applicability, and numeric ranges before saving, but users still had to manually copy that context into the `진료 전 질문` form.
+  - Added a compact source-backed `질문 초안` shortcut inside the active vital helper so the entered reading, current BP/glucose standard, app assessment, clinician-contact framing, and official source URL move into the question draft together.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `buildVitalStandardQuestionDraft()` with fail-closed unknown-standard handling and punctuation cleanup before the official evidence line.
+  - Updated `src/App.tsx`.
+    - Added `applyVitalStandardQuestion()` for validated BP/glucose drafts.
+    - The BP path uses the KDCA hypertension standard; the diabetes-tracking glucose path uses the KDA diabetes-care target standard.
+  - Updated `src/App.css`.
+    - Added a compact non-overflowing button style inside the vital helper.
+  - Updated `src/healthStandards.test.ts`, `README.md`, and `DESIGN.md`.
+    - Covered source-backed vital question text, no raw `출처:` leakage, no double punctuation before `공식 근거`, and documented the new helper contract.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 21 tests.
+  - `npm run typecheck`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check`: PASS.
+  - `npm run test`: PASS, 30 files and 228 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - The BP helper exposed `혈압 기준 진료 질문 초안 만들기`, KDCA source text, adult-common range rows, and no button overflow.
+    - Clicking the BP shortcut filled topic `혈압 기준 확인` and a question containing `혈압 128/78 mmHg`, `성인 남녀 공통 한국 성인 혈압 기준`, `진료팀 연락 기준`, and `질병관리청 국가건강정보포털 고혈압` with `thtimt_cntnts_sn=28`.
+    - The generated BP question did not include `.. 공식 근거`.
+    - Switching the same helper to glucose exposed `혈당 기준 진료 질문 초안 만들기`, KDA source text, and `70 미만은 저혈당`.
+    - Clicking the glucose shortcut filled topic `혈당 기준 확인` and a question containing `혈당 118 mg/dL (식전)`, `성인 남녀 공통 당뇨 추적 혈당 기준`, `진료팀 연락 기준`, and `대한당뇨병학회 당뇨병 관리 목표`.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving source-backed cervical patient workflows, Korean health standards/export clarity, caregiver-share review surfaces, and BP/glucose usability where the app still makes users manually transfer context.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:36 KST - Vital Question Evidence Pipeline Iteration
+
+- Improvement target:
+  - The BP/glucose helper question shortcut filled the visible question draft with official source text, but it used `공식 근거:` inside the body.
+  - Existing question copy/export pipelines split only parseable `출처:` lines into clinic-readable `근거:` evidence, so the new vital question needed to follow the same source-evidence contract as lab and cervical generated questions.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - `buildVitalStandardQuestionDraft()` now emits a newline `출처: source label - source URL` line for BP/glucose source evidence.
+    - Kept punctuation cleanup so the body does not create doubled periods before the source line.
+  - Updated `src/healthStandards.test.ts`.
+    - The vital draft builder now asserts parseable KDCA/KDA `출처:` lines.
+  - Updated `src/questionClipboard.test.ts`.
+    - Added a saved-question copy regression proving generated vital questions become `근거:` text and do not leak raw `출처:` in copied question output.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that generated vital questions retain parseable source evidence and copied/exported question text reformats it as `근거:`.
+- Verification:
+  - `npm run test -- src/healthStandards.test.ts src/questionClipboard.test.ts`: PASS, 2 files and 26 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 30 files and 229 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Clicking `혈압 기준 진료 질문 초안 만들기` filled topic `혈압 기준 확인`.
+    - The question draft included `혈압 128/78 mmHg`, `성인 남녀 공통 한국 성인 혈압 기준`, `진료팀 연락 기준`, and a parseable source line `출처: 질병관리청 국가건강정보포털 고혈압 - https://health.kdca.go.kr/...thtimt_cntnts_sn=28`.
+    - The old `공식 근거:` text was absent.
+    - The helper button did not overflow.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving source-backed cervical patient workflows, Korean health standards/export clarity, caregiver-share review surfaces, and BP/glucose usability where source evidence or visible workflow transfer remains weak.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:54 KST - Cervical Record-Check Draft UX Iteration
+
+- Improvement target:
+  - The 자궁경부암 케어 panel had official-source `기록 체크` items, but those checklist rows were read-only.
+  - Added a checklist-to-record workflow so a patient can turn a source-backed record-check item directly into a structured symptom/action draft without manually copying the text.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `buildCervicalCancerCareItemSymptomDraft()` and the shared record-draft item type.
+    - The generated draft keeps a structured `자궁경부암 기록 체크 초안` body, source evidence line, clinician-confirmation action, and no direct treatment instruction.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `기록 초안` buttons beside each `기록 체크` row in the 자궁경부암 panel.
+    - Clicking a button fills the symptom/action draft, preserves existing draft text by appending when needed, focuses the symptom record form, and uses compact wrapping controls so the button/source link do not overflow.
+  - Updated downstream tests:
+    - `src/cervicalCancerCare.test.ts`
+    - `src/careActionQueue.test.ts`
+    - `src/visitPacket.test.ts`
+    - `src/csvExport.test.ts`
+    - `src/caregiverExport.test.ts`
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented record-check draft buttons and source-backed care-queue/export evidence.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 99 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 30 files and 243 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and reloaded the page.
+    - DOM check found 8 `기록 체크 초안` buttons.
+    - Clicked `림프부종 감염·악화 신호 자궁경부암 기록 체크 초안 만들기`.
+    - Button rendered as `기록 초안`, had no overflow, and filled symptom `림프부종 감염·악화 신호`.
+    - The body contained `자궁경부암 기록 체크 초안`, `- 체크 항목: 림프부종 감염·악화 신호`, official evidence basis text, and `출처: 국가암정보센터 림프부종 치료 전후관리 - https://www.cancer.go.kr/lay1/S1T429C431/contents.do`.
+    - The action became `림프부종 감염·악화 신호 내용을 다음 진료 때 진료팀에 확인`.
+    - No direct treatment-order wording was present and browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - The next useful slice is likely extending the same checklist-to-draft pattern to selected recovery/prevention rows or improving caregiver review affordances for these newly generated records.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:58 KST - Cervical Recovery/Prevention Memo Draft Iteration
+
+- Improvement target:
+  - The previous 자궁경부암 record-draft workflow covered only the visible `기록 체크` rows.
+  - `회복 일정 메모` and `검진·예방 메모` still required manual transfer from source-backed guidance into the symptom/action draft.
+- Code/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Generalized the generated body heading from `자궁경부암 기록 체크 초안` to `자궁경부암 기록 메모 초안`.
+    - Generalized the body field from `체크 항목` to `기록 항목` so the same builder fits record, recovery, and prevention memo items.
+  - Updated `src/App.tsx`.
+    - Added a shared `renderCervicalCareItemActions()` renderer.
+    - Applied the same `기록 초안` button and source-link action cluster to `기록 체크`, `회복 일정 메모`, and `검진·예방 메모`.
+    - Updated save feedback to `자궁경부암 기록 메모 초안 준비됨`.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added recovery and prevention memo draft coverage for `성생활 재개·통증 상담` and `HPV 백신 가족 안내`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented record/recovery/prevention memo draft buttons with source-backed symptom/action notes.
+- Verification:
+  - `npm run test -- src/cervicalCancerCare.test.ts src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`: PASS, 5 files and 100 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 30 files and 244 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and reloaded the page.
+    - DOM check found 22 `자궁경부암 기록 메모 초안` buttons: 8 record-check, 9 recovery, and 5 prevention items.
+    - Clicked `성생활 재개·통증 상담 자궁경부암 기록 메모 초안 만들기`; the button had no overflow and filled symptom/action/body with the NCC sex-life source line.
+    - Reloaded and clicked `HPV 백신 가족 안내 자궁경부암 기록 메모 초안 만들기`; the button had no overflow and filled symptom/action/body with the KDCA HPV source line plus screening-continuation wording.
+    - Both drafts used `자궁경부암 기록 메모 초안`, retained source evidence, showed save feedback, and contained no direct treatment-order wording.
+    - Browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - A useful next slice is caregiver/export affordance polish for generated cervical memo records or a fresh UI overflow/design audit of the expanded cervical panel.
+- No git staging or commit was performed.
+
+## 2026-06-04 23:02 KST - Caregiver Cervical Memo Label Iteration
+
+- Improvement target:
+  - Generated 자궁경부암 recovery/prevention memo records now save into recent symptoms, but caregiver HTML presented them like generic symptom rows.
+  - Added a small scan label so caregivers can distinguish generated cervical memo records from ordinary symptom entries while still seeing linked official evidence.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - Added `formatCaregiverSymptomRecordLabel()`.
+    - Recent-symptom rows now render `자궁경부암 기록 메모` for generated cervical memo drafts, `자궁경부암 경고 기록` for structured cervical warning drafts, and `증상 기록` otherwise.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added regression coverage for a generated `HPV 백신 가족 안내` memo record in caregiver recent symptoms.
+    - The test verifies the label, KDCA HPV source link, screening-continuation wording, and no raw `출처:` leak.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented caregiver recent-symptom labels that distinguish generated cervical memo records from generic symptom records.
+- Verification:
+  - `npm run test -- src/caregiverExport.test.ts src/cervicalCancerCare.test.ts`: PASS, 2 files and 47 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 30 files and 245 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and reloaded the page.
+    - Clicked `HPV 백신 가족 안내 자궁경부암 기록 메모 초안 만들기`, saved it with `증상 기록 추가`, then clicked `공유본 미리보기`.
+    - The caregiver preview iframe `srcdoc` contained `최근 증상`, `HPV 백신 가족 안내 3/10`, `자궁경부암 기록 메모`, and the linked KDCA HPV source label.
+    - The preview did not contain raw `출처: 질병관리청 국가건강정보포털 자궁경부암 백신`, did not contain direct treatment-order wording, and browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - A useful next slice is a focused mobile/overflow audit of the expanded cervical panel and caregiver preview controls.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:44 KST - Glucose Vital Question Evidence Regression Iteration
+
+- Improvement target:
+  - The generated vital-question downstream evidence regressions covered KDCA blood-pressure questions, but did not directly exercise the KDA glucose generated-question path across exports.
+  - Added glucose-specific coverage so the blood-glucose helper cannot regress to raw `출처:` leakage or drop KDA evidence when a generated question is saved.
+- Code/docs changes:
+  - Updated `src/careActionQueue.test.ts`.
+    - Generated glucose vital questions now assert care-queue details and copied queue text convert the KDA `출처:` line into `근거: 대한당뇨병학회 당뇨병 관리 목표`.
+  - Updated `src/visitPacket.test.ts`.
+    - Markdown visit packets now assert generated glucose questions preserve `혈당 118 mg/dL (식전)` and KDA `근거:`.
+  - Updated `src/csvExport.test.ts`.
+    - CSV question rows now assert generated glucose question body and source evidence are split into body plus detail evidence.
+  - Updated `src/caregiverExport.test.ts`.
+    - Caregiver HTML now asserts generated glucose question evidence renders as a linked KDA `근거:` label.
+  - Updated `src/questionClipboard.test.ts`.
+    - Single-question copy now has a generated glucose question regression in addition to the BP case.
+  - Updated `README.md` and `DESIGN.md`.
+    - Clarified that generated vital-question evidence covers KDCA blood-pressure and KDA glucose source lines across care queue, copy, Markdown, CSV, and caregiver HTML outputs.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/questionClipboard.test.ts src/healthStandards.test.ts`: PASS, 6 files and 103 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 30 files and 238 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Cleared browser errors, reloaded, switched the vital helper to glucose, and clicked `혈당 기준 진료 질문 초안 만들기`.
+    - DOM check confirmed topic `혈당 기준 확인`.
+    - The question draft contained `혈당 118 mg/dL (식전)`, `성인 남녀 공통 당뇨 추적 혈당 기준`, `진료팀 연락 기준`, and `출처: 대한당뇨병학회 당뇨병 관리 목표 - https://www.diabetes.or.kr/general/info/treat/treat_01.php`.
+    - The draft did not contain old `공식 근거:` or raw `근거:` text.
+    - The helper button did not overflow and browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving source-backed cervical patient workflows, Korean health standards/export clarity, caregiver-share review surfaces, and BP/glucose usability where source evidence or visible workflow transfer remains weak.
+- No git staging or commit was performed.
+
+## 2026-06-04 22:41 KST - Vital Question Export Evidence Regression Iteration
+
+- Improvement target:
+  - The vital helper now writes parseable `출처:` evidence into generated BP/glucose questions, but only question copy had a dedicated regression.
+  - Added downstream coverage so saved generated vital questions keep official-source evidence in the care queue, Markdown visit packet, CSV export, and caregiver HTML export.
+- Code/docs changes:
+  - Updated `src/careActionQueue.test.ts`.
+    - Generated vital questions now assert care-queue detail and copied queue text convert KDCA `출처:` into `근거:`.
+  - Updated `src/visitPacket.test.ts`.
+    - Generated vital questions now assert Markdown visit packets preserve BP measurement text and KDCA `근거:`.
+  - Updated `src/csvExport.test.ts`.
+    - Generated vital questions now assert CSV question rows split body and `근거:` evidence.
+  - Updated `src/caregiverExport.test.ts`.
+    - Generated vital questions now assert caregiver HTML renders the KDCA source as a linked `근거:` label and does not leak raw `출처:`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that vital-generated question evidence is preserved across care queue, copy, Markdown, CSV, and caregiver HTML outputs.
+- Verification:
+  - `npm run test -- src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/questionClipboard.test.ts src/healthStandards.test.ts`: PASS, 6 files and 98 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 30 files and 233 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Reused only the existing right-side browser surface at `http://127.0.0.1:1420/`.
+    - Reloaded the page and clicked `혈압 기준 진료 질문 초안 만들기`.
+    - DOM check confirmed topic `혈압 기준 확인`.
+    - The question draft contained `혈압 128/78 mmHg`, `성인 남녀 공통 한국 성인 혈압 기준`, `진료팀 연락 기준`, and the parseable line `출처: 질병관리청 국가건강정보포털 고혈압 - https://health.kdca.go.kr/...thtimt_cntnts_sn=28`.
+    - The draft did not contain old `공식 근거:` or raw `근거:` text.
+    - The helper button did not overflow and browser errors were empty.
+- Current next durable improvement direction:
+  - Continue with the same `surface:513` only.
+  - Keep improving source-backed cervical patient workflows, Korean health standards/export clarity, caregiver-share review surfaces, and BP/glucose usability where source evidence or visible workflow transfer remains weak.
+- No git staging or commit was performed.
+
+## 2026-06-04 23:07 KST - Direct Symptom Export Label Iteration
+
+- Improvement target:
+  - Caregiver HTML recent-symptom rows distinguished generated cervical memo drafts from generic symptoms, but Markdown and CSV direct symptom rows still relied only on symptom text and source evidence.
+  - The same saved HPV prevention memo could therefore look like a generic symptom outside caregiver HTML even though it was created from a cervical-care memo draft.
+- Code/docs changes:
+  - Added `src/symptomRecordLabels.ts` and `src/symptomRecordLabels.test.ts`.
+    - Shared label rule returns `증상 기록`, `자궁경부암 경고 기록`, or `자궁경부암 기록 메모` from the saved body/action draft marker.
+  - Updated `src/caregiverExport.ts`.
+    - Replaced the caregiver-local label helper with the shared helper.
+  - Updated `src/visitPacket.ts` and `src/visitPacket.test.ts`.
+    - Markdown direct symptom rows now prefix `[증상 기록]`, `[자궁경부암 경고 기록]`, or `[자궁경부암 기록 메모]`.
+    - Added HPV prevention memo regression coverage with KDCA source evidence conversion to `근거:`.
+  - Updated `src/csvExport.ts` and `src/csvExport.test.ts`.
+    - CSV direct symptom rows keep the 6-column schema and place the record label in the `status` column, joined with medication when present.
+    - Added HPV prevention memo regression coverage and generic/warning direct symptom row assertions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented direct symptom record labels across Markdown, CSV, and caregiver HTML exports.
+- Verification:
+  - `npm run test -- src/symptomRecordLabels.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/cervicalCancerCare.test.ts`: PASS, 5 files and 82 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 31 files and 250 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Confirmed `surface:513` was at `http://127.0.0.1:1420/`, cleared browser errors/console, and reloaded.
+    - Clicked `HPV 백신 가족 안내 자궁경부암 기록 메모 초안 만들기` and verified the symptom form filled `HPV 백신 가족 안내`, `자궁경부암 기록 메모 초안`, the KDCA HPV source line, and the follow-up action.
+    - Saved with `증상 기록 추가`.
+    - Opened `요약 미리보기` and verified the Markdown direct symptom row contained `[자궁경부암 기록 메모] HPV 백신 가족 안내 3/10` plus `근거: 질병관리청 국가건강정보포털 자궁경부암 백신`.
+    - Opened `CSV 미리보기` and verified the direct `symptom` row kept the 6-column schema with status `자궁경부암 기록 메모`, retained KDCA `근거:`, and did not contain raw KDCA `출처:` inside that direct row.
+    - Browser errors were empty; console only had normal Vite debug connection logs; body, preview, and `<pre>` had no horizontal overflow at 1094x859.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:19 KST - In-App Symptom Record Label UI Iteration
+
+- Improvement target:
+  - CSV, Markdown, and caregiver exports distinguished generated cervical memo records from generic symptoms, but the in-app latest-symptom metric and recent timeline could still show the same record as a generic symptom.
+  - Browser QA also exposed a same-date ordering bug: when multiple symptoms shared today's date, the latest-symptom metric could keep an older same-day symptom instead of the newly saved HPV memo.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Latest symptom metric now uses `formatSymptomRecordLabel()` and shows a compact record-label chip.
+    - Recent timeline symptom rows now show the same record-label chip before the symptom title.
+    - Same-date latest-symptom and timeline ordering now prefer later inserted records.
+  - Added `src/recordOrdering.ts` and `src/recordOrdering.test.ts`.
+    - Covers latest dated record selection and same-date insertion-order tie-breaks.
+  - Updated `src/App.css`.
+    - Added wrapping-safe `.metric-record-label` and `.timeline-record-label` styles with stable compact dimensions.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented in-app latest-symptom and timeline labels as part of the symptom record-label contract.
+- Verification:
+  - `npm run test -- src/recordOrdering.test.ts src/symptomRecordLabels.test.ts`: PASS, 2 files and 6 tests.
+  - `npm run test -- src/symptomRecordLabels.test.ts src/caregiverExport.test.ts src/visitPacket.test.ts src/csvExport.test.ts`: PASS, 4 files and 62 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 32 files and 253 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Confirmed the browser surface stayed at `http://127.0.0.1:1420/`, cleared browser errors/console, and reloaded.
+    - DOM check showed the latest-symptom metric text as `최근 증상 / 3/10 / HPV 백신 가족 안내 / 자궁경부암 기록 메모`.
+    - Timeline labels included `자궁경부암 기록 메모` for HPV memo rows and `증상 기록` for generic symptom rows.
+    - The same-date HPV memo appeared ahead of the older same-day generic symptom.
+    - Browser errors were empty; console only had normal Vite debug connection logs; body, metric label, and timeline labels had no horizontal overflow at 1094x859.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:50 KST - Saved Vital Timeline Assessment Iteration Resume Note
+
+- Latest in-progress improvement:
+  - Added saved BP/glucose recent-timeline assessment chips with `mmHg` and Korean glucose context labels.
+  - Primary code files: `src/vitalRecordLabels.ts`, `src/vitalRecordLabels.test.ts`, `src/App.tsx`, `src/App.css`.
+  - Documentation touched: `README.md`, `DESIGN.md`, `working.md`.
+- Verification:
+  - `npm run test -- src/vitalRecordLabels.test.ts src/healthRules.test.ts`: PASS, 2 files and 14 tests.
+  - `npm run typecheck`: PASS after normalizing timeline item shape with `recordLabelTone`.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 33 files and 265 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Backed up `carevault.v1` localStorage before adding browser QA rows.
+    - Added a BP row and a glucose row through the visible UI.
+    - DOM check confirmed `혈당 191 mg/dL (식후 2시간)` had `timeline-record-label = 식후 목표 초과` and `timeline-record-label-watch`.
+    - DOM check confirmed `혈압 132/82 mmHg` had `timeline-record-label = 고혈압 전단계 범위` and `timeline-record-label-watch`.
+    - Timeline rows and body had no horizontal overflow.
+    - Removed/restored the browser QA rows; follow-up DOM check found `qaRows = 0`.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-04 23:58 KST - Vital Save Feedback Label Iteration Completion Note
+
+- Latest completed improvement:
+  - The vital primary save button now says `혈압 기록 추가` or `혈당 기록 추가` instead of generic `측정값 추가`.
+  - Saved-status feedback now includes the saved assessment label, for example `혈당 기록 추가됨 · 식후 목표 초과`.
+  - Primary files: `src/vitalRecordLabels.ts`, `src/vitalRecordLabels.test.ts`, `src/App.tsx`.
+  - Documentation touched: `README.md`, `DESIGN.md`, `working.md`.
+- Verification:
+  - `npm run test -- src/vitalRecordLabels.test.ts src/healthRules.test.ts`: PASS, 2 files and 14 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 33 files and 265 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Button label changed from `혈압 기록 추가` to `혈당 기록 추가` when switching vital type.
+    - Backed up `carevault.v1` localStorage before adding a browser QA row.
+    - Saved a glucose row through the visible UI.
+    - Status feedback contained `혈당 기록 추가됨 · 식후 목표 초과 · 브라우저 자동 저장됨`.
+    - Timeline row contained `혈당 191 mg/dL (식후 2시간)` and `식후 목표 초과`.
+    - Restored `carevault.v1`; follow-up DOM check found `qaRows = 0`.
+    - Body had no horizontal overflow.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:05 KST - Latest Vital Metric Label Iteration Completion Note
+
+- Latest completed improvement:
+  - Latest blood-pressure and glucose dashboard metric cards now reuse the saved-vital label helper instead of split inline BP/glucose assessment logic.
+  - The latest blood-pressure metric value keeps `mmHg`, and its assessment chip uses the same ok/watch/risk/neutral tone classes as timeline vital rows.
+  - The latest glucose metric keeps the value unit plus a compact context-and-assessment chip such as `식후 2시간 · 식후 목표 범위`.
+  - Primary files: `src/vitalRecordLabels.ts`, `src/vitalRecordLabels.test.ts`, `src/App.tsx`, `src/App.css`.
+  - Documentation touched: `README.md`, `DESIGN.md`, `working.md`.
+- Verification:
+  - `npm run test -- src/vitalRecordLabels.test.ts src/healthRules.test.ts`: PASS, 2 files and 14 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 33 files and 265 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded `http://127.0.0.1:1420/`.
+    - DOM check confirmed the latest blood-pressure metric showed `126/78 mmHg` with `metric-record-label-watch` and `주의혈압 범위`.
+    - DOM check confirmed the latest glucose metric showed `146 mg/dL` with `metric-record-label-ok` and `식후 2시간 · 식후 목표 범위`.
+    - Body had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:09 KST - Latest Vital Metric Date Ordering Completion Note
+
+- Latest completed improvement:
+  - Latest blood-pressure and glucose dashboard metric cards now select the newest dated matching record instead of the last inserted matching record.
+  - Added `latestDatedItemMatching()` to reuse the date-first, same-date insertion-order helper contract for filtered record groups.
+  - This prevents later-entered older-date BP/glucose readings from replacing the true latest dated reading in the dashboard cards.
+  - Primary files: `src/recordOrdering.ts`, `src/recordOrdering.test.ts`, `src/App.tsx`.
+  - Documentation touched: `README.md`, `DESIGN.md`, `working.md`.
+- Verification:
+  - `npm run test -- src/recordOrdering.test.ts src/vitalRecordLabels.test.ts`: PASS, 2 files and 7 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 33 files and 266 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded `http://127.0.0.1:1420/`.
+    - Backed up `carevault.v1` localStorage before adding QA rows.
+    - Appended older-date QA rows `qa-old-bp-order` and `qa-old-glu-order` to the end of `state.vitals`.
+    - After reload, latest blood-pressure still showed `126/78 mmHg` with `주의혈압 범위`.
+    - After reload, latest glucose still showed `146 mg/dL` with `식후 2시간 · 식후 목표 범위`.
+    - Restored `carevault.v1`; follow-up DOM check found no `qa-old-*` rows in storage.
+    - Body had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:14 KST - Vital Trend Chart Tooltip Iteration Completion Note
+
+- Latest completed improvement:
+  - BP/glucose trend chart data now comes from `buildVitalChartData()` instead of inline JSX mapping.
+  - Chart points preserve full record dates, BP `mmHg`, glucose `mg/dL`, and Korean glucose measurement context labels for tooltip rendering.
+  - Replaced the default Recharts tooltip with a compact Korean custom tooltip.
+  - Added small chart dots and larger active dots so the chart has visible hover targets.
+  - Primary files: `src/vitalChartData.ts`, `src/vitalChartData.test.ts`, `src/App.tsx`, `src/App.css`.
+  - Documentation touched: `README.md`, `DESIGN.md`, `working.md`.
+- Verification:
+  - `npm run test -- src/vitalChartData.test.ts src/recordOrdering.test.ts`: PASS, 2 files and 6 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 34 files and 268 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded `http://127.0.0.1:1420/`.
+    - DOM check confirmed `.recharts-wrapper` exists.
+    - DOM check confirmed 5 `.recharts-dot` hover targets rendered.
+    - Body had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - Verification limit:
+    - cmux WKWebView automation did not activate the Recharts tooltip via selector hover, dot hover, click, or JS-dispatched mousemove, so tooltip text was verified through `src/vitalChartData.test.ts` and typechecked render wiring rather than an active browser tooltip DOM snapshot.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:18 KST - Vital Trend Chart Visible Summary Completion Note
+
+- Latest completed improvement:
+  - Added always-visible BP/glucose chart summary chips below the Recharts trend chart.
+  - The summary shows chart period, units, BP/glucose record counts, and latest glucose measurement context without requiring hover.
+  - Added `buildVitalChartSummary()` so visible chart metadata is testable outside JSX.
+  - Added an actual whitespace separator between summary label and value for better DOM/screen-reader text.
+  - Primary files: `src/vitalChartData.ts`, `src/vitalChartData.test.ts`, `src/App.tsx`, `src/App.css`.
+  - Documentation touched: `README.md`, `DESIGN.md`, `working.md`.
+- Verification:
+  - `npm run test -- src/vitalChartData.test.ts`: PASS, 1 file and 4 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 34 files and 270 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Cleared browser errors and console, then reloaded `http://127.0.0.1:1420/`.
+    - After React/Recharts mount settled, DOM check found 4 visible `.vital-chart-summary` chips:
+      - `기간 2026-05-29 - 2026-06-01`
+      - `단위 혈압 mmHg / 혈당 mg/dL`
+      - `기록 혈압 2개 · 혈당 1개`
+      - `최근 혈당 시점 식후 2시간`
+    - DOM check confirmed 5 `.recharts-dot` hover targets rendered.
+    - Body and chart summary had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:22 KST - Health Standards Filter Summary Iteration Note
+
+- Improvement target:
+  - The Korean health-standard panel already had dense category filters and filter-aware copy, but the selected filter only showed section count text.
+  - Users still had to scan all visible cards to know whether the current filter included risk-highlight rows, sex-specific criteria, or multiple official source groups.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `buildHealthStandardRangeFilterSummary()` with visible criteria count, risk-highlight row count, sex-specific criteria count, and de-duplicated official source count.
+  - Updated `src/healthStandards.test.ts`.
+    - Added fixed expectations for the `암환자` and `당뇨·지질` quick-filter summaries.
+  - Updated `src/App.tsx`.
+    - Rendered the summary items under the standards quick-filter buttons with an accessible summary label.
+  - Updated `src/App.css`.
+    - Added wrapping-safe `.standards-range-summary` chips using the existing 8px radius and compact typography.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the filter summary chips and added the corresponding design checklist item.
+- Verification so far:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 23 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 34 files and 271 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Confirmed `surface:513` was at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and console, reloaded, and clicked the `암환자` standards quick filter.
+    - DOM check found the visible sections `ANC 감염 위험 기준`, `혈소판 출혈 위험 기준`, and `체온·감염 연락 기준`.
+    - DOM check found summary chips `표시 3/22개 기준`, `주의 7개 위험 강조 행`, `성별 남녀 공통`, and `근거 공식 출처 2개`.
+    - Body, filter buttons, and `.standards-range-summary` had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:27 KST - Health Standards Clipboard Summary Iteration Note
+
+- Improvement target:
+  - The selected Korean standards quick filter now showed visible summary chips, but copied clinic-prep text still included only the selected section count.
+  - Users could lose the visible risk-row, sex-specific, and official-source context after copying standards for a visit.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - `formatHealthStandardsClipboardText()` now reuses `buildHealthStandardRangeFilterSummary()` and inserts a `선택 범위 요약` block after the selected filter line.
+  - Updated `src/healthStandards.test.ts`.
+    - Added clipboard regressions for the `검사` and `암환자` quick filters, including displayed criteria, risk-highlight row, sex-specific criteria, and official-source counts.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that copied Korean standards text must preserve the same selected-range summary as the visible chips.
+- Verification so far:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 23 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 34 files and 271 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Confirmed `surface:513` was at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and console, reloaded, and clicked the `암환자` standards quick filter.
+    - Browser DOM showed the visible chips `표시 3/22개 기준`, `주의 7개 위험 강조 행`, `성별 남녀 공통`, and `근거 공식 출처 2개`.
+    - Installed a temporary browser-side `navigator.clipboard.writeText` capture, clicked `암환자 기준 복사`, and verified the captured copied text contained `선택 범위: 암환자 · 3/22개 표시`, `선택 범위 요약`, `- 표시: 3/22개 기준`, `- 주의: 7개 위험 강조 행`, `- 성별: 남녀 공통`, `- 근거: 공식 출처 2개`, and `ANC 감염 위험 기준`.
+    - The captured copied text excluded the BMI range section, proving the selected filter boundary still held.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:32 KST - Health Standards Copy Status Summary Iteration Note
+
+- Improvement target:
+  - The Korean standards copy text now preserved the selected summary, but the success feedback still said only `암환자 기준 복사됨`.
+  - After a copy action, users could not tell from the visible status whether the risk-row, sex-specific, and source-count summary was included.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `formatHealthStandardRangeFilterCopyStatus()` to compact the selected summary into a short success message.
+  - Updated `src/App.tsx`.
+    - `copyHealthStandards()` now uses the compact summary status after clipboard copy succeeds.
+  - Updated `src/healthStandards.test.ts`.
+    - Added fixed expectations such as `암환자 기준 복사됨 · 표시 3/22 · 주의 7 · 남녀 공통 · 출처 2개`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented post-copy status feedback that echoes the selected-range summary.
+- Verification so far:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 23 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 34 files and 271 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Confirmed `surface:513` was at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and console, reloaded, clicked the `암환자` standards quick filter, then clicked `암환자 기준 복사`.
+    - DOM status check found `암환자 기준 복사됨 · 표시 3/22 · 주의 7 · 남녀 공통 · 출처 2개`.
+    - The matching status element and body had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:36 KST - Health Standards Copy Accessibility Summary Iteration Note
+
+- Improvement target:
+  - The Korean standards copy button already copied and confirmed the selected summary, but its pre-copy `aria-label` and hover `title` still exposed only a category/count-level description.
+  - Keyboard and assistive-technology users needed the same displayed criteria, risk-row, sex-specific, and source-count scope before activating copy.
+- Code/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Added `formatHealthStandardRangeFilterCopyDescription()` and shared compact summary parts with the post-copy status formatter.
+  - Updated `src/App.tsx`.
+    - The standards copy button `aria-label` and `title` now include the compact selected-range summary before copy.
+  - Updated `src/healthStandards.test.ts`.
+    - Added fixed expectations such as `한국 성인 건강 기준 암환자 범위 복사 · 표시 3/22 · 주의 7 · 남녀 공통 · 출처 2개`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that the copy affordance label/title, copied text, and post-copy status share the same selected-range summary.
+- Verification so far:
+  - `npm run test -- src/healthStandards.test.ts`: PASS, 1 file and 23 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 34 files and 271 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Confirmed `surface:513` was at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and console, reloaded, and clicked the `암환자` standards quick filter.
+    - DOM check found copy button text `암환자 기준 복사` with `aria-label` and `title` set to `한국 성인 건강 기준 암환자 범위 복사 · 표시 3/22 · 주의 7 · 남녀 공통 · 출처 2개`.
+    - The copy button and body had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:40 KST - Care Queue Copy Source Summary Iteration Note
+
+- Improvement target:
+  - The dashboard care queue already showed source-breakdown chips, but the queue copy button, copied checklist header, and success status exposed only a total item count.
+  - Users needed the same question/vital/lab/document/visit scope before copy, inside copied clinic-prep text, and after copy confirmation.
+- Code/docs changes:
+  - Updated `src/careActionQueue.ts`.
+    - Exported the dashboard queue source labels/order.
+    - Added `formatCareActionQueueSourceCountSummary()`, `formatCareActionQueueCopySummary()`, `formatCareActionQueueCopyDescription()`, and `formatCareActionQueueCopyStatus()`.
+    - Added `분류 요약:` to the copied queue checklist header.
+  - Updated `src/App.tsx`.
+    - Reused the exported queue labels/order for visible chips.
+    - The queue copy button `aria-label`/`title` and post-copy status now include the compact source-breakdown summary.
+  - Updated `src/careActionQueue.test.ts`.
+    - Added fixed queue copy summary expectations such as `진료 준비 큐 6개 항목 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1 복사`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that the queue copy affordance, copied text, and post-copy status preserve the visible source-count summary.
+- Verification so far:
+  - `npm run test -- src/careActionQueue.test.ts`: PASS, 1 file and 25 tests.
+  - `npm run typecheck`: PASS after replacing the remaining App references with the exported queue label/order names.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 34 files and 272 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Confirmed `surface:513` was at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and console, reloaded, and inspected `.queue-copy-button`.
+    - DOM check found button text `큐 복사` with `aria-label` and `title` set to `진료 준비 큐 8개 항목 · 증상 1 · 자궁경부 1 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1 복사`.
+    - Visible source chips were `증상1`, `자궁경부1`, `질문1`, `활력2`, `검사1`, `서류1`, and `방문1`.
+    - Installed a temporary browser-side clipboard capture, clicked `큐 복사`, and verified the copied header included `분류 요약: 증상 1 · 자궁경부 1 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1`.
+    - DOM status text included `진료 준비 큐 복사됨 · 8개 항목 · 증상 1 · 자궁경부 1 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1`.
+    - The copy button and body had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:45 KST - Export Preview Copy Summary Iteration Note
+
+- Improvement target:
+  - Export previews already showed line count, character count, byte size, and `근거:`/`출처:` marker count chips.
+  - The preview copy button and copy-success status still exposed only the export format, so users could not confirm the copied preview size/source-marker scope before or after copying.
+- Code/docs changes:
+  - Updated `src/exportPreviewSummary.ts`.
+    - Added `formatExportPreviewCompactSummary()`, `formatExportPreviewCopyDescription()`, and `formatExportPreviewCopyStatus()`.
+  - Updated `src/App.tsx`.
+    - The export preview copy button `aria-label`/`title` and copy-success status now include the same line/character/byte/source-marker summary as the visible chips.
+  - Updated `src/exportPreviewSummary.test.ts`.
+    - Added fixed expectations such as `진료 요약 미리보기 복사 · 2줄 · 7자 · 11B · 근거/출처 1개`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that export preview copy affordance and post-copy status preserve the visible summary chips.
+- Verification so far:
+  - `npm run test -- src/exportPreviewSummary.test.ts`: PASS, 1 file and 5 tests.
+  - `npm run typecheck`: PASS.
+  - `git diff --check`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `npm run test`: PASS, 34 files and 273 tests.
+  - `npm run build`: PASS.
+  - cmux `surface:513` browser proof:
+    - Ran `cmux select-workspace --workspace workspace:11`.
+    - Confirmed `surface:513` was at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and console, reloaded, and opened `요약 미리보기`.
+    - DOM check found the preview copy button `aria-label` and `title` set to `진료 요약 미리보기 복사 · 237줄 · 30,249자 · 52,239B · 근거/출처 97개`.
+    - The visible summary chips showed `분량 237줄`, `문자 30,249자`, `크기 52,239B`, and `출처 표식 근거/출처 97개`.
+    - Installed a temporary browser-side clipboard capture, clicked `복사`, and verified the copied text started with `# CareVault 진료 요약`, had length 30,249, and included `근거:`.
+    - DOM status text included `진료 요약 미리보기 복사됨 · 237줄 · 30,249자 · 52,239B · 근거/출처 97개`.
+    - The preview panel and body had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+    - Closed the preview panel after verification.
+  - No git staging or commit was performed.
+
+## 2026-06-05 00:48 KST - Export Preview Print Download Summary Iteration Note
+
+- Improvement target:
+  - Export preview copy controls now preserved the visible line/character/byte/source-marker summary, but print and download controls still exposed only the export format.
+  - Users needed the same summary before printing/downloading and in the resulting action feedback.
+- Code/docs changes:
+  - Updated `src/exportPreviewSummary.ts`.
+    - Added print/download description and status formatters that reuse the compact preview summary.
+  - Updated `src/App.tsx`.
+    - The export preview print/download button `aria-label`/`title` and print/download status now include the same line/character/byte/source-marker summary as the visible chips.
+  - Updated `src/exportPreviewSummary.test.ts`.
+    - Extended the preview action formatter regression to cover copy, print, and download descriptions/statuses.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that export preview copy, print, and download affordances plus action feedback preserve the visible summary chips.
+- Verification so far:
+  - PASS: `npm run test -- src/exportPreviewSummary.test.ts` (1 file, 5 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `git diff --check`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run test` (34 files, 273 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Export preview visible summary chips stayed at `237줄`, `30,249자`, `52,239B`, `근거/출처 97개`.
+    - Copy/print/download button `aria-label` and `title` each included the same compact summary.
+    - Download-only capture produced `carevault-visit-summary-2026-06-04.md` from a blob URL and showed `진료 요약 미리보기 다운로드됨 · 237줄 · 30,249자 · 52,239B · 근거/출처 97개`.
+    - Print capture wrote the print document, called `focus()`/`print()`, and showed `진료 요약 미리보기 인쇄 준비 · 237줄 · 30,249자 · 52,239B · 근거/출처 97개`.
+    - Browser errors: none. Console: Vite connect logs only. Body and preview panel horizontal overflow: false. Preview panel closed after QA.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:50 KST - Saved Question Panel Summary Iteration Note
+
+- Improvement target:
+  - The dashboard open-question metric already gave a compact status summary, but the full `진료 전 질문` panel did not summarize the saved-question list before users started editing or adding questions.
+  - The useful next slice was a local panel-level summary that shows total saved questions, status mix, source-backed question count, and answer-memo count without adding new medical facts.
+- Code/docs changes:
+  - Updated `src/questionMetric.ts`.
+    - Added `buildQuestionListSummary()` plus typed summary items for total count, open/answered/deferred status mix, source-backed count, and answer-memo count.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `저장 질문 요약` chips below the `진료 전 질문` heading and before the form, with compact responsive wrapping and status/source/memo emphasis.
+  - Updated `src/questionMetric.test.ts`.
+    - Added regression coverage for mixed saved-question lists and empty lists.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the saved-question panel summary chip contract and added a design checklist item for horizontal overflow.
+- Verification so far:
+  - PASS: `npm run test -- src/questionMetric.test.ts` (1 file, 4 tests).
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/questionMetric.ts src/questionMetric.test.ts src/questionDisplay.ts src/questionDisplay.test.ts src/questionClipboard.ts src/questionClipboard.test.ts src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (37 files, 290 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Cleared browser errors and console, reloaded, and waited for `.question-panel-summary`.
+    - DOM check found `aria-label` as `저장 질문 요약 전체 1개 · 확인 필요 1개 · 근거 없음 · 답변 메모 없음`.
+    - Visible chips were `전체1개`, `확인 필요1개`, `근거없음`, and `답변 메모없음`.
+    - Each chip, the summary container, and the body had no horizontal overflow at 1094x859.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:54 KST - Saved Symptom Panel Summary Iteration Note
+
+- Improvement target:
+  - The `진료 전 질문` panel now had compact saved-list summary chips, but the adjacent `증상·부작용 기록` panel still did not summarize existing symptom records before the form.
+  - The useful next slice was a panel-level saved-symptom summary for severity mix, source-backed records, and care-queue candidates using existing severity/source/template rules only, without adding new medical facts.
+- Code/docs changes:
+  - Added `src/symptomMetric.ts`.
+    - Added `buildSymptomPanelSummary()` with typed summary items for total count, 고위험/관찰/안정 severity mix, source-backed record count, and care-queue candidate count.
+  - Added `src/symptomMetric.test.ts`.
+    - Covered mixed saved symptoms and the empty state.
+  - Updated `src/symptomSupportTemplates.ts`.
+    - Exported `isSymptomSupportCareQueueCandidate()` and reused it in the existing queue-hint formatter.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `저장 증상 요약` chips below the `증상·부작용 기록` heading and before the form, sharing the question-panel summary visual language with symptom-specific risk/watch/source/queue emphasis.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the saved-symptom panel summary chip contract.
+- Verification so far:
+  - PASS: `npm run test -- src/symptomMetric.test.ts src/symptomRecordLabels.test.ts` (2 files, 10 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/symptomMetric.ts src/symptomMetric.test.ts src/symptomSupportTemplates.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (38 files, 292 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - `surface:513` initially showed another local URL after workspace selection, so it was explicitly navigated back to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `저장 증상 요약 전체 6개 · 관찰 1개 · 안정 5개 · 근거 포함 5개 · 큐 후보 1개`.
+    - Visible chips were `전체6개`, `관찰1개`, `안정5개`, `근거포함 5개`, and `큐 후보1개`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console only had normal Vite debug connection logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:57 KST - Saved Lab Panel Summary Iteration Note
+
+- Improvement target:
+  - The question and symptom panels now had compact saved-list summary chips, but the `검사 수치 추적` panel still only showed a raw count.
+  - The useful next slice was a saved-lab summary that shows low/high/normal/reference-missing mix, source-backed records, and follow-up question candidates using existing `assessLabValue()` and lab source-evidence parsing only, without adding new medical facts.
+- Code/docs changes:
+  - Added `src/labMetric.ts`.
+    - Added `buildLabPanelSummary()` with typed summary items for total count, 낮음/높음/기준 없음/범위 내 mix, source-backed count, and follow-up question candidate count.
+  - Added `src/labMetric.test.ts`.
+    - Covered mixed saved lab results and the empty state.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `저장 검사 요약` chips below the `검사 수치 추적` heading and before the saved lab-result list, sharing the compact panel-summary visual language with lab-specific low/high/reference/source/question emphasis.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the saved-lab panel summary chip contract.
+- Verification so far:
+  - PASS: `npm run test -- src/labMetric.test.ts src/labSourceEvidence.test.ts` (2 files, 7 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/labMetric.ts src/labMetric.test.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (39 files, 294 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `저장 검사 요약 전체 1개 · 낮음 1개 · 근거 없음 · 질문 후보 1개`.
+    - Visible chips were `전체1개`, `낮음1개`, `근거없음`, and `질문 후보1개`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 01:59 KST - Food Judgment Summary Iteration Note
+
+- Improvement target:
+  - The cancer-food judgment panel already showed item-level official-source chips, but users had to scan every chip to see whether the input leaned toward diet-support candidates, limit/caution items, or care-team-confirmation items.
+  - The useful next slice was a compact food-judgment summary for matched item count, support/limit/care-team category counts, and unique official-source count using existing `assessCancerFood()` matches only, without adding new medical facts.
+- Code/docs changes:
+  - Added `src/foodMetric.ts`.
+    - Added `buildFoodPanelSummary()` with typed summary items for matched item count, 식단 후보, 제한/주의, 진료팀 확인, and official-source count.
+  - Added `src/foodMetric.test.ts`.
+    - Covered mixed food matches and the empty state.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `음식 판단 요약` chips below the `암환자 음식 판단` heading and before the food input, sharing the compact panel-summary visual language with food-specific support/limit/care-team/source emphasis.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the food-judgment summary chip contract.
+- Verification so far:
+  - PASS: `npm run test -- src/foodMetric.test.ts src/healthRules.test.ts` (2 files, 13 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/foodMetric.ts src/foodMetric.test.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (40 files, 296 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `음식 판단 요약 매칭 4개 · 식단 후보 2개 · 제한/주의 1개 · 진료팀 확인 1개 · 공식 출처 2개`.
+    - Visible chips were `매칭4개`, `식단 후보2개`, `제한/주의1개`, `진료팀 확인1개`, and `공식 출처2개`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:04 KST - Saved Document Panel Summary Iteration Note
+
+- Improvement target:
+  - The saved-document panel already had search, filters, review status, next-action updates, attachment checks, and a deleted archive, but users still had to scan the whole list to see the review/action/archive workload.
+  - The useful next slice was a compact saved-document summary for review-status mix, open next actions, attachment recovery needs, and deleted-document archive count using existing document states and `needsAttachmentRecovery()` only, without adding new medical facts.
+- Code/docs changes:
+  - Added `src/documentMetric.ts`.
+    - Added `buildDocumentPanelSummary()` with typed summary items for total count, 검토 필요/의료진 질문/결과 대기/정리 완료 mix, open next-action count, attachment-recovery count, and deleted-archive count.
+  - Added `src/documentMetric.test.ts`.
+    - Covered mixed saved documents and the empty state.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `저장 서류 요약` chips below the `저장된 서류` heading and before search/filters, sharing the compact panel-summary visual language with document-specific review/action/recovery/archive emphasis.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the saved-document panel summary chip contract.
+- Verification so far:
+  - PASS: `npm run test -- src/documentMetric.test.ts src/attachmentRecovery.test.ts` (2 files, 4 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css src/documentMetric.ts src/documentMetric.test.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (41 files, 298 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `저장 서류 요약 전체 1개 · 의료진 질문 1개 · 열린 조치 1개 · 첨부 복구 없음 · 삭제 보관 없음`.
+    - Visible chips were `전체1개`, `의료진 질문1개`, `열린 조치1개`, `첨부 복구없음`, and `삭제 보관없음`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:08 KST - Saved Vital Panel Summary Iteration Note
+
+- Improvement target:
+  - The BP/glucose input panel had source-backed input criteria and save-preview assessment, but users still had to infer the saved history mix from the chart, metric cards, or timeline.
+  - The useful next slice was a compact saved-vital summary for total count, BP/glucose type mix, and ok/watch/risk/neutral assessment mix using existing `assessVitalRecord()` only, without adding new medical facts.
+- Code/docs changes:
+  - Added `src/vitalMetric.ts`.
+    - Added `buildVitalPanelSummary()` with typed summary items for total count, 혈압/혈당 counts, and 고위험/관찰/기준 내/확인 필요 assessment counts.
+    - The summary accepts the existing diabetes option so saved glucose assessment mix updates with the profile's 당뇨 추적 mode.
+  - Added `src/vitalMetric.test.ts`.
+    - Covered mixed saved BP/glucose records and the empty state.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `저장 활력 요약` chips below the `혈압·혈당 입력` heading and before the form, sharing the compact panel-summary visual language with vital-specific type/status emphasis.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the saved-vital panel summary chip contract.
+- Verification so far:
+  - PASS: `npm run test -- src/vitalMetric.test.ts src/vitalRecordLabels.test.ts src/healthRules.test.ts` (3 files, 16 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css src/vitalMetric.ts src/vitalMetric.test.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (42 files, 300 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `저장 활력 요약 전체 3개 · 혈압 2개 · 혈당 1개 · 관찰 2개 · 기준 내 1개`.
+    - Visible chips were `전체3개`, `혈압2개`, `혈당1개`, `관찰2개`, and `기준 내1개`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:11 KST - Visit Panel Summary Iteration Note
+
+- Improvement target:
+  - The dashboard already had a 14-day appointment reminder strip, but the `병원 방문 기록` input panel itself did not summarize saved visit workload before the form.
+  - The useful next slice was a compact visit-panel summary for total visits, upcoming appointments, appointments inside the existing 14-day reminder window, and visits with summary/plan notes, using existing appointment-reminder date semantics only.
+- Code/docs changes:
+  - Added `src/visitMetric.ts`.
+    - Added `buildVisitPanelSummary()` with typed summary items for total count, 다가오는 일정, 14일 이내, and 요약/계획 counts.
+    - Reuses `buildAppointmentReminders()` for the 14-day window so panel summary and dashboard reminder semantics stay aligned.
+  - Added `src/visitMetric.test.ts`.
+    - Covered mixed past/future visits and the empty state.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `방문 기록 요약` chips below the `병원 방문 기록` heading and before the form, sharing the compact panel-summary visual language with visit-specific upcoming/soon/plan emphasis.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the visit-panel summary chip contract.
+- Verification so far:
+  - PASS: `npm run test -- src/visitMetric.test.ts src/appointmentReminders.test.ts` (2 files, 5 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css src/visitMetric.ts src/visitMetric.test.ts`.
+  - PASS: `npm run typecheck` after removing one unused constant.
+  - PASS: `npm run test` (43 files, 302 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `방문 기록 요약 전체 1개 · 다가오는 일정 1개 · 14일 이내 1개 · 요약/계획 1개`.
+    - Visible chips were `전체1개`, `다가오는 일정1개`, `14일 이내1개`, and `요약/계획1개`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:14 KST - Cervical Care Note Summary Chips Iteration Note
+
+- Improvement target:
+  - The 자궁경부암 케어 노트 had a long copy-helper summary and dense source-backed checklist sections, but the panel itself did not offer small first-scan chips for item/source counts before the checklist.
+  - The useful next slice was compact top summary chips for total items, priority items, profile screening summary, warning cards, question drafts, record/recovery/prevention items, and official-source count, reusing the existing clipboard summary counts without adding new medical facts.
+- Code/docs changes:
+  - Added `src/cervicalCancerCareMetric.ts`.
+    - Added `buildCervicalCancerCarePanelSummary()` to convert the existing clipboard summary into visible chip items.
+  - Added `src/cervicalCancerCareMetric.test.ts`.
+    - Covered profile-specific screening-summary inclusion and generic no-profile summary behavior.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `자궁경부암 케어 노트 요약` chips below the panel title and before the non-diagnosis boundary note.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the cervical care note top summary chip contract.
+- Verification so far:
+  - PASS: `npm run test -- src/cervicalCancerCareMetric.test.ts src/cervicalCancerCareClipboard.test.ts` (2 files, 6 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css src/cervicalCancerCareMetric.ts src/cervicalCancerCareMetric.test.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (44 files, 304 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `자궁경부암 케어 노트 요약 전체 40개 · 우선 3개 · 검진요약 1개 · 경고 4개 · 질문 10개 · 기록/회복/예방 22개 · 공식 출처 17개`.
+    - Visible chips were `전체40개`, `우선3개`, `검진요약1개`, `경고4개`, `질문10개`, `기록/회복/예방22개`, and `공식 출처17개`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:16 KST - Recent Timeline Summary Chips Iteration Note
+
+- Improvement target:
+  - The recent timeline mixes vitals, visits, documents, symptoms, questions, and labs, but users had to scan rows to understand record coverage and source-backed entries.
+  - The useful next slice was compact recent-timeline summary chips for total records, record-type counts, and source-backed record count before the mixed list.
+- Code/docs changes:
+  - Added `src/timelineMetric.ts`.
+    - Added `buildTimelinePanelSummary()` with typed summary items for total, 활력, 방문, 서류, 증상, 질문, 검사, and 근거 포함 counts.
+  - Added `src/timelineMetric.test.ts`.
+    - Covered mixed record counts and the empty state.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `최근 타임라인 요약` chips before the timeline list.
+    - Source-backed count uses existing symptom, question, and lab evidence parsing rules rather than new medical logic.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the recent-timeline summary chip contract.
+- Verification so far:
+  - PASS: `npm run test -- src/timelineMetric.test.ts src/questionDisplay.test.ts src/symptomDisplay.test.ts src/labSourceEvidence.test.ts` (4 files, 14 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css src/timelineMetric.ts src/timelineMetric.test.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (45 files, 306 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `최근 타임라인 요약 전체 13개 · 활력 3개 · 방문 1개 · 서류 1개 · 증상 6개 · 질문 1개 · 검사 1개 · 근거 포함 5개`.
+    - Visible chips were `전체13개`, `활력3개`, `방문1개`, `서류1개`, `증상6개`, `질문1개`, `검사1개`, and `근거 포함5개`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:20 KST - Care Action Queue Summary Chips Iteration Note
+
+- Improvement target:
+  - The dashboard care action queue already showed source-breakdown chips and preserved that breakdown in copy affordances, but users still had to scan rows to understand how much of the queue required review versus schedule/general follow-up.
+  - The useful next slice was compact queue summary chips for total items, watch-tone items, neutral schedule/general items, and source-backed items before the existing source breakdown.
+- Code/docs changes:
+  - Added `src/careActionQueueMetric.ts`.
+    - Added `buildCareActionQueuePanelSummary()` with explicit total, `watch`, `neutral`, and `근거:` detail counts.
+    - Reuses existing care action row data only; it does not add medical criteria or change queue inclusion.
+  - Added `src/careActionQueueMetric.test.ts`.
+    - Covered mixed tone/source-backed rows and the empty state.
+  - Updated `src/careActionQueue.ts` and `src/careActionQueue.test.ts`.
+    - Added shared tone/source-backed count formatting so the summary chips, copy button label/title, copy status, and copied checklist header use the same numbers.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `진료 준비 큐 요약` chips above the source breakdown with no change to existing queue copy labels or source-count chips.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the tone/source-backed summary chip and queue-copy contract.
+- Verification so far:
+  - PASS: `npm run test -- src/careActionQueueMetric.test.ts src/careActionQueue.test.ts` (2 files, 27 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css src/careActionQueue.ts src/careActionQueue.test.ts src/careActionQueueMetric.ts src/careActionQueueMetric.test.ts working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 308 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `진료 준비 큐 요약 전체 8개 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 4개`.
+    - Copy button `aria-label`/`title` were `진료 준비 큐 8개 항목 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 4개 · 증상 1 · 자궁경부 1 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1 복사`.
+    - Visible chips were `전체8개`, `확인 필요6개`, `일정/일반2개`, and `근거 포함4개`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:28 KST - Caregiver Share Settings Summary Chips Iteration Note
+
+- Improvement target:
+  - The caregiver-share controls already had section include/exclude text and stale-preview protection, but the live topbar controls did not summarize preset intent, profile redaction, memo presence, and include/exclude counts in one first-scan row.
+  - The useful next slice was compact summary chips for the current caregiver-share scope before preview/export, without changing exported content or privacy defaults.
+- Code/docs changes:
+  - Updated `src/caregiverShareSettings.ts`.
+    - Added `buildCaregiverShareSettingsPanelSummary()` with preset, profile, memo, included-section count, and excluded-section count items plus an accessible summary label.
+    - Added caregiver share export/preview description and status formatters that reuse the same compact share-scope summary.
+  - Updated `src/caregiverShareSettings.test.ts`.
+    - Covered privacy-minimal preset summary chips, the default settings summary, and caregiver share export/preview labels plus status text.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added `보호자 공유 설정 요약` chips in the topbar caregiver-share controls.
+    - Added the same share-scope summary to `공유본` and `공유본 미리보기` button `aria-label`/`title`, plus preview/export status feedback.
+    - Chips include hover titles with full preset or section scope details and wrap safely inside the topbar.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the live caregiver-share settings summary chip and action-label/status contract.
+- Verification so far:
+  - PASS: `npm run test -- src/caregiverShareSettings.test.ts` (1 file, 17 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 311 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found `aria-label` as `보호자 공유 설정 요약 공유 의도 직접 설정 · 프로필 표시 · 전달 메모 없음 · 포함 7개 · 제외 0개`.
+    - `공유본` button `aria-label`/`title` were `보호자 공유본 내보내기 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개`.
+    - `공유본 미리보기` button `aria-label`/`title` and post-click status were `보호자 공유본 미리보기 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개` and `보호자 공유본 미리보기 생성 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개`.
+    - Visible chips were `의도직접 설정`, `프로필표시`, `메모없음`, `포함7개`, and `제외없음`.
+    - Chip titles preserved full details including `포함 진료, 질문, 서류, 증상, 검사, 음식, 혈압·혈당`.
+    - Each chip, the summary container, and the body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:36 KST - Backup Export Scope Summary Iteration Note
+
+- Improvement target:
+  - The full-state JSON backup already sanitized local attachment paths and preserved attachment filenames, but the topbar `내보내기` button did not say what scope would be included before export.
+  - The useful next slice was to summarize backup scope in the export button label/title and post-export status: profile, record count, caregiver-share settings, and attachment filename count.
+- Code/docs changes:
+  - Updated `src/backupState.ts`.
+    - Added `buildCareVaultBackupScopeSummary()`, `formatCareVaultBackupScopeCompactSummary()`, `formatCareVaultBackupExportDescription()`, and `formatCareVaultBackupExportStatus()`.
+    - The summary counts saved record arrays, includes deleted-document archive records, counts attachment filenames only, and never exposes local attachment paths.
+  - Updated `src/backupState.test.ts`.
+    - Covered scope summary counts, export label/status text, and no local path leakage.
+  - Updated `src/App.tsx`.
+    - Added backup export `aria-label`/`title` with the compact scope summary.
+    - Updated backup export success status with the same summary.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the backup export scope summary contract.
+- Verification so far:
+  - PASS: `npm run test -- src/backupState.test.ts` (1 file, 6 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/backupState.ts src/backupState.test.ts`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 312 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM check found the backup button `aria-label`/`title` as `전체 백업 내보내기 · 프로필 포함 · 기록 13개 · 공유 설정 포함 · 첨부 파일명 0개`.
+    - Download click was tested with anchor navigation stubbed; generated filename was `carevault-backup-2026-06-04.json`.
+    - Post-export status rendered `백업 내보냄 · 프로필 포함 · 기록 13개 · 공유 설정 포함 · 첨부 파일명 0개`.
+    - Backup button and body had no horizontal overflow.
+    - Browser errors were empty; console had no entries after clearing.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:41 KST - Backup Import Scope Summary Iteration Note
+
+- Improvement target:
+  - The JSON backup import path already failed closed for invalid JSON or malformed backup objects, but the topbar `가져오기` button and success feedback did not explain the JSON-validation, state-replacement, imported-scope, or attachment-reattachment boundary before/after import.
+  - The useful next slice was to reuse the backup scope summary for import success while keeping the existing validation and state-replacement behavior unchanged.
+- Code/docs changes:
+  - Updated `src/backupState.ts`.
+    - Added `formatCareVaultBackupImportDescription()`, `formatCareVaultBackupImportSuccessDetail()`, and `formatCareVaultBackupImportStatus()`.
+    - Import success detail now summarizes imported profile, record count, caregiver-share settings, and attachment filename count, and explicitly says when restored attachment filenames need reattachment.
+  - Updated `src/backupState.test.ts`.
+    - Covered import description, success detail, status text, and no local path leakage.
+  - Updated `src/App.tsx`.
+    - Added backup import `aria-label`/`title` with JSON-validation and replacement/reattachment boundaries.
+    - Updated successful import feedback and saved action status with the imported backup scope summary.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the backup import label/status contract alongside the backup export scope contract.
+- Verification so far:
+  - PASS: `npm run test -- src/backupState.test.ts` (1 file, 7 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/backupState.ts src/backupState.test.ts working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 313 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM snapshot and eval found the backup import button `aria-label`/`title` as `CareVault 백업 가져오기 · JSON 구조 검증 후 기존 기록 교체 · 첨부 파일명은 재첨부 필요`.
+    - Backup import button and body had no horizontal overflow.
+    - Synthetic file input injection reached the native `change` event with one JSON file, but did not trigger React's file-input handler from the untrusted DOM event; unit tests cover the success-detail/status formatter path.
+    - The synthetic payload included `/Users/wj/private/qa-result.pdf`, but because the React file-input handler did not run from the untrusted DOM event, storage stayed on the original app state; post-restore checks confirmed the QA profile was not persisted. Unit tests cover the sanitized import success detail/status path and no local path leakage.
+    - Final browser errors were empty; final console entries were empty after clearing reload-time Vite debug logs.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:47 KST - Visit Summary Range-Aware Action Labels Iteration Note
+
+- Improvement target:
+  - The visit-summary Markdown export already respected the selected 7/30/90-day/all-record range and stale-preview guards, but the topbar `진료 요약` and `요약 미리보기` buttons did not expose the selected range in their accessible labels or hover titles.
+  - The useful next slice was to preserve the same selected range in export/preview button labels and post-action status feedback, without changing the Markdown content or date filtering.
+- Code/docs changes:
+  - Updated `src/visitPacket.ts`.
+    - Added `formatVisitPacketExportDescription()`, `formatVisitPacketExportStatus()`, `formatVisitPacketPreviewDescription()`, and `formatVisitPacketPreviewStatus()`.
+  - Updated `src/visitPacket.test.ts`.
+    - Added coverage for range-aware export and preview action labels.
+  - Updated `src/App.tsx`.
+    - Added range-aware `aria-label`/`title` text to `진료 요약` and `요약 미리보기`.
+    - Updated visit-summary export and preview status feedback to preserve the selected range.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the visit-summary range-aware action-label/status contract.
+- Verification so far:
+  - PASS: `npm run test -- src/visitPacket.test.ts` (1 file, 18 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/visitPacket.ts src/visitPacket.test.ts working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 314 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - Default 30-day buttons rendered `aria-label`/`title` as `진료 요약 내보내기 · 범위 최근 30일` and `진료 요약 미리보기 · 범위 최근 30일`.
+    - After selecting `요약 7일`, visible status became `진료 요약 범위: 최근 7일`.
+    - The export and preview button `aria-label`/`title` changed to `진료 요약 내보내기 · 범위 최근 7일` and `진료 요약 미리보기 · 범위 최근 7일`.
+    - Clicking preview produced status `진료 요약 미리보기 생성 · 범위 최근 7일`.
+    - Download click was tested with anchor navigation stubbed; generated filename was `carevault-visit-summary-2026-06-04.md` from a blob URL and status became `진료 요약 내보냄 · 범위 최근 7일`.
+    - Export button, preview button, and body had no horizontal overflow; the selector was restored to `요약 30일`.
+    - Final browser errors were empty; final console entries were empty.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:52 KST - CSV Export Scope Action Labels Iteration Note
+
+- Improvement target:
+  - The CSV companion export already included rich rows for records, care queue, Korean standards, source evidence, food checks, and cervical-cancer references, but the topbar `CSV` and `CSV 미리보기` buttons did not expose that scope before activation.
+  - The useful next slice was to summarize CSV export scope in the button labels/titles and post-action status without changing the CSV schema or medical content.
+- Code/docs changes:
+  - Updated `src/csvExport.ts`.
+    - Added `buildCsvExportScopeSummary()`, `formatCsvExportScopeSummary()`, `formatCsvExportDescription()`, `formatCsvExportStatus()`, `formatCsvPreviewDescription()`, and `formatCsvPreviewStatus()`.
+    - The summary covers saved record count, care queue maximum, cervical-reference inclusion, food-check inclusion, standards/source rows, and local-path exclusion.
+  - Updated `src/csvExport.test.ts`.
+    - Added coverage for CSV scope summary, export label/status text, and preview label/status text.
+  - Updated `src/App.tsx`.
+    - Added range/scope-aware `aria-label`/`title` text to `CSV` and `CSV 미리보기`.
+    - Updated CSV export and preview status feedback to preserve the same scope summary.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the CSV export/preview action-label/status contract.
+- Verification so far:
+  - PASS: `npm run test -- src/csvExport.test.ts` (1 file, 18 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/csvExport.ts src/csvExport.test.ts working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 315 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - DOM snapshot and eval found `CSV` button `aria-label`/`title` as `CSV 내보내기 · 기록 13개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외`.
+    - DOM snapshot and eval found `CSV 미리보기` button `aria-label`/`title` as `CSV 미리보기 · 기록 13개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외`.
+    - Clicking preview produced status `CSV 미리보기 생성 · 기록 13개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외`.
+    - Preview summary rendered `형식 CSV 분량 159줄 문자 40,240자 크기 64,160B 출처 표식 근거/출처 74개`.
+    - Download click was tested with anchor navigation stubbed; generated filename was `carevault-records-2026-06-04.csv` from a blob URL and status became `CSV 내보냄 · 기록 13개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외`.
+    - CSV export button, CSV preview button, and body had no horizontal overflow.
+    - Final browser errors were empty; final console entries were empty.
+  - No git staging or commit was performed.
+
+## 2026-06-05 02:56 KST - CSV Preview Stale Record Guard Iteration Note
+
+- Improvement target:
+  - The CSV preview now exposed its export scope, but it still had no stale guard if CSV-relevant records changed after preview generation.
+  - The useful next slice was to snapshot CSV-relevant state at preview generation time, block stale copy/print/download actions, and offer a fresh CSV preview action.
+- Code/docs changes:
+  - Updated `src/csvExport.ts`.
+    - Added `buildCsvExportFingerprint()`, limited to CSV-relevant fields.
+    - The fingerprint intentionally excludes `attachmentPath` so local paths are not copied into the preview freshness marker.
+  - Updated `src/csvExport.test.ts`.
+    - Covered fingerprint changes for CSV-relevant content and no local attachment path leakage.
+  - Updated `src/App.tsx`.
+    - Added `csvExportFingerprint` to `ExportPreviewState`.
+    - Added stale CSV preview detection to `guardFreshExportPreview()`, disabled preview copy/print/download controls when stale, and added a `CSV 미리보기 기록 변경 감지` alert with a fresh-preview action.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented stale CSV preview protection.
+- Verification so far:
+  - PASS: `npm run test -- src/csvExport.test.ts` (1 file, 19 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/csvExport.ts src/csvExport.test.ts working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 316 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - Generated a CSV preview, then changed the food query from `브로콜리, 현미밥, 베이컨, 자몽 주스` to include `생굴`.
+    - Stale alert rendered `CSV 기록이 바뀌었습니다 현재 미리보기는 이전 기록으로 생성되었습니다. 새 미리보기`.
+    - Preview `복사`, `인쇄`, and `다운로드` buttons were disabled with title `CSV 기록이 바뀌어 새 미리보기가 필요합니다.`; `닫기` remained enabled.
+    - Clicking `새 미리보기` removed the stale alert and re-enabled copy/print/download.
+    - Status after regeneration was `CSV 미리보기 생성 · 기록 13개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외`.
+    - Temporary food-query change was restored in `localStorage` and the rendered textarea after reload.
+    - Final browser errors were empty; final console entries were empty.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:01 KST - Visit Summary Preview Stale Record Guard Iteration Note
+
+- Improvement target:
+  - The visit-summary Markdown preview already detected selected-range changes, but it could still let users copy/print/download an older Markdown packet if records or the food query changed while the range stayed the same.
+  - The useful next slice was to snapshot Markdown-relevant visit-summary state at preview generation time, block stale copy/print/download actions, and offer a fresh visit-summary preview action.
+- Code/docs changes:
+  - Updated `src/visitPacket.ts`.
+    - Added `buildVisitPacketExportFingerprint()`, limited to Markdown-relevant visit-summary fields plus the current food query.
+    - The fingerprint intentionally excludes `attachmentPath` so local file paths are not copied into the preview freshness marker.
+  - Updated `src/visitPacket.test.ts`.
+    - Covered fingerprint changes for visit-summary content and no local attachment path leakage.
+  - Updated `src/App.tsx`.
+    - Added `visitPacketExportFingerprint` to `ExportPreviewState`.
+    - Added stale visit-summary content detection to `guardFreshExportPreview()`, disabled preview copy/print/download controls when stale, and added a `진료 요약 미리보기 기록 변경 감지` alert with a fresh-preview action.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented stale visit-summary range/record preview protection.
+- Verification so far:
+  - PASS: `npm run test -- src/visitPacket.test.ts` (1 file, 19 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/visitPacket.ts src/visitPacket.test.ts working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 317 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - Generated a visit-summary preview, then changed the food query from `브로콜리, 현미밥, 베이컨, 자몽 주스` to include `생굴` using cmux `fill`.
+    - Stale alert rendered `진료 요약 기록이 바뀌었습니다 현재 미리보기는 이전 기록으로 생성되었습니다. 새 미리보기`.
+    - Preview `복사`, `인쇄`, and `다운로드` buttons were disabled with title `진료 요약 기록이 바뀌어 새 미리보기가 필요합니다.`; `닫기` remained enabled.
+    - Clicking `새 미리보기` removed the stale alert and re-enabled copy/print/download.
+    - Status after regeneration was `진료 요약 미리보기 생성 · 범위 최근 30일`.
+    - Temporary food-query change was restored in `localStorage` and the rendered textarea after reload.
+    - Final browser errors were empty; final console entries were empty.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:10 KST - Caregiver Preview Stale Record Guard Iteration Note
+
+- Improvement target:
+  - Caregiver HTML previews already detected share-setting changes, but they could still let users copy/print/download an older family-share page if shared records changed while settings stayed the same.
+  - The useful next slice was to snapshot section-scoped caregiver export content at preview generation time, block stale copy/print/download actions, and offer a fresh caregiver preview action.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - Added `buildCaregiverExportContentFingerprint()`, scoped to the enabled caregiver share sections.
+    - The fingerprint intentionally excludes `attachmentPath` so local file paths are not copied into the preview freshness marker.
+  - Updated `src/caregiverExport.test.ts`.
+    - Covered fingerprint changes for shared caregiver content, disabled-section scoping, and no local attachment path leakage.
+  - Updated `src/App.tsx`.
+    - Added `caregiverShareContentFingerprint` to `ExportPreviewState`.
+    - Added stale caregiver content detection to `guardFreshExportPreview()`, disabled preview copy/print/download controls when stale, and added a `보호자 공유본 미리보기 기록 변경 감지` alert with a fresh-preview action.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented stale caregiver setting/record preview protection.
+- Verification so far:
+  - PASS: `npm run test -- src/caregiverExport.test.ts` (1 file, 29 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/caregiverExport.ts src/caregiverExport.test.ts working.md`.
+  - PASS: `npm run test` (46 files, 318 tests).
+  - PASS: `npm run build`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Explicitly navigated `surface:513` to `http://127.0.0.1:1420/` before QA.
+    - Generated a caregiver preview, then changed the food query from `브로콜리, 현미밥, 베이컨, 자몽 주스` to include `생굴` using cmux `fill`.
+    - Stale alert rendered `보호자 공유본 기록이 바뀌었습니다 현재 미리보기는 이전 기록으로 생성되었습니다. 새 미리보기`.
+    - Preview `복사`, `인쇄`, and `다운로드` buttons were disabled with title `보호자 공유본 기록이 바뀌어 새 미리보기가 필요합니다.`; `닫기` remained enabled.
+    - Clicking `새 미리보기` removed the stale alert and re-enabled copy/print/download.
+    - Status after regeneration was `보호자 공유본 미리보기 생성 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개`.
+    - Temporary food-query change was restored in `localStorage` and the rendered textarea after reload.
+    - Final browser errors were empty; final console entries were empty.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:19 KST - Caregiver Preview Settings-Stale Precedence Iteration Note
+
+- Improvement target:
+  - The new caregiver record-stale guard worked for shared record changes, but a settings-only section change could also trigger the record-stale alert because the content fingerprint was recomputed with the current section settings.
+  - The useful next slice was to compare caregiver preview content against the preview-generation section scope and avoid duplicate record-stale messaging when settings alone changed.
+- Baseline RED evidence:
+  - In cmux `surface:513`, generated a caregiver preview with all sections included, then toggled only the `음식` share section off.
+  - Before the fix, the preview rendered both `공유 설정이 바뀌었습니다` and `보호자 공유본 기록이 바뀌었습니다` even though no shared record had changed.
+- Code/docs changes:
+  - Updated `src/caregiverExport.ts`.
+    - Added `isCaregiverExportContentFingerprintStale()` so content freshness can be tested against an explicit preview section snapshot.
+  - Updated `src/App.tsx`.
+    - Recomputed caregiver content freshness with `caregiverShareSettingsSnapshot.sections` instead of the current share sections.
+    - Suppressed the caregiver record-stale alert while caregiver settings are already stale, so settings-only changes report only the settings cause.
+  - Updated `src/caregiverExport.test.ts`.
+    - Added snapshot-scoped content freshness coverage.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented caregiver settings-stale precedence and generated-section-scope record checks.
+- Verification so far:
+  - PASS: `npm run test -- src/caregiverExport.test.ts` (1 file, 30 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/caregiverExport.ts src/caregiverExport.test.ts working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `cmux select-workspace --workspace workspace:11`, then right-side in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Repeated the settings-only path: generated a caregiver preview, toggled only the `음식` section off, and confirmed only the settings-stale alert rendered.
+    - Confirmed the record-stale alert was absent, copy/print/download were disabled with title `공유 설정이 바뀌어 새 미리보기가 필요합니다.`, and `닫기` remained enabled.
+    - Clicking `새 미리보기` removed stale alerts and re-enabled copy/print/download for the 6-section preview.
+    - Restored `음식` to included, reloaded, and confirmed the caregiver preview label returned to `포함 7개 · 제외 0개`.
+    - Final browser errors were empty; final console entries were empty.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:22 KST - WKWebView Select Touch Target Iteration Note
+
+- Improvement target:
+  - The export/caregiver topbar relies on native selects for visit-summary range and caregiver share presets.
+  - In the current cmux WKWebView surface, those selects rendered below the intended visual/touch height because `min-height` alone did not determine the native select control box.
+- Baseline evidence:
+  - In right-side cmux in-app browser `surface:513` at `http://127.0.0.1:1420/`, the visit-summary range select rendered at 24px high and the caregiver preset select rendered at 20px high.
+  - The page had no horizontal overflow, but the native select controls did not meet the intended desktop or mobile touch-target contract.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Added explicit `height: 40px` for `.summary-range-select`.
+    - Added explicit `height: 32px` for `.caregiver-share-preset-select`.
+    - Added explicit 44px heights for both selects inside the existing `max-width: 760px` responsive block.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that native range/preset selects are part of the mobile touch-target contract.
+- Verification so far:
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.css working.md`.
+  - PASS: right-side cmux in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - After reload, the visit-summary range select rendered at 40px high.
+    - After reload, the caregiver preset select rendered at 32px high.
+    - `document.documentElement.scrollWidth` equaled `clientWidth`, so current cmux surface had no horizontal overflow.
+    - Browser errors were empty; final console entries were empty after clearing normal Vite debug logs.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:25 KST - Narrow Stale Preview Action Layout Iteration Note
+
+- Improvement target:
+  - After fixing native select heights, a 320px responsive smoke test still showed the export-preview stale alert's `새 미리보기` action as a narrow 72px by 97px vertical button.
+  - The useful next slice was to keep the stale action at a normal 44px touch height and make it span the alert width on narrow screens.
+- Baseline evidence:
+  - Playwright 320x900 viewport at `http://127.0.0.1:1420/` generated a caregiver preview, toggled only the `음식` share section off, and measured the stale-alert fresh-preview button at 72px wide by 97px high.
+  - The page had no horizontal overflow, but the button shape was awkward and made the Korean label wrap too narrowly.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - In the existing `max-width: 760px` media block, changed `.export-preview-stale-alert` to a two-column grid and made its `.secondary-inline-button` span the full alert width.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented full-width stale-preview actions at mobile width.
+- Verification so far:
+  - PASS: Playwright 320x900 smoke test.
+    - `scrollWidth` equaled `clientWidth` at 320px.
+    - Settings-only caregiver stale alert rendered without the record-stale alert.
+    - Fresh-preview button measured 222px wide by 44px high.
+    - Disabled copy/print/download buttons remained 44px high with the settings-stale disabled title.
+  - PASS: right-side cmux in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - After reload, current surface had no horizontal overflow.
+    - Visit-summary range select remained 40px high and caregiver preset select remained 32px high.
+    - Browser errors were empty; final console entries were empty after clearing normal Vite debug logs.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:31 KST - Mobile Touch Target Sweep Iteration Note
+
+- Improvement target:
+  - After the stale-preview action fix, a whole-page 320px interactive-control audit still found compact controls outside the caregiver preview path.
+  - The useful next slice was to apply the mobile touch-target contract across visible controls, disclosure summaries, and source links without introducing horizontal overflow.
+- Baseline evidence:
+  - Playwright 320x1200 viewport at `http://127.0.0.1:1420/` initially found 32 under-44 actionable controls after excluding raw checkbox/radio inputs.
+  - Remaining sub-44 controls included cervical warning draft buttons, cervical disclosure summaries, primary add buttons, question priority/status controls, document filters, and update-status selects.
+  - After the first CSS pass, buttons, inputs, selects, and summaries were fixed, but official-source links and nav anchors remained below 44px because they were inline or compact links.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Added mobile-only 44px minimum heights for primary buttons, secondary inline buttons, cervical action buttons, question status buttons, disclosure summaries, native selects, document update controls, and visible source links.
+    - Added mobile-only `inline-flex` alignment for `a[href]` so official-source links receive a measurable touch box.
+    - Kept the changes inside the existing `max-width: 760px` responsive block so desktop density remains unchanged.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that mobile-width form controls, disclosure summaries, checkbox labels, official-source links, and stale-preview actions are part of the 44px touch-target contract.
+- Verification so far:
+  - PASS: Playwright 320x1200 whole-page audit.
+    - `scrollWidth` equaled `clientWidth` at 320px.
+    - `under44Actionable` was empty.
+    - `protrudingActionable` was empty.
+    - `rawCheckboxLabelsUnder44` was empty.
+  - PASS: right-side cmux in-app browser `surface:513` at `http://127.0.0.1:1420/`.
+    - Current WKWebView surface measured 1094px wide, so the mobile media block was not active there.
+    - Current surface still had no horizontal overflow.
+    - Visit-summary range select remained 40px high and caregiver preset select remained 32px high on the current desktop-width surface.
+    - Browser errors were empty; final console entries were empty after clearing normal Vite debug logs.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:36 KST - Stateful Toggle Accessible Name Iteration Note
+
+- Improvement target:
+  - The right-side cmux accessibility snapshot showed several caregiver-share and profile-mode checkboxes as generic `on` entries.
+  - DOM labels existed visually, but the useful next slice was to make the toggle state and next action explicit for automation and assistive tools.
+- Baseline evidence:
+  - cmux `surface:513` snapshot showed caregiver-share section and profile mode checkboxes as `checkbox "on"` without the section or tracking-mode intent.
+  - Playwright DOM inspection confirmed the visible label text existed, but `aria-label` and `title` were empty for those checkbox inputs.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added stateful accessible-label helpers for caregiver profile redaction, caregiver share sections, and profile tracking mode toggles.
+    - Added matching `aria-label` and `title` values to the profile redaction checkbox, caregiver section checkboxes, and cancer-care/diabetes/hypertension tracking checkboxes.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that caregiver-share and profile tracking toggles expose current state plus next action to assistive tools.
+- Verification so far:
+  - PASS: Playwright DOM inspection showed all 11 checkbox inputs now have non-empty stateful `aria-label` and `title` values.
+  - PASS: Playwright label-driven interaction found the new accessible names, toggled the `음식` caregiver section off, found the updated excluded-state label, and restored the section to checked.
+  - PASS: Playwright confirmed `http://127.0.0.1:1420/` loads with `document.readyState` complete and no horizontal overflow at 1094px.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - BLOCKED: cmux `surface:513` browser-control commands (`snapshot`, `eval`, `goto --snapshot-after`, `errors list`, `console list`, and `url`) timed out after a reload, so right-side cmux surface QA could not be completed in this slice.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:44 KST - Tablet Topbar Title Wrap Iteration Note
+
+- Improvement target:
+  - The real right-side cmux browser showed the Korean page title squeezed beside dense export and caregiver-share controls at the current tablet-ish surface width.
+  - The useful next slice was to keep the title readable above the dense action group without changing the existing desktop or mobile visual direction.
+- Baseline evidence:
+  - Computer Use on the right-side cmux app confirmed the browser pane was alive at `http://127.0.0.1:1420/` and visually showed `나의 건강 기록` wrapping per syllable in a narrow topbar column.
+  - Playwright 1094px viewport baseline measured `.topbar` at 1034px by 322px, the `h1` at 55px by 221px, and `.top-actions` at 961px by 322px with no horizontal overflow.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - In the existing `max-width: 1120px` media block, changed `.topbar` to `display: grid` and left-aligns `.top-actions`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the 1120px topbar stacking rule so dense export/caregiver-share controls cannot collapse the Korean page title into vertical text.
+- Verification so far:
+  - PASS: Playwright 1094px post-fix measurement.
+    - `scrollWidth` equaled `clientWidth`.
+    - `.topbar` used grid layout.
+    - The `h1` measured 1034px wide by 37px high instead of the 55px by 221px baseline.
+    - `.top-actions` measured 1034px wide by 322px high and no actionable controls protruded past the viewport.
+  - PASS: Playwright 760px and 320px responsive smoke measurements.
+    - `scrollWidth` equaled `clientWidth` at both widths.
+    - The title remained a normal 32px-high line box at both widths.
+    - No actionable controls protruded past the viewport.
+  - PASS: local dev server availability.
+    - `curl -I http://127.0.0.1:1420/` returned HTTP 200.
+    - `cmux browser status` returned `enabled`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - BLOCKED: right-side cmux visual re-check after HMR.
+    - Computer Use showed the active right browser tab had drifted to a blank `새 탭`; the existing `CareVault` tab remained visible but did not switch through AX or coordinate clicks.
+    - `cmux browser --surface surface:513 errors list` and `console list` both timed out under a 5-second wrapper, matching the earlier cmux CLI timeout behavior.
+    - The layout fix is therefore verified through Playwright fixed-viewports and local dev-server HTTP proof, not through a fresh post-HMR cmux surface screenshot.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:48 KST - Symptom Severity Slider Touch Target Iteration Note
+
+- Improvement target:
+  - After the mobile touch-target sweep, the remaining 320px/760px audit entries were hidden file inputs and the symptom severity range slider.
+  - The hidden file inputs were already `tabIndex=-1`, so the useful next slice was the focusable slider: expose its state in the accessible name and make its mobile touch box meet the 44px contract.
+- Baseline evidence:
+  - Playwright 320px inspection found three `input[type=file]` elements with `className="visually-hidden"` and `tabIndex=-1`; these were not real focusable controls.
+  - The single `input[type=range]` remained focusable with empty `aria-label`/`title` and measured 172px by 40px at 320px.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added current-value `aria-label` and `title` text to the symptom severity slider.
+  - Updated `src/App.css`.
+    - In the existing `max-width: 760px` block, set the symptom severity range input to 44px height.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented symptom severity sliders as part of the mobile touch-target and accessible-label contract.
+- Verification so far:
+  - PASS: Playwright 760px and 320px focused-control audit.
+    - `scrollWidth` equaled `clientWidth` at both widths.
+    - The symptom severity slider measured 612px by 44px at 760px and 172px by 44px at 320px.
+    - The slider exposed `증상 심한 정도 3/10 · 좌우로 조정합니다` as both `aria-label` and `title`.
+    - Focusable visible under-44 controls and protruding controls were empty after excluding hidden file inputs with `tabIndex=-1`.
+  - PASS: Playwright keyboard interaction.
+    - Focusing the slider and pressing ArrowRight five times updated the accessible label from `3/10` to `8/10` and the visible value to `8/10`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:52 KST - Right-Pane Caregiver Topbar Control Target Iteration Note
+
+- Improvement target:
+  - A fresh Playwright audit at the cmux-like 1094px right-pane width found the caregiver memo preset buttons, caregiver share reset button, and caregiver share preset select still rendered at 32px high.
+  - The useful next slice was to make those dense topbar caregiver controls easier to operate in the right-side browser without changing the broader desktop density.
+- Baseline evidence:
+  - Playwright 1094px audit loaded `http://127.0.0.1:1420/` with `document.readyState` complete and no horizontal overflow.
+  - Under-40 topbar controls included `식사`, `증상`, `서류` memo preset buttons, `공유 설정 초기화`, and the caregiver preset select at 32px height.
+  - The memo preset buttons and reset button had visible text but no explicit `aria-label`/`title`; the caregiver preset select had an aria label but no title or current-preset detail.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added intent-specific `aria-label` and `title` text to caregiver memo preset buttons and the caregiver reset button.
+    - Added current preset detail to the caregiver preset select's `aria-label` and `title`.
+  - Updated `src/App.css`.
+    - In the existing `max-width: 1120px` block, set caregiver memo preset buttons, reset, and preset select to 40px height.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the right-pane caregiver topbar control target and intent-label contract.
+- Verification so far:
+  - PASS: Playwright 1094px caregiver topbar audit.
+    - `scrollWidth` equaled `clientWidth`.
+    - The three memo preset buttons each measured 65px by 40px and exposed `보호자 공유본 전달 메모 프리셋 적용: ...` as text/title.
+    - The reset button measured 130px by 40px and exposed `보호자 공유 설정 초기화` as text/title.
+    - The preset select measured 132px by 40px and exposed `보호자 공유 설정 프리셋 · 현재 프리셋 미선택` as text/title.
+    - No controls protruded past the viewport; the only remaining under-40 topbar item was the hidden file input.
+  - BLOCKED: cmux browser `open http://127.0.0.1:1420/ --focus true` timed out under an 8-second wrapper, so this slice used Playwright fixed-width evidence instead of a fresh cmux screenshot.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:54 KST - Dashboard Metric Source Target Iteration Note
+
+- Improvement target:
+  - After the right-pane caregiver topbar fix, the next 1094px audit showed the dashboard metric copy/source controls were still very short.
+  - The useful next slice was to make the top dashboard's Korean criteria copy buttons and official-source links easier to hit without changing medical content or widening the metric cards.
+- Baseline evidence:
+  - Playwright 1094px audit loaded `http://127.0.0.1:1420/` with no horizontal overflow.
+  - Under-sized dashboard actions included:
+    - `프로필 성별 기준 복사` at 101px by 24px.
+    - `대시보드 기준 복사` at 120px by 24px.
+    - BMI, waist, recent BP, and recent glucose official-source links at 15px high.
+  - The affected buttons/links already had useful accessible names and titles, so this slice focused on target size and layout stability.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Raised `.metric-profile-copy-button` minimum height to 32px with slightly larger padding.
+    - Raised `.metric-standard-note` inline source link rows to 28px minimum height.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented right-pane-sized dashboard metric criteria copy/source targets.
+- Verification so far:
+  - PASS: Playwright 1094px dashboard metric action audit.
+    - `scrollWidth` equaled `clientWidth`.
+    - Profile sex-standard copy measured 105px by 32px.
+    - Dashboard health-standard copy measured 124px by 32px.
+    - BMI, waist, recent BP, and recent glucose official-source links each measured 28px high.
+    - No dashboard actions below 28px remained in the audited top dashboard range, and no measured target protruded past the viewport.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 03:57 KST - Cervical Official Source Target Iteration Note
+
+- Improvement target:
+  - A fresh 1094px whole-page audit found the largest remaining short-target cluster inside the source-backed 자궁경부암 케어 노트.
+  - The useful next slice was to keep the existing medical wording and official-source links intact while making those links easier to hit in the right-pane desktop layout.
+- Baseline evidence:
+  - Playwright 1094px audit loaded `http://127.0.0.1:1420/` with no horizontal overflow.
+  - The short cervical-care source links included:
+    - Priority checklist official-source links at 24px high.
+    - Screening-summary links at 14px high.
+    - Item source chips at 18px high.
+    - Full source-list links at 14px high.
+  - The source links already had context-specific accessible names and hover titles, so this slice focused only on target height and layout stability.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Added 28px minimum heights to cervical priority source links, alert/source-list links, screening source links, prompt source links, and item source chips.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented right-pane-friendly 28px official-source targets for the cervical-care panel.
+- Verification so far:
+  - PASS: Playwright 1094px cervical source-link audit.
+    - `scrollWidth` equaled `clientWidth`.
+    - 42 cervical-care official-source links were measured.
+    - Minimum measured source-link height was 28px.
+    - `under28` was empty.
+    - No measured cervical-care source link protruded past the viewport.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:03 KST - Right-Pane Source Target Sweep Iteration Note
+
+- Improvement target:
+  - After the cervical-care source-link fix, a 1094px whole-page audit still showed short official-source targets in the Korean standards/profile area, the blood-pressure input helper, and the cancer-care nutrition food chips.
+  - The useful next slice was a CSS-only target-height sweep that preserved all medical wording, source labels, URLs, and accessible names.
+- Baseline evidence:
+  - Playwright 1094px audit loaded `http://127.0.0.1:1420/` with no horizontal overflow.
+  - The largest remaining short-target cluster was 23 profile standards source links at 15-26px high.
+  - After fixing the profile cluster, the only remaining short targets were one blood-pressure input-helper source link at 16px high and four nutrition food-chip source links at 15px high.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Raised `.standards-range-strip a` and `.standards-coverage em a` to 28px minimum height.
+    - Raised `.vital-standard-helper-heading a` and `.food-chip a` to 28px minimum height.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented right-pane-friendly source targets for Korean standards, BP/glucose input-helper links, and nutrition food-chip source links.
+- Verification so far:
+  - PASS: Playwright 1094px profile standards source-link audit with `details.standards-coverage` opened.
+    - 44 profile standards source links were measured.
+    - Minimum measured source-link height was 28px.
+    - `under28` was empty.
+    - No measured profile standards source link protruded past the viewport.
+  - PASS: Playwright 1094px whole-page visible-control audit.
+    - `scrollWidth` equaled `clientWidth`.
+    - 190 visible controls/links were measured.
+    - `totalSmall` was 0 for the audit threshold of width below 40px or height below 28px, excluding hidden/file/checkbox/radio controls.
+    - No measured visible control protruded past the viewport.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:11 KST - Mobile Text Fit Sweep Iteration Note
+
+- Improvement target:
+  - After the right-pane target sweep, the next useful slice was narrow-phone text fit because the design contract explicitly requires 320px and 760px layouts to avoid horizontal overflow and clipped Korean labels.
+  - The slice stayed UI-only and did not alter medical wording, thresholds, source labels, or URLs.
+- Baseline evidence:
+  - cmux state check found the right-side in-app browser still on Book Forge. Workspace switching to `암관리` did not change the selected workspace, and setting the right-browser omnibar to `http://127.0.0.1:1420/` plus Return/KP_Enter did not navigate away from Book Forge.
+  - Playwright 320/375/760 audits against `http://127.0.0.1:1420/` had no horizontal overflow and no small visible targets, but found visible text clipping in:
+    - The profile standards applicability chip at 320px and 760px.
+    - The saved-document `다음 조치` one-line input at 320px and 375px.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Converted the saved-document next-action editor from a one-line input to a two-row textarea.
+  - Updated `src/App.css`.
+    - Added aggressive wrapping for `.standards-applicability-strip` and `.standards-profile-strip` text.
+    - Made `.document-update-controls` inputs/selects/textareas fill their label width and added textarea line-height/resizing.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented multiline saved-document next-action editing and mobile text-fit requirements for standards applicability chips.
+- Verification so far:
+  - PASS: Playwright 320px, 375px, and 760px mobile text-fit/touch audit.
+    - `scrollWidth` equaled `clientWidth` for all three viewports.
+    - `totalSmall` was 0 at all three viewports for visible controls under the 44px mobile threshold.
+    - `protrudingCount` was 0 at all three viewports.
+    - `visibleClippedCount` was 0 at all three viewports.
+    - The document next-action textarea had matching client/scroll width and height at all three viewports.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:18 KST - Document Action Accessible Label Iteration Note
+
+- Improvement target:
+  - After the mobile text-fit sweep, the next low-risk UI slice was saved-document and deleted-archive action clarity.
+  - The visible row actions were intentionally compact (`첨부`, `삭제`, `복구`), but repeated document rows did not expose document-specific `aria-label` or hover `title` text.
+  - The slice stayed UI-only and did not alter medical wording, thresholds, source labels, URLs, storage shape, or action behavior.
+- Baseline evidence:
+  - Seeded Playwright audit loaded `http://127.0.0.1:1420/` with three saved documents and one deleted-archive document.
+  - 13 saved/deleted document action buttons were measured.
+  - All 13 had `aria-label: null` and `title: null`; the only accessible names were generic visible strings such as `재첨부`, `첨부 확인`, `삭제`, `복구`, and `첨부 정리`.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `formatDocumentActionButtonLabel()` for saved/deleted document row actions.
+    - Added matching `aria-label` and `title` text to attachment add/reconnect/check/preview/open/remove, delete-archive move, deleted-archive restore, and deleted-attachment cleanup actions.
+    - Labels include the document title, category/status, attachment filename/status when relevant, and intended action.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the document-specific row action label/title contract and added it to the design checklist and decision log.
+- Verification:
+  - PASS: Seeded Playwright document-action label audit.
+    - 13 saved/deleted document action buttons were measured.
+    - `missingAria`, `missingTitle`, `ariaTitleMismatch`, `genericOnly`, `missingDocumentTitle`, `smallTargets`, and `protruding` were all empty.
+    - `scrollWidth` equaled `clientWidth` at 1094px.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:23 KST - Stale Preview Fresh Action Accessibility Iteration Note
+
+- Improvement target:
+  - After adding document-specific row action labels, the next UI accessibility gap was the export-preview stale-alert fresh action.
+  - The stale alert correctly blocked copy/print/download and showed a compact `새 미리보기` action, but the button did not expose which preview type and changed state would be regenerated.
+  - The slice stayed UI-only and did not alter medical wording, thresholds, source labels, URLs, export content, storage shape, or stale-guard behavior.
+- cmux evidence:
+  - Computer Use still showed the right-side cmux in-app browser on Book Forge, with `블로그` selected in the sidebar and the right browser URL at `writeflow.koreacmc.kr/bookforge/...`.
+  - Clicking the `암관리` workspace row did not switch the selected workspace or right browser content.
+  - This keeps cmux marked as blocked for CareVault right-pane verification; rendered proof used Playwright against `http://127.0.0.1:1420/`.
+- Baseline evidence:
+  - Playwright generated a stale caregiver preview by opening `공유본 미리보기` and toggling the `음식` share section.
+  - The stale-alert fresh action rendered as text `새 미리보기` with `aria-label: null` and `title: null`.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added scoped fresh-preview descriptions for caregiver setting changes, caregiver record changes, visit-summary range changes, visit-summary record changes, and CSV record changes.
+    - Added matching `aria-label` and `title` text to all five stale-alert fresh-preview buttons.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented scoped fresh-preview labels and added the stale-preview fresh-action accessibility check to the design checklist and decision log.
+- Verification:
+  - PASS: Playwright stale caregiver-settings fresh-action audit.
+    - The fresh button rendered matching `aria-label`/`title`: `보호자 공유본 미리보기 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 6개 · 제외 1개 새로 생성 · 변경된 공유 설정 적용`.
+    - The label was not generic text-only and included `새로 생성`.
+  - PASS: Playwright stale visit-summary range fresh-action audit.
+    - The fresh button rendered matching `aria-label`/`title`: `진료 요약 미리보기 · 범위 최근 7일 새로 생성 · 변경된 범위 적용`.
+    - The label was not generic text-only and included `새로 생성`.
+  - PASS: Source-level check confirmed all five stale-preview fresh buttons have matching `aria-label` and `title` bindings.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:27 KST - Primary Action Accessible Label Iteration Note
+
+- Improvement target:
+  - After stale-preview fresh actions were labeled, a fresh Playwright visible-button audit still found short primary actions without `aria-label` or `title`.
+  - The affected CareVault actions were the topbar manual `저장`, vital add, visit add, question add, lab add, document attachment selection, and document save buttons.
+  - The slice stayed UI-only and did not alter medical wording, thresholds, source labels, URLs, validation, storage shape, or action behavior.
+- Baseline evidence:
+  - Playwright visible-button audit loaded `http://127.0.0.1:1420/` at 1094x1200.
+  - Seven visible CareVault action buttons had no `aria-label` and no `title`: `저장`, `혈압 기록 추가`, `방문 기록 추가`, `질문 추가`, `검사 수치 추가`, `첨부 파일 선택`, and `서류 메모 저장`.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added a scoped topbar manual-save `aria-label`/title.
+    - Added scoped `aria-label`/title text to vital, visit, question, lab, and document primary actions.
+    - Added a scoped `aria-label`/title to document attachment selection.
+    - The vital add action now includes the current measurement and Korean standard preview when available.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented primary form action and document attachment-selection label/title requirements.
+- Verification:
+  - PASS: Playwright targeted primary-action label audit.
+    - All seven target buttons had matching non-empty `aria-label` and `title`.
+    - No target button had an accessible label equal to only its visible text.
+    - The vital add label rendered `혈압 기록 추가 · 혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:32 KST - Scoped Form Control Accessibility Iteration Note
+
+- Improvement target:
+  - After primary action labels were scoped, the next rendered accessibility gap was repeated form-control labels.
+  - The app has many user-facing fields named `날짜`, `메모`, `우선순위`, `상태`, and `분류`; native labels worked visually, but assistive names and hover titles did not always carry section context.
+  - The slice stayed UI-only and did not alter medical wording, thresholds, source labels, URLs, validation, persistence, or export behavior.
+- cmux evidence:
+  - Computer Use still showed the `암관리` cmux window with the right browser tab on Book Forge at `writeflow.koreacmc.kr/bookforge/...`.
+  - The CareVault right-pane target was therefore still blocked; rendered proof used Playwright against `http://127.0.0.1:1420/`.
+- Baseline evidence:
+  - Playwright audited visible `input`, `select`, and `textarea` controls at `http://127.0.0.1:1420/`.
+  - 67 visible controls were measured.
+  - 49 visible controls had neither explicit `aria-label` nor `title`, including repeated profile/vital/visit/symptom/question/lab/food/document fields and hidden file inputs exposed by layout.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `formControlDescriptions` for profile, vital, visit, symptom, question, lab, food, document, filter, backup import, and file attachment controls.
+    - Added matching `aria-label` and `title` text to visible inputs, native selects, textareas, and hidden file inputs.
+    - Added a saved-question priority-select label that includes the question topic and current priority.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that repeated form controls must expose section-scoped accessible names and matching hover titles.
+- Verification:
+  - PASS: Playwright form-control label audit after the patch.
+    - 67 visible controls were measured.
+    - `weakCount` was 0.
+    - Sample labels included `기본 정보 이름/대상 · 기록 주체 표시`, `혈압·혈당 입력 날짜`, `병원 방문 기록 진료 요약`, `검사 수치 입력 프리셋 선택`, `암환자 음식 판단 음식 또는 식단 입력`, and `저장된 서류 상태 필터`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:35 KST - Button Label Consistency and Target Size Iteration Note
+
+- Improvement target:
+  - After visible form controls were labeled, a whole-button Playwright audit showed no missing button labels but did find label/title drift and a few compact controls below the desktop hit-target floor.
+  - The affected controls were saved-question status buttons, the lab follow-up question button, the default symptom add button, compact cervical-care draft buttons, and saved-question status actions.
+  - The slice stayed UI-only and did not alter medical wording, thresholds, source labels, URLs, validation, persistence, export content, or saved data shape.
+- Baseline evidence:
+  - Playwright audited 78 visible buttons at `http://127.0.0.1:1420/`.
+  - `weakCount` and `ariaNoTitleCount` were already 0.
+  - `mismatchCount` was 4 for saved-question status and lab follow-up buttons whose `aria-label` and `title` used different wording for the same action.
+  - `genericCount` was 1 for the default symptom add button whose accessible label was only `증상 기록 추가`.
+  - `smallCount` was 29, mostly compact cervical-care draft buttons and saved-question status actions at 30px height.
+- Code/docs changes:
+  - Updated `src/questionStatus.ts` and `src/questionStatus.test.ts`.
+    - Question status buttons now return the same action sentence for `aria-label` and `title`.
+    - The fallback no longer says `진료 전 질문 질문`.
+  - Updated `src/labQuestionPrompts.ts` and `src/labQuestionPrompts.test.ts`.
+    - Lab follow-up buttons now use one matching label/title sentence with `· 메모 포함` or `· 메모와 근거 포함`.
+  - Updated `src/App.tsx`.
+    - The symptom add button now keeps its visible text compact while exposing a scoped label/title such as `증상 기록 추가 · 증상명 또는 몸 상태 메모 필요`.
+  - Updated `src/App.css`.
+    - Raised compact cervical alert/check draft buttons and saved-question status buttons above sub-32px desktop hit targets while keeping mobile governed by the existing 44px control contract.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the matching button label/title and compact-hit-target contract.
+- Verification:
+  - PASS: Playwright whole-button audit after the patch.
+    - 78 visible buttons were measured.
+    - `weakCount`, `ariaNoTitleCount`, `mismatchCount`, `genericCount`, and `smallCount` were all 0.
+    - Sample rendered labels included `증상 기록 추가 · 증상명 또는 몸 상태 메모 필요`, `혈액검사 질문 상태를 확인 필요로 변경`, and `WBC 검사 질문 추가 · 메모 포함`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css src/questionStatus.ts src/questionStatus.test.ts src/labQuestionPrompts.ts src/labQuestionPrompts.test.ts working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:38 KST - Sidebar Link Destination Accessibility Iteration Note
+
+- Improvement target:
+  - After button label and target-size cleanup, the next rendered audit target was visible links.
+  - Official external source links already kept target size and external-link safety, but the internal sidebar section links did not expose explicit destination labels or hover titles.
+  - The slice stayed navigation-only and did not alter medical wording, thresholds, source labels, URLs, persistence, export content, or routing behavior.
+- Baseline evidence:
+  - Playwright audited 125 visible links at `http://127.0.0.1:1420/`.
+  - 119 external links had no unsafe `_blank` issue and no target below 28px.
+  - 6 weak links were the sidebar section anchors: `대시보드`, `입력 기록`, `음식 판단`, `증상·질문`, `검사 수치`, and `서류 보관`.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added destination-specific `aria-label` and `title` text to all six sidebar section anchors.
+    - Labels use the pattern `${section} 섹션으로 이동`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the sidebar destination-link accessibility contract.
+- Verification:
+  - PASS: Playwright visible-link audit after the patch.
+    - 125 visible links were measured.
+    - 6 internal links had matching destination-specific labels/titles.
+    - `weakCount`, `unsafeExternalCount`, and `smallExternalCount` were all 0.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:40 KST - Sidebar Active Section State Iteration Note
+
+- Improvement target:
+  - After sidebar links had destination-specific labels, the remaining sidebar gap was current-section feedback.
+  - Users could jump to dashboard, record, nutrition, care-plan, lab, and document sections, but the sidebar did not expose or show which section was currently selected by hash.
+  - The slice stayed navigation/UI-only and did not alter medical wording, thresholds, source labels, URLs, persistence, export content, or routing beyond the existing hash anchors.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added `sidebarSectionIds`, `SidebarSectionId`, and `normalizeSidebarSectionHash()`.
+    - Added hash-backed `activeSectionId` state and a `hashchange` listener.
+    - Added `aria-current="page"` to the active sidebar link and click handlers that update the active section immediately.
+  - Updated `src/App.css`.
+    - Added a visible active style for `.nav-stack a[aria-current="page"]`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the destination label plus active-section contract.
+- Verification:
+  - PASS: Playwright active sidebar navigation audit.
+    - Initial load exposed one active link: `#dashboard` with `aria-current="page"`.
+    - Clicking `#labs` updated hash and active link to `검사 수치`.
+    - Programmatically setting `window.location.hash = "#documents"` updated active link to `서류 보관`.
+    - All sidebar links retained matching `aria-label` and `title` text.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:45 KST - Scroll-Aware Sidebar Active State Iteration Note
+
+- Improvement target:
+  - After adding hash-backed sidebar active state, a manual-scroll audit showed the active marker stayed on `대시보드` even after the user scrolled directly to `검사 수치`.
+  - This made the sidebar less useful in the long medical-record dashboard because users can scroll through records without clicking the nav.
+  - The slice stayed navigation/UI-only and did not alter medical wording, thresholds, source labels, URLs, persistence, export content, or record behavior.
+- cmux evidence:
+  - Computer Use confirmed the right cmux in-app browser address field could be set to `http://127.0.0.1:1420/`.
+  - Pressing Return after `set_value`, clicking the omnibar and pressing Return again, then trying Command+L -> URL -> Return did not navigate the WebView to CareVault.
+  - The content stayed on WriteFlow (`writeflow.koreacmc.kr/trends`) while the omnibar displayed the local URL, so CareVault right-pane verification remains blocked by cmux browser navigation behavior.
+- Baseline evidence:
+  - Playwright loaded `http://127.0.0.1:1420/`.
+  - Calling `document.querySelector("#labs").scrollIntoView({ block: "start" })` placed `#labs` near the top of the viewport.
+  - The active sidebar link still reported `#dashboard`.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Extended the sidebar active-state effect with scroll and resize listeners.
+    - Uses a requestAnimationFrame-throttled viewport anchor to select the visible section.
+    - Retains hash and click updates for direct link navigation.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented click/hash/scroll-aware sidebar active-state behavior.
+- Verification:
+  - PASS: Playwright active sidebar navigation audit.
+    - Initial load exposed `#dashboard`.
+    - Manual scroll to `#labs` updated the active link to `검사 수치`.
+    - Clicking `#nutrition` updated the active link to `음식 판단`.
+    - Setting `window.location.hash = "#documents"` updated the active link to `서류 보관`.
+    - All active links retained matching `aria-label` and `title` text.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md src/App.tsx src/App.css working.md`.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 319 tests).
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 04:55 KST - Live Official Source URL Audit Iteration Note
+
+- Improvement target:
+  - A stricter source-link audit found three production medical source links that were not reliable despite returning HTTP 200 in a simple check.
+  - KDCA lipid detail links for `cntnts_sn=5361` and `cntnts_sn=6054` collapsed to the KDCA health-info home page.
+  - The legacy KDA HDL helper URL on `old.diabetes.or.kr` redirected to a thin current-domain shell in browser-like fetches.
+- Official source verification:
+  - Verified the current KDA public `당뇨병 관리 목표` page at `https://www.diabetes.or.kr/general/info/treat/treat_01.php`.
+    - The page includes 식전 80-130 mg/dL, 식후 2시간 180 mg/dL 미만, and HDL 남성 40 mg/dL 이상 / 여성 50 mg/dL 이상 targets.
+  - Verified the live KDCA 2025 page `혈압·혈당이 높다면? 지금부터 관리하세요!` at `https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=124`.
+    - The page includes 이상지질혈증 관리, total cholesterol, LDL, HDL, and triglyceride risk thresholds.
+  - Verified the live KDCA `임상 화학 검사` page remains reachable for other chemistry helper sources.
+- Code/test/docs changes:
+  - Updated `src/healthStandards.ts`.
+    - Replaced the dead `지질 검사` detail URL with the live KDCA 이상지질혈증 관리 page.
+    - Replaced the legacy HDL KDA URL with the current KDA public management page.
+    - Changed the stale lipid helper row from `금식 확인` wording to live-source-backed `정기검사` wording.
+  - Updated `src/labPresets.ts`.
+    - Replaced dead KDCA 이상지질혈증 and legacy KDA URLs with live official URLs.
+    - Tightened total cholesterol, LDL, and triglyceride notes to name the KDCA high-risk/lipid-management source.
+  - Updated source-label and export expectations in related tests.
+  - Updated `DESIGN.md` decision log.
+- Verification:
+  - PASS: focused source/export suite: `npm run test -- healthStandards labPresets labSourceEvidence labQuestionPrompts caregiverExport csvExport visitPacket careActionQueue questionClipboard` (11 files, 151 tests).
+  - PASS: refined production source audit.
+    - Checked 40 unique production URLs from `src/healthRules.ts`, `src/healthStandards.ts`, `src/cervicalCancerCare.ts`, `src/symptomSupportTemplates.ts`, and `src/labPresets.ts`.
+    - `suspiciousCount: 0`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:00 KST - BP Common-Standard Consistency Iteration Note
+
+- Improvement target:
+  - After the live source URL replacement, rendered standards and lab source labels were re-audited at desktop, right-pane, tablet-edge, and mobile widths.
+  - The long official source labels did not create horizontal overflow, so no CSS patch was needed for that hypothesis.
+  - A smaller consistency gap remained in vital logic: `낮은 혈압 가능` was the only blood-pressure assessment summary that did not state the adult common standard context.
+- Code/test changes:
+  - Added a RED test in `src/healthRules.test.ts` to require `성인 남녀 공통` wording for low-blood-pressure assessment summaries.
+  - Updated `src/healthRules.ts` so `낮은 혈압 가능` now reads as an adult common BP-standard assessment before symptom guidance.
+- Verification:
+  - PASS: Playwright standards/lab source-label audit.
+    - Checked `desktop` 1365px, `right-pane` 820px, `tablet-edge` 761px, and `mobile` 390px.
+    - Selected `당뇨·지질` and HDL 프리셋; `bodyOverflow: 0`, source-link overflow count 0 at every width.
+  - PASS: RED confirmed before patch with `npm run test -- healthRules`.
+  - PASS: `npm run test -- healthRules vitalRecordLabels careActionQueue caregiverExport csvExport visitPacket` (8 files, 110 tests).
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:05 KST - Document History Right-Pane Overflow Iteration Note
+
+- Improvement target:
+  - A full-app Playwright audit with 암환자 관리 모드 and 당뇨 추적 enabled found no page-level horizontal overflow.
+  - It did find a visible right-pane overflow inside saved-document history rows: `.document-history` entries exceeded their narrow container by 4-9px at 820px width.
+  - Accessibility-only `visually-hidden` overflow and small native checkbox inputs were ignored because the visible label rows remain the practical interaction targets.
+- Code changes:
+  - Updated `src/App.css`.
+    - At `max-width: 1120px`, `.document-history li` now switches from three compact columns to one column.
+    - This matches the already-existing mobile behavior but covers the right-pane/tablet two-column breakpoint too.
+- Verification:
+  - PASS: Playwright full-app responsive audit after the patch.
+    - `right-pane-full` 820px: `bodyOverflow: 0`, `documentHistoryOverflowCount: 0`, visible non-hidden overflow 0.
+    - `mobile-full` 390px: `bodyOverflow: 0`, `documentHistoryOverflowCount: 0`, visible non-hidden overflow 0.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:15 KST - Low-Blood-Pressure Source Separation Iteration Note
+
+- Improvement target:
+  - Blood-pressure assessments now classify low values, but low-blood-pressure UI, clinician-question drafts, and care-queue rows still reused the KDCA hypertension source.
+  - This could make a low-BP record cite the wrong official page even though the assessment wording was distinct.
+- Official source verification:
+  - Verified the live KDCA `저혈압` page at `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5259`.
+  - The page is titled `저혈압`, shows an update date of 2026-04-23, and states that 90/60 mmHg or lower is generally called low blood pressure.
+- Code/test changes:
+  - Updated `src/healthStandards.ts`.
+    - Added the `low-blood-pressure` implemented standard with KDCA 저혈압 source evidence.
+    - Added low-BP range lines and a visible `저혈압 확인 기준` section immediately after the hypertension BP section.
+    - Added low-BP vital helper copy and kept low-BP clinician-question drafts under the BP topic.
+  - Updated `src/App.tsx`.
+    - Vital input now chooses the active BP standard after assessment, so low BP switches the helper/source/question context to `low-blood-pressure`.
+    - Dashboard BP source evidence now follows the latest BP assessment `standardId`, so a latest low-BP record changes the `최근 혈압` card from KDCA hypertension to KDCA low-blood-pressure evidence.
+  - Updated `src/careActionQueue.ts`.
+    - BP queue rows now use the assessment `standardId`, falling back to hypertension only when no specific ID is present.
+  - Updated tests to assert that low-BP evidence includes KDCA 저혈압 `cntnts_sn=5259` and does not include the KDCA hypertension URL.
+  - Verification:
+  - PASS: Playwright low-BP vital-input source audit on `http://127.0.0.1:1431/`.
+    - Entered BP `88/58` with note `기립 시 어지러움`.
+    - Save action aria switched to `낮은 혈압 가능 · 성인 남녀 공통 · 저혈압 확인 기준`.
+    - Rendered KDCA 저혈압 source links were present.
+    - Generated clinician-question draft used `질병관리청 국가건강정보포털 저혈압` with `cntnts_sn=5259`.
+    - Generated clinician-question draft did not include the KDCA hypertension URL `thtimt_cntnts_sn=28`.
+  - PASS: Playwright low-BP dashboard source audit on `http://127.0.0.1:1431/`.
+    - Added a low-BP record from the rendered form.
+    - The `최근 혈압` dashboard card rendered `88/58 mmHg`, `낮은 혈압 가능`, `성인 남녀 공통 · 저혈압 확인 기준`, and KDCA 저혈압 source evidence.
+  - PASS: `npm run test -- healthRules healthStandards careActionQueue` (5 files, 67 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 320 tests).
+  - PASS: `git diff --check -- src/App.tsx src/careActionQueue.ts src/careActionQueue.test.ts src/healthRules.ts src/healthRules.test.ts src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `npm run build`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:20 KST - Cervical Late Bowel/Bladder Record-Check Iteration Note
+
+- Improvement target:
+  - The cervical-care panel already had a clinician-question draft for late bowel/bladder changes, but the record-check list still grouped late 장폐색, 혈변, and 혈뇨 under a broader `배뇨·배변·출혈 변화 메모` item.
+  - A more scan-friendly record-check item would help users record the specific late bowel/bladder warning context before a visit without creating treatment instructions.
+- Official source verification:
+  - Rechecked the National Cancer Center 자궁경부암 `치료의 부작용` page at `https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894`.
+  - The page describes surgery-related acute complications such as 장폐색 and post-radiation chronic complications after 6 months such as 장폐색, 혈변, and 혈뇨.
+- Code/test/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `장폐색·혈변·혈뇨 연락 메모` as a source-backed record-check item.
+    - The item records 복부팽만, 구토, 배변/가스 변화, 혈변, 혈뇨, 방광·직장 통증, occurrence timing, and treatment-end timing for care-team contact-standard review.
+  - Updated cervical-care tests and summary expectations.
+    - Profile-specific care-note summary now reports `전체 41개`, `기록/회복/예방 23개`.
+    - Generic care-note summary now reports `전체 40개`, `기록/회복/예방 23개`.
+  - Updated `README.md` and `DESIGN.md` to document the late 장폐색·혈변·혈뇨 record-check memo contract.
+- Verification:
+  - PASS: `npm run test -- cervicalCancerCare cervicalCancerCareClipboard cervicalCancerCareMetric` (3 files, 26 tests).
+  - PASS: Playwright rendered UI audit on `http://127.0.0.1:1431/`.
+    - The new item was visible.
+    - Summary chips rendered `전체 41개` and `기록/회복/예방 23개`.
+    - The source link kept item-specific aria/title text and the National Cancer Center side-effects URL.
+    - The item draft filled the symptom form with source-retaining body text and a care-team confirmation action.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:26 KST - Cervical Late Complication Queue-Label Iteration Note
+
+- Improvement target:
+  - Follow-up export audits for the new `장폐색·혈변·혈뇨 연락 메모` found a subtle care-queue classification risk.
+  - The generated source-backed draft included both `장폐색` and `혈변·혈뇨`, so it could be classified by a broader urinary/bowel or generic cervical-warning label instead of the more specific `장폐색 확인 기록`.
+- Code/test changes:
+  - Updated `src/symptomSupportTemplates.ts`.
+    - When a symptom text includes bowel-obstruction priority terms such as `장폐색` or `복부팽만`, the symptom template matcher now prefers the `cervical-bowel-obstruction` template over the broader `cervical-urinary-bowel-bleeding` template.
+  - Updated `src/careActionQueue.ts`.
+    - Specific contact-threshold labels now win for non-general cervical warnings.
+    - Generated official cervical warning drafts keep the existing `자궁경부암 경고 기록` label, while late-complication drafts can resolve to `장폐색 확인 기록`.
+    - Generated cervical record memos now preserve the `공식 근거/기록 기준` line in care-queue detail, so the queue keeps the actionable symptom list instead of only the short follow-up action.
+  - Updated export and template tests.
+    - CSV, Markdown visit packet, and caregiver HTML tests now assert the late complication generated draft keeps its source URL, action text, specific symptoms, and `장폐색 확인 기록` queue label.
+    - Care-queue tests now assert the same generated draft keeps `복부팽만, 구토, 배변/가스 변화, 혈변, 혈뇨` in queue detail.
+    - Symptom-template tests now lock mixed `장폐색·혈변·혈뇨` wording to the bowel-obstruction template.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that generated cervical record-memo care-queue rows preserve the official `공식 근거/기록 기준` detail and late-complication queue label.
+- Verification:
+  - PASS: RED/green export loop.
+    - The new assertions first exposed the wrong broad label path.
+    - After the queue/template changes, `npm run test -- src/careActionQueue.test.ts src/symptomSupportTemplates.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts` passed, 5 files and 112 tests.
+  - PASS: Playwright UI audit on `http://127.0.0.1:1431/`.
+    - Clicked the `장폐색·혈변·혈뇨 연락 메모` record draft button.
+    - Saved it through the rendered `자궁경부암 기록 메모 추가` button.
+    - The 진료 준비 큐 showed the saved record title `장폐색·혈변·혈뇨 연락 메모 3/10`, `복부팽만, 구토, 배변/가스 변화, 혈변, 혈뇨`, National Cancer Center treatment-side-effects evidence, and the specific `장폐색 확인 기록` label.
+    - The same queue slice did not show the generic cervical-warning or urinary/bowel label for that saved late-complication draft.
+  - PASS: Playwright right-pane/mobile overflow audit after saving that queue item.
+    - 390px viewport: `bodyOverflow: 0`, visible overflow count 0.
+    - 820px viewport: `bodyOverflow: 0`, visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (46 files, 320 tests).
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: focused post-doc check `npm run test -- src/careActionQueue.test.ts src/symptomSupportTemplates.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`, 5 files and 112 tests.
+  - PASS: `npm run build`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/careActionQueue.ts src/careActionQueue.test.ts src/symptomSupportTemplates.ts src/symptomSupportTemplates.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:37 KST - Care Queue Clipboard Readability Iteration Note
+
+- Improvement target:
+  - After preserving the late `장폐색·혈변·혈뇨 연락 메모` official basis in care-queue detail, the copied queue text still placed long memo, assessment, record-basis, and evidence segments on one ` / `-joined line.
+  - A Playwright copy audit also found that the long post-copy status text could overflow the 390px mobile viewport when it replaced the topbar status chip immediately after saving a generated record.
+- Code/test changes:
+  - Updated `src/careActionQueue.ts`.
+    - Care-queue clipboard output now splits compound detail text into labeled `메모:`, `판정:`, `기록 기준:`, and `근거:` lines while leaving simple one-line details unchanged.
+    - Parenthetical cervical screening-summary evidence such as `(근거: ...)` is split into a separate `근거:` line in copied queue text.
+  - Updated `src/careActionQueue.test.ts`.
+    - The clinic-ready clipboard fixture now locks the line-split vital and lab detail format.
+    - The cervical screening quick-check clipboard assertion now locks separate `기준:` and `근거:` lines.
+    - The generated late cervical complication draft now asserts clipboard text keeps `증상 · 장폐색 확인 기록`, the record memo line, the official record-basis sentence, the National Cancer Center treatment-side-effects evidence, and no raw `출처:` line.
+  - Updated `src/App.tsx`.
+    - Added a transient save-label guard so clipboard success feedback is not overwritten by a pending autosave that started before the copy click.
+    - Applied the guard to care-queue, question, cervical-care-note, standards, dashboard standards, sex-standard, and preview copy success messages.
+  - Updated `src/App.css`.
+    - Split the topbar mode chip and save-status chip.
+    - Long save-status copy feedback now wraps within the topbar instead of forcing horizontal scroll.
+  - Updated `README.md` and `DESIGN.md` to document the copied queue line format and mobile status-chip wrapping contract.
+- Verification:
+  - PASS: `npm run test -- src/careActionQueue.test.ts`, 1 file and 26 tests.
+  - PASS: Playwright rendered copy audit on `http://127.0.0.1:1431/`.
+    - Added the `장폐색·혈변·혈뇨 연락 메모` generated record through the rendered UI.
+    - Clicked the rendered `큐 복사` button.
+    - Clipboard text included `증상 · 장폐색 확인 기록`, `메모: 장폐색·혈변·혈뇨 연락 메모 내용을 다음 진료 때 진료팀에 확인`, `기록 기준: 국가암정보센터는 수술 직후 급성 합병증으로 장폐색을`, and `근거: 국가암정보센터 자궁경부암 치료의 부작용`.
+    - Clipboard text did not include raw `출처:`.
+  - PASS: Playwright mobile status/overflow audit on `http://127.0.0.1:1431/`.
+    - At 390px, the topbar status still showed `진료 준비 큐 복사됨` at 500ms and 1300ms after a quick save-then-copy flow.
+    - `scrollWidth` matched viewport width 390px, `bodyOverflow: 0`, and visible overflow count 0.
+  - PASS: Playwright default queue-copy audit on `http://127.0.0.1:1431/`.
+    - The copied cervical screening row showed separate `기준:` and `근거:` lines.
+    - The row retained both National Cancer Center screening source URLs and did not include nested `근거: 출처:`.
+    - 390px overflow remained `bodyOverflow: 0`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:42 KST - BP/Glucose Chart Latest-Value Summary Iteration Note
+
+- Improvement target:
+  - The BP/glucose chart already had Korean tooltips and visible period/unit/count chips, but the visible summary only exposed the latest glucose measurement context.
+  - Touch and narrow-pane users still had to rely on hover or separate metric cards to see the latest BP and glucose values from the chart area itself.
+- cmux target status:
+  - Confirmed `cmux` is running and the right in-app browser pane is present.
+  - The pane was still on a WriteFlow Book Forge URL.
+  - Attempted to navigate the existing cmux omnibar to `http://127.0.0.1:1431/`, but the existing WebView content did not refresh through the available accessibility actions.
+  - Opened a new cmux browser tab and entered the same local URL; `Return`/`KP_Enter` still did not trigger page load through the accessible text field.
+  - The visible `가져오기` toolbar action was only a browser-data import popover, not a page-load action.
+  - Continued rendered verification against the same local target with Playwright because the dev server was reachable and the cmux WebView navigation did not complete.
+- Code/test/docs changes:
+  - Updated `src/vitalChartData.ts`.
+    - Added latest BP and latest glucose value formatters for the visible chart summary.
+    - Empty chart summaries now also show `기록`, `최근 혈압`, and `최근 혈당` waiting states.
+  - Updated `src/vitalChartData.test.ts`.
+    - The summary test now locks period, units, counts, latest BP value, and latest glucose value with context.
+    - Added partial-series coverage for a glucose-only point plus a BP point with only diastolic data.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that chart summary chips expose latest BP and latest glucose values with units and glucose context.
+- Verification:
+  - PASS: `npm run test -- src/vitalChartData.test.ts`, 1 file and 5 tests.
+  - PASS: Playwright chart-summary audit on `http://127.0.0.1:1431/`.
+    - 390px mobile summary showed period, units, `혈압 2개 · 혈당 1개`, `최근 혈압 126/78 mmHg`, and `최근 혈당 146 mg/dL (식후 2시간)`.
+    - 820px right-pane summary showed the same values.
+    - Both 390px and 820px had `bodyOverflow: 0`, chart-summary overflow 0, and visible overflow count 0.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:47 KST - BP/Glucose Chart Visible Legend Iteration Note
+
+- Improvement target:
+  - The BP/glucose chart summary now exposes latest values, but the chart line colors still depended on hover/tooltips for interpretation.
+  - Touch users and narrow cmux/right-pane users should be able to identify 수축기 혈압, 이완기 혈압, and 혈당 lines without hovering the chart.
+- Code/test/docs changes:
+  - Updated `src/vitalChartData.ts`.
+    - Added shared `vitalChartLegendItems` metadata for 수축기 혈압, 이완기 혈압, and 혈당 line labels, units, data keys, and colors.
+  - Updated `src/App.tsx`.
+    - Reused the shared legend colors for the Recharts lines.
+    - Added visible chart-legend chips below the chart with matching color marks, units, `aria-label`, and hover title text.
+  - Updated `src/App.css`.
+    - Added compact wrapped legend-chip styling that stays readable in mobile and right-pane widths.
+  - Updated `src/vitalChartData.test.ts`, `README.md`, and `DESIGN.md`.
+    - Locked the legend metadata and documented the visible chart-line legend contract.
+- Verification:
+  - PASS: `npm run test -- src/vitalChartData.test.ts`, 1 file and 6 tests.
+  - PASS: Playwright chart-legend audit on `http://127.0.0.1:1431/`.
+    - 390px mobile legend showed `수축기 혈압 mmHg`, `이완기 혈압 mmHg`, and `혈당 mg/dL`.
+    - 820px right-pane legend showed the same labels and units.
+    - Legend colors matched the line palette: `rgb(31, 122, 140)`, `rgb(109, 93, 252)`, and `rgb(217, 119, 6)`.
+    - Both 390px and 820px kept `bodyOverflow: 0`, chart-legend overflow 0, and visible overflow count 0.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:51 KST - BP/Glucose Chart Dual-Axis Iteration Note
+
+- Improvement target:
+  - The BP/glucose chart now had visible legend and latest-value summary chips, but BP `mmHg` and glucose `mg/dL` still shared one visible Y-axis scale.
+  - Mixed units needed separate left/right axis labels so a touch or right-pane user does not infer that 혈압 and 혈당 use the same scale.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Split the Recharts Y axes into `bloodPressure` and `glucose` axis IDs.
+    - Labeled the left axis `혈압 mmHg` and the right axis `혈당 mg/dL`.
+    - Bound 수축기/이완기 lines to the BP axis and the 혈당 line to the glucose axis.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the separate BP/glucose chart axis contract and added a design checklist item for labeled axes without mobile overflow.
+- Verification:
+  - PASS: `npm run test -- src/vitalChartData.test.ts`, 1 file and 6 tests.
+  - PASS: Playwright chart dual-axis audit on `http://127.0.0.1:1431/`.
+    - 390px mobile SVG text included `혈압 mmHg` and `혈당 mg/dL`.
+    - 820px right-pane SVG text included the same axis labels.
+    - Both widths retained the visible 수축기/이완기/혈당 legend and latest BP/glucose summary chips.
+    - Both widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 322 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:54 KST - BP/Glucose Chart Source-Data List Iteration Note
+
+- Improvement target:
+  - The chart now had axes, legend, tooltip, and summary chips, but the plotted date-by-date values were still not exposed as a plain touch/screen-reader-friendly list.
+  - Users in cmux/right-pane or mobile contexts should not need hover precision to review the exact chart source values.
+- Code/test/docs changes:
+  - Updated `src/vitalChartData.ts`.
+    - Added `buildVitalChartAccessibleRows()` for date-by-date BP/glucose chart source rows.
+    - Each row keeps the record date, BP `mmHg`, glucose `mg/dL`, and glucose measurement context when present.
+  - Updated `src/App.tsx`.
+    - Added a collapsible `차트 원자료` section below the chart summary.
+    - Rows expose visible date/BP/glucose cells plus an accessible summary label.
+  - Updated `src/App.css`.
+    - Styled the source-data disclosure and rows so they wrap inside 320px, 390px, and right-pane widths.
+  - Updated `src/vitalChartData.test.ts`, `README.md`, and `DESIGN.md`.
+    - Locked the source-row formatter and documented the chart source-data review contract.
+- Verification:
+  - PASS: `npm run test -- src/vitalChartData.test.ts`, 1 file and 7 tests.
+  - PASS: `npm run typecheck`.
+  - cmux status:
+    - The right cmux in-app browser tab still showed the omnibar value `http://127.0.0.1:1431/`.
+    - Pressing `Return` in the omnibar and clicking the cmux refresh button did not render the WebView content.
+    - Kept the rendered evidence on the same reachable local URL through Playwright instead of claiming cmux page-load success.
+  - PASS: Playwright chart source-data audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, and 820px rendered `차트 원자료 3개`.
+    - Opening the disclosure showed rows with `2026-05-29 · 132/84 mmHg · 혈당 없음`, `2026-05-30 · 혈압 없음 · 146 mg/dL (식후 2시간)`, and `2026-06-01 · 126/78 mmHg · 혈당 없음`.
+    - All three widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - No git staging or commit was performed.
+
+## 2026-06-05 05:59 KST - Cervical Warning Record Field Guide Iteration Note
+
+- Improvement target:
+  - The 자궁경부암 케어 panel already had warning cards and per-card record drafts, but users had to open or infer the structure before knowing what to record.
+  - A patient preparing for care-team conversation needs the warning-record fields visible before the dense alert cards: when it happened, what changed, how much/how long, and what symptoms came with it.
+- Code/test/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Added `cervicalCancerCareAlertRecordFields` for `언제`, `무엇이`, `얼마나`, and `같이`.
+    - Added `formatCervicalCancerCareAlertRecordFieldEvidence()` so copied/exported text keeps official source evidence.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Added source-backed `경고 신호 기록 항목` cards above the cervical priority checklist.
+    - Each card exposes item-specific official-source links with contextual accessible labels.
+  - Updated clipboard, metric, Markdown, CSV, and caregiver HTML pipelines.
+    - Copied cervical-care note scope now includes `기록항목 4개`.
+    - Markdown, CSV, and caregiver HTML preserve the `경고 신호 기록 항목` section with evidence.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the visible warning-record-field cards and export/copy preservation contract.
+- Verification:
+  - PASS: `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts`, 3 files and 27 tests.
+  - PASS: `npm run test -- src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`, 3 files and 68 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright cervical warning-record guide audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, and 820px rendered one `경고 신호 기록 항목` guide with four cards: `언제`, `무엇이`, `얼마나`, and `같이`.
+    - Every card had at least two official-source links with contextual `공식 출처` accessible labels.
+    - All three widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:04 KST - Cervical Warning Draft Field-Guide Iteration Note
+
+- Improvement target:
+  - The 자궁경부암 panel now showed source-backed warning-record field cards, but the per-warning `기록 초안` button still filled only older blank occurrence/amount/trigger/accompanied-symptom prompts.
+  - The button-generated record draft should reuse the visible field guide so patients do not have to transfer the guide manually, while preserving a single parseable official source line for export/source parsing.
+- Code/test/docs changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - `buildCervicalCancerAlertSymptomDraft()` now inserts `기록 항목 가이드` with the same `언제`, `무엇이`, `얼마나`, and `같이` field details before a separate `내 기록` area.
+    - The generated warning draft keeps one official `출처:` line from the alert source instead of adding multiple parseable source lines.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Locked the field-guide lines, the separate `내 기록` heading, and the one-line `출처:` contract.
+  - Updated `src/careActionQueue.ts` and `src/careActionQueue.test.ts`.
+    - Prevented structured cervical warning drafts from being relabeled by field-guide keywords such as bowel-obstruction terms.
+    - Excluded the long field-guide body from contact-threshold template matching for structured warning drafts, so the care-queue detail keeps the warning-card's own official source.
+    - Added a regression test so official warning drafts stay `자궁경부암 경고 기록` while late-complication memo drafts can still use the more specific contact-threshold label.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that warning-card recording drafts prefill the visible warning-record field guide and keep a single parseable official source line.
+- Verification:
+  - PASS: `npm run test -- src/cervicalCancerCare.test.ts`, 1 file and 21 tests.
+  - PASS: `npm run test -- src/careActionQueue.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts`, 4 files and 95 tests.
+  - PASS: Playwright warning-card draft audit on `http://127.0.0.1:1431/`.
+    - 390px and 820px clicked `비정상 질출혈 자궁경부암 증상 기록 초안 만들기`.
+    - The `몸 상태 메모` draft contained `기록 항목 가이드`, all four field-guide lines, `내 기록`, and exactly one parseable `출처:` line.
+    - Both widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: Playwright warning-card save-label audit at 390px on `http://127.0.0.1:1431/`.
+    - The generated save button read `자궁경부암 경고 기록 추가`.
+    - After saving, the page contained `자궁경부암 경고 기록` and did not relabel `비정상 질출혈 3/10` as `장폐색 확인 기록`.
+    - The matching care-queue row kept `근거: 국가암정보센터 자궁경부암 일반적 증상` and did not switch to `자궁경부암 치료의 부작용`.
+    - The width kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 325 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/cervicalCancerCare.ts src/cervicalCancerCare.test.ts src/careActionQueue.ts src/careActionQueue.test.ts`.
+  - cmux status:
+    - The right cmux browser tab still showed `http://127.0.0.1:1431/` in the omnibar, but the WebView content remained blank.
+    - Rendered evidence stayed on the same reachable local URL through Playwright instead of claiming cmux page-load success.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:26 KST - Care Queue Visible Source Link Iteration Note
+
+- Improvement target:
+  - A fresh Playwright raw-visible-text audit found dashboard care queue rows still showing official source URLs inline in the paragraph text.
+  - The affected rows were source-backed BP/glucose vital details and the profile-based cervical screening quick-check detail.
+  - Clipboard/export paths still need the full source URL, so the fix should be display-only.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added a dashboard queue visible-detail splitter for URL-bearing `근거: 출처명 (URL)` groups.
+    - The visible queue paragraph now keeps the memo/assessment body, while source citations render as linked `근거:` rows.
+    - The underlying `action.detail` string remains unchanged for queue copy, Markdown, CSV, and caregiver export evidence.
+  - Updated `src/App.css`.
+    - Added compact wrapping/focus styles for `.action-queue-evidence`.
+    - Included queue evidence links in the mobile 44px official-source link target rule.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the display/export split for dashboard queue source evidence.
+- Verification:
+  - PASS: Playwright raw-visible-text audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, 760px, and 1224px had `leakCount: 0`, `queueHasRawUrl: false`, `bodyOverflow: 0`, and no overflowing visible elements.
+    - Queue evidence links rendered as linked `근거:` labels for KDCA blood pressure and National Cancer Center cervical screening sources.
+    - Source link heights were 44px at 320/390/760px and 28px at 1224px.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 327 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:31 KST - Caregiver Memo Preset Visible Action Label Iteration Note
+
+- Improvement target:
+  - A fresh button-label parity audit found the caregiver memo preset buttons visibly said only `식사`, `증상`, and `서류`.
+  - Their aria-label/title already said `보호자 공유본 전달 메모 프리셋 적용: ...`, so the visible command under-described the action.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the caregiver memo preset visible labels to `식사 적용`, `증상 적용`, and `서류 적용`.
+    - Preserved the existing preset text, status feedback, aria-label, and title wording.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that caregiver memo preset buttons visibly include the action word while retaining the 40px right-pane control contract.
+- Verification:
+  - PASS: Playwright caregiver memo preset label audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, 760px, 1094px, and 1224px rendered exactly `식사 적용`, `증상 적용`, and `서류 적용`.
+    - Old exact labels `식사`, `증상`, and `서류` counted 0.
+    - Buttons kept the existing aria-label/title text, measured 44px high at 320/390/760px, 40px high at 1094/1224px, and had no body overflow.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 327 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:32 KST - Saved Document Archive Visible Label Iteration Note
+
+- Improvement target:
+  - The saved-document row danger action visibly said only `삭제`, while its aria-label/title and actual behavior are recoverable movement into `삭제 보관함`.
+  - The shorter visible label could imply immediate permanent deletion instead of archive-style recovery.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the saved-document row archive button visible label from `삭제` to `삭제 보관`.
+    - Preserved the document-specific archive aria-label/title, confirmation dialog, history entry, and status feedback.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that recoverable saved-document delete actions visibly say `삭제 보관`.
+- Verification:
+  - PASS: Playwright saved-document archive label audit on `http://127.0.0.1:1431/#documents`.
+    - 320px, 390px, 760px, and 1224px rendered exactly one saved-document danger action as `삭제 보관`.
+    - Old exact label `삭제` counted 0.
+    - The button preserved the document-specific archive aria-label/title, measured 44px high at 320/390/760px and 36px high at 1224px, and had no body overflow.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 327 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:36 KST - Care Queue Visible Evidence Parser Test Hardening Note
+
+- Improvement target:
+  - The dashboard care queue visible-source fix was covered by Playwright, but the parsing rule lived inside `App.tsx` without focused unit coverage.
+  - A future change to care queue detail formatting could reintroduce raw URL text in the dashboard paragraph without failing fast.
+- Code/test changes:
+  - Added `src/careActionVisibleDetail.ts`.
+    - Extracts URL-backed `근거: 출처명 (URL)` groups from visible care queue paragraph text.
+    - Preserves ordinary detail text and URL-free local evidence text unchanged.
+  - Added `src/careActionVisibleDetail.test.ts`.
+    - Covers BP/KDCA single-source detail, parenthesized cervical screening detail with two links, ordinary detail text, and URL-free local evidence.
+  - Updated `src/App.tsx`.
+    - Imports the parser from the new utility instead of defining it inline.
+- Verification:
+  - PASS: `npm run test -- src/careActionVisibleDetail.test.ts`, 1 file and 3 tests.
+  - PASS: Playwright raw-visible-text audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, 760px, and 1224px kept `leakCount: 0`, `bodyOverflow: 0`, and no overflowing elements.
+    - Queue evidence links still rendered two KDCA blood-pressure links and two National Cancer Center cervical screening links.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 47 files and 330 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/careActionVisibleDetail.ts src/careActionVisibleDetail.test.ts src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:36 KST - HDL Sex-Specific Lab Preset Refresh Feedback Iteration Note
+
+- Improvement target:
+  - The lab preset helper already promised that Hgb/HDL/GGT sex-specific ranges refresh when profile sex changes while the draft still matches the preset values.
+  - Unit coverage pinned Hgb and GGT refresh behavior, but HDL refresh behavior and the user-facing status feedback were not explicit enough for a male/female criteria audit.
+- Code/test/docs changes:
+  - Updated `src/labPresets.test.ts`.
+    - Added HDL female-to-male refresh coverage for `50 mg/dL 이상` to `40 mg/dL 이상`.
+    - Added HDL custom-range protection coverage so user-edited draft ranges are not overwritten.
+    - Added exact status-message coverage for HDL, Hgb, and GGT sex-sync feedback.
+  - Updated `src/labPresets.ts`.
+    - Added `formatLabPresetSexSyncStatusLabel()` so refreshed sex-specific preset feedback names the selected preset and female/male/default 기준.
+  - Updated `src/App.tsx`.
+    - Profile sex changes now report statuses such as `성별 기준 수정됨 · HDL 콜레스테롤 남성 기준으로 갱신` instead of only `검사 프리셋 범위 갱신`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented exact sex-specific lab preset refresh feedback for HDL/GGT/Hgb helpers.
+- Verification:
+  - PASS: `npm run test -- src/labPresets.test.ts`, 1 file and 10 tests.
+  - PASS: Playwright HDL preset refresh audit on `http://127.0.0.1:1431/`.
+    - 390px and 820px selected `HDL 콜레스테롤` on a female profile.
+    - Before sex change: preview contained `여성 기준 적용` and `50 mg/dL 이상`; lower range field was `50`.
+    - After switching profile sex to male: preview contained `남성 기준 적용` and `40 mg/dL 이상`; lower range field was `40`.
+    - Status chip read `성별 기준 수정됨 · HDL 콜레스테롤 남성 기준으로 갱신`.
+    - Both widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 326 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/labPresets.ts src/labPresets.test.ts`.
+  - cmux status:
+    - Activated the `암관리` workspace in cmux and loaded `http://127.0.0.1:1431/` in the right in-app browser.
+    - Computer Use confirmed visible `CareVault` HTML content on the same local URL after the Playwright audit.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:40 KST - Sex-Specific Lab Preset Memo Refresh Iteration Note
+
+- Improvement target:
+  - The previous iteration fixed HDL range/status feedback when profile sex changes, but a preset-filled memo could still keep the old `적용 기준: 여성 기준 적용` line after switching the draft to male 기준.
+  - Saved lab notes, follow-up questions, Markdown, CSV, and caregiver exports all reuse that memo text, so the memo applicability line needs to move with the refreshed sex-specific range unless the user wrote a custom memo.
+- RED test:
+  - Added a failing `src/labPresets.test.ts` expectation for `resolveLabPresetSexChangeDraft()`.
+  - RED confirmed the helper did not exist and the app had no tested path for refreshing auto-filled memo applicability.
+- Code/test/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added `LabPresetDraftWithNoteSnapshot`.
+    - Added `resolveLabPresetSexChangeDraft()` to reuse the existing range guard, refresh auto-filled preset notes to the next sex applicability, and preserve custom user notes.
+  - Updated `src/App.tsx`.
+    - Profile sex changes now apply the note-aware sex-specific preset draft update.
+  - Updated `src/labPresets.test.ts`.
+    - Locked HDL female-to-male auto-note refresh from `적용 기준: 여성 기준 적용` to `적용 기준: 남성 기준 적용`.
+    - Locked custom memo preservation during the same range refresh.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that HDL/GGT/Hgb sex-specific refresh updates both range and auto-filled memo applicability while preserving custom memos.
+- Verification:
+  - PASS: `npm run test -- src/labPresets.test.ts`, 1 file and 11 tests.
+  - PASS: Playwright HDL preset memo-refresh audit on `http://127.0.0.1:1431/`.
+    - 390px and 820px selected `HDL 콜레스테롤` on a female profile.
+    - Before sex change: lower range field was `50`; note contained `적용 기준: 여성 기준 적용`.
+    - After switching profile sex to male: lower range field was `40`; note contained `적용 기준: 남성 기준 적용` and no longer contained `적용 기준: 여성 기준 적용`.
+    - Preview contained `남성 기준 적용` and `40 mg/dL 이상`.
+    - Status chip read `성별 기준 수정됨 · HDL 콜레스테롤 남성 기준으로 갱신`.
+    - Both widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 327 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:43 KST - Lab Preset Range-And-Memo Guidance Copy Iteration Note
+
+- Improvement target:
+  - The HDL/GGT/Hgb sex-specific preset flow now refreshes both the numeric range and auto-filled memo applicability when the user has not customized the draft.
+  - The visible helper and preview copy still described only `프리셋 범위`, which under-explained why the memo `적용 기준` line can also change.
+- RED test:
+  - Updated `src/labPresets.test.ts` expectations first.
+  - RED confirmed the preview detail still said `범위를 직접 고친 뒤` and did not mention memo edits or range-plus-auto-memo sync.
+- Code/test/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Female/male sex-specific preview details now say `범위나 메모를 직접 고친 뒤` to match the preservation rule.
+    - The unspecified-sex preview now says `범위와 자동 메모 기준만 갱신` for Hgb/HDL/GGT helpers.
+  - Updated `src/App.tsx`.
+    - The lab preset control helper now says sex-specific preset `범위와 자동 메모 기준` refresh only before direct user edits.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that visible lab preset guidance describes range-plus-auto-memo refresh behavior.
+- Verification:
+  - PASS: `npm run test -- src/labPresets.test.ts`, 1 file and 11 tests.
+  - PASS: Playwright lab preset guidance copy audit on `http://127.0.0.1:1431/`.
+    - 390px and 820px selected `HDL 콜레스테롤`.
+    - The helper text included `프리셋 범위와 자동 메모 기준`.
+    - The preview text included `범위나 메모를 직접 고친 뒤`.
+    - The official source label `대한당뇨병학회 당뇨병 관리 목표` remained visible.
+    - Both widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 327 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:01 KST - Repeated Control Hover Title Parity Iteration Note
+
+- Improvement target:
+  - `DESIGN.md` says repeated controls should expose scoped accessible labels and matching hover titles.
+  - Several visible repeated controls had scoped `aria-label` values but no matching `title`, so pointer users could not get the same contextual hint.
+- RED check:
+  - Playwright on `http://127.0.0.1:1431/` opened all `<details>` sections at 1224px.
+  - The control parity scan found five visible controls with `aria-label` but no matching `title`:
+    - `진료 요약 범위`
+    - `보호자 공유본 전달 메모`
+    - `혈압 혈당 차트 원자료 3개 보기`
+    - `혈액검사 메모 검토 상태`
+    - `혈액검사 메모 다음 조치`
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Added matching `title` attributes to the visit-summary range select, caregiver memo textarea, BP/glucose chart source-data summary, and saved-document edit controls.
+  - Updated `DESIGN.md`.
+    - Logged the repeated-control hover-title parity fix.
+- Verification:
+  - PASS: Playwright control parity audit on `http://127.0.0.1:1431/`.
+    - Visible `button`, `select`, `input`, `textarea`, and `summary` controls with both `aria-label` and `title` now had mismatch count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:05 KST - Saved Document Search Icon Alignment Iteration Note
+
+- Improvement target:
+  - A fresh Playwright all-details audit at 320px, 360px, 390px, 760px, 1094px, 1224px, and 1366px showed no page-level horizontal overflow.
+  - The same audit found the saved-document search field measured 44px high but had a 54px scroll height because its absolute search icon was positioned at `top: 36px`, protruding below the input.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Recentered `.search-field svg` with `top: 50%` and `transform: translateY(-50%)`.
+  - Updated `DESIGN.md`.
+    - Added a responsive contract that saved-document search icons stay vertically centered inside their inputs.
+- Verification:
+  - PASS: Playwright saved-document search icon audit on `http://127.0.0.1:1431/`.
+    - 320px, 360px, 390px, 760px, 1094px, 1224px, and 1366px kept the icon inside the input.
+    - Icon center delta was 0px at every width.
+    - Search-field scroll height now matches client height: 44px on mobile/narrow widths and 40px on right-pane/desktop widths.
+  - PASS: Playwright all-details visible-control audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, 760px, and 1224px kept `bodyOverflow: 0`.
+    - Visible short-control count was 0 after excluding visually hidden file inputs and raw checkbox inputs whose labels are the touch targets.
+    - Visible clipping count was 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:07 KST - Backup Button Visible Label Iteration Note
+
+- Improvement target:
+  - cmux first-viewport review showed the full-state JSON backup actions only as `내보내기` and `가져오기`.
+  - Their `aria-label` and `title` already carried the full backup scope, but the visible text did not distinguish backup export/import from visit-summary, CSV, or caregiver-share exports.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the visible topbar labels to `백업 내보내기` and `백업 가져오기`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that backup controls must visibly say `백업` while retaining detailed scope labels/titles.
+- Verification:
+  - PASS: Playwright topbar backup visible-label audit on `http://127.0.0.1:1431/`.
+    - 390px, 760px, 1094px, 1224px, and 1366px rendered `백업 내보내기` and `백업 가져오기`.
+    - The detailed `aria-label`/`title` values still began with `전체 백업 내보내기` and `CareVault 백업 가져오기`.
+    - Topbar button clipping count was 0 and `bodyOverflow` stayed 0 at every measured width.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:11 KST - Manual Save and Caregiver Control Height Iteration Note
+
+- Improvement target:
+  - Playwright at 1224px found one topbar button with visible text exactly `저장`, even though its scoped `aria-label` and title were `현재 CareVault 기록 수동 저장`.
+  - The same scan found caregiver memo preset/reset controls at 32px high in the constrained right-pane layout, while `DESIGN.md` requires those controls to stay at least 40px high.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the topbar manual save visible label to `수동 저장`.
+  - Updated `src/App.css`.
+    - Raised `.memo-preset-button`, `.caregiver-reset-button`, and `.caregiver-share-preset-select` to 40px base height.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the visible manual-save text and constrained right-pane caregiver control-height contract.
+- Verification:
+  - PASS: Playwright topbar manual-save and caregiver-control audit on `http://127.0.0.1:1431/`.
+    - 390px, 760px, 1094px, 1224px, and 1366px rendered `수동 저장` with the existing `현재 CareVault 기록 수동 저장` aria/title text.
+    - Visible topbar button text exactly `저장` count was 0 at every measured width.
+    - Caregiver memo preset buttons, reset button, and preset select measured at least 40px high at every measured width.
+    - Topbar button clipping count was 0 and `bodyOverflow` stayed 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:16 KST - Caregiver Export Visible Label Iteration Note
+
+- Improvement target:
+  - A Playwright topbar audit at 320px, 390px, 760px, 1094px, 1224px, and 1366px found the caregiver export button was visibly labeled only `공유본`.
+  - The same button already had the detailed `보호자 공유본 내보내기 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개` aria/title scope text, but the visible label was less explicit than adjacent `요약 미리보기`, `CSV 미리보기`, and `공유본 미리보기` actions.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the caregiver export visible label from `공유본` to `공유본 내보내기`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that the caregiver export action must visibly name the export action while preserving the detailed share-scope aria/title text.
+- Verification:
+  - PASS: Playwright topbar caregiver-export label audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, 760px, 1094px, 1224px, and 1366px rendered exactly one `공유본 내보내기` button.
+    - Exact visible `공유본` button count was 0 at every measured width.
+    - The detailed `aria-label` and `title` values still matched and began with `보호자 공유본 내보내기`.
+    - Topbar button clipping count was 0 and `bodyOverflow` stayed 0 at every measured width.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:18 KST - Visit and CSV Export Visible Label Iteration Note
+
+- Improvement target:
+  - A Playwright topbar audit at 390px, 760px, 1094px, 1224px, and 1366px found the visit-summary export button visibly labeled only `진료 요약`.
+  - The same scan found the CSV export button visibly labeled only `CSV`.
+  - Both buttons already had detailed matching aria/title scope text beginning with `진료 요약 내보내기` and `CSV 내보내기`, so the useful slice was to make the visible labels expose the export action too.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the visit-summary export visible label to `요약 내보내기`.
+    - Changed the CSV export visible label to `CSV 내보내기`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented visible export-action labels for backup, visit-summary, CSV, and caregiver-share exports.
+- Verification:
+  - PASS: Playwright topbar visit/CSV export label audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, 760px, 1094px, 1224px, and 1366px rendered exactly one `요약 내보내기` and exactly one `CSV 내보내기`.
+    - Exact visible `진료 요약` and `CSV` export button counts were 0 at every measured width.
+    - The detailed `aria-label` and `title` values still matched and began with `진료 요약 내보내기` and `CSV 내보내기`.
+    - Topbar button clipping count was 0 and `bodyOverflow` stayed 0 at every measured width.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:20 KST - Saved Document Add Attachment Visible Label Iteration Note
+
+- Improvement target:
+  - A full visible-button action-word audit at 390px and 1224px found one real mismatch after export labels were fixed: the saved-document attachment action had document-specific aria/title text containing `첨부 추가`, but the visible label was only `첨부`.
+  - The `첨부 파일 선택` finding was a false positive because its `내보내기` word appears only in the explanatory phrase `파일명만 내보내기에 포함`.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the no-attachment saved-document row action from `첨부` to `첨부 추가`.
+    - Kept existing `재첨부` text when an attachment already exists.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented that saved-document rows without an attachment must visibly say `첨부 추가` while preserving document-specific aria/title context.
+- Verification:
+  - PASS: Playwright saved-document action label audit on `http://127.0.0.1:1431/#documents`.
+    - 320px, 390px, 760px, and 1224px rendered exactly one `첨부 추가` action and zero exact `첨부` actions.
+    - The `첨부 추가` button preserved document-specific matching `aria-label` and `title`.
+    - Document action button clipping count was 0 and `bodyOverflow` stayed 0 at every measured width.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:58 KST - Mobile Chart Source Disclosure Touch Target Iteration Note
+
+- Improvement target:
+  - `DESIGN.md` requires mobile disclosure summaries to keep a 44px touch height.
+  - The BP/glucose chart source-data disclosure was source-critical for touch and screen-reader users but still used a 34px compact desktop summary height on mobile.
+- RED check:
+  - Playwright on `http://127.0.0.1:1431/` opened all `<details>` sections.
+  - At 320px and 390px, `혈압 혈당 차트 원자료 3개 보기` measured `34px` high.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Added `.vital-chart-data summary` to the mobile 44px control-height contract.
+    - Kept the desktop/right-pane 34px compact disclosure height unchanged.
+  - Updated `DESIGN.md`.
+    - Logged the BP/glucose chart source-data disclosure touch-target fix.
+- Verification:
+  - PASS: Playwright all-details control-height audit on `http://127.0.0.1:1431/`.
+    - 320px: chart source-data summary `44px`, short control count 0, `bodyOverflow: 0`, visible overflow count 0.
+    - 390px: chart source-data summary `44px`, short control count 0, `bodyOverflow: 0`, visible overflow count 0.
+    - 1224px: chart source-data summary remained compact at `34px`, short control count 0, `bodyOverflow: 0`, visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/healthStandards.ts src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:54 KST - Mobile Standards Source Link Touch Target Iteration Note
+
+- Improvement target:
+  - `DESIGN.md` requires mobile and narrow cmux widths to keep official-source links at a 44px touch height.
+  - Some source-heavy standards coverage links still used the desktop 28px link height on mobile because their more specific base selectors overrode the generic mobile `a[href]` rule.
+- RED check:
+  - Playwright on `http://127.0.0.1:1431/` opened all `<details>` sections at 320px, 375px, 390px, and 760px.
+  - Official source links in standards coverage measured as low as `28px`, including BMI, waist, BP, glucose, kidney, electrolyte, lipid, HDL, GGT, liver, protein, calcium, phosphate, and uric-acid source rows.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Added specific mobile touch-height overrides for `.standards-coverage em a`, `.lab-preset-source a`, and `.vital-standard-helper-heading a`.
+    - Kept the desktop/right-pane compact source-link sizing unchanged outside the mobile breakpoint.
+  - Updated `DESIGN.md`.
+    - Logged the standards-coverage/lab-preset/vital-helper official-source touch-target fix.
+- Verification:
+  - PASS: Playwright mobile source-link audit on `http://127.0.0.1:1431/`.
+    - 320px, 375px, 390px, and 760px all reported zero visible official-source links below 44px.
+    - Standards coverage source-link samples measured `44px` high.
+    - All checked widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:50 KST - cmux Topbar Title Grid Iteration Note
+
+- Improvement target:
+  - The live cmux right-pane browser was wider than the 1120px stacking breakpoint, but the actual CareVault workspace was still constrained by the left sidebar.
+  - Dense export/caregiver-share controls squeezed the topbar title column until `나의 건강 기록` rendered as single-character Korean lines.
+- RED check:
+  - Playwright on `http://127.0.0.1:1431/` at 1224px measured `.topbar` as `display: flex`.
+  - The title column was only `47.296875px`, and the `h1` estimated line count was 6.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Changed the default topbar to a two-column grid with a protected `15rem-22rem` title column and a flexible wrapped actions column.
+    - Kept the existing 1120px-and-below behavior as a single-column stacked grid.
+  - Updated `DESIGN.md`.
+    - Documented the constrained cmux right-pane topbar title contract above 1120px.
+- Verification:
+  - PASS: Playwright responsive topbar audit on `http://127.0.0.1:1431/`.
+    - 1224px: title column `352px`, `h1` estimated line count 1, `bodyOverflow: 0`, visible overflow count 0.
+    - 1366px: title column `352px`, `h1` estimated line count 1, `bodyOverflow: 0`, visible overflow count 0.
+    - 820px: single-column topbar, `h1` estimated line count 1, `bodyOverflow: 0`, visible overflow count 0.
+    - 390px: single-column topbar, `h1` estimated line count 1, `bodyOverflow: 0`, visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:46 KST - Lab Preset Preview Accessibility Label Iteration Note
+
+- Improvement target:
+  - The lab preset preview now contains range, applicability, source, and range-plus-auto-memo guidance.
+  - Its `aria-label` still said only `선택한 검사 프리셋 범위`, so assistive technology named only part of the preview content.
+- RED check:
+  - Playwright on `http://127.0.0.1:1431/` selected `HDL 콜레스테롤` at 390px.
+  - The preview text included memo guidance, but `.lab-preset-preview` still had `aria-label="선택한 검사 프리셋 범위"`.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the lab preset preview `aria-label` to `선택한 검사 프리셋 범위와 메모 기준`.
+  - Updated `DESIGN.md`.
+    - Documented that the lab preset preview accessibility name must mention both range and memo criteria.
+- Verification:
+  - PASS: Playwright accessibility-label audit on `http://127.0.0.1:1431/`.
+    - 390px and 820px selected `HDL 콜레스테롤`.
+    - `getByLabel("선택한 검사 프리셋 범위와 메모 기준")` matched exactly one preview.
+    - The old exact label `선택한 검사 프리셋 범위` matched zero previews.
+    - The preview still included memo guidance and the official source label.
+    - Both widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test` (`46 passed`, `327 passed`).
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/labPresets.ts src/labPresets.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:27 KST - Direct Vital Export Assessment Evidence Iteration Note
+
+- Improvement target:
+  - The dashboard queue and chart source-data rows already exposed BP/glucose Korean-standard assessments and official sources, but direct vital rows in Markdown, CSV, and caregiver HTML exports still focused on value/unit/context.
+  - Protectors or clinicians reviewing exported records should not have to infer whether `혈압 132/84` or `혈당 146 mg/dL` maps to an adult-common BP/glucose standard.
+- RED test:
+  - Added failing expectations in `src/caregiverExport.test.ts`, `src/csvExport.test.ts`, and `src/visitPacket.test.ts`.
+  - RED confirmed: direct caregiver, CSV, and visit-summary vital rows lacked per-vital assessment/source evidence while the existing queue rows already had it.
+- Code/test/docs changes:
+  - Added `src/vitalAssessmentEvidence.ts`.
+    - Centralizes BP/glucose assessment, standard selection, source-label, and source-URL evidence for direct export rows.
+    - Keeps low-BP rows on the KDCA low-blood-pressure source through the assessment `standardId`.
+  - Updated `src/vitalChartData.ts`.
+    - Reused the same assessment/source helper for chart source-data assessment labels.
+    - A targeted chart/export suite caught an initial refactor bug where a BP record could be evaluated in the glucose assessment slot; restoring the chart record-type guard fixed it before full verification.
+  - Updated `src/caregiverExport.ts`.
+    - Recent BP/glucose rows now render the measurement, per-vital assessment, adult-common standard label, user note, and linked official-source evidence.
+  - Updated `src/csvExport.ts`.
+    - Direct `vital` rows now put `판정 · 기준` in the status column and user note, assessment summary, and `근거:` source evidence in the detail column.
+  - Updated `src/visitPacket.ts`.
+    - Direct Markdown vital lines now include the per-vital assessment, adult-common standard label, user note, and official source evidence.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented direct BP/glucose export rows with per-vital assessment, adult-common standard labels, and official-source evidence.
+- Verification:
+  - PASS: `npm run test -- src/caregiverExport.test.ts src/csvExport.test.ts src/visitPacket.test.ts`, 3 files and 68 tests.
+  - PASS: `npm run test -- src/vitalChartData.test.ts src/caregiverExport.test.ts src/csvExport.test.ts src/visitPacket.test.ts`, 4 files and 75 tests.
+  - PASS: Playwright export-preview audit on `http://127.0.0.1:1431/`.
+    - 390px and 820px clicked `요약 미리보기`, `CSV 미리보기`, and `공유본 미리보기`.
+    - Markdown, CSV, and caregiver rendered/raw preview content all contained the BP/glucose assessment, adult-common standard labels, and official source evidence.
+    - Both widths kept `bodyOverflow: 0` and preview panel overflow 0.
+  - PASS: Playwright chart source-data audit on `http://127.0.0.1:1431/`.
+    - 390px and 820px opened `차트 원자료`.
+    - Rows preserved BP/glucose assessment labels, adult-common standard labels, and official source labels after the shared-helper refactor.
+    - Both widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 325 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/caregiverExport.ts src/caregiverExport.test.ts src/csvExport.ts src/csvExport.test.ts src/visitPacket.ts src/visitPacket.test.ts src/vitalAssessmentEvidence.ts src/vitalChartData.ts src/vitalChartData.test.ts src/App.css src/App.tsx src/cervicalCancerCare.ts src/cervicalCancerCare.test.ts src/careActionQueue.ts src/careActionQueue.test.ts`.
+  - cmux status:
+    - The right cmux browser omnibar still pointed at `http://127.0.0.1:1431/`, but the visible WebView remained blank in Computer Use.
+    - Rendered evidence for this iteration used Playwright against the same reachable local URL.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:17 KST - Mobile Official Source Target Re-Audit Note
+
+- Improvement target:
+  - A fresh 320/390/820px interaction audit showed no horizontal overflow and checkbox labels already met the 44px mobile touch-target contract.
+  - The same audit still surfaced mobile official-source links at 28px in specific cervical, standards, metric, timeline, lab, and question source-link selectors, despite the broad mobile `a[href]` rule.
+- Code/docs changes:
+  - Updated `src/App.css`.
+    - Added mobile-only explicit 44px minimum height and vertical padding for the remaining source-link selector families:
+      `cervical-priority`, alert/source-list, screening, prompt, item source chips, standards range links, metric evidence, timeline evidence, lab evidence, and question evidence.
+    - Preserved the existing 28px right-pane/desktop target behavior outside the mobile breakpoint.
+  - Updated `DESIGN.md`.
+    - Added a decision-log entry for the mobile source-link re-audit and selector-specific 44px fix.
+- Verification:
+  - PASS: Playwright source-link target audit on `http://127.0.0.1:1431/`.
+    - 320px and 390px measured 94 source links each; every measured link was at least 44px high.
+    - 820px measured the same 94 source links with 28px right-pane targets preserved.
+    - All widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: Playwright visible-link regression audit on `http://127.0.0.1:1431/`.
+    - 320px and 390px had no visible links below 44px and no horizontal overflow.
+    - 820px preserved compact desktop/right-pane link heights, including the 28px official-source chip.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 325 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css src/App.tsx src/vitalChartData.ts src/vitalChartData.test.ts src/cervicalCancerCare.ts src/cervicalCancerCare.test.ts src/careActionQueue.ts src/careActionQueue.test.ts`.
+  - cmux status:
+    - `http://127.0.0.1:1431/` still returned HTTP 200, and a fresh Computer Use check showed the right cmux browser omnibar on the same URL.
+    - The visible cmux WebView content remained blank, with the sidebar still visually indicating the `블로그` workspace despite the window title `암관리`.
+    - Rendered evidence for this iteration stayed on the same reachable local URL through Playwright.
+  - No git staging or commit was performed.
+
+## 2026-06-05 06:11 KST - BP/Glucose Chart Source-Data Assessment Iteration Note
+
+- Improvement target:
+  - The BP/glucose chart source-data disclosure showed date-by-date values, units, and glucose measurement context, but it still required users to infer the Korean standard assessment from other panels.
+  - For mobile/right-pane review, each raw chart row should carry the BP/glucose assessment, state that the applied BP/glucose 기준 is `성인 남녀 공통`, and show the official source label.
+- Code/test/docs changes:
+  - Updated `src/vitalChartData.ts`.
+    - `buildVitalChartData()` now accepts the profile diabetes-tracking option and computes BP/glucose assessment plus official source labels for chart points.
+    - `buildVitalChartAccessibleRows()` now includes a `판정:` field such as `고혈압 전단계 범위 · 성인 남녀 공통 한국 성인 혈압 · 질병관리청 국가건강정보포털 고혈압` or `식후 목표 범위 · 성인 남녀 공통 당뇨 추적 혈당 · 대한당뇨병학회 당뇨병 관리 목표`.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Passed the current profile diabetes setting into chart data generation.
+    - Added a fourth visible source-data cell for the assessment and adjusted the row grid to wrap at narrow widths.
+  - Updated `src/vitalChartData.test.ts`.
+    - Locked BP and glucose assessment text in chart points and accessible source rows.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the adult-common BP/glucose assessment and official source labels in collapsible chart source-data rows.
+- Verification:
+  - PASS: `npm run test -- src/vitalChartData.test.ts`, 1 file and 7 tests.
+  - PASS: Playwright chart source-data assessment audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, and 820px opened `차트 원자료`.
+    - Each row had four visible cells: date, BP, glucose, and `판정`.
+    - Rows included `판정:`, `성인 남녀 공통`, and official source labels, including `질병관리청 국가건강정보포털 고혈압` and `대한당뇨병학회 당뇨병 관리 목표`.
+    - All widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 46 files and 325 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/vitalChartData.ts src/vitalChartData.test.ts src/App.tsx src/App.css src/cervicalCancerCare.ts src/cervicalCancerCare.test.ts src/careActionQueue.ts src/careActionQueue.test.ts`.
+  - cmux status:
+    - The right cmux browser tab still showed `http://127.0.0.1:1431/` in the omnibar, but the WebView content remained blank.
+    - Rendered evidence stayed on the same reachable local URL through Playwright instead of claiming cmux page-load success.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:40 KST - DESIGN Runtime Evidence Refresh Note
+
+- Improvement target:
+  - `DESIGN.md` still pointed at stale cmux runtime evidence, including `surface:513` and `http://127.0.0.1:1420/`.
+  - The current verified target for this CareVault pass is the right cmux in-app browser in workspace `암관리` at `http://127.0.0.1:1431/`.
+- Docs changes:
+  - Updated `DESIGN.md`.
+    - Set `source.checked_at` to `2026-06-05`.
+    - Replaced stale runtime evidence with `cmux workspace 암관리 right in-app browser at http://127.0.0.1:1431/`.
+    - Updated the Evidence Map runtime QA line and added a decision-log entry for the runtime-evidence refresh.
+- Verification:
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md`.
+  - PASS: Computer Use cmux state check.
+    - Window title: `암관리`.
+    - Omnibar: `http://127.0.0.1:1431/`.
+    - Visible page content: CareVault dashboard, including `나의 건강 기록`, export controls, caregiver controls, and profile/BP/glucose cards.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:44 KST - Export Preview Visible Action Label Iteration Note
+
+- Improvement target:
+  - Export preview action buttons had detailed aria-label/title text, but their visible labels were only `복사`, `인쇄`, `다운로드`, and `닫기`.
+  - Users working inside an open Markdown/CSV/caregiver preview should see that each action targets the current preview without relying on hover text.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed export preview visible labels to `미리보기 복사`, `미리보기 인쇄`, `미리보기 다운로드`, and `미리보기 닫기`.
+    - Preserved the existing scoped aria-label/title summaries with line, character, byte, and source-marker counts.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the preview-scoped visible action labels and added the no-overflow checklist item.
+- Verification:
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright export preview action-label audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, 760px, and 1224px all showed the four preview-scoped labels.
+    - All widths kept `bodyOverflow: 0`, preview panel overflow 0, visible overflow count 0, and no too-short preview actions.
+  - PASS: `npm run test`, 47 files and 330 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:47 KST - Stale Preview Fresh Action Visible Label Iteration Note
+
+- Improvement target:
+  - Stale export-preview fresh actions had scoped aria-label/title text, but all five visible buttons still said `새 미리보기`.
+  - The visible button should name whether it is applying changed caregiver settings, shared records, visit-summary range, visit-summary records, or CSV records.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed stale fresh-action visible labels to `설정 반영`, `공유 기록 반영`, `범위 반영`, `요약 기록 반영`, and `CSV 기록 반영`.
+    - Preserved the existing detailed aria-label/title text for each stale state.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented state-specific visible stale-preview actions and strengthened the design checklist from accessible-only labels to visible-plus-accessible labels.
+- Verification:
+  - PASS: Source-level label check confirmed all five state-specific labels appear exactly once in `src/App.tsx`.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright stale-preview label audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, and 1224px generated caregiver-setting and visit-summary-range stale alerts.
+    - Caregiver setting stale action rendered `설정 반영`; visit-summary range stale action rendered `범위 반영`.
+    - Both states kept matching scoped aria-label/title text, `bodyOverflow: 0`, alert overflow 0, visible overflow count 0, and mobile 44px action height.
+  - PASS: `npm run test`, 47 files and 330 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 07:49 KST - Remaining Short Action Label Iteration Note
+
+- Improvement target:
+  - A fresh visible-button scan found three remaining short action labels with richer aria/title context:
+    `큐 복사`, saved-question `복사`, and saved-question status `보류`.
+  - These were not functional bugs, but they under-described repeated dashboard/question actions for pointer users.
+- Code/test/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the dashboard care queue copy button to `진료 큐 복사`.
+    - Changed saved-question copy buttons to `질문 복사`.
+  - Updated `src/questionStatus.ts` and `src/questionStatus.test.ts`.
+    - Kept the canonical deferred status label as `보류`, but changed the button visible label to `보류 처리`.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the visible `진료 큐 복사`, `질문 복사`, and `보류 처리` label contracts.
+- Verification:
+  - PASS: `npm run test -- src/questionStatus.test.ts`, 1 file and 2 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright visible-button short-label audit on `http://127.0.0.1:1431/`.
+    - 390px and 1224px each found `진료 큐 복사`, `질문 복사`, and `보류 처리` exactly once.
+    - Remaining generic short-button count was 0, with `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: `npm run test`, 47 files and 330 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/questionStatus.ts src/questionStatus.test.ts`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 08:02 KST - CBC RBC/Hct Korean Reference Helper Iteration Note
+
+- Improvement target:
+  - The lab preset surface and Korean health-standard range panel covered WBC, ANC, Hgb, and PLT-related cancer-care checks, but did not expose RBC or Hct as sex-specific CBC helper ranges.
+  - The current-profile sex-standard chips also needed to show RBC/Hct so caregivers can see which male/female CBC references are being applied before copying.
+- Code/test/docs changes:
+  - Updated `src/labPresets.ts`.
+    - Added source-backed RBC and Hct presets from 서울아산병원 전혈구검사 참고치.
+    - Updated WBC and PLT helper ranges to the same CBC source.
+    - Added sex-specific RBC/Hct refresh behavior and visible helper wording for `Hgb/RBC/Hct/HDL/GGT`.
+  - Updated `src/healthStandards.ts`.
+    - Added CBC WBC/RBC/Hct/PLT range rows, source-backed `CBC 입력 보조` standards section, and CBC sex-specific coverage.
+    - Added current-profile RBC/Hct sex-standard notes and copy chips.
+  - Updated `src/labPresets.test.ts` and `src/healthStandards.test.ts`.
+    - Locked RBC/Hct ranges, source labels, selected-filter counts, profile sex-standard chip counts, and copied standards text.
+  - Updated `README.md` and `DESIGN.md` to document the CBC WBC/RBC/Hct/PLT helper contract.
+- Verification:
+  - PASS: `npm run test -- src/labPresets.test.ts src/healthStandards.test.ts`, 2 files and 38 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 47 files and 330 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/labPresets.ts src/labPresets.test.ts src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: Playwright UI audit on `http://127.0.0.1:1431/#labs`.
+    - 320px, 390px, 760px, and 1224px all exposed `RBC 적혈구수` and `Hct 적혈구용적률` preset options.
+    - RBC preview showed female range `4.0-5.4 10^6/uL`, Hct preview showed female range `36-46 %`, and both showed `서울아산병원 전혈구검사 참고치`.
+    - Profile sex-standard chips included `RBC/Hct`, standards text included `CBC 입력 보조`, the helper text included `Hgb/RBC/Hct/HDL/GGT`, and the old `Hgb/HDL/GGT처럼` text was absent.
+    - All audited widths kept `bodyOverflow: 0`, visible overflow count 0, mobile select height 44px, and mobile preview source-link height 44px.
+  - PASS: Computer Use cmux state check.
+    - Workspace/window: `암관리`.
+    - Right in-app browser omnibar: `http://127.0.0.1:1431/`.
+    - Visible CareVault page included profile `RBC/Hct` chip and the updated lab preset helper text.
+  - No git staging or commit was performed.
+
+## 2026-06-05 08:04 KST - CBC Direct-Input Placeholder Iteration Note
+
+- Improvement target:
+  - After adding RBC/Hct presets, the direct lab item placeholder still listed WBC and chemistry examples but omitted RBC, Hct, and PLT.
+  - Direct-input users should see the same CBC terms that the preset selector now supports.
+- Code/docs changes:
+  - Updated `src/App.tsx`.
+    - Changed the lab item placeholder to start with `WBC, RBC, Hct, PLT` before HbA1c and chemistry examples.
+  - Updated `DESIGN.md` to lock this direct-input placeholder contract.
+- Verification:
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 47 files and 330 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/labPresets.ts src/labPresets.test.ts src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: Playwright placeholder audit on `http://127.0.0.1:1431/#labs`.
+    - 320px, 390px, 760px, and 1224px all exposed the placeholder `예: WBC, RBC, Hct, PLT, HbA1c...`.
+    - All audited widths kept body overflow 0 and visible overflow count 0.
+  - PASS: Computer Use cmux state check stayed on workspace/window `암관리` with the right in-app browser at `http://127.0.0.1:1431/`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 08:19 KST - Glucose Acute-Range Source Routing Iteration Note
+
+- Improvement target:
+  - Low-glucose and very-high-glucose assessments needed their own Korean official source IDs instead of inheriting the profile diabetes-care or non-diabetes screening glucose source.
+  - Korean users reviewing queue/export evidence should see the acute KDCA low-glucose and high-glucose basis for `<70 mg/dL` and `>=250 mg/dL` before profile diabetes/screening defaults.
+- Official source verification:
+  - KDCA 저혈당 page: `70 mg/dL` 미만 저혈당 기준 and symptom/context recording basis.
+  - KDCA 고혈당 page: `250 mg/dL` 이상 현저한 고혈당 기준 and dehydration/altered-consciousness symptom basis.
+- Code/test/docs changes:
+  - Updated `src/healthRules.ts`.
+    - Added `hypoglycemia` as the `standardId` for glucose below `70 mg/dL`.
+    - Changed the old high-glucose risk cutoff to `250 mg/dL` and routed it to `marked-hyperglycemia`.
+  - Updated `src/healthStandards.ts`.
+    - Added source-backed `저혈당 확인 기준` and `현저한 고혈당 확인 기준` standards, range rows, quick-filter membership, helper text, dashboard/export summary coverage, and copied standards text.
+  - Updated `src/vitalAssessmentEvidence.ts`, `src/careActionQueue.ts`, and `src/App.tsx`.
+    - Made draft helpers, direct vital export evidence, care queue details, and dashboard source selection prefer the assessment-specific `standardId`.
+  - Updated regression tests in `src/healthRules.test.ts`, `src/vitalAssessmentEvidence.test.ts`, `src/healthStandards.test.ts`, `src/careActionQueue.test.ts`, `src/csvExport.test.ts`, `src/visitPacket.test.ts`, and `src/caregiverExport.test.ts`.
+    - Locked low-glucose and marked-hyperglycemia source labels, URLs, range rows, queue details, and direct export evidence.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented separate KDCA low-glucose/marked-hyperglycemia source routing and export/queue preservation.
+- Verification:
+  - PASS: `npm run test -- src/healthRules.test.ts src/vitalAssessmentEvidence.test.ts src/healthStandards.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/vitalChartData.test.ts`, 8 files and 142 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 48 files and 332 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: Playwright glucose acute-range UI audit on `http://127.0.0.1:1431/`.
+    - 320px, 390px, 760px, and 1224px showed `저혈당 확인 기준`, KDCA 저혈당 source, `70 mg/dL 미만`, and `저혈당 범위` for a 66 mg/dL draft.
+    - The same widths showed `현저한 고혈당 확인 기준`, KDCA 고혈당 source, `250 mg/dL 이상`, and `현저한 고혈당 범위` for a 250 mg/dL draft.
+    - The standards panel exposed both new rows, and all audited widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: Computer Use cmux state check.
+    - Workspace/window: `암관리`.
+    - Right in-app browser omnibar: `http://127.0.0.1:1431/`.
+    - Visible CareVault page loaded in the right browser.
+  - No git staging or commit was performed.
+
+## 2026-06-05 08:34 KST - Temperature Vital Fever-Contact Iteration Note
+
+- Improvement target:
+  - Cancer-care users could record fever/chills as a symptom-support template, but the vital form still only accepted blood pressure and glucose.
+  - Cervical/cancer-patient fever tracking needed a direct `체온` vital path that preserved the National Cancer Center 38℃ infection-contact standard in dashboard, care queue, exports, and SQLite mirror data.
+- Official source basis:
+  - National Cancer Center infection guidance: cancer-patient chills or body temperature `38℃` or higher should be treated as an immediate emergency/care-team contact threshold.
+  - Existing app standard ID: `infection-fever`, source `국가암정보센터 감염 의료진 상담 기준`, URL `https://www.cancer.go.kr/lay1/S1T435C439/contents.do`.
+- Code/test/docs changes:
+  - Updated `src/healthRules.ts`, `src/vitalValidation.ts`, `src/vitalRecordLabels.ts`, and `src/vitalAssessmentEvidence.ts`.
+    - Added `temperature` vital support, `temperatureC`, `assessTemperature()`, validation messages, timeline/metric labels, and `infection-fever` evidence routing.
+  - Updated `src/App.tsx`, `src/vitalMetric.ts`, and `src/vitalChartData.ts`.
+    - Added the `체온` vital select option, 0.1℃ input, fever save preview, latest-temperature dashboard metric, temperature-aware panel summary, and BP/glucose chart filtering for temperature records.
+  - Updated `src/careActionQueue.ts`, `src/csvExport.ts`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Added fever temperature care-queue rows and direct Markdown/CSV/caregiver vital rows that preserve note, assessment, cancer-patient common standard label, and official source URL.
+  - Updated `src/storage.ts`.
+    - Added `temperature_c REAL`, existing-DB migration via `PRAGMA table_info(vitals)`, insert binding, and normalized-search coverage.
+  - Updated `src/healthStandards.ts` and `src/caregiverShareSettings.ts`.
+    - Added `infection-fever` to the 생활지표 filter, added vital helper text, normalized the standard label to `체온·감염 연락 기준`, and renamed the caregiver vital section to `혈압·혈당·체온`.
+  - Added or updated regression tests across health rules, validation, labels, evidence, care queue, CSV, Markdown, caregiver HTML, storage, panel summary, chart data, standards, and caregiver share settings.
+  - Updated `README.md` and `DESIGN.md` to document direct temperature vital support, 38℃ fever-contact evidence preservation, and SQLite `temperature_c` migration.
+- Verification:
+  - PASS: `npm run test -- src/healthRules.test.ts src/vitalValidation.test.ts src/vitalRecordLabels.test.ts src/vitalAssessmentEvidence.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/storage.test.ts src/vitalMetric.test.ts src/vitalChartData.test.ts src/healthStandards.test.ts src/caregiverShareSettings.test.ts`, 13 files and 182 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 48 files and 341 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/healthRules.ts src/healthRules.test.ts src/healthStandards.ts src/healthStandards.test.ts src/vitalValidation.ts src/vitalValidation.test.ts src/vitalRecordLabels.ts src/vitalRecordLabels.test.ts src/vitalAssessmentEvidence.ts src/vitalAssessmentEvidence.test.ts src/careActionQueue.ts src/careActionQueue.test.ts src/csvExport.ts src/csvExport.test.ts src/visitPacket.ts src/visitPacket.test.ts src/caregiverExport.ts src/caregiverExport.test.ts src/storage.ts src/storage.test.ts src/vitalMetric.ts src/vitalMetric.test.ts src/vitalChartData.ts src/vitalChartData.test.ts src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: Playwright temperature vital UI audit on `http://127.0.0.1:1431/#records`.
+    - 320px, 390px, 760px, and 1224px all exposed `체온·감염 연락 기준`, `국가암정보센터 감염 의료진 상담 기준`, `38℃`, and `발열 연락 기준` after selecting `체온` and entering `38.1`.
+    - All audited widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: Computer Use cmux state check.
+    - Workspace/window: `암관리`.
+    - Right in-app browser omnibar: `http://127.0.0.1:1431/`.
+    - Visible CareVault page included `혈압·혈당·체온` labels and the latest-temperature metric source card.
+  - No git staging or commit was performed.
+
+## 2026-06-05 08:37 KST - Vital Timeline Source Evidence Iteration Note
+
+- Improvement target:
+  - Recent timeline rows showed source-backed symptom/question records, but saved blood pressure, glucose, and temperature vital rows still appeared as if they had no official evidence in the timeline summary.
+  - Korean users reviewing recent records should see the same KDCA/KDA/NCC basis on saved vital timeline rows that exports, care queue rows, and dashboard metric cards already preserve.
+- Code/test/docs changes:
+  - Added `src/vitalTimelineDisplay.ts`.
+    - Builds timeline-specific official-source evidence from saved vital records without duplicating the existing vital assessment evidence rules.
+    - Returns compact source labels, linked source URLs, and full `근거:` evidence text for BP, glucose, and fever-temperature records.
+  - Added `src/vitalTimelineDisplay.test.ts`.
+    - Locked KDCA hypertension evidence, National Cancer Center fever evidence, and empty evidence for incomplete temperature rows.
+  - Updated `src/App.tsx`.
+    - Counts source-backed vital rows in the recent-timeline summary.
+    - Renders vital timeline rows with `근거 포함` badges and linked `근거:` evidence rows.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented source-backed vital timeline evidence and BP/glucose/temperature source-count coverage.
+- Verification:
+  - PASS: `npm run test -- src/vitalTimelineDisplay.test.ts src/timelineMetric.test.ts src/vitalAssessmentEvidence.test.ts src/vitalRecordLabels.test.ts`, 4 files and 12 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 49 files and 344 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/timelineMetric.ts src/timelineMetric.test.ts src/vitalAssessmentEvidence.ts src/vitalRecordLabels.ts`.
+  - PASS: `git diff --no-index --check /dev/null src/vitalTimelineDisplay.ts` and `git diff --no-index --check /dev/null src/vitalTimelineDisplay.test.ts` emitted no whitespace warnings; exit 1 was expected because each untracked file differs from `/dev/null`.
+  - PASS: Playwright vital timeline evidence audit on `http://127.0.0.1:1431/#records`.
+    - 320px, 390px, 760px, and 1224px exposed timeline summary source counts, KDCA hypertension evidence, KDA glucose evidence, fever-contact evidence text, body overflow 0, and no visible overflow.
+    - 390px exposed actual `근거 포함3개` summary text and `timeline-record-evidence-label` badges on vital rows.
+  - PASS: Computer Use cmux state check.
+    - Workspace/window: `암관리`.
+    - Right in-app browser omnibar: `http://127.0.0.1:1431/`.
+    - Visible CareVault page and accessibility tree exposed recent-timeline `근거 포함 3개` plus linked BP/glucose vital evidence rows.
+  - No git staging or commit was performed.
+
+## 2026-06-05 08:45 KST - Lab Preset Source Recovery Iteration Note
+
+- Improvement target:
+  - Saved lab rows could keep official source evidence when created through a preset, but older or direct-entered rows such as the seeded WBC record had no visible `근거:` even though the app already had Seoul Asan/KDCA/NCC preset sources for those lab names.
+  - Korean users reviewing WBC/ANC/PLT/Hgb-style results should see the relevant official-source basis in saved lab cards, recent timeline rows, care queue detail, generated lab questions, and exports without manually retyping a `출처:` line.
+- Code/test/docs changes:
+  - Updated `src/labSourceEvidence.ts`.
+    - Added common lab-name alias matching for CBC, diabetes, kidney, electrolyte, lipid, liver, protein/nutrition, calcium/phosphate/uric-acid, ANC, and platelet presets.
+    - Added `buildLabSourceEvidenceParts()` so explicit note evidence stays authoritative, while missing note evidence can recover preset source labels and URLs.
+    - Extended `formatLabNoteWithSourceEvidence()` with an optional lab name for CSV, Markdown, and caregiver exports.
+  - Updated `src/App.tsx`.
+    - Counts recovered lab evidence in the recent-timeline summary.
+    - Renders WBC-style lab timeline rows with `근거 포함` badges and linked `근거:` evidence rows.
+    - Shows saved lab-card evidence and marks lab follow-up question buttons as `메모와 근거 포함` when preset evidence is recovered.
+  - Updated `src/labMetric.ts`, `src/labQuestionPrompts.ts`, `src/careActionQueue.ts`, `src/csvExport.ts`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Reused the same recovered evidence for panel source counts, generated clinician questions, care queue details, CSV rows, Markdown visit packets, and caregiver HTML.
+  - Updated regression tests for lab evidence parsing/recovery, saved-lab summary chips, generated questions, care queue detail/counts, CSV, Markdown, and caregiver exports.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented preset-derived source recovery for older/direct-entered lab rows and export surfaces.
+- Verification:
+  - PASS: `npm run test -- src/labSourceEvidence.test.ts src/labMetric.test.ts src/labQuestionPrompts.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts src/timelineMetric.test.ts`, 8 files and 118 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 49 files and 347 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/labSourceEvidence.ts src/labSourceEvidence.test.ts src/labMetric.ts src/labMetric.test.ts src/labQuestionPrompts.ts src/labQuestionPrompts.test.ts src/careActionQueue.ts src/careActionQueue.test.ts src/csvExport.ts src/csvExport.test.ts src/visitPacket.ts src/caregiverExport.ts`.
+  - PASS: Playwright lab source recovery UI audit on `http://127.0.0.1:1431/#labs`.
+    - 320px, 390px, 760px, and 1224px exposed saved-lab `근거 포함 1개`, WBC `서울아산병원 전혈구검사 참고치` lab-card evidence, recent-timeline `근거 포함4개`, WBC timeline evidence, and `WBC 검사 질문 추가 · 메모와 근거 포함`.
+    - All audited widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: Computer Use cmux state check.
+    - Workspace/window: `암관리`.
+    - Right in-app browser omnibar: `http://127.0.0.1:1431/`.
+    - Visible CareVault page and accessibility tree exposed care-queue `근거 포함 4개`, WBC Seoul Asan evidence, recent-timeline `근거 포함 4개`, and saved-lab `근거 포함 1개`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 08:51 KST - Immune Food Lab Context Iteration Note
+
+- Improvement target:
+  - The app already had WBC/ANC lab helpers and National Cancer Center immune-function food-safety rules, but the nutrition panel did not connect a saved low WBC/ANC row to the raw/unpasteurized food-safety context.
+  - Korean cancer patients and caregivers should see why food-safety checks matter when a low WBC/ANC record is present, while the app still frames it as a recorded low lab context and a care-team question, not a diagnosis or treatment instruction.
+- Source recheck:
+  - National Cancer Information Center immune-function diet page: `https://cancer.go.kr/lay1/S1T479C489/contents.do`.
+    - Rechecked low white-blood-cell post-treatment food infection prevention wording and raw/undercooked/unpasteurized food-safety examples.
+  - Seoul Asan complete blood count page: `https://ent.amc.seoul.kr/asan/mobile/healthinfo/management/managementDetail.do?managementId=126`.
+    - Rechecked WBC infection-defense context and the adult WBC reference range already used by the CBC helper.
+- Code/test/docs changes:
+  - Added `src/immuneFoodContext.ts` and `src/immuneFoodContext.test.ts`.
+    - Detects saved WBC/ANC rows below the user-entered lower range.
+    - Builds a `면역저하 검사 연결` summary with recovered lab evidence plus the National Cancer Center immune-function food-safety source.
+    - Keeps normal/range-missing rows out of this context.
+  - Updated `src/foodMetric.ts`.
+    - Lets food summary source counts include the additional lab-linked official-source labels.
+  - Updated `src/App.tsx` and `src/App.css`.
+    - Renders a compact nutrition-panel strip with the recorded low WBC/ANC value, lab source link, and immune-function diet source link.
+    - Keeps source links wrapped and mobile touch-target friendly.
+  - Updated `src/csvExport.ts`, `src/visitPacket.ts`, and `src/caregiverExport.ts`.
+    - Preserves the same low-lab immune-food context in CSV, Markdown visit packets, and caregiver HTML.
+    - Caregiver HTML shows this context only when both food and lab sharing sections are enabled, avoiding lab-value leakage through the food section alone.
+  - Updated regression tests for the helper, food summary source counts, CSV, Markdown, and caregiver HTML.
+  - Updated `README.md` and `DESIGN.md` to document the low WBC/ANC nutrition context contract.
+- Verification so far:
+  - RED baseline: `npm run test -- src/immuneFoodContext.test.ts` failed before implementation because `./immuneFoodContext` did not exist.
+  - PASS: `npm run test -- src/immuneFoodContext.test.ts`, 3 tests.
+  - PASS: `npm run test -- src/immuneFoodContext.test.ts src/foodMetric.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`, 5 files and 77 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/App.css src/foodMetric.ts src/foodMetric.test.ts src/immuneFoodContext.ts src/immuneFoodContext.test.ts src/csvExport.ts src/csvExport.test.ts src/visitPacket.ts src/visitPacket.test.ts src/caregiverExport.ts src/caregiverExport.test.ts`.
+  - PASS: `npm run test`, 50 files and 351 tests.
+  - PASS: `npm run build`.
+  - PASS: Playwright nutrition context UI audit on `http://127.0.0.1:1431/#nutrition`.
+    - 320px, 390px, 760px, and 1224px exposed `면역저하 검사 연결`, `2026-06-01 WBC 3.4 10^3/uL`, `서울아산병원 전혈구검사 참고치`, `국가암정보센터 증상별 식생활 - 면역기능의 저하`, food summary `공식 출처 4개`, and both context source links.
+    - All audited widths kept `bodyOverflow: 0` and visible overflow count 0.
+  - PASS: Computer Use cmux state check.
+    - Workspace/window: `암관리`.
+    - Right in-app browser omnibar: `http://127.0.0.1:1420/`.
+    - Visible CareVault page and accessibility tree exposed the nutrition-panel `면역저하 검사 연결` context, WBC value, lab source link, immune-function food-safety source link, and food summary `공식 출처 4개`.
+  - No git staging or commit was performed.
+
+## 2026-06-05 09:18 KST - Nutrition Question Draft Resume Verification Note
+
+- Resume finding:
+  - `README.md` and `DESIGN.md` already documented the nutrition-panel `질문 초안` contract, and `src/foodQuestionPrompts.ts` / `src/foodQuestionPrompts.test.ts` existed as untracked files.
+  - The previous `working.md` entry stopped at the low WBC/ANC immune-food context strip, so this iteration verified and logged the follow-on source-retaining nutrition question-draft slice instead of repeating earlier work.
+- Code/design state verified:
+  - `src/foodQuestionPrompts.ts` builds an editable pre-visit question draft from matched food reasons, optional WBC/ANC immune-low context, lab evidence, source count, and a parseable `출처:` line.
+  - `src/App.tsx` exposes the nutrition-panel `질문 초안` button with source-count scope in `aria-label`/title, fills the question draft, moves focus to the question textarea, and does not save a question automatically.
+  - `README.md` and `DESIGN.md` already document the food-safety question-draft contract.
+- Stitch MCP:
+  - Created Stitch project `CareVault UI UX AutoResearch` with project id `10602093894318676839`.
+  - Uploaded a compact CareVault DESIGN.md screen instance `7814555668945736330` covering clinical workstation tone, colors, nutrition low-lab context, question-draft source retention, and cmux overflow/touch-target rules.
+  - `create_design_system_from_design_md` returned `Request contains an invalid argument` for both short id and full `sourceScreen`; the uploaded DESIGN.md screen remains available as Stitch design evidence, but a generated Stitch design-system asset was not created in this iteration.
+- Verification:
+  - PASS: `npm run test -- src/foodQuestionPrompts.test.ts src/immuneFoodContext.test.ts src/foodMetric.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts`, 6 files and 81 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: Computer Use cmux state check.
+    - Workspace/window: `암관리`.
+    - Reused the existing right in-app browser tab; no additional cmux browser tab was created.
+    - Omnibar: `http://127.0.0.1:1420/#nutrition`.
+    - Clicking `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함` changed the live status to `음식 판단 질문 초안 준비됨`, moved focus to `진료 전 질문 내용`, and filled:
+      - topic `식단·음식 안전`
+      - priority `이번 진료 우선`
+      - WBC low-lab context `2026-06-01 WBC 3.4 10^3/uL`
+      - matched food reasons for broccoli, brown rice, bacon, and grapefruit
+      - lab evidence `서울아산병원 전혈구검사 참고치`
+      - parseable source line `출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do`
+  - No git staging or commit was performed in this verification note.

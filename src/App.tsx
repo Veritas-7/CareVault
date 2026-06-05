@@ -23,6 +23,7 @@ import {
   Save,
   Search,
   ShieldCheck,
+  Thermometer,
   Trash2,
   Unlink,
   Upload,
@@ -44,31 +45,107 @@ import {
   assessBloodPressure,
   assessCancerFood,
   assessLabValue,
+  assessTemperature,
+  assessWaistCircumference,
+  buildFoodMatchSourceLinkLabels,
   calculateBmi,
+  koreanHealthStandardSummary,
   type FoodAssessment,
   type GlucoseContext,
   type LabFlag,
 } from "./healthRules";
+import { buildFoodPanelSummary } from "./foodMetric";
 import {
+  buildDashboardMetricStandardEvidence,
+  buildHealthStandardSourceLinkLabels,
+  buildHealthStandardSexApplicabilityBadge,
+  buildProfileMetricSexStandardChips,
+  buildProfileSexStandardNotes,
+  buildHealthStandardRangeFilterSummary,
+  buildVitalStandardQuestionDraft,
+  buildVitalStandardRangeLines,
+  buildVitalStandardRangeSections,
+  filterVitalStandardRangeSections,
+  formatDashboardMetricStandardClipboardText,
+  formatDashboardMetricStandardCompactSummary,
+  formatDashboardMetricStandardCopyDescription,
+  formatDashboardMetricStandardCopyStatus,
+  formatDashboardMetricStandardNote,
+  formatHealthStandardRangeFilterCopyDescription,
+  formatHealthStandardRangeFilterCopyStatus,
+  formatHealthStandardsClipboardText,
+  formatHealthStandardSource,
+  formatProfileMetricSexStandardClipboardText,
+  formatProfileMetricSexStandardCopyDescription,
+  formatProfileMetricSexStandardCopyStatus,
+  formatProfileWaistStandardNote,
+  formatVitalInputStandardHelp,
+  formatVitalSavePreviewLabel,
+  getHealthStandardCoverage,
+  healthStandardStatusLabel,
+  healthStandardRangeFilterOptions,
+  isExternalHealthStandardSource,
+  koreanHealthStandardApplicabilitySummary,
+  koreanHealthStandardCoverage,
+  koreanHealthStandardUseBoundary,
+  type DashboardMetricStandardEvidence,
+  type HealthStandardRangeFilterId,
+} from "./healthStandards";
+import {
+  buildLabFollowupQuestionButtonLabels,
   buildLabQuestionPrompt,
   getNextQuestionDate,
   type LabQuestionSource,
 } from "./labQuestionPrompts";
-import { buildCareActionQueue, type CareActionSource } from "./careActionQueue";
+import { buildLabPanelSummary } from "./labMetric";
+import {
+  buildFoodQuestionButtonLabels,
+  buildFoodQuestionDraft,
+} from "./foodQuestionPrompts";
+import {
+  buildCareActionQueue,
+  careActionQueueSourceLabel,
+  careActionQueueSourceOrder,
+  countCareActionQueueSources,
+  formatCareActionQueueClipboardText,
+  formatCareActionQueueCopyDescription,
+  formatCareActionQueueCopyStatus,
+} from "./careActionQueue";
+import { buildCareActionQueuePanelSummary } from "./careActionQueueMetric";
+import { careActionQueueEmptyRecoveryLinks } from "./careActionQueueEmptyState";
+import { buildCareActionVisibleDetailParts } from "./careActionVisibleDetail";
 import { isPreviewableImageAttachment } from "./attachmentPreview";
+import { formatLabReferenceRangeLabel } from "./exportSourceLabels";
 import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
 import { needsAttachmentRecovery } from "./attachmentRecovery";
 import {
+  buildSymptomSupportActionNote,
   buildSymptomSupportQuestion,
+  buildSymptomSupportQueueHint,
   findSymptomSupportTemplate,
+  formatSymptomSupportSource,
 } from "./symptomSupportTemplates";
 import { buildAppointmentReminders } from "./appointmentReminders";
+import {
+  hasRequiredTextValues,
+  recordRequiredFieldMessages,
+} from "./entryValidation";
 import {
   appendDocumentHistory,
   type DocumentHistoryEntry,
   type DocumentHistoryKind,
 } from "./documentHistory";
-import { labPresets, resolveLabPreset } from "./labPresets";
+import { buildDocumentPanelSummary } from "./documentMetric";
+import {
+  buildLabPresetPreview,
+  formatLabPresetNoteWithSource,
+  formatLabPresetSexSyncStatusLabel,
+  labPresets,
+  resolveLabPreset,
+  resolveLabPresetSexChangeDraft,
+} from "./labPresets";
+import { buildLabSourceEvidenceParts, formatLabSourceEvidence } from "./labSourceEvidence";
+import { buildImmuneFoodSafetyContext } from "./immuneFoodContext";
 import {
   loadNormalizedMirrorStatus,
   loadNormalizedSearchSummary,
@@ -80,20 +157,165 @@ import {
   type PersistenceBackend,
 } from "./storage";
 import {
+  parseOptionalNumberInput,
+  validateVitalDraft,
+} from "./vitalValidation";
+import {
+  formatProfileNumberDisplay,
+  isProfileNumberField,
+  sanitizeProfileNumberInput,
+  validateProfileNumberInput,
+} from "./profileValidation";
+import { buildVitalPanelSummary } from "./vitalMetric";
+import {
+  buildVisitPacketExportFingerprint,
   buildVisitPacketMarkdown,
+  formatVisitPacketExportDescription,
+  formatVisitPacketExportStatus,
+  formatVisitPacketPreviewDescription,
+  formatVisitPacketPreviewStatus,
   visitPacketRangeLabels,
   type VisitPacketRange,
 } from "./visitPacket";
-import { buildCareVaultCsv } from "./csvExport";
+import { buildVisitPanelSummary } from "./visitMetric";
 import {
+  buildCareVaultCsv,
+  buildCsvExportFingerprint,
+  formatCsvExportDescription,
+  formatCsvExportStatus,
+  formatCsvPreviewDescription,
+  formatCsvPreviewStatus,
+} from "./csvExport";
+import {
+  buildExportPreviewSummary,
+  formatExportPreviewCopyDescription,
+  formatExportPreviewCopyStatus,
+  formatExportPreviewDownloadDescription,
+  formatExportPreviewDownloadStatus,
+  formatExportPreviewPrintDescription,
+  formatExportPreviewPrintStatus,
+} from "./exportPreviewSummary";
+import {
+  buildCaregiverExportContentFingerprint,
   buildCaregiverExportHtml,
-  caregiverExportSectionDefaults,
+  isCaregiverExportContentFingerprintStale,
   type CaregiverExportSectionId,
-  type CaregiverExportSections,
 } from "./caregiverExport";
+import {
+  describeCareVaultBackupImportFailure,
+  formatCareVaultBackupExportDescription,
+  formatCareVaultBackupExportStatus,
+  formatCareVaultBackupImportDescription,
+  formatCareVaultBackupImportStatus,
+  formatCareVaultBackupImportSuccessDetail,
+  prepareCareVaultBackupImport,
+  sanitizeCareVaultBackupState,
+} from "./backupState";
+import {
+  buildCaregiverShareSettingsDifferences,
+  buildCaregiverShareSettingsFingerprint,
+  buildCaregiverShareSettingsPanelSummary,
+  buildCaregiverShareSettingsPreviewSummary,
+  buildCaregiverShareSectionSummary,
+  caregiverShareSettingPresets,
+  caregiverShareSectionOptions,
+  createDefaultCaregiverShareSettings,
+  formatCaregiverShareExportDescription,
+  formatCaregiverShareExportStatus,
+  formatCaregiverSharePreviewDescription,
+  formatCaregiverSharePreviewStatus,
+  getCaregiverShareSettingsPreset,
+  hasCustomCaregiverShareSettings,
+  normalizeCaregiverShareSettings,
+  type CaregiverShareSettings,
+  type CaregiverShareSettingsPreviewSummary,
+} from "./caregiverShareSettings";
+import {
+  defaultQuestionPriority,
+  normalizeQuestionPriority,
+  questionPriorityLabel,
+  type QuestionPriority,
+} from "./questionPriority";
+import {
+  buildQuestionStatusButtonLabels,
+  questionStatusLabel,
+  type QuestionStatus,
+} from "./questionStatus";
+import {
+  formatQuestionClipboardCopyDescription,
+  formatQuestionClipboardCopyStatus,
+  formatQuestionClipboardText,
+} from "./questionClipboard";
+import {
+  buildQuestionDisplayParts,
+  buildQuestionTimelineDisplayParts,
+  formatQuestionAnswerMemoDisplay,
+} from "./questionDisplay";
+import { buildQuestionListSummary, buildQuestionMetricSummary } from "./questionMetric";
+import {
+  latestDatedItem,
+  latestDatedItemMatching,
+  sortDatedItemsNewestFirst,
+} from "./recordOrdering";
+import {
+  formatSymptomRecordLabel,
+  formatSymptomRecordSavedStatusLabel,
+  formatSymptomRecordSaveActionLabel,
+  hasSymptomRecordSourceEvidence,
+} from "./symptomRecordLabels";
+import { buildSymptomDisplayParts } from "./symptomDisplay";
+import { buildSymptomPanelSummary } from "./symptomMetric";
+import { buildTimelinePanelSummary } from "./timelineMetric";
+import {
+  assessVitalRecord,
+  formatVitalMetricRecordLabel,
+  formatVitalMetricValue,
+  formatVitalRecordLabel,
+  formatVitalRecordSavedStatusLabel,
+  formatVitalRecordSaveActionLabel,
+  formatVitalTimelineTitle,
+} from "./vitalRecordLabels";
+import { buildVitalTimelineDisplayParts } from "./vitalTimelineDisplay";
+import {
+  buildVitalChartAccessibleRows,
+  buildVitalChartData,
+  buildVitalChartSummary,
+  formatVitalChartTooltipValue,
+  vitalChartLegendItems,
+  type VitalChartPoint,
+} from "./vitalChartData";
+import {
+  buildCervicalCancerAlertSymptomDraft,
+  buildCervicalCancerCareItemSymptomDraft,
+  buildCervicalCancerCarePromptQuestion,
+  buildCervicalCancerCareSourceLinkLabels,
+  buildCervicalCancerScreeningQuestion,
+  buildCervicalCancerScreeningSummary,
+  cervicalCancerCareAlerts,
+  cervicalCancerCareAlertRecordFields,
+  cervicalCancerCareChecks,
+  cervicalCancerCarePreventionGuides,
+  cervicalCancerCarePriorityItems,
+  cervicalCancerCarePrompts,
+  cervicalCancerCareRecoveryGuides,
+  cervicalCancerCareSources,
+  formatCervicalCancerCareSourceLinkLabel,
+  getCervicalCancerCareSource,
+  type CervicalCancerCareAlert,
+  type CervicalCancerCarePrompt,
+  type CervicalCancerCareRecordDraftItem,
+} from "./cervicalCancerCare";
+import {
+  buildCervicalCancerCareClipboardSummary,
+  formatCervicalCancerCareClipboardCompactSummary,
+  formatCervicalCancerCareClipboardDescription,
+  formatCervicalCancerCareClipboardStatus,
+  formatCervicalCancerCareClipboardText,
+} from "./cervicalCancerCareClipboard";
+import { buildCervicalCancerCarePanelSummary } from "./cervicalCancerCareMetric";
 
 type Sex = "female" | "male" | "other";
-type VitalType = "blood-pressure" | "glucose";
+type VitalType = "blood-pressure" | "glucose" | "temperature";
 type DocumentCategory =
   | "lab"
   | "imaging"
@@ -113,6 +335,7 @@ type Profile = {
   sex: Sex;
   heightCm: string;
   weightKg: string;
+  waistCm: string;
   cancerCareMode: boolean;
   diabetes: boolean;
   hypertension: boolean;
@@ -126,6 +349,7 @@ type VitalEntry = {
   diastolic?: number;
   glucoseMgDl?: number;
   glucoseContext?: GlucoseContext;
+  temperatureC?: number;
   note: string;
 };
 
@@ -164,11 +388,24 @@ type AttachmentPreviewState = {
 };
 
 type ExportPreviewState = {
+  caregiverShareContentFingerprint?: string;
+  caregiverShareSettingsFingerprint?: string;
+  caregiverShareSettingsSnapshot?: CaregiverShareSettings;
+  caregiverShareSettingsSummary?: CaregiverShareSettingsPreviewSummary;
   content: string;
+  csvExportFingerprint?: string;
   filename: string;
   format: string;
   mimeType: string;
   title: string;
+  visitPacketExportFingerprint?: string;
+  visitPacketRangeSnapshot?: VisitPacketRange;
+};
+
+type BackupImportFeedback = {
+  detail: string;
+  title: string;
+  tone: "error" | "success";
 };
 
 function escapePrintHtml(value: string) {
@@ -193,13 +430,12 @@ type SymptomEntry = {
   action: string;
 };
 
-type QuestionStatus = "open" | "answered" | "deferred";
-
 type CareQuestion = {
   id: string;
   date: string;
   topic: string;
   question: string;
+  priority: QuestionPriority;
   status: QuestionStatus;
   answer: string;
 };
@@ -215,11 +451,56 @@ type LabResult = {
   note: string;
 };
 
-type CaregiverShareSettings = {
-  coverMemo: string;
-  redactProfile: boolean;
-  sections: CaregiverExportSections;
+type VitalChartTooltipPayloadItem = {
+  color?: string;
+  dataKey?: string | number;
+  payload?: VitalChartPoint;
+  value?: unknown;
 };
+
+function VitalChartTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: VitalChartTooltipPayloadItem[];
+}) {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
+  const point = payload.find((item) => item.payload)?.payload;
+  const rows = payload
+    .map((item) => ({
+      color: item.color,
+      label:
+        item.dataKey !== undefined
+          ? formatVitalChartTooltipValue(item.dataKey, item.value)
+          : "",
+    }))
+    .filter((item) => item.label);
+
+  if (!point || rows.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="vital-chart-tooltip">
+      <strong>{point.dateLabel}</strong>
+      {point.glucose !== undefined && point.glucoseContextLabel ? (
+        <span>혈당 측정: {point.glucoseContextLabel}</span>
+      ) : null}
+      <ul>
+        {rows.map((row) => (
+          <li key={row.label}>
+            <mark style={{ backgroundColor: row.color }} />
+            {row.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 type AppState = {
   profile: Profile;
@@ -243,6 +524,7 @@ const defaultState: AppState = {
     sex: "female",
     heightCm: "164",
     weightKg: "62",
+    waistCm: "82",
     cancerCareMode: true,
     diabetes: true,
     hypertension: true,
@@ -324,6 +606,7 @@ const defaultState: AppState = {
       date: "2026-06-15",
       topic: "혈액검사",
       question: "백혈구 수치가 낮을 때 외식이나 날음식을 어느 정도 제한해야 하나?",
+      priority: "high",
       status: "open",
       answer: "",
     },
@@ -340,11 +623,7 @@ const defaultState: AppState = {
       note: "면역저하 식품 안전 질문과 연결",
     },
   ],
-  caregiverShareSettings: {
-    coverMemo: "",
-    redactProfile: false,
-    sections: { ...caregiverExportSectionDefaults },
-  },
+  caregiverShareSettings: createDefaultCaregiverShareSettings(),
 };
 
 const emptyVital: VitalEntry = {
@@ -355,7 +634,22 @@ const emptyVital: VitalEntry = {
   diastolic: 78,
   glucoseMgDl: 118,
   glucoseContext: "before-meal",
+  temperatureC: 36.8,
   note: "",
+};
+
+const vitalQuestionGlucoseContextLabel: Record<GlucoseContext, string> = {
+  fasting: "공복",
+  "before-meal": "식전",
+  "after-meal": "식후 2시간",
+  bedtime: "취침 전",
+  random: "수시",
+};
+
+const vitalTypeLabel: Record<VitalType, string> = {
+  "blood-pressure": "혈압",
+  glucose: "혈당",
+  temperature: "체온",
 };
 
 const emptyVisit: VisitEntry = {
@@ -394,6 +688,7 @@ const emptyQuestion: CareQuestion = {
   date: today,
   topic: "",
   question: "",
+  priority: defaultQuestionPriority,
   status: "open",
   answer: "",
 };
@@ -437,38 +732,12 @@ const documentReviewStatusLabel: Record<DocumentReviewStatus, string> = {
   done: "정리 완료",
 };
 
-const questionStatusLabel: Record<QuestionStatus, string> = {
-  open: "확인 필요",
-  answered: "답변 완료",
-  deferred: "보류",
-};
-
 const labFlagLabel: Record<LabFlag, string> = {
   low: "낮음",
   normal: "범위 내",
   high: "높음",
   unknown: "기준 없음",
 };
-
-const careActionSourceLabel: Record<CareActionSource, string> = {
-  question: "질문",
-  lab: "검사",
-  document: "서류",
-  visit: "방문",
-};
-
-const caregiverExportSectionOptions: Array<{
-  id: CaregiverExportSectionId;
-  label: string;
-}> = [
-  { id: "visits", label: "진료" },
-  { id: "questions", label: "질문" },
-  { id: "documents", label: "서류" },
-  { id: "symptoms", label: "증상" },
-  { id: "labs", label: "검사" },
-  { id: "food", label: "음식" },
-  { id: "vitals", label: "혈압·혈당" },
-];
 
 const caregiverMemoPresets = [
   {
@@ -485,6 +754,80 @@ const caregiverMemoPresets = [
   },
 ];
 
+const formControlDescriptions = {
+  backupImportFile: "CareVault 백업 JSON 파일 선택",
+  profileName: "기본 정보 이름/대상 · 기록 주체 표시",
+  profileAge: "기본 정보 나이 · 한국 성인 기준 해석에 사용",
+  profileSex: "기본 정보 성별 · 남녀 기준이 다른 항목에 적용",
+  profileHeight: "기본 정보 키(cm) · BMI 계산에 사용",
+  profileWeight: "기본 정보 몸무게(kg) · BMI 계산에 사용",
+  profileWaist: "기본 정보 허리둘레(cm) · 한국 성인 복부비만 기준 확인",
+  vitalDate: "혈압·혈당·체온 입력 날짜",
+  vitalType: "혈압·혈당·체온 입력 종류 선택",
+  vitalSystolic: "혈압 입력 수축기 혈압(mmHg)",
+  vitalDiastolic: "혈압 입력 이완기 혈압(mmHg)",
+  vitalGlucose: "혈당 입력 값(mg/dL)",
+  vitalGlucoseContext: "혈당 입력 측정 시점",
+  vitalTemperature: "체온 입력 값(℃)",
+  vitalNote: "혈압·혈당·체온 입력 메모",
+  visitDate: "병원 방문 기록 날짜",
+  visitHospital: "병원 방문 기록 병원/과",
+  visitReason: "병원 방문 기록 방문 이유",
+  visitNextDate: "병원 방문 기록 다음 일정",
+  visitSummary: "병원 방문 기록 진료 요약",
+  visitPlan: "병원 방문 기록 계획/질문",
+  symptomDate: "증상·부작용 기록 날짜",
+  symptomName: "증상·부작용 기록 증상명",
+  symptomMedication: "증상·부작용 기록 약/대응",
+  symptomBody: "증상·부작용 기록 몸 상태 메모",
+  symptomAction: "증상·부작용 기록 다음 행동",
+  questionDate: "진료 전 질문 확인일",
+  questionTopic: "진료 전 질문 주제",
+  questionPriority: "진료 전 질문 우선순위",
+  questionBody: "진료 전 질문 내용",
+  questionAnswer: "진료 전 질문 답변 메모",
+  labPreset: "검사 수치 입력 프리셋 선택",
+  labDate: "검사 수치 입력 날짜",
+  labName: "검사 수치 입력 항목",
+  labValue: "검사 수치 입력 값",
+  labUnit: "검사 수치 입력 단위",
+  labLower: "검사 수치 입력 기준 하한",
+  labUpper: "검사 수치 입력 기준 상한",
+  labNote: "검사 수치 입력 메모",
+  foodQuery: "암환자 음식 판단 음식 또는 식단 입력",
+  documentDate: "서류 수기 보관 날짜",
+  documentCategory: "서류 수기 보관 분류",
+  documentReviewStatus: "서류 수기 보관 검토 상태",
+  documentTitle: "서류 수기 보관 제목",
+  documentBody: "서류 수기 보관 내용",
+  documentNextAction: "서류 수기 보관 다음 조치",
+  documentTags: "서류 수기 보관 태그",
+  documentAttachmentFile: "서류 메모 첨부 파일 선택 입력",
+  savedAttachmentFile: "저장된 서류 첨부 파일 재연결 입력",
+  documentCategoryFilter: "저장된 서류 분류 필터",
+  documentStatusFilter: "저장된 서류 상태 필터",
+} as const;
+
+const sidebarSectionIds = [
+  "dashboard",
+  "records",
+  "nutrition",
+  "care-plan",
+  "labs",
+  "documents",
+] as const;
+
+type SidebarSectionId = (typeof sidebarSectionIds)[number];
+
+const defaultSidebarSectionId: SidebarSectionId = "dashboard";
+
+function normalizeSidebarSectionHash(hash: string): SidebarSectionId {
+  const sectionId = hash.replace(/^#/, "");
+  return sidebarSectionIds.includes(sectionId as SidebarSectionId)
+    ? (sectionId as SidebarSectionId)
+    : defaultSidebarSectionId;
+}
+
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -499,24 +842,27 @@ function extractFileName(path: string) {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path;
 }
 
-function normalizeCaregiverShareSettings(
-  input: Partial<CaregiverShareSettings> | undefined,
-): CaregiverShareSettings {
-  return {
-    coverMemo: input?.coverMemo ?? "",
-    redactProfile: input?.redactProfile ?? false,
-    sections: {
-      ...caregiverExportSectionDefaults,
-      ...(input?.sections ?? {}),
-    },
-  };
-}
-
 function normalizeAppState(input: Partial<AppState>): AppState {
+  const profile = { ...defaultState.profile, ...input.profile };
+
   return {
     ...defaultState,
     ...input,
-    profile: { ...defaultState.profile, ...input.profile },
+    profile: {
+      ...profile,
+      age: sanitizeProfileNumberInput("age", profile.age, defaultState.profile.age),
+      heightCm: sanitizeProfileNumberInput(
+        "heightCm",
+        profile.heightCm,
+        defaultState.profile.heightCm,
+      ),
+      waistCm: sanitizeProfileNumberInput("waistCm", profile.waistCm, defaultState.profile.waistCm),
+      weightKg: sanitizeProfileNumberInput(
+        "weightKg",
+        profile.weightKg,
+        defaultState.profile.weightKg,
+      ),
+    },
     foodQuery: input.foodQuery ?? defaultState.foodQuery,
     vitals: input.vitals ?? [],
     visits: input.visits ?? [],
@@ -533,7 +879,10 @@ function normalizeAppState(input: Partial<AppState>): AppState {
       history: document.history ?? [],
     })),
     symptoms: input.symptoms ?? [],
-    questions: input.questions ?? [],
+    questions: (input.questions ?? []).map((question) => ({
+      ...question,
+      priority: normalizeQuestionPriority(question.priority),
+    })),
     labResults: input.labResults ?? [],
     caregiverShareSettings: normalizeCaregiverShareSettings(input.caregiverShareSettings),
   };
@@ -589,6 +938,69 @@ function buildNormalizedCareVaultMirror(
   };
 }
 
+function renderMetricStandardEvidence(evidence: DashboardMetricStandardEvidence | null) {
+  if (!evidence) return null;
+
+  return (
+    <small
+      className="metric-standard-note metric-standard-evidence"
+      aria-label={`${evidence.note} 근거 ${evidence.sourceLabel}`}
+    >
+      <span>{evidence.note}</span>
+      {evidence.sourceUrl.startsWith("https://") ? (
+        <a
+          href={evidence.sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={evidence.linkLabels.ariaLabel}
+          title={evidence.linkLabels.title}
+        >
+          <ShieldCheck aria-hidden="true" />
+          근거: {evidence.linkLabels.visibleLabel}
+        </a>
+      ) : (
+        <span>근거: {evidence.sourceLabel}</span>
+      )}
+    </small>
+  );
+}
+
+type DocumentActionLabelKind =
+  | "add-attachment"
+  | "replace-attachment"
+  | "check-attachment"
+  | "preview-attachment"
+  | "open-attachment"
+  | "remove-attachment"
+  | "archive-document"
+  | "restore-document"
+  | "clean-deleted-attachment";
+
+function formatDocumentActionButtonLabel(document: CareDocument, kind: DocumentActionLabelKind) {
+  const documentContext = `${document.title} ${documentLabel[document.category]} 서류`;
+  const reviewContext = `상태 ${documentReviewStatusLabel[document.reviewStatus]}`;
+  const attachmentContext = document.attachmentName
+    ? `현재 첨부 ${document.attachmentName}`
+    : "현재 첨부 없음";
+  const attachmentStatusContext = document.attachmentStatus
+    ? `첨부 상태 ${document.attachmentStatus}`
+    : "첨부 상태 미확인";
+
+  const actionLabel: Record<DocumentActionLabelKind, string> = {
+    "add-attachment": `${documentContext} 첨부 추가 · ${reviewContext}`,
+    "replace-attachment": `${documentContext} 첨부 재연결 · ${attachmentContext} · ${reviewContext}`,
+    "check-attachment": `${documentContext} 첨부 확인 · ${attachmentContext} · ${attachmentStatusContext}`,
+    "preview-attachment": `${documentContext} 이미지 첨부 미리보기 · ${attachmentContext}`,
+    "open-attachment": `${documentContext} 첨부 파일 열기 · ${attachmentContext}`,
+    "remove-attachment": `${documentContext} 첨부 연결 제거 · ${attachmentContext}`,
+    "archive-document": `${documentContext} 삭제 보관함으로 이동 · ${reviewContext}`,
+    "restore-document": `${documentContext} 삭제 보관함에서 복구 · ${reviewContext}`,
+    "clean-deleted-attachment": `${documentContext} 삭제 보관함 첨부 연결 정리 · ${attachmentContext}`,
+  };
+
+  return actionLabel[kind];
+}
+
 function App() {
   const [state, setState] = useState<AppState>(defaultState);
   const [hydrated, setHydrated] = useState(false);
@@ -602,21 +1014,29 @@ function App() {
   const [visitDraft, setVisitDraft] = useState<VisitEntry>(emptyVisit);
   const [documentDraft, setDocumentDraft] = useState<CareDocument>(emptyDocument);
   const [symptomDraft, setSymptomDraft] = useState<SymptomEntry>(emptySymptom);
+  const [symptomDraftFocusRequest, setSymptomDraftFocusRequest] = useState(0);
   const [questionDraft, setQuestionDraft] = useState<CareQuestion>(emptyQuestion);
+  const [questionDraftFocusRequest, setQuestionDraftFocusRequest] = useState(0);
   const [labDraft, setLabDraft] = useState<LabResult>(emptyLabResult);
   const [documentActionBaselines, setDocumentActionBaselines] = useState<Record<string, string>>(
     {},
   );
   const [labPresetChoice, setLabPresetChoice] = useState("");
+  const [standardRangeFilter, setStandardRangeFilter] =
+    useState<HealthStandardRangeFilterId>("all");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
   const [documentFilter, setDocumentFilter] = useState("");
   const [documentCategoryFilter, setDocumentCategoryFilter] =
     useState<DocumentCategoryFilter>("all");
   const [documentStatusFilter, setDocumentStatusFilter] =
     useState<DocumentReviewStatusFilter>("all");
+  const [activeSectionId, setActiveSectionId] =
+    useState<SidebarSectionId>(defaultSidebarSectionId);
   const [savedAttachmentTargetId, setSavedAttachmentTargetId] = useState<string | null>(null);
   const [attachmentPreview, setAttachmentPreview] = useState<AttachmentPreviewState | null>(null);
   const [exportPreview, setExportPreview] = useState<ExportPreviewState | null>(null);
+  const [backupImportFeedback, setBackupImportFeedback] =
+    useState<BackupImportFeedback | null>(null);
   const [browserAttachmentPreviewUrls, setBrowserAttachmentPreviewUrls] = useState<
     Record<string, string>
   >({});
@@ -624,6 +1044,63 @@ function App() {
   const documentAttachmentInputRef = useRef<HTMLInputElement>(null);
   const savedAttachmentInputRef = useRef<HTMLInputElement>(null);
   const browserAttachmentPreviewUrlsRef = useRef<Record<string, string>>({});
+  const documentDraftAttachmentFileRef = useRef<File | null>(null);
+  const documentDraftAttachmentPreviewUrlRef = useRef<string | null>(null);
+  const documentActionBaselinesRef = useRef<Record<string, string>>({});
+  const pendingActionLabelRef = useRef<string | null>(null);
+  const transientSaveLabelUntilRef = useRef(0);
+  const symptomDraftInputRef = useRef<HTMLInputElement>(null);
+  const questionDraftTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    let activeSectionFrame = 0;
+
+    const getActiveSectionFromScroll = () => {
+      const anchorY = Math.min(window.innerHeight * 0.35, 220);
+      let activeId = defaultSidebarSectionId;
+
+      for (const sectionId of sidebarSectionIds) {
+        const section = document.getElementById(sectionId);
+        if (!section) continue;
+
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= anchorY && rect.bottom > 80) {
+          activeId = sectionId;
+        }
+      }
+
+      return activeId;
+    };
+
+    const syncActiveSectionFromScroll = () => {
+      if (activeSectionFrame) {
+        window.cancelAnimationFrame(activeSectionFrame);
+      }
+
+      activeSectionFrame = window.requestAnimationFrame(() => {
+        activeSectionFrame = 0;
+        setActiveSectionId(getActiveSectionFromScroll());
+      });
+    };
+
+    const syncActiveSectionFromHash = () => {
+      setActiveSectionId(normalizeSidebarSectionHash(window.location.hash));
+    };
+
+    syncActiveSectionFromHash();
+    window.addEventListener("hashchange", syncActiveSectionFromHash);
+    window.addEventListener("resize", syncActiveSectionFromScroll);
+    window.addEventListener("scroll", syncActiveSectionFromScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("hashchange", syncActiveSectionFromHash);
+      window.removeEventListener("resize", syncActiveSectionFromScroll);
+      window.removeEventListener("scroll", syncActiveSectionFromScroll);
+      if (activeSectionFrame) {
+        window.cancelAnimationFrame(activeSectionFrame);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -653,13 +1130,71 @@ function App() {
       Object.values(browserAttachmentPreviewUrlsRef.current).forEach((url) =>
         URL.revokeObjectURL(url),
       );
+      if (documentDraftAttachmentPreviewUrlRef.current) {
+        URL.revokeObjectURL(documentDraftAttachmentPreviewUrlRef.current);
+      }
     },
     [],
   );
 
+  useEffect(() => {
+    if (symptomDraftFocusRequest === 0) return;
+
+    const handle = window.setTimeout(() => {
+      const target = symptomDraftInputRef.current;
+      if (!target) return;
+
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 0);
+
+    return () => window.clearTimeout(handle);
+  }, [symptomDraftFocusRequest]);
+
+  useEffect(() => {
+    if (questionDraftFocusRequest === 0) return;
+
+    const handle = window.setTimeout(() => {
+      const target = questionDraftTextareaRef.current;
+      if (!target) return;
+
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 0);
+
+    return () => window.clearTimeout(handle);
+  }, [questionDraftFocusRequest]);
+
   const foodAssessment = useMemo(
     () => assessCancerFood(state.foodQuery),
     [state.foodQuery],
+  );
+  const immuneFoodSafetyContext = useMemo(
+    () => buildImmuneFoodSafetyContext(state.labResults),
+    [state.labResults],
+  );
+  const foodPanelSummary = useMemo(
+    () => buildFoodPanelSummary(foodAssessment.matches, immuneFoodSafetyContext?.sourceLabels),
+    [foodAssessment.matches, immuneFoodSafetyContext],
+  );
+  const foodQuestionDraft = useMemo(
+    () =>
+      buildFoodQuestionDraft({
+        assessment: foodAssessment,
+        foodQuery: state.foodQuery,
+        immuneContext: immuneFoodSafetyContext,
+      }),
+    [foodAssessment, immuneFoodSafetyContext, state.foodQuery],
+  );
+  const foodQuestionButtonLabels = useMemo(
+    () => buildFoodQuestionButtonLabels(foodQuestionDraft?.sourceCount ?? 0),
+    [foodQuestionDraft],
   );
 
   const normalizedMirror = useMemo(
@@ -674,7 +1209,13 @@ function App() {
       savePersistedState(state, { normalizedMirror })
         .then((backend) => {
           setStorageBackend(backend);
-          setSaveLabel(backend === "sqlite" ? "SQLite 자동 저장됨" : "브라우저 자동 저장됨");
+          const savedLabel =
+            backend === "sqlite" ? "SQLite 자동 저장됨" : "브라우저 자동 저장됨";
+          const actionLabel = pendingActionLabelRef.current;
+          pendingActionLabelRef.current = null;
+          if (Date.now() >= transientSaveLabelUntilRef.current) {
+            setSaveLabel(actionLabel ? `${actionLabel} · ${savedLabel}` : savedLabel);
+          }
           if (backend === "sqlite") {
             return loadNormalizedMirrorStatus()
               .then(setNormalizedMirrorStatus)
@@ -720,22 +1261,109 @@ function App() {
       ),
     [state.profile.heightCm, state.profile.weightKg],
   );
+  const waistStatus = useMemo(
+    () =>
+      assessWaistCircumference(
+        Number.parseFloat(state.profile.waistCm),
+        state.profile.sex,
+      ),
+    [state.profile.sex, state.profile.waistCm],
+  );
+  const profileSexStandardNotes = useMemo(
+    () => buildProfileSexStandardNotes(state.profile.sex),
+    [state.profile.sex],
+  );
+  const profileMetricSexStandardChips = useMemo(
+    () => buildProfileMetricSexStandardChips(state.profile.sex),
+    [state.profile.sex],
+  );
+  const profileMetricSexLabel = sexLabel[state.profile.sex];
+  const profileMetricSexStandardCopyDescription = useMemo(
+    () =>
+      formatProfileMetricSexStandardCopyDescription(
+        profileMetricSexLabel,
+        profileMetricSexStandardChips,
+      ),
+    [profileMetricSexLabel, profileMetricSexStandardChips],
+  );
+  const profileMetricSexStandardCopyStatus = useMemo(
+    () =>
+      formatProfileMetricSexStandardCopyStatus(
+        profileMetricSexLabel,
+        profileMetricSexStandardChips,
+      ),
+    [profileMetricSexLabel, profileMetricSexStandardChips],
+  );
+  const profileMetricSexStandardClipboardText = useMemo(
+    () =>
+      formatProfileMetricSexStandardClipboardText(
+        profileMetricSexLabel,
+        profileMetricSexStandardChips,
+      ),
+    [profileMetricSexLabel, profileMetricSexStandardChips],
+  );
 
-  const latestBp = [...state.vitals]
-    .reverse()
-    .find((item) => item.type === "blood-pressure" && item.systolic && item.diastolic);
-  const latestGlucose = [...state.vitals]
-    .reverse()
-    .find((item) => item.type === "glucose" && item.glucoseMgDl);
+  const latestBp = latestDatedItemMatching(
+    state.vitals,
+    (item) => item.type === "blood-pressure" && Boolean(item.systolic && item.diastolic),
+  );
+  const latestGlucose = latestDatedItemMatching(
+    state.vitals,
+    (item) => item.type === "glucose" && Boolean(item.glucoseMgDl),
+  );
+  const latestTemperature = latestDatedItemMatching(
+    state.vitals,
+    (item) => item.type === "temperature" && Boolean(item.temperatureC),
+  );
+  const vitalPanelSummary = useMemo(
+    () => buildVitalPanelSummary(state.vitals, { diabetes: state.profile.diabetes }),
+    [state.profile.diabetes, state.vitals],
+  );
 
-  const bpStatus = latestBp?.systolic && latestBp?.diastolic
-    ? assessBloodPressure(latestBp.systolic, latestBp.diastolic)
+  const bpStatus = latestBp ? assessVitalRecord(latestBp) : undefined;
+  const glucoseStatus = latestGlucose
+    ? assessVitalRecord(latestGlucose, {
+        diabetes: state.profile.diabetes,
+      })
     : undefined;
-  const glucoseStatus = latestGlucose?.glucoseMgDl
-    ? assessBloodGlucose(latestGlucose.glucoseMgDl, latestGlucose.glucoseContext ?? "random")
+  const temperatureStatus = latestTemperature ? assessVitalRecord(latestTemperature) : undefined;
+  const latestSymptom = latestDatedItem(state.symptoms);
+  const latestSymptomDisplay = latestSymptom
+    ? buildSymptomDisplayParts(latestSymptom)
     : undefined;
-  const latestSymptom = [...state.symptoms].sort((a, b) => b.date.localeCompare(a.date))[0];
-  const openQuestionCount = state.questions.filter((question) => question.status === "open").length;
+  const latestSymptomRecordLabel = latestSymptom
+    ? formatSymptomRecordLabel(latestSymptom)
+    : "";
+  const latestSymptomHasSourceEvidence = Boolean(latestSymptomDisplay?.sourceEvidence);
+  const symptomDraftHasRecordPreview = Boolean(
+    symptomDraft.symptom.trim()
+    || symptomDraft.medication.trim()
+    || symptomDraft.body.trim()
+    || symptomDraft.action.trim(),
+  );
+  const symptomDraftRecordLabel = symptomDraftHasRecordPreview
+    ? formatSymptomRecordLabel(symptomDraft)
+    : "";
+  const symptomDraftHasSourceEvidence = hasSymptomRecordSourceEvidence(symptomDraft);
+  const symptomDraftSaveActionLabel = formatSymptomRecordSaveActionLabel(symptomDraft);
+  const symptomDraftSaveActionDescription = symptomDraftHasRecordPreview
+    ? `${symptomDraftSaveActionLabel} · ${
+      symptomDraft.symptom.trim() ? `증상 ${symptomDraft.symptom.trim()}` : symptomDraftRecordLabel
+    }${symptomDraftHasSourceEvidence ? " · 근거 포함" : ""}`
+    : `${symptomDraftSaveActionLabel} · 증상명 또는 몸 상태 메모 필요`;
+  const symptomPanelSummary = useMemo(
+    () => buildSymptomPanelSummary(state.symptoms),
+    [state.symptoms],
+  );
+  const questionMetricSummary = useMemo(
+    () => buildQuestionMetricSummary(state.questions),
+    [state.questions],
+  );
+  const questionListSummary = useMemo(
+    () => buildQuestionListSummary(state.questions),
+    [state.questions],
+  );
+  const openQuestionCount = questionMetricSummary.openCount;
   const symptomLevel =
     latestSymptom?.severity >= 7 ? "risk" : latestSymptom?.severity >= 4 ? "watch" : "ok";
   const labAssessments = state.labResults.map((result) => ({
@@ -746,30 +1374,270 @@ function App() {
       result.upper ? Number.parseFloat(result.upper) : undefined,
     ),
   }));
+  const timelinePanelSummary = useMemo(
+    () =>
+      buildTimelinePanelSummary({
+        documentCount: state.documents.length,
+        labCount: state.labResults.length,
+        questionCount: state.questions.length,
+        sourceBackedCount:
+          state.vitals.filter((vital) =>
+            Boolean(
+              buildVitalTimelineDisplayParts(vital, {
+                diabetes: state.profile.diabetes,
+              }).sourceEvidence,
+            ),
+          ).length
+          + state.symptoms.filter(hasSymptomRecordSourceEvidence).length
+          + state.questions.filter((question) =>
+            Boolean(
+              buildQuestionTimelineDisplayParts(
+                question.question,
+                questionStatusLabel[question.status],
+              ).sourceEvidence,
+            ),
+          ).length
+          + state.labResults.filter((result) =>
+            Boolean(buildLabSourceEvidenceParts(result).sourceLabel),
+          ).length,
+        symptomCount: state.symptoms.length,
+        visitCount: state.visits.length,
+        vitalCount: state.vitals.length,
+      }),
+    [
+      state.documents,
+      state.labResults,
+      state.profile.diabetes,
+      state.questions,
+      state.symptoms,
+      state.visits,
+      state.vitals,
+    ],
+  );
+  const labPanelSummary = useMemo(
+    () => buildLabPanelSummary(state.labResults),
+    [state.labResults],
+  );
   const abnormalLabCount = labAssessments.filter(({ assessment }) =>
     ["low", "high"].includes(assessment.flag),
   ).length;
+  const documentPanelSummary = useMemo(
+    () => buildDocumentPanelSummary(state.documents, state.deletedDocuments),
+    [state.documents, state.deletedDocuments],
+  );
   const activeDocumentActionCount = state.documents.filter(
     (document) => document.reviewStatus !== "done",
   ).length;
   const careActions = useMemo(() => buildCareActionQueue(state, today), [state, today]);
+  const careActionSourceCounts = useMemo(
+    () => countCareActionQueueSources(careActions),
+    [careActions],
+  );
+  const careActionQueuePanelSummary = useMemo(
+    () => buildCareActionQueuePanelSummary(careActions),
+    [careActions],
+  );
+  const careActionQueueCopyDescription = useMemo(
+    () => formatCareActionQueueCopyDescription(careActions),
+    [careActions],
+  );
+  const careActionQueueCopyStatus = useMemo(
+    () => formatCareActionQueueCopyStatus(careActions),
+    [careActions],
+  );
+  const cervicalCancerCareClipboardSummary = useMemo(
+    () => buildCervicalCancerCareClipboardSummary(state.profile),
+    [state.profile],
+  );
+  const cervicalCancerCarePanelSummary = useMemo(
+    () => buildCervicalCancerCarePanelSummary(cervicalCancerCareClipboardSummary),
+    [cervicalCancerCareClipboardSummary],
+  );
+  const cervicalCancerCareClipboardCompactSummary = useMemo(
+    () => formatCervicalCancerCareClipboardCompactSummary(cervicalCancerCareClipboardSummary),
+    [cervicalCancerCareClipboardSummary],
+  );
+  const cervicalCancerCareClipboardDescription = useMemo(
+    () => formatCervicalCancerCareClipboardDescription(cervicalCancerCareClipboardSummary),
+    [cervicalCancerCareClipboardSummary],
+  );
+  const cervicalCancerCareClipboardStatus = useMemo(
+    () => formatCervicalCancerCareClipboardStatus(cervicalCancerCareClipboardSummary),
+    [cervicalCancerCareClipboardSummary],
+  );
   const appointmentReminders = useMemo(
     () => buildAppointmentReminders(state.visits, today),
     [state.visits],
+  );
+  const visitPanelSummary = useMemo(
+    () => buildVisitPanelSummary(state.visits, today),
+    [state.visits],
+  );
+  const profileAgeDisplay = formatProfileNumberDisplay(state.profile.age, "세", "나이 미입력");
+  const profileHeightDisplay = formatProfileNumberDisplay(
+    state.profile.heightCm,
+    "cm",
+    "키 미입력",
+  );
+  const profileWeightDisplay = formatProfileNumberDisplay(
+    state.profile.weightKg,
+    "kg",
+    "몸무게 미입력",
+  );
+  const profileWaistDisplay = formatProfileNumberDisplay(state.profile.waistCm, "cm", "");
+  const profileWaistStandardNote = formatProfileWaistStandardNote(state.profile.sex);
+  const healthStandardRangeSections = useMemo(() => buildVitalStandardRangeSections(), []);
+  const visibleHealthStandardRangeSections = useMemo(
+    () => filterVitalStandardRangeSections(healthStandardRangeSections, standardRangeFilter),
+    [healthStandardRangeSections, standardRangeFilter],
+  );
+  const healthStandardRangeSummary = useMemo(
+    () => buildHealthStandardRangeFilterSummary(healthStandardRangeSections, standardRangeFilter),
+    [healthStandardRangeSections, standardRangeFilter],
+  );
+  const selectedHealthStandardRangeFilter = useMemo(
+    () =>
+      healthStandardRangeFilterOptions.find((option) => option.id === standardRangeFilter) ??
+      healthStandardRangeFilterOptions[0],
+    [standardRangeFilter],
+  );
+  const healthStandardsCopyLabel =
+    selectedHealthStandardRangeFilter.id === "all"
+      ? "전체 기준 복사"
+      : `${selectedHealthStandardRangeFilter.label} 기준 복사`;
+  const healthStandardsCopyDescription = formatHealthStandardRangeFilterCopyDescription(
+    selectedHealthStandardRangeFilter.label,
+    healthStandardRangeSummary,
+  );
+  const healthStandardsCopyStatus = formatHealthStandardRangeFilterCopyStatus(
+    selectedHealthStandardRangeFilter.label,
+    healthStandardRangeSummary,
+  );
+  const bmiMetricStandardEvidence = buildDashboardMetricStandardEvidence(
+    "bmi",
+    "BMI 대시보드 기준",
+  );
+  const waistMetricStandardEvidence = buildDashboardMetricStandardEvidence(
+    "waist",
+    "허리둘레 대시보드 기준",
+  );
+  const bloodPressureMetricStandardId = bpStatus?.standardId ?? "blood-pressure";
+  const bloodPressureMetricStandardEvidence = buildDashboardMetricStandardEvidence(
+    bloodPressureMetricStandardId,
+    "최근 혈압 기준",
+  );
+  const glucoseMetricStandardEvidence = buildDashboardMetricStandardEvidence(
+    state.profile.diabetes ? "glucose-care" : "glucose-screening",
+    "최근 혈당 기준",
+  );
+  const temperatureMetricStandardEvidence = buildDashboardMetricStandardEvidence(
+    temperatureStatus?.standardId ?? "infection-fever",
+    "최근 체온 기준",
+  );
+  const dashboardMetricStandardEvidences = [
+    bmiMetricStandardEvidence,
+    waistMetricStandardEvidence,
+    bloodPressureMetricStandardEvidence,
+    glucoseMetricStandardEvidence,
+    temperatureMetricStandardEvidence,
+  ];
+  const dashboardMetricStandardCompactSummary = formatDashboardMetricStandardCompactSummary(
+    dashboardMetricStandardEvidences,
+  );
+  const dashboardMetricStandardCopyDescription = formatDashboardMetricStandardCopyDescription(
+    dashboardMetricStandardEvidences,
+  );
+  const dashboardMetricStandardCopyStatus = formatDashboardMetricStandardCopyStatus(
+    dashboardMetricStandardEvidences,
+  );
+  const dashboardMetricStandardClipboardText = formatDashboardMetricStandardClipboardText(
+    dashboardMetricStandardEvidences,
+  );
+  const vitalDraftValidation = validateVitalDraft(vitalDraft);
+  const vitalDraftGlucoseContext = vitalDraft.glucoseContext ?? "random";
+  const vitalDraftAssessment =
+    vitalDraftValidation.type === "ok"
+      ? vitalDraft.type === "blood-pressure"
+        ? assessBloodPressure(
+            vitalDraftValidation.values.systolic ?? 0,
+            vitalDraftValidation.values.diastolic ?? 0,
+          )
+        : vitalDraft.type === "temperature"
+          ? assessTemperature(vitalDraftValidation.values.temperatureC ?? 0)
+          : assessBloodGlucose(
+              vitalDraftValidation.values.glucoseMgDl ?? 0,
+              vitalDraftGlucoseContext,
+              {
+                diabetes: state.profile.diabetes,
+              },
+            )
+      : null;
+  const vitalDraftStandardId =
+    vitalDraft.type === "blood-pressure"
+      ? vitalDraftAssessment?.standardId ?? "blood-pressure"
+      : vitalDraft.type === "temperature"
+        ? vitalDraftAssessment?.standardId ?? "infection-fever"
+        : vitalDraftAssessment?.standardId ?? (state.profile.diabetes ? "glucose-care" : "glucose-screening");
+  const vitalDraftStandard = getHealthStandardCoverage(vitalDraftStandardId);
+  const vitalDraftStandardNote = formatDashboardMetricStandardNote(vitalDraftStandardId);
+  const vitalDraftStandardRangeLines = buildVitalStandardRangeLines(vitalDraftStandardId);
+  const vitalDraftSourceLinkLabels = vitalDraftStandard
+    ? buildHealthStandardSourceLinkLabels(
+        vitalDraftStandard.sourceLabel,
+        `${vitalTypeLabel[vitalDraft.type]} 입력 기준`,
+      )
+    : null;
+  const vitalDraftSourceLink =
+    vitalDraftStandard &&
+    isExternalHealthStandardSource(vitalDraftStandard) &&
+    vitalDraftSourceLinkLabels
+      ? {
+          href: vitalDraftStandard.sourceUrl,
+          labels: vitalDraftSourceLinkLabels,
+        }
+      : null;
+  const vitalDraftHelperText = formatVitalInputStandardHelp(vitalDraftStandardId);
+  const vitalDraftMeasurementLabel =
+    vitalDraftValidation.type === "ok"
+      ? vitalDraft.type === "blood-pressure"
+        ? `혈압 ${vitalDraftValidation.values.systolic}/${vitalDraftValidation.values.diastolic} mmHg`
+        : vitalDraft.type === "temperature"
+          ? `체온 ${vitalDraftValidation.values.temperatureC}℃`
+          : `혈당 ${vitalDraftValidation.values.glucoseMgDl} mg/dL (${vitalQuestionGlucoseContextLabel[vitalDraftGlucoseContext]})`
+      : "";
+  const vitalDraftSavePreviewLabel =
+    vitalDraftAssessment && vitalDraftStandard
+      ? formatVitalSavePreviewLabel({
+          assessmentLabel: vitalDraftAssessment.label,
+          measurementLabel: vitalDraftMeasurementLabel,
+          standardLabel: vitalDraftStandard.label,
+          standardSexApplicability: vitalDraftStandard.sexApplicability,
+        })
+      : "";
+  const vitalDraftSavePreviewAriaLabel =
+    vitalDraftAssessment && vitalDraftSavePreviewLabel
+      ? `저장 전 기준 확인: ${vitalDraftSavePreviewLabel}. ${vitalDraftAssessment.summary}`
+      : undefined;
+  const vitalDraftSaveActionLabel = formatVitalRecordSaveActionLabel(vitalDraft);
+  const vitalDraftSaveActionDescription = vitalDraftSavePreviewLabel
+    ? `${vitalDraftSaveActionLabel} · ${vitalDraftSavePreviewLabel}`
+    : `${vitalDraftSaveActionLabel} · 기준 확인 후 저장`;
+  const selectedLabPresetPreview = useMemo(
+    () => buildLabPresetPreview(labPresetChoice, state.profile.sex),
+    [labPresetChoice, state.profile.sex],
   );
   const symptomSupportTemplate = useMemo(
     () => findSymptomSupportTemplate(`${symptomDraft.symptom} ${symptomDraft.body}`),
     [symptomDraft.body, symptomDraft.symptom],
   );
+  const cervicalCancerScreeningSummary = useMemo(
+    () => buildCervicalCancerScreeningSummary(state.profile),
+    [state.profile.age, state.profile.sex],
+  );
 
-  const chartData = [...state.vitals]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map((entry) => ({
-      date: entry.date.slice(5),
-      systolic: entry.systolic,
-      diastolic: entry.diastolic,
-      glucose: entry.glucoseMgDl,
-    }));
+  const chartData = buildVitalChartData(state.vitals, { diabetes: state.profile.diabetes });
+  const chartSummary = buildVitalChartSummary(chartData);
+  const chartAccessibleRows = buildVitalChartAccessibleRows(chartData);
 
   const filteredDocuments = state.documents.filter((document) => {
     const categoryMatches =
@@ -780,38 +1648,227 @@ function App() {
       `${document.date} ${documentLabel[document.category]} ${document.title} ${document.body} ${document.tags} ${document.nextAction} ${documentReviewStatusLabel[document.reviewStatus]} ${document.attachmentName ?? ""} ${document.attachmentStatus ?? ""}`.toLowerCase();
     return categoryMatches && statusMatches && haystack.includes(documentFilter.toLowerCase());
   });
+  const hasActiveDocumentFilters =
+    Boolean(documentFilter.trim()) ||
+    documentCategoryFilter !== "all" ||
+    documentStatusFilter !== "all";
+
+  const setActionSaveLabel = (label: string) => {
+    transientSaveLabelUntilRef.current = 0;
+    pendingActionLabelRef.current = label;
+    setSaveLabel(label);
+  };
+
+  const setTransientSaveLabel = (label: string) => {
+    pendingActionLabelRef.current = null;
+    transientSaveLabelUntilRef.current = Date.now() + 2000;
+    setSaveLabel(label);
+  };
+
+  const resetDocumentFilters = () => {
+    setDocumentFilter("");
+    setDocumentCategoryFilter("all");
+    setDocumentStatusFilter("all");
+    setSaveLabel("서류 필터 초기화됨");
+  };
+
+  const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>
+    caregiverShareSectionOptions.find((option) => option.id === id)?.label ?? id;
+
+  const getCaregiverShareProfileRedactionToggleLabel = (redactProfile: boolean) =>
+    redactProfile
+      ? "보호자 공유본 프로필 가리기 켜짐 · 이름과 기본 프로필 정보를 숨깁니다"
+      : "보호자 공유본 프로필 가리기 꺼짐 · 이름과 기본 프로필 정보를 표시합니다";
+
+  const getCaregiverShareSectionToggleLabel = (
+    label: string,
+    checked: boolean,
+    isOnlyIncludedSection: boolean,
+  ) => {
+    if (checked && isOnlyIncludedSection) {
+      return `보호자 공유본 포함 섹션 ${label} 포함됨 · 최소 1개 섹션은 포함해야 해서 해제할 수 없습니다`;
+    }
+
+    return checked
+      ? `보호자 공유본 포함 섹션 ${label} 포함됨 · 선택 해제하면 공유본에서 제외됩니다`
+      : `보호자 공유본 포함 섹션 ${label} 제외됨 · 선택하면 공유본에 포함됩니다`;
+  };
+
+  const getProfileModeToggleLabel = (
+    field: "cancerCareMode" | "diabetes" | "hypertension",
+    checked: boolean,
+  ) => {
+    const labels: Record<typeof field, string> = {
+      cancerCareMode: "암환자 관리",
+      diabetes: "당뇨 추적",
+      hypertension: "혈압 추적",
+    };
+    const stateText = checked ? "켜짐" : "꺼짐";
+    const actionText = checked ? "선택 해제하면 끕니다" : "선택하면 켭니다";
+
+    return `${labels[field]} ${stateText} · ${actionText}`;
+  };
+
+  const getProfileActionLabel = (field: keyof Profile, value: Profile[keyof Profile]) => {
+    if (field === "cancerCareMode") {
+      return value ? "암환자 관리 켜짐" : "암환자 관리 꺼짐";
+    }
+    if (field === "diabetes") {
+      return value ? "당뇨 추적 켜짐" : "당뇨 추적 꺼짐";
+    }
+    if (field === "hypertension") {
+      return value ? "혈압 추적 켜짐" : "혈압 추적 꺼짐";
+    }
+
+    const profileFieldLabels: Record<
+      Exclude<keyof Profile, "cancerCareMode" | "diabetes" | "hypertension">,
+      string
+    > = {
+      age: "나이",
+      heightCm: "키",
+      name: "프로필 이름",
+      sex: "성별 기준",
+      waistCm: "허리둘레",
+      weightKg: "몸무게",
+    };
+    return `${profileFieldLabels[field]} 수정됨`;
+  };
 
   const saveProfile = (field: keyof Profile, value: Profile[keyof Profile]) => {
+    if (isProfileNumberField(field) && typeof value === "string") {
+      const validation = validateProfileNumberInput(field, value);
+      if (validation.type === "error") {
+        setSaveLabel(validation.message);
+        return;
+      }
+    }
+
+    const nextProfileSex = field === "sex" && typeof value === "string" ? (value as Sex) : null;
+    const shouldSyncLabPresetSexRange =
+      nextProfileSex !== null && nextProfileSex !== state.profile.sex && labPresetChoice;
+    const syncedLabPreset = shouldSyncLabPresetSexRange
+      ? resolveLabPresetSexChangeDraft(labPresetChoice, state.profile.sex, nextProfileSex, labDraft)
+      : null;
+
+    if (syncedLabPreset) {
+      setLabDraft((current) => ({
+        ...current,
+        name: syncedLabPreset.name,
+        unit: syncedLabPreset.unit,
+        lower: syncedLabPreset.lower,
+        upper: syncedLabPreset.upper,
+        note: syncedLabPreset.note,
+      }));
+    }
+
     setState((current) => ({
       ...current,
       profile: { ...current.profile, [field]: value },
     }));
+    const actionLabel = getProfileActionLabel(field, value);
+    setActionSaveLabel(
+      syncedLabPreset && nextProfileSex
+        ? `${actionLabel} · ${formatLabPresetSexSyncStatusLabel(labPresetChoice, nextProfileSex)}`
+        : actionLabel,
+    );
   };
 
   const addVital = () => {
+    const validation = validateVitalDraft(vitalDraft);
+    if (validation.type === "error") {
+      setSaveLabel(validation.message);
+      return;
+    }
+
+    const savedVital: VitalEntry = {
+      date: vitalDraft.date,
+      id: createId(
+        vitalDraft.type === "glucose"
+          ? "glu"
+          : vitalDraft.type === "temperature"
+            ? "temp"
+            : "bp",
+      ),
+      note: vitalDraft.note,
+      type: vitalDraft.type,
+      systolic: vitalDraft.type === "blood-pressure" ? validation.values.systolic : undefined,
+      diastolic: vitalDraft.type === "blood-pressure" ? validation.values.diastolic : undefined,
+      glucoseMgDl: vitalDraft.type === "glucose" ? validation.values.glucoseMgDl : undefined,
+      glucoseContext: vitalDraft.type === "glucose" ? vitalDraft.glucoseContext : undefined,
+      temperatureC: vitalDraft.type === "temperature" ? validation.values.temperatureC : undefined,
+    };
+
     setState((current) => ({
       ...current,
-      vitals: [
-        ...current.vitals,
-        {
-          ...vitalDraft,
-          id: createId(vitalDraft.type === "glucose" ? "glu" : "bp"),
-          systolic: vitalDraft.type === "blood-pressure" ? Number(vitalDraft.systolic) : undefined,
-          diastolic: vitalDraft.type === "blood-pressure" ? Number(vitalDraft.diastolic) : undefined,
-          glucoseMgDl: vitalDraft.type === "glucose" ? Number(vitalDraft.glucoseMgDl) : undefined,
-        },
-      ],
+      vitals: [...current.vitals, savedVital],
     }));
     setVitalDraft({ ...emptyVital, date: today });
+    setActionSaveLabel(
+      formatVitalRecordSavedStatusLabel(savedVital, {
+        diabetes: state.profile.diabetes,
+      }),
+    );
+  };
+
+  const applyVitalStandardQuestion = () => {
+    const validation = validateVitalDraft(vitalDraft);
+    if (validation.type === "error") {
+      setSaveLabel(validation.message);
+      return;
+    }
+
+    const glucoseContext = vitalDraft.glucoseContext ?? "random";
+    const assessment =
+      vitalDraft.type === "blood-pressure"
+        ? assessBloodPressure(validation.values.systolic ?? 0, validation.values.diastolic ?? 0)
+        : vitalDraft.type === "temperature"
+          ? assessTemperature(validation.values.temperatureC ?? 0)
+          : assessBloodGlucose(validation.values.glucoseMgDl ?? 0, glucoseContext, {
+              diabetes: state.profile.diabetes,
+            });
+    const measurementLabel =
+      vitalDraft.type === "blood-pressure"
+        ? `혈압 ${validation.values.systolic}/${validation.values.diastolic} mmHg`
+        : vitalDraft.type === "temperature"
+          ? `체온 ${validation.values.temperatureC}℃`
+          : `혈당 ${validation.values.glucoseMgDl} mg/dL (${vitalQuestionGlucoseContextLabel[glucoseContext]})`;
+    const draft = buildVitalStandardQuestionDraft({
+      assessmentLabel: assessment.label,
+      assessmentSummary: assessment.summary,
+      measurementLabel,
+      note: vitalDraft.note,
+      standardId: vitalDraftStandardId,
+    });
+
+    if (!draft) {
+      setSaveLabel("혈압·혈당·체온 기준 질문 초안을 만들 수 없습니다.");
+      return;
+    }
+
+    setQuestionDraft((current) => ({
+      ...current,
+      date: getNextQuestionDate(state.visits, today),
+      priority: "next-visit",
+      question: draft.question,
+      status: "open",
+      topic: draft.topic,
+    }));
+    setSaveLabel(`${vitalTypeLabel[vitalDraft.type]} 기준 질문 초안 준비됨`);
+    setQuestionDraftFocusRequest((request) => request + 1);
   };
 
   const addVisit = () => {
-    if (!visitDraft.hospital.trim() || !visitDraft.reason.trim()) return;
+    if (!hasRequiredTextValues(visitDraft.hospital, visitDraft.reason)) {
+      setSaveLabel(recordRequiredFieldMessages.visit);
+      return;
+    }
+
     setState((current) => ({
       ...current,
       visits: [...current.visits, { ...visitDraft, id: createId("visit") }],
     }));
     setVisitDraft({ ...emptyVisit, date: today });
+    setActionSaveLabel("방문 기록 추가됨");
   };
 
   const createDocumentHistory = (
@@ -826,14 +1883,58 @@ function App() {
     detail,
   });
 
+  const captureDocumentActionBaseline = (document: CareDocument) => {
+    if (documentActionBaselinesRef.current[document.id] !== undefined) return;
+    documentActionBaselinesRef.current = {
+      ...documentActionBaselinesRef.current,
+      [document.id]: document.nextAction,
+    };
+    setDocumentActionBaselines((current) => ({
+      ...current,
+      [document.id]: document.nextAction,
+    }));
+  };
+
+  const clearDocumentActionBaseline = (documentId: string) => {
+    const { [documentId]: _removedRef, ...nextRef } = documentActionBaselinesRef.current;
+    documentActionBaselinesRef.current = nextRef;
+    setDocumentActionBaselines((current) => {
+      const { [documentId]: _removed, ...rest } = current;
+      return rest;
+    });
+  };
+
   const addDocument = () => {
-    if (!documentDraft.title.trim() || !documentDraft.body.trim()) return;
+    if (!hasRequiredTextValues(documentDraft.title, documentDraft.body)) {
+      setSaveLabel(recordRequiredFieldMessages.document);
+      return;
+    }
+
     const documentId = createId("doc");
     const createdEntry = createDocumentHistory(
       "created",
       "서류 저장",
       `${documentDraft.title.trim()} 기록 생성`,
     );
+    const browserAttachmentFile = documentDraftAttachmentFileRef.current;
+    const draftPreviewUrl = documentDraftAttachmentPreviewUrlRef.current;
+    let draftPreviewTransferred = false;
+    if (
+      draftPreviewUrl &&
+      documentDraft.attachmentStorage === "browser-reference" &&
+      documentDraft.attachmentName &&
+      isPreviewableImageAttachment(documentDraft.attachmentName)
+    ) {
+      setBrowserAttachmentPreviewUrl(documentId, draftPreviewUrl);
+      documentDraftAttachmentPreviewUrlRef.current = null;
+      draftPreviewTransferred = true;
+    } else if (
+      browserAttachmentFile &&
+      documentDraft.attachmentStorage === "browser-reference" &&
+      documentDraft.attachmentName === browserAttachmentFile.name
+    ) {
+      rememberBrowserAttachmentPreviewUrl(documentId, browserAttachmentFile);
+    }
     setState((current) => ({
       ...current,
       documents: [
@@ -845,7 +1946,12 @@ function App() {
         },
       ],
     }));
+    documentDraftAttachmentFileRef.current = null;
+    if (!draftPreviewTransferred) {
+      clearDocumentDraftAttachmentPreviewUrl();
+    }
     setDocumentDraft({ ...emptyDocument, date: today });
+    setActionSaveLabel("서류 메모 저장됨");
   };
 
   const updateDocumentReviewStatus = (
@@ -871,25 +1977,26 @@ function App() {
         };
       }),
     }));
-    setSaveLabel("서류 조치 업데이트됨");
+    setActionSaveLabel("서류 조치 업데이트됨");
   };
 
-  const updateDocumentNextAction = (documentId: string, nextAction: string) => {
+  const updateDocumentNextAction = (targetDocument: CareDocument, nextAction: string) => {
+    captureDocumentActionBaseline(targetDocument);
     setState((current) => ({
       ...current,
       documents: current.documents.map((document) =>
-        document.id === documentId ? { ...document, nextAction } : document,
+        document.id === targetDocument.id ? { ...document, nextAction } : document,
       ),
     }));
   };
 
   const recordDocumentNextActionBlur = (document: CareDocument, nextAction: string) => {
-    const previous = documentActionBaselines[document.id] ?? document.nextAction;
+    const previous =
+      documentActionBaselinesRef.current[document.id] ??
+      documentActionBaselines[document.id] ??
+      document.nextAction;
     if (previous.trim() === nextAction.trim()) {
-      setDocumentActionBaselines((current) => {
-        const { [document.id]: _removed, ...rest } = current;
-        return rest;
-      });
+      clearDocumentActionBaseline(document.id);
       return;
     }
 
@@ -906,11 +2013,8 @@ function App() {
           : item,
       ),
     }));
-    setDocumentActionBaselines((current) => {
-      const { [document.id]: _removed, ...rest } = current;
-      return rest;
-    });
-    setSaveLabel("서류 조치 이력 기록됨");
+    clearDocumentActionBaseline(document.id);
+    setActionSaveLabel("서류 조치 이력 기록됨");
   };
 
   const attachDocumentFile = async () => {
@@ -946,6 +2050,7 @@ function App() {
         attachmentStorage: "tauri-sandbox",
         attachmentStatus: attachmentExists ? "앱 샌드박스 복사됨" : "앱 샌드박스 경로 저장됨",
       }));
+      documentDraftAttachmentFileRef.current = null;
       setSaveLabel(attachmentExists ? "첨부 파일 앱 보관 준비" : "첨부 경로 저장 준비");
     } catch (error) {
       console.error("Document attachment selection failed", error);
@@ -956,6 +2061,11 @@ function App() {
 
   const attachBrowserReference = (file?: File) => {
     if (!file) return;
+    clearDocumentDraftAttachmentPreviewUrl();
+    documentDraftAttachmentFileRef.current = file;
+    documentDraftAttachmentPreviewUrlRef.current = isPreviewableImageAttachment(file.name)
+      ? URL.createObjectURL(file)
+      : null;
     setDocumentDraft((current) => ({
       ...current,
       attachmentName: file.name,
@@ -967,6 +2077,8 @@ function App() {
   };
 
   const clearDocumentAttachment = () => {
+    documentDraftAttachmentFileRef.current = null;
+    clearDocumentDraftAttachmentPreviewUrl();
     setDocumentDraft((current) => ({
       ...current,
       attachmentName: undefined,
@@ -991,7 +2103,7 @@ function App() {
       if (!attachmentExists) {
         const status = "파일 없음 - 재첨부 필요";
         updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-        setSaveLabel(status);
+        setActionSaveLabel(status);
         return;
       }
 
@@ -1001,7 +2113,7 @@ function App() {
       console.error("Document attachment open failed", error);
       const status = "첨부 열기 실패 - 재첨부 필요";
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-      setSaveLabel(status);
+      setActionSaveLabel(status);
     }
   };
 
@@ -1035,7 +2147,7 @@ function App() {
     if (!document.attachmentPath || !canUseTauriRuntime()) {
       const status = "파일명 참조만 저장됨";
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-      setSaveLabel(status);
+      setActionSaveLabel(status);
       return;
     }
 
@@ -1044,12 +2156,12 @@ function App() {
       const attachmentExists = await exists(document.attachmentPath).catch(() => false);
       const status = attachmentExists ? "파일 확인됨" : "파일 없음 - 재첨부 필요";
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-      setSaveLabel(status);
+      setActionSaveLabel(status);
     } catch (error) {
       console.error("Document attachment check failed", error);
       const status = "첨부 확인 실패";
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-      setSaveLabel(status);
+      setActionSaveLabel(status);
     }
   };
 
@@ -1067,17 +2179,24 @@ function App() {
     });
   };
 
-  const rememberBrowserAttachmentPreviewUrl = (documentId: string, file: File) => {
+  const clearDocumentDraftAttachmentPreviewUrl = () => {
+    if (!documentDraftAttachmentPreviewUrlRef.current) return;
+    URL.revokeObjectURL(documentDraftAttachmentPreviewUrlRef.current);
+    documentDraftAttachmentPreviewUrlRef.current = null;
+  };
+
+  const setBrowserAttachmentPreviewUrl = (documentId: string, previewUrl: string) => {
     clearBrowserAttachmentPreviewUrl(documentId);
-
-    if (!isPreviewableImageAttachment(file.name)) return;
-
-    const previewUrl = URL.createObjectURL(file);
     browserAttachmentPreviewUrlsRef.current[documentId] = previewUrl;
     setBrowserAttachmentPreviewUrls((current) => ({
       ...current,
       [documentId]: previewUrl,
     }));
+  };
+
+  const rememberBrowserAttachmentPreviewUrl = (documentId: string, file: File) => {
+    if (!isPreviewableImageAttachment(file.name)) return;
+    setBrowserAttachmentPreviewUrl(documentId, URL.createObjectURL(file));
   };
 
   const updateSavedDocumentAttachment = (
@@ -1118,7 +2237,7 @@ function App() {
       attachmentStatus: "브라우저 파일명 참조",
     });
     setSavedAttachmentTargetId(null);
-    setSaveLabel("저장된 서류 첨부 파일명 참조 갱신");
+    setActionSaveLabel("저장된 서류 첨부 파일명 참조 갱신");
   };
 
   const replaceSavedDocumentAttachment = async (document: CareDocument) => {
@@ -1156,7 +2275,7 @@ function App() {
         attachmentStorage: "tauri-sandbox",
         attachmentStatus,
       });
-      setSaveLabel(attachmentExists ? "저장된 서류 첨부 재연결됨" : "첨부 경로 갱신됨");
+      setActionSaveLabel(attachmentExists ? "저장된 서류 첨부 재연결됨" : "첨부 경로 갱신됨");
     } catch (error) {
       console.error("Saved document attachment replacement failed", error);
       setSaveLabel("저장된 서류 첨부 재연결 실패");
@@ -1196,7 +2315,7 @@ function App() {
       if (!attachmentExists) {
         const status = "파일 없음 - 재첨부 필요";
         updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-        setSaveLabel(status);
+        setActionSaveLabel(status);
         return;
       }
 
@@ -1266,7 +2385,7 @@ function App() {
           : item,
       ),
     }));
-    setSaveLabel("첨부 제거됨");
+    setActionSaveLabel("첨부 제거됨");
   };
 
   const removeDeletedDocumentAttachment = async (document: CareDocument) => {
@@ -1300,7 +2419,7 @@ function App() {
           : item,
       ),
     }));
-    setSaveLabel("삭제 보관함 첨부 정리됨");
+    setActionSaveLabel("삭제 보관함 첨부 정리됨");
   };
 
   const deleteDocument = async (document: CareDocument) => {
@@ -1329,7 +2448,7 @@ function App() {
         ...current.deletedDocuments.filter((item) => item.id !== document.id),
       ],
     }));
-    setSaveLabel("서류 기록이 삭제 보관함으로 이동됨");
+    setActionSaveLabel("서류 기록이 삭제 보관함으로 이동됨");
   };
 
   const restoreDocument = (document: CareDocument) => {
@@ -1350,11 +2469,15 @@ function App() {
       ],
       deletedDocuments: current.deletedDocuments.filter((item) => item.id !== document.id),
     }));
-    setSaveLabel("서류 기록 복구됨");
+    setActionSaveLabel("서류 기록 복구됨");
   };
 
   const addSymptom = () => {
-    if (!symptomDraft.symptom.trim()) return;
+    if (!hasRequiredTextValues(symptomDraft.symptom)) {
+      setSaveLabel(recordRequiredFieldMessages.symptom);
+      return;
+    }
+
     setState((current) => ({
       ...current,
       symptoms: [
@@ -1367,15 +2490,21 @@ function App() {
       ],
     }));
     setSymptomDraft({ ...emptySymptom, date: today });
+    setActionSaveLabel(formatSymptomRecordSavedStatusLabel(symptomDraft));
   };
 
   const addQuestion = () => {
-    if (!questionDraft.topic.trim() || !questionDraft.question.trim()) return;
+    if (!hasRequiredTextValues(questionDraft.topic, questionDraft.question)) {
+      setSaveLabel(recordRequiredFieldMessages.question);
+      return;
+    }
+
     setState((current) => ({
       ...current,
       questions: [...current.questions, { ...questionDraft, id: createId("question") }],
     }));
     setQuestionDraft({ ...emptyQuestion, date: today });
+    setActionSaveLabel("질문 추가됨");
   };
 
   const applySymptomSupportTemplate = () => {
@@ -1386,21 +2515,230 @@ function App() {
       date: getNextQuestionDate(state.visits, today),
       topic: `부작용: ${symptomSupportTemplate.label}`,
       question: buildSymptomSupportQuestion(symptomSupportTemplate, symptomDraft.symptom),
+      priority: "next-visit",
       status: "open",
     }));
     setSymptomDraft((current) => ({
       ...current,
       action: current.action.trim()
         ? current.action
-        : `${symptomSupportTemplate.mealNote} ${symptomSupportTemplate.safetyNote}`,
+        : buildSymptomSupportActionNote(symptomSupportTemplate),
     }));
-    setSaveLabel("부작용 질문 초안 준비됨");
+    setSaveLabel(`부작용 질문 초안 준비됨: ${symptomSupportTemplate.label}`);
+    setQuestionDraftFocusRequest((request) => request + 1);
   };
+
+  const applyInfectionFeverStandardDraft = () => {
+    const template = findSymptomSupportTemplate("체온 38℃ 이상 오한 감염");
+    if (!template) return;
+
+    setSymptomDraft((current) => {
+      const currentBody = current.body.trim();
+      const nextBody = currentBody
+        ? current.body.includes(template.mealNote)
+          ? current.body
+          : `${currentBody}\n${template.mealNote}`
+        : template.mealNote;
+      const hasExistingSymptomText = current.symptom.trim() || currentBody;
+
+      return {
+        ...current,
+        action: current.action.trim() ? current.action : buildSymptomSupportActionNote(template),
+        body: nextBody,
+        date: current.date || today,
+        severity: hasExistingSymptomText ? current.severity : 5,
+        symptom: current.symptom.trim() ? current.symptom : "발열·오한/감염 의심",
+      };
+    });
+    setSaveLabel("체온·감염 증상 초안 준비됨");
+    setSymptomDraftFocusRequest((request) => request + 1);
+  };
+
+  const applyInfectionFeverStandardQuestion = () => {
+    const template = findSymptomSupportTemplate("체온 38℃ 이상 오한 감염");
+    if (!template) return;
+
+    const generatedQuestion = buildSymptomSupportQuestion(template, "체온 38℃ 이상 또는 오한");
+    setQuestionDraft((current) => {
+      const currentQuestion = current.question.trim();
+      const hasExistingQuestionDraft = current.topic.trim() || currentQuestion;
+      const nextQuestion = currentQuestion
+        ? current.question.includes(generatedQuestion)
+          ? current.question
+          : `${currentQuestion}\n${generatedQuestion}`
+        : generatedQuestion;
+
+      return {
+        ...current,
+        date: hasExistingQuestionDraft ? current.date : getNextQuestionDate(state.visits, today),
+        priority: hasExistingQuestionDraft ? current.priority : "next-visit",
+        question: nextQuestion,
+        status: "open",
+        topic: current.topic.trim() ? current.topic : `부작용: ${template.label}`,
+      };
+    });
+    setSaveLabel("체온·감염 질문 초안 준비됨");
+    setQuestionDraftFocusRequest((request) => request + 1);
+  };
+
+  const applyCervicalCancerCarePrompt = (prompt: CervicalCancerCarePrompt) => {
+    setQuestionDraft((current) => ({
+      ...current,
+      date: getNextQuestionDate(state.visits, today),
+      topic: prompt.topic,
+      question: buildCervicalCancerCarePromptQuestion(prompt),
+      priority: "next-visit",
+      status: "open",
+    }));
+    setSaveLabel(`자궁경부암 질문 초안 준비됨: ${prompt.topic}`);
+    setQuestionDraftFocusRequest((request) => request + 1);
+  };
+
+  const applyCervicalCancerScreeningQuestion = () => {
+    setQuestionDraft((current) => ({
+      ...current,
+      date: getNextQuestionDate(state.visits, today),
+      topic: "자궁경부암 검진",
+      question: buildCervicalCancerScreeningQuestion(cervicalCancerScreeningSummary),
+      priority: "next-visit",
+      status: "open",
+    }));
+    setSaveLabel("자궁경부암 검진 질문 초안 준비됨");
+    setQuestionDraftFocusRequest((request) => request + 1);
+  };
+
+  const applyFoodQuestionDraft = () => {
+    if (!foodQuestionDraft) {
+      setSaveLabel("음식 판단 질문 초안을 만들 수 없습니다.");
+      return;
+    }
+
+    setQuestionDraft((current) => ({
+      ...current,
+      date: getNextQuestionDate(state.visits, today),
+      priority: foodQuestionDraft.priority,
+      question: foodQuestionDraft.question,
+      status: "open",
+      topic: foodQuestionDraft.topic,
+    }));
+    setSaveLabel("음식 판단 질문 초안 준비됨");
+    setQuestionDraftFocusRequest((request) => request + 1);
+  };
+
+  const applyCervicalCancerCareAlert = (alert: CervicalCancerCareAlert) => {
+    const draft = buildCervicalCancerAlertSymptomDraft(alert);
+
+    setSymptomDraft((current) => {
+      const currentBody = current.body.trim();
+      const nextBody = currentBody
+        ? current.body.includes(draft.body)
+          ? current.body
+          : `${currentBody}\n${draft.body}`
+        : draft.body;
+
+      return {
+        ...current,
+        action: current.action.trim() ? current.action : draft.action,
+        body: nextBody,
+        date: current.date || today,
+        symptom: current.symptom.trim() ? current.symptom : draft.symptom,
+      };
+    });
+    setSaveLabel(`자궁경부암 증상 초안 준비됨: ${alert.title}`);
+    setSymptomDraftFocusRequest((request) => request + 1);
+  };
+
+  const applyCervicalCancerCareItemDraft = (item: CervicalCancerCareRecordDraftItem) => {
+    const draft = buildCervicalCancerCareItemSymptomDraft(item);
+
+    setSymptomDraft((current) => {
+      const currentBody = current.body.trim();
+      const hasExistingSymptomText = Boolean(current.symptom.trim() || currentBody);
+      const nextBody = currentBody
+        ? current.body.includes(draft.body)
+          ? current.body
+          : `${currentBody}\n${draft.body}`
+        : draft.body;
+
+      return {
+        ...current,
+        action: current.action.trim() ? current.action : draft.action,
+        body: nextBody,
+        date: current.date || today,
+        severity: hasExistingSymptomText ? current.severity : 3,
+        symptom: current.symptom.trim() ? current.symptom : draft.symptom,
+      };
+    });
+    setSaveLabel(`자궁경부암 기록 메모 초안 준비됨: ${item.label}`);
+    setSymptomDraftFocusRequest((request) => request + 1);
+  };
+
+  const copyCervicalCancerCareNote = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel("자궁경부암 케어 노트 복사를 지원하지 않는 브라우저입니다.");
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(formatCervicalCancerCareClipboardText(state.profile))
+      .then(() => setTransientSaveLabel(cervicalCancerCareClipboardStatus))
+      .catch(() => setSaveLabel("자궁경부암 케어 노트 복사 실패"));
+  };
+
+  const renderCervicalCareItemSourceLink = (sourceId: string, itemLabel: string) => {
+    const source = getCervicalCancerCareSource(sourceId);
+    const linkLabels = buildCervicalCancerCareSourceLinkLabels(sourceId, itemLabel);
+
+    return source ? (
+      <a
+        className="cervical-item-source"
+        href={source.url}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={linkLabels.ariaLabel}
+        title={linkLabels.title}
+      >
+        {linkLabels.visibleLabel}
+        <ExternalLink aria-hidden="true" />
+      </a>
+    ) : (
+      <small className="cervical-item-source">{linkLabels.visibleLabel}</small>
+    );
+  };
+
+  const formatCervicalCareListItemAriaLabel = (
+    item: CervicalCancerCareRecordDraftItem,
+  ) => {
+    const source = getCervicalCancerCareSource(item.sourceId);
+    const detail = item.detail.trim().replace(/[.。]+$/, "");
+    const sourceText = source ? ` 출처: ${source.label}.` : "";
+
+    return `${item.label}. ${detail}.${sourceText}`;
+  };
+
+  const renderCervicalCareItemActions = (item: CervicalCancerCareRecordDraftItem) => (
+    <div className="cervical-check-actions">
+      <button
+        type="button"
+        className="secondary-inline-button cervical-check-draft-button"
+        onClick={() => applyCervicalCancerCareItemDraft(item)}
+        aria-label={`${item.label} 자궁경부암 기록 메모 초안 만들기`}
+        title={`${item.label} 자궁경부암 기록 메모 초안 만들기`}
+      >
+        <ClipboardList aria-hidden="true" />
+        기록 초안
+      </button>
+      {renderCervicalCareItemSourceLink(item.sourceId, item.label)}
+    </div>
+  );
 
   const applyLabPreset = (presetId: string) => {
     setLabPresetChoice(presetId);
     const preset = resolveLabPreset(presetId, state.profile.sex);
     if (!preset) return;
+    const presetPreview = buildLabPresetPreview(presetId, state.profile.sex);
+    const presetLabel =
+      labPresets.find((candidate) => candidate.id === presetId)?.label ?? preset.name;
 
     setLabDraft((current) => ({
       ...current,
@@ -1408,18 +2746,32 @@ function App() {
       unit: preset.unit,
       lower: preset.lower,
       upper: preset.upper,
-      note: current.note.trim() ? current.note : preset.note,
+      note: current.note.trim()
+        ? current.note
+        : formatLabPresetNoteWithSource(preset, presetPreview?.applicabilityLabel),
     }));
+    setSaveLabel(`검사 프리셋 적용: ${presetLabel}`);
+  };
+
+  const resetLabDraft = () => {
+    setLabDraft({ ...emptyLabResult, date: today });
+    setLabPresetChoice("");
+    setSaveLabel("검사 입력 초기화됨");
   };
 
   const addLabResult = () => {
-    if (!labDraft.name.trim() || !labDraft.value.trim()) return;
+    if (!hasRequiredTextValues(labDraft.name, labDraft.value)) {
+      setSaveLabel(recordRequiredFieldMessages.lab);
+      return;
+    }
+
     setState((current) => ({
       ...current,
       labResults: [...current.labResults, { ...labDraft, id: createId("lab") }],
     }));
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
+    setActionSaveLabel("검사 수치 추가됨");
   };
 
   const addLabQuestion = (lab: LabQuestionSource, assessment: ReturnType<typeof assessLabValue>) => {
@@ -1432,12 +2784,13 @@ function App() {
           date: getNextQuestionDate(current.visits, today),
           topic: "검사 수치",
           question: buildLabQuestionPrompt(lab, assessment),
+          priority: "high",
           status: "open",
           answer: "",
         },
       ],
     }));
-    setSaveLabel("검사 질문 추가됨");
+    setActionSaveLabel("검사 질문 추가됨");
   };
 
   const updateQuestionStatus = (id: string, status: QuestionStatus) => {
@@ -1447,6 +2800,77 @@ function App() {
         question.id === id ? { ...question, status } : question,
       ),
     }));
+    setActionSaveLabel(`질문 상태: ${questionStatusLabel[status]}`);
+  };
+
+  const updateQuestionPriority = (id: string, priority: QuestionPriority) => {
+    setState((current) => ({
+      ...current,
+      questions: current.questions.map((question) =>
+        question.id === id ? { ...question, priority } : question,
+      ),
+    }));
+    setActionSaveLabel(`질문 우선순위: ${questionPriorityLabel[priority]}`);
+  };
+
+  const copyQuestionForVisit = (question: CareQuestion) => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel("질문 복사를 지원하지 않는 브라우저입니다.");
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(formatQuestionClipboardText(question))
+      .then(() => setTransientSaveLabel(formatQuestionClipboardCopyStatus(question)))
+      .catch(() => setSaveLabel("질문 복사 실패"));
+  };
+
+  const copyCareActionQueue = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel("진료 준비 큐 복사를 지원하지 않는 브라우저입니다.");
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(formatCareActionQueueClipboardText(careActions, today))
+      .then(() => setTransientSaveLabel(careActionQueueCopyStatus))
+      .catch(() => setSaveLabel("진료 준비 큐 복사 실패"));
+  };
+
+  const copyHealthStandards = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel("한국 건강 기준 복사를 지원하지 않는 브라우저입니다.");
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(formatHealthStandardsClipboardText(state.profile.sex, standardRangeFilter))
+      .then(() => setTransientSaveLabel(healthStandardsCopyStatus))
+      .catch(() => setSaveLabel("한국 건강 기준 복사 실패"));
+  };
+
+  const copyProfileMetricSexStandards = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel("프로필 성별 기준 복사를 지원하지 않는 브라우저입니다.");
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(profileMetricSexStandardClipboardText)
+      .then(() => setTransientSaveLabel(profileMetricSexStandardCopyStatus))
+      .catch(() => setSaveLabel("프로필 성별 기준 복사 실패"));
+  };
+
+  const copyDashboardMetricStandards = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel("대시보드 건강 기준 복사를 지원하지 않는 브라우저입니다.");
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(dashboardMetricStandardClipboardText)
+      .then(() => setTransientSaveLabel(dashboardMetricStandardCopyStatus))
+      .catch(() => setSaveLabel("대시보드 건강 기준 복사 실패"));
   };
 
   const storageText =
@@ -1505,36 +2929,160 @@ function App() {
       range: visitPacketRange,
     });
 
+  const buildVisitPacketExportPreview = (): ExportPreviewState => ({
+    content: buildVisitPacketExport(),
+    filename: `carevault-visit-summary-${today}.md`,
+    format: "진료 요약",
+    mimeType: "text/markdown;charset=utf-8",
+    title: `진료 요약 미리보기 (${visitPacketRangeLabels[visitPacketRange]})`,
+    visitPacketExportFingerprint: buildVisitPacketExportFingerprint(state, state.foodQuery),
+    visitPacketRangeSnapshot: visitPacketRange,
+  });
+
   const buildCsvExport = () => buildCareVaultCsv(state, new Date().toISOString());
 
-  const buildCaregiverExport = () =>
-    buildCaregiverExportHtml(state, new Date().toISOString(), {
+  const buildCsvExportPreview = (): ExportPreviewState => ({
+    content: buildCsvExport(),
+    csvExportFingerprint: buildCsvExportFingerprint(state),
+    filename: `carevault-records-${today}.csv`,
+    format: "CSV",
+    mimeType: "text/csv;charset=utf-8",
+    title: "CSV 미리보기",
+  });
+
+  const buildCaregiverExport = () => {
+    const preset = getCaregiverShareSettingsPreset(state.caregiverShareSettings.presetId);
+    return buildCaregiverExportHtml(state, new Date().toISOString(), {
       coverMemo: state.caregiverShareSettings.coverMemo,
+      presetDescription: preset?.description,
+      presetLabel: preset?.label,
       redactProfile: state.caregiverShareSettings.redactProfile,
       sections: state.caregiverShareSettings.sections,
     });
+  };
+
+  const buildCaregiverExportPreview = (): ExportPreviewState => ({
+    caregiverShareContentFingerprint: buildCaregiverExportContentFingerprint(
+      state,
+      state.caregiverShareSettings.sections,
+    ),
+    caregiverShareSettingsFingerprint: buildCaregiverShareSettingsFingerprint(
+      state.caregiverShareSettings,
+    ),
+    caregiverShareSettingsSnapshot: normalizeCaregiverShareSettings(
+      state.caregiverShareSettings,
+    ),
+    caregiverShareSettingsSummary: buildCaregiverShareSettingsPreviewSummary(
+      state.caregiverShareSettings,
+    ),
+    content: buildCaregiverExport(),
+    filename: `carevault-caregiver-share-${today}.html`,
+    format: "보호자 공유본",
+    mimeType: "text/html;charset=utf-8",
+    title: "보호자 공유본 미리보기",
+  });
 
   const showExportPreview = (preview: ExportPreviewState) => {
     setExportPreview(preview);
     setSaveLabel(`${preview.format} 미리보기 생성`);
   };
 
+  const updateVisitPacketRange = (range: VisitPacketRange) => {
+    setVisitPacketRange(range);
+    setSaveLabel(`진료 요약 범위: ${visitPacketRangeLabels[range]}`);
+  };
+
+  const showCaregiverExportPreview = () => {
+    showExportPreview(buildCaregiverExportPreview());
+    setSaveLabel(formatCaregiverSharePreviewStatus(state.caregiverShareSettings));
+  };
+  const showVisitPacketExportPreview = () => {
+    showExportPreview(buildVisitPacketExportPreview());
+    setSaveLabel(formatVisitPacketPreviewStatus(visitPacketRange));
+  };
+  const showCsvExportPreview = () => {
+    showExportPreview(buildCsvExportPreview());
+    setSaveLabel(formatCsvPreviewStatus(state));
+  };
+
+  const isCaregiverExportPreviewStale = (preview: ExportPreviewState | null) =>
+    Boolean(
+      preview?.caregiverShareSettingsFingerprint &&
+        preview.caregiverShareSettingsFingerprint !==
+          buildCaregiverShareSettingsFingerprint(state.caregiverShareSettings),
+    );
+
+  const isCaregiverExportPreviewContentStale = (preview: ExportPreviewState | null) =>
+    isCaregiverExportContentFingerprintStale(
+      state,
+      preview?.caregiverShareContentFingerprint,
+      preview?.caregiverShareSettingsSnapshot?.sections ?? state.caregiverShareSettings.sections,
+    );
+
+  const isVisitPacketExportPreviewRangeStale = (preview: ExportPreviewState | null) =>
+    Boolean(
+      preview?.visitPacketRangeSnapshot &&
+        preview.visitPacketRangeSnapshot !== visitPacketRange,
+    );
+
+  const isVisitPacketExportPreviewContentStale = (preview: ExportPreviewState | null) =>
+    Boolean(
+      preview?.visitPacketExportFingerprint &&
+        preview.visitPacketExportFingerprint !==
+          buildVisitPacketExportFingerprint(state, state.foodQuery),
+    );
+
+  const isCsvExportPreviewStale = (preview: ExportPreviewState | null) =>
+    Boolean(
+      preview?.csvExportFingerprint &&
+        preview.csvExportFingerprint !== buildCsvExportFingerprint(state),
+    );
+
+  const guardFreshExportPreview = () => {
+    if (isCaregiverExportPreviewStale(exportPreview)) {
+      setSaveLabel("공유 설정이 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      return false;
+    }
+    if (isCaregiverExportPreviewContentStale(exportPreview)) {
+      setSaveLabel("보호자 공유본 기록이 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      return false;
+    }
+    if (isVisitPacketExportPreviewRangeStale(exportPreview)) {
+      setSaveLabel("진료 요약 범위가 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      return false;
+    }
+    if (isVisitPacketExportPreviewContentStale(exportPreview)) {
+      setSaveLabel("진료 요약 기록이 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      return false;
+    }
+    if (isCsvExportPreviewStale(exportPreview)) {
+      setSaveLabel("CSV 기록이 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      return false;
+    }
+    return true;
+  };
+
   const downloadExportPreview = () => {
     if (!exportPreview) return;
+    if (!guardFreshExportPreview()) return;
     downloadTextFile(exportPreview.content, exportPreview.filename, exportPreview.mimeType);
-    setSaveLabel(`${exportPreview.format} 내보냄`);
+    setSaveLabel(exportPreviewDownloadStatus || `${exportPreview.format} 내보냄`);
   };
 
   const copyExportPreview = () => {
     if (!exportPreview) return;
+    if (!guardFreshExportPreview()) return;
     navigator.clipboard
       .writeText(exportPreview.content)
-      .then(() => setSaveLabel(`${exportPreview.format} 미리보기 복사됨`))
+      .then(() =>
+        setTransientSaveLabel(exportPreviewCopyStatus || `${exportPreview.format} 미리보기 복사됨`),
+      )
       .catch(() => setSaveLabel("미리보기 복사 실패"));
   };
 
   const printExportPreview = () => {
     if (!exportPreview) return;
+    if (!guardFreshExportPreview()) return;
 
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
@@ -1569,7 +3117,7 @@ function App() {
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
-    setSaveLabel(`${exportPreview.format} 인쇄 준비`);
+    setSaveLabel(exportPreviewPrintStatus || `${exportPreview.format} 인쇄 준비`);
   };
 
   const exportBackup = () => {
@@ -1577,7 +3125,7 @@ function App() {
       app: "CareVault",
       schemaVersion: 1,
       exportedAt: new Date().toISOString(),
-      state,
+      state: sanitizeCareVaultBackupState(state),
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: "application/json",
@@ -1590,56 +3138,88 @@ function App() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    setSaveLabel(formatCareVaultBackupExportStatus(state));
   };
 
   const exportVisitPacket = () => {
     const markdown = buildVisitPacketExport();
     downloadTextFile(markdown, `carevault-visit-summary-${today}.md`, "text/markdown;charset=utf-8");
-    setSaveLabel(`진료 요약 내보냄 (${visitPacketRangeLabels[visitPacketRange]})`);
+    setSaveLabel(formatVisitPacketExportStatus(visitPacketRange));
   };
 
   const exportCsvCompanion = () => {
     const csv = buildCsvExport();
     downloadTextFile(csv, `carevault-records-${today}.csv`, "text/csv;charset=utf-8");
-    setSaveLabel("CSV 내보냄");
+    setSaveLabel(formatCsvExportStatus(state));
   };
 
   const exportCaregiverHtml = () => {
     const html = buildCaregiverExport();
     downloadTextFile(html, `carevault-caregiver-share-${today}.html`, "text/html;charset=utf-8");
-    setSaveLabel("보호자 공유본 내보냄");
+    setSaveLabel(formatCaregiverShareExportStatus(state.caregiverShareSettings));
   };
 
   const importBackup = (file: File | undefined) => {
     if (!file) return;
 
+    const showImportFailure = (detail: string) => {
+      setBackupImportFeedback({
+        detail,
+        title: "백업 가져오기 실패",
+        tone: "error",
+      });
+      setSaveLabel("가져오기 실패: 기존 기록 유지");
+    };
+
     const reader = new FileReader();
+    reader.onerror = () => {
+      showImportFailure("파일을 읽지 못했습니다. 기존 건강 기록은 그대로 유지되었습니다.");
+    };
     reader.onload = () => {
+      let parsed: unknown;
       try {
-        const parsed = JSON.parse(String(reader.result));
-        const importedState =
-          parsed && typeof parsed === "object" && "state" in parsed ? parsed.state : parsed;
-        if (!importedState?.profile || !Array.isArray(importedState?.vitals)) {
-          setSaveLabel("가져오기 실패");
-          return;
-        }
-        setState(normalizeAppState(importedState));
-        setSaveLabel("백업 가져옴");
+        parsed = JSON.parse(String(reader.result));
       } catch {
-        setSaveLabel("가져오기 실패");
+        showImportFailure(
+          "JSON 파일 형식을 확인하세요. 기존 건강 기록은 그대로 유지되었습니다.",
+        );
+        return;
       }
+
+      const imported = prepareCareVaultBackupImport(parsed);
+      if (imported.type === "error") {
+        showImportFailure(
+          `${describeCareVaultBackupImportFailure(imported.reason)} 기존 건강 기록은 그대로 유지되었습니다.`,
+        );
+        return;
+      }
+
+      setState(normalizeAppState(imported.state as Partial<AppState>));
+      setExportPreview(null);
+      setAttachmentPreview(null);
+      setBackupImportFeedback({
+        detail: formatCareVaultBackupImportSuccessDetail(imported.state),
+        title: "백업 가져오기 완료",
+        tone: "success",
+      });
+      setActionSaveLabel(formatCareVaultBackupImportStatus(imported.state));
     };
     reader.readAsText(file);
   };
 
-  const updateCaregiverShareSettings = (updates: Partial<CaregiverShareSettings>) => {
+  const updateCaregiverShareSettings = (
+    updates: Partial<CaregiverShareSettings>,
+    actionLabel?: string,
+  ) => {
     setState((current) => ({
       ...current,
       caregiverShareSettings: normalizeCaregiverShareSettings({
         ...current.caregiverShareSettings,
+        presetId: "",
         ...updates,
       }),
     }));
+    if (actionLabel) setActionSaveLabel(actionLabel);
   };
 
   const updateCaregiverShareSection = (id: CaregiverExportSectionId, checked: boolean) => {
@@ -1649,6 +3229,7 @@ function App() {
         ...current,
         caregiverShareSettings: {
           ...currentSettings,
+          presetId: "",
           sections: {
             ...currentSettings.sections,
             [id]: checked,
@@ -1656,12 +3237,129 @@ function App() {
         },
       };
     });
+    setActionSaveLabel(
+      `공유 섹션 ${checked ? "포함" : "제외"}: ${getCaregiverShareSectionLabel(id)}`,
+    );
+  };
+
+  const resetCaregiverShareSettings = () => {
+    setState((current) => ({
+      ...current,
+      caregiverShareSettings: createDefaultCaregiverShareSettings(),
+    }));
+    setActionSaveLabel("보호자 공유 설정 초기화");
+  };
+
+  const applyCaregiverSharePreset = (presetId: string) => {
+    const preset = getCaregiverShareSettingsPreset(presetId);
+    if (!preset) return;
+
+    setState((current) => ({
+      ...current,
+      caregiverShareSettings: normalizeCaregiverShareSettings({
+        ...preset.settings,
+        presetId: preset.id,
+      }),
+    }));
+    setActionSaveLabel(`보호자 공유 프리셋 적용: ${preset.label}`);
   };
 
   const showRenderedExportPreview = exportPreview ? isHtmlExportPreview(exportPreview) : false;
+  const exportPreviewHasStaleCaregiverSettings = isCaregiverExportPreviewStale(exportPreview);
+  const exportPreviewHasStaleCaregiverContent =
+    !exportPreviewHasStaleCaregiverSettings &&
+    isCaregiverExportPreviewContentStale(exportPreview);
+  const exportPreviewHasStaleVisitPacketRange =
+    isVisitPacketExportPreviewRangeStale(exportPreview);
+  const exportPreviewHasStaleVisitPacketContent =
+    isVisitPacketExportPreviewContentStale(exportPreview);
+  const exportPreviewHasStaleCsvState = isCsvExportPreviewStale(exportPreview);
+  const exportPreviewHasStaleState =
+    exportPreviewHasStaleCaregiverSettings ||
+    exportPreviewHasStaleCaregiverContent ||
+    exportPreviewHasStaleVisitPacketRange ||
+    exportPreviewHasStaleVisitPacketContent ||
+    exportPreviewHasStaleCsvState;
+  const exportPreviewDisabledReason = exportPreviewHasStaleCaregiverSettings
+    ? "공유 설정이 바뀌어 새 미리보기가 필요합니다."
+    : exportPreviewHasStaleCaregiverContent
+      ? "보호자 공유본 기록이 바뀌어 새 미리보기가 필요합니다."
+      : exportPreviewHasStaleVisitPacketRange
+        ? "진료 요약 범위가 바뀌어 새 미리보기가 필요합니다."
+        : exportPreviewHasStaleVisitPacketContent
+          ? "진료 요약 기록이 바뀌어 새 미리보기가 필요합니다."
+          : exportPreviewHasStaleCsvState
+            ? "CSV 기록이 바뀌어 새 미리보기가 필요합니다."
+            : undefined;
   const activeCaregiverSectionCount = Object.values(
     state.caregiverShareSettings.sections,
   ).filter(Boolean).length;
+  const caregiverShareSectionSummary = buildCaregiverShareSectionSummary(
+    state.caregiverShareSettings,
+  );
+  const caregiverShareSettingsPanelSummary = buildCaregiverShareSettingsPanelSummary(
+    state.caregiverShareSettings,
+  );
+  const selectedCaregiverSharePresetLabel =
+    getCaregiverShareSettingsPreset(state.caregiverShareSettings.presetId)?.label ??
+    "프리셋 미선택";
+  const caregiverSharePresetSelectDescription = `보호자 공유 설정 프리셋 · 현재 ${selectedCaregiverSharePresetLabel}`;
+  const caregiverShareExportDescription = formatCaregiverShareExportDescription(
+    state.caregiverShareSettings,
+  );
+  const caregiverSharePreviewDescription = formatCaregiverSharePreviewDescription(
+    state.caregiverShareSettings,
+  );
+  const backupExportDescription = formatCareVaultBackupExportDescription(state);
+  const backupImportDescription = formatCareVaultBackupImportDescription();
+  const visitPacketExportDescription = formatVisitPacketExportDescription(visitPacketRange);
+  const visitPacketPreviewDescription = formatVisitPacketPreviewDescription(visitPacketRange);
+  const csvExportDescription = formatCsvExportDescription(state);
+  const csvPreviewDescription = formatCsvPreviewDescription(state);
+  const caregiverSettingsFreshPreviewDescription =
+    `${caregiverSharePreviewDescription} 새로 생성 · 변경된 공유 설정 적용`;
+  const caregiverContentFreshPreviewDescription =
+    `${caregiverSharePreviewDescription} 새로 생성 · 변경된 보호자 공유 기록 적용`;
+  const visitPacketRangeFreshPreviewDescription =
+    `${visitPacketPreviewDescription} 새로 생성 · 변경된 범위 적용`;
+  const visitPacketContentFreshPreviewDescription =
+    `${visitPacketPreviewDescription} 새로 생성 · 변경된 기록 적용`;
+  const csvFreshPreviewDescription = `${csvPreviewDescription} 새로 생성 · 변경된 기록 적용`;
+  const caregiverPreviewSettingDifferences =
+    exportPreviewHasStaleCaregiverSettings && exportPreview?.caregiverShareSettingsSnapshot
+      ? buildCaregiverShareSettingsDifferences(
+          exportPreview.caregiverShareSettingsSnapshot,
+          state.caregiverShareSettings,
+        )
+      : [];
+  const exportPreviewSummary = exportPreview
+    ? buildExportPreviewSummary(exportPreview.content)
+    : null;
+  const exportPreviewCopyDescription =
+    exportPreview && exportPreviewSummary
+      ? formatExportPreviewCopyDescription(exportPreview.format, exportPreviewSummary)
+      : "";
+  const exportPreviewCopyStatus =
+    exportPreview && exportPreviewSummary
+      ? formatExportPreviewCopyStatus(exportPreview.format, exportPreviewSummary)
+      : "";
+  const exportPreviewPrintDescription =
+    exportPreview && exportPreviewSummary
+      ? formatExportPreviewPrintDescription(exportPreview.format, exportPreviewSummary)
+      : "";
+  const exportPreviewPrintStatus =
+    exportPreview && exportPreviewSummary
+      ? formatExportPreviewPrintStatus(exportPreview.format, exportPreviewSummary)
+      : "";
+  const exportPreviewDownloadDescription =
+    exportPreview && exportPreviewSummary
+      ? formatExportPreviewDownloadDescription(exportPreview.format, exportPreviewSummary)
+      : "";
+  const exportPreviewDownloadStatus =
+    exportPreview && exportPreviewSummary
+      ? formatExportPreviewDownloadStatus(exportPreview.format, exportPreviewSummary)
+      : "";
+  const hasCustomCaregiverSettings = hasCustomCaregiverShareSettings(state.caregiverShareSettings);
 
   return (
     <main className="app-shell">
@@ -1674,27 +3372,63 @@ function App() {
           </div>
         </div>
         <nav className="nav-stack" aria-label="앱 섹션">
-          <a href="#dashboard">
+          <a
+            href="#dashboard"
+            aria-current={activeSectionId === "dashboard" ? "page" : undefined}
+            aria-label="대시보드 섹션으로 이동"
+            title="대시보드 섹션으로 이동"
+            onClick={() => setActiveSectionId("dashboard")}
+          >
             <LineChartIcon aria-hidden="true" />
             대시보드
           </a>
-          <a href="#records">
+          <a
+            href="#records"
+            aria-current={activeSectionId === "records" ? "page" : undefined}
+            aria-label="입력 기록 섹션으로 이동"
+            title="입력 기록 섹션으로 이동"
+            onClick={() => setActiveSectionId("records")}
+          >
             <ClipboardList aria-hidden="true" />
             입력 기록
           </a>
-          <a href="#nutrition">
+          <a
+            href="#nutrition"
+            aria-current={activeSectionId === "nutrition" ? "page" : undefined}
+            aria-label="음식 판단 섹션으로 이동"
+            title="음식 판단 섹션으로 이동"
+            onClick={() => setActiveSectionId("nutrition")}
+          >
             <Apple aria-hidden="true" />
             음식 판단
           </a>
-          <a href="#care-plan">
+          <a
+            href="#care-plan"
+            aria-current={activeSectionId === "care-plan" ? "page" : undefined}
+            aria-label="증상·질문 섹션으로 이동"
+            title="증상·질문 섹션으로 이동"
+            onClick={() => setActiveSectionId("care-plan")}
+          >
             <Pill aria-hidden="true" />
             증상·질문
           </a>
-          <a href="#labs">
+          <a
+            href="#labs"
+            aria-current={activeSectionId === "labs" ? "page" : undefined}
+            aria-label="검사 수치 섹션으로 이동"
+            title="검사 수치 섹션으로 이동"
+            onClick={() => setActiveSectionId("labs")}
+          >
             <ClipboardList aria-hidden="true" />
             검사 수치
           </a>
-          <a href="#documents">
+          <a
+            href="#documents"
+            aria-current={activeSectionId === "documents" ? "page" : undefined}
+            aria-label="서류 보관 섹션으로 이동"
+            title="서류 보관 섹션으로 이동"
+            onClick={() => setActiveSectionId("documents")}
+          >
             <FileText aria-hidden="true" />
             서류 보관
           </a>
@@ -1720,18 +3454,29 @@ function App() {
             <h1>{state.profile.name}</h1>
           </div>
           <div className="top-actions">
-            <span>{state.profile.cancerCareMode ? "암환자 관리 모드" : "일반 관리 모드"}</span>
-            <span>{saveLabel}</span>
-            <button type="button" className="secondary-button" onClick={exportBackup}>
+            <span className="mode-chip">
+              {state.profile.cancerCareMode ? "암환자 관리 모드" : "일반 관리 모드"}
+            </span>
+            <span aria-live="polite" className="save-status-chip" role="status">
+              {saveLabel}
+            </span>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={exportBackup}
+              aria-label={backupExportDescription}
+              title={backupExportDescription}
+            >
               <Download aria-hidden="true" />
-              내보내기
+              백업 내보내기
             </button>
             <select
               className="summary-range-select"
               aria-label="진료 요약 범위"
+              title="진료 요약 범위"
               value={visitPacketRange}
               onChange={(event) =>
-                setVisitPacketRange(event.currentTarget.value as VisitPacketRange)
+                updateVisitPacketRange(event.currentTarget.value as VisitPacketRange)
               }
             >
               <option value="7d">요약 7일</option>
@@ -1739,74 +3484,65 @@ function App() {
               <option value="90d">요약 90일</option>
               <option value="all">요약 전체</option>
             </select>
-            <button type="button" className="secondary-button" onClick={exportVisitPacket}>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={exportVisitPacket}
+              aria-label={visitPacketExportDescription}
+              title={visitPacketExportDescription}
+            >
               <FileText aria-hidden="true" />
-              진료 요약
+              요약 내보내기
             </button>
             <button
               type="button"
               className="secondary-button"
-              onClick={() =>
-                showExportPreview({
-                  content: buildVisitPacketExport(),
-                  filename: `carevault-visit-summary-${today}.md`,
-                  format: "진료 요약",
-                  mimeType: "text/markdown;charset=utf-8",
-                  title: `진료 요약 미리보기 (${visitPacketRangeLabels[visitPacketRange]})`,
-                })
-              }
+              onClick={showVisitPacketExportPreview}
+              aria-label={visitPacketPreviewDescription}
+              title={visitPacketPreviewDescription}
             >
               <Eye aria-hidden="true" />
               요약 미리보기
             </button>
-            <button type="button" className="secondary-button" onClick={exportCsvCompanion}>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={exportCsvCompanion}
+              aria-label={csvExportDescription}
+              title={csvExportDescription}
+            >
               <Download aria-hidden="true" />
-              CSV
+              CSV 내보내기
             </button>
             <button
               type="button"
               className="secondary-button"
-              onClick={() =>
-                showExportPreview({
-                  content: buildCsvExport(),
-                  filename: `carevault-records-${today}.csv`,
-                  format: "CSV",
-                  mimeType: "text/csv;charset=utf-8",
-                  title: "CSV 미리보기",
-                })
-              }
+              onClick={showCsvExportPreview}
+              aria-label={csvPreviewDescription}
+              title={csvPreviewDescription}
             >
               <Eye aria-hidden="true" />
               CSV 미리보기
-            </button>
-            <button type="button" className="secondary-button" onClick={exportCaregiverHtml}>
-              <FileText aria-hidden="true" />
-              공유본
-            </button>
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={() =>
-                showExportPreview({
-                  content: buildCaregiverExport(),
-                  filename: `carevault-caregiver-share-${today}.html`,
-                  format: "보호자 공유본",
-                  mimeType: "text/html;charset=utf-8",
-                  title: "보호자 공유본 미리보기",
-                })
-              }
-            >
-              <Eye aria-hidden="true" />
-              공유본 미리보기
             </button>
             <label className="caregiver-profile-redaction">
               <input
                 type="checkbox"
                 checked={state.caregiverShareSettings.redactProfile}
+                aria-label={getCaregiverShareProfileRedactionToggleLabel(
+                  state.caregiverShareSettings.redactProfile,
+                )}
+                title={getCaregiverShareProfileRedactionToggleLabel(
+                  state.caregiverShareSettings.redactProfile,
+                )}
                 onChange={(event) =>
-                  updateCaregiverShareSettings({
-                    redactProfile: event.currentTarget.checked,
-                  })
+                  updateCaregiverShareSettings(
+                    {
+                      redactProfile: event.currentTarget.checked,
+                    },
+                    event.currentTarget.checked
+                      ? "보호자 공유 프로필 가림"
+                      : "보호자 공유 프로필 표시",
+                  )
                 }
               />
               프로필 가리기
@@ -1814,12 +3550,16 @@ function App() {
             <textarea
               className="caregiver-cover-memo"
               aria-label="보호자 공유본 전달 메모"
+              title="보호자 공유본 전달 메모"
               rows={2}
               value={state.caregiverShareSettings.coverMemo}
               onChange={(event) =>
-                updateCaregiverShareSettings({
-                  coverMemo: event.currentTarget.value,
-                })
+                updateCaregiverShareSettings(
+                  {
+                    coverMemo: event.currentTarget.value,
+                  },
+                  "보호자 전달 메모 수정됨",
+                )
               }
               placeholder="보호자에게 전달할 메모"
             />
@@ -1829,23 +3569,79 @@ function App() {
                   key={preset.label}
                   type="button"
                   className="memo-preset-button"
-                  onClick={() => updateCaregiverShareSettings({ coverMemo: preset.text })}
+                  aria-label={`보호자 공유본 전달 메모 프리셋 적용: ${preset.label}`}
+                  title={`보호자 공유본 전달 메모 프리셋 적용: ${preset.label}`}
+                  onClick={() =>
+                    updateCaregiverShareSettings(
+                      { coverMemo: preset.text },
+                      `전달 메모 프리셋 적용: ${preset.label}`,
+                    )
+                  }
                 >
                   <MessageSquare aria-hidden="true" />
-                  {preset.label}
+                  {preset.label} 적용
                 </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="caregiver-reset-button"
+              onClick={resetCaregiverShareSettings}
+              disabled={!hasCustomCaregiverSettings}
+              aria-label="보호자 공유 설정 초기화"
+              title="보호자 공유 설정 초기화"
+            >
+              <RotateCcw aria-hidden="true" />
+              공유 설정 초기화
+            </button>
+            <select
+              className="caregiver-share-preset-select"
+              aria-label={caregiverSharePresetSelectDescription}
+              title={caregiverSharePresetSelectDescription}
+              value={state.caregiverShareSettings.presetId}
+              onChange={(event) => applyCaregiverSharePreset(event.currentTarget.value)}
+            >
+              <option value="">공유 프리셋</option>
+              {caregiverShareSettingPresets.map((preset) => (
+                <option key={preset.id} value={preset.id}>
+                  {preset.label}
+                </option>
+              ))}
+            </select>
+            <div
+              className="caregiver-settings-summary"
+              role="status"
+              aria-label={caregiverShareSettingsPanelSummary.ariaLabel}
+            >
+              {caregiverShareSettingsPanelSummary.items.map((item) => (
+                <span
+                  className={`caregiver-settings-summary-chip summary-${item.id}`}
+                  key={item.id}
+                  title={item.title}
+                >
+                  <b>{item.label}</b>
+                  <strong>{item.value}</strong>
+                </span>
               ))}
             </div>
             <fieldset className="caregiver-section-options" aria-label="보호자 공유본 포함 섹션">
               <legend>공유본 포함</legend>
-              {caregiverExportSectionOptions.map((option) => {
+              {caregiverShareSectionOptions.map((option) => {
                 const checked = state.caregiverShareSettings.sections[option.id];
+                const isOnlyIncludedSection = checked && activeCaregiverSectionCount === 1;
+                const toggleLabel = getCaregiverShareSectionToggleLabel(
+                  option.label,
+                  checked,
+                  isOnlyIncludedSection,
+                );
                 return (
                   <label key={option.id}>
                     <input
                       type="checkbox"
                       checked={checked}
-                      disabled={checked && activeCaregiverSectionCount === 1}
+                      disabled={isOnlyIncludedSection}
+                      aria-label={toggleLabel}
+                      title={toggleLabel}
                       onChange={() => updateCaregiverShareSection(option.id, !checked)}
                     />
                     {option.label}
@@ -1853,70 +3649,259 @@ function App() {
                 );
               })}
             </fieldset>
+            <div className="caregiver-section-summary" role="status" aria-label="보호자 공유본 포함 요약">
+              <strong>공유 섹션</strong>
+              <span>{caregiverShareSectionSummary.includedText}</span>
+              <small>제외 {caregiverShareSectionSummary.excludedText}</small>
+            </div>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={exportCaregiverHtml}
+              aria-label={caregiverShareExportDescription}
+              title={caregiverShareExportDescription}
+            >
+              <FileText aria-hidden="true" />
+              공유본 내보내기
+            </button>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={showCaregiverExportPreview}
+              aria-label={caregiverSharePreviewDescription}
+              title={caregiverSharePreviewDescription}
+            >
+              <Eye aria-hidden="true" />
+              공유본 미리보기
+            </button>
             <button
               type="button"
               className="secondary-button"
               onClick={() => importInputRef.current?.click()}
+              aria-label={backupImportDescription}
+              title={backupImportDescription}
             >
               <Upload aria-hidden="true" />
-              가져오기
+              백업 가져오기
             </button>
             <input
               ref={importInputRef}
               className="visually-hidden"
               type="file"
+              tabIndex={-1}
               accept="application/json"
-              onChange={(event) => importBackup(event.currentTarget.files?.[0])}
+              aria-label={formControlDescriptions.backupImportFile}
+              title={formControlDescriptions.backupImportFile}
+              onChange={(event) => {
+                importBackup(event.currentTarget.files?.[0]);
+                event.currentTarget.value = "";
+              }}
             />
-            <button type="button" onClick={saveNow}>
+            <button
+              type="button"
+              onClick={saveNow}
+              aria-label="현재 CareVault 기록 수동 저장"
+              title="현재 CareVault 기록 수동 저장"
+            >
               <Save aria-hidden="true" />
-              저장
+              수동 저장
             </button>
           </div>
         </header>
+        {backupImportFeedback ? (
+          <section
+            className={`backup-import-feedback tone-${backupImportFeedback.tone}`}
+            role={backupImportFeedback.tone === "error" ? "alert" : "status"}
+            aria-label={backupImportFeedback.title}
+          >
+            {backupImportFeedback.tone === "error" ? (
+              <AlertTriangle aria-hidden="true" />
+            ) : (
+              <ShieldCheck aria-hidden="true" />
+            )}
+            <div>
+              <strong>{backupImportFeedback.title}</strong>
+              <span>{backupImportFeedback.detail}</span>
+            </div>
+          </section>
+        ) : null}
 
         <section id="dashboard" className="metrics-grid" aria-label="핵심 지표">
           <article className="metric-card">
             <UserRound aria-hidden="true" />
             <span>프로필</span>
             <strong>
-              {state.profile.age}세 · {sexLabel[state.profile.sex]}
+              {profileAgeDisplay} · {sexLabel[state.profile.sex]}
             </strong>
             <small>
-              {state.profile.heightCm}cm / {state.profile.weightKg}kg
+              {profileHeightDisplay} / {profileWeightDisplay}
+              {profileWaistDisplay ? ` · 허리 ${profileWaistDisplay}` : ""}
             </small>
+            <div
+              className="metric-profile-standards"
+              aria-label={`프로필 성별 적용 기준 ${sexLabel[state.profile.sex]}`}
+            >
+              <span className="metric-profile-standard-heading">현재 성별 기준</span>
+              {profileMetricSexStandardChips.map((item) => (
+                <span
+                  key={item.id}
+                  className="metric-profile-standard-chip"
+                  aria-label={`${item.label}: ${item.detail}. 근거: ${item.sourceLabel}`}
+                  title={`${item.label}: ${item.detail} · 근거: ${item.sourceLabel}`}
+                >
+                  <b>{item.label}</b>
+                  <span className="metric-profile-standard-separator" aria-hidden="true">
+                    ·
+                  </span>
+                  <span>{item.detail}</span>
+                  <ShieldCheck
+                    className="metric-profile-standard-source-icon"
+                    aria-hidden="true"
+                  />
+                </span>
+              ))}
+              <button
+                type="button"
+                className="secondary-inline-button metric-profile-copy-button"
+                onClick={copyProfileMetricSexStandards}
+                aria-label={profileMetricSexStandardCopyDescription}
+                title={profileMetricSexStandardCopyDescription}
+              >
+                <Copy aria-hidden="true" />
+                성별 기준 복사
+              </button>
+            </div>
+            <div
+              className="metric-dashboard-standard-actions"
+              aria-label={`대시보드 건강 기준 ${dashboardMetricStandardCompactSummary}`}
+            >
+              <span className="metric-profile-standard-heading">대시보드 기준</span>
+              <span className="metric-dashboard-standard-summary">
+                {dashboardMetricStandardCompactSummary}
+              </span>
+              <button
+                type="button"
+                className="secondary-inline-button metric-profile-copy-button metric-dashboard-standard-copy-button"
+                onClick={copyDashboardMetricStandards}
+                aria-label={dashboardMetricStandardCopyDescription}
+                title={dashboardMetricStandardCopyDescription}
+              >
+                <Copy aria-hidden="true" />
+                대시보드 기준 복사
+              </button>
+            </div>
           </article>
           <article className={`metric-card status-${bmi.level}`}>
             <Activity aria-hidden="true" />
             <span>BMI</span>
             <strong>{bmi.value ? bmi.value.toFixed(1) : "-"}</strong>
             <small>{bmi.label}</small>
+            {renderMetricStandardEvidence(bmiMetricStandardEvidence)}
+          </article>
+          <article className={`metric-card status-${waistStatus.level}`}>
+            <Activity aria-hidden="true" />
+            <span>허리둘레</span>
+            <strong>{waistStatus.value ? `${waistStatus.value} cm` : "-"}</strong>
+            <small>{waistStatus.label}</small>
+            {renderMetricStandardEvidence(waistMetricStandardEvidence)}
           </article>
           <article className={`metric-card status-${bpStatus?.level ?? "neutral"}`}>
             <HeartPulse aria-hidden="true" />
             <span>최근 혈압</span>
-            <strong>
-              {latestBp ? `${latestBp.systolic}/${latestBp.diastolic}` : "-"}
-            </strong>
-            <small>{bpStatus?.label ?? "입력 대기"}</small>
+            <strong>{latestBp ? formatVitalMetricValue(latestBp) : "-"}</strong>
+            {latestBp ? (
+              <small
+                className={`metric-record-label metric-record-label-${bpStatus?.level ?? "neutral"}`}
+              >
+                {formatVitalMetricRecordLabel(latestBp)}
+              </small>
+            ) : (
+              <small>입력 대기</small>
+            )}
+            {renderMetricStandardEvidence(bloodPressureMetricStandardEvidence)}
           </article>
           <article className={`metric-card status-${glucoseStatus?.level ?? "neutral"}`}>
             <ClipboardList aria-hidden="true" />
             <span>최근 혈당</span>
-            <strong>{latestGlucose ? `${latestGlucose.glucoseMgDl} mg/dL` : "-"}</strong>
-            <small>{glucoseStatus?.label ?? "입력 대기"}</small>
+            <strong>{latestGlucose ? formatVitalMetricValue(latestGlucose) : "-"}</strong>
+            {latestGlucose ? (
+              <small
+                className={`metric-record-label metric-record-label-${glucoseStatus?.level ?? "neutral"}`}
+              >
+                {formatVitalMetricRecordLabel(latestGlucose, {
+                  diabetes: state.profile.diabetes,
+                })}
+              </small>
+            ) : (
+              <small>입력 대기</small>
+            )}
+            {renderMetricStandardEvidence(glucoseMetricStandardEvidence)}
+          </article>
+          <article className={`metric-card status-${temperatureStatus?.level ?? "neutral"}`}>
+            <Thermometer aria-hidden="true" />
+            <span>최근 체온</span>
+            <strong>{latestTemperature ? formatVitalMetricValue(latestTemperature) : "-"}</strong>
+            {latestTemperature ? (
+              <small
+                className={`metric-record-label metric-record-label-${temperatureStatus?.level ?? "neutral"}`}
+              >
+                {formatVitalMetricRecordLabel(latestTemperature)}
+              </small>
+            ) : (
+              <small>입력 대기</small>
+            )}
+            {renderMetricStandardEvidence(temperatureMetricStandardEvidence)}
           </article>
           <article className={`metric-card status-${latestSymptom ? symptomLevel : "neutral"}`}>
             <Pill aria-hidden="true" />
             <span>최근 증상</span>
             <strong>{latestSymptom ? `${latestSymptom.severity}/10` : "-"}</strong>
             <small>{latestSymptom?.symptom ?? "입력 대기"}</small>
+            {latestSymptom ? (
+              <>
+                <small className="metric-record-label">{latestSymptomRecordLabel}</small>
+                {latestSymptomHasSourceEvidence && latestSymptomDisplay ? (
+                  <small
+                    className="metric-source-evidence"
+                    aria-label={`최근 증상 근거 ${latestSymptomDisplay.sourceLabel}`}
+                  >
+                    <ShieldCheck aria-hidden="true" />
+                    {latestSymptomDisplay.sourceUrl ? (
+                      <a
+                        href={latestSymptomDisplay.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        title={`최근 증상 근거: ${latestSymptomDisplay.sourceLabel}`}
+                      >
+                        {latestSymptomDisplay.compactSourceEvidence}
+                      </a>
+                    ) : (
+                      <span>{latestSymptomDisplay.compactSourceEvidence}</span>
+                    )}
+                  </small>
+                ) : null}
+              </>
+            ) : null}
           </article>
           <article className={`metric-card status-${openQuestionCount ? "watch" : "ok"}`}>
             <MessageSquare aria-hidden="true" />
             <span>진료 질문</span>
             <strong>{openQuestionCount}개</strong>
-            <small>{openQuestionCount ? "다음 진료 전 확인" : "열린 질문 없음"}</small>
+            <small>{questionMetricSummary.statusText}</small>
+            {openQuestionCount ? (
+              <div
+                className="metric-question-summary"
+                aria-label={`진료 질문 요약 ${questionMetricSummary.priorityText} · ${questionMetricSummary.sourceText}`}
+              >
+                <span className="metric-question-chip">{questionMetricSummary.priorityText}</span>
+                {questionMetricSummary.sourceBackedOpenCount ? (
+                  <span className="metric-question-source-chip">
+                    <ShieldCheck aria-hidden="true" />
+                    {questionMetricSummary.sourceText}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
           </article>
           <article className={`metric-card status-${abnormalLabCount ? "watch" : "ok"}`}>
             <ClipboardList aria-hidden="true" />
@@ -1935,9 +3920,37 @@ function App() {
         <section className="action-queue-panel" aria-label="진료 준비 큐">
           <div className="section-title">
             <h2>진료 준비 큐</h2>
-            <span>
-              {careActions.length}개 확인 항목 · 예약 {appointmentReminders.length}개
-            </span>
+            <div className="section-title-copy">
+              <span>
+                {careActions.length}개 확인 항목 · 예약 {appointmentReminders.length}개
+              </span>
+              <button
+                className="secondary-inline-button queue-copy-button"
+                type="button"
+                onClick={copyCareActionQueue}
+                aria-label={careActionQueueCopyDescription}
+                title={careActionQueueCopyDescription}
+              >
+                <Copy aria-hidden="true" />
+                진료 큐 복사
+              </button>
+            </div>
+          </div>
+          <div className="action-queue-summary" aria-label={careActionQueuePanelSummary.ariaLabel}>
+            {careActionQueuePanelSummary.items.map((item) => (
+              <span className={`action-queue-summary-chip summary-${item.id}`} key={item.id}>
+                <b>{item.label}</b>
+                <strong>{item.value}</strong>
+              </span>
+            ))}
+          </div>
+          <div className="action-queue-breakdown" aria-label="진료 준비 큐 항목 분류">
+            {careActionQueueSourceOrder.map((source) => (
+              <span key={source}>
+                <b>{careActionQueueSourceLabel[source]}</b>
+                <strong>{careActionSourceCounts[source]}</strong>
+              </span>
+            ))}
           </div>
           {appointmentReminders.length ? (
             <div className="appointment-reminder-list" aria-label="다음 예약 알림">
@@ -1959,33 +3972,396 @@ function App() {
           ) : null}
           {careActions.length ? (
             <div className="action-queue-list">
-              {careActions.map((action) => (
-                <article className={`action-row action-${action.tone}`} key={action.id}>
-                  <time>{action.date}</time>
-                  <div className="action-source">
-                    {action.source === "question" ? <MessageSquare aria-hidden="true" /> : null}
-                    {action.source === "lab" ? <ClipboardList aria-hidden="true" /> : null}
-                    {action.source === "document" ? <FileText aria-hidden="true" /> : null}
-                    {action.source === "visit" ? <Hospital aria-hidden="true" /> : null}
-                    <span>{careActionSourceLabel[action.source]}</span>
-                  </div>
-                  <div>
-                    <strong>{action.title}</strong>
-                    <p>{action.detail}</p>
-                  </div>
-                  <mark>{action.label}</mark>
-                </article>
-              ))}
+              {careActions.map((action) => {
+                const visibleDetail = buildCareActionVisibleDetailParts(action.detail);
+
+                return (
+                  <article className={`action-row action-${action.tone}`} key={action.id}>
+                    <time>{action.date}</time>
+                    <div className="action-source">
+                      {action.source === "symptom" ? <AlertTriangle aria-hidden="true" /> : null}
+                      {action.source === "cervical" ? <ShieldCheck aria-hidden="true" /> : null}
+                      {action.source === "question" ? <MessageSquare aria-hidden="true" /> : null}
+                      {action.source === "vital" ? <Activity aria-hidden="true" /> : null}
+                      {action.source === "lab" ? <ClipboardList aria-hidden="true" /> : null}
+                      {action.source === "document" ? <FileText aria-hidden="true" /> : null}
+                      {action.source === "visit" ? <Hospital aria-hidden="true" /> : null}
+                      <span>{careActionQueueSourceLabel[action.source]}</span>
+                    </div>
+                    <div className="action-detail">
+                      <strong>{action.title}</strong>
+                      <p>{visibleDetail.body}</p>
+                      {visibleDetail.evidenceLinks.length ? (
+                        <small
+                          className="action-queue-evidence"
+                          aria-label={`${action.title} 근거 ${visibleDetail.evidenceLinks
+                            .map((source) => source.sourceLabel)
+                            .join(", ")}`}
+                        >
+                          <ShieldCheck aria-hidden="true" />
+                          {visibleDetail.evidenceLinks.map((source) => (
+                            <a
+                              href={source.sourceUrl}
+                              key={`${source.sourceLabel}-${source.sourceUrl}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={`${action.title} 근거 ${source.sourceLabel} 열기`}
+                              title={`${action.title} 근거: ${source.sourceLabel}`}
+                            >
+                              근거: {source.sourceLabel}
+                            </a>
+                          ))}
+                        </small>
+                      ) : null}
+                    </div>
+                    <mark>{action.label}</mark>
+                  </article>
+                );
+              })}
             </div>
           ) : (
-            <p className="action-empty">
-              현재 열려 있는 질문, 기준 밖 검사, 서류 조치, 예정 방문이 없습니다.
-            </p>
+            <div className="action-empty" role="status" aria-label="진료 준비 큐 비어 있음">
+              <p>현재 자궁경부암 검진 확인, 증상 경고, 열려 있는 질문, 기준 밖 활력·검사, 서류 조치, 예정 방문이 없습니다.</p>
+              <div className="action-empty-links" aria-label="진료 준비 항목 추가 바로가기">
+                {careActionQueueEmptyRecoveryLinks.map((link) => (
+                  <a href={link.href} key={link.id}>
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
           )}
         </section>
 
+        {state.profile.cancerCareMode ? (
+          <section className="cervical-care-panel" aria-label="자궁경부암 케어 노트">
+            <div className="section-title">
+              <div>
+                <p className="eyebrow">국가암정보센터·KDCA 기반</p>
+                <h2>자궁경부암 케어 노트</h2>
+              </div>
+              <div className="section-title-copy">
+                <span>{cervicalCancerCareClipboardCompactSummary}</span>
+                <button
+                  className="secondary-inline-button cervical-copy-button"
+                  type="button"
+                  onClick={copyCervicalCancerCareNote}
+                  aria-label={cervicalCancerCareClipboardDescription}
+                  title={cervicalCancerCareClipboardDescription}
+                >
+                  <Copy aria-hidden="true" />
+                  노트 복사
+                </button>
+              </div>
+            </div>
+            <div
+              className="cervical-care-summary"
+              aria-label={`자궁경부암 케어 노트 요약 ${cervicalCancerCarePanelSummary.ariaLabel}`}
+            >
+              {cervicalCancerCarePanelSummary.items.map((item) => (
+                <span className={`cervical-care-summary-chip summary-${item.id}`} key={item.id}>
+                  <strong>{item.label}</strong>
+                  {item.value}
+                </span>
+              ))}
+            </div>
+            <p className="cervical-care-note">
+              진단·처방·치료 지시가 아니라 진료 전 기록과 질문 준비를 돕는 공식 출처 기반 메모입니다.
+            </p>
+            <div
+              className="cervical-alert-record-guide"
+              aria-label="자궁경부암 경고 신호 기록 항목"
+            >
+              <div className="cervical-alert-record-heading">
+                <strong>경고 신호 기록 항목</strong>
+                <span>언제 · 무엇이 · 얼마나 · 같이</span>
+              </div>
+              {cervicalCancerCareAlertRecordFields.map((field) => (
+                <article key={field.label}>
+                  <strong>{field.label}</strong>
+                  <p>{field.detail}</p>
+                  <div aria-label={`${field.label} 기록 항목 공식 출처`}>
+                    {field.sourceIds.map((sourceId) => {
+                      const source = getCervicalCancerCareSource(sourceId);
+                      const sourceLinkLabels = buildCervicalCancerCareSourceLinkLabels(
+                        sourceId,
+                        `${field.label} 기록 항목`,
+                      );
+                      return source ? (
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          key={sourceId}
+                          aria-label={sourceLinkLabels.ariaLabel}
+                          title={sourceLinkLabels.title}
+                        >
+                          {source.label}
+                          <ExternalLink aria-hidden="true" />
+                        </a>
+                      ) : null;
+                    })}
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div
+              className="cervical-priority-strip"
+              aria-label="자궁경부암 우선 확인 체크리스트"
+            >
+              <div className="cervical-priority-heading">
+                <strong>우선 확인 체크리스트</strong>
+                <span>기록 · 질문 · 회복 상담</span>
+              </div>
+              {cervicalCancerCarePriorityItems.map((item) => (
+                <article className="cervical-priority-card" key={item.label}>
+                  <strong>{item.label}</strong>
+                  <p>{item.detail}</p>
+                  <div className="cervical-priority-sources" aria-label={`${item.label} 공식 출처`}>
+                    {item.sourceIds.map((sourceId) => {
+                      const source = getCervicalCancerCareSource(sourceId);
+                      const sourceLinkLabels = buildCervicalCancerCareSourceLinkLabels(
+                        sourceId,
+                        `${item.label} 우선 체크리스트`,
+                      );
+                      return source ? (
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          key={sourceId}
+                          aria-label={sourceLinkLabels.ariaLabel}
+                          title={sourceLinkLabels.title}
+                        >
+                          {source.label}
+                          <ExternalLink aria-hidden="true" />
+                        </a>
+                      ) : null;
+                    })}
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="cervical-care-layout">
+              <div className="cervical-care-alerts">
+                <strong>진료팀에 확인할 신호</strong>
+                <div className="cervical-alert-grid">
+                  {cervicalCancerCareAlerts.map((item) => {
+                    const source = getCervicalCancerCareSource(item.sourceId);
+                    const sourceLinkLabels = buildCervicalCancerCareSourceLinkLabels(
+                      item.sourceId,
+                      item.title,
+                    );
+                    return (
+                      <article className="cervical-alert-card" key={item.title}>
+                        <AlertTriangle aria-hidden="true" />
+                        <div>
+                          <h3>{item.title}</h3>
+                          <p>{item.detail}</p>
+                          <small>{item.action}</small>
+                          <div className="cervical-alert-actions">
+                            <button
+                              className="secondary-inline-button"
+                              type="button"
+                              onClick={() => applyCervicalCancerCareAlert(item)}
+                              aria-label={`${item.title} 자궁경부암 증상 기록 초안 만들기`}
+                              title={`${item.title} 자궁경부암 증상 기록 초안 만들기`}
+                            >
+                              <ClipboardList aria-hidden="true" />
+                              기록 초안
+                            </button>
+                            {source ? (
+                              <a
+                                className="cervical-alert-source-link"
+                                href={source.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label={sourceLinkLabels.ariaLabel}
+                                title={sourceLinkLabels.title}
+                              >
+                                {sourceLinkLabels.visibleLabel}
+                                <ExternalLink aria-hidden="true" />
+                              </a>
+                            ) : null}
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+              <aside className="cervical-care-side">
+                <div className="cervical-screening-summary">
+                  <div className="cervical-screening-heading">
+                    <strong>검진 기준 빠른 확인</strong>
+                    <span>{cervicalCancerScreeningSummary.status}</span>
+                  </div>
+                  <p>{cervicalCancerScreeningSummary.detail}</p>
+                  <small>{cervicalCancerScreeningSummary.action}</small>
+                  <button
+                    type="button"
+                    className="secondary-inline-button cervical-screening-question-button"
+                    onClick={applyCervicalCancerScreeningQuestion}
+                    aria-label="현재 프로필 기준 자궁경부암 검진 질문 초안 만들기"
+                    title="현재 프로필 기준 자궁경부암 검진 질문 초안 만들기"
+                  >
+                    <MessageSquare aria-hidden="true" />
+                    질문 초안
+                  </button>
+                  <div
+                    className="cervical-screening-source-list"
+                    aria-label="검진 기준 공식 출처"
+                  >
+                    {cervicalCancerScreeningSummary.sourceIds.map((sourceId) => {
+                      const source = getCervicalCancerCareSource(sourceId);
+                      const sourceLinkLabels = buildCervicalCancerCareSourceLinkLabels(
+                        sourceId,
+                        "검진 기준 빠른 확인",
+                      );
+                      return source ? (
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          key={sourceId}
+                          aria-label={sourceLinkLabels.ariaLabel}
+                          title={sourceLinkLabels.title}
+                        >
+                          {source.label}
+                          <ExternalLink aria-hidden="true" />
+                        </a>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+                <details className="cervical-care-disclosure cervical-prompt-disclosure">
+                  <summary>
+                    <strong>다음 진료 질문 초안</strong>
+                    <span>{cervicalCancerCarePrompts.length}개 · 출처 포함</span>
+                  </summary>
+                  <div className="cervical-prompt-list">
+                    {cervicalCancerCarePrompts.map((prompt) => {
+                      const source = getCervicalCancerCareSource(prompt.sourceId);
+                      const sourceLinkLabels = buildCervicalCancerCareSourceLinkLabels(
+                        prompt.sourceId,
+                        `${prompt.topic} 질문 초안`,
+                      );
+                      return (
+                        <div className="cervical-prompt-row" key={prompt.topic}>
+                          <button
+                            type="button"
+                            className="secondary-inline-button"
+                            onClick={() => applyCervicalCancerCarePrompt(prompt)}
+                            aria-label={`${prompt.topic} 자궁경부암 질문 초안 만들기`}
+                            title={`${prompt.topic} 자궁경부암 질문 초안 만들기`}
+                          >
+                            <MessageSquare aria-hidden="true" />
+                            <span>
+                              <strong>{prompt.topic}</strong>
+                              <small>질문 초안 만들기</small>
+                            </span>
+                          </button>
+                          {source ? (
+                            <a
+                              className="cervical-prompt-source-link"
+                              href={source.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={sourceLinkLabels.ariaLabel}
+                              title={sourceLinkLabels.title}
+                            >
+                              {sourceLinkLabels.visibleLabel}
+                              <ExternalLink aria-hidden="true" />
+                            </a>
+                          ) : (
+                            <small>{formatCervicalCancerCareSourceLinkLabel(prompt.sourceId)}</small>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </details>
+                <div>
+                  <div className="cervical-list-heading">
+                    <strong>기록 체크</strong>
+                    <span>{cervicalCancerCareChecks.length}개 항목</span>
+                  </div>
+                  <ul className="cervical-check-list">
+                    {cervicalCancerCareChecks.map((item) => (
+                      <li key={item.label} aria-label={formatCervicalCareListItemAriaLabel(item)}>
+                        <span>{item.label}</span>
+                        <small>{item.detail}</small>
+                        {renderCervicalCareItemActions(item)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <details className="cervical-care-disclosure">
+                  <summary>
+                    <strong>회복 일정 메모</strong>
+                    <span>{cervicalCancerCareRecoveryGuides.length}개 항목</span>
+                  </summary>
+                  <ul className="cervical-check-list">
+                    {cervicalCancerCareRecoveryGuides.map((item) => (
+                      <li key={item.label} aria-label={formatCervicalCareListItemAriaLabel(item)}>
+                        <span>{item.label}</span>
+                        <small>{item.detail}</small>
+                        {renderCervicalCareItemActions(item)}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <details className="cervical-care-disclosure">
+                  <summary>
+                    <strong>검진·예방 메모</strong>
+                    <span>{cervicalCancerCarePreventionGuides.length}개 항목</span>
+                  </summary>
+                  <ul className="cervical-check-list">
+                    {cervicalCancerCarePreventionGuides.map((item) => (
+                      <li key={item.label} aria-label={formatCervicalCareListItemAriaLabel(item)}>
+                        <span>{item.label}</span>
+                        <small>{item.detail}</small>
+                        {renderCervicalCareItemActions(item)}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <div className="cervical-source-list">
+                  <div
+                    className="cervical-source-list-heading"
+                    aria-label={`자궁경부암 케어 노트 공식 출처 ${cervicalCancerCareClipboardSummary.sourceCount}개`}
+                  >
+                    <strong>출처</strong>
+                    {" "}
+                    <span>{cervicalCancerCareClipboardSummary.sourceCount}개</span>
+                  </div>
+                  {Object.entries(cervicalCancerCareSources).map(([sourceId, source]) => {
+                    const sourceLinkLabels = buildCervicalCancerCareSourceLinkLabels(
+                      sourceId,
+                      "자궁경부암 케어 노트",
+                    );
+                    return (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        key={source.url}
+                        aria-label={sourceLinkLabels.ariaLabel}
+                        title={sourceLinkLabels.title}
+                      >
+                        {source.label}
+                        <ExternalLink aria-hidden="true" />
+                      </a>
+                    );
+                  })}
+                </div>
+              </aside>
+            </div>
+          </section>
+        ) : null}
+
         <section className="content-grid">
-          <section className="panel profile-panel" aria-label="프로필 입력">
+          <section id="profile" className="panel profile-panel" aria-label="프로필 입력">
             <div className="section-title">
               <h2>기본 정보</h2>
               <span>위험도 해석의 기준값</span>
@@ -1995,14 +4371,19 @@ function App() {
                 이름/대상
                 <input
                   value={state.profile.name}
+                  aria-label={formControlDescriptions.profileName}
+                  title={formControlDescriptions.profileName}
                   onChange={(event) => saveProfile("name", event.currentTarget.value)}
                 />
               </label>
               <label>
                 나이
                 <input
+                  min="1"
                   type="number"
                   value={state.profile.age}
+                  aria-label={formControlDescriptions.profileAge}
+                  title={formControlDescriptions.profileAge}
                   onChange={(event) => saveProfile("age", event.currentTarget.value)}
                 />
               </label>
@@ -2010,6 +4391,8 @@ function App() {
                 성별
                 <select
                   value={state.profile.sex}
+                  aria-label={formControlDescriptions.profileSex}
+                  title={formControlDescriptions.profileSex}
                   onChange={(event) => saveProfile("sex", event.currentTarget.value as Sex)}
                 >
                   <option value="female">여성</option>
@@ -2020,25 +4403,231 @@ function App() {
               <label>
                 키(cm)
                 <input
+                  min="1"
                   type="number"
                   value={state.profile.heightCm}
+                  aria-label={formControlDescriptions.profileHeight}
+                  title={formControlDescriptions.profileHeight}
                   onChange={(event) => saveProfile("heightCm", event.currentTarget.value)}
                 />
               </label>
               <label>
                 몸무게(kg)
                 <input
+                  min="1"
                   type="number"
                   value={state.profile.weightKg}
+                  aria-label={formControlDescriptions.profileWeight}
+                  title={formControlDescriptions.profileWeight}
                   onChange={(event) => saveProfile("weightKg", event.currentTarget.value)}
                 />
               </label>
+              <label>
+                허리둘레(cm)
+                <input
+                  min="1"
+                  type="number"
+                  value={state.profile.waistCm}
+                  aria-label={formControlDescriptions.profileWaist}
+                  title={formControlDescriptions.profileWaist}
+                  onChange={(event) => saveProfile("waistCm", event.currentTarget.value)}
+                />
+                <small className="profile-field-helper">{profileWaistStandardNote}</small>
+              </label>
+            </div>
+            <div className="standards-note" aria-label="한국 성인 건강 기준">
+              <div className="standards-note-header">
+                <strong>한국 성인 기준</strong>
+                <button
+                  className="secondary-inline-button standards-copy-button"
+                  type="button"
+                  onClick={copyHealthStandards}
+                  aria-label={healthStandardsCopyDescription}
+                  title={healthStandardsCopyDescription}
+                >
+                  <Copy aria-hidden="true" />
+                  {healthStandardsCopyLabel}
+                </button>
+              </div>
+              <span>{koreanHealthStandardSummary.bmi}</span>
+              <span>{koreanHealthStandardSummary.bloodPressure}</span>
+              <span>{koreanHealthStandardSummary.glucose}</span>
+              <span>{koreanHealthStandardSummary.waist}</span>
+              <p className="standards-boundary-note">{koreanHealthStandardUseBoundary}</p>
+              <div className="standards-applicability-strip" aria-label="성별 기준 요약">
+                {koreanHealthStandardApplicabilitySummary.map((item) => (
+                  <span key={item.id}>
+                    <strong>{item.label}</strong>
+                    <small>{item.detail}</small>
+                  </span>
+                ))}
+              </div>
+              <div className="standards-profile-strip" aria-label="현재 프로필 성별 적용 기준">
+                <strong>현재 성별 적용</strong>
+                {profileSexStandardNotes.map((item) => (
+                  <span key={item.id}>
+                    <b>{item.label}</b>
+                    <small>{item.detail}</small>
+                  </span>
+                ))}
+              </div>
+              <div
+                className="standards-range-strip"
+                aria-label="신체계측 혈압 혈당 신기능 전해질 지질 간기능 단백 칼슘 인산 요산 혈액 체온 숫자 범위 요약"
+              >
+                <div className="standards-range-filter" aria-label="기준 범위 빠른 필터">
+                  <div>
+                    <strong>기준 빠른 보기</strong>
+                    <small>
+                      {selectedHealthStandardRangeFilter.label} ·{" "}
+                      {visibleHealthStandardRangeSections.length}/{healthStandardRangeSections.length}개 표시
+                    </small>
+                  </div>
+                  <div role="group" aria-label="기준 범위 카테고리 선택">
+                    {healthStandardRangeFilterOptions.map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        aria-pressed={standardRangeFilter === option.id}
+                        aria-label={`${option.label} 기준 보기: ${option.detail}`}
+                        title={`${option.label} 기준 보기: ${option.detail}`}
+                        onClick={() => setStandardRangeFilter(option.id)}
+                      >
+                        <span>{option.label}</span>
+                        <small>{option.detail}</small>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="standards-range-summary" aria-label="선택한 기준 빠른 보기 요약">
+                    {healthStandardRangeSummary.map((item) => (
+                      <span key={item.id}>
+                        <strong>{item.label}</strong>
+                        {" "}
+                        <small>{item.value}</small>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {visibleHealthStandardRangeSections.map((section) => {
+                  const sourceLinkLabels = buildHealthStandardSourceLinkLabels(
+                    section.sourceLabel,
+                    section.label,
+                  );
+                  return (
+                    <section key={section.id}>
+                      <div>
+                        <strong>{section.label}</strong>
+                        {section.sourceUrl.startsWith("https://") ? (
+                          <a
+                            href={section.sourceUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={sourceLinkLabels.ariaLabel}
+                            title={sourceLinkLabels.title}
+                          >
+                            {sourceLinkLabels.visibleLabel}
+                          </a>
+                        ) : (
+                          <small>{section.sourceLabel}</small>
+                        )}
+                      </div>
+                      <ul>
+                        {section.lines.map((line) => (
+                          <li
+                            key={line.id}
+                            className={line.tone === "risk" ? "standard-range-risk-row" : undefined}
+                          >
+                            <b>{line.label}</b>
+                            <span>{line.detail}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      {section.standardId === "infection-fever" ? (
+                        <div className="standard-range-actions">
+                          <button
+                            className="secondary-inline-button standard-range-action-button"
+                            type="button"
+                            onClick={applyInfectionFeverStandardDraft}
+                            aria-label="체온·감염 연락 기준 증상 기록 초안 만들기"
+                            title="체온·감염 연락 기준 증상 기록 초안 만들기"
+                          >
+                            <ClipboardList aria-hidden="true" />
+                            증상 기록 초안
+                          </button>
+                          <button
+                            className="secondary-inline-button standard-range-action-button"
+                            type="button"
+                            onClick={applyInfectionFeverStandardQuestion}
+                            aria-label="체온·감염 연락 기준 진료 질문 초안 만들기"
+                            title="체온·감염 연락 기준 진료 질문 초안 만들기"
+                          >
+                            <MessageSquare aria-hidden="true" />
+                            질문 초안
+                          </button>
+                        </div>
+                      ) : null}
+                    </section>
+                  );
+                })}
+              </div>
+              <details className="standards-coverage">
+                <summary>적용 범위</summary>
+                <ul>
+                  {koreanHealthStandardCoverage.map((item) => {
+                    const sourceLinkLabels = buildHealthStandardSourceLinkLabels(
+                      item.sourceLabel,
+                      item.label,
+                    );
+                    const sexBadge = buildHealthStandardSexApplicabilityBadge(item);
+                    return (
+                      <li key={item.id}>
+                        <mark>{healthStandardStatusLabel[item.status]}</mark>
+                        <span
+                          className={`standard-sex-badge standard-sex-badge-${sexBadge.tone}`}
+                        >
+                          {sexBadge.label}
+                        </span>
+                        <span className="standard-coverage-label">{item.label}</span>
+                        <small>
+                          {item.summary}
+                          {item.sexSpecific ? " 남녀 기준 분리." : " 남녀 공통 적용."}
+                        </small>
+                        <small>성별 적용: {item.sexApplicability}</small>
+                        <em>
+                          근거:{" "}
+                          {isExternalHealthStandardSource(item) ? (
+                            <a
+                              href={item.sourceUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={sourceLinkLabels.ariaLabel}
+                              title={sourceLinkLabels.title}
+                            >
+                              {sourceLinkLabels.visibleLabel}
+                            </a>
+                          ) : (
+                            formatHealthStandardSource(item)
+                          )}
+                        </em>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </details>
             </div>
             <div className="toggle-row">
               <label>
                 <input
                   type="checkbox"
                   checked={state.profile.cancerCareMode}
+                  aria-label={getProfileModeToggleLabel(
+                    "cancerCareMode",
+                    state.profile.cancerCareMode,
+                  )}
+                  title={getProfileModeToggleLabel(
+                    "cancerCareMode",
+                    state.profile.cancerCareMode,
+                  )}
                   onChange={(event) => saveProfile("cancerCareMode", event.currentTarget.checked)}
                 />
                 암환자 관리
@@ -2047,6 +4636,8 @@ function App() {
                 <input
                   type="checkbox"
                   checked={state.profile.diabetes}
+                  aria-label={getProfileModeToggleLabel("diabetes", state.profile.diabetes)}
+                  title={getProfileModeToggleLabel("diabetes", state.profile.diabetes)}
                   onChange={(event) => saveProfile("diabetes", event.currentTarget.checked)}
                 />
                 당뇨 추적
@@ -2055,6 +4646,8 @@ function App() {
                 <input
                   type="checkbox"
                   checked={state.profile.hypertension}
+                  aria-label={getProfileModeToggleLabel("hypertension", state.profile.hypertension)}
+                  title={getProfileModeToggleLabel("hypertension", state.profile.hypertension)}
                   onChange={(event) => saveProfile("hypertension", event.currentTarget.checked)}
                 />
                 혈압 추적
@@ -2069,25 +4662,134 @@ function App() {
             </div>
             <div className="chart-box">
               <ResponsiveContainer width="100%" height={270}>
-                <LineChart data={chartData} margin={{ left: -20, right: 18, top: 12, bottom: 8 }}>
+                <LineChart data={chartData} margin={{ left: 2, right: 4, top: 12, bottom: 8 }}>
                   <CartesianGrid stroke="#d9e2e4" strokeDasharray="3 3" />
                   <XAxis dataKey="date" tick={{ fill: "#526066", fontSize: 12 }} />
-                  <YAxis tick={{ fill: "#526066", fontSize: 12 }} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="systolic" stroke="#1f7a8c" strokeWidth={3} dot={false} name="수축기" />
-                  <Line type="monotone" dataKey="diastolic" stroke="#6d5dfc" strokeWidth={3} dot={false} name="이완기" />
-                  <Line type="monotone" dataKey="glucose" stroke="#d97706" strokeWidth={3} dot={false} name="혈당" />
+                  <YAxis
+                    yAxisId="bloodPressure"
+                    width={44}
+                    tick={{ fill: "#526066", fontSize: 12 }}
+                    label={{
+                      angle: -90,
+                      fill: "#526066",
+                      fontSize: 11,
+                      fontWeight: 800,
+                      position: "insideLeft",
+                      value: "혈압 mmHg",
+                    }}
+                  />
+                  <YAxis
+                    yAxisId="glucose"
+                    orientation="right"
+                    width={46}
+                    tick={{ fill: "#8a4a00", fontSize: 12 }}
+                    label={{
+                      angle: 90,
+                      fill: "#8a4a00",
+                      fontSize: 11,
+                      fontWeight: 800,
+                      position: "insideRight",
+                      value: "혈당 mg/dL",
+                    }}
+                  />
+                  <Tooltip content={<VitalChartTooltip />} />
+                  <Line
+                    type="monotone"
+                    dataKey="systolic"
+                    yAxisId="bloodPressure"
+                    stroke={vitalChartLegendItems[0].color}
+                    strokeWidth={3}
+                    dot={{ r: 3, strokeWidth: 2 }}
+                    activeDot={{ r: 5 }}
+                    name="수축기 혈압"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="diastolic"
+                    yAxisId="bloodPressure"
+                    stroke={vitalChartLegendItems[1].color}
+                    strokeWidth={3}
+                    dot={{ r: 3, strokeWidth: 2 }}
+                    activeDot={{ r: 5 }}
+                    name="이완기 혈압"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="glucose"
+                    yAxisId="glucose"
+                    stroke={vitalChartLegendItems[2].color}
+                    strokeWidth={3}
+                    dot={{ r: 3, strokeWidth: 2 }}
+                    activeDot={{ r: 5 }}
+                    name="혈당"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
+            <div className="vital-chart-legend" aria-label="혈압 혈당 차트 선 범례">
+              {vitalChartLegendItems.map((item) => (
+                <span
+                  aria-label={`${item.label} 선: ${item.unit}`}
+                  key={item.dataKey}
+                  title={`${item.label} 선 · ${item.unit}`}
+                >
+                  <mark style={{ backgroundColor: item.color }} />
+                  <strong>{item.label}</strong>
+                  <small>{item.unit}</small>
+                </span>
+              ))}
+            </div>
+            <div className="vital-chart-summary" aria-label="혈압 혈당 차트 단위와 기간 요약">
+              {chartSummary.map((item) => (
+                <span key={item.label}>
+                  <strong>{item.label}</strong>
+                  {" "}
+                  {item.value}
+                </span>
+              ))}
+            </div>
+            <details className="vital-chart-data">
+              <summary
+                aria-label={`혈압 혈당 차트 원자료 ${chartAccessibleRows.length}개 보기`}
+                title={`혈압 혈당 차트 원자료 ${chartAccessibleRows.length}개 보기`}
+              >
+                <strong>차트 원자료</strong>
+                <span>{chartAccessibleRows.length}개</span>
+              </summary>
+              {chartAccessibleRows.length ? (
+                <ul aria-label="혈압 혈당 차트 원자료 목록">
+                  {chartAccessibleRows.map((row, index) => (
+                    <li aria-label={row.summary} key={`${row.summary}-${index}`}>
+                      <time>{row.date}</time>
+                      <span>{row.bloodPressure}</span>
+                      <span>{row.glucose}</span>
+                      <span>{row.assessment}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>차트 원자료 기록 대기</p>
+              )}
+            </details>
           </section>
         </section>
 
         <section id="records" className="content-grid two-columns">
           <section className="panel">
             <div className="section-title">
-              <h2>혈압·혈당 입력</h2>
+              <h2>혈압·혈당·체온 입력</h2>
               <span>날짜별 측정값</span>
+            </div>
+            <div
+              className="vital-panel-summary"
+              aria-label={`저장 활력 요약 ${vitalPanelSummary.ariaLabel}`}
+            >
+              {vitalPanelSummary.items.map((item) => (
+                <span className={`vital-panel-summary-chip summary-${item.id}`} key={item.id}>
+                  <strong>{item.label}</strong>
+                  {item.value}
+                </span>
+              ))}
             </div>
             <div className="form-grid">
               <label>
@@ -2095,6 +4797,8 @@ function App() {
                 <input
                   type="date"
                   value={vitalDraft.date}
+                  aria-label={formControlDescriptions.vitalDate}
+                  title={formControlDescriptions.vitalDate}
                   onChange={(event) => setVitalDraft({ ...vitalDraft, date: event.currentTarget.value })}
                 />
               </label>
@@ -2102,12 +4806,15 @@ function App() {
                 종류
                 <select
                   value={vitalDraft.type}
+                  aria-label={formControlDescriptions.vitalType}
+                  title={formControlDescriptions.vitalType}
                   onChange={(event) =>
                     setVitalDraft({ ...vitalDraft, type: event.currentTarget.value as VitalType })
                   }
                 >
                   <option value="blood-pressure">혈압</option>
                   <option value="glucose">혈당</option>
+                  <option value="temperature">체온</option>
                 </select>
               </label>
               {vitalDraft.type === "blood-pressure" ? (
@@ -2117,8 +4824,13 @@ function App() {
                     <input
                       type="number"
                       value={vitalDraft.systolic ?? ""}
+                      aria-label={formControlDescriptions.vitalSystolic}
+                      title={formControlDescriptions.vitalSystolic}
                       onChange={(event) =>
-                        setVitalDraft({ ...vitalDraft, systolic: Number(event.currentTarget.value) })
+                        setVitalDraft({
+                          ...vitalDraft,
+                          systolic: parseOptionalNumberInput(event.currentTarget.value),
+                        })
                       }
                     />
                   </label>
@@ -2127,12 +4839,34 @@ function App() {
                     <input
                       type="number"
                       value={vitalDraft.diastolic ?? ""}
+                      aria-label={formControlDescriptions.vitalDiastolic}
+                      title={formControlDescriptions.vitalDiastolic}
                       onChange={(event) =>
-                        setVitalDraft({ ...vitalDraft, diastolic: Number(event.currentTarget.value) })
+                        setVitalDraft({
+                          ...vitalDraft,
+                          diastolic: parseOptionalNumberInput(event.currentTarget.value),
+                        })
                       }
                     />
                   </label>
                 </>
+              ) : vitalDraft.type === "temperature" ? (
+                <label>
+                  체온 ℃
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={vitalDraft.temperatureC ?? ""}
+                    aria-label={formControlDescriptions.vitalTemperature}
+                    title={formControlDescriptions.vitalTemperature}
+                    onChange={(event) =>
+                      setVitalDraft({
+                        ...vitalDraft,
+                        temperatureC: parseOptionalNumberInput(event.currentTarget.value),
+                      })
+                    }
+                  />
+                </label>
               ) : (
                 <>
                   <label>
@@ -2140,8 +4874,13 @@ function App() {
                     <input
                       type="number"
                       value={vitalDraft.glucoseMgDl ?? ""}
+                      aria-label={formControlDescriptions.vitalGlucose}
+                      title={formControlDescriptions.vitalGlucose}
                       onChange={(event) =>
-                        setVitalDraft({ ...vitalDraft, glucoseMgDl: Number(event.currentTarget.value) })
+                        setVitalDraft({
+                          ...vitalDraft,
+                          glucoseMgDl: parseOptionalNumberInput(event.currentTarget.value),
+                        })
                       }
                     />
                   </label>
@@ -2149,6 +4888,8 @@ function App() {
                     측정 시점
                     <select
                       value={vitalDraft.glucoseContext}
+                      aria-label={formControlDescriptions.vitalGlucoseContext}
+                      title={formControlDescriptions.vitalGlucoseContext}
                       onChange={(event) =>
                         setVitalDraft({
                           ...vitalDraft,
@@ -2166,17 +4907,76 @@ function App() {
                 </>
               )}
             </div>
+            <div className="vital-standard-helper" aria-label="혈압 혈당 체온 입력 기준">
+              <div className="vital-standard-helper-heading">
+                <strong>{vitalTypeLabel[vitalDraft.type]} 기준</strong>
+                {vitalDraftSourceLink ? (
+                  <a
+                    href={vitalDraftSourceLink.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={vitalDraftSourceLink.labels.ariaLabel}
+                    title={vitalDraftSourceLink.labels.title}
+                  >
+                    {vitalDraftSourceLink.labels.visibleLabel}
+                  </a>
+                ) : null}
+              </div>
+              <span>{vitalDraftStandardNote}</span>
+              <small>{vitalDraftHelperText}</small>
+              <ul className="vital-standard-range-list">
+                {vitalDraftStandardRangeLines.map((line) => (
+                  <li
+                    key={line.id}
+                    className={line.tone === "risk" ? "standard-range-risk-row" : undefined}
+                  >
+                    <b>{line.label}</b>
+                    <span>{line.detail}</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                className="secondary-inline-button vital-standard-question-button"
+                type="button"
+                onClick={applyVitalStandardQuestion}
+                aria-label={`${vitalTypeLabel[vitalDraft.type]} 기준 진료 질문 초안 만들기`}
+                title={`${vitalTypeLabel[vitalDraft.type]} 기준 진료 질문 초안 만들기`}
+              >
+                <MessageSquare aria-hidden="true" />
+                질문 초안
+              </button>
+            </div>
             <label className="wide-label">
               메모
               <input
                 value={vitalDraft.note}
+                aria-label={formControlDescriptions.vitalNote}
+                title={formControlDescriptions.vitalNote}
                 onChange={(event) => setVitalDraft({ ...vitalDraft, note: event.currentTarget.value })}
-                placeholder="예: 운동 후, 약 복용 전, 식후 2시간"
+                placeholder="예: 운동 후, 약 복용 전, 식후 2시간, 오한 동반"
               />
             </label>
-            <button className="primary-button" type="button" onClick={addVital}>
+            {vitalDraftAssessment && vitalDraftSavePreviewLabel ? (
+              <div
+                className={`vital-save-preview vital-save-preview-${vitalDraftAssessment.level}`}
+                role="status"
+                aria-live="polite"
+                aria-label={vitalDraftSavePreviewAriaLabel}
+              >
+                <span>저장 전 기준 확인</span>
+                <strong>{vitalDraftAssessment.label}</strong>
+                <small>{vitalDraftSavePreviewLabel}</small>
+              </div>
+            ) : null}
+            <button
+              className="primary-button"
+              type="button"
+              onClick={addVital}
+              aria-label={vitalDraftSaveActionDescription}
+              title={vitalDraftSaveActionDescription}
+            >
               <Plus aria-hidden="true" />
-              측정값 추가
+              {vitalDraftSaveActionLabel}
             </button>
           </section>
 
@@ -2185,12 +4985,25 @@ function App() {
               <h2>병원 방문 기록</h2>
               <span>진료 흐름과 다음 일정</span>
             </div>
+            <div
+              className="visit-panel-summary"
+              aria-label={`방문 기록 요약 ${visitPanelSummary.ariaLabel}`}
+            >
+              {visitPanelSummary.items.map((item) => (
+                <span className={`visit-panel-summary-chip summary-${item.id}`} key={item.id}>
+                  <strong>{item.label}</strong>
+                  {item.value}
+                </span>
+              ))}
+            </div>
             <div className="form-grid">
               <label>
                 날짜
                 <input
                   type="date"
                   value={visitDraft.date}
+                  aria-label={formControlDescriptions.visitDate}
+                  title={formControlDescriptions.visitDate}
                   onChange={(event) => setVisitDraft({ ...visitDraft, date: event.currentTarget.value })}
                 />
               </label>
@@ -2198,6 +5011,8 @@ function App() {
                 병원/과
                 <input
                   value={visitDraft.hospital}
+                  aria-label={formControlDescriptions.visitHospital}
+                  title={formControlDescriptions.visitHospital}
                   onChange={(event) => setVisitDraft({ ...visitDraft, hospital: event.currentTarget.value })}
                 />
               </label>
@@ -2205,6 +5020,8 @@ function App() {
                 방문 이유
                 <input
                   value={visitDraft.reason}
+                  aria-label={formControlDescriptions.visitReason}
+                  title={formControlDescriptions.visitReason}
                   onChange={(event) => setVisitDraft({ ...visitDraft, reason: event.currentTarget.value })}
                 />
               </label>
@@ -2213,6 +5030,8 @@ function App() {
                 <input
                   type="date"
                   value={visitDraft.nextDate}
+                  aria-label={formControlDescriptions.visitNextDate}
+                  title={formControlDescriptions.visitNextDate}
                   onChange={(event) => setVisitDraft({ ...visitDraft, nextDate: event.currentTarget.value })}
                 />
               </label>
@@ -2221,6 +5040,8 @@ function App() {
               진료 요약
               <textarea
                 value={visitDraft.summary}
+                aria-label={formControlDescriptions.visitSummary}
+                title={formControlDescriptions.visitSummary}
                 onChange={(event) => setVisitDraft({ ...visitDraft, summary: event.currentTarget.value })}
               />
             </label>
@@ -2228,10 +5049,18 @@ function App() {
               계획/질문
               <input
                 value={visitDraft.plan}
+                aria-label={formControlDescriptions.visitPlan}
+                title={formControlDescriptions.visitPlan}
                 onChange={(event) => setVisitDraft({ ...visitDraft, plan: event.currentTarget.value })}
               />
             </label>
-            <button className="primary-button" type="button" onClick={addVisit}>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={addVisit}
+              aria-label="방문 기록 추가 · 병원/과와 방문 이유 필요"
+              title="방문 기록 추가 · 병원/과와 방문 이유 필요"
+            >
               <Plus aria-hidden="true" />
               방문 기록 추가
             </button>
@@ -2243,63 +5072,199 @@ function App() {
             <h2>최근 타임라인</h2>
             <span>측정·진료·서류가 한 날짜 흐름에 쌓입니다</span>
           </div>
+          <div
+            className="timeline-panel-summary"
+            aria-label={`최근 타임라인 요약 ${timelinePanelSummary.ariaLabel}`}
+          >
+            {timelinePanelSummary.items.map((item) => (
+              <span className={`timeline-panel-summary-chip summary-${item.id}`} key={item.id}>
+                <strong>{item.label}</strong>
+                {item.value}
+              </span>
+            ))}
+          </div>
           <div className="timeline-list">
-            {[
-              ...state.vitals.map((item) => ({
-                id: item.id,
-                date: item.date,
-                icon: <Activity aria-hidden="true" />,
-                title:
-                  item.type === "blood-pressure"
-                    ? `혈압 ${item.systolic}/${item.diastolic}`
-                    : `혈당 ${item.glucoseMgDl} mg/dL`,
-                detail: item.note,
-              })),
-              ...state.visits.map((item) => ({
+            {sortDatedItemsNewestFirst([
+              ...state.vitals.map((item, index) => {
+                const vitalAssessment = assessVitalRecord(item, {
+                  diabetes: state.profile.diabetes,
+                });
+                const vitalDisplay = buildVitalTimelineDisplayParts(item, {
+                  diabetes: state.profile.diabetes,
+                });
+
+                return {
+                  id: item.id,
+                  date: item.date,
+                  icon: <Activity aria-hidden="true" />,
+                  order: index,
+                  recordLabel: formatVitalRecordLabel(item, {
+                    diabetes: state.profile.diabetes,
+                  }),
+                  recordLabelTone: vitalAssessment.level,
+                  hasSourceEvidence: Boolean(vitalDisplay.sourceEvidence),
+                  title: formatVitalTimelineTitle(item),
+                  detail: item.note,
+                  sourceEvidence: vitalDisplay.sourceEvidence,
+                  sourceEvidenceTypeLabel: "활력",
+                  sourceLabel: vitalDisplay.sourceLabel,
+                  sourceUrl: vitalDisplay.sourceUrl,
+                };
+              }),
+              ...state.visits.map((item, index) => ({
                 id: item.id,
                 date: item.date,
                 icon: <Hospital aria-hidden="true" />,
+                order: state.vitals.length + index,
+                recordLabel: "",
+                recordLabelTone: undefined,
+                hasSourceEvidence: false,
                 title: `${item.hospital} · ${item.reason}`,
                 detail: item.summary,
+                sourceEvidence: "",
+                sourceEvidenceTypeLabel: "",
+                sourceLabel: "",
+                sourceUrl: "",
               })),
-              ...state.documents.map((item) => ({
+              ...state.documents.map((item, index) => ({
                 id: item.id,
                 date: item.date,
                 icon: <FileText aria-hidden="true" />,
+                order: state.vitals.length + state.visits.length + index,
+                recordLabel: "",
+                recordLabelTone: undefined,
+                hasSourceEvidence: false,
                 title: `${documentLabel[item.category]} · ${item.title}`,
                 detail: `${documentReviewStatusLabel[item.reviewStatus]}${item.nextAction ? ` · ${item.nextAction}` : item.tags ? ` · ${item.tags}` : ""}`,
+                sourceEvidence: "",
+                sourceEvidenceTypeLabel: "",
+                sourceLabel: "",
+                sourceUrl: "",
               })),
-              ...state.symptoms.map((item) => ({
-                id: item.id,
-                date: item.date,
-                icon: <Pill aria-hidden="true" />,
-                title: `증상 ${item.symptom} · ${item.severity}/10`,
-                detail: item.action || item.body,
-              })),
-              ...state.questions.map((item) => ({
-                id: item.id,
-                date: item.date,
-                icon: <MessageSquare aria-hidden="true" />,
-                title: `질문 · ${item.topic}`,
-                detail: `${questionStatusLabel[item.status]}: ${item.question}`,
-              })),
-              ...labAssessments.map(({ result, assessment }) => ({
-                id: result.id,
-                date: result.date,
-                icon: <ClipboardList aria-hidden="true" />,
-                title: `검사 ${result.name} · ${result.value}${result.unit ? ` ${result.unit}` : ""}`,
-                detail: `${assessment.label}: ${result.note}`,
-              })),
-            ]
-              .sort((a, b) => b.date.localeCompare(a.date))
+              ...state.symptoms.map((item, index) => {
+                const symptomDisplay = buildSymptomDisplayParts(item);
+
+                return {
+                  id: item.id,
+                  date: item.date,
+                  icon: <Pill aria-hidden="true" />,
+                  order: state.vitals.length + state.visits.length + state.documents.length + index,
+                  recordLabel: formatSymptomRecordLabel(item),
+                  recordLabelTone: undefined,
+                  hasSourceEvidence: hasSymptomRecordSourceEvidence(item),
+                  title: `${item.symptom} · ${item.severity}/10`,
+                  detail: symptomDisplay.body,
+                  sourceEvidence: symptomDisplay.sourceEvidence,
+                  sourceEvidenceTypeLabel: "기록",
+                  sourceLabel: symptomDisplay.sourceLabel,
+                  sourceUrl: symptomDisplay.sourceUrl,
+                };
+              }),
+              ...state.questions.map((item, index) => {
+                const questionDisplay = buildQuestionTimelineDisplayParts(
+                  item.question,
+                  questionStatusLabel[item.status],
+                );
+
+                return {
+                  id: item.id,
+                  date: item.date,
+                  icon: <MessageSquare aria-hidden="true" />,
+                  order:
+                    state.vitals.length
+                    + state.visits.length
+                    + state.documents.length
+                    + state.symptoms.length
+                    + index,
+                  recordLabel: "",
+                  recordLabelTone: undefined,
+                  hasSourceEvidence: false,
+                  title: `질문 · ${item.topic}`,
+                  detail: questionDisplay.detail,
+                  sourceEvidence: questionDisplay.sourceEvidence,
+                  sourceEvidenceTypeLabel: "질문",
+                  sourceLabel: questionDisplay.sourceLabel,
+                  sourceUrl: questionDisplay.sourceUrl,
+                };
+              }),
+              ...labAssessments.map(({ result, assessment }, index) => {
+                const labSourceEvidence = buildLabSourceEvidenceParts(result);
+                return {
+                  id: result.id,
+                  date: result.date,
+                  icon: <ClipboardList aria-hidden="true" />,
+                  order:
+                    state.vitals.length
+                    + state.visits.length
+                    + state.documents.length
+                    + state.symptoms.length
+                    + state.questions.length
+                    + index,
+                  recordLabel: assessment.label,
+                  recordLabelTone: assessment.level,
+                  hasSourceEvidence: Boolean(labSourceEvidence.sourceLabel),
+                  title: `검사 ${result.name} · ${result.value}${result.unit ? ` ${result.unit}` : ""}`,
+                  detail: labSourceEvidence.noteBody
+                    ? `${assessment.label}: ${labSourceEvidence.noteBody}`
+                    : assessment.summary,
+                  sourceEvidence: formatLabSourceEvidence(
+                    labSourceEvidence.sourceLabel,
+                    labSourceEvidence.sourceUrl,
+                  ),
+                  sourceEvidenceTypeLabel: "검사",
+                  sourceLabel: labSourceEvidence.sourceLabel,
+                  sourceUrl: labSourceEvidence.sourceUrl,
+                };
+              }),
+            ])
               .slice(0, 8)
               .map((item) => (
                 <article className="timeline-item" key={item.id}>
                   <time>{item.date}</time>
                   {item.icon}
                   <div>
+                    {item.recordLabel ? (
+                      <div className="timeline-record-badges">
+                        <span
+                          className={`timeline-record-label ${
+                            item.recordLabelTone
+                              ? `timeline-record-label-${item.recordLabelTone}`
+                              : ""
+                          }`}
+                        >
+                          {item.recordLabel}
+                        </span>
+                        {item.hasSourceEvidence ? (
+                          <span className="timeline-record-evidence-label">근거 포함</span>
+                        ) : null}
+                      </div>
+                    ) : null}
                     <strong>{item.title}</strong>
                     <p>{item.detail || "세부 메모 없음"}</p>
+                    {item.sourceEvidence ? (
+                      <small
+                        className="timeline-source-evidence"
+                        aria-label={`${item.title} ${
+                          item.sourceEvidenceTypeLabel || "기록"
+                        } 근거 ${item.sourceLabel}`}
+                      >
+                        <ShieldCheck aria-hidden="true" />
+                        {item.sourceUrl ? (
+                          <a
+                            href={item.sourceUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={`${item.title} ${
+                              item.sourceEvidenceTypeLabel || "기록"
+                            } 근거: ${item.sourceLabel}`}
+                          >
+                            {item.sourceEvidence}
+                          </a>
+                        ) : (
+                          <span>{item.sourceEvidence}</span>
+                        )}
+                      </small>
+                    ) : null}
                   </div>
                 </article>
               ))}
@@ -2312,12 +5277,25 @@ function App() {
               <h2>증상·부작용 기록</h2>
               <span>치료 중 몸 상태를 날짜별로 누적</span>
             </div>
+            <div
+              className="symptom-panel-summary"
+              aria-label={`저장 증상 요약 ${symptomPanelSummary.ariaLabel}`}
+            >
+              {symptomPanelSummary.items.map((item) => (
+                <span className={`symptom-panel-summary-chip summary-${item.id}`} key={item.id}>
+                  <strong>{item.label}</strong>
+                  {item.value}
+                </span>
+              ))}
+            </div>
             <div className="form-grid">
               <label>
                 날짜
                 <input
                   type="date"
                   value={symptomDraft.date}
+                  aria-label={formControlDescriptions.symptomDate}
+                  title={formControlDescriptions.symptomDate}
                   onChange={(event) =>
                     setSymptomDraft({ ...symptomDraft, date: event.currentTarget.value })
                   }
@@ -2326,7 +5304,10 @@ function App() {
               <label>
                 증상
                 <input
+                  ref={symptomDraftInputRef}
                   value={symptomDraft.symptom}
+                  aria-label={formControlDescriptions.symptomName}
+                  title={formControlDescriptions.symptomName}
                   onChange={(event) =>
                     setSymptomDraft({ ...symptomDraft, symptom: event.currentTarget.value })
                   }
@@ -2341,6 +5322,8 @@ function App() {
                 min="0"
                 max="10"
                 value={symptomDraft.severity}
+                aria-label={`증상 심한 정도 ${symptomDraft.severity}/10 · 좌우로 조정합니다`}
+                title={`증상 심한 정도 ${symptomDraft.severity}/10 · 좌우로 조정합니다`}
                 onChange={(event) =>
                   setSymptomDraft({ ...symptomDraft, severity: Number(event.currentTarget.value) })
                 }
@@ -2353,6 +5336,8 @@ function App() {
               약/대응
               <input
                 value={symptomDraft.medication}
+                aria-label={formControlDescriptions.symptomMedication}
+                title={formControlDescriptions.symptomMedication}
                 onChange={(event) =>
                   setSymptomDraft({ ...symptomDraft, medication: event.currentTarget.value })
                 }
@@ -2363,6 +5348,8 @@ function App() {
               몸 상태 메모
               <textarea
                 value={symptomDraft.body}
+                aria-label={formControlDescriptions.symptomBody}
+                title={formControlDescriptions.symptomBody}
                 onChange={(event) =>
                   setSymptomDraft({ ...symptomDraft, body: event.currentTarget.value })
                 }
@@ -2373,28 +5360,67 @@ function App() {
               다음 행동
               <input
                 value={symptomDraft.action}
+                aria-label={formControlDescriptions.symptomAction}
+                title={formControlDescriptions.symptomAction}
                 onChange={(event) =>
                   setSymptomDraft({ ...symptomDraft, action: event.currentTarget.value })
                 }
                 placeholder="예: 다음 진료 때 질문, 24시간 지속 시 전화"
               />
             </label>
+            {symptomDraftHasRecordPreview ? (
+              <div
+                className="symptom-record-preview"
+                role="status"
+                aria-label={`저장될 기록 종류 ${symptomDraftRecordLabel}${symptomDraftHasSourceEvidence ? " 근거 포함" : ""}`}
+              >
+                <span>저장될 기록 종류</span>
+                <strong>{symptomDraftRecordLabel}</strong>
+                {symptomDraftHasSourceEvidence ? (
+                  <small className="symptom-record-evidence-label">근거 포함</small>
+                ) : null}
+              </div>
+            ) : null}
             {symptomSupportTemplate ? (
               <div className="symptom-template-band" role="status">
                 <div>
                   <span>{symptomSupportTemplate.label}</span>
                   <p>{symptomSupportTemplate.mealNote}</p>
                   <small>{symptomSupportTemplate.safetyNote}</small>
+                  <small className="symptom-template-queue-hint">
+                    {buildSymptomSupportQueueHint(symptomSupportTemplate)}
+                  </small>
+                  <a
+                    href={symptomSupportTemplate.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${symptomSupportTemplate.label} 공식 출처 ${symptomSupportTemplate.sourceLabel} 열기`}
+                    title={`${symptomSupportTemplate.label} 공식 출처 ${symptomSupportTemplate.sourceLabel} 열기`}
+                  >
+                    {formatSymptomSupportSource(symptomSupportTemplate)}
+                    <ExternalLink aria-hidden="true" />
+                  </a>
                 </div>
-                <button type="button" onClick={applySymptomSupportTemplate}>
+                <button
+                  type="button"
+                  onClick={applySymptomSupportTemplate}
+                  aria-label={`${symptomSupportTemplate.label} 질문 초안 채우기`}
+                  title={`${symptomSupportTemplate.label} 질문 초안 채우기`}
+                >
                   <MessageSquare aria-hidden="true" />
                   질문 초안
                 </button>
               </div>
             ) : null}
-            <button className="primary-button" type="button" onClick={addSymptom}>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={addSymptom}
+              aria-label={symptomDraftSaveActionDescription}
+              title={symptomDraftSaveActionDescription}
+            >
               <Plus aria-hidden="true" />
-              증상 기록 추가
+              {symptomDraftSaveActionLabel}
             </button>
           </section>
 
@@ -2403,12 +5429,25 @@ function App() {
               <h2>진료 전 질문</h2>
               <span>놓치기 쉬운 질문을 상태별로 관리</span>
             </div>
+            <div
+              className="question-panel-summary"
+              aria-label={`저장 질문 요약 ${questionListSummary.ariaLabel}`}
+            >
+              {questionListSummary.items.map((item) => (
+                <span className={`question-panel-summary-chip summary-${item.id}`} key={item.id}>
+                  <strong>{item.label}</strong>
+                  {item.value}
+                </span>
+              ))}
+            </div>
             <div className="form-grid">
               <label>
                 진료/확인일
                 <input
                   type="date"
                   value={questionDraft.date}
+                  aria-label={formControlDescriptions.questionDate}
+                  title={formControlDescriptions.questionDate}
                   onChange={(event) =>
                     setQuestionDraft({ ...questionDraft, date: event.currentTarget.value })
                   }
@@ -2418,17 +5457,42 @@ function App() {
                 주제
                 <input
                   value={questionDraft.topic}
+                  aria-label={formControlDescriptions.questionTopic}
+                  title={formControlDescriptions.questionTopic}
                   onChange={(event) =>
                     setQuestionDraft({ ...questionDraft, topic: event.currentTarget.value })
                   }
                   placeholder="예: 식단, 검사수치, 부작용"
                 />
               </label>
+              <label>
+                우선순위
+                <select
+                  value={questionDraft.priority}
+                  aria-label={formControlDescriptions.questionPriority}
+                  title={formControlDescriptions.questionPriority}
+                  onChange={(event) =>
+                    setQuestionDraft({
+                      ...questionDraft,
+                      priority: normalizeQuestionPriority(event.currentTarget.value),
+                    })
+                  }
+                >
+                  {(["high", "next-visit", "routine"] as QuestionPriority[]).map((priority) => (
+                    <option value={priority} key={priority}>
+                      {questionPriorityLabel[priority]}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
             <label className="wide-label">
               질문
               <textarea
+                ref={questionDraftTextareaRef}
                 value={questionDraft.question}
+                aria-label={formControlDescriptions.questionBody}
+                title={formControlDescriptions.questionBody}
                 onChange={(event) =>
                   setQuestionDraft({ ...questionDraft, question: event.currentTarget.value })
                 }
@@ -2439,41 +5503,132 @@ function App() {
               답변 메모
               <input
                 value={questionDraft.answer}
+                aria-label={formControlDescriptions.questionAnswer}
+                title={formControlDescriptions.questionAnswer}
                 onChange={(event) =>
                   setQuestionDraft({ ...questionDraft, answer: event.currentTarget.value })
                 }
                 placeholder="진료 후 답변을 여기에 남김"
               />
             </label>
-            <button className="primary-button" type="button" onClick={addQuestion}>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={addQuestion}
+              aria-label={`진료 전 질문 추가 · 우선순위 ${questionPriorityLabel[questionDraft.priority]}`}
+              title={`진료 전 질문 추가 · 우선순위 ${questionPriorityLabel[questionDraft.priority]}`}
+            >
               <Plus aria-hidden="true" />
               질문 추가
             </button>
             <div className="question-list">
               {[...state.questions]
                 .sort((a, b) => a.date.localeCompare(b.date))
-                .map((question) => (
-                  <article className="question-item" key={question.id}>
-                    <div>
-                      <span>{question.date}</span>
-                      <strong>{question.topic}</strong>
-                      <p>{question.question}</p>
-                      {question.answer ? <small>{question.answer}</small> : null}
-                    </div>
-                    <div className="inline-actions">
-                      {(["open", "answered", "deferred"] as QuestionStatus[]).map((status) => (
+                .map((question) => {
+                  const questionCopyDescription =
+                    formatQuestionClipboardCopyDescription(question);
+                  const questionDisplay = buildQuestionDisplayParts(question.question);
+                  const answerMemoDisplay = formatQuestionAnswerMemoDisplay(question.answer);
+                  const questionPriorityControlDescription = `${
+                    question.topic || "진료 전 질문"
+                  } 우선순위 변경 · 현재 ${questionPriorityLabel[question.priority]}`;
+
+                  return (
+                    <article className="question-item" key={question.id}>
+                      <div>
+                        <span>
+                          {question.date} · {questionPriorityLabel[question.priority]}
+                        </span>
+                        <strong>{question.topic}</strong>
+                        <p>{questionDisplay.body}</p>
+                        {questionDisplay.sourceEvidence ? (
+                          <small
+                            className="question-source-evidence"
+                            aria-label={`${question.topic} 질문 근거 ${questionDisplay.sourceLabel}`}
+                          >
+                            <ShieldCheck aria-hidden="true" />
+                            {questionDisplay.sourceUrl ? (
+                              <a
+                                href={questionDisplay.sourceUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                title={`${question.topic} 질문 근거: ${questionDisplay.sourceLabel}`}
+                              >
+                                {questionDisplay.sourceEvidence}
+                              </a>
+                            ) : (
+                              <span>{questionDisplay.sourceEvidence}</span>
+                            )}
+                          </small>
+                        ) : null}
+                        {answerMemoDisplay ? (
+                          <small
+                            className="question-answer-memo"
+                            aria-label={`${question.topic} 질문 답변 메모`}
+                          >
+                            <span>답변 메모</span>
+                            <b>{answerMemoDisplay}</b>
+                          </small>
+                        ) : null}
+                      </div>
+                      <div className="question-card-controls">
+                        <label className="question-priority-control">
+                          우선순위
+                          <select
+                            value={question.priority}
+                            aria-label={questionPriorityControlDescription}
+                            title={questionPriorityControlDescription}
+                            onChange={(event) =>
+                              updateQuestionPriority(
+                                question.id,
+                                normalizeQuestionPriority(event.currentTarget.value),
+                              )
+                            }
+                          >
+                            {(["high", "next-visit", "routine"] as QuestionPriority[]).map(
+                              (priority) => (
+                                <option value={priority} key={priority}>
+                                  {questionPriorityLabel[priority]}
+                                </option>
+                              ),
+                            )}
+                          </select>
+                        </label>
                         <button
                           type="button"
-                          className={question.status === status ? "active" : ""}
-                          onClick={() => updateQuestionStatus(question.id, status)}
-                          key={status}
+                          className="secondary-inline-button question-copy-button"
+                          aria-label={questionCopyDescription}
+                          title={questionCopyDescription}
+                          onClick={() => copyQuestionForVisit(question)}
                         >
-                          {questionStatusLabel[status]}
+                          <Copy aria-hidden="true" />
+                          질문 복사
                         </button>
-                      ))}
-                    </div>
-                  </article>
-                ))}
+                        <div className="inline-actions">
+                          {(["open", "answered", "deferred"] as QuestionStatus[]).map((status) => {
+                            const statusButtonLabels = buildQuestionStatusButtonLabels(
+                              question.topic,
+                              status,
+                            );
+
+                            return (
+                              <button
+                                type="button"
+                                className={question.status === status ? "active" : ""}
+                                onClick={() => updateQuestionStatus(question.id, status)}
+                                aria-label={statusButtonLabels.ariaLabel}
+                                title={statusButtonLabels.title}
+                                key={status}
+                              >
+                                {statusButtonLabels.visibleLabel}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
             </div>
           </section>
         </section>
@@ -2488,6 +5643,8 @@ function App() {
               검사 항목 프리셋
               <select
                 value={labPresetChoice}
+                aria-label={formControlDescriptions.labPreset}
+                title={formControlDescriptions.labPreset}
                 onChange={(event) => applyLabPreset(event.currentTarget.value)}
               >
                 <option value="">직접 입력</option>
@@ -2497,14 +5654,72 @@ function App() {
                   </option>
                 ))}
               </select>
-              <small>프리셋은 입력 보조값입니다. 실제 결과지의 검사실 기준을 우선하세요.</small>
+              <small>
+                프리셋은 입력 보조값입니다. 성별 기준을 바꾸면 Hgb/RBC/Hct/HDL/GGT처럼 성별이 있는
+                프리셋 범위와 자동 메모 기준은 사용자가 직접 고치기 전까지만 자동 갱신됩니다.
+              </small>
             </label>
+            <div
+              className="lab-preset-preview"
+              aria-live="polite"
+              aria-label="선택한 검사 프리셋 범위와 메모 기준"
+            >
+              {selectedLabPresetPreview ? (
+                <>
+                  <div className="lab-preset-preview-header">
+                    <strong>{selectedLabPresetPreview.label}</strong>
+                    <span>{selectedLabPresetPreview.applicabilityLabel}</span>
+                  </div>
+                  <dl className="lab-preset-preview-grid">
+                    <div>
+                      <dt>항목</dt>
+                      <dd>{selectedLabPresetPreview.name}</dd>
+                    </div>
+                    <div>
+                      <dt>기준 범위</dt>
+                      <dd>{selectedLabPresetPreview.rangeLabel}</dd>
+                    </div>
+                    <div>
+                      <dt>단위</dt>
+                      <dd>{selectedLabPresetPreview.unit || "직접 입력"}</dd>
+                    </div>
+                  </dl>
+                  <p className="lab-preset-applicability-note">
+                    {selectedLabPresetPreview.applicabilityDetail}
+                  </p>
+                  <p>{selectedLabPresetPreview.note}</p>
+                  <small className="lab-preset-source">
+                    근거:{" "}
+                    {selectedLabPresetPreview.sourceUrl.startsWith("https://") ? (
+                      <a
+                        href={selectedLabPresetPreview.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`${selectedLabPresetPreview.label} 프리셋 근거 ${selectedLabPresetPreview.sourceLabel} 열기`}
+                        title={`${selectedLabPresetPreview.label} 프리셋 근거: ${selectedLabPresetPreview.sourceLabel}`}
+                      >
+                        {selectedLabPresetPreview.sourceLabel}
+                        <ExternalLink aria-hidden="true" />
+                      </a>
+                    ) : (
+                      <span>{selectedLabPresetPreview.sourceLabel}</span>
+                    )}
+                  </small>
+                </>
+              ) : (
+                <p className="lab-preset-empty">
+                  직접 입력 모드입니다. 결과지에 적힌 검사실 기준 범위와 단위를 그대로 입력하세요.
+                </p>
+              )}
+            </div>
             <div className="form-grid">
               <label>
                 날짜
                 <input
                   type="date"
                   value={labDraft.date}
+                  aria-label={formControlDescriptions.labDate}
+                  title={formControlDescriptions.labDate}
                   onChange={(event) => setLabDraft({ ...labDraft, date: event.currentTarget.value })}
                 />
               </label>
@@ -2512,8 +5727,10 @@ function App() {
                 항목
                 <input
                   value={labDraft.name}
+                  aria-label={formControlDescriptions.labName}
+                  title={formControlDescriptions.labName}
                   onChange={(event) => setLabDraft({ ...labDraft, name: event.currentTarget.value })}
-                  placeholder="예: WBC, HbA1c, AST, ALT"
+                  placeholder="예: WBC, RBC, Hct, PLT, HbA1c, BUN, Cr, eGFR, UACR, Alb, TP, Ca, P, UA, Na, K, AST, ALT"
                 />
               </label>
               <label>
@@ -2521,6 +5738,8 @@ function App() {
                 <input
                   type="number"
                   value={labDraft.value}
+                  aria-label={formControlDescriptions.labValue}
+                  title={formControlDescriptions.labValue}
                   onChange={(event) => setLabDraft({ ...labDraft, value: event.currentTarget.value })}
                 />
               </label>
@@ -2528,6 +5747,8 @@ function App() {
                 단위
                 <input
                   value={labDraft.unit}
+                  aria-label={formControlDescriptions.labUnit}
+                  title={formControlDescriptions.labUnit}
                   onChange={(event) => setLabDraft({ ...labDraft, unit: event.currentTarget.value })}
                   placeholder="예: mg/dL, 10^3/uL"
                 />
@@ -2537,6 +5758,8 @@ function App() {
                 <input
                   type="number"
                   value={labDraft.lower}
+                  aria-label={formControlDescriptions.labLower}
+                  title={formControlDescriptions.labLower}
                   onChange={(event) => setLabDraft({ ...labDraft, lower: event.currentTarget.value })}
                 />
               </label>
@@ -2545,22 +5768,44 @@ function App() {
                 <input
                   type="number"
                   value={labDraft.upper}
+                  aria-label={formControlDescriptions.labUpper}
+                  title={formControlDescriptions.labUpper}
                   onChange={(event) => setLabDraft({ ...labDraft, upper: event.currentTarget.value })}
                 />
               </label>
             </div>
             <label className="wide-label">
               메모
-              <input
+              <textarea
                 value={labDraft.note}
+                aria-label={formControlDescriptions.labNote}
+                title={formControlDescriptions.labNote}
                 onChange={(event) => setLabDraft({ ...labDraft, note: event.currentTarget.value })}
                 placeholder="예: 다음 진료 때 질문, 약 변경 후 추적"
               />
             </label>
-            <button className="primary-button" type="button" onClick={addLabResult}>
-              <Plus aria-hidden="true" />
-              검사 수치 추가
-            </button>
+            <div className="form-actions">
+              <button
+                className="primary-button"
+                type="button"
+                onClick={addLabResult}
+                aria-label="검사 수치 추가 · 검사명과 수치 필요"
+                title="검사 수치 추가 · 검사명과 수치 필요"
+              >
+                <Plus aria-hidden="true" />
+                검사 수치 추가
+              </button>
+              <button
+                className="secondary-inline-button"
+                type="button"
+                onClick={resetLabDraft}
+                aria-label="검사 입력 프리셋과 값 초기화"
+                title="검사 입력 프리셋과 값 초기화"
+              >
+                <RotateCcw aria-hidden="true" />
+                검사 입력 초기화
+              </button>
+            </div>
           </section>
 
           <section className="panel">
@@ -2568,37 +5813,84 @@ function App() {
               <h2>검사 수치 추적</h2>
               <span>{state.labResults.length}개 기록</span>
             </div>
-            <div className="lab-list">
-              {labAssessments.map(({ result, assessment }) => (
-                <article className="lab-item" key={result.id}>
-                  <div>
-                    <span>{result.date}</span>
-                    <strong>
-                      {result.name} {result.value}
-                      {result.unit ? ` ${result.unit}` : ""}
-                    </strong>
-                    <p>
-                      기준 {result.lower || "-"} - {result.upper || "-"} {result.unit}
-                    </p>
-                    {result.note ? <small>{result.note}</small> : null}
-                    {assessment.flag !== "normal" ? (
-                      <div className="lab-followup-actions">
-                        <button
-                          className="secondary-inline-button"
-                          type="button"
-                          onClick={() => addLabQuestion(result, assessment)}
-                        >
-                          <MessageSquare aria-hidden="true" />
-                          질문으로 추가
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
-                  <mark className={`lab-${assessment.flag}`}>
-                    {labFlagLabel[assessment.flag]}
-                  </mark>
-                </article>
+            <div
+              className="lab-panel-summary"
+              aria-label={`저장 검사 요약 ${labPanelSummary.ariaLabel}`}
+            >
+              {labPanelSummary.items.map((item) => (
+                <span className={`lab-panel-summary-chip summary-${item.id}`} key={item.id}>
+                  <strong>{item.label}</strong>
+                  {item.value}
+                </span>
               ))}
+            </div>
+            <div className="lab-list">
+              {labAssessments.map(({ result, assessment }) => {
+                const labSourceEvidence = buildLabSourceEvidenceParts(result);
+                const labRangeLabel = formatLabReferenceRangeLabel(
+                  result.lower,
+                  result.upper,
+                  result.unit,
+                );
+                const labQuestionButtonLabels = buildLabFollowupQuestionButtonLabels(
+                  result.name,
+                  Boolean(labSourceEvidence.sourceLabel),
+                );
+
+                return (
+                  <article className="lab-item" key={result.id}>
+                    <div>
+                      <span>{result.date}</span>
+                      <strong>
+                        {result.name} {result.value}
+                        {result.unit ? ` ${result.unit}` : ""}
+                      </strong>
+                      <p>
+                        {labRangeLabel ? `기준 ${labRangeLabel}` : "기준 직접 확인"}
+                      </p>
+                      {labSourceEvidence.noteBody ? (
+                        <small className="lab-note-body">{labSourceEvidence.noteBody}</small>
+                      ) : null}
+                      {labSourceEvidence.sourceLabel ? (
+                        <small className="lab-source-evidence">
+                          근거:{" "}
+                          {labSourceEvidence.sourceUrl.startsWith("https://") ? (
+                            <a
+                              href={labSourceEvidence.sourceUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={`${result.name} 검사 근거 ${labSourceEvidence.sourceLabel} 열기`}
+                              title={`${result.name} 검사 근거: ${labSourceEvidence.sourceLabel}`}
+                            >
+                              {labSourceEvidence.sourceLabel}
+                              <ExternalLink aria-hidden="true" />
+                            </a>
+                          ) : (
+                            <span>{labSourceEvidence.sourceLabel}</span>
+                          )}
+                        </small>
+                      ) : null}
+                      {assessment.flag !== "normal" ? (
+                        <div className="lab-followup-actions">
+                          <button
+                            className="secondary-inline-button"
+                            type="button"
+                            onClick={() => addLabQuestion(result, assessment)}
+                            aria-label={labQuestionButtonLabels.ariaLabel}
+                            title={labQuestionButtonLabels.title}
+                          >
+                            <MessageSquare aria-hidden="true" />
+                            질문으로 추가
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                    <mark className={`lab-${assessment.flag}`}>
+                      {labFlagLabel[assessment.flag]}
+                    </mark>
+                  </article>
+                );
+              })}
             </div>
           </section>
         </section>
@@ -2608,17 +5900,70 @@ function App() {
             <h2>암환자 음식 판단</h2>
             <span>치료가 아니라 근거 기반 주의·기록 도구</span>
           </div>
+          <div
+            className="food-panel-summary"
+            aria-label={`음식 판단 요약 ${foodPanelSummary.ariaLabel}`}
+          >
+            {foodPanelSummary.items.map((item) => (
+              <span className={`food-panel-summary-chip summary-${item.id}`} key={item.id}>
+                <strong>{item.label}</strong>
+                {item.value}
+              </span>
+            ))}
+          </div>
+          {immuneFoodSafetyContext ? (
+            <div
+              className="immune-food-context"
+              aria-label={immuneFoodSafetyContext.ariaLabel}
+              data-testid="immune-food-context"
+            >
+              <div className="immune-food-context-heading">
+                <ShieldCheck aria-hidden="true" />
+                <strong>{immuneFoodSafetyContext.label}</strong>
+                <span>{immuneFoodSafetyContext.labValueLabel}</span>
+              </div>
+              <p>{immuneFoodSafetyContext.summary}</p>
+              <div className="immune-food-source-evidence">
+                {immuneFoodSafetyContext.labSourceLabel &&
+                immuneFoodSafetyContext.labSourceUrl ? (
+                  <a
+                    href={immuneFoodSafetyContext.labSourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`면역저하 검사 근거 ${immuneFoodSafetyContext.labSourceLabel} 열기`}
+                    title={`면역저하 검사 근거: ${immuneFoodSafetyContext.labSourceLabel}`}
+                  >
+                    {immuneFoodSafetyContext.labSourceLabel}
+                    <ExternalLink aria-hidden="true" />
+                  </a>
+                ) : null}
+                <a
+                  href={immuneFoodSafetyContext.foodSafetySourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`면역저하 식품 안전 근거 ${immuneFoodSafetyContext.foodSafetySourceLabel} 열기`}
+                  title={`면역저하 식품 안전 근거: ${immuneFoodSafetyContext.foodSafetySourceLabel}`}
+                >
+                  {immuneFoodSafetyContext.foodSafetySourceLabel}
+                  <ExternalLink aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          ) : null}
           <div className="nutrition-layout">
             <label className="wide-label">
               음식 또는 식단 입력
               <textarea
                 value={state.foodQuery}
+                aria-label={formControlDescriptions.foodQuery}
+                title={formControlDescriptions.foodQuery}
                 onChange={(event) => {
                   const foodQuery = event.currentTarget.value;
                   setState((current) => ({
                     ...current,
                     foodQuery,
                   }));
+                  setActionSaveLabel("음식 판단 업데이트됨");
                 }}
                 placeholder="예: 두부, 블루베리, 소시지, 술, 생굴"
               />
@@ -2630,12 +5975,42 @@ function App() {
             </div>
           </div>
           <div className="food-chip-row">
-            {foodAssessment.matches.map((match) => (
-              <span className={`food-chip ${match.level}`} key={`${match.term}-${match.level}`}>
-                {match.term}: {match.reason}
-              </span>
-            ))}
+            {foodAssessment.matches.map((match) => {
+              const sourceLinkLabels = buildFoodMatchSourceLinkLabels(match);
+
+              return (
+                <span className={`food-chip ${match.level}`} key={`${match.term}-${match.level}`}>
+                  <b>
+                    {match.term}: {match.reason}
+                  </b>
+                  <a
+                    href={match.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={sourceLinkLabels.ariaLabel}
+                    title={sourceLinkLabels.title}
+                  >
+                    {sourceLinkLabels.visibleLabel}
+                    <ExternalLink aria-hidden="true" />
+                  </a>
+                </span>
+              );
+            })}
           </div>
+          {foodQuestionDraft ? (
+            <div className="food-question-actions">
+              <button
+                className="secondary-inline-button"
+                type="button"
+                onClick={applyFoodQuestionDraft}
+                aria-label={foodQuestionButtonLabels.ariaLabel}
+                title={foodQuestionButtonLabels.title}
+              >
+                <MessageSquare aria-hidden="true" />
+                {foodQuestionButtonLabels.visibleLabel}
+              </button>
+            </div>
+          ) : null}
           <p className="medical-disclaimer">
             <AlertTriangle aria-hidden="true" />
             항암·수술·면역저하 상태에서는 음식 안전 기준이 달라질 수 있습니다. 보충제, 극단 식단,
@@ -2655,6 +6030,8 @@ function App() {
                 <input
                   type="date"
                   value={documentDraft.date}
+                  aria-label={formControlDescriptions.documentDate}
+                  title={formControlDescriptions.documentDate}
                   onChange={(event) =>
                     setDocumentDraft({ ...documentDraft, date: event.currentTarget.value })
                   }
@@ -2664,6 +6041,8 @@ function App() {
                 분류
                 <select
                   value={documentDraft.category}
+                  aria-label={formControlDescriptions.documentCategory}
+                  title={formControlDescriptions.documentCategory}
                   onChange={(event) =>
                     setDocumentDraft({
                       ...documentDraft,
@@ -2682,6 +6061,8 @@ function App() {
                 서류 검토 상태
                 <select
                   value={documentDraft.reviewStatus}
+                  aria-label={formControlDescriptions.documentReviewStatus}
+                  title={formControlDescriptions.documentReviewStatus}
                   onChange={(event) =>
                     setDocumentDraft({
                       ...documentDraft,
@@ -2701,6 +6082,8 @@ function App() {
               제목
               <input
                 value={documentDraft.title}
+                aria-label={formControlDescriptions.documentTitle}
+                title={formControlDescriptions.documentTitle}
                 onChange={(event) =>
                   setDocumentDraft({ ...documentDraft, title: event.currentTarget.value })
                 }
@@ -2711,6 +6094,8 @@ function App() {
               내용
               <textarea
                 value={documentDraft.body}
+                aria-label={formControlDescriptions.documentBody}
+                title={formControlDescriptions.documentBody}
                 onChange={(event) =>
                   setDocumentDraft({ ...documentDraft, body: event.currentTarget.value })
                 }
@@ -2721,6 +6106,8 @@ function App() {
               다음 조치
               <input
                 value={documentDraft.nextAction}
+                aria-label={formControlDescriptions.documentNextAction}
+                title={formControlDescriptions.documentNextAction}
                 onChange={(event) =>
                   setDocumentDraft({ ...documentDraft, nextAction: event.currentTarget.value })
                 }
@@ -2731,6 +6118,8 @@ function App() {
               태그
               <input
                 value={documentDraft.tags}
+                aria-label={formControlDescriptions.documentTags}
+                title={formControlDescriptions.documentTags}
                 onChange={(event) =>
                   setDocumentDraft({ ...documentDraft, tags: event.currentTarget.value })
                 }
@@ -2742,14 +6131,23 @@ function App() {
                 ref={documentAttachmentInputRef}
                 className="visually-hidden"
                 type="file"
+                tabIndex={-1}
                 accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"
+                aria-label={formControlDescriptions.documentAttachmentFile}
+                title={formControlDescriptions.documentAttachmentFile}
                 onChange={(event) => {
                   attachBrowserReference(event.currentTarget.files?.[0]);
                   event.currentTarget.value = "";
                 }}
               />
               <div className="attachment-actions">
-                <button className="secondary-inline-button" type="button" onClick={attachDocumentFile}>
+                <button
+                  className="secondary-inline-button"
+                  type="button"
+                  onClick={attachDocumentFile}
+                  aria-label="서류 메모 첨부 파일 선택 · 파일명만 내보내기에 포함"
+                  title="서류 메모 첨부 파일 선택 · 파일명만 내보내기에 포함"
+                >
                   <Paperclip aria-hidden="true" />
                   첨부 파일 선택
                 </button>
@@ -2774,7 +6172,13 @@ function App() {
                 <p className="attachment-empty">첨부 없음</p>
               )}
             </div>
-            <button className="primary-button" type="button" onClick={addDocument}>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={addDocument}
+              aria-label="서류 메모 저장 · 제목과 내용 필요"
+              title="서류 메모 저장 · 제목과 내용 필요"
+            >
               <Plus aria-hidden="true" />
               서류 메모 저장
             </button>
@@ -2787,11 +6191,25 @@ function App() {
                 {filteredDocuments.length}/{state.documents.length}개 기록
               </span>
             </div>
+            <div
+              className="document-panel-summary"
+              aria-label={`저장 서류 요약 ${documentPanelSummary.ariaLabel}`}
+            >
+              {documentPanelSummary.items.map((item) => (
+                <span className={`document-panel-summary-chip summary-${item.id}`} key={item.id}>
+                  <strong>{item.label}</strong>
+                  {item.value}
+                </span>
+              ))}
+            </div>
             <input
               ref={savedAttachmentInputRef}
               className="visually-hidden"
               type="file"
+              tabIndex={-1}
               accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"
+              aria-label={formControlDescriptions.savedAttachmentFile}
+              title={formControlDescriptions.savedAttachmentFile}
               onChange={(event) => {
                 attachBrowserReferenceToSavedDocument(event.currentTarget.files?.[0]);
                 event.currentTarget.value = "";
@@ -2799,9 +6217,12 @@ function App() {
             />
             <label className="search-field">
               <Search aria-hidden="true" />
+              <span className="visually-hidden">저장된 서류 검색</span>
               <input
                 value={documentFilter}
                 onChange={(event) => setDocumentFilter(event.currentTarget.value)}
+                aria-label="저장된 서류 검색어"
+                title="저장된 서류 검색어"
                 placeholder="날짜, 분류, 제목, 내용, 태그 검색"
               />
             </label>
@@ -2813,6 +6234,8 @@ function App() {
                 분류 필터
                 <select
                   value={documentCategoryFilter}
+                  aria-label={formControlDescriptions.documentCategoryFilter}
+                  title={formControlDescriptions.documentCategoryFilter}
                   onChange={(event) =>
                     setDocumentCategoryFilter(event.currentTarget.value as DocumentCategoryFilter)
                   }
@@ -2829,6 +6252,8 @@ function App() {
                 상태 필터
                 <select
                   value={documentStatusFilter}
+                  aria-label={formControlDescriptions.documentStatusFilter}
+                  title={formControlDescriptions.documentStatusFilter}
                   onChange={(event) =>
                     setDocumentStatusFilter(
                       event.currentTarget.value as DocumentReviewStatusFilter,
@@ -2845,141 +6270,192 @@ function App() {
               </label>
             </div>
             <div className="document-list">
-              {filteredDocuments.map((document) => (
-                <article className="document-item" key={document.id}>
-                  <div>
-                    <span>{document.date}</span>
-                    <div className="document-status-row">
-                      <mark>{documentLabel[document.category]}</mark>
-                      <small className={`status-chip review-${document.reviewStatus}`}>
-                        {documentReviewStatusLabel[document.reviewStatus]}
-                      </small>
-                    </div>
-                    <strong>{document.title}</strong>
-                    <p>{document.body}</p>
-                    <div
-                      className="document-update-controls"
-                      aria-label={`${document.title} 서류 조치 수정`}
-                    >
-                      <label>
-                        상태
-                        <select
-                          aria-label={`${document.title} 검토 상태`}
-                          value={document.reviewStatus}
-                          onChange={(event) =>
-                            updateDocumentReviewStatus(
-                              document.id,
-                              event.currentTarget.value as DocumentReviewStatus,
-                            )
-                          }
-                        >
-                          {Object.entries(documentReviewStatusLabel).map(([value, label]) => (
-                            <option value={value} key={value}>
-                              {label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label>
-                        다음 조치
-                        <input
-                          aria-label={`${document.title} 다음 조치`}
-                          value={document.nextAction}
-                          onFocus={() =>
-                            setDocumentActionBaselines((current) => ({
-                              ...current,
-                              [document.id]: document.nextAction,
-                            }))
-                          }
-                          onChange={(event) =>
-                            updateDocumentNextAction(document.id, event.currentTarget.value)
-                          }
-                          onBlur={(event) =>
-                            recordDocumentNextActionBlur(document, event.currentTarget.value)
-                          }
-                          placeholder="다음 진료 때 확인할 내용"
-                        />
-                      </label>
-                    </div>
-                    {document.history?.length ? (
-                      <div className="document-history" aria-label={`${document.title} 변경 이력`}>
-                        <span>변경 이력</span>
-                        <ol>
-                          {[...document.history]
-                            .slice(-3)
-                            .reverse()
-                            .map((entry) => (
-                              <li key={entry.id}>
-                                <time>{entry.at.slice(0, 10)}</time>
-                                <strong>{entry.label}</strong>
-                                <small>{entry.detail}</small>
-                              </li>
-                            ))}
-                        </ol>
-                      </div>
-                    ) : null}
-                    {document.attachmentName ? (
-                      <div className="document-attachment">
-                        <Paperclip aria-hidden="true" />
-                        <span>{document.attachmentName}</span>
-                        <small>
-                          {document.attachmentStorage
-                            ? attachmentStorageLabel[document.attachmentStorage]
-                            : "첨부"}
+              {filteredDocuments.length ? (
+                filteredDocuments.map((document) => (
+                  <article className="document-item" key={document.id}>
+                    <div>
+                      <span>{document.date}</span>
+                      <div className="document-status-row">
+                        <mark>{documentLabel[document.category]}</mark>
+                        <small className={`status-chip review-${document.reviewStatus}`}>
+                          {documentReviewStatusLabel[document.reviewStatus]}
                         </small>
-                        {document.attachmentStatus ? (
-                          <small className="attachment-status">{document.attachmentStatus}</small>
-                        ) : null}
                       </div>
-                    ) : null}
-                    {needsAttachmentRecovery(document.attachmentStatus) ? (
-                      <div className="attachment-recovery" role="status">
-                        <AlertTriangle aria-hidden="true" />
-                        <span>첨부 원본을 찾거나 열 수 없습니다. 재첨부로 새 복사본을 연결하세요.</span>
+                      <strong>{document.title}</strong>
+                      <p>{document.body}</p>
+                      <div
+                        className="document-update-controls"
+                        aria-label={`${document.title} 서류 조치 수정`}
+                      >
+                        <label>
+                          상태
+                          <select
+                            aria-label={`${document.title} 검토 상태`}
+                            title={`${document.title} 검토 상태`}
+                            value={document.reviewStatus}
+                            onChange={(event) =>
+                              updateDocumentReviewStatus(
+                                document.id,
+                                event.currentTarget.value as DocumentReviewStatus,
+                              )
+                            }
+                          >
+                            {Object.entries(documentReviewStatusLabel).map(([value, label]) => (
+                              <option value={value} key={value}>
+                                {label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label>
+                          다음 조치
+                          <textarea
+                            aria-label={`${document.title} 다음 조치`}
+                            title={`${document.title} 다음 조치`}
+                            value={document.nextAction}
+                            rows={2}
+                            onFocus={() => captureDocumentActionBaseline(document)}
+                            onChange={(event) =>
+                              updateDocumentNextAction(document, event.currentTarget.value)
+                            }
+                            onBlur={(event) =>
+                              recordDocumentNextActionBlur(document, event.currentTarget.value)
+                            }
+                            placeholder="다음 진료 때 확인할 내용"
+                          />
+                        </label>
                       </div>
-                    ) : null}
-                  </div>
-                  <div className="document-actions">
-                    <button type="button" onClick={() => replaceSavedDocumentAttachment(document)}>
-                      <Upload aria-hidden="true" />
-                      {document.attachmentName ? "재첨부" : "첨부"}
-                    </button>
-                    {document.attachmentName ? (
-                      <button type="button" onClick={() => checkDocumentAttachment(document)}>
-                        <ShieldCheck aria-hidden="true" />
-                        첨부 확인
+                      {document.history?.length ? (
+                        <div className="document-history" aria-label={`${document.title} 변경 이력`}>
+                          <span>변경 이력</span>
+                          <ol>
+                            {[...document.history]
+                              .slice(-3)
+                              .reverse()
+                              .map((entry) => (
+                                <li key={entry.id}>
+                                  <time>{entry.at.slice(0, 10)}</time>
+                                  <strong>{entry.label}</strong>
+                                  <small>{entry.detail}</small>
+                                </li>
+                              ))}
+                          </ol>
+                        </div>
+                      ) : null}
+                      {document.attachmentName ? (
+                        <div className="document-attachment">
+                          <Paperclip aria-hidden="true" />
+                          <span>{document.attachmentName}</span>
+                          <small>
+                            {document.attachmentStorage
+                              ? attachmentStorageLabel[document.attachmentStorage]
+                              : "첨부"}
+                          </small>
+                          {document.attachmentStatus ? (
+                            <small className="attachment-status">{document.attachmentStatus}</small>
+                          ) : null}
+                        </div>
+                      ) : null}
+                      {needsAttachmentRecovery(document.attachmentStatus) ? (
+                        <div className="attachment-recovery" role="status">
+                          <AlertTriangle aria-hidden="true" />
+                          <span>첨부 원본을 찾거나 열 수 없습니다. 재첨부로 새 복사본을 연결하세요.</span>
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="document-actions">
+                      <button
+                        type="button"
+                        onClick={() => replaceSavedDocumentAttachment(document)}
+                        aria-label={formatDocumentActionButtonLabel(
+                          document,
+                          document.attachmentName ? "replace-attachment" : "add-attachment",
+                        )}
+                        title={formatDocumentActionButtonLabel(
+                          document,
+                          document.attachmentName ? "replace-attachment" : "add-attachment",
+                        )}
+                      >
+                        <Upload aria-hidden="true" />
+                        {document.attachmentName ? "재첨부" : "첨부 추가"}
                       </button>
-                    ) : null}
-                    {document.attachmentName &&
-                    isPreviewableImageAttachment(document.attachmentName) ? (
-                      <button type="button" onClick={() => previewDocumentAttachment(document)}>
-                        <ImageIcon aria-hidden="true" />
-                        미리보기
+                      {document.attachmentName ? (
+                        <button
+                          type="button"
+                          onClick={() => checkDocumentAttachment(document)}
+                          aria-label={formatDocumentActionButtonLabel(document, "check-attachment")}
+                          title={formatDocumentActionButtonLabel(document, "check-attachment")}
+                        >
+                          <ShieldCheck aria-hidden="true" />
+                          첨부 확인
+                        </button>
+                      ) : null}
+                      {document.attachmentName &&
+                      isPreviewableImageAttachment(document.attachmentName) ? (
+                        <button
+                          type="button"
+                          onClick={() => previewDocumentAttachment(document)}
+                          aria-label={formatDocumentActionButtonLabel(document, "preview-attachment")}
+                          title={formatDocumentActionButtonLabel(document, "preview-attachment")}
+                        >
+                          <ImageIcon aria-hidden="true" />
+                          미리보기
+                        </button>
+                      ) : null}
+                      {document.attachmentPath ? (
+                        <button
+                          type="button"
+                          onClick={() => openDocumentAttachment(document)}
+                          aria-label={formatDocumentActionButtonLabel(document, "open-attachment")}
+                          title={formatDocumentActionButtonLabel(document, "open-attachment")}
+                        >
+                          <ExternalLink aria-hidden="true" />
+                          열기
+                        </button>
+                      ) : null}
+                      {document.attachmentName ? (
+                        <button
+                          type="button"
+                          onClick={() => removeSavedDocumentAttachment(document)}
+                          aria-label={formatDocumentActionButtonLabel(document, "remove-attachment")}
+                          title={formatDocumentActionButtonLabel(document, "remove-attachment")}
+                        >
+                          <Unlink aria-hidden="true" />
+                          첨부 제거
+                        </button>
+                      ) : null}
+                      <button
+                        className="danger-action"
+                        type="button"
+                        onClick={() => deleteDocument(document)}
+                        aria-label={formatDocumentActionButtonLabel(document, "archive-document")}
+                        title={formatDocumentActionButtonLabel(document, "archive-document")}
+                      >
+                        <Trash2 aria-hidden="true" />
+                        삭제 보관
                       </button>
-                    ) : null}
-                    {document.attachmentPath ? (
-                      <button type="button" onClick={() => openDocumentAttachment(document)}>
-                        <ExternalLink aria-hidden="true" />
-                        열기
-                      </button>
-                    ) : null}
-                    {document.attachmentName ? (
-                      <button type="button" onClick={() => removeSavedDocumentAttachment(document)}>
-                        <Unlink aria-hidden="true" />
-                        첨부 제거
-                      </button>
-                    ) : null}
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="document-empty" role="status" aria-label="저장된 서류 필터 결과 없음">
+                  <p>
+                    {state.documents.length
+                      ? "검색어나 필터 조건에 맞는 저장된 서류가 없습니다."
+                      : "아직 저장된 서류가 없습니다. 검사, 영상, 처방, 진료 메모를 먼저 저장하세요."}
+                  </p>
+                  {state.documents.length && hasActiveDocumentFilters ? (
                     <button
-                      className="danger-action"
+                      className="secondary-inline-button document-empty-reset"
                       type="button"
-                      onClick={() => deleteDocument(document)}
+                      onClick={resetDocumentFilters}
                     >
-                      <Trash2 aria-hidden="true" />
-                      삭제
+                      <RotateCcw aria-hidden="true" />
+                      필터 초기화
                     </button>
-                  </div>
-                </article>
-              ))}
+                  ) : null}
+                </div>
+              )}
             </div>
             {state.deletedDocuments.length ? (
               <div className="deleted-document-panel" aria-label="삭제 보관함">
@@ -2999,12 +6475,28 @@ function App() {
                         ) : null}
                       </div>
                       <div className="deleted-document-actions">
-                        <button type="button" onClick={() => restoreDocument(document)}>
+                        <button
+                          type="button"
+                          onClick={() => restoreDocument(document)}
+                          aria-label={formatDocumentActionButtonLabel(document, "restore-document")}
+                          title={formatDocumentActionButtonLabel(document, "restore-document")}
+                        >
                           <RotateCcw aria-hidden="true" />
                           복구
                         </button>
                         {hasAttachmentMetadata(document) ? (
-                          <button type="button" onClick={() => removeDeletedDocumentAttachment(document)}>
+                          <button
+                            type="button"
+                            onClick={() => removeDeletedDocumentAttachment(document)}
+                            aria-label={formatDocumentActionButtonLabel(
+                              document,
+                              "clean-deleted-attachment",
+                            )}
+                            title={formatDocumentActionButtonLabel(
+                              document,
+                              "clean-deleted-attachment",
+                            )}
+                          >
                             <Unlink aria-hidden="true" />
                             첨부 정리
                           </button>
@@ -3018,10 +6510,10 @@ function App() {
           </section>
         </section>
 
-        <section className="next-steps">
-          <CalendarDays aria-hidden="true" />
+        <section className="care-boundary-strip">
+          <ShieldCheck aria-hidden="true" />
           <p>
-            다음 개발 슬라이스: 보호자 공유본 설정 초기화.
+            기록과 내보내기는 로컬 기기 기준으로 준비되며, 진료 판단은 의료진 기준을 우선하세요.
           </p>
         </section>
         {exportPreview ? (
@@ -3033,29 +6525,230 @@ function App() {
                 <span>{exportPreview.filename}</span>
               </div>
               <div className="export-preview-actions">
-                <button type="button" className="secondary-inline-button" onClick={copyExportPreview}>
+                <button
+                  type="button"
+                  className="secondary-inline-button"
+                  onClick={copyExportPreview}
+                  disabled={exportPreviewHasStaleState}
+                  aria-label={exportPreviewCopyDescription}
+                  title={exportPreviewDisabledReason ?? exportPreviewCopyDescription}
+                >
                   <Copy aria-hidden="true" />
-                  복사
+                  미리보기 복사
                 </button>
-                <button type="button" className="secondary-inline-button" onClick={printExportPreview}>
+                <button
+                  type="button"
+                  className="secondary-inline-button"
+                  onClick={printExportPreview}
+                  disabled={exportPreviewHasStaleState}
+                  aria-label={exportPreviewPrintDescription}
+                  title={exportPreviewDisabledReason ?? exportPreviewPrintDescription}
+                >
                   <Printer aria-hidden="true" />
-                  인쇄
+                  미리보기 인쇄
                 </button>
-                <button type="button" className="secondary-inline-button" onClick={downloadExportPreview}>
+                <button
+                  type="button"
+                  className="secondary-inline-button"
+                  onClick={downloadExportPreview}
+                  disabled={exportPreviewHasStaleState}
+                  aria-label={exportPreviewDownloadDescription}
+                  title={exportPreviewDisabledReason ?? exportPreviewDownloadDescription}
+                >
                   <Download aria-hidden="true" />
-                  다운로드
+                  미리보기 다운로드
                 </button>
                 <button
                   type="button"
                   className="text-icon-button"
                   onClick={() => setExportPreview(null)}
                   aria-label="내보내기 미리보기 닫기"
+                  title="내보내기 미리보기 닫기"
                 >
                   <X aria-hidden="true" />
-                  닫기
+                  미리보기 닫기
                 </button>
               </div>
             </div>
+            {exportPreviewSummary ? (
+              <div className="export-preview-summary" aria-label="내보내기 미리보기 요약">
+                <span>
+                  <strong>형식</strong>
+                  {exportPreview.format}
+                </span>
+                <span>
+                  <strong>분량</strong>
+                  {exportPreviewSummary.lineLabel}
+                </span>
+                <span>
+                  <strong>문자</strong>
+                  {exportPreviewSummary.characterLabel}
+                </span>
+                <span>
+                  <strong>크기</strong>
+                  {exportPreviewSummary.byteLabel}
+                </span>
+                <span className="export-preview-source-marker">
+                  <strong>출처 표식</strong>
+                  {exportPreviewSummary.sourceMarkerLabel}
+                </span>
+              </div>
+            ) : null}
+            {exportPreviewHasStaleCaregiverSettings ? (
+              <div
+                className="export-preview-stale-alert"
+                role="status"
+                aria-label="보호자 공유본 미리보기 변경 감지"
+              >
+                <AlertTriangle aria-hidden="true" />
+                <div>
+                  <strong>공유 설정이 바뀌었습니다</strong>
+                  <span>현재 미리보기는 이전 설정으로 생성되었습니다.</span>
+                </div>
+                <button
+                  type="button"
+                  className="secondary-inline-button"
+                  onClick={showCaregiverExportPreview}
+                  aria-label={caregiverSettingsFreshPreviewDescription}
+                  title={caregiverSettingsFreshPreviewDescription}
+                >
+                  <Eye aria-hidden="true" />
+                  설정 반영
+                </button>
+              </div>
+            ) : null}
+            {exportPreviewHasStaleCaregiverContent ? (
+              <div
+                className="export-preview-stale-alert"
+                role="status"
+                aria-label="보호자 공유본 미리보기 기록 변경 감지"
+              >
+                <AlertTriangle aria-hidden="true" />
+                <div>
+                  <strong>보호자 공유본 기록이 바뀌었습니다</strong>
+                  <span>현재 미리보기는 이전 기록으로 생성되었습니다.</span>
+                </div>
+                <button
+                  type="button"
+                  className="secondary-inline-button"
+                  onClick={showCaregiverExportPreview}
+                  aria-label={caregiverContentFreshPreviewDescription}
+                  title={caregiverContentFreshPreviewDescription}
+                >
+                  <Eye aria-hidden="true" />
+                  공유 기록 반영
+                </button>
+              </div>
+            ) : null}
+            {exportPreviewHasStaleVisitPacketRange ? (
+              <div
+                className="export-preview-stale-alert"
+                role="status"
+                aria-label="진료 요약 미리보기 범위 변경 감지"
+              >
+                <AlertTriangle aria-hidden="true" />
+                <div>
+                  <strong>진료 요약 범위가 바뀌었습니다</strong>
+                  <span>현재 미리보기는 이전 범위로 생성되었습니다.</span>
+                </div>
+                <button
+                  type="button"
+                  className="secondary-inline-button"
+                  onClick={showVisitPacketExportPreview}
+                  aria-label={visitPacketRangeFreshPreviewDescription}
+                  title={visitPacketRangeFreshPreviewDescription}
+                >
+                  <Eye aria-hidden="true" />
+                  범위 반영
+                </button>
+              </div>
+            ) : null}
+            {exportPreviewHasStaleVisitPacketContent ? (
+              <div
+                className="export-preview-stale-alert"
+                role="status"
+                aria-label="진료 요약 미리보기 기록 변경 감지"
+              >
+                <AlertTriangle aria-hidden="true" />
+                <div>
+                  <strong>진료 요약 기록이 바뀌었습니다</strong>
+                  <span>현재 미리보기는 이전 기록으로 생성되었습니다.</span>
+                </div>
+                <button
+                  type="button"
+                  className="secondary-inline-button"
+                  onClick={showVisitPacketExportPreview}
+                  aria-label={visitPacketContentFreshPreviewDescription}
+                  title={visitPacketContentFreshPreviewDescription}
+                >
+                  <Eye aria-hidden="true" />
+                  요약 기록 반영
+                </button>
+              </div>
+            ) : null}
+            {exportPreviewHasStaleCsvState ? (
+              <div
+                className="export-preview-stale-alert"
+                role="status"
+                aria-label="CSV 미리보기 기록 변경 감지"
+              >
+                <AlertTriangle aria-hidden="true" />
+                <div>
+                  <strong>CSV 기록이 바뀌었습니다</strong>
+                  <span>현재 미리보기는 이전 기록으로 생성되었습니다.</span>
+                </div>
+                <button
+                  type="button"
+                  className="secondary-inline-button"
+                  onClick={showCsvExportPreview}
+                  aria-label={csvFreshPreviewDescription}
+                  title={csvFreshPreviewDescription}
+                >
+                  <Eye aria-hidden="true" />
+                  CSV 기록 반영
+                </button>
+              </div>
+            ) : null}
+            {exportPreviewHasStaleCaregiverSettings &&
+            caregiverPreviewSettingDifferences.length ? (
+              <div
+                className="export-preview-setting-differences"
+                aria-label="보호자 공유본 미리보기 설정 변경 차이"
+              >
+                <strong>바뀐 설정</strong>
+                <ul>
+                  {caregiverPreviewSettingDifferences.map((difference) => (
+                    <li key={difference.id}>
+                      <span className="setting-diff-label">{difference.label}</span>
+                      <span className="setting-diff-value">
+                        <small>생성 시점</small>
+                        {difference.previousText}
+                      </span>
+                      <span className="setting-diff-value">
+                        <small>현재</small>
+                        {difference.currentText}
+                      </span>
+                      {difference.detailText ? (
+                        <small className="setting-diff-detail">{difference.detailText}</small>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {exportPreview.caregiverShareSettingsSummary ? (
+              <div
+                className="export-preview-settings-snapshot"
+                aria-label="보호자 공유본 미리보기 생성 시점 설정"
+              >
+                <strong>생성 시점 설정</strong>
+                <span>{exportPreview.caregiverShareSettingsSummary.presetText}</span>
+                <span>{exportPreview.caregiverShareSettingsSummary.profileText}</span>
+                <span>{exportPreview.caregiverShareSettingsSummary.memoText}</span>
+                <span>포함 {exportPreview.caregiverShareSettingsSummary.includedText}</span>
+                <small>제외 {exportPreview.caregiverShareSettingsSummary.excludedText}</small>
+              </div>
+            ) : null}
             {showRenderedExportPreview ? (
               <>
                 <div className="export-preview-rendered" aria-label="보호자 공유본 렌더 미리보기">
@@ -3086,6 +6779,7 @@ function App() {
           >
             <div className="attachment-preview-header">
               <div>
+                <span className="attachment-preview-kicker">이미지 미리보기</span>
                 <strong>{attachmentPreview.title}</strong>
                 <span>{attachmentPreview.attachmentName}</span>
               </div>

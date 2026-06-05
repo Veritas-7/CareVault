@@ -1,0 +1,31 @@
+import { describe, expect, it } from "vitest";
+import {
+  defaultQuestionPriority,
+  normalizeQuestionPriority,
+  questionPriorityLabel,
+  questionPrioritySortRank,
+} from "./questionPriority";
+
+describe("questionPriority", () => {
+  it("keeps appointment triage labels explicit", () => {
+    expect(questionPriorityLabel).toEqual({
+      high: "이번 진료 우선",
+      "next-visit": "다음 진료",
+      routine: "일반 확인",
+    });
+  });
+
+  it("normalizes missing or unknown priority to next visit", () => {
+    expect(defaultQuestionPriority).toBe("next-visit");
+    expect(normalizeQuestionPriority(undefined)).toBe("next-visit");
+    expect(normalizeQuestionPriority("unknown")).toBe("next-visit");
+    expect(normalizeQuestionPriority("high")).toBe("high");
+  });
+
+  it("sorts high-priority questions before routine questions", () => {
+    expect(questionPrioritySortRank.high).toBeLessThan(questionPrioritySortRank["next-visit"]);
+    expect(questionPrioritySortRank["next-visit"]).toBeLessThan(
+      questionPrioritySortRank.routine,
+    );
+  });
+});

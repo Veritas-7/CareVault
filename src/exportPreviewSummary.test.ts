@@ -1,0 +1,95 @@
+import { describe, expect, it } from "vitest";
+import {
+  buildExportPreviewSummary,
+  formatExportPreviewCompactSummary,
+  formatExportPreviewCopyDescription,
+  formatExportPreviewCopyStatus,
+  formatExportPreviewDownloadDescription,
+  formatExportPreviewDownloadStatus,
+  formatExportPreviewPrintDescription,
+  formatExportPreviewPrintStatus,
+} from "./exportPreviewSummary";
+
+describe("exportPreviewSummary", () => {
+  it("counts lines, characters, and UTF-8 bytes for preview content", () => {
+    expect(buildExportPreviewSummary("첫 줄\nsecond")).toEqual({
+      byteCount: 14,
+      byteLabel: "14B",
+      characterCount: 10,
+      characterLabel: "10자",
+      lineCount: 2,
+      lineLabel: "2줄",
+      sourceMarkerCount: 0,
+      sourceMarkerLabel: "근거/출처 0개",
+    });
+  });
+
+  it("formats empty preview content as zero-size", () => {
+    expect(buildExportPreviewSummary("")).toEqual({
+      byteCount: 0,
+      byteLabel: "0B",
+      characterCount: 0,
+      characterLabel: "0자",
+      lineCount: 0,
+      lineLabel: "0줄",
+      sourceMarkerCount: 0,
+      sourceMarkerLabel: "근거/출처 0개",
+    });
+  });
+
+  it("counts evidence and source markers in preview content", () => {
+    expect(
+      buildExportPreviewSummary(
+        [
+          "질문: 검사 수치 확인",
+          "근거: 대한당뇨병학회 당뇨병 관리 목표",
+          "출처: 국가암정보센터 자궁경부암 일반적 증상",
+        ].join("\n"),
+      ),
+    ).toMatchObject({
+      sourceMarkerCount: 2,
+      sourceMarkerLabel: "근거/출처 2개",
+    });
+  });
+
+  it("counts source markers inside rendered caregiver HTML previews", () => {
+    expect(
+      buildExportPreviewSummary(
+        [
+          "<section>",
+          '<small>근거: <a href="https://example.test/source">공식 출처</a></small>',
+          '<p>출처: 국가암정보센터 자궁경부암 일반적 증상</p>',
+          "</section>",
+        ].join("\n"),
+      ),
+    ).toMatchObject({
+      lineCount: 4,
+      sourceMarkerCount: 2,
+      sourceMarkerLabel: "근거/출처 2개",
+    });
+  });
+
+  it("formats preview action affordances with the same compact summary as visible chips", () => {
+    const summary = buildExportPreviewSummary("a\n근거: x");
+
+    expect(formatExportPreviewCompactSummary(summary)).toBe("2줄 · 7자 · 11B · 근거/출처 1개");
+    expect(formatExportPreviewCopyDescription("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 복사 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewCopyStatus("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 복사됨 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewPrintDescription("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 인쇄 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewPrintStatus("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 인쇄 준비 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewDownloadDescription("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 다운로드 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewDownloadStatus("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 다운로드됨 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+  });
+});

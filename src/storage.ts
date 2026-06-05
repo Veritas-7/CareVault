@@ -12,6 +12,7 @@ export type NormalizedCareVaultMirror = {
     sex: string;
     heightCm: string;
     weightKg: string;
+    waistCm?: string;
     cancerCareMode: boolean;
     diabetes: boolean;
     hypertension: boolean;
@@ -24,6 +25,7 @@ export type NormalizedCareVaultMirror = {
     diastolic?: number;
     glucoseMgDl?: number;
     glucoseContext?: string;
+    temperatureC?: number;
     note: string;
   }>;
   visits: Array<{
@@ -79,6 +81,7 @@ export type NormalizedCareVaultMirror = {
     date: string;
     topic: string;
     question: string;
+    priority?: string;
     status: string;
     answer: string;
   }>;
@@ -202,6 +205,7 @@ const normalizedTableStatements: SqlStatement[] = [
       sex TEXT NOT NULL,
       height_cm TEXT NOT NULL,
       weight_kg TEXT NOT NULL,
+      waist_cm TEXT NOT NULL DEFAULT '',
       cancer_care_mode INTEGER NOT NULL,
       diabetes INTEGER NOT NULL,
       hypertension INTEGER NOT NULL,
@@ -216,6 +220,7 @@ const normalizedTableStatements: SqlStatement[] = [
       systolic REAL,
       diastolic REAL,
       glucose_mg_dl REAL,
+      temperature_c REAL,
       glucose_context TEXT,
       note TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -301,6 +306,7 @@ const normalizedTableStatements: SqlStatement[] = [
       date TEXT NOT NULL,
       topic TEXT NOT NULL,
       question TEXT NOT NULL,
+      priority TEXT NOT NULL DEFAULT 'next-visit',
       status TEXT NOT NULL,
       answer TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -370,6 +376,7 @@ export function buildNormalizedSearchStatements(input: string): NormalizedSearch
       query: `SELECT COUNT(*) AS count FROM vitals
         WHERE date ${like}
           OR type ${like}
+          OR COALESCE(CAST(temperature_c AS TEXT), '') ${like}
           OR COALESCE(glucose_context, '') ${like}
           OR note ${like}`,
       bindValues,
@@ -436,6 +443,7 @@ export function buildNormalizedSearchStatements(input: string): NormalizedSearch
         WHERE date ${like}
           OR topic ${like}
           OR question ${like}
+          OR priority ${like}
           OR status ${like}
           OR answer ${like}`,
       bindValues,
@@ -479,18 +487,20 @@ export function buildNormalizedMirrorStatements(
         sex,
         height_cm,
         weight_kg,
+        waist_cm,
         cancer_care_mode,
         diabetes,
         hypertension,
         updated_at
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       ON CONFLICT(id) DO UPDATE SET
         name = excluded.name,
         age = excluded.age,
         sex = excluded.sex,
         height_cm = excluded.height_cm,
         weight_kg = excluded.weight_kg,
+        waist_cm = excluded.waist_cm,
         cancer_care_mode = excluded.cancer_care_mode,
         diabetes = excluded.diabetes,
         hypertension = excluded.hypertension,
@@ -502,6 +512,7 @@ export function buildNormalizedMirrorStatements(
         mirror.profile.sex,
         mirror.profile.heightCm,
         mirror.profile.weightKg,
+        mirror.profile.waistCm ?? "",
         boolToSql(mirror.profile.cancerCareMode),
         boolToSql(mirror.profile.diabetes),
         boolToSql(mirror.profile.hypertension),
@@ -528,11 +539,12 @@ export function buildNormalizedMirrorStatements(
         systolic,
         diastolic,
         glucose_mg_dl,
+        temperature_c,
         glucose_context,
         note,
         updated_at
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       bindValues: [
         vital.id,
         vital.date,
@@ -540,6 +552,7 @@ export function buildNormalizedMirrorStatements(
         optionalNumber(vital.systolic),
         optionalNumber(vital.diastolic),
         optionalNumber(vital.glucoseMgDl),
+        optionalNumber(vital.temperatureC),
         optionalText(vital.glucoseContext),
         vital.note,
         updatedAt,
@@ -714,16 +727,18 @@ export function buildNormalizedMirrorStatements(
         date,
         topic,
         question,
+        priority,
         status,
         answer,
         updated_at
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
       bindValues: [
         question.id,
         question.date,
         question.topic,
         question.question,
+        question.priority ?? "next-visit",
         question.status,
         question.answer,
         updatedAt,
@@ -766,6 +781,41 @@ async function ensureNormalizedTables(db: SqlDatabase) {
   for (const statement of normalizedTableStatements) {
     await db.execute(statement.query, statement.bindValues);
   }
+  await ensureProfileSnapshotColumns(db);
+  await ensureVitalColumns(db);
+  await ensureQuestionColumns(db);
+}
+
+async function ensureProfileSnapshotColumns(db: SqlDatabase) {
+  const rows = (await db.select("PRAGMA table_info(profile_snapshot)")) as Array<{
+    name?: unknown;
+  }>;
+  const hasWaistColumn = rows.some((row) => row.name === "waist_cm");
+  if (!hasWaistColumn) {
+    await db.execute("ALTER TABLE profile_snapshot ADD COLUMN waist_cm TEXT NOT NULL DEFAULT ''");
+  }
+}
+
+async function ensureVitalColumns(db: SqlDatabase) {
+  const rows = (await db.select("PRAGMA table_info(vitals)")) as Array<{
+    name?: unknown;
+  }>;
+  const hasTemperatureColumn = rows.some((row) => row.name === "temperature_c");
+  if (!hasTemperatureColumn) {
+    await db.execute("ALTER TABLE vitals ADD COLUMN temperature_c REAL");
+  }
+}
+
+async function ensureQuestionColumns(db: SqlDatabase) {
+  const rows = (await db.select("PRAGMA table_info(questions)")) as Array<{
+    name?: unknown;
+  }>;
+  const hasPriorityColumn = rows.some((row) => row.name === "priority");
+  if (!hasPriorityColumn) {
+    await db.execute(
+      "ALTER TABLE questions ADD COLUMN priority TEXT NOT NULL DEFAULT 'next-visit'",
+    );
+  }
 }
 
 async function mirrorNormalizedState(
@@ -773,6 +823,7 @@ async function mirrorNormalizedState(
   mirror: NormalizedCareVaultMirror,
   updatedAt: string,
 ) {
+  await ensureNormalizedTables(db);
   const statements = buildNormalizedMirrorStatements(mirror, updatedAt);
   await db.execute("BEGIN");
   try {
