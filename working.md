@@ -14579,4 +14579,4 @@
   - PASS: `git diff --check -- DESIGN.md working.md vite.config.ts`.
   - PASS: stopped the local Vite preview server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `838a7e6` (`Split production helper chunks`).
