@@ -380,7 +380,10 @@ import {
   cervicalCancerCarePrompts,
   cervicalCancerCareRecoveryGuides,
   cervicalCancerCareSources,
+  formatCervicalCancerCareAlertDraftActionLabel,
+  formatCervicalCancerCareItemDraftActionLabel,
   formatCervicalCancerCareListItemAriaLabel,
+  formatCervicalCancerCarePromptDraftActionLabel,
   formatCervicalCancerCareSourceLinkLabel,
   getCervicalCancerCareSource,
   type CervicalCancerCareAlert,
@@ -2621,8 +2624,8 @@ function App() {
         type="button"
         className="secondary-inline-button cervical-check-draft-button"
         onClick={() => applyCervicalCancerCareItemDraft(item)}
-        aria-label={`${item.label} 자궁경부암 기록 메모 초안 만들기`}
-        title={`${item.label} 자궁경부암 기록 메모 초안 만들기`}
+        aria-label={formatCervicalCancerCareItemDraftActionLabel(item)}
+        title={formatCervicalCancerCareItemDraftActionLabel(item)}
       >
         <ClipboardList aria-hidden="true" />
         기록 초안
@@ -4102,8 +4105,8 @@ function App() {
                               className="secondary-inline-button"
                               type="button"
                               onClick={() => applyCervicalCancerCareAlert(item)}
-                              aria-label={`${item.title} 자궁경부암 증상 기록 초안 만들기`}
-                              title={`${item.title} 자궁경부암 증상 기록 초안 만들기`}
+                              aria-label={formatCervicalCancerCareAlertDraftActionLabel(item)}
+                              title={formatCervicalCancerCareAlertDraftActionLabel(item)}
                             >
                               <ClipboardList aria-hidden="true" />
                               기록 초안
@@ -4197,8 +4200,8 @@ function App() {
                             type="button"
                             className="secondary-inline-button"
                             onClick={() => applyCervicalCancerCarePrompt(prompt)}
-                            aria-label={`${prompt.topic} 자궁경부암 질문 초안 만들기`}
-                            title={`${prompt.topic} 자궁경부암 질문 초안 만들기`}
+                            aria-label={formatCervicalCancerCarePromptDraftActionLabel(prompt)}
+                            title={formatCervicalCancerCarePromptDraftActionLabel(prompt)}
                           >
                             <MessageSquare aria-hidden="true" />
                             <span>

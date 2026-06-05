@@ -14,7 +14,10 @@ import {
   cervicalCancerCarePrompts,
   cervicalCancerCareRecoveryGuides,
   cervicalCancerCareSources,
+  formatCervicalCancerCareAlertDraftActionLabel,
+  formatCervicalCancerCareItemDraftActionLabel,
   formatCervicalCancerCareListItemAriaLabel,
+  formatCervicalCancerCarePromptDraftActionLabel,
   formatCervicalCancerCareSourceLinkLabel,
   formatCervicalCancerCareSourceEvidence,
   formatCervicalCancerCarePriorityEvidence,
@@ -320,6 +323,18 @@ describe("cervicalCancerCare", () => {
         sourceId: "missing-source",
       }),
     ).toBe("직접 확인. 문장 끝 정리.");
+  });
+
+  it("builds item-specific draft action labels for cervical care buttons", () => {
+    expect(formatCervicalCancerCareAlertDraftActionLabel(cervicalCancerCareAlerts[0])).toBe(
+      "비정상 질출혈 자궁경부암 증상 기록 초안 만들기",
+    );
+    expect(formatCervicalCancerCarePromptDraftActionLabel(cervicalCancerCarePrompts[0])).toBe(
+      "자궁경부암 추적 자궁경부암 질문 초안 만들기",
+    );
+    expect(formatCervicalCancerCareItemDraftActionLabel(cervicalCancerCareChecks[0])).toBe(
+      "출혈·분비물 기록 자궁경부암 기록 메모 초안 만들기",
+    );
   });
 
   it("builds symptom drafts from warning cards with source labels and URLs", () => {

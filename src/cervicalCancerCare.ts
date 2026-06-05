@@ -539,6 +539,20 @@ export function formatCervicalCancerCareListItemAriaLabel(
   return `${item.label}. ${detail}.${sourceText}`;
 }
 
+export function formatCervicalCancerCareItemDraftActionLabel(
+  item: CervicalCancerCareRecordDraftItem,
+) {
+  return `${item.label} 자궁경부암 기록 메모 초안 만들기`;
+}
+
+export function formatCervicalCancerCareAlertDraftActionLabel(alert: CervicalCancerCareAlert) {
+  return `${alert.title} 자궁경부암 증상 기록 초안 만들기`;
+}
+
+export function formatCervicalCancerCarePromptDraftActionLabel(prompt: CervicalCancerCarePrompt) {
+  return `${prompt.topic} 자궁경부암 질문 초안 만들기`;
+}
+
 export function formatCervicalCancerCareSourceEvidence(sourceId: string) {
   const source = getCervicalCancerCareSource(sourceId);
   return source
