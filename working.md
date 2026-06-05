@@ -17656,3 +17656,36 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `baef913` (`Raise export preview action targets`).
+
+## 2026-06-06 00:06 KST - Lab Followup Action Target cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires narrow cmux visible controls to keep the broader 44px touch/click target, while lab follow-up question buttons need scoped accessible labels and hover titles.
+  - Real cmux QA found the saved WBC lab card's `질문으로 추가` action was still a 36px `secondary-inline-button` in the constrained right pane.
+- Change:
+  - Added a `.lab-followup-actions .secondary-inline-button` CSS rule so saved-lab follow-up question actions use a 44px minimum target without changing unrelated compact desktop buttons.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `사업보고서` and the right pane was Research Flow AI, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#labs`.
+  - RED/IMPROVEMENT: viewport scan on the actual right pane found `WBC 검사 질문 추가 · 메모와 근거 포함` at height 36px and `minHeight: 36px`.
+  - RED screenshot: `/tmp/carevault-surface9-iter8-lab-question-36-red.png` captured the visible saved-lab follow-up action before the patch.
+  - PASS after fix: reloaded the same `surface:9` so the updated stylesheet contained the lab follow-up 44px rule.
+  - PASS after fix: DOM measurement returned `height: 44`, `minHeight: 44px`, and the same scoped aria label `WBC 검사 질문 추가 · 메모와 근거 포함`.
+  - PASS screenshot: `/tmp/carevault-surface9-iter8-lab-question-44-after-reload.png` captured the 44px saved-lab follow-up action.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug/HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `1d0cfe9` (`Raise lab followup action target`).
