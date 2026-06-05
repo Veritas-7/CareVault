@@ -1995,6 +1995,7 @@ textarea:focus-visible {
   min-height: 40px;
 }
 
+.profile-field-feedback,
 .record-form-feedback {
   margin: 10px 0 0;
   padding: 10px 12px;

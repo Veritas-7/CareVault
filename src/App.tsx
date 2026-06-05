@@ -288,6 +288,7 @@ import {
 import {
   formatProfileNumberDisplay,
   isProfileNumberField,
+  type ProfileNumberField,
   validateProfileNumberInput,
 } from "./profileValidation";
 import { formatProfileModeToggleLabel } from "./profileModeToggle";
@@ -792,6 +793,13 @@ function App() {
   const [normalizedSearchSummary, setNormalizedSearchSummary] =
     useState<NormalizedSearchSummary | null>(null);
   const [saveLabel, setSaveLabel] = useState("저장소 확인 중");
+  const [profileNumberDrafts, setProfileNumberDrafts] = useState<
+    Partial<Record<ProfileNumberField, string>>
+  >({});
+  const [profileFieldFeedback, setProfileFieldFeedback] = useState<{
+    field: ProfileNumberField;
+    message: string;
+  } | null>(null);
   const [recordFormFeedback, setRecordFormFeedback] = useState<
     Partial<Record<RecordFormFeedbackId, string>>
   >({});
@@ -1759,11 +1767,19 @@ function App() {
 
   const saveProfile = (field: keyof Profile, value: Profile[keyof Profile]) => {
     if (isProfileNumberField(field) && typeof value === "string") {
+      setProfileNumberDrafts((current) => ({ ...current, [field]: value }));
       const validation = validateProfileNumberInput(field, value);
       if (validation.type === "error") {
+        setProfileFieldFeedback({ field, message: validation.message });
         setSaveLabel(validation.message);
         return;
       }
+      setProfileFieldFeedback((current) => (current?.field === field ? null : current));
+      setProfileNumberDrafts((current) => {
+        const next = { ...current };
+        delete next[field];
+        return next;
+      });
     }
 
     const nextProfileSex = field === "sex" && typeof value === "string" ? (value as Sex) : null;
@@ -1794,6 +1810,21 @@ function App() {
         ? `${actionLabel} · ${formatLabPresetSexSyncStatusLabel(labPresetChoice, nextProfileSex)}`
         : actionLabel,
     );
+  };
+
+  const getProfileNumberValue = (field: ProfileNumberField) =>
+    profileNumberDrafts[field] ?? state.profile[field];
+
+  const getProfileNumberFeedbackProps = (field: ProfileNumberField) =>
+    profileFieldFeedback?.field === field
+      ? {
+          "aria-describedby": "profile-field-feedback",
+          "aria-invalid": true,
+        }
+      : {};
+
+  const handleProfileNumberInput = (field: ProfileNumberField, value: string) => {
+    saveProfile(field, value);
   };
 
   const updateVitalDraft = (updates: Partial<VitalEntry>) => {
@@ -4818,10 +4849,11 @@ function App() {
                 <input
                   min="1"
                   type="number"
-                  value={state.profile.age}
+                  value={getProfileNumberValue("age")}
                   aria-label={formControlDescriptions.profileAge}
                   title={formControlDescriptions.profileAge}
-                  onChange={(event) => saveProfile("age", event.currentTarget.value)}
+                  {...getProfileNumberFeedbackProps("age")}
+                  onInput={(event) => handleProfileNumberInput("age", event.currentTarget.value)}
                 />
               </label>
               <label>
@@ -4842,10 +4874,13 @@ function App() {
                 <input
                   min="1"
                   type="number"
-                  value={state.profile.heightCm}
+                  value={getProfileNumberValue("heightCm")}
                   aria-label={formControlDescriptions.profileHeight}
                   title={formControlDescriptions.profileHeight}
-                  onChange={(event) => saveProfile("heightCm", event.currentTarget.value)}
+                  {...getProfileNumberFeedbackProps("heightCm")}
+                  onInput={(event) =>
+                    handleProfileNumberInput("heightCm", event.currentTarget.value)
+                  }
                 />
               </label>
               <label>
@@ -4853,10 +4888,13 @@ function App() {
                 <input
                   min="1"
                   type="number"
-                  value={state.profile.weightKg}
+                  value={getProfileNumberValue("weightKg")}
                   aria-label={formControlDescriptions.profileWeight}
                   title={formControlDescriptions.profileWeight}
-                  onChange={(event) => saveProfile("weightKg", event.currentTarget.value)}
+                  {...getProfileNumberFeedbackProps("weightKg")}
+                  onInput={(event) =>
+                    handleProfileNumberInput("weightKg", event.currentTarget.value)
+                  }
                 />
               </label>
               <label>
@@ -4864,14 +4902,27 @@ function App() {
                 <input
                   min="1"
                   type="number"
-                  value={state.profile.waistCm}
+                  value={getProfileNumberValue("waistCm")}
                   aria-label={formControlDescriptions.profileWaist}
                   title={formControlDescriptions.profileWaist}
-                  onChange={(event) => saveProfile("waistCm", event.currentTarget.value)}
+                  {...getProfileNumberFeedbackProps("waistCm")}
+                  onInput={(event) =>
+                    handleProfileNumberInput("waistCm", event.currentTarget.value)
+                  }
                 />
                 <small className="profile-field-helper">{profileWaistStandardNote}</small>
               </label>
             </div>
+            {profileFieldFeedback ? (
+              <p
+                className="profile-field-feedback"
+                id="profile-field-feedback"
+                role="status"
+                aria-live="polite"
+              >
+                {profileFieldFeedback.message}
+              </p>
+            ) : null}
             <div className="standards-note" aria-label="한국 성인 건강 기준">
               <div className="standards-note-header">
                 <strong>한국 성인 기준</strong>
