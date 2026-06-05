@@ -14036,7 +14036,7 @@
   - PASS: `npm run test`, 54 files and 367 tests.
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
-  - Git commit and push will be reported in the final assistant output.
+  - PASS: committed and pushed to `origin/main` as `d1cc8af` (`Improve disclosure summary labels`).
 
 ## 2026-06-05 10:12 KST - Caregiver Reset Disabled Reason Iteration Note
 
@@ -14071,7 +14071,7 @@
   - PASS: `npm run test`, 54 files and 368 tests.
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
-  - Git commit and push will be reported in the final assistant output.
+  - PASS: committed and pushed to `origin/main` as `b9f06e1` (`Improve caregiver reset disabled label`).
 
 ## 2026-06-05 10:18 KST - Source Link Accessible Label Iteration Note
 
@@ -14110,7 +14110,7 @@
   - PASS: `npm run test`, 54 files and 369 tests.
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
-  - Git commit and push will be reported in the final assistant output.
+  - PASS: committed and pushed to `origin/main` as `69cee6a` (`Improve source link accessible labels`).
 
 ## 2026-06-05 10:21 KST - Shared Source Helper Title Parity Iteration Note
 
@@ -14144,7 +14144,7 @@
   - PASS: `npm run test`, 54 files and 369 tests.
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged nine-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `c887166` (`Align evidence link hover titles`).
 
 ## 2026-06-05 10:30 KST - Hidden File Input Accessibility Iteration Note
 
@@ -14172,7 +14172,7 @@
   - PASS: `npm run test`, 54 files and 369 tests.
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `42b57dd` (`Hide backing file inputs from accessibility tree`).
 
 ## 2026-06-05 10:37 KST - Nutrition Question Action Target Iteration Note
 
@@ -14205,4 +14205,4 @@
   - PASS: `npm run test`, 54 files and 369 tests.
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `2df5811` (`Raise nutrition question action target`).
