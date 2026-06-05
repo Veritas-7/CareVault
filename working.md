@@ -13906,4 +13906,4 @@
     - Reattached `/Users/wj/Ai/System/10_Projects/CareVault/src-tauri/icons/icon.png` to the saved `혈액검사 메모` document as a browser-session test attachment.
     - Opened the saved-document image preview and saw `혈액검사 메모 첨부 미리보기`, `icon.png`, close action `첨부 미리보기 닫기`, image alt `혈액검사 메모 첨부 이미지 미리보기`, and source label `브라우저 세션 미리보기`.
     - Closed the dialog with `첨부 미리보기 닫기`; the dialog disappeared and the live status changed to `이미지 미리보기 닫힘`.
-  - No git staging or commit was performed in this verification note.
+  - Git staging, commit, and push were performed after this verification note using explicit paths only; see the final assistant report for pushed-head evidence.
