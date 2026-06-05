@@ -3323,15 +3323,15 @@ function App() {
     exportPreviewHasStaleVisitPacketContent ||
     exportPreviewHasStaleCsvState;
   const exportPreviewDisabledReason = exportPreviewHasStaleCaregiverSettings
-    ? "공유 설정이 바뀌어 새 미리보기가 필요합니다."
+    ? "공유 설정이 바뀌어 다시 생성이 필요합니다."
     : exportPreviewHasStaleCaregiverContent
-      ? "보호자 공유본 기록이 바뀌어 새 미리보기가 필요합니다."
+      ? "보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다."
       : exportPreviewHasStaleVisitPacketRange
-        ? "진료 요약 범위가 바뀌어 새 미리보기가 필요합니다."
+        ? "진료 요약 범위가 바뀌어 다시 생성이 필요합니다."
         : exportPreviewHasStaleVisitPacketContent
-          ? "진료 요약 기록이 바뀌어 새 미리보기가 필요합니다."
+          ? "진료 요약 기록이 바뀌어 다시 생성이 필요합니다."
           : exportPreviewHasStaleCsvState
-            ? "CSV 기록이 바뀌어 새 미리보기가 필요합니다."
+            ? "CSV 기록이 바뀌어 다시 생성이 필요합니다."
             : undefined;
   const activeCaregiverSectionCount = Object.values(
     state.caregiverShareSettings.sections,
@@ -3362,14 +3362,14 @@ function App() {
   const csvExportDescription = formatCsvExportDescription(state);
   const csvPreviewDescription = formatCsvPreviewDescription(state);
   const caregiverSettingsFreshPreviewDescription =
-    `${caregiverSharePreviewDescription} 새로 생성 · 변경된 공유 설정 적용`;
+    "새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용";
   const caregiverContentFreshPreviewDescription =
-    `${caregiverSharePreviewDescription} 새로 생성 · 변경된 보호자 공유 기록 적용`;
+    "새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용";
   const visitPacketRangeFreshPreviewDescription =
-    `${visitPacketPreviewDescription} 새로 생성 · 변경된 범위 적용`;
+    "새 미리보기 생성 · 진료 요약 · 변경된 범위 적용";
   const visitPacketContentFreshPreviewDescription =
-    `${visitPacketPreviewDescription} 새로 생성 · 변경된 기록 적용`;
-  const csvFreshPreviewDescription = `${csvPreviewDescription} 새로 생성 · 변경된 기록 적용`;
+    "새 미리보기 생성 · 진료 요약 · 변경된 기록 적용";
+  const csvFreshPreviewDescription = "새 미리보기 생성 · CSV · 변경된 기록 적용";
   const caregiverPreviewSettingDifferences =
     exportPreviewHasStaleCaregiverSettings && exportPreview?.caregiverShareSettingsSnapshot
       ? buildCaregiverShareSettingsDifferences(
@@ -3626,8 +3626,8 @@ function App() {
                   key={preset.label}
                   type="button"
                   className="memo-preset-button"
-                  aria-label={`보호자 공유본 전달 메모 프리셋 적용: ${preset.label}`}
-                  title={`보호자 공유본 전달 메모 프리셋 적용: ${preset.label}`}
+                  aria-label={`보호자 공유본 ${preset.label} 메모 프리셋 적용`}
+                  title={`보호자 공유본 ${preset.label} 메모 프리셋 적용`}
                   onClick={() =>
                     updateCaregiverShareSettings(
                       { coverMemo: preset.text },

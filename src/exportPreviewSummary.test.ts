@@ -75,19 +75,19 @@ describe("exportPreviewSummary", () => {
 
     expect(formatExportPreviewCompactSummary(summary)).toBe("2줄 · 7자 · 11B · 근거/출처 1개");
     expect(formatExportPreviewCopyDescription("진료 요약", summary)).toBe(
-      "진료 요약 미리보기 복사 · 2줄 · 7자 · 11B · 근거/출처 1개",
+      "진료 요약 복사 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
     expect(formatExportPreviewCopyStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 복사됨 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
     expect(formatExportPreviewPrintDescription("진료 요약", summary)).toBe(
-      "진료 요약 미리보기 인쇄 · 2줄 · 7자 · 11B · 근거/출처 1개",
+      "진료 요약 인쇄 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
     expect(formatExportPreviewPrintStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 인쇄 준비 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
     expect(formatExportPreviewDownloadDescription("진료 요약", summary)).toBe(
-      "진료 요약 미리보기 다운로드 · 2줄 · 7자 · 11B · 근거/출처 1개",
+      "진료 요약 다운로드 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
     expect(formatExportPreviewDownloadStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 다운로드됨 · 2줄 · 7자 · 11B · 근거/출처 1개",
@@ -101,10 +101,10 @@ describe("exportPreviewSummary", () => {
     expect(
       formatExportPreviewDisabledActionDescription(
         actionDescription,
-        "진료 요약 범위가 바뀌어 새 미리보기가 필요합니다.",
+        "진료 요약 범위가 바뀌어 다시 생성이 필요합니다.",
       ),
     ).toBe(
-      "진료 요약 미리보기 복사 · 2줄 · 7자 · 11B · 근거/출처 1개 · 비활성: 진료 요약 범위가 바뀌어 새 미리보기가 필요합니다.",
+      "진료 요약 복사 · 2줄 · 7자 · 11B · 근거/출처 1개 · 비활성: 진료 요약 범위가 바뀌어 다시 생성이 필요합니다.",
     );
     expect(formatExportPreviewDisabledActionDescription(actionDescription)).toBe(
       actionDescription,

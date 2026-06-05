@@ -46,7 +46,7 @@ export function formatExportPreviewCopyDescription(
   format: string,
   summary: ExportPreviewSummary,
 ) {
-  return `${format} 미리보기 복사 · ${formatExportPreviewCompactSummary(summary)}`;
+  return `${format} 복사 · ${formatExportPreviewCompactSummary(summary)}`;
 }
 
 export function formatExportPreviewDisabledActionDescription(
@@ -65,7 +65,7 @@ export function formatExportPreviewPrintDescription(
   format: string,
   summary: ExportPreviewSummary,
 ) {
-  return `${format} 미리보기 인쇄 · ${formatExportPreviewCompactSummary(summary)}`;
+  return `${format} 인쇄 · ${formatExportPreviewCompactSummary(summary)}`;
 }
 
 export function formatExportPreviewPrintStatus(format: string, summary: ExportPreviewSummary) {
@@ -76,7 +76,7 @@ export function formatExportPreviewDownloadDescription(
   format: string,
   summary: ExportPreviewSummary,
 ) {
-  return `${format} 미리보기 다운로드 · ${formatExportPreviewCompactSummary(summary)}`;
+  return `${format} 다운로드 · ${formatExportPreviewCompactSummary(summary)}`;
 }
 
 export function formatExportPreviewDownloadStatus(format: string, summary: ExportPreviewSummary) {

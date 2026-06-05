@@ -14206,3 +14206,52 @@
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - PASS: committed and pushed to `origin/main` as `2df5811` (`Raise nutrition question action target`).
+
+## 2026-06-05 10:55 KST - Caregiver Preview Accessible Name Disambiguation Iteration Note
+
+- Improvement target:
+  - A follow-up run of the real-person Playwright helpers found two strict-mode accessibility-name collisions:
+    - `getByLabel("보호자 공유본 전달 메모")` matched the textarea plus the three caregiver memo preset buttons because their names started with the exact textarea label.
+    - `getByRole("button", { name: "공유본 미리보기" })` and `getByRole("button", { name: "새 미리보기" })` matched multiple export-preview controls because secondary action names and disabled reasons reused the same phrases.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Renamed caregiver memo preset button `aria-label`/`title` text to `보호자 공유본 {식사|증상|서류} 메모 프리셋 적용`, keeping visible text and behavior unchanged.
+    - Renamed stale export refresh button labels to start with `새 미리보기 생성` and removed `새 미리보기` from disabled export action reasons.
+  - Updated `src/exportPreviewSummary.ts`.
+    - Shortened export-preview action accessible names to action-first forms such as `보호자 공유본 복사`, `보호자 공유본 인쇄`, and `보호자 공유본 다운로드`.
+  - Updated `src/exportPreviewSummary.test.ts`.
+    - Locked the action label contract and disabled-reason wording.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for caregiver memo and export-preview action name disambiguation.
+- Verification so far:
+  - PASS: `npm test -- exportPreviewSummary`, 1 file and 6 tests.
+  - PASS: Focused Playwright label uniqueness check at 390x900.
+    - `getByLabel("보호자 공유본 전달 메모")`: 1.
+    - `getByRole("textbox", { name: "보호자 공유본 전달 메모" })`: 1.
+    - `getByRole("button", { name: "공유본 미리보기" })`: 1.
+    - `getByRole("button", { name: "새 미리보기" })`: 1 after stale memo edit.
+    - `getByRole("button", { name: "다운로드" })`: 1 in the preview panel.
+  - PASS: `carevault-keyboard-focus-audit.cjs`.
+    - Required focus targets reached: caregiver memo, caregiver preset select, caregiver preview, new preview, preview close.
+    - Missing visible focus styles: 0.
+    - Hidden focus rows: 0.
+  - PASS: `carevault-mobile-layout-audit.cjs` at 390px.
+    - `bodyScrollWidth`: 390.
+    - `documentScrollWidth`: 390.
+    - Target issues: 0.
+    - Overflow issues: 0.
+  - PASS: `carevault-stale-diff-smoke.cjs`.
+    - Caregiver stale setting-difference smoke passed.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser only; no new cmux browser was created.
+    - Opened caregiver preview in the live browser and changed the caregiver delivery memo to create a stale preview condition.
+    - Live accessibility tree exposed the unique textarea label and the renamed memo preset button labels.
+  - PASS: Stitch project check for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx src/exportPreviewSummary.ts src/exportPreviewSummary.test.ts`.
+  - PASS: `npm run test`, 54 files and 369 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
+  - Pending: commit and push.
