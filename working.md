@@ -1,5 +1,37 @@
 # CareVault Working Notes
 
+## 2026-06-06 04:34 KST - Symptom Save Local Feedback cmux QA
+
+- Completed slice: add local visible feedback for symptom record saves.
+- Source commit: `4347e31` (`Show symptom save local feedback`), pushed to `origin main`.
+- Changed files:
+  - `src/App.tsx`
+  - `src/App.css`
+- Implementation:
+  - Added `symptomSaveFeedback` state and an `updateSymptomDraft()` helper that clears stale local save feedback when symptom form fields change.
+  - `addSymptom()` now computes the existing symptom-saved status once, shows it both in the global save label and in a local `.symptom-save-feedback[role=status]` row next to the symptom form action.
+  - Cleared stale symptom save feedback when symptom-support and cervical-cancer draft helpers overwrite the symptom draft.
+  - Reused the existing lab/visit save feedback styling for symptom save feedback.
+- cmux in-app browser QA, single right-pane `surface:9`:
+  - Rejected evidence while the visible cmux workspace was not `암관리`; accepted evidence only after Computer Use showed window/sidebar workspace `암관리`.
+  - RED before the patch: entered `피로` in the visible symptom form and clicked `증상 기록 추가`; top status and timeline updated, but no local `.symptom-save-feedback` existed.
+  - RED screenshot: `/tmp/carevault-surface9-iter38-symptom-save-local-feedback-red.png`.
+  - PASS after the patch: same visible `암관리` browser flow produced `.symptom-save-feedback[role=status]` with `증상 기록 추가됨`, saved the `피로` symptom, and showed no browser errors.
+  - PASS screenshot: `/tmp/carevault-surface9-iter38-symptom-save-local-feedback-pass.png`.
+  - Restored the browser localStorage baseline after PASS; visible `암관리` returned to 8 records / 1 symptom and no local symptom feedback.
+  - `cmux browser surface:9 errors`: `No browser errors`.
+- Verification:
+  - `npm run test -- src/symptomRecordLabels.test.ts src/entryValidation.test.ts`: PASS, 2 files / 15 tests.
+  - `npm run test`: PASS, 61 files / 476 tests.
+  - `npm run typecheck`: PASS.
+  - `npm run build`: PASS.
+  - `cargo check` in `src-tauri`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check -- src/App.tsx src/App.css`: PASS.
+  - `npm run runtime:doctor`: PASS after stopping the Vite dev server on port 1420.
+  - DB sanity: `main`, `나의 건강 기록`, `1|0`.
+  - `gitleaks protect --staged --no-banner --redact`: PASS, no leaks found.
+
 ## 2026-06-06 04:25 KST - Visit Save Local Feedback cmux QA
 
 - Completed slice: add local visible feedback for hospital visit saves.
