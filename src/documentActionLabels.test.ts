@@ -4,6 +4,9 @@ import {
   formatDocumentActionButtonLabel,
   formatDocumentArchiveStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
+  formatDocumentAttachmentPathUpdatedStatusLabel,
+  formatDocumentAttachmentReconnectStatusLabel,
+  formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
   formatDocumentReviewStatusUpdatedLabel,
@@ -114,6 +117,29 @@ describe("documentActionLabels", () => {
     );
     expect(formatDocumentAttachmentRemovedStatusLabel({ ...baseDocument, attachmentName: "  " })).toBe(
       "혈액검사 메모 검사 서류 첨부 제거됨 · 제거한 첨부 파일명 미확인",
+    );
+  });
+
+  it("builds document-specific attachment reference and reconnect feedback", () => {
+    expect(formatDocumentAttachmentReferenceStatusLabel(baseDocument, "browser-scan.png")).toBe(
+      "혈액검사 메모 검사 서류 첨부 파일명 참조 갱신됨 · 현재 첨부 browser-scan.png",
+    );
+    expect(
+      formatDocumentAttachmentReconnectStatusLabel(baseDocument, "blood-result.pdf", "파일 확인됨"),
+    ).toBe(
+      "혈액검사 메모 검사 서류 첨부 재연결됨 · 현재 첨부 blood-result.pdf · 첨부 상태 파일 확인됨",
+    );
+    expect(
+      formatDocumentAttachmentPathUpdatedStatusLabel(
+        baseDocument,
+        "result.pdf",
+        "앱 샌드박스 경로 저장됨",
+      ),
+    ).toBe(
+      "혈액검사 메모 검사 서류 첨부 경로 갱신됨 · 현재 첨부 result.pdf · 첨부 상태 앱 샌드박스 경로 저장됨",
+    );
+    expect(formatDocumentAttachmentReferenceStatusLabel(baseDocument, "  ")).toBe(
+      "혈액검사 메모 검사 서류 첨부 파일명 참조 갱신됨 · 현재 첨부 첨부 파일명 미확인",
     );
   });
 

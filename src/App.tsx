@@ -149,6 +149,9 @@ import {
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
   formatDocumentArchiveStatusLabel,
+  formatDocumentAttachmentPathUpdatedStatusLabel,
+  formatDocumentAttachmentReconnectStatusLabel,
+  formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
   formatDocumentReviewStatusUpdatedLabel,
@@ -2147,6 +2150,9 @@ function App() {
 
   const attachBrowserReferenceToSavedDocument = (file?: File) => {
     if (!file || !savedAttachmentTargetId) return;
+    const targetDocument = state.documents.find(
+      (document) => document.id === savedAttachmentTargetId,
+    );
 
     rememberBrowserAttachmentPreviewUrl(savedAttachmentTargetId, file);
     updateSavedDocumentAttachment(savedAttachmentTargetId, {
@@ -2156,7 +2162,11 @@ function App() {
       attachmentStatus: "브라우저 파일명 참조",
     });
     setSavedAttachmentTargetId(null);
-    setActionSaveLabel("저장된 서류 첨부 파일명 참조 갱신");
+    setActionSaveLabel(
+      targetDocument
+        ? formatDocumentAttachmentReferenceStatusLabel(targetDocument, file.name)
+        : "저장된 서류 첨부 파일명 참조 갱신",
+    );
   };
 
   const replaceSavedDocumentAttachment = async (document: CareDocument) => {
@@ -2187,14 +2197,19 @@ function App() {
 
       const attachmentExists = await exists(selected).catch(() => false);
       const attachmentStatus = attachmentExists ? "파일 확인됨" : "앱 샌드박스 경로 저장됨";
+      const attachmentName = extractFileName(selected);
       clearBrowserAttachmentPreviewUrl(document.id);
       updateSavedDocumentAttachment(document.id, {
-        attachmentName: extractFileName(selected),
+        attachmentName,
         attachmentPath: selected,
         attachmentStorage: "tauri-sandbox",
         attachmentStatus,
       });
-      setActionSaveLabel(attachmentExists ? "저장된 서류 첨부 재연결됨" : "첨부 경로 갱신됨");
+      setActionSaveLabel(
+        attachmentExists
+          ? formatDocumentAttachmentReconnectStatusLabel(document, attachmentName, attachmentStatus)
+          : formatDocumentAttachmentPathUpdatedStatusLabel(document, attachmentName, attachmentStatus),
+      );
     } catch (error) {
       console.error("Saved document attachment replacement failed", error);
       setSaveLabel("저장된 서류 첨부 재연결 실패");

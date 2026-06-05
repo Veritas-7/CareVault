@@ -68,12 +68,47 @@ function formatRemovedAttachmentContext(document: CareDocument) {
     : "제거한 첨부 파일명 미확인";
 }
 
+function formatAttachmentFileName(attachmentName: string | undefined) {
+  return attachmentName?.trim() || "첨부 파일명 미확인";
+}
+
+function formatAttachmentStatusContext(attachmentStatus: string | undefined) {
+  return attachmentStatus?.trim() ? ` · 첨부 상태 ${attachmentStatus.trim()}` : "";
+}
+
 export function formatDocumentAttachmentRemovedStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 첨부 제거됨 · ${formatRemovedAttachmentContext(document)}`;
 }
 
 export function formatDeletedDocumentAttachmentCleanedStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 삭제 보관함 첨부 정리됨 · ${formatRemovedAttachmentContext(document)}`;
+}
+
+export function formatDocumentAttachmentReferenceStatusLabel(
+  document: CareDocument,
+  attachmentName: string | undefined,
+) {
+  return `${formatDocumentContext(document)} 첨부 파일명 참조 갱신됨 · 현재 첨부 ${formatAttachmentFileName(attachmentName)}`;
+}
+
+export function formatDocumentAttachmentReconnectStatusLabel(
+  document: CareDocument,
+  attachmentName: string | undefined,
+  attachmentStatus?: string,
+) {
+  return `${formatDocumentContext(document)} 첨부 재연결됨 · 현재 첨부 ${formatAttachmentFileName(
+    attachmentName,
+  )}${formatAttachmentStatusContext(attachmentStatus)}`;
+}
+
+export function formatDocumentAttachmentPathUpdatedStatusLabel(
+  document: CareDocument,
+  attachmentName: string | undefined,
+  attachmentStatus?: string,
+) {
+  return `${formatDocumentContext(document)} 첨부 경로 갱신됨 · 현재 첨부 ${formatAttachmentFileName(
+    attachmentName,
+  )}${formatAttachmentStatusContext(attachmentStatus)}`;
 }
 
 export function formatDocumentActionButtonLabel(
