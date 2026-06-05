@@ -17287,3 +17287,35 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `653a1c9` (`Clarify cervical clipboard failure feedback`).
+
+## 2026-06-05 22:35 KST - Food Question Draft Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires the nutrition-panel `질문 초안` action to carry matched food reasons, low-lab context when present, and source-count scope into the editable pre-visit question draft.
+  - Source audit found the action label exposed source count, but the post-action feedback still reported only `음식 판단 질문 초안을 만들 수 없습니다.` or `음식 판단 질문 초안 준비됨`.
+- Change:
+  - Added food-question draft ready and unavailable status formatters in `src/foodQuestionPrompts.ts`.
+  - Updated `App.tsx` to build a reusable food-question draft input so draft generation and feedback share the same food query, matches, immune-food context, and source count.
+  - Added focused tests covering ready feedback with matched food count, low-lab context, priority, and source count plus unavailable feedback for empty/unclassified food checks.
+  - RED note: first focused run correctly failed because the test undercounted actual matches/sources; expectation was updated to the real source-backed assessment summary.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM eval timed out waiting for JavaScript result.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS after RED correction: `npm run test -- src/foodQuestionPrompts.test.ts`, 4 tests.
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/foodQuestionPrompts.ts src/foodQuestionPrompts.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `e501ac0` (`Clarify food question draft feedback`).
