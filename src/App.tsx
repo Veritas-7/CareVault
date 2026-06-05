@@ -319,6 +319,7 @@ import {
 } from "./caregiverShareSettings";
 import {
   formatQuestionDraftAddActionLabel,
+  formatQuestionDraftAddedStatus,
   formatQuestionPriorityControlDescription,
   formatQuestionPriorityUpdateStatus,
   normalizeQuestionPriority,
@@ -2450,7 +2451,7 @@ function App() {
     }));
     setQuestionDraft({ ...emptyQuestion, date: today });
     clearRecordFormValidationFeedback("question");
-    setActionSaveLabel("질문 추가됨");
+    setActionSaveLabel(formatQuestionDraftAddedStatus(questionDraft.topic, questionDraft.priority));
   };
 
   const applySymptomSupportTemplate = () => {

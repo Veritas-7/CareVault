@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   defaultQuestionPriority,
   formatQuestionDraftAddActionLabel,
+  formatQuestionDraftAddedStatus,
   formatQuestionPriorityControlDescription,
   formatQuestionPriorityUpdateStatus,
   normalizeQuestionPriority,
@@ -41,6 +42,18 @@ describe("questionPriority", () => {
     );
     expect(formatQuestionDraftAddActionLabel("routine")).toBe(
       "진료 전 질문 추가 · 우선순위 일반 확인",
+    );
+  });
+
+  it("formats question draft added feedback with topic and priority scope", () => {
+    expect(formatQuestionDraftAddedStatus("혈액검사", "high")).toBe(
+      "혈액검사 질문 추가됨 · 우선순위 이번 진료 우선",
+    );
+    expect(formatQuestionDraftAddedStatus("혈액검사 질문", "next-visit")).toBe(
+      "혈액검사 질문 추가됨 · 우선순위 다음 진료",
+    );
+    expect(formatQuestionDraftAddedStatus("  ", "routine")).toBe(
+      "진료 전 질문 추가됨 · 우선순위 일반 확인",
     );
   });
 

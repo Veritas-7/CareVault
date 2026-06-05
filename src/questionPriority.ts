@@ -14,6 +14,12 @@ export const questionPrioritySortRank: Record<QuestionPriority, number> = {
   routine: 2,
 };
 
+function formatQuestionDraftContext(topic: string) {
+  const trimmedTopic = topic.trim();
+  if (!trimmedTopic) return "진료 전 질문";
+  return trimmedTopic.endsWith("질문") ? trimmedTopic : `${trimmedTopic} 질문`;
+}
+
 export function normalizeQuestionPriority(value: unknown): QuestionPriority {
   return value === "high" || value === "next-visit" || value === "routine"
     ? value
@@ -22,6 +28,10 @@ export function normalizeQuestionPriority(value: unknown): QuestionPriority {
 
 export function formatQuestionDraftAddActionLabel(priority: QuestionPriority) {
   return `진료 전 질문 추가 · 우선순위 ${questionPriorityLabel[priority]}`;
+}
+
+export function formatQuestionDraftAddedStatus(topic: string, priority: QuestionPriority) {
+  return `${formatQuestionDraftContext(topic)} 추가됨 · 우선순위 ${questionPriorityLabel[priority]}`;
 }
 
 export function formatQuestionPriorityControlDescription(
