@@ -17789,3 +17789,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `5037e9a` (`Clarify ready question action`).
+
+## 2026-06-06 00:41 KST - Visit Add Ready Label cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires required add/save validation feedback to clear once required fields become valid, and stale required-field warnings should switch to scoped ready status.
+  - Real cmux QA found the visit form's global and local feedback cleared after entering 병원/과 and 방문 이유, but the `방문 기록 추가` button still exposed `병원/과와 방문 이유 필요` in aria/title while the draft was ready.
+- Change:
+  - Added `formatVisitAddActionLabel()` in `src/visitMetric.ts`.
+  - Updated the visit add button in `src/App.tsx` to use the dynamic label for both aria-label and hover title.
+  - Added regression coverage in `src/visitMetric.test.ts`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `working.md` and the right pane was Worklog, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#care-plan`, then the existing surface was used for the visit flow.
+  - RED/IMPROVEMENT: clicked empty `방문 기록 추가`; the local feedback rendered `병원/과와 방문 이유를 입력해주세요.`, then entering `QA 종양내과` and `추적 진료 준비 확인` cleared the local feedback while the button still said `방문 기록 추가 · 병원/과와 방문 이유 필요`. Screenshot `/tmp/carevault-surface9-iter12-visit-ready-stale-required-red.png` captured the stale required action state.
+  - PASS after fix: reloaded the same `surface:9`, entered the same visit draft, and the add button aria/title became `방문 기록 추가 · QA 종양내과 · 추적 진료 준비 확인 입력 준비됨`. Screenshot `/tmp/carevault-surface9-iter12-visit-ready-label-pass.png` captured the updated ready label.
+  - PASS cleanup in browser: cleared the hospital and reason draft values without saving a fake visit record; the add button reverted to `방문 기록 추가 · 병원/과와 방문 이유 필요`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/visitMetric.test.ts`, 5 tests.
+  - PASS: `npm run test`, 61 files and 475 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/visitMetric.ts src/visitMetric.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `fe21b14` (`Clarify ready visit action`).
