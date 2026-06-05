@@ -15856,3 +15856,16 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `0f73f96` (`Align sidebar order with page flow`); `git ls-remote origin refs/heads/main` returned `0f73f96cc263bdb9aef6b7c65e988efedcb279df`.
+
+## 2026-06-05 17:57 KST - README Sidebar Order Sync
+
+- Improvement target:
+  - After the sidebar page-flow fix, `README.md` still described sidebar order as dashboard, records, food, symptoms/questions, labs, and documents.
+  - The source and live UI now use dashboard, records, symptoms/questions, labs, food, and documents.
+- Change:
+  - Updated the README sidebar feature bullet to match the current source/UI order.
+- Verification:
+  - PASS: `git diff --check -- README.md`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: committed and pushed to `origin/main` as `11d42b5` (`Sync README sidebar order`); `git ls-remote origin refs/heads/main` returned `11d42b5f7e8df0de6ab0ea5517a37eaca012f10e`.
