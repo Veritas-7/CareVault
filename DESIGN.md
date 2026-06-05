@@ -408,6 +408,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 
 ## Decisions Log
 
+- 2026-06-06: Scoped stale export-preview fresh-action visible labels so settings/range refresh buttons name the preview state being applied, not only generic `설정 반영` or `범위 반영`.
 - 2026-06-05: Moved AppState defaults and hydration normalization into `src/appState.ts` so `src/App.tsx` stays a component-only module for Vite Fast Refresh while preserving the same local-first persisted-state contract.
 - 2026-06-04: Created project design contract because no CareVault `DESIGN.md` existed.
 - 2026-06-04: Added cervical cancer care note as a record/question-prep panel instead of a treatment advice panel.

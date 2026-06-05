@@ -10,6 +10,7 @@ import {
   formatExportPreviewDownloadDescription,
   formatExportPreviewDownloadStatus,
   formatExportPreviewFreshActionDescription,
+  formatExportPreviewFreshActionVisibleLabel,
   formatExportPreviewPrintDescription,
   formatExportPreviewPrintStatus,
   formatExportPreviewStaleStatus,
@@ -122,17 +123,32 @@ describe("exportPreviewSummary", () => {
   });
 
   it("keeps stale preview refresh labels scoped to preview type and changed state", () => {
+    expect(formatExportPreviewFreshActionVisibleLabel("caregiver-settings")).toBe(
+      "공유 설정 반영",
+    );
     expect(formatExportPreviewFreshActionDescription("caregiver-settings")).toBe(
       "새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용",
+    );
+    expect(formatExportPreviewFreshActionVisibleLabel("caregiver-content")).toBe(
+      "공유 기록 반영",
     );
     expect(formatExportPreviewFreshActionDescription("caregiver-content")).toBe(
       "새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용",
     );
+    expect(formatExportPreviewFreshActionVisibleLabel("visit-range")).toBe(
+      "요약 범위 반영",
+    );
     expect(formatExportPreviewFreshActionDescription("visit-range")).toBe(
       "새 미리보기 생성 · 진료 요약 · 변경된 범위 적용",
     );
+    expect(formatExportPreviewFreshActionVisibleLabel("visit-content")).toBe(
+      "요약 기록 반영",
+    );
     expect(formatExportPreviewFreshActionDescription("visit-content")).toBe(
       "새 미리보기 생성 · 진료 요약 · 변경된 기록 적용",
+    );
+    expect(formatExportPreviewFreshActionVisibleLabel("csv-content")).toBe(
+      "CSV 기록 반영",
     );
     expect(formatExportPreviewFreshActionDescription("csv-content")).toBe(
       "새 미리보기 생성 · CSV · 변경된 기록 적용",

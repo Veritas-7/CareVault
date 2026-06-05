@@ -26,6 +26,14 @@ const exportPreviewFreshActionDescriptions: Record<ExportPreviewFreshActionReaso
   "csv-content": "새 미리보기 생성 · CSV · 변경된 기록 적용",
 };
 
+const exportPreviewFreshActionVisibleLabels: Record<ExportPreviewFreshActionReason, string> = {
+  "caregiver-settings": "공유 설정 반영",
+  "caregiver-content": "공유 기록 반영",
+  "visit-range": "요약 범위 반영",
+  "visit-content": "요약 기록 반영",
+  "csv-content": "CSV 기록 반영",
+};
+
 const exportPreviewStaleStatusDescriptions: Record<ExportPreviewFreshActionReason, string> = {
   "caregiver-settings": "변경된 공유 설정",
   "caregiver-content": "변경된 보호자 공유 기록",
@@ -84,6 +92,12 @@ export function formatExportPreviewFreshActionDescription(
   reason: ExportPreviewFreshActionReason,
 ) {
   return exportPreviewFreshActionDescriptions[reason];
+}
+
+export function formatExportPreviewFreshActionVisibleLabel(
+  reason: ExportPreviewFreshActionReason,
+) {
+  return exportPreviewFreshActionVisibleLabels[reason];
 }
 
 export function formatExportPreviewCopyStatus(format: string, summary: ExportPreviewSummary) {

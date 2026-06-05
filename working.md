@@ -18848,3 +18848,31 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `073931a` (`Show profile number local feedback`).
+
+## 2026-06-06 06:02 KST - Export Preview Fresh Action Label cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires stale export-preview refresh actions to name the preview state being applied, with scoped visible labels and aria/title descriptions.
+  - Source review found stale preview actions could still rely on generic visible labels such as `설정 반영` or `범위 반영`, which made the action unclear when multiple preview types exist.
+- Change:
+  - Added `formatExportPreviewFreshActionVisibleLabel()` and scoped visible label mappings in `src/exportPreviewSummary.ts`.
+  - Updated all stale export-preview refresh buttons in `src/App.tsx` to use scoped labels: `공유 설정 반영`, `공유 기록 반영`, `요약 범위 반영`, `요약 기록 반영`, and `CSV 기록 반영`.
+  - Expanded `src/exportPreviewSummary.test.ts` to lock both scoped visible labels and the existing aria/title descriptions.
+  - Added a `DESIGN.md` decisions-log entry for the scoped stale preview action labels.
+- Runtime/browser notes:
+  - PASS: reused only the existing right cmux in-app browser; no new browser pane or tab was opened.
+  - PASS: before accepting evidence, Computer Use confirmed the visible cmux window was `암관리`, the selected right tab was CareVault, and the right pane URL was `http://127.0.0.1:1420/#care-plan`.
+  - RED/IMPROVEMENT: in visible `암관리`, opened `보호자 공유본 미리보기`, then toggled `프로필 가리기`; stale state appeared with a generic `설정 반영` button before the refreshed code was active in the browser.
+  - PASS after fix: refreshed the same cmux CareVault tab, generated a protected caregiver preview, toggled `프로필 가리기` back, and the stale alert rendered `공유 설정 반영` with the changed setting diff from `프로필 가림` to `프로필 표시`.
+  - PASS cleanup in browser: regenerated `보호자 공유본 미리보기` with the current `프로필 표시` setting so the preview returned to a fresh state.
+  - PASS: `cmux browser surface:9 errors` returned `No browser errors`.
+  - PASS: Stitch project context remained `projects/10602093894318676839`, private CareVault UI UX AutoResearch project.
+- Automated verification:
+  - PASS: `git diff --check -- src/App.tsx src/exportPreviewSummary.ts src/exportPreviewSummary.test.ts DESIGN.md working.md`.
+  - PASS: `npm run test -- src/exportPreviewSummary.test.ts`, 8 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.

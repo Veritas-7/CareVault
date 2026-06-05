@@ -326,6 +326,7 @@ import {
   formatExportPreviewDownloadDescription,
   formatExportPreviewDownloadStatus,
   formatExportPreviewFreshActionDescription,
+  formatExportPreviewFreshActionVisibleLabel,
   formatExportPreviewPrintDescription,
   formatExportPreviewPrintStatus,
   formatExportPreviewStaleStatus,
@@ -7232,7 +7233,7 @@ function App() {
                   title={caregiverSettingsFreshPreviewDescription}
                 >
                   <Eye aria-hidden="true" />
-                  설정 반영
+                  {formatExportPreviewFreshActionVisibleLabel("caregiver-settings")}
                 </button>
               </div>
             ) : null}
@@ -7257,7 +7258,7 @@ function App() {
                   title={caregiverContentFreshPreviewDescription}
                 >
                   <Eye aria-hidden="true" />
-                  공유 기록 반영
+                  {formatExportPreviewFreshActionVisibleLabel("caregiver-content")}
                 </button>
               </div>
             ) : null}
@@ -7282,7 +7283,7 @@ function App() {
                   title={visitPacketRangeFreshPreviewDescription}
                 >
                   <Eye aria-hidden="true" />
-                  범위 반영
+                  {formatExportPreviewFreshActionVisibleLabel("visit-range")}
                 </button>
               </div>
             ) : null}
@@ -7307,7 +7308,7 @@ function App() {
                   title={visitPacketContentFreshPreviewDescription}
                 >
                   <Eye aria-hidden="true" />
-                  요약 기록 반영
+                  {formatExportPreviewFreshActionVisibleLabel("visit-content")}
                 </button>
               </div>
             ) : null}
@@ -7332,7 +7333,7 @@ function App() {
                   title={csvFreshPreviewDescription}
                 >
                   <Eye aria-hidden="true" />
-                  CSV 기록 반영
+                  {formatExportPreviewFreshActionVisibleLabel("csv-content")}
                 </button>
               </div>
             ) : null}
