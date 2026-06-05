@@ -18160,3 +18160,36 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `717710d` (`Show saved question action local feedback`).
+
+## 2026-06-06 02:21 KST - Saved Question Copy Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires saved-question copy controls to expose auditable post-copy status with topic, date, priority, answer status, source-evidence presence, and answer-memo presence.
+  - Real cmux QA found the saved-question `질문 복사` button updated the top save-status chip, but the affected question row had no local `role=status` feedback confirming the copied question scope.
+- Change:
+  - Updated `copyQuestionForVisit()` in `src/App.tsx` so clipboard unsupported, successful copy, and copy failure branches all set `questionActionFeedback` for the affected saved-question row.
+  - Preserved the existing global save-status behavior while adding the row-local feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed cmux had switched to the `블로그` workspace with a WriteFlow browser pane, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#care-plan`.
+  - RED/IMPROVEMENT: clicked `혈액검사 질문 복사`; the top status showed `혈액검사 질문 복사됨 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`, but local `.question-action-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter23-question-copy-local-feedback-red.png` captured the missing row feedback.
+  - PASS after fix: reloaded the same surface and clicked the same `질문 복사` button; the question row showed visible local `role=status` feedback `혈액검사 질문 복사됨 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`, and the top status preserved the same copy message. Screenshot `/tmp/carevault-surface9-iter23-question-copy-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: reloaded `surface:9` and verified no stale `.question-action-feedback` remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/questionClipboard.test.ts`, 7 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `9fc5dad` (`Show saved question copy local feedback`).
