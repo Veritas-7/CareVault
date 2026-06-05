@@ -454,6 +454,7 @@ import {
   formatCervicalCancerCareListItemAriaLabel,
   formatCervicalCancerCarePromptDraftActionLabel,
   formatCervicalCancerCareSourceLinkLabel,
+  formatCervicalCancerScreeningQuestionDraftReadyStatus,
   getCervicalCancerCareSource,
   type CervicalCancerCareAlert,
   type CervicalCancerCarePrompt,
@@ -2630,7 +2631,9 @@ function App() {
       priority: "next-visit",
       status: "open",
     }));
-    setSaveLabel("자궁경부암 검진 질문 초안 준비됨");
+    setSaveLabel(
+      formatCervicalCancerScreeningQuestionDraftReadyStatus(cervicalCancerScreeningSummary),
+    );
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 

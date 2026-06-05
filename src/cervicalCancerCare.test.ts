@@ -22,6 +22,7 @@ import {
   formatCervicalCancerCareSourceEvidence,
   formatCervicalCancerCarePriorityEvidence,
   formatCervicalCancerCareAlertRecordFieldEvidence,
+  formatCervicalCancerScreeningQuestionDraftReadyStatus,
   formatCervicalCancerScreeningSummaryEvidence,
   formatCervicalCancerCareAlertEvidence,
   formatCervicalCancerCareItemEvidence,
@@ -527,6 +528,9 @@ describe("cervicalCancerCare", () => {
     expect(question).toContain("병원 추적검사 일정");
     expect(question).toContain("https://www.cancer.go.kr/lay1/S1T553C554/contents.do");
     expect(question).toContain("https://www.cancer.go.kr/lay1/S1T553C555/contents.do");
+    expect(formatCervicalCancerScreeningQuestionDraftReadyStatus(summary)).toBe(
+      "자궁경부암 검진 질문 초안 준비됨 · 국가암검진 대상 기준 해당 · 근거 2개: 국가암정보센터 국가암검진 대상자 선정 및 통보, 국가암정보센터 국가암검진 검진주기 및 검진방법",
+    );
     expect(question).not.toContain("근거: 출처:");
     expect(question).toContain("?");
     expect(question).not.toContain("치료하세요");

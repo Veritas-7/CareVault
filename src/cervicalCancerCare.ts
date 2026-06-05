@@ -503,6 +503,19 @@ export function buildCervicalCancerScreeningQuestion(
   ].join("\n");
 }
 
+export function formatCervicalCancerScreeningQuestionDraftReadyStatus(
+  summary: CervicalCancerScreeningSummary,
+) {
+  const sourceLabels = summary.sourceIds
+    .map(
+      (sourceId) =>
+        getCervicalCancerCareSource(sourceId)?.label ?? "공식 자궁경부암 케어 자료",
+    )
+    .join(", ");
+
+  return `자궁경부암 검진 질문 초안 준비됨 · ${summary.status} · 근거 ${summary.sourceIds.length}개: ${sourceLabels}`;
+}
+
 export function getCervicalCancerCareSource(sourceId: string) {
   return cervicalCancerCareSources[sourceId];
 }
