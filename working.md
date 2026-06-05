@@ -17689,3 +17689,35 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `1d0cfe9` (`Raise lab followup action target`).
+
+## 2026-06-06 00:14 KST - Lab Form Control Target cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires scoped form controls with repeated labels to expose clear labels/titles and keep narrow cmux visible controls at the 44px touch/click target.
+  - Real cmux QA found the lab input form's preset select, date/name/value/unit inputs, add button, and reset button were still 40px tall in the constrained right pane.
+- Change:
+  - Added `lab-panel` to the lab input panel in `src/App.tsx`.
+  - Added scoped `.lab-panel` CSS rules so lab select, non-checkbox inputs, and form action buttons use 44px targets without changing unrelated panels.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `블로그` and the right pane was WriteFlow, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#labs`.
+  - RED/IMPROVEMENT: DOM measurement in the actual right pane showed the lab preset select, date/name/value/unit controls, `검사 수치 추가`, and `검사 입력 초기화` actions all at height 40px. Screenshot `/tmp/carevault-surface9-iter9-lab-form-40-red.png` captured the state.
+  - PASS after fix: reloaded the same `surface:9`; the first labs panel had class `panel lab-panel` and the stylesheet contained the scoped 44px lab-panel rule.
+  - PASS after fix: DOM measurement returned height 44px for the preset select, date/name/value/unit controls, `검사 수치 추가`, and `검사 입력 초기화` actions. Screenshot `/tmp/carevault-surface9-iter9-lab-form-44-after-reload.png` captured the updated form.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug/HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `19018ce` (`Raise lab form control targets`).
