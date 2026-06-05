@@ -198,6 +198,7 @@ import {
   formatRecordFormFeedbackAriaLabel,
   hasRequiredTextValues,
   recordRequiredFieldMessages,
+  shouldClearRecordFormFeedback,
   type RecordFormFeedbackId,
 } from "./entryValidation";
 import {
@@ -823,6 +824,72 @@ function App() {
       </p>
     );
   };
+
+  useEffect(() => {
+    if (
+      shouldClearRecordFormFeedback(
+        recordFormFeedback.vital,
+        validateVitalDraft(vitalDraft).type === "ok",
+      )
+    ) {
+      clearRecordFormValidationFeedback("vital");
+    }
+  }, [recordFormFeedback.vital, vitalDraft]);
+
+  useEffect(() => {
+    if (
+      shouldClearRecordFormFeedback(
+        recordFormFeedback.visit,
+        hasRequiredTextValues(visitDraft.hospital, visitDraft.reason),
+      )
+    ) {
+      clearRecordFormValidationFeedback("visit");
+    }
+  }, [recordFormFeedback.visit, visitDraft.hospital, visitDraft.reason]);
+
+  useEffect(() => {
+    if (
+      shouldClearRecordFormFeedback(
+        recordFormFeedback.symptom,
+        hasRequiredTextValues(symptomDraft.symptom),
+      )
+    ) {
+      clearRecordFormValidationFeedback("symptom");
+    }
+  }, [recordFormFeedback.symptom, symptomDraft.symptom]);
+
+  useEffect(() => {
+    if (
+      shouldClearRecordFormFeedback(
+        recordFormFeedback.question,
+        hasRequiredTextValues(questionDraft.topic, questionDraft.question),
+      )
+    ) {
+      clearRecordFormValidationFeedback("question");
+    }
+  }, [recordFormFeedback.question, questionDraft.question, questionDraft.topic]);
+
+  useEffect(() => {
+    if (
+      shouldClearRecordFormFeedback(
+        recordFormFeedback.lab,
+        hasRequiredTextValues(labDraft.name, labDraft.value),
+      )
+    ) {
+      clearRecordFormValidationFeedback("lab");
+    }
+  }, [labDraft.name, labDraft.value, recordFormFeedback.lab]);
+
+  useEffect(() => {
+    if (
+      shouldClearRecordFormFeedback(
+        recordFormFeedback.document,
+        hasRequiredTextValues(documentDraft.title, documentDraft.body),
+      )
+    ) {
+      clearRecordFormValidationFeedback("document");
+    }
+  }, [documentDraft.body, documentDraft.title, recordFormFeedback.document]);
 
   useEffect(() => {
     let activeSectionFrame = 0;

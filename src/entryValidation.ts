@@ -24,6 +24,13 @@ export function formatRecordFormFeedbackAriaLabel(
   return `${recordFormFeedbackLabels[formId]} 필수 항목 안내 · ${message}`;
 }
 
+export function shouldClearRecordFormFeedback(
+  currentMessage: string | undefined,
+  isFormValid: boolean,
+) {
+  return Boolean(currentMessage && isFormValid);
+}
+
 export function hasRequiredTextValues(...values: Array<string | undefined>) {
   return values.every((value) => Boolean(value?.trim()));
 }

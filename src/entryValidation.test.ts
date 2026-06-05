@@ -4,6 +4,7 @@ import {
   hasRequiredTextValues,
   recordRequiredFieldMessages,
   recordFormFeedbackLabels,
+  shouldClearRecordFormFeedback,
 } from "./entryValidation";
 
 describe("hasRequiredTextValues", () => {
@@ -34,5 +35,13 @@ describe("formatRecordFormFeedbackAriaLabel", () => {
     ).toBe("병원 방문 기록 필수 항목 안내 · 병원/과와 방문 이유를 입력해주세요.");
     expect(recordFormFeedbackLabels.document).toBe("서류 수기 보관");
     expect(recordFormFeedbackLabels.vital).toContain("혈압");
+  });
+});
+
+describe("shouldClearRecordFormFeedback", () => {
+  it("clears an existing local feedback row only after the guarded form becomes valid", () => {
+    expect(shouldClearRecordFormFeedback(recordRequiredFieldMessages.visit, true)).toBe(true);
+    expect(shouldClearRecordFormFeedback(recordRequiredFieldMessages.visit, false)).toBe(false);
+    expect(shouldClearRecordFormFeedback(undefined, true)).toBe(false);
   });
 });
