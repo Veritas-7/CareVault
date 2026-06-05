@@ -1957,7 +1957,9 @@ function App() {
         };
       }),
     }));
-    setActionSaveLabel(formatDocumentReviewStatusUpdatedLabel(targetDocument, reviewStatus));
+    const feedback = formatDocumentReviewStatusUpdatedLabel(targetDocument, reviewStatus);
+    setDocumentActionFeedback({ documentId: targetDocument.id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const updateDocumentNextAction = (targetDocument: CareDocument, nextAction: string) => {
