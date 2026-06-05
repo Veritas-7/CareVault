@@ -102,7 +102,11 @@ import {
   getNextQuestionDate,
   type LabQuestionSource,
 } from "./labQuestionPrompts";
-import { buildLabPanelSummary, formatLabResultSavedStatusLabel } from "./labMetric";
+import {
+  buildLabPanelSummary,
+  formatLabDraftResetStatusLabel,
+  formatLabResultSavedStatusLabel,
+} from "./labMetric";
 import {
   buildFoodQuestionButtonLabels,
   buildFoodQuestionDraft,
@@ -2717,10 +2721,13 @@ function App() {
   };
 
   const resetLabDraft = () => {
+    const presetLabel = labPresetChoice
+      ? labPresets.find((candidate) => candidate.id === labPresetChoice)?.label
+      : "";
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
     clearRecordFormValidationFeedback("lab");
-    setSaveLabel("검사 입력 초기화됨");
+    setSaveLabel(formatLabDraftResetStatusLabel(labDraft, presetLabel, today));
   };
 
   const addLabResult = () => {

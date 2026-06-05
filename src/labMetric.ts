@@ -13,6 +13,10 @@ export type LabResultSavedStatusSource = LabPanelSummarySource & {
   unit: string;
 };
 
+export type LabDraftResetStatusSource = LabResultSavedStatusSource & {
+  date: string;
+};
+
 export type LabPanelSummaryItem = {
   id: string;
   label: string;
@@ -49,6 +53,38 @@ export function formatLabResultSavedStatusLabel(result: LabResultSavedStatusSour
   const evidenceContext = buildLabSourceEvidenceParts(result).sourceLabel ? "근거 포함" : "근거 없음";
 
   return `${prefix} · ${formatLabResultValue(result)} · 판정 ${assessment.label} · ${evidenceContext}`;
+}
+
+export function formatLabDraftResetStatusLabel(
+  draft: LabDraftResetStatusSource,
+  presetLabel: string | undefined,
+  resetDate: string,
+) {
+  const presetContext = presetLabel?.trim()
+    ? `프리셋 ${presetLabel.trim()} 해제`
+    : "직접 입력 모드";
+  const targetDate = resetDate.trim() || draft.date.trim() || "오늘";
+  const name = draft.name.trim();
+  const value = formatLabResultValue(draft);
+
+  if (!name && value === "값 없음") {
+    return `검사 입력 초기화됨 · ${presetContext} · 이전 입력 없음 · 날짜 ${targetDate}`;
+  }
+
+  const previousInput = name ? `${name} ${value}` : value;
+  const assessment = assessLabSummarySource(draft);
+  const evidenceContext = buildLabSourceEvidenceParts(draft).sourceLabel
+    ? "근거 포함"
+    : "근거 없음";
+
+  return [
+    "검사 입력 초기화됨",
+    presetContext,
+    `이전 ${previousInput}`,
+    `판정 ${assessment.label}`,
+    evidenceContext,
+    `날짜 ${targetDate}`,
+  ].join(" · ");
 }
 
 export function buildLabPanelSummary(results: LabPanelSummarySource[]): LabPanelSummary {

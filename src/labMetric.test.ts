@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildLabPanelSummary, formatLabResultSavedStatusLabel } from "./labMetric";
+import {
+  buildLabPanelSummary,
+  formatLabDraftResetStatusLabel,
+  formatLabResultSavedStatusLabel,
+} from "./labMetric";
 
 describe("labMetric", () => {
   it("builds lab-result saved status feedback from value, assessment, and source evidence", () => {
@@ -41,6 +45,41 @@ describe("labMetric", () => {
         value: "",
       }),
     ).toBe("검사 수치 추가됨 · 값 없음 · 판정 값 없음 · 근거 없음");
+  });
+
+  it("formats lab reset feedback with preset context and cleared draft summary", () => {
+    expect(
+      formatLabDraftResetStatusLabel(
+        {
+          date: "2026-06-01",
+          lower: "4",
+          name: "WBC",
+          note: "",
+          unit: "10^3/uL",
+          upper: "10",
+          value: "3.2",
+        },
+        "백혈구",
+        "2026-06-05",
+      ),
+    ).toBe(
+      "검사 입력 초기화됨 · 프리셋 백혈구 해제 · 이전 WBC 3.2 10^3/uL · 판정 기준보다 낮음 · 근거 포함 · 날짜 2026-06-05",
+    );
+    expect(
+      formatLabDraftResetStatusLabel(
+        {
+          date: "2026-06-01",
+          lower: "",
+          name: "",
+          note: "",
+          unit: "",
+          upper: "",
+          value: "",
+        },
+        "",
+        "",
+      ),
+    ).toBe("검사 입력 초기화됨 · 직접 입력 모드 · 이전 입력 없음 · 날짜 2026-06-01");
   });
 
   it("builds saved-lab panel summary chips from lab flags, evidence, and question candidates", () => {
