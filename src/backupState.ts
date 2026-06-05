@@ -54,8 +54,8 @@ function hasAttachmentName(document: BackupDocument) {
   return typeof document.attachmentName === "string" && document.attachmentName.trim().length > 0;
 }
 
-function countArrayItems(value: unknown) {
-  return Array.isArray(value) ? value.length : 0;
+function countRecordItems(value: unknown) {
+  return Array.isArray(value) ? value.filter(isRecord).length : 0;
 }
 
 function countAttachmentNames(documents: unknown) {
@@ -97,7 +97,7 @@ export function buildCareVaultBackupScopeSummary(
   const hasProfile = isRecord(state.profile);
   const hasCaregiverSettings = isRecord(state.caregiverShareSettings);
   const recordCount = recordArrayKeys.reduce<number>(
-    (count, key) => count + countArrayItems(state[key]),
+    (count, key) => count + countRecordItems(state[key]),
     0,
   );
   const attachmentNameCount =

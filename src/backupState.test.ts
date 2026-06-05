@@ -166,6 +166,31 @@ describe("backupState", () => {
     expect(formatCareVaultBackupExportDescription(state)).not.toContain("/Users/wj/private");
   });
 
+  it("counts only usable record objects in backup scope summaries", () => {
+    const state = {
+      caregiverShareSettings: {},
+      deletedDocuments: [false, { attachmentName: 77 }],
+      documents: [{ attachmentName: "scan.pdf" }, "skip"],
+      labResults: "not-array",
+      profile: { name: "나의 건강 기록" },
+      questions: [{}, []],
+      symptoms: [null],
+      visits: [123, {}],
+      vitals: [{}, "skip"],
+    };
+
+    const summary = buildCareVaultBackupScopeSummary(state);
+
+    expect(summary.recordCount).toBe(5);
+    expect(summary.attachmentNameCount).toBe(1);
+    expect(summary.ariaLabel).toBe(
+      "백업 범위 프로필 포함 · 기록 5개 · 보호자 공유 설정 포함 · 첨부 파일명 1개",
+    );
+    expect(formatCareVaultBackupImportStatus(state)).toBe(
+      "백업 가져옴 · 프로필 포함 · 기록 5개 · 공유 설정 포함 · 첨부 파일명 1개",
+    );
+  });
+
   it("describes backup import safety scope and success result without local paths", () => {
     const importedState = {
       caregiverShareSettings: { redactProfile: false },

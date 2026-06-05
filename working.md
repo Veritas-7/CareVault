@@ -14520,3 +14520,33 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `c6e5503` (`Normalize persisted record fields`).
+
+## 2026-06-05 11:47 KST - Backup Scope Usable Record Count Iteration Note
+
+- Improvement target:
+  - Backup/import copy reviewed after the persistence hardening work showed `buildCareVaultBackupScopeSummary()` counted every array item, including junk strings, numbers, nulls, and nested arrays.
+  - Hydration ignores those non-object entries, so import success and backup button labels could overstate how many usable records were actually imported or exported.
+- Code/design changes:
+  - Updated `src/backupState.ts`.
+    - Replaced raw array-length counting with usable object-record counting for record arrays.
+    - Left attachment filename counting unchanged because it already requires object documents with nonblank string filenames.
+  - Updated `src/backupState.test.ts`.
+    - Added a mixed-array regression case proving summary and import-status text report usable record counts only.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for usable-record backup scope counts.
+- Verification so far:
+  - PASS: `npm test -- backupState`, 1 file and 8 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright backup import upload smoke at 390x884 using the visible `백업 가져오기` button and a mixed valid/junk JSON backup.
+    - Import feedback reported `프로필 포함 · 기록 5개 · 공유 설정 포함 · 첨부 파일명 0개`.
+    - Raw junk record counts such as `기록 9개` or `기록 10개` were not shown.
+    - Imported normalized collections showed 1 document, 1 question, 1 visit, and 1 vital record.
+    - Body client width and scroll width: 390 / 390.
+    - Page errors: 0; console errors: 0.
+  - PASS: `npm run test`, 55 files and 376 tests.
+  - PASS: `npm run build` with the existing Vite chunk-size warning.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/backupState.ts src/backupState.test.ts`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - Pending: commit and push.

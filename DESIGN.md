@@ -671,6 +671,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Guarded persisted document history arrays so malformed nested history values do not break document rendering or normalized mirrors.
 - 2026-06-05: Hardened caregiver-share settings normalization so malformed persisted memo, preset, redaction, or section values fall back safely.
 - 2026-06-05: Normalized malformed persisted record scalar fields at hydration so bad dates, enum values, attachment fields, history entries, numbers, and labels cannot reach render or mirror paths.
+- 2026-06-05: Made backup import/export scope summaries count only usable object records so malformed array junk does not overstate imported or exported record counts.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.
