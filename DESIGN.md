@@ -596,6 +596,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Made caregiver preview stale-record checks use the generated section scope and suppress duplicate record-stale alerts when only share settings changed.
 - 2026-06-05: Fixed WKWebView select touch-target rendering by assigning explicit heights to the visit-summary range and caregiver preset selects.
 - 2026-06-05: Made narrow export-preview stale-alert fresh-preview actions span the alert width so Korean labels do not collapse into tall narrow buttons.
+- 2026-06-05: Made stale export-preview copy, print, and download controls expose the same action-plus-disabled-reason sentence in aria-label and hover title text.
 - 2026-06-05: Applied the 44px mobile touch-target contract to visible buttons, form controls, disclosure summaries, checkbox labels, and official-source links across the app.
 - 2026-06-05: Re-audited mobile official-source links and raised the remaining cervical, standards, metric, timeline, lab, and question source-link selectors to the 44px touch-target contract while preserving 28px right-pane targets.
 - 2026-06-05: Added per-vital BP/glucose assessment, adult-common standard labels, and official-source evidence to direct Markdown, CSV, and caregiver HTML export rows.

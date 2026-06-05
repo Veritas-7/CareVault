@@ -202,6 +202,7 @@ import {
   buildExportPreviewSummary,
   formatExportPreviewCopyDescription,
   formatExportPreviewCopyStatus,
+  formatExportPreviewDisabledActionDescription,
   formatExportPreviewDownloadDescription,
   formatExportPreviewDownloadStatus,
   formatExportPreviewPrintDescription,
@@ -3389,6 +3390,18 @@ function App() {
     exportPreview && exportPreviewSummary
       ? formatExportPreviewDownloadStatus(exportPreview.format, exportPreviewSummary)
       : "";
+  const exportPreviewCopyActionDescription = formatExportPreviewDisabledActionDescription(
+    exportPreviewCopyDescription,
+    exportPreviewDisabledReason,
+  );
+  const exportPreviewPrintActionDescription = formatExportPreviewDisabledActionDescription(
+    exportPreviewPrintDescription,
+    exportPreviewDisabledReason,
+  );
+  const exportPreviewDownloadActionDescription = formatExportPreviewDisabledActionDescription(
+    exportPreviewDownloadDescription,
+    exportPreviewDisabledReason,
+  );
   const hasCustomCaregiverSettings = hasCustomCaregiverShareSettings(state.caregiverShareSettings);
 
   return (
@@ -6568,8 +6581,8 @@ function App() {
                   className="secondary-inline-button"
                   onClick={copyExportPreview}
                   disabled={exportPreviewHasStaleState}
-                  aria-label={exportPreviewCopyDescription}
-                  title={exportPreviewDisabledReason ?? exportPreviewCopyDescription}
+                  aria-label={exportPreviewCopyActionDescription}
+                  title={exportPreviewCopyActionDescription}
                 >
                   <Copy aria-hidden="true" />
                   미리보기 복사
@@ -6579,8 +6592,8 @@ function App() {
                   className="secondary-inline-button"
                   onClick={printExportPreview}
                   disabled={exportPreviewHasStaleState}
-                  aria-label={exportPreviewPrintDescription}
-                  title={exportPreviewDisabledReason ?? exportPreviewPrintDescription}
+                  aria-label={exportPreviewPrintActionDescription}
+                  title={exportPreviewPrintActionDescription}
                 >
                   <Printer aria-hidden="true" />
                   미리보기 인쇄
@@ -6590,8 +6603,8 @@ function App() {
                   className="secondary-inline-button"
                   onClick={downloadExportPreview}
                   disabled={exportPreviewHasStaleState}
-                  aria-label={exportPreviewDownloadDescription}
-                  title={exportPreviewDisabledReason ?? exportPreviewDownloadDescription}
+                  aria-label={exportPreviewDownloadActionDescription}
+                  title={exportPreviewDownloadActionDescription}
                 >
                   <Download aria-hidden="true" />
                   미리보기 다운로드

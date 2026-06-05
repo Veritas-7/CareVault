@@ -13966,3 +13966,38 @@
     - The reset action exposed `저장된 서류 필터 초기화 · 검색어 없는서류필터테스트 · 분류 전체 분류 · 상태 전체 상태`.
     - Clicking reset restored `1 / 1 개 기록`, cleared the search field, and changed the live status to `서류 필터 초기화됨`.
   - Git staging, commit, and push will be reported in the final assistant output.
+
+## 2026-06-05 09:53 KST - Export Preview Disabled Action Label Iteration Note
+
+- Improvement target:
+  - Stale export-preview copy, print, and download controls already blocked action until a fresh preview was generated, but their hover `title` only exposed the disabled reason while `aria-label` exposed only the action summary.
+  - This split weakened the `DESIGN.md` rule that button `aria-label` and hover title text should match when both are relevant, and made stale preview controls less clear for keyboard and screen-reader users.
+- Stitch MCP:
+  - Rechecked Stitch project `CareVault UI UX AutoResearch` (`10602093894318676839`) and confirmed the uploaded 390px CareVault DESIGN.md screen instance `7814555668945736330` remains the active UI/UX evidence surface.
+- Code/design changes:
+  - Updated `src/exportPreviewSummary.ts`.
+    - Added `formatExportPreviewDisabledActionDescription()` so stale controls can keep action, preview summary, and disabled reason in one sentence.
+  - Updated `src/App.tsx`.
+    - Reused the shared disabled-action sentence for both `aria-label` and `title` on stale export-preview copy, print, and download buttons.
+  - Updated `src/exportPreviewSummary.test.ts`.
+    - Locked the action-plus-disabled-reason sentence and the non-stale fallback.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for stale export-preview action label/title parity.
+- Verification:
+  - PASS: `npm run test -- src/exportPreviewSummary.test.ts`, 1 file and 6 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx src/exportPreviewSummary.ts src/exportPreviewSummary.test.ts`.
+  - PASS: App button scan: all `src/App.tsx` buttons have an `aria-label`.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser only; no additional cmux browser tab was created.
+    - Omnibar stayed on `http://127.0.0.1:1420/#nutrition`.
+    - Clicked `진료 요약 미리보기 · 범위 최근 30일`, then changed the range selector to `요약 90일`.
+    - The live status changed from `진료 요약 미리보기 생성 · 범위 최근 30일` to `진료 요약 범위: 최근 90일`, confirming the existing preview became stale by range change.
+  - PASS: Supplemental DOM assertion against the same running local dev server.
+    - The stale preview alert read `진료 요약 범위가 바뀌었습니다`.
+    - Copy, print, and download actions were disabled, each measured 44px high at 390px.
+    - Their `aria-label` and `title` matched and included `비활성: 진료 요약 범위가 바뀌어 새 미리보기가 필요합니다.`
+  - PASS: `npm run test`, 53 files and 364 tests.
+  - PASS: `npm run build`.
+  - Pending: staged secret scan before commit and push.

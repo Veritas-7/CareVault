@@ -49,6 +49,14 @@ export function formatExportPreviewCopyDescription(
   return `${format} 미리보기 복사 · ${formatExportPreviewCompactSummary(summary)}`;
 }
 
+export function formatExportPreviewDisabledActionDescription(
+  actionDescription: string,
+  disabledReason?: string,
+) {
+  const trimmedReason = disabledReason?.trim();
+  return trimmedReason ? `${actionDescription} · 비활성: ${trimmedReason}` : actionDescription;
+}
+
 export function formatExportPreviewCopyStatus(format: string, summary: ExportPreviewSummary) {
   return `${format} 미리보기 복사됨 · ${formatExportPreviewCompactSummary(summary)}`;
 }

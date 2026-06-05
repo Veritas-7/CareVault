@@ -4,6 +4,7 @@ import {
   formatExportPreviewCompactSummary,
   formatExportPreviewCopyDescription,
   formatExportPreviewCopyStatus,
+  formatExportPreviewDisabledActionDescription,
   formatExportPreviewDownloadDescription,
   formatExportPreviewDownloadStatus,
   formatExportPreviewPrintDescription,
@@ -90,6 +91,23 @@ describe("exportPreviewSummary", () => {
     );
     expect(formatExportPreviewDownloadStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 다운로드됨 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+  });
+
+  it("keeps stale preview action labels and titles scoped to action plus disabled reason", () => {
+    const summary = buildExportPreviewSummary("a\n근거: x");
+    const actionDescription = formatExportPreviewCopyDescription("진료 요약", summary);
+
+    expect(
+      formatExportPreviewDisabledActionDescription(
+        actionDescription,
+        "진료 요약 범위가 바뀌어 새 미리보기가 필요합니다.",
+      ),
+    ).toBe(
+      "진료 요약 미리보기 복사 · 2줄 · 7자 · 11B · 근거/출처 1개 · 비활성: 진료 요약 범위가 바뀌어 새 미리보기가 필요합니다.",
+    );
+    expect(formatExportPreviewDisabledActionDescription(actionDescription)).toBe(
+      actionDescription,
     );
   });
 });
