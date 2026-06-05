@@ -2364,6 +2364,18 @@ textarea:focus-visible {
   font-size: 0.78rem;
 }
 
+.health-standards-copy-feedback {
+  padding: 7px 9px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .standards-boundary-note {
   margin: 2px 0;
   padding: 8px 9px;

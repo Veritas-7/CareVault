@@ -812,6 +812,9 @@ function App() {
   const [dashboardMetricCopyFeedback, setDashboardMetricCopyFeedback] = useState<string | null>(
     null,
   );
+  const [healthStandardsCopyFeedback, setHealthStandardsCopyFeedback] = useState<string | null>(
+    null,
+  );
   const [documentActionFeedback, setDocumentActionFeedback] = useState<{
     documentId: string;
     message: string;
@@ -2983,26 +2986,29 @@ function App() {
 
   const copyHealthStandards = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel(
-        formatHealthStandardRangeFilterCopyUnsupportedStatus(
-          selectedHealthStandardRangeFilter.label,
-          healthStandardRangeSummary,
-        ),
+      const feedback = formatHealthStandardRangeFilterCopyUnsupportedStatus(
+        selectedHealthStandardRangeFilter.label,
+        healthStandardRangeSummary,
       );
+      setHealthStandardsCopyFeedback(feedback);
+      setSaveLabel(feedback);
       return;
     }
 
     navigator.clipboard
       .writeText(formatHealthStandardsClipboardText(state.profile.sex, standardRangeFilter))
-      .then(() => setTransientSaveLabel(healthStandardsCopyStatus))
-      .catch(() =>
-        setSaveLabel(
-          formatHealthStandardRangeFilterCopyFailedStatus(
-            selectedHealthStandardRangeFilter.label,
-            healthStandardRangeSummary,
-          ),
-        ),
-      );
+      .then(() => {
+        setHealthStandardsCopyFeedback(healthStandardsCopyStatus);
+        setTransientSaveLabel(healthStandardsCopyStatus);
+      })
+      .catch(() => {
+        const feedback = formatHealthStandardRangeFilterCopyFailedStatus(
+          selectedHealthStandardRangeFilter.label,
+          healthStandardRangeSummary,
+        );
+        setHealthStandardsCopyFeedback(feedback);
+        setSaveLabel(feedback);
+      });
   };
 
   const copyProfileMetricSexStandards = () => {
@@ -4735,6 +4741,11 @@ function App() {
                   {healthStandardsCopyLabel}
                 </button>
               </div>
+              {healthStandardsCopyFeedback ? (
+                <div className="health-standards-copy-feedback" role="status">
+                  {healthStandardsCopyFeedback}
+                </div>
+              ) : null}
               <span>{koreanHealthStandardSummary.bmi}</span>
               <span>{koreanHealthStandardSummary.bloodPressure}</span>
               <span>{koreanHealthStandardSummary.glucose}</span>
