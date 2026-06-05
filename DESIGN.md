@@ -666,6 +666,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Ensured the Tauri SQLite `app_state` table is created before app load/save so first-run persistence does not fail before hydration.
 - 2026-06-05: Added UI-surface context to repeated health-standard source link accessible names so dashboard, quick-range, and coverage links resolve uniquely.
 - 2026-06-05: Hardened browser storage persistence so blocked or quota-limited localStorage falls back to memory instead of breaking hydrate/save.
+- 2026-06-05: Made save-status labels distinguish SQLite, browser storage, and temporary memory backends so blocked-storage fallback is not misreported as browser-saved.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.

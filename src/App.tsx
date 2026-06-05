@@ -1025,6 +1025,18 @@ function formatDocumentActionButtonLabel(document: CareDocument, kind: DocumentA
   return actionLabel[kind];
 }
 
+function formatStorageReadyLabel(backend: PersistenceBackend) {
+  if (backend === "sqlite") return "SQLite 저장 준비";
+  if (backend === "localStorage") return "브라우저 저장 준비";
+  return "임시 메모리 저장 준비";
+}
+
+function formatStorageSavedLabel(backend: PersistenceBackend, automatic = false) {
+  const storageLabel =
+    backend === "sqlite" ? "SQLite" : backend === "localStorage" ? "브라우저" : "임시 메모리";
+  return `${storageLabel} ${automatic ? "자동 저장됨" : "저장됨"}`;
+}
+
 function App() {
   const [state, setState] = useState<AppState>(defaultState);
   const [hydrated, setHydrated] = useState(false);
@@ -1133,7 +1145,7 @@ function App() {
       if (!active) return;
       setState(normalizeAppState(result.state));
       setStorageBackend(result.backend);
-      setSaveLabel(result.backend === "sqlite" ? "SQLite 저장 준비" : "브라우저 저장 준비");
+      setSaveLabel(formatStorageReadyLabel(result.backend));
       if (result.backend === "sqlite") {
         loadNormalizedMirrorStatus()
           .then(setNormalizedMirrorStatus)
@@ -1233,8 +1245,7 @@ function App() {
       savePersistedState(state, { normalizedMirror })
         .then((backend) => {
           setStorageBackend(backend);
-          const savedLabel =
-            backend === "sqlite" ? "SQLite 자동 저장됨" : "브라우저 자동 저장됨";
+          const savedLabel = formatStorageSavedLabel(backend, true);
           const actionLabel = pendingActionLabelRef.current;
           pendingActionLabelRef.current = null;
           if (Date.now() >= transientSaveLabelUntilRef.current) {
@@ -2939,7 +2950,7 @@ function App() {
     savePersistedState(state, { normalizedMirror })
       .then((backend) => {
         setStorageBackend(backend);
-        setSaveLabel(backend === "sqlite" ? "SQLite 저장됨" : "브라우저 저장됨");
+        setSaveLabel(formatStorageSavedLabel(backend));
         if (backend === "sqlite") {
           return loadNormalizedMirrorStatus()
             .then(setNormalizedMirrorStatus)

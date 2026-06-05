@@ -14381,3 +14381,29 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `f489f81` (`Harden browser storage fallback`).
+
+## 2026-06-05 11:21 KST - Storage Backend Save Label Accuracy Iteration Note
+
+- Improvement target:
+  - Follow-up code review of the blocked-storage fallback found that the visible save-status badge still used `브라우저 저장 준비/됨` for every non-SQLite backend.
+  - In blocked-storage fallback, this could mislead the user into thinking data was persisted to browser storage even though the active backend is temporary memory.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added `formatStorageReadyLabel()` and `formatStorageSavedLabel()`.
+    - Hydration, automatic save, and manual save now distinguish `SQLite`, `브라우저`, and `임시 메모리` save-status labels.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for storage-backend save-label accuracy.
+- Verification so far:
+  - PASS: Playwright blocked-localStorage save-label smoke at 390x884.
+    - Storage text: `현재 데이터는 임시 메모리에만 있습니다.`.
+    - Memory save labels: `임시 메모리 자동 저장됨`.
+    - Browser save labels: 0.
+    - Page errors: 0; console errors: 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx`.
+  - PASS: `npm run test`, 54 files and 373 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - Pending: commit and push.
