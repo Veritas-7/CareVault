@@ -15869,3 +15869,35 @@
   - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
 - Cleanup:
   - PASS: committed and pushed to `origin/main` as `11d42b5` (`Sync README sidebar order`); `git ls-remote origin refs/heads/main` returned `11d42b5f7e8df0de6ab0ea5517a37eaca012f10e`.
+
+## 2026-06-05 18:13 KST - Local Required-Field Feedback
+
+- Improvement target:
+  - Real cmux click-through found empty-form validation messages were written only to the global topbar save chip.
+  - At the visit form, the clicked `방문 기록 추가` button was visible, but the validation text `병원/과와 방문 이유를 입력해주세요.` was offscreen near the topbar, so the click looked like a silent no-op.
+- Change:
+  - Added scoped local form-feedback rows for guarded vital, visit, symptom, question, lab, and document add/save actions.
+  - Kept the global save chip update, but also renders a local `role=status` row with form-specific accessible labels and scrolls that row into view after validation failure.
+  - Added validation helper coverage for the form-specific feedback aria labels.
+  - Updated `DESIGN.md` so required add/save validation feedback must be visible beside the affected form action, not only in the topbar.
+- Real-browser/runtime verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: before fix, clicking `방문 기록 추가` put the validation message only in `.save-status-chip` at `top:-12494`, while the clicked visit button was in view.
+  - PASS: after fix, clicking `방문 기록 추가` showed local feedback `병원/과와 방문 이유를 입력해주세요.` with aria label `병원 방문 기록 필수 항목 안내 · 병원/과와 방문 이유를 입력해주세요.`, visible at `top:410` to `bottom:449`.
+  - PASS: clicking `서류 메모 저장` showed local feedback `서류 제목과 내용을 입력해주세요.` with aria label `서류 수기 보관 필수 항목 안내 · 서류 제목과 내용을 입력해주세요.`, visible at `top:693` to `bottom:732`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839` before the UI slice; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/entryValidation.test.ts`, 4 tests.
+  - PASS: `npm run test`, 58 files and 421 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.css src/App.tsx src/entryValidation.ts src/entryValidation.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `1d1b65a` (`Show local required-field feedback`); `git ls-remote origin refs/heads/main` returned `1d1b65aca4972ae4d1245d7cb85bc5e4a91af3f6`.
