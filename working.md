@@ -18470,3 +18470,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `d9b70d2` (`Show cervical symptom draft local feedback`).
+
+## 2026-06-06 03:36 KST - Infection Standard Draft Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires the fever/infection standards-card shortcuts to create source-retaining symptom record and clinician-question drafts with immediate visible feedback in the constrained cmux right pane.
+  - Real cmux QA found `체온·감염 연락 기준 증상 기록 초안 만들기` filled the symptom draft and updated the top save-status chip, but the 기준 빠른 보기 card had no local `role=status` confirmation near the action.
+- Change:
+  - Added transient `infectionFeverStandardDraftFeedback` UI state in `src/App.tsx`.
+  - Updated both `applyInfectionFeverStandardDraft()` and `applyInfectionFeverStandardQuestion()` so symptom-record and clinician-question shortcuts set local standard-card feedback while preserving existing top save-status behavior.
+  - Rendered `.standard-range-draft-feedback` inside the infection-fever standard action row and styled it as a compact wrapping full-row status.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use showed cmux had switched to `working.md`, so that Worklog Tracker pane was rejected as invalid CareVault evidence.
+  - CORRECTED: one intermediate PASS-looking command started while `current-workspace` reported `workspace:2`, so that evidence was explicitly discarded and the PASS was rerun after `cmux workspace select workspace:4`.
+  - PASS: Computer Use confirmed the active workspace was `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: clicked `체온·감염 연락 기준 증상 기록 초안 만들기`; the top status showed `발열·오한/감염 의심 증상 초안 준비됨 · 근거 국가암정보센터 감염 의료진 상담 기준 · 저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.`, but local `.standard-range-draft-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter32-infection-standard-draft-local-feedback-red.png` captured the missing card feedback.
+  - PASS after fix: reloaded the same surface in `암관리` and clicked the same standard-card draft button; the 기준 빠른 보기 card showed visible local `role=status` feedback with the same symptom-draft/source summary, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter32-infection-standard-draft-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: forced reload on `surface:9` and verified no stale `.standard-range-draft-feedback`, the symptom save button returned to default `증상 기록 추가`, and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/healthStandards.test.ts src/symptomSupportTemplates.test.ts`, 49 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `0ae3350` (`Show infection standard draft local feedback`).
