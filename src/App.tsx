@@ -301,7 +301,11 @@ import {
   visitPacketRangeLabels,
   type VisitPacketRange,
 } from "./visitPacket";
-import { buildVisitPanelSummary, formatVisitAddedStatus } from "./visitMetric";
+import {
+  buildVisitPanelSummary,
+  formatVisitAddActionLabel,
+  formatVisitAddedStatus,
+} from "./visitMetric";
 import {
   buildCareVaultCsv,
   buildCsvExportFingerprint,
@@ -3473,6 +3477,14 @@ function App() {
     "visit-content",
   );
   const csvFreshPreviewDescription = formatExportPreviewFreshActionDescription("csv-content");
+  const visitDraftHasRequiredFields = hasRequiredTextValues(
+    visitDraft.hospital,
+    visitDraft.reason,
+  );
+  const visitAddActionLabel = formatVisitAddActionLabel(
+    visitDraft,
+    visitDraftHasRequiredFields,
+  );
   const questionDraftHasRequiredFields = hasRequiredTextValues(
     questionDraft.topic,
     questionDraft.question,
@@ -5243,8 +5255,8 @@ function App() {
               className="primary-button"
               type="button"
               onClick={addVisit}
-              aria-label="방문 기록 추가 · 병원/과와 방문 이유 필요"
-              title="방문 기록 추가 · 병원/과와 방문 이유 필요"
+              aria-label={visitAddActionLabel}
+              title={visitAddActionLabel}
             >
               <Plus aria-hidden="true" />
               방문 기록 추가

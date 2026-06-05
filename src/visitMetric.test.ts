@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildVisitPanelSummary, formatVisitAddedStatus } from "./visitMetric";
+import {
+  buildVisitPanelSummary,
+  formatVisitAddActionLabel,
+  formatVisitAddedStatus,
+} from "./visitMetric";
 
 describe("visitMetric", () => {
   it("builds visit panel summary chips from upcoming appointments and planned notes", () => {
@@ -76,6 +80,24 @@ describe("visitMetric", () => {
         reason: "항암 후 추적",
       }),
     ).toBe("서울암센터 방문 기록 추가됨 · 항암 후 추적 · 방문일 2026-06-10 · 다음 일정 2026-06-24");
+  });
+
+  it("formats visit add action labels for required and ready drafts", () => {
+    expect(
+      formatVisitAddActionLabel(
+        {
+          hospital: "",
+          reason: "",
+        },
+        false,
+      ),
+    ).toBe("방문 기록 추가 · 병원/과와 방문 이유 필요");
+    expect(
+      formatVisitAddActionLabel({
+        hospital: "QA 종양내과",
+        reason: "추적 진료 준비 확인",
+      }),
+    ).toBe("방문 기록 추가 · QA 종양내과 · 추적 진료 준비 확인 입력 준비됨");
   });
 
   it("formats visit added feedback with stable fallback context", () => {

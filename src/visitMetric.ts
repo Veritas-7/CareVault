@@ -25,6 +25,8 @@ export type VisitAddedStatusSource = Pick<
   "date" | "hospital" | "nextDate" | "reason"
 >;
 
+export type VisitAddActionLabelSource = Pick<VisitPanelSummarySource, "hospital" | "reason">;
+
 function dateToUtcDay(dateIso: string) {
   const [year, month, day] = dateIso.split("-").map(Number);
   if (!year || !month || !day) return Number.NaN;
@@ -45,6 +47,18 @@ export function formatVisitAddedStatus(visit: VisitAddedStatusSource) {
   ]
     .filter(Boolean)
     .join(" · ");
+}
+
+export function formatVisitAddActionLabel(
+  visit: VisitAddActionLabelSource,
+  hasRequiredFields = true,
+) {
+  const hospital = visit.hospital.trim();
+  const reason = visit.reason.trim();
+  if (!hasRequiredFields || !hospital || !reason) {
+    return "방문 기록 추가 · 병원/과와 방문 이유 필요";
+  }
+  return `방문 기록 추가 · ${hospital} · ${reason} 입력 준비됨`;
 }
 
 export function buildVisitPanelSummary(
