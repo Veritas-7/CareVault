@@ -15700,3 +15700,33 @@
   - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: committed and pushed to `origin/main` as `7d8d194` (`Raise source evidence link targets`); `git ls-remote origin refs/heads/main` returned `7d8d194e6e0f46fdf928ef6dbefea7eb22d040ac`.
+
+## 2026-06-05 17:22 KST - Saved-Document Filter Regression Coverage
+
+- Improvement target:
+  - Real cmux typing in the saved-document search showed the no-match and reset flow was healthy, but the filtering predicate lived inline in `App.tsx` and had no direct regression coverage.
+  - `cmux browser fill` was not a reliable React input-event proxy for this field; real `type` was used for live evidence.
+- Change:
+  - Extracted saved-document search/category/status filtering into `filterDocumentsBySearchAndReview`.
+  - Added `hasActiveDocumentFilters` for reset-state detection.
+  - Added regression tests for trimmed search text, attachment/status text search, category/status filtering, and active-filter detection.
+  - Updated `DESIGN.md` with the tested saved-document filter stability contract.
+- Real-browser verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: after navigating the same surface to `http://127.0.0.1:1420/#documents`, real keyboard typing `없는문서검색어-qa` into `저장된 서류 검색어` produced the no-match state and `visibleItems:0`.
+  - PASS: clicking `서류 필터 초기화` cleared the search input and restored the single saved document.
+  - PASS: blank `서류 메모 저장` validation showed `서류 제목과 내용을 입력해주세요.` and did not add records.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+- Automated verification:
+  - PASS: `npm run test -- src/documentFilterActions.test.ts`, 7 tests.
+  - PASS: `npm run test`, 57 files and 418 tests.
+  - PASS: `npm run typecheck` after fixing the helper's `"all"` sentinel generic inference issue.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/documentFilterActions.ts src/documentFilterActions.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: committed and pushed to `origin/main` as `1bbe61a` (`Cover saved document filtering`); `git ls-remote origin refs/heads/main` returned `1bbe61a90e8a79831056edc1176cfade16882e11`.
