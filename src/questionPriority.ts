@@ -29,8 +29,12 @@ export function normalizeQuestionPriority(value: unknown): QuestionPriority {
 export function formatQuestionDraftAddActionLabel(
   priority: QuestionPriority,
   hasRequiredFields = true,
+  topic = "",
 ) {
-  const requiredScope = hasRequiredFields ? "" : " · 질문 주제와 내용 필요";
+  const trimmedTopic = topic.trim();
+  const readyScope =
+    hasRequiredFields && trimmedTopic ? ` · ${formatQuestionDraftContext(trimmedTopic)} 입력 준비됨` : "";
+  const requiredScope = hasRequiredFields ? readyScope : " · 질문 주제와 내용 필요";
   return `진료 전 질문 추가${requiredScope} · 우선순위 ${questionPriorityLabel[priority]}`;
 }
 

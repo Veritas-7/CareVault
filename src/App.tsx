@@ -3480,6 +3480,7 @@ function App() {
   const questionDraftAddActionLabel = formatQuestionDraftAddActionLabel(
     questionDraft.priority,
     questionDraftHasRequiredFields,
+    questionDraft.topic,
   );
   const labAddActionLabel = formatLabAddActionLabel(labDraft);
   const caregiverPreviewSettingDifferences =

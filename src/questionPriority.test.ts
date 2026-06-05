@@ -46,6 +46,12 @@ describe("questionPriority", () => {
     expect(formatQuestionDraftAddActionLabel("next-visit", false)).toBe(
       "진료 전 질문 추가 · 질문 주제와 내용 필요 · 우선순위 다음 진료",
     );
+    expect(formatQuestionDraftAddActionLabel("next-visit", true, "QA 확인 질문")).toBe(
+      "진료 전 질문 추가 · QA 확인 질문 입력 준비됨 · 우선순위 다음 진료",
+    );
+    expect(formatQuestionDraftAddActionLabel("routine", true, "검사 결과")).toBe(
+      "진료 전 질문 추가 · 검사 결과 질문 입력 준비됨 · 우선순위 일반 확인",
+    );
   });
 
   it("formats question draft added feedback with topic and priority scope", () => {
