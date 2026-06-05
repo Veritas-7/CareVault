@@ -17128,3 +17128,35 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `1f259b8` (`Clarify vital question draft feedback`).
+
+## 2026-06-05 22:08 KST - Clipboard Failure Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires saved-question and care-queue copy affordances plus post-copy status feedback to preserve the same visible context summary.
+  - Source audit found question and care-queue copy success paths preserved topic/date/priority/status/source counts, but unsupported-browser and write-failure paths still reported generic strings such as `질문 복사를 지원하지 않는 브라우저입니다.`, `질문 복사 실패`, `진료 준비 큐 복사를 지원하지 않는 브라우저입니다.`, and `진료 준비 큐 복사 실패`.
+- Change:
+  - Added question clipboard failure and unsupported-browser status formatters in `src/questionClipboard.ts`.
+  - Added care-queue clipboard failure and unsupported-browser status formatters in `src/careActionQueue.ts`.
+  - Updated `App.tsx` copy handlers to report the same question or queue summary in clipboard-missing and write-failure feedback.
+  - Added focused tests covering source-backed question copy failure context and care-queue tone/source-count failure context.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM eval timed out waiting for JavaScript result.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/questionClipboard.test.ts src/careActionQueue.test.ts`, 2 files and 36 tests.
+  - PASS: `npm run test`, 60 files and 470 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/questionClipboard.ts src/questionClipboard.test.ts src/careActionQueue.ts src/careActionQueue.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `936ee0f` (`Clarify clipboard failure feedback`).
