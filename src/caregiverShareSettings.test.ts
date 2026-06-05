@@ -16,7 +16,9 @@ import {
   formatCaregiverShareProfileRedactionToggleLabel,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
+  formatCaregiverSharePresetStatus,
   formatCaregiverShareResetDescription,
+  formatCaregiverShareResetStatus,
   formatCaregiverShareSectionSummaryAriaLabel,
   formatCaregiverShareSectionToggleLabel,
   formatCaregiverShareSettingsCompactSummary,
@@ -275,6 +277,15 @@ describe("caregiverShareSettings", () => {
     );
     expect(formatCaregiverSharePreviewStatus(settings)).toBe(
       `보호자 공유본 미리보기 생성 · ${compactSummary}`,
+    );
+    expect(formatCaregiverSharePresetStatus("정보 최소", settings)).toBe(
+      `보호자 공유 프리셋 적용: 정보 최소 · ${compactSummary}`,
+    );
+    expect(formatCaregiverSharePresetStatus("", settings)).toBe(
+      `보호자 공유 프리셋 적용: 프리셋 · ${compactSummary}`,
+    );
+    expect(formatCaregiverShareResetStatus()).toBe(
+      "보호자 공유 설정 초기화됨 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개",
     );
   });
 

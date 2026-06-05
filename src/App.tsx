@@ -321,7 +321,9 @@ import {
   formatCaregiverShareProfileRedactionToggleLabel,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
+  formatCaregiverSharePresetStatus,
   formatCaregiverShareResetDescription,
+  formatCaregiverShareResetStatus,
   formatCaregiverShareSectionSummaryAriaLabel,
   formatCaregiverShareSectionToggleLabel,
   getCaregiverShareSettingsPreset,
@@ -3232,21 +3234,22 @@ function App() {
       ...current,
       caregiverShareSettings: createDefaultCaregiverShareSettings(),
     }));
-    setActionSaveLabel("보호자 공유 설정 초기화");
+    setActionSaveLabel(formatCaregiverShareResetStatus());
   };
 
   const applyCaregiverSharePreset = (presetId: string) => {
     const preset = getCaregiverShareSettingsPreset(presetId);
     if (!preset) return;
+    const selectedSettings = normalizeCaregiverShareSettings({
+      ...preset.settings,
+      presetId: preset.id,
+    });
 
     setState((current) => ({
       ...current,
-      caregiverShareSettings: normalizeCaregiverShareSettings({
-        ...preset.settings,
-        presetId: preset.id,
-      }),
+      caregiverShareSettings: selectedSettings,
     }));
-    setActionSaveLabel(`보호자 공유 프리셋 적용: ${preset.label}`);
+    setActionSaveLabel(formatCaregiverSharePresetStatus(preset.label, selectedSettings));
   };
 
   const showRenderedExportPreview = exportPreview ? isHtmlExportPreview(exportPreview) : false;

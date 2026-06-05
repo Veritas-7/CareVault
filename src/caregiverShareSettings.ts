@@ -385,6 +385,20 @@ export function formatCaregiverSharePreviewStatus(
   return `보호자 공유본 미리보기 생성 · ${formatCaregiverShareSettingsCompactSummary(input)}`;
 }
 
+export function formatCaregiverShareResetStatus() {
+  return `보호자 공유 설정 초기화됨 · ${formatCaregiverShareSettingsCompactSummary(
+    createDefaultCaregiverShareSettings(),
+  )}`;
+}
+
+export function formatCaregiverSharePresetStatus(
+  presetLabel: string,
+  input: CaregiverShareSettingsInput | undefined,
+) {
+  const label = presetLabel.trim() || "프리셋";
+  return `보호자 공유 프리셋 적용: ${label} · ${formatCaregiverShareSettingsCompactSummary(input)}`;
+}
+
 function summarizeCaregiverSharePreset(settings: CaregiverShareSettings) {
   const preset = getCaregiverShareSettingsPreset(settings.presetId);
   return preset ? `${preset.label} · ${preset.description}` : "직접 설정";
