@@ -140,7 +140,7 @@ import {
   resolveRuntimeAttachmentPreview,
 } from "./attachmentRecovery";
 import {
-  documentDraftAttachmentClearedStatusLabel,
+  formatDocumentDraftAttachmentClearedStatusLabel,
   formatDocumentDraftAttachmentRemoveActionLabel,
 } from "./documentAttachmentActions";
 import {
@@ -1999,6 +1999,8 @@ function App() {
   };
 
   const clearDocumentAttachment = () => {
+    const attachmentName = documentDraft.attachmentName;
+    const attachmentStatus = documentDraft.attachmentStatus;
     documentDraftAttachmentFileRef.current = null;
     clearDocumentDraftAttachmentPreviewUrl();
     setDocumentDraft((current) => ({
@@ -2008,7 +2010,9 @@ function App() {
       attachmentStorage: undefined,
       attachmentStatus: undefined,
     }));
-    setSaveLabel(documentDraftAttachmentClearedStatusLabel);
+    setSaveLabel(
+      formatDocumentDraftAttachmentClearedStatusLabel(attachmentName, attachmentStatus),
+    );
   };
 
   const openDocumentAttachment = async (document: CareDocument) => {

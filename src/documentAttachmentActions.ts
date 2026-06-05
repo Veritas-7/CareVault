@@ -1,8 +1,21 @@
 export const documentDraftAttachmentClearedStatusLabel = "첨부 선택 제거됨";
 
-export function formatDocumentDraftAttachmentRemoveActionLabel(attachmentName?: string) {
+function formatDraftAttachmentContext(attachmentName?: string, attachmentStatus?: string) {
   const trimmedName = attachmentName?.trim();
+  const trimmedStatus = attachmentStatus?.trim();
   const attachmentContext = trimmedName ? `현재 선택 ${trimmedName}` : "현재 선택 첨부 없음";
 
+  return trimmedStatus ? `${attachmentContext} · 상태 ${trimmedStatus}` : attachmentContext;
+}
+
+export function formatDocumentDraftAttachmentRemoveActionLabel(attachmentName?: string) {
+  const attachmentContext = formatDraftAttachmentContext(attachmentName);
   return `서류 메모 첨부 선택 제거 · ${attachmentContext}`;
+}
+
+export function formatDocumentDraftAttachmentClearedStatusLabel(
+  attachmentName?: string,
+  attachmentStatus?: string,
+) {
+  return `첨부 선택 제거됨 · ${formatDraftAttachmentContext(attachmentName, attachmentStatus)}`;
 }

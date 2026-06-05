@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   documentDraftAttachmentClearedStatusLabel,
+  formatDocumentDraftAttachmentClearedStatusLabel,
   formatDocumentDraftAttachmentRemoveActionLabel,
 } from "./documentAttachmentActions";
 
@@ -19,5 +20,11 @@ describe("documentAttachmentActions", () => {
 
   it("keeps the draft attachment cleared status explicit", () => {
     expect(documentDraftAttachmentClearedStatusLabel).toBe("첨부 선택 제거됨");
+    expect(
+      formatDocumentDraftAttachmentClearedStatusLabel("scan.png", "브라우저 파일명 참조"),
+    ).toBe("첨부 선택 제거됨 · 현재 선택 scan.png · 상태 브라우저 파일명 참조");
+    expect(formatDocumentDraftAttachmentClearedStatusLabel()).toBe(
+      "첨부 선택 제거됨 · 현재 선택 첨부 없음",
+    );
   });
 });
