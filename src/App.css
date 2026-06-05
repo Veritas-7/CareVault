@@ -2279,7 +2279,7 @@ textarea:focus-visible {
 .toggle-row label {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
+  min-height: 40px;
   padding: 0 10px;
   border-radius: 8px;
   color: #1d2528;
