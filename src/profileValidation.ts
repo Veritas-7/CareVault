@@ -11,6 +11,16 @@ const profileNumberFieldMessages: Record<ProfileNumberField, string> = {
   weightKg: "몸무게는 0보다 크게 입력해주세요.",
 };
 
+const plainDecimalNumberPattern = /^-?(?:\d+\.?\d*|\.\d+)$/;
+
+function parsePlainDecimalNumberInput(value: string | undefined) {
+  const trimmed = value?.trim();
+  if (!trimmed || !plainDecimalNumberPattern.test(trimmed)) return undefined;
+
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 export function isProfileNumberField(field: string): field is ProfileNumberField {
   return field === "age" || field === "heightCm" || field === "weightKg" || field === "waistCm";
 }
@@ -22,8 +32,8 @@ export function validateProfileNumberInput(
   const trimmed = value.trim();
   if (!trimmed) return { type: "ok" };
 
-  const numericValue = Number(trimmed);
-  if (!Number.isFinite(numericValue) || numericValue <= 0) {
+  const numericValue = parsePlainDecimalNumberInput(trimmed);
+  if (numericValue === undefined || numericValue <= 0) {
     return {
       message: profileNumberFieldMessages[field],
       type: "error",
@@ -49,8 +59,8 @@ export function formatProfileNumberDisplay(
   missingLabel: string,
 ) {
   const trimmed = value.trim();
-  const numericValue = Number(trimmed);
-  if (!trimmed || !Number.isFinite(numericValue) || numericValue <= 0) {
+  const numericValue = parsePlainDecimalNumberInput(trimmed);
+  if (!trimmed || numericValue === undefined || numericValue <= 0) {
     return missingLabel;
   }
 

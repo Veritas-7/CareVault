@@ -686,6 +686,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Dropped malformed restored document history timestamps during hydration so impossible change-log times cannot leak into saved-document history displays.
 - 2026-06-05: Dropped unknown restored caregiver-share preset IDs during hydration so the preset select never carries a retired or invalid option value.
 - 2026-06-05: Tightened vital-entry number input parsing to reject hex, exponent, and unit-suffixed strings before blood-pressure, glucose, or temperature values are saved.
+- 2026-06-05: Tightened profile number input parsing to reject hex, exponent, and unit-suffixed strings before age, height, weight, or waist values are saved or displayed.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.

@@ -35,6 +35,21 @@ describe("profileValidation", () => {
     });
   });
 
+  it("rejects non-decimal profile number strings", () => {
+    expect(validateProfileNumberInput("age", "1e2")).toEqual({
+      message: "나이는 0보다 크게 입력해주세요.",
+      type: "error",
+    });
+    expect(validateProfileNumberInput("heightCm", "0xA4")).toEqual({
+      message: "키는 0보다 크게 입력해주세요.",
+      type: "error",
+    });
+    expect(validateProfileNumberInput("waistCm", "82cm")).toEqual({
+      message: "허리둘레는 0보다 크게 입력해주세요.",
+      type: "error",
+    });
+  });
+
   it("identifies profile number fields", () => {
     expect(isProfileNumberField("age")).toBe(true);
     expect(isProfileNumberField("heightCm")).toBe(true);

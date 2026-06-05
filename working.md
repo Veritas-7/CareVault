@@ -14629,6 +14629,43 @@
   - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
   - PASS: stopped the local Vite dev server before staging.
 
+## 2026-06-05 13:22 KST - Profile Input Decimal Parsing Guard Iteration Note
+
+- Improvement target:
+  - Profile age, height, weight, and waist draft fields still validated text with raw `Number()`.
+  - Non-decimal clinical profile strings such as `1e2` or `0xA4` could be accepted as saved profile values and then feed BMI, waist, dashboard, helper, and export displays.
+- Code/design changes:
+  - Updated `src/profileValidation.ts`.
+    - Added a plain-decimal parser for profile number text before numeric conversion.
+    - Exponent, hex-like, and unit-suffixed profile values now resolve to the existing field-specific error messages instead of being saved or displayed as measurements.
+  - Updated `src/profileValidation.test.ts`.
+    - Added RED/GREEN regression coverage for `1e2`, `0xA4`, and `82cm`.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for strict profile number input parsing.
+- Verification so far:
+  - PASS: RED baseline before implementation: `npm test -- src/profileValidation.test.ts` failed because `1e2` was accepted as a valid profile age.
+  - PASS: GREEN after implementation: `npm test -- src/profileValidation.test.ts`, 1 file and 8 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 392 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright profile exponent-input smoke at `http://127.0.0.1:1420/#dashboard`.
+    - `document.title`: `CareVault`.
+    - H1 count: 1; H1 text `나의 건강 기록`.
+    - Body client width and scroll width: 390 / 390.
+    - Filling age with `1e2` left age at `56` and showed `나이는 0보다 크게 입력해주세요.`.
+    - Filling height with `165.5` still saved normally and showed `키 수정됨`.
+    - No exponent text leaked into visible content.
+    - Page errors and console errors: none.
+    - Selector note: browser-native number inputs do not allow unit-suffixed text through Playwright fill, so unit/hex cases remain covered by the focused validator test.
+  - PASS: Existing cmux right-side in-app browser in workspace `암관리` stayed on the existing CareVault tab and showed `http://127.0.0.1:1420/#dashboard`.
+    - No new browser tab was opened.
+    - Profile metric remained `56세 · 여성 164cm / 62kg · 허리 82cm`.
+    - BMI, waist metric, source links, caregiver-share controls, care queue, vital inputs, timeline, lab tracking, nutrition, and document controls were visible.
+  - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+
 ## 2026-06-05 12:16 KST - Strict Lab Number Text Parsing Iteration Note
 
 - Improvement target:
