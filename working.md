@@ -17381,3 +17381,68 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `d8278e9` (`Clarify cervical screening draft feedback`).
+
+## 2026-06-05 22:53 KST - Backup Import Failure Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires backup import labels and status feedback to state JSON validation, replacement boundaries, and attachment reattachment boundaries.
+  - Source audit found import success feedback already repeated imported scope, but failure feedback still collapsed to `가져오기 실패: 기존 기록 유지` without naming validation or attachment reattachment scope.
+- Change:
+  - Added `formatCareVaultBackupImportFailureStatus()` in `src/backupState.ts`.
+  - Updated `App.tsx` backup import failure handling so topbar feedback now says JSON validation failed, existing records were kept, and attachment reattachment state was unchanged.
+  - Added focused regression coverage in `src/backupState.test.ts` alongside import safety and success scope expectations.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM eval timed out waiting for JavaScript result.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` on standalone retry and `cmux browser surface:9 errors list` returned `No browser errors` on standalone retry.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/backupState.test.ts`, 8 tests.
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/backupState.ts src/backupState.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `a909d6d` (`Clarify backup import failure feedback`).
+
+## 2026-06-05 23:02 KST - Export Preview Focus After Real cmux QA
+
+- Improvement target:
+  - User correction: the prior cmux checks reused `surface:9` but did not sufficiently test the right in-app browser like a person clicking through the UI.
+  - `DESIGN.md` requires export preview content and preview-scoped actions to be visible and understandable after preview generation.
+  - Real cmux screenshot QA found that clicking `CSV 미리보기` generated the preview and status chip, but the first visible viewport stayed near the dashboard/top controls; the actual preview panel was far below the fold.
+- Change:
+  - Added an `exportPreviewPanelRef` in `App.tsx`.
+  - Made the export preview section focusable with `tabIndex={-1}`.
+  - Added a preview-generation effect that focuses and scrolls the preview panel into view after `exportPreview` is set.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PASS: confirmed via screenshot that `surface:9` initially showed a connection-refused page when the dev server was stopped, then started the current-source dev server and reloaded the same surface.
+  - PASS: with the server running, `cmux browser surface:9 screenshot` showed the actual CareVault UI in the right in-app browser, not a blank or hidden proxy state.
+  - PASS: `cmux browser surface:9 snapshot --interactive --max-depth 6` exposed actionable buttons and labels, including `CSV 미리보기` and `내보내기 미리보기 닫기`.
+  - RED/BROKEN UX: clicking `CSV 미리보기` before the fix generated preview controls in the DOM but left the visible screenshot at the top dashboard area, so the preview itself was not immediately visible.
+  - PASS after fix: clicked `CSV 미리보기` in the same `surface:9`; screenshot `/tmp/carevault-surface9-preview-scrolled.png` showed the page scrolled to the `CSV 미리보기` panel with focus outline, summary chips, copy/print/download/close controls, and CSV content visible.
+  - PASS: clicked `내보내기 미리보기 닫기`; the snapshot no longer contained preview action buttons.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug connection messages during dev.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `822327e` (`Focus export preview after generation`).
