@@ -62,7 +62,7 @@ performance:
   chunks: "Recharts, Lucide, health standards, cervical-care, and export helpers split below Vite warning threshold"
 evidence:
   source: "src/App.tsx, src/App.css, src/healthStandards.ts, src/cervicalCancerCare.ts, src/symptomSupportTemplates.ts"
-  runtime: "cmux workspace 암관리 right in-app browser at http://127.0.0.1:1420/"
+  runtime: "cmux workspace 암관리 right in-app browser at http://127.0.0.1:1420/ and Tauri desktop SQLite readback at tauri://localhost"
 ---
 
 # DESIGN.md
@@ -688,6 +688,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Tightened vital-entry number input parsing to reject hex, exponent, and unit-suffixed strings before blood-pressure, glucose, or temperature values are saved.
 - 2026-06-05: Tightened profile number input parsing to reject hex, exponent, and unit-suffixed strings before age, height, weight, or waist values are saved or displayed.
 - 2026-06-05: Trimmed restored profile number strings during hydration so padded age, height, weight, or waist backups become stable number-input values.
+- 2026-06-05: Verified the Tauri desktop SQLite mirror and normalized search readback with live UI evidence plus direct sandbox database counts.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.

@@ -15096,3 +15096,63 @@
   - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
   - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
   - PASS: stopped the local Vite dev server before staging.
+
+## 2026-06-05 13:38 KST - Tauri SQLite Readback Runtime Pass
+
+- Improvement target:
+  - The README's current durable slice asked for a desktop-runtime Tauri SQLite readback pass when desktop verification was in scope.
+  - The app needed runtime proof that normalized mirror counts and normalized document-search counts are read back from SQLite, not just assembled in browser preview or unit tests.
+- Scope:
+  - No source behavior changed in this slice because the live runtime pass succeeded.
+  - Updated `README.md`.
+    - Marked the Tauri SQLite readback pass as verified with the sandbox DB path and moved the next durable app slice to saved-attachment missing-file/opener-failure recovery.
+  - Updated `DESIGN.md`.
+    - Added Tauri desktop SQLite readback to runtime evidence and added a changelog line for the verified mirror/search readback.
+  - Updated `working.md`.
+    - Recorded the desktop runtime, direct DB counts, and environment caveat.
+- Verification so far:
+  - PASS: `git status --short --branch` before launch: `## main...origin/main`.
+  - PASS: `git rev-parse HEAD origin/main`: both `f1fed30240d038dbe3328bd214337cc9e95000cd`.
+  - PASS: port 1420 had no listener before launch.
+  - PASS: `npm run tauri -- info`.
+    - Tauri packages/plugins were detected, including SQL, dialog, fs, and opener plugins.
+    - Environment caveat: Xcode Command Line Tools were installed, but full Xcode was not installed.
+  - PASS: `cargo check` in `src-tauri`, finished the dev profile successfully.
+  - PASS: `npm run tauri dev` launched the desktop app at `tauri://localhost`.
+  - PASS: Computer Use inspected the live `CareVault` Tauri window.
+    - Storage text: `현재 데이터는 Tauri SQLite DB에 저장됩니다.`
+    - Sidebar mirror status: `정규화 mirror: 활력 3개, 검사 1개, 질문 1개, 서류 1개, 이력 1개, 첨부 0개, 증상 1개, 음식 1개.`
+    - Save label showed `SQLite 저장 준비` and then `SQLite 자동 저장됨`.
+  - PASS: Tauri document search readback with `혈액검사`.
+    - UI showed `SQLite 전체 검색: 4개 - 서류 1, 이력 1, 첨부 0, 검사 0, 질문 1, 증상 0, 진료 1, 활력 0, 음식 0`.
+  - PASS: Located the active sandbox database and WAL files:
+    - `/Users/wj/Library/Application Support/app.veritas.carevault/carevault.db`
+    - `/Users/wj/Library/Application Support/app.veritas.carevault/carevault.db-shm`
+    - `/Users/wj/Library/Application Support/app.veritas.carevault/carevault.db-wal`
+  - PASS: Direct `sqlite3` count readback from the sandbox DB:
+    - `profile|1`
+    - `vitals|3`
+    - `visits|1`
+    - `active_documents|1`
+    - `deleted_documents|0`
+    - `attachments|0`
+    - `history|1`
+    - `symptoms|1`
+    - `questions|1`
+    - `labs|1`
+    - `food|1`
+  - PASS: Stopped the Tauri dev server and closed the CareVault app process.
+  - PASS: Confirmed port 1420 had no listener after shutdown.
+  - PASS: Confirmed no `carevault` process remained after shutdown.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 393 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Existing cmux `암관리` right-side in-app browser reused the existing CareVault pane at `http://127.0.0.1:1420/#dashboard`.
+    - No new browser tab was opened.
+    - Browser storage label, dashboard metrics, care queue, cervical-care panel, timeline, lab tracking, nutrition, and document controls were visible.
+  - PASS: Stopped the local Vite dev server after cmux verification and confirmed port 1420 had no listener.
+  - PASS: Confirmed no `carevault` process remained after all runtime checks.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
