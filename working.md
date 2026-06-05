@@ -17755,3 +17755,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `26fea22` (`Clarify ready lab add action`).
+
+## 2026-06-06 00:34 KST - Question Add Ready Label cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires repeated form controls and required add/save flows to expose scoped labels/titles, local validation feedback, and ready-state feedback once required fields become valid.
+  - Real cmux QA found the question form cleared the local required warning after entering a topic and question body, but the `질문 추가` button only exposed `진료 전 질문 추가 · 우선순위 다음 진료`, without naming the ready draft topic.
+- Change:
+  - Extended `formatQuestionDraftAddActionLabel()` in `src/questionPriority.ts` so ready question drafts include the topic context and `입력 준비됨`.
+  - Passed `questionDraft.topic` into the add-button formatter in `src/App.tsx`.
+  - Added regression coverage in `src/questionPriority.test.ts` for ready topic labels, including topics that do and do not already end with `질문`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `블로그` and the right pane was WriteFlow, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#labs`, then the existing surface was used for the question flow.
+  - RED/IMPROVEMENT: clicked empty `질문 추가`; the local feedback rendered `질문 주제와 내용을 입력해주세요.`, then entering `QA 확인 질문` and `다음 진료 때 혈액검사 결과를 어떻게 확인하면 좋을까요?` cleared local feedback while the button still said `진료 전 질문 추가 · 우선순위 다음 진료`. Screenshot `/tmp/carevault-surface9-iter11-question-ready-missing-topic-red.png` captured the pre-fix ready-but-unspecific state.
+  - PASS after fix: reloaded the same `surface:9`, entered the same question draft, and the add button aria/title became `진료 전 질문 추가 · QA 확인 질문 입력 준비됨 · 우선순위 다음 진료`. Screenshot `/tmp/carevault-surface9-iter11-question-ready-topic-pass.png` captured the updated ready label.
+  - PASS cleanup in browser: cleared the question topic and body without saving a fake record; the add button reverted to `진료 전 질문 추가 · 질문 주제와 내용 필요 · 우선순위 다음 진료`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/questionPriority.test.ts`, 7 tests.
+  - PASS: `npm run test`, 61 files and 474 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/questionPriority.ts src/questionPriority.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `5037e9a` (`Clarify ready question action`).
