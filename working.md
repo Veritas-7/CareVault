@@ -17484,3 +17484,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `c5add99` (`Clarify empty question draft action`).
+
+## 2026-06-05 23:28 KST - Document Empty Reset Hit Target cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires document list search/filter no-match states to provide a clear reset action, and compact controls still need reliable touch/click targets.
+  - Real cmux QA found the no-match reset action was functionally correct and well-labelled, but its visible hit target was only 34px tall.
+- Change:
+  - Updated `.document-empty-reset` in `src/App.css` from `min-height: 34px` to `min-height: 44px`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace was `블로그` and `surface:9` belonged to WriteFlow, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to the `암관리` workspace before testing; the right pane then showed CareVault at `http://127.0.0.1:1420/#records`.
+  - PASS: clicked `서류 보관` in the same `surface:9`; screenshot `/tmp/carevault-surface9-iter3-documents.png` and `scrollY=15732` confirmed the actual document section with one saved document was reached.
+  - NOTE: an early malformed `cmux browser fill` command inserted `--snapshot-after` into the search field; this was discarded as operator error and not treated as an app bug.
+  - PASS: cleanly filled the saved-document search input with `없는문서cmuxqa`; screenshot `/tmp/carevault-surface9-iter3-document-nomatch-clean.png` captured the real no-match state.
+  - RED/IMPROVEMENT: before the patch, the reset button aria/title was `저장된 서류 필터 초기화 · 검색어 없는문서cmuxqa · 분류 전체 분류 · 상태 전체 상태`, but the button rect height was 34px.
+  - PASS after fix: HMR updated the same right pane; screenshot `/tmp/carevault-surface9-iter3-document-reset-44.png` captured the no-match state with the larger reset action.
+  - PASS after fix: `cmux browser surface:9 get styles 'button[aria-label^="저장된 서류 필터 초기화"]' --property min-height` returned `44px`, `height` returned `44px`, and DOM eval returned `{height:44, minHeight:"44px"}` with the expected aria label.
+  - PASS: clicked the reset action in the same `surface:9`; the search value became empty, the reset button disappeared, and the status included `서류 필터 초기화됨 · 검색어 없는문서cmuxqa · 분류 전체 분류 · 상태 전체 상태`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug/HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating only the port-1420 Vite node process.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `83379c4` (`Raise document empty reset hit target`).
