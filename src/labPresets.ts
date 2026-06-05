@@ -513,6 +513,21 @@ export function formatLabPresetNoteWithSource(
     .join("\n");
 }
 
+export function formatLabPresetAppliedStatusLabel(
+  presetId: string,
+  sex: LabPresetSex = "other",
+) {
+  const preview = buildLabPresetPreview(presetId, sex);
+  if (!preview) return "검사 프리셋 적용: 선택한 프리셋";
+
+  return [
+    `검사 프리셋 적용: ${preview.label}`,
+    `기준 ${preview.rangeLabel}`,
+    preview.applicabilityLabel,
+    `근거 ${preview.sourceLabel}`,
+  ].join(" · ");
+}
+
 export function formatLabPresetSexSyncStatusLabel(
   presetId: string,
   nextSex: LabPresetSex,

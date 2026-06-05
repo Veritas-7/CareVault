@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildLabPresetPreview,
+  formatLabPresetAppliedStatusLabel,
   formatLabPresetNoteWithSource,
   formatLabPresetSourceEvidence,
   formatLabPresetSexSyncStatusLabel,
@@ -616,7 +617,13 @@ describe("labPresets", () => {
     ).toBeNull();
   });
 
-  it("formats exact status feedback when profile sex refreshes a selected preset", () => {
+  it("formats exact status feedback for lab preset actions", () => {
+    expect(formatLabPresetAppliedStatusLabel("hemoglobin", "female")).toBe(
+      "검사 프리셋 적용: Hgb 헤모글로빈 · 기준 12-16 g/dL · 여성 기준 적용 · 근거 서울아산병원 혈색소 검사 참고치",
+    );
+    expect(formatLabPresetAppliedStatusLabel("custom-test", "other")).toBe(
+      "검사 프리셋 적용: 선택한 프리셋",
+    );
     expect(formatLabPresetSexSyncStatusLabel("hdl-cholesterol", "male")).toBe(
       "HDL 콜레스테롤 남성 기준으로 갱신",
     );

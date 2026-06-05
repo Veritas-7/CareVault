@@ -233,6 +233,7 @@ import {
 import { buildDocumentPanelSummary } from "./documentMetric";
 import {
   buildLabPresetPreview,
+  formatLabPresetAppliedStatusLabel,
   formatLabPresetNoteWithSource,
   formatLabPresetSexSyncStatusLabel,
   labPresets,
@@ -2704,8 +2705,6 @@ function App() {
     const preset = resolveLabPreset(presetId, state.profile.sex);
     if (!preset) return;
     const presetPreview = buildLabPresetPreview(presetId, state.profile.sex);
-    const presetLabel =
-      labPresets.find((candidate) => candidate.id === presetId)?.label ?? preset.name;
 
     setLabDraft((current) => ({
       ...current,
@@ -2717,7 +2716,7 @@ function App() {
         ? current.note
         : formatLabPresetNoteWithSource(preset, presetPreview?.applicabilityLabel),
     }));
-    setSaveLabel(`검사 프리셋 적용: ${presetLabel}`);
+    setSaveLabel(formatLabPresetAppliedStatusLabel(presetId, state.profile.sex));
   };
 
   const resetLabDraft = () => {
