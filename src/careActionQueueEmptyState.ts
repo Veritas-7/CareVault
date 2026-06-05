@@ -25,3 +25,11 @@ export const careActionQueueEmptyRecoveryLinks = [
     label: "서류 조치 추가",
   },
 ];
+
+type CareActionQueueEmptyRecoveryLink = (typeof careActionQueueEmptyRecoveryLinks)[number];
+
+export function formatCareActionQueueEmptyRecoveryLinkLabel(
+  link: CareActionQueueEmptyRecoveryLink,
+) {
+  return `진료 준비 항목 추가 바로가기: ${link.label}`;
+}

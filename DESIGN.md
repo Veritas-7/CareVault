@@ -657,6 +657,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Preserved late 장폐색·혈변·혈뇨 generated memo queue labels and official basis detail in dashboard/export care queues.
 - 2026-06-05: Added scoped accessible labels and matching hover titles to disclosure summaries for cervical care lists, Korean-standard coverage, and rendered export raw HTML.
 - 2026-06-05: Added action-context and disabled-reason parity to the caregiver-share reset button label and hover title.
+- 2026-06-05: Added scoped accessible labels and matching hover titles to source-evidence and empty-queue recovery links.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.

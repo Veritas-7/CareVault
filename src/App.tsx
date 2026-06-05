@@ -112,7 +112,10 @@ import {
   formatCareActionQueueCopyStatus,
 } from "./careActionQueue";
 import { buildCareActionQueuePanelSummary } from "./careActionQueueMetric";
-import { careActionQueueEmptyRecoveryLinks } from "./careActionQueueEmptyState";
+import {
+  careActionQueueEmptyRecoveryLinks,
+  formatCareActionQueueEmptyRecoveryLinkLabel,
+} from "./careActionQueueEmptyState";
 import { buildCareActionVisibleDetailParts } from "./careActionVisibleDetail";
 import {
   attachmentPreviewCloseActionLabel,
@@ -3925,7 +3928,8 @@ function App() {
                         href={latestSymptomDisplay.sourceUrl}
                         target="_blank"
                         rel="noreferrer"
-                        title={`최근 증상 근거: ${latestSymptomDisplay.sourceLabel}`}
+                        aria-label={`최근 증상 근거 ${latestSymptomDisplay.sourceLabel} 열기`}
+                        title={`최근 증상 근거 ${latestSymptomDisplay.sourceLabel} 열기`}
                       >
                         {latestSymptomDisplay.compactSourceEvidence}
                       </a>
@@ -4078,7 +4082,12 @@ function App() {
               <p>현재 자궁경부암 검진 확인, 증상 경고, 열려 있는 질문, 기준 밖 활력·검사, 서류 조치, 예정 방문이 없습니다.</p>
               <div className="action-empty-links" aria-label="진료 준비 항목 추가 바로가기">
                 {careActionQueueEmptyRecoveryLinks.map((link) => (
-                  <a href={link.href} key={link.id}>
+                  <a
+                    href={link.href}
+                    key={link.id}
+                    aria-label={formatCareActionQueueEmptyRecoveryLinkLabel(link)}
+                    title={formatCareActionQueueEmptyRecoveryLinkLabel(link)}
+                  >
                     {link.label}
                   </a>
                 ))}
@@ -5334,9 +5343,12 @@ function App() {
                             href={item.sourceUrl}
                             target="_blank"
                             rel="noreferrer"
+                            aria-label={`${item.title} ${
+                              item.sourceEvidenceTypeLabel || "기록"
+                            } 근거 ${item.sourceLabel} 열기`}
                             title={`${item.title} ${
                               item.sourceEvidenceTypeLabel || "기록"
-                            } 근거: ${item.sourceLabel}`}
+                            } 근거 ${item.sourceLabel} 열기`}
                           >
                             {item.sourceEvidence}
                           </a>
@@ -5632,7 +5644,8 @@ function App() {
                                 href={questionDisplay.sourceUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                title={`${question.topic} 질문 근거: ${questionDisplay.sourceLabel}`}
+                                aria-label={`${question.topic} 질문 근거 ${questionDisplay.sourceLabel} 열기`}
+                                title={`${question.topic} 질문 근거 ${questionDisplay.sourceLabel} 열기`}
                               >
                                 {questionDisplay.sourceEvidence}
                               </a>

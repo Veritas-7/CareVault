@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { careActionQueueEmptyRecoveryLinks } from "./careActionQueueEmptyState";
+import {
+  careActionQueueEmptyRecoveryLinks,
+  formatCareActionQueueEmptyRecoveryLinkLabel,
+} from "./careActionQueueEmptyState";
 
 describe("careActionQueueEmptyState", () => {
   it("keeps empty queue recovery links focused on forms that can create queue items", () => {
@@ -30,5 +33,11 @@ describe("careActionQueueEmptyState", () => {
         label: "서류 조치 추가",
       },
     ]);
+  });
+
+  it("formats empty queue recovery link labels with the target action", () => {
+    expect(formatCareActionQueueEmptyRecoveryLinkLabel(careActionQueueEmptyRecoveryLinks[0])).toBe(
+      "진료 준비 항목 추가 바로가기: 혈압·혈당 입력",
+    );
   });
 });

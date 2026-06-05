@@ -14072,3 +14072,42 @@
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
   - Git commit and push will be reported in the final assistant output.
+
+## 2026-06-05 10:18 KST - Source Link Accessible Label Iteration Note
+
+- Improvement target:
+  - A fresh interactive-tag source scan found four anchor render paths without complete `aria-label`/`title` parity:
+    - latest-symptom source evidence link
+    - empty care-queue recovery links
+    - timeline source evidence link
+    - saved-question source evidence link
+  - Buttons, form controls, and disclosure summaries were already clean after the prior iterations.
+- Code/design changes:
+  - Updated `src/careActionQueueEmptyState.ts`.
+    - Added `formatCareActionQueueEmptyRecoveryLinkLabel()` for the empty queue recovery link action names.
+  - Updated `src/careActionQueueEmptyState.test.ts`.
+    - Locked the recovery link label sentence.
+  - Updated `src/App.tsx`.
+    - Added matching `aria-label` and `title` text to latest-symptom source, timeline source, question source, and empty-queue recovery links.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for source-evidence and empty-queue recovery link labels.
+- Verification:
+  - PASS: `npm run test -- src/careActionQueueEmptyState.test.ts`, 1 file and 2 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Interactive-tag source scan: buttons, links, inputs, selects, textareas, and summaries all have both `aria-label` and `title` in `src/App.tsx`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/careActionQueueEmptyState.ts src/careActionQueueEmptyState.test.ts`.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser only; no additional cmux browser tab was created.
+    - Omnibar stayed on `http://127.0.0.1:1420/#nutrition`.
+    - The live accessibility tree exposed CareVault links with scoped source names, including timeline WBC and vital evidence links.
+  - PASS: Supplemental DOM assertion against the same running local dev server at 390x884.
+    - Rendered changed source links had matching `aria-label` and `title`, and measured at least 44px high.
+    - Checked labels included `검사 WBC · 3.4 10^3/uL 검사 근거 서울아산병원 전혈구검사 참고치 열기`, `혈압 126/78 mmHg 활력 근거 질병관리청 국가건강정보포털 고혈압 열기`, and `혈당 146 mg/dL (식후 2시간) 활력 근거 대한당뇨병학회 당뇨병 관리 목표 열기`.
+  - RED follow-up found during broader DOM sweep:
+    - Many existing source-link helpers already expose `aria-label`, but their hover `title` still uses older colon wording instead of matching the aria sentence.
+    - Likely shared follow-up helpers: `buildHealthStandardSourceLinkLabels()`, `buildCervicalCancerCareSourceLinkLabels()`, and `buildFoodMatchSourceLinkLabels()`.
+  - PASS: `npm run test`, 54 files and 369 tests.
+  - PASS: `npm run build`.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
+  - Git commit and push will be reported in the final assistant output.
