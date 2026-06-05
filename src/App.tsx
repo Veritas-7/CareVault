@@ -866,12 +866,27 @@ function extractFileName(path: string) {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path;
 }
 
-function normalizeAppState(input: Partial<AppState>): AppState {
-  const profile = { ...defaultState.profile, ...input.profile };
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function normalizeObjectArray<T>(value: unknown): T[] {
+  return Array.isArray(value) ? (value.filter(isObjectRecord) as T[]) : [];
+}
+
+function normalizeAppState(input: unknown): AppState {
+  const persisted = isObjectRecord(input) ? (input as Partial<AppState>) : {};
+  const profileInput = isObjectRecord(persisted.profile) ? persisted.profile : {};
+  const profile = { ...defaultState.profile, ...profileInput };
+  const documents = normalizeObjectArray<AppState["documents"][number]>(persisted.documents);
+  const deletedDocuments = normalizeObjectArray<AppState["deletedDocuments"][number]>(
+    persisted.deletedDocuments,
+  );
+  const questions = normalizeObjectArray<AppState["questions"][number]>(persisted.questions);
 
   return {
     ...defaultState,
-    ...input,
+    ...persisted,
     profile: {
       ...profile,
       age: sanitizeProfileNumberInput("age", profile.age, defaultState.profile.age),
@@ -887,28 +902,33 @@ function normalizeAppState(input: Partial<AppState>): AppState {
         defaultState.profile.weightKg,
       ),
     },
-    foodQuery: input.foodQuery ?? defaultState.foodQuery,
-    vitals: input.vitals ?? [],
-    visits: input.visits ?? [],
-    documents: (input.documents ?? []).map((document) => ({
+    foodQuery:
+      typeof persisted.foodQuery === "string" ? persisted.foodQuery : defaultState.foodQuery,
+    vitals: normalizeObjectArray<AppState["vitals"][number]>(persisted.vitals),
+    visits: normalizeObjectArray<AppState["visits"][number]>(persisted.visits),
+    documents: documents.map((document) => ({
       ...document,
       reviewStatus: document.reviewStatus ?? "needs-review",
       nextAction: document.nextAction ?? "",
       history: document.history ?? [],
     })),
-    deletedDocuments: (input.deletedDocuments ?? []).map((document) => ({
+    deletedDocuments: deletedDocuments.map((document) => ({
       ...document,
       reviewStatus: document.reviewStatus ?? "needs-review",
       nextAction: document.nextAction ?? "",
       history: document.history ?? [],
     })),
-    symptoms: input.symptoms ?? [],
-    questions: (input.questions ?? []).map((question) => ({
+    symptoms: normalizeObjectArray<AppState["symptoms"][number]>(persisted.symptoms),
+    questions: questions.map((question) => ({
       ...question,
       priority: normalizeQuestionPriority(question.priority),
     })),
-    labResults: input.labResults ?? [],
-    caregiverShareSettings: normalizeCaregiverShareSettings(input.caregiverShareSettings),
+    labResults: normalizeObjectArray<AppState["labResults"][number]>(persisted.labResults),
+    caregiverShareSettings: normalizeCaregiverShareSettings(
+      isObjectRecord(persisted.caregiverShareSettings)
+        ? persisted.caregiverShareSettings
+        : undefined,
+    ),
   };
 }
 

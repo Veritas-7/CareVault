@@ -14407,3 +14407,27 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - PASS: committed and pushed to `origin/main` as `5cd8524` (`Clarify memory storage save labels`).
+
+## 2026-06-05 11:27 KST - Persisted AppState Shape Guard Iteration Note
+
+- Improvement target:
+  - A follow-up persistence review found that syntactically valid JSON such as `null`, numbers, or objects with non-array collection fields could pass `JSON.parse()` and then break `normalizeAppState()`.
+  - This could happen with manually edited browser storage or stale/corrupt persisted data even when JSON parsing itself succeeds.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added object-record and object-array guards before normalizing persisted state.
+    - `normalizeAppState()` now accepts `unknown`, defaults non-object roots, ignores non-array collection fields, drops non-object collection entries, and keeps caregiver settings defaulted when malformed.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for persisted AppState shape fallback.
+- Verification so far:
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright malformed-persistence smoke at 390x884.
+    - Case `json-null`: H1 count 1; page errors 0; console errors 0; scroll width 390.
+    - Case `bad-shapes`: H1 count 1; page errors 0; console errors 0; scroll width 390.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx`.
+  - PASS: `npm run test`, 54 files and 373 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - Pending: commit and push.
