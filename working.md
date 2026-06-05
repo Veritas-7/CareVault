@@ -17319,3 +17319,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `e501ac0` (`Clarify food question draft feedback`).
+
+## 2026-06-05 22:43 KST - Symptom Support Draft Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires source-backed symptom/question drafts to preserve the official Korean source context, the safety boundary, and the care-queue evidence hint for contact-threshold templates.
+  - Source audit found the generated draft bodies and action labels were source-retaining, but post-action feedback still collapsed to generic `부작용 질문 초안 준비됨`, `체온·감염 증상 초안 준비됨`, or `체온·감염 질문 초안 준비됨` strings.
+- Change:
+  - Added `formatSymptomSupportSymptomDraftReadyStatus()` and `formatSymptomSupportQuestionDraftReadyStatus()` in `src/symptomSupportTemplates.ts`.
+  - Updated `App.tsx` symptom-support and fever/infection draft handlers to use the same template label, official source label, and queue-evidence hint in ready feedback.
+  - Added focused tests for fever/infection symptom and question ready statuses so source and care-queue context stay locked to the template.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM eval timed out waiting for JavaScript result.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/symptomSupportTemplates.test.ts`, 19 tests.
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/symptomSupportTemplates.ts src/symptomSupportTemplates.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `c0e4e3e` (`Clarify symptom support draft feedback`).
