@@ -15411,3 +15411,4 @@
   - PASS: Existing cmux `암관리` CareVault browser pane reused at `http://127.0.0.1:1420/#documents`; no new browser tab was opened.
     - Saved-document summary, history rows, attachment controls, and archive action labels were visible in the accessibility tree.
   - PASS: Stopped the temporary Vite server and confirmed port 1420 had no listener and no CareVault/Tauri/Vite process from this repo remained.
+  - PASS: committed and pushed to `origin/main` as `8ce4bfe` (`Guard deleted archive mirror flags`); `git ls-remote origin refs/heads/main` returned `8ce4bfedd3b078b64770bdc527a87b8a21df5e89`.
