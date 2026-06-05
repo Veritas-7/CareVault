@@ -610,6 +610,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Raised the mobile BP/glucose chart source-data disclosure summary to the 44px touch-target contract.
 - 2026-06-05: Added matching hover titles to repeated visit-range, caregiver-memo, chart-source, and saved-document edit controls.
 - 2026-06-05: Added a matching hover title to the attachment image preview close action and made close report `이미지 미리보기 닫힘` instead of leaving the open-state status visible.
+- 2026-06-05: Added filename-scoped aria-label/title text, clearer visible wording, and explicit cleared feedback to the document-draft attachment remove action.
 - 2026-06-05: Recentered the saved-document search icon inside its input so the icon no longer protrudes below the 44px mobile field.
 - 2026-06-05: Made topbar backup export/import visible labels say `백업 내보내기` and `백업 가져오기` while keeping the existing detailed aria/title scope text.
 - 2026-06-05: Made the topbar manual save action visibly say `수동 저장` and raised caregiver memo preset/reset/preset-select controls to 40px in constrained right-pane layouts.

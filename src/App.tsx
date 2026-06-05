@@ -123,6 +123,10 @@ import { formatLabReferenceRangeLabel } from "./exportSourceLabels";
 import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
 import { needsAttachmentRecovery } from "./attachmentRecovery";
 import {
+  documentDraftAttachmentClearedStatusLabel,
+  formatDocumentDraftAttachmentRemoveActionLabel,
+} from "./documentAttachmentActions";
+import {
   buildSymptomSupportActionNote,
   buildSymptomSupportQuestion,
   buildSymptomSupportQueueHint,
@@ -1429,6 +1433,9 @@ function App() {
     () => buildDocumentPanelSummary(state.documents, state.deletedDocuments),
     [state.documents, state.deletedDocuments],
   );
+  const documentDraftAttachmentRemoveActionLabel = formatDocumentDraftAttachmentRemoveActionLabel(
+    documentDraft.attachmentName,
+  );
   const activeDocumentActionCount = state.documents.filter(
     (document) => document.reviewStatus !== "done",
   ).length;
@@ -2090,6 +2097,7 @@ function App() {
       attachmentStorage: undefined,
       attachmentStatus: undefined,
     }));
+    setSaveLabel(documentDraftAttachmentClearedStatusLabel);
   };
 
   const openDocumentAttachment = async (document: CareDocument) => {
@@ -6161,9 +6169,15 @@ function App() {
                   첨부 파일 선택
                 </button>
                 {documentDraft.attachmentName ? (
-                  <button className="text-icon-button" type="button" onClick={clearDocumentAttachment}>
+                  <button
+                    className="text-icon-button"
+                    type="button"
+                    onClick={clearDocumentAttachment}
+                    aria-label={documentDraftAttachmentRemoveActionLabel}
+                    title={documentDraftAttachmentRemoveActionLabel}
+                  >
                     <X aria-hidden="true" />
-                    제거
+                    첨부 제거
                   </button>
                 ) : null}
               </div>

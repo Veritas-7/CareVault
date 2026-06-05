@@ -13907,3 +13907,32 @@
     - Opened the saved-document image preview and saw `혈액검사 메모 첨부 미리보기`, `icon.png`, close action `첨부 미리보기 닫기`, image alt `혈액검사 메모 첨부 이미지 미리보기`, and source label `브라우저 세션 미리보기`.
     - Closed the dialog with `첨부 미리보기 닫기`; the dialog disappeared and the live status changed to `이미지 미리보기 닫힘`.
   - Git staging, commit, and push were performed after this verification note using explicit paths only; see the final assistant report for pushed-head evidence.
+
+## 2026-06-05 09:39 KST - Document Draft Attachment Remove Label Iteration Note
+
+- Improvement target:
+  - The document-draft attachment remove button appeared only after a file was selected, but its visible label was the generic `제거` and it did not expose a scoped `aria-label` or hover `title`.
+  - This was inconsistent with the `DESIGN.md` file-selection rule that repeated document actions should carry section and file context.
+- Stitch MCP:
+  - Rechecked Stitch project `CareVault UI UX AutoResearch` (`10602093894318676839`) and confirmed the uploaded 390px CareVault DESIGN.md screen instance `7814555668945736330` remains the active UI/UX evidence surface.
+- Code/design changes:
+  - Added `src/documentAttachmentActions.ts`.
+    - Centralized the filename-scoped draft attachment remove action label and cleared-status sentence.
+  - Added `src/documentAttachmentActions.test.ts`.
+    - Locked the filename-trimming case, fallback no-attachment context, and cleared-status label.
+  - Updated `src/App.tsx`.
+    - Reused the shared remove label for both `aria-label` and `title`.
+    - Changed the visible draft clear action from `제거` to `첨부 제거`.
+    - Changed the clear feedback to `첨부 선택 제거됨`.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for the document-draft attachment remove action label and feedback fix.
+- Verification:
+  - PASS: `npm run test -- src/documentAttachmentActions.test.ts`, 1 file and 3 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser only; no additional cmux browser tab was created.
+    - Omnibar stayed on `http://127.0.0.1:1420/#nutrition`.
+    - Selected `/Users/wj/Ai/System/10_Projects/CareVault/src-tauri/icons/icon.png` through the document-draft file picker.
+    - The selected attachment exposed `icon.png 파일명 참조` and the remove action `서류 메모 첨부 선택 제거 · 현재 선택 icon.png`.
+    - Clicking the remove action restored `첨부 없음` and changed the live status to `첨부 선택 제거됨`.
+  - Git staging, commit, and push will be reported in the final assistant output.
