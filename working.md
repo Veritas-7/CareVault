@@ -15730,3 +15730,36 @@
   - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: committed and pushed to `origin/main` as `1bbe61a` (`Cover saved document filtering`); `git ls-remote origin refs/heads/main` returned `1bbe61a90e8a79831056edc1176cfade16882e11`.
+
+## 2026-06-05 17:35 KST - App State Fast Refresh Boundary
+
+- Improvement target:
+  - Vite dev output had repeated Fast Refresh invalidations for `src/App.tsx`: `Could not Fast Refresh ("normalizeAppState" export is incompatible)`.
+  - The root cause was a non-component named export in the main React component module, kept there only for persisted-state normalization tests.
+- Change:
+  - Moved AppState types, default seed state, empty draft values, labels, and `normalizeAppState` into new pure module `src/appState.ts`.
+  - Updated `src/App.tsx` to import state helpers from `src/appState.ts` and leave only `export default App`.
+  - Updated `src/appStateNormalization.test.ts` to import the normalizer from `./appState`.
+  - Updated `DESIGN.md` with the component-only Fast Refresh boundary decision.
+- Real-browser/runtime verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: navigated the same surface to `http://127.0.0.1:1420/#documents`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: browser console showed only Vite connect/connected and a normal `hot updated: /src/App.tsx` after a no-content `touch src/App.tsx`.
+  - PASS: running Vite output showed `hmr update /src/App.tsx` with no `Could not Fast Refresh` invalidation warning.
+  - PASS: `rg -n "^export " src/App.tsx src/appState.ts` showed `src/App.tsx` only exports `default App`, with AppState exports isolated in `src/appState.ts`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/appStateNormalization.test.ts`, 5 tests.
+  - PASS: `npm run test`, 57 files and 418 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/appState.ts src/appStateNormalization.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `662d47c` (`Move app state normalization out of App`); `git ls-remote origin refs/heads/main` returned `662d47caf0a00531b0942112ae04e7e46f2b2fe9`.
