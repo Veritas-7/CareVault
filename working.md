@@ -17823,3 +17823,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `fe21b14` (`Clarify ready visit action`).
+
+## 2026-06-06 00:49 KST - Document Add Ready Label cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires button aria-label/title to expose the same action sentence and required form flows to switch stale required warnings to scoped ready status once required fields are valid.
+  - Real cmux QA found the document form's local feedback cleared after entering a title and body, but the `서류 메모 저장` button still exposed `제목과 내용 필요` in aria/title while the draft was ready.
+- Change:
+  - Added `formatDocumentDraftAddActionLabel()` in `src/documentActionLabels.ts`.
+  - Updated the document add button in `src/App.tsx` to use the dynamic label for both aria-label and hover title.
+  - Added regression coverage in `src/documentActionLabels.test.ts`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `working.md` and the right pane was Worklog, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#documents`, then the existing surface was used for the document flow.
+  - RED/IMPROVEMENT: entering `QA 검사 메모` and `다음 진료 때 확인할 검사 메모입니다.` cleared the local document feedback while the button still said `서류 메모 저장 · 제목과 내용 필요`. Screenshot `/tmp/carevault-surface9-iter13-document-ready-stale-required-red.png` captured the stale required action state.
+  - PASS after fix: with the same document draft still filled in the same `surface:9`, the add button aria/title became `서류 메모 저장 · QA 검사 메모 입력 준비됨`. Screenshot `/tmp/carevault-surface9-iter13-document-ready-label-pass.png` captured the updated ready label.
+  - PASS cleanup in browser: cleared the document title and body draft values without saving a fake document record; the add button reverted to `서류 메모 저장 · 제목과 내용 필요`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/documentActionLabels.test.ts`, 16 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/documentActionLabels.ts src/documentActionLabels.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `b9429aa` (`Clarify ready document action`).
