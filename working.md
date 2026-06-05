@@ -14255,3 +14255,31 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
   - PASS: committed and pushed to `origin/main` as `0448bfa` (`Disambiguate caregiver preview action labels`).
+
+## 2026-06-05 11:05 KST - Export Preview Clipboard Unsupported-Browser Guard Iteration Note
+
+- Improvement target:
+  - A code read of copy/export flows found that every main copy action checked `navigator.clipboard?.writeText` before writing except export-preview copy.
+  - In browsers or embedded views without Clipboard API support, clicking preview copy could throw before the existing promise `.catch()` ran.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added the same fail-closed Clipboard API support guard to `copyExportPreview()`.
+    - Unsupported environments now show `미리보기 복사를 지원하지 않는 브라우저입니다.` instead of throwing.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for the export-preview copy unsupported-browser guard.
+- Verification so far:
+  - PASS: Unsupported Clipboard API browser simulation at 390x900.
+    - `navigator.clipboard` was forced to `undefined`.
+    - Preview copy showed `미리보기 복사를 지원하지 않는 브라우저입니다.`.
+    - Page errors: 0; console errors: 0.
+  - PASS: Normal Clipboard API browser simulation at 390x900.
+    - Mocked `navigator.clipboard.writeText()` received 47,487 characters of caregiver preview HTML.
+    - Page errors: 0; console errors: 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx`.
+  - PASS: `npm run test`, 54 files and 369 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - Pending: commit and push.

@@ -3114,6 +3114,11 @@ function App() {
   const copyExportPreview = () => {
     if (!exportPreview) return;
     if (!guardFreshExportPreview()) return;
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel("미리보기 복사를 지원하지 않는 브라우저입니다.");
+      return;
+    }
+
     navigator.clipboard
       .writeText(exportPreview.content)
       .then(() =>
