@@ -16354,3 +16354,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `7b68cdf` (`Summarize caregiver section aria labels`).
+
+## 2026-06-05 19:51 KST - Caregiver Preset Select Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires caregiver-share preset controls to expose intent labels/titles, not just generic select names.
+  - Source audit found the caregiver preset select label/title only named the current preset and was built inline in `App.tsx`, so the next action and fallback wording had no focused regression coverage.
+- Change:
+  - Added `formatCaregiverSharePresetSelectDescription()` in `src/caregiverShareSettings.ts`.
+  - Updated `App.tsx` to use the shared select description for both `aria-label` and `title`.
+  - Added focused tests for selected-preset and empty-label fallback descriptions.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `cmux browser surface:9 get title` returned `CareVault` after navigation to `http://127.0.0.1:1420/`.
+  - BLOCKED: same-surface snapshot still returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, empty `title`, `.app-shell` count `0`, caregiver preset select count `0`, and empty body text, while `curl -I` returned HTTP `200`.
+  - PASS: `cmux browser surface:9 console` returned `No console entries` and `cmux browser surface:9 errors` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/caregiverShareSettings.test.ts`, 24 tests.
+  - PASS: `npm run test`, 60 files and 438 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `697065a` (`Clarify caregiver preset select labels`).
