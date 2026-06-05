@@ -15285,3 +15285,5 @@
   - PASS: Stopped the live CareVault processes and Vite server, then confirmed port 1420 had no listener and no CareVault process remained.
   - PASS: Restored the original sandbox DB from `/tmp/carevault-tauri-db-backup.W8K2sp/carevault.db`.
   - PASS: Post-restore SQLite check showed original data again: profile `나의 건강 기록`, first document `혈액검사 메모`.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - PASS: committed and pushed to `origin/main` as `32d2788` (`Record live Tauri attachment readback`).
