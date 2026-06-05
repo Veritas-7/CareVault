@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
+    "runtime:doctor": "bash scripts/verify_runtime_clean.sh",
     "preview": "vite preview",
     "tauri": "tauri"
   },

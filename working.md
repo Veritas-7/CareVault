@@ -15454,3 +15454,25 @@
   - PASS: killed the explicit CareVault/Tauri/Vite PIDs from this test run.
   - PASS: confirmed port 1420 had no CareVault listener after cleanup.
   - PASS: committed and pushed to `origin/main` as `452c10c` (`Fix document archive action label fit`); `git ls-remote origin refs/heads/main` returned `452c10cc504550eaac1845ed538a923d7b8e810a`.
+
+## 2026-06-05 16:03 KST - Runtime Doctor For Current-Source Desktop Verification
+
+- Improvement target:
+  - The archive-label slice exposed a verification hazard: `npm run tauri dev` left both a debug process and an installed release-bundle CareVault window visible to Computer Use, so live visual evidence could accidentally bind to stale installed code.
+  - Future desktop checks need a cheap preflight that proves port 1420 and CareVault runtime processes are clean before trusting current-source evidence.
+- Change:
+  - Added `scripts/verify_runtime_clean.sh`.
+    - Fails if port 1420 is already listening.
+    - Fails if the installed/release `CareVault.app` process is running from this repo's bundle path.
+    - Fails if stale CareVault dev processes are running for this repo's Vite server, Tauri CLI, or debug binary.
+    - Matches Vite/debug commands as executable words so `vitest` and the script's own awk matcher are not false positives.
+  - Added `npm run runtime:doctor` as the discoverable project command.
+  - Updated `README.md` and `DESIGN.md` to document the new preflight guard.
+- Verification:
+  - PASS: `npm run runtime:doctor`.
+  - PASS: `npm run test`, 56 files and 410 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md package.json scripts/verify_runtime_clean.sh`.

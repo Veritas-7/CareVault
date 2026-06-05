@@ -699,6 +699,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Tightened normalized SQLite mirror regression coverage so deleted-archive attachment and document-history rows must carry `is_deleted = 1`.
 - 2026-06-05: Verified live Tauri archive and restore SQLite readback for active/deleted document counts, attachment/history `is_deleted` flags, and post-run sandbox database restore.
 - 2026-06-05: Reserved saved-document desktop action-column width so recoverable archive buttons keep the full `삭제 보관` label instead of collapsing to `삭제`.
+- 2026-06-05: Added a runtime doctor preflight for current-source desktop verification so stale port 1420 listeners, installed release windows, and leftover CareVault dev processes are caught before live evidence is trusted.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.
