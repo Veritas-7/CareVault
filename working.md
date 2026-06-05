@@ -15389,3 +15389,25 @@
   - PASS: stopped the live Tauri/Vite runtime, restored the original sandbox database, and verified original data again: `나의 건강 기록|혈액검사 메모`.
   - PASS: confirmed no CareVault/Tauri process remained after cleanup.
   - PASS: after docs, full local verification, Stitch refresh, existing cmux browser check, staged gitleaks, and commit, pushed implementation commit `10f83f5` (`Stabilize SQLite preview recovery saves`) to `origin/main`; `git ls-remote origin refs/heads/main` returned `10f83f52fbe0e4c42ba6b9e172645c687ed764db`.
+
+## 2026-06-05 15:41 KST - Deleted Archive Mirror Flag Regression Note
+
+- Improvement target:
+  - The next durable slice calls for direct SQLite readback confidence after attachment recovery, archive, and restore changes.
+  - The storage mirror fixture modeled a deleted document, but its attachment/history fixture rows still used `isDeleted: false`, so the normalized mirror test did not prove deleted-archive attachment/history flags.
+- Change:
+  - Updated `src/storage.test.ts` so the deleted-document attachment row and history row both use `isDeleted: true`.
+  - Tightened the mirror statement assertions to require `document_attachments.is_deleted = 1` and `document_history.is_deleted = 1` for the deleted archive fixture.
+  - Updated `README.md` and `DESIGN.md` to document the archive/readback regression guard.
+- Verification:
+  - PASS: `npm test -- src/storage.test.ts`, 1 file and 14 tests.
+  - PASS: `npm run test`, 56 files and 410 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/storage.test.ts`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Existing cmux `암관리` CareVault browser pane reused at `http://127.0.0.1:1420/#documents`; no new browser tab was opened.
+    - Saved-document summary, history rows, attachment controls, and archive action labels were visible in the accessibility tree.
+  - PASS: Stopped the temporary Vite server and confirmed port 1420 had no listener and no CareVault/Tauri/Vite process from this repo remained.

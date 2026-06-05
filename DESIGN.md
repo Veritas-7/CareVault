@@ -696,6 +696,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Ordered Tauri SQLite saves so normalized mirror data writes before the compatible JSON `app_state` upsert, with bounded busy-timeout/retry handling for `SQLITE_BUSY` save contention.
 - 2026-06-05: Added a module-level latest-only persisted save queue so autosave and manual-save calls serialize across React dev StrictMode remounts and stale queued saves cannot overwrite newer state.
 - 2026-06-05: Coalesced consecutive duplicate document-history entries so repeated attachment preview failures or retries do not inflate the saved-document audit trail.
+- 2026-06-05: Tightened normalized SQLite mirror regression coverage so deleted-archive attachment and document-history rows must carry `is_deleted = 1`.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.

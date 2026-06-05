@@ -105,7 +105,7 @@ const mirror: NormalizedCareVaultMirror = {
       attachmentName: "saved-reconnect.png",
       attachmentStorage: "browser-reference",
       attachmentStatus: "브라우저 파일명 참조",
-      isDeleted: false,
+      isDeleted: true,
     },
   ],
   documentHistory: [
@@ -134,7 +134,7 @@ const mirror: NormalizedCareVaultMirror = {
       kind: "attachment-replaced",
       label: "첨부 재연결",
       detail: "saved-reconnect.png: 브라우저 파일명 참조",
-      isDeleted: false,
+      isDeleted: true,
     },
   ],
   symptoms: [
@@ -389,7 +389,7 @@ describe("storage normalized mirror", () => {
       "saved-reconnect.png",
       "browser-reference",
       "브라우저 파일명 참조",
-      0,
+      1,
       "2026-06-03T00:00:00.000Z",
     ]);
     expect(
@@ -406,6 +406,22 @@ describe("storage normalized mirror", () => {
       "다음 조치 변경",
       "cmux direct next action",
       0,
+      "2026-06-03T00:00:00.000Z",
+    ]);
+    expect(
+      statements.find(
+        (statement) =>
+          statement.query.includes("INSERT INTO document_history") &&
+          statement.bindValues?.[0] === "history-doc-2-reattached",
+      )?.bindValues,
+    ).toEqual([
+      "history-doc-2-reattached",
+      "doc-2",
+      "2026-06-03T00:02:00.000Z",
+      "attachment-replaced",
+      "첨부 재연결",
+      "saved-reconnect.png: 브라우저 파일명 참조",
+      1,
       "2026-06-03T00:00:00.000Z",
     ]);
   });
