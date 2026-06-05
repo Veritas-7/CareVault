@@ -2508,7 +2508,9 @@ function App() {
           : item,
       ),
     }));
-    setActionSaveLabel(formatDeletedDocumentAttachmentCleanedStatusLabel(document));
+    const feedback = formatDeletedDocumentAttachmentCleanedStatusLabel(document);
+    setDocumentActionFeedback({ documentId: document.id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const deleteDocument = async (document: CareDocument) => {
@@ -2537,7 +2539,9 @@ function App() {
         ...current.deletedDocuments.filter((item) => item.id !== document.id),
       ],
     }));
-    setActionSaveLabel(formatDocumentArchiveStatusLabel(document));
+    const feedback = formatDocumentArchiveStatusLabel(document);
+    setDocumentActionFeedback({ documentId: document.id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const restoreDocument = (document: CareDocument) => {
@@ -2558,7 +2562,9 @@ function App() {
       ],
       deletedDocuments: current.deletedDocuments.filter((item) => item.id !== document.id),
     }));
-    setActionSaveLabel(formatDocumentRestoreStatusLabel(document));
+    const feedback = formatDocumentRestoreStatusLabel(document);
+    setDocumentActionFeedback({ documentId: document.id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const addSymptom = () => {
@@ -6803,6 +6809,11 @@ function App() {
                             <Unlink aria-hidden="true" />
                             첨부 정리
                           </button>
+                        ) : null}
+                        {documentActionFeedback?.documentId === document.id ? (
+                          <div className="document-action-feedback" role="status">
+                            {documentActionFeedback.message}
+                          </div>
                         ) : null}
                       </div>
                     </article>
