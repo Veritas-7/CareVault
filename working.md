@@ -18193,3 +18193,39 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `9fc5dad` (`Show saved question copy local feedback`).
+
+## 2026-06-06 02:30 KST - Care Queue Copy Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires copy controls and post-copy status feedback to preserve visible scope summaries, and every new control needs visible feedback or a clear state change in the constrained cmux right pane.
+  - Real cmux QA found `진료 큐 복사` updated only the top save-status chip, so users focused on the 진료 준비 큐 panel had no local `role=status` confirmation near the copied queue.
+- Change:
+  - Added transient `careActionQueueFeedback` UI state in `src/App.tsx`.
+  - Updated `copyCareActionQueue()` so clipboard unsupported, successful copy, and copy failure branches all set local queue feedback while preserving the existing top save-status behavior.
+  - Rendered `.action-queue-feedback` inside the 진료 준비 큐 panel and reused the existing local feedback styling shared by document/question rows.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed cmux had switched to `working.md`, then `블로그`; those Worklog/WriteFlow panes were rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#care-plan`.
+  - Candidate rejected: clicking `WBC 검사 질문 추가` already produced local `.lab-followup-feedback`, so that path was not changed. The temporary generated-question browser state was restored from DB `app_state.main`.
+  - Correction: a first browser-state restore used raw `atob()` and caused UTF-8 mojibake in localStorage; it was immediately corrected with `TextDecoder('utf-8')`, then verified `bad=false`, no generated test question, and normal `혈액검사` labels before continuing.
+  - RED/IMPROVEMENT: clicked `진료 큐 복사`; the top status showed `진료 준비 큐 복사됨 · 7개 항목 · 확인 필요 5개 · 일정/일반 2개 · 근거 포함 4개 · 자궁경부 1 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1`, but local queue feedback was empty. Screenshot `/tmp/carevault-surface9-iter24-care-queue-copy-local-feedback-red.png` captured the missing panel feedback.
+  - PASS after fix: reloaded the same surface and clicked the same `진료 큐 복사` button; the queue panel showed visible local `role=status` feedback with the same copied queue scope, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter24-care-queue-copy-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: reloaded `surface:9` and verified no stale `.action-queue-feedback`, no generated test question, and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/careActionQueue.test.ts`, 29 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `6dde18e` (`Show care queue copy local feedback`).
