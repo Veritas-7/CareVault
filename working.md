@@ -15498,3 +15498,16 @@
   - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
   - PASS: `git diff --check -- README.md DESIGN.md working.md package.json`.
   - PASS: committed and pushed to `origin/main` as `faf3a78` (`Add clean Tauri dev entrypoint`); `git ls-remote origin refs/heads/main` returned `faf3a78732f6ab85101b76663590de1a98e84d75`.
+
+## 2026-06-05 16:15 KST - workingd.md Resume Pointer
+
+- Improvement target:
+  - The active objective explicitly asks agents to read `workingd.md`, but the CareVault repo only had `working.md`.
+  - Repeated missing-file checks waste resume time and can make the next agent think the worklog is absent.
+- Change:
+  - Added `workingd.md` as a small pointer file.
+  - It tells agents that `working.md` is the active worklog and that progress must not be duplicated into `workingd.md`.
+- Verification:
+  - PASS: `npm run runtime:doctor`.
+  - PASS: `npm run test`, 56 files and 410 tests.
+  - PASS: `git diff --check -- working.md workingd.md`.
