@@ -72,6 +72,8 @@ import {
   formatDashboardMetricStandardCopyDescription,
   formatDashboardMetricStandardCopyStatus,
   formatDashboardMetricStandardNote,
+  feverInfectionStandardQuestionDraftActionLabel,
+  feverInfectionStandardSymptomDraftActionLabel,
   formatHealthStandardRangeFilterCopyDescription,
   formatHealthStandardRangeFilterCopyStatus,
   formatHealthStandardsClipboardText,
@@ -4494,8 +4496,8 @@ function App() {
                             className="secondary-inline-button standard-range-action-button"
                             type="button"
                             onClick={applyInfectionFeverStandardDraft}
-                            aria-label="체온·감염 연락 기준 증상 기록 초안 만들기"
-                            title="체온·감염 연락 기준 증상 기록 초안 만들기"
+                            aria-label={feverInfectionStandardSymptomDraftActionLabel}
+                            title={feverInfectionStandardSymptomDraftActionLabel}
                           >
                             <ClipboardList aria-hidden="true" />
                             증상 기록 초안
@@ -4504,8 +4506,8 @@ function App() {
                             className="secondary-inline-button standard-range-action-button"
                             type="button"
                             onClick={applyInfectionFeverStandardQuestion}
-                            aria-label="체온·감염 연락 기준 진료 질문 초안 만들기"
-                            title="체온·감염 연락 기준 진료 질문 초안 만들기"
+                            aria-label={feverInfectionStandardQuestionDraftActionLabel}
+                            title={feverInfectionStandardQuestionDraftActionLabel}
                           >
                             <MessageSquare aria-hidden="true" />
                             질문 초안

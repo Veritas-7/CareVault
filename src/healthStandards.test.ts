@@ -11,6 +11,8 @@ import {
   buildVitalStandardRangeLines,
   buildVitalStandardRangeSections,
   filterVitalStandardRangeSections,
+  feverInfectionStandardQuestionDraftActionLabel,
+  feverInfectionStandardSymptomDraftActionLabel,
   formatDashboardMetricStandardClipboardText,
   formatDashboardMetricStandardCompactSummary,
   formatDashboardMetricStandardCopyDescription,
@@ -103,6 +105,15 @@ describe("healthStandards", () => {
     expect(statusById.cbc).toBe("input-helper");
     expect(statusById["lab-ranges"]).toBe("user-range-required");
     expect(healthStandardStatusLabel["user-range-required"]).toBe("사용자 기준 우선");
+  });
+
+  it("keeps fever infection standard shortcut action labels reusable", () => {
+    expect(feverInfectionStandardSymptomDraftActionLabel).toBe(
+      "체온·감염 연락 기준 증상 기록 초안 만들기",
+    );
+    expect(feverInfectionStandardQuestionDraftActionLabel).toBe(
+      "체온·감염 연락 기준 진료 질문 초안 만들기",
+    );
   });
 
   it("keeps source labels attached to every displayed standard", () => {

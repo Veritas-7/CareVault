@@ -119,6 +119,12 @@ export const healthStandardStatusLabel: Record<HealthStandardCoverageStatus, str
   "user-range-required": "사용자 기준 우선",
 };
 
+export const feverInfectionStandardSymptomDraftActionLabel =
+  "체온·감염 연락 기준 증상 기록 초안 만들기";
+
+export const feverInfectionStandardQuestionDraftActionLabel =
+  "체온·감염 연락 기준 진료 질문 초안 만들기";
+
 export const koreanHealthStandardUseBoundary =
   "성인 기준 참고용입니다. 임신·소아·투석·항암 중 특수 기준이나 증상이 있으면 결과지와 진료팀 기준을 우선합니다.";
 
