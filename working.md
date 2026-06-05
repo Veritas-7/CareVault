@@ -14810,6 +14810,7 @@
     - `혈압·혈당·체온 입력`, saved vital summary, and recent timeline were visible.
   - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - PASS: committed and pushed to `origin/main` as `4917d69` (`Guard restored vital measurements`).
 
 ## 2026-06-05 12:07 KST - SQLite Count Integer Parsing Iteration Note
 
