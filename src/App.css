@@ -2220,6 +2220,19 @@ textarea:focus-visible {
   height: 14px;
 }
 
+.vital-standard-question-feedback {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .vital-standard-range-list li {
   display: grid;
   grid-template-columns: minmax(72px, auto) minmax(0, 1fr);

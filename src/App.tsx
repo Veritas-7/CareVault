@@ -815,6 +815,9 @@ function App() {
   const [healthStandardsCopyFeedback, setHealthStandardsCopyFeedback] = useState<string | null>(
     null,
   );
+  const [vitalStandardQuestionFeedback, setVitalStandardQuestionFeedback] = useState<string | null>(
+    null,
+  );
   const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
   const [cervicalCancerCareCopyFeedback, setCervicalCancerCareCopyFeedback] = useState<
     string | null
@@ -922,6 +925,10 @@ function App() {
       clearRecordFormValidationFeedback("vital", { refreshStaleSaveLabel: true });
     }
   }, [recordFormFeedback.vital, vitalDraft]);
+
+  useEffect(() => {
+    setVitalStandardQuestionFeedback(null);
+  }, [vitalDraft]);
 
   useEffect(() => {
     if (
@@ -1836,7 +1843,9 @@ function App() {
     const draft = buildVitalStandardQuestionDraft(draftInput);
 
     if (!draft) {
-      setSaveLabel(formatVitalStandardQuestionDraftStatusLabel(draftInput));
+      const feedback = formatVitalStandardQuestionDraftStatusLabel(draftInput);
+      setVitalStandardQuestionFeedback(feedback);
+      setSaveLabel(feedback);
       return;
     }
 
@@ -1849,7 +1858,9 @@ function App() {
       topic: draft.topic,
     }));
     clearRecordFormValidationFeedback("vital");
-    setSaveLabel(formatVitalStandardQuestionDraftStatusLabel(draftInput));
+    const feedback = formatVitalStandardQuestionDraftStatusLabel(draftInput);
+    setVitalStandardQuestionFeedback(feedback);
+    setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
@@ -5275,6 +5286,11 @@ function App() {
                 <MessageSquare aria-hidden="true" />
                 질문 초안
               </button>
+              {vitalStandardQuestionFeedback ? (
+                <div className="vital-standard-question-feedback" role="status">
+                  {vitalStandardQuestionFeedback}
+                </div>
+              ) : null}
             </div>
             <label className="wide-label">
               메모
