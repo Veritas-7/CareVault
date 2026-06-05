@@ -5,7 +5,9 @@ import {
   countCareActionQueueTones,
   formatCareActionQueueClipboardText,
   formatCareActionQueueCopyDescription,
+  formatCareActionQueueCopyFailedStatus,
   formatCareActionQueueCopyStatus,
+  formatCareActionQueueCopyUnsupportedStatus,
   formatCareActionQueueSourceCountSummary,
   formatCareActionQueueToneCountSummary,
   type CareActionQueueState,
@@ -1203,6 +1205,12 @@ describe("careActionQueue", () => {
     );
     expect(formatCareActionQueueCopyStatus(actions)).toBe(
       "진료 준비 큐 복사됨 · 6개 항목 · 확인 필요 5개 · 일정/일반 1개 · 근거 포함 3개 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1",
+    );
+    expect(formatCareActionQueueCopyUnsupportedStatus(actions)).toBe(
+      "진료 준비 큐 복사 미지원 · 브라우저 클립보드 없음 · 6개 항목 · 확인 필요 5개 · 일정/일반 1개 · 근거 포함 3개 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1",
+    );
+    expect(formatCareActionQueueCopyFailedStatus(actions)).toBe(
+      "진료 준비 큐 복사 실패 · 6개 항목 · 확인 필요 5개 · 일정/일반 1개 · 근거 포함 3개 · 질문 1 · 활력 2 · 검사 1 · 서류 1 · 방문 1",
     );
     expect(formatCareActionQueueCopyDescription([])).toBe(
       "진료 준비 큐 0개 항목 · 확인 필요 0개 · 일정/일반 0개 · 근거 포함 0개 · 분류 없음 복사",

@@ -562,6 +562,16 @@ export function formatCareActionQueueCopyStatus(actions: CareAction[]) {
   return `진료 준비 큐 복사됨 · ${formatCareActionQueueCopySummary(actions)}`;
 }
 
+export function formatCareActionQueueCopyUnsupportedStatus(actions: CareAction[]) {
+  return `진료 준비 큐 복사 미지원 · 브라우저 클립보드 없음 · ${formatCareActionQueueCopySummary(
+    actions,
+  )}`;
+}
+
+export function formatCareActionQueueCopyFailedStatus(actions: CareAction[]) {
+  return `진료 준비 큐 복사 실패 · ${formatCareActionQueueCopySummary(actions)}`;
+}
+
 function formatCareActionQueueClipboardDetailLabel(action: CareAction, detail: string, index: number) {
   if (detail.startsWith("근거:")) return "근거";
   if (action.source === "cervical") return "기준";

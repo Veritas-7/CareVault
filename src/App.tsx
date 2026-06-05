@@ -119,7 +119,9 @@ import {
   countCareActionQueueSources,
   formatCareActionQueueClipboardText,
   formatCareActionQueueCopyDescription,
+  formatCareActionQueueCopyFailedStatus,
   formatCareActionQueueCopyStatus,
+  formatCareActionQueueCopyUnsupportedStatus,
 } from "./careActionQueue";
 import { buildCareActionQueuePanelSummary } from "./careActionQueueMetric";
 import {
@@ -363,7 +365,9 @@ import {
 } from "./questionStatus";
 import {
   formatQuestionClipboardCopyDescription,
+  formatQuestionClipboardCopyFailedStatus,
   formatQuestionClipboardCopyStatus,
+  formatQuestionClipboardCopyUnsupportedStatus,
   formatQuestionClipboardText,
 } from "./questionClipboard";
 import {
@@ -2830,26 +2834,26 @@ function App() {
 
   const copyQuestionForVisit = (question: CareQuestion) => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel("질문 복사를 지원하지 않는 브라우저입니다.");
+      setSaveLabel(formatQuestionClipboardCopyUnsupportedStatus(question));
       return;
     }
 
     navigator.clipboard
       .writeText(formatQuestionClipboardText(question))
       .then(() => setTransientSaveLabel(formatQuestionClipboardCopyStatus(question)))
-      .catch(() => setSaveLabel("질문 복사 실패"));
+      .catch(() => setSaveLabel(formatQuestionClipboardCopyFailedStatus(question)));
   };
 
   const copyCareActionQueue = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel("진료 준비 큐 복사를 지원하지 않는 브라우저입니다.");
+      setSaveLabel(formatCareActionQueueCopyUnsupportedStatus(careActions));
       return;
     }
 
     navigator.clipboard
       .writeText(formatCareActionQueueClipboardText(careActions, today))
       .then(() => setTransientSaveLabel(careActionQueueCopyStatus))
-      .catch(() => setSaveLabel("진료 준비 큐 복사 실패"));
+      .catch(() => setSaveLabel(formatCareActionQueueCopyFailedStatus(careActions)));
   };
 
   const copyHealthStandards = () => {

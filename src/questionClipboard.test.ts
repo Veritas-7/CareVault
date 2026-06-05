@@ -4,7 +4,9 @@ import { buildLabQuestionPrompt } from "./labQuestionPrompts";
 import {
   formatQuestionClipboardActionSummary,
   formatQuestionClipboardCopyDescription,
+  formatQuestionClipboardCopyFailedStatus,
   formatQuestionClipboardCopyStatus,
+  formatQuestionClipboardCopyUnsupportedStatus,
   formatQuestionClipboardText,
 } from "./questionClipboard";
 
@@ -195,6 +197,12 @@ describe("questionClipboard", () => {
     );
     expect(formatQuestionClipboardCopyStatus(sourceBackedQuestion)).toBe(
       "부작용: 질건조·성교통/성생활 상담 질문 복사됨 · 2026-06-20 · 다음 진료 · 확인 필요 · 근거 포함",
+    );
+    expect(formatQuestionClipboardCopyUnsupportedStatus(sourceBackedQuestion)).toBe(
+      "부작용: 질건조·성교통/성생활 상담 질문 복사 미지원 · 브라우저 클립보드 없음 · 2026-06-20 · 다음 진료 · 확인 필요 · 근거 포함",
+    );
+    expect(formatQuestionClipboardCopyFailedStatus(sourceBackedQuestion)).toBe(
+      "부작용: 질건조·성교통/성생활 상담 질문 복사 실패 · 2026-06-20 · 다음 진료 · 확인 필요 · 근거 포함",
     );
     expect(formatQuestionClipboardActionSummary(answeredQuestion)).toBe(
       "2026-06-10 · 이번 진료 우선 · 답변 완료 · 근거 없음 · 답변 메모 포함",

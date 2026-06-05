@@ -48,6 +48,20 @@ export function formatQuestionClipboardCopyStatus(question: QuestionClipboardInp
   return `${topic} 질문 복사됨 · ${formatQuestionClipboardActionSummary(question)}`;
 }
 
+export function formatQuestionClipboardCopyUnsupportedStatus(question: QuestionClipboardInput) {
+  const topic = question.topic.trim() || "진료 질문";
+
+  return `${topic} 질문 복사 미지원 · 브라우저 클립보드 없음 · ${formatQuestionClipboardActionSummary(
+    question,
+  )}`;
+}
+
+export function formatQuestionClipboardCopyFailedStatus(question: QuestionClipboardInput) {
+  const topic = question.topic.trim() || "진료 질문";
+
+  return `${topic} 질문 복사 실패 · ${formatQuestionClipboardActionSummary(question)}`;
+}
+
 export function formatQuestionClipboardText(question: QuestionClipboardInput) {
   const priority = normalizeQuestionPriority(question.priority);
   const lines = [
