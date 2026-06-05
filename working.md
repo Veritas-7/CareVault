@@ -16139,3 +16139,33 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `1f1849b` (`Cover cervical draft action labels`); `git ls-remote origin refs/heads/main` returned `1f1849b42b4b1f36688e04f93cab8f5d88e585f4`.
+
+## 2026-06-05 19:13 KST - Sidebar Navigation Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires sidebar links to keep destination-specific `aria-label` and hover `title` text, visible Korean labels, and an order that matches the actual scroll flow.
+  - Source audit found the link copy was correct but hardcoded directly in `App.tsx`, so the label/title/href metadata was not directly tied to the tested sidebar section order.
+- Change:
+  - Added `sidebarNavigationItems` in `src/sidebarNavigation.ts` with section id, href, visible label, and destination action label.
+  - Updated `App.tsx` to render sidebar links from that metadata while preserving the existing icons, `aria-current`, click behavior, and visible order.
+  - Extended `src/sidebarNavigation.test.ts` to pin the destination-specific action labels, hrefs, visible labels, and order.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - BLOCKED: same-surface navigation to `http://127.0.0.1:1420/` returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, `.app-shell` count `0`, nav link count `0`, current nav link count `0`, and empty body text, while `curl -I` returned HTTP `200`.
+  - PASS: `cmux browser surface:9 console` returned `No console entries` and `cmux browser surface:9 errors` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/sidebarNavigation.test.ts`, 5 tests.
+  - PASS: `npm run test`, 60 files and 433 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/sidebarNavigation.ts src/sidebarNavigation.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `d29def8` (`Cover sidebar navigation labels`); `git ls-remote origin refs/heads/main` returned `d29def848f625afea4aacaacc0be10da72f14923`.
