@@ -15453,3 +15453,4 @@
 - Cleanup:
   - PASS: killed the explicit CareVault/Tauri/Vite PIDs from this test run.
   - PASS: confirmed port 1420 had no CareVault listener after cleanup.
+  - PASS: committed and pushed to `origin/main` as `452c10c` (`Fix document archive action label fit`); `git ls-remote origin refs/heads/main` returned `452c10cc504550eaac1845ed538a923d7b8e810a`.
