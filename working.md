@@ -16880,3 +16880,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `85f6455` (`Clarify caregiver share preset feedback`).
+
+## 2026-06-05 21:22 KST - Caregiver Share Section Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires caregiver-share controls and status feedback to preserve preset intent, profile redaction, memo presence, and included/excluded section counts.
+  - Source audit found section include/exclude feedback still only reported `공유 섹션 포함/제외: <label>` without the resulting caregiver-share summary.
+- Change:
+  - Added `formatCaregiverShareSectionStatus()` in `src/caregiverShareSettings.ts`.
+  - Updated `App.tsx` section toggle handling to compute the resulting caregiver-share settings and report the toggled section plus the resulting compact summary.
+  - Added focused tests for section exclusion summaries and fallback section labels.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM eval timed out waiting for JavaScript result.
+  - PASS after retry: initial console/error queries hit cmux timeout, then `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/caregiverShareSettings.test.ts`, 25 tests.
+  - PASS: `npm run test`, 60 files and 465 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `fa1c103` (`Clarify caregiver share section feedback`).
