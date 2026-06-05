@@ -15247,3 +15247,41 @@
   - PASS: Confirmed no `carevault` process remained after runtime checks.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged six-file diff.
   - PASS: committed and pushed to `origin/main` as `c0a4c6a` (`Add attachment runtime fixture`).
+
+## 2026-06-05 14:02 KST - Live Tauri Missing-File Recovery Readback Note
+
+- Improvement target:
+  - The README's current durable slice asked for a live Tauri desktop seeded click-through for saved-attachment missing-file recovery and direct SQLite document-history readback.
+  - The run needed to prove the real Tauri `@tauri-apps/plugin-fs` `exists()` path, UI recovery prompt, auto-save path, and SQLite readback without permanently changing the user's sandbox data.
+- Runtime setup:
+  - Backed up the current sandbox DB to `/tmp/carevault-tauri-db-backup.W8K2sp/carevault.db`.
+  - Seeded `~/Library/Application Support/app.veritas.carevault/carevault.db` `app_state/main` with one disposable document:
+    - Title: `실기기 첨부 누락 테스트`.
+    - Attachment: `missing-scan.png`.
+    - Path: `/tmp/carevault-live-tauri-missing-scan.png`.
+    - Starting status: `파일 확인됨`.
+  - Removed the fixture attachment path before launch so the desktop runtime had to detect a real missing file.
+- Verification:
+  - PASS: pre-launch port 1420 had no listener and no CareVault process was running.
+  - PASS: `npm run tauri dev` launched the desktop app at `tauri://localhost`.
+  - PASS: Computer Use inspected the live `CareVault` Tauri window.
+    - Storage text: `현재 데이터는 Tauri SQLite DB에 저장됩니다.`
+    - Seeded document `실기기 첨부 누락 테스트` was visible with `missing-scan.png`, starting status `파일 확인됨`, and `첨부 확인`.
+  - PASS: Clicked the live `첨부 확인` button.
+    - UI save label became `파일 없음 - 재첨부 필요 · SQLite 자동 저장됨`.
+    - Sidebar mirror readback became `서류 1개, 이력 2개, 첨부 1개`.
+    - Saved document card showed `파일 없음 - 재첨부 필요`.
+    - Reattachment prompt showed `첨부 원본을 찾거나 열 수 없습니다. 재첨부로 새 복사본을 연결하세요.`
+    - History showed `첨부 확인` and `missing-scan.png: 파일 없음 - 재첨부 필요`.
+  - PASS: Direct SQLite JSON app_state readback:
+    - `attachmentStatus`: `파일 없음 - 재첨부 필요`.
+    - `history[1].label`: `첨부 확인`.
+    - `history[1].detail`: `missing-scan.png: 파일 없음 - 재첨부 필요`.
+    - `history` length: 2.
+  - PASS: Direct SQLite normalized table readback:
+    - `care_documents`: `doc-live-tauri-missing|파일 없음 - 재첨부 필요`.
+    - `document_attachments`: `doc-live-tauri-missing|파일 없음 - 재첨부 필요`.
+    - `document_history`: `첨부 확인|missing-scan.png: 파일 없음 - 재첨부 필요`.
+  - PASS: Stopped the live CareVault processes and Vite server, then confirmed port 1420 had no listener and no CareVault process remained.
+  - PASS: Restored the original sandbox DB from `/tmp/carevault-tauri-db-backup.W8K2sp/carevault.db`.
+  - PASS: Post-restore SQLite check showed original data again: profile `나의 건강 기록`, first document `혈액검사 메모`.

@@ -691,6 +691,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Verified the Tauri desktop SQLite mirror and normalized search readback with live UI evidence plus direct sandbox database counts.
 - 2026-06-05: Centralized saved-attachment missing, opener-failure, check-failure, and image-preview-failure recovery statuses so cards, history entries, and reattachment prompts stay aligned.
 - 2026-06-05: Added disposable Tauri runtime adapter fixtures for missing-file, opener-failure, and image-preview conversion-failure recovery, and made rendered image load errors mark the saved card for reattachment.
+- 2026-06-05: Verified live Tauri desktop missing-file attachment recovery with a seeded sandbox database, in-card reattachment prompt, direct SQLite status/history readback, and post-run database restore.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.
