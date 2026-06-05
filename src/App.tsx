@@ -3746,6 +3746,7 @@ function App() {
               className="visually-hidden"
               type="file"
               tabIndex={-1}
+              aria-hidden="true"
               accept="application/json"
               aria-label={formControlDescriptions.backupImportFile}
               title={formControlDescriptions.backupImportFile}
@@ -6225,6 +6226,7 @@ function App() {
                 className="visually-hidden"
                 type="file"
                 tabIndex={-1}
+                aria-hidden="true"
                 accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"
                 aria-label={formControlDescriptions.documentAttachmentFile}
                 title={formControlDescriptions.documentAttachmentFile}
@@ -6306,6 +6308,7 @@ function App() {
               className="visually-hidden"
               type="file"
               tabIndex={-1}
+              aria-hidden="true"
               accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"
               aria-label={formControlDescriptions.savedAttachmentFile}
               title={formControlDescriptions.savedAttachmentFile}

@@ -14145,3 +14145,31 @@
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged nine-file diff.
   - Pending: commit and push.
+
+## 2026-06-05 10:30 KST - Hidden File Input Accessibility Iteration Note
+
+- Improvement target:
+  - A rendered 390x884 target-size audit found no small effective controls except three visually hidden file inputs.
+  - Those backing inputs were `tabIndex={-1}` and opened by visible buttons, but they still appeared as 1px-wide file-upload controls in the accessibility tree.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added `aria-hidden="true"` to the hidden backup import, new document attachment, and saved-document attachment inputs.
+    - Kept the visible backup/document buttons as the accessible, full-size user targets.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for hiding backing file inputs from the accessibility tree.
+- Verification so far:
+  - PASS: `npm run typecheck`.
+  - PASS: Supplemental rendered DOM target audit at 390x884.
+    - Effective accessible targets under 32px: 0.
+    - Hidden file inputs all report `aria-hidden="true"` and `tabIndex="-1"`.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser at `http://127.0.0.1:1420/#nutrition`; no new cmux browser was created.
+    - The accessibility tree no longer exposed standalone file-upload controls for backup import, document attachment, or saved-document attachment.
+  - PASS: Supplemental file-chooser regression check.
+    - Visible backup import, new document attachment, and saved-document attachment buttons each triggered a single-file chooser.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: Interactive-tag source scan: buttons, links, inputs, selects, textareas, and summaries all have both `aria-label` and `title` in `src/App.tsx`.
+  - PASS: `npm run test`, 54 files and 369 tests.
+  - PASS: `npm run build`.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - Pending: commit and push.
