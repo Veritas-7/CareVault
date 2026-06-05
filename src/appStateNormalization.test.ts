@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { normalizeAppState } from "./App";
+import { normalizeAppState } from "./appState";
 
 describe("normalizeAppState", () => {
   it("normalizes malformed persisted record scalar fields before rendering", () => {

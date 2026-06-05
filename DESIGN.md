@@ -407,6 +407,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 
 ## Decisions Log
 
+- 2026-06-05: Moved AppState defaults and hydration normalization into `src/appState.ts` so `src/App.tsx` stays a component-only module for Vite Fast Refresh while preserving the same local-first persisted-state contract.
 - 2026-06-04: Created project design contract because no CareVault `DESIGN.md` existed.
 - 2026-06-04: Added cervical cancer care note as a record/question-prep panel instead of a treatment advice panel.
 - 2026-06-04: Explicitly labeled blood pressure and glucose as adult common criteria and waist/HDL/hemoglobin as sex-specific where applicable.
