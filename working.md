@@ -14456,4 +14456,4 @@
   - PASS: `npm run build`.
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `5aa6029` (`Guard persisted document history`).
