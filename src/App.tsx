@@ -824,6 +824,7 @@ function App() {
   const [symptomSupportQuestionFeedback, setSymptomSupportQuestionFeedback] = useState<
     string | null
   >(null);
+  const [symptomSaveFeedback, setSymptomSaveFeedback] = useState<string | null>(null);
   const [visitSaveFeedback, setVisitSaveFeedback] = useState<string | null>(null);
   const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
   const [labPresetFeedback, setLabPresetFeedback] = useState<string | null>(null);
@@ -2626,12 +2627,19 @@ function App() {
     setActionSaveLabel(feedback);
   };
 
+  const updateSymptomDraft = (updates: Partial<SymptomEntry>) => {
+    setSymptomDraft((current) => ({ ...current, ...updates }));
+    setSymptomSaveFeedback(null);
+  };
+
   const addSymptom = () => {
     if (!hasRequiredTextValues(symptomDraft.symptom)) {
+      setSymptomSaveFeedback(null);
       setRecordFormValidationFeedback("symptom", recordRequiredFieldMessages.symptom);
       return;
     }
 
+    const feedback = formatSymptomRecordSavedStatusLabel(symptomDraft);
     setState((current) => ({
       ...current,
       symptoms: [
@@ -2645,7 +2653,8 @@ function App() {
     }));
     setSymptomDraft({ ...emptySymptom, date: today });
     clearRecordFormValidationFeedback("symptom");
-    setActionSaveLabel(formatSymptomRecordSavedStatusLabel(symptomDraft));
+    setSymptomSaveFeedback(feedback);
+    setActionSaveLabel(feedback);
   };
 
   const addQuestion = () => {
@@ -2675,6 +2684,7 @@ function App() {
       priority: "next-visit",
       status: "open",
     }));
+    setSymptomSaveFeedback(null);
     setSymptomDraft((current) => ({
       ...current,
       action: current.action.trim()
@@ -2691,6 +2701,7 @@ function App() {
     if (!template) return;
     const feedback = formatSymptomSupportSymptomDraftReadyStatus(template);
 
+    setSymptomSaveFeedback(null);
     setSymptomDraft((current) => {
       const currentBody = current.body.trim();
       const nextBody = currentBody
@@ -2803,6 +2814,7 @@ function App() {
     const draft = buildCervicalCancerAlertSymptomDraft(alert);
     const feedback = `자궁경부암 증상 초안 준비됨: ${alert.title}`;
 
+    setSymptomSaveFeedback(null);
     setSymptomDraft((current) => {
       const currentBody = current.body.trim();
       const nextBody = currentBody
@@ -2828,6 +2840,7 @@ function App() {
     const draft = buildCervicalCancerCareItemSymptomDraft(item);
     const feedback = `자궁경부암 기록 메모 초안 준비됨: ${item.label}`;
 
+    setSymptomSaveFeedback(null);
     setSymptomDraft((current) => {
       const currentBody = current.body.trim();
       const hasExistingSymptomText = Boolean(current.symptom.trim() || currentBody);
@@ -5738,9 +5751,7 @@ function App() {
                   value={symptomDraft.date}
                   aria-label={formControlDescriptions.symptomDate}
                   title={formControlDescriptions.symptomDate}
-                  onChange={(event) =>
-                    setSymptomDraft({ ...symptomDraft, date: event.currentTarget.value })
-                  }
+                  onChange={(event) => updateSymptomDraft({ date: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -5750,9 +5761,7 @@ function App() {
                   value={symptomDraft.symptom}
                   aria-label={formControlDescriptions.symptomName}
                   title={formControlDescriptions.symptomName}
-                  onChange={(event) =>
-                    setSymptomDraft({ ...symptomDraft, symptom: event.currentTarget.value })
-                  }
+                  onChange={(event) => updateSymptomDraft({ symptom: event.currentTarget.value })}
                   placeholder="예: 오심, 통증, 피로, 손발저림"
                 />
               </label>
@@ -5767,7 +5776,7 @@ function App() {
                 aria-label={`증상 심한 정도 ${symptomDraft.severity}/10 · 좌우로 조정합니다`}
                 title={`증상 심한 정도 ${symptomDraft.severity}/10 · 좌우로 조정합니다`}
                 onChange={(event) =>
-                  setSymptomDraft({ ...symptomDraft, severity: Number(event.currentTarget.value) })
+                  updateSymptomDraft({ severity: Number(event.currentTarget.value) })
                 }
               />
               <span className={`severity-value severity-${symptomDraft.severity >= 7 ? "risk" : symptomDraft.severity >= 4 ? "watch" : "ok"}`}>
@@ -5780,9 +5789,7 @@ function App() {
                 value={symptomDraft.medication}
                 aria-label={formControlDescriptions.symptomMedication}
                 title={formControlDescriptions.symptomMedication}
-                onChange={(event) =>
-                  setSymptomDraft({ ...symptomDraft, medication: event.currentTarget.value })
-                }
+                onChange={(event) => updateSymptomDraft({ medication: event.currentTarget.value })}
                 placeholder="예: 진통제 복용, 항구토제 복용, 휴식"
               />
             </label>
@@ -5792,9 +5799,7 @@ function App() {
                 value={symptomDraft.body}
                 aria-label={formControlDescriptions.symptomBody}
                 title={formControlDescriptions.symptomBody}
-                onChange={(event) =>
-                  setSymptomDraft({ ...symptomDraft, body: event.currentTarget.value })
-                }
+                onChange={(event) => updateSymptomDraft({ body: event.currentTarget.value })}
                 placeholder="언제 시작됐는지, 식사/수면/활동과 관련이 있는지 입력"
               />
             </label>
@@ -5804,9 +5809,7 @@ function App() {
                 value={symptomDraft.action}
                 aria-label={formControlDescriptions.symptomAction}
                 title={formControlDescriptions.symptomAction}
-                onChange={(event) =>
-                  setSymptomDraft({ ...symptomDraft, action: event.currentTarget.value })
-                }
+                onChange={(event) => updateSymptomDraft({ action: event.currentTarget.value })}
                 placeholder="예: 다음 진료 때 질문, 24시간 지속 시 전화"
               />
             </label>
@@ -5869,6 +5872,11 @@ function App() {
               <Plus aria-hidden="true" />
               {symptomDraftSaveActionLabel}
             </button>
+            {symptomSaveFeedback ? (
+              <div className="symptom-save-feedback" role="status">
+                {symptomSaveFeedback}
+              </div>
+            ) : null}
             {renderRecordFormFeedback("symptom")}
           </section>
 
