@@ -16911,3 +16911,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `fa1c103` (`Clarify caregiver share section feedback`).
+
+## 2026-06-05 21:27 KST - Lab Reset Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires lab/standards workflows to preserve scan-friendly status, evidence context, and selected input state in feedback.
+  - Source audit found `resetLabDraft()` still reported only `검사 입력 초기화됨`, losing whether a preset was cleared and what draft value/context was reset.
+- Change:
+  - Added `formatLabDraftResetStatusLabel()` in `src/labMetric.ts`.
+  - Updated `App.tsx` lab reset handling to report selected preset/direct-input context, previous draft value, assessment, evidence presence, and reset date before clearing the draft.
+  - Added focused tests for preset-backed WBC reset feedback and empty direct-input reset feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM eval timed out waiting for JavaScript result.
+  - PASS after retry: first DOM/console/error query set timed out; retrying console/error returned `No console entries` and `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/labMetric.test.ts`, 7 tests.
+  - PASS: `npm run test`, 60 files and 466 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/labMetric.ts src/labMetric.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `6b8ecb7` (`Clarify lab reset feedback`).
