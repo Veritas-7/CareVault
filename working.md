@@ -15412,3 +15412,44 @@
     - Saved-document summary, history rows, attachment controls, and archive action labels were visible in the accessibility tree.
   - PASS: Stopped the temporary Vite server and confirmed port 1420 had no listener and no CareVault/Tauri/Vite process from this repo remained.
   - PASS: committed and pushed to `origin/main` as `8ce4bfe` (`Guard deleted archive mirror flags`); `git ls-remote origin refs/heads/main` returned `8ce4bfedd3b078b64770bdc527a87b8a21df5e89`.
+
+## 2026-06-05 15:57 KST - Live Tauri Archive/Restore SQLite Readback And Action Label Fit Note
+
+- Improvement target:
+  - Continue the deleted-archive durability lane beyond regression fixtures by proving a real desktop archive and restore click-through writes consistent JSON `app_state` and normalized SQLite mirror rows.
+  - Fix the observed desktop saved-document archive action label fit so the recoverable action is visually `삭제 보관`, not only `삭제`.
+- Live Tauri archive/restore verification:
+  - Backed up the current sandbox database to `/tmp/carevault-live-archive-db.VU1VBr/carevault.db`.
+  - Seeded `~/Library/Application Support/app.veritas.carevault/carevault.db` with one disposable document:
+    - Title: `실기기 삭제 복구 테스트`.
+    - Attachment reference: `archive-proof.png`.
+    - Starting active/deleted counts: `1|0`.
+  - PASS: initial direct SQLite readback showed the disposable document active with `care_documents`, `document_attachments`, and `document_history` `is_deleted = 0`.
+  - PASS: clicked the live archive action and read back:
+    - JSON active/deleted counts: `0|1`.
+    - Latest history label: `삭제 보관`.
+    - `care_documents`, `document_attachments`, and both history rows carried `is_deleted = 1`.
+  - PASS: clicked `복구` in the deleted archive and read back:
+    - JSON active/deleted counts: `1|0`.
+    - Latest history label: `서류 복구`.
+    - `care_documents`, `document_attachments`, and all history rows returned to `is_deleted = 0`.
+  - PASS: stopped CareVault/Tauri/Vite processes after the live run and restored the original sandbox database.
+  - PASS: post-restore database verification returned `나의 건강 기록|혈액검사 메모` and normalized document count `1|0`.
+- Label-fit implementation and proof:
+  - Updated `src/App.css` so saved-document action buttons have centered text, stable min-width, and the destructive archive action keeps a no-wrap `122px` minimum.
+  - Updated `.document-item` and `.document-actions` so desktop rows reserve the same `122px` action column instead of letting WebKit collapse the action to a short visible label.
+  - PASS: browser computed-layout proof against the current Vite dev server reported the danger action text as `삭제 보관`, `width: 122`, `minWidth: 122px`, `whiteSpace: nowrap`, `gridTemplateColumns: 210px 122px`, and `actionsMinWidth: 122px`.
+  - Note: Computer Use repeatedly rebound to the installed release-bundle CareVault window while `npm run tauri dev` also had a debug process running, so the CSS proof is current-source browser layout rather than a trusted current-source Tauri visual screenshot.
+- Automated and surface verification:
+  - PASS: `npm run test`, 56 files and 410 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.css`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330`.
+  - PASS: Existing cmux `암관리` browser pane reused at `http://127.0.0.1:1420/#documents`; no new browser tab was opened.
+    - Accessibility tree showed saved-document controls and the archive action with the full target-specific label `혈액검사 메모 검사 서류 삭제 보관함으로 이동 · 상태 의료진 질문`.
+- Cleanup:
+  - PASS: killed the explicit CareVault/Tauri/Vite PIDs from this test run.
+  - PASS: confirmed port 1420 had no CareVault listener after cleanup.
