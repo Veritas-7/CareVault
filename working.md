@@ -15287,3 +15287,50 @@
   - PASS: Post-restore SQLite check showed original data again: profile `나의 건강 기록`, first document `혈액검사 메모`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - PASS: committed and pushed to `origin/main` as `32d2788` (`Record live Tauri attachment readback`).
+
+## 2026-06-05 14:37 KST - Live Tauri Image Preview Failure Hardening Note
+
+- Improvement target:
+  - The README's current durable slice asked for a live Tauri desktop seeded image-preview load-failure click-through and direct SQLite document-history readback.
+  - A deliberately invalid image attachment should not leave a saved-document card and history looking healthy after preview fails.
+- Runtime setup and live finding:
+  - Backed up the sandbox database to `/tmp/carevault-tauri-preview-db-backup.t1Zy6o/carevault.db`.
+  - Created a deliberately invalid PNG fixture at `/tmp/carevault-live-tauri-bad-preview.png`, then also tried an app-support copy at `~/Library/Application Support/app.veritas.carevault/bad-preview.png`.
+  - Raw `/tmp` and app-support absolute paths hit `파일 없음 - 재첨부 필요`, so they did not exercise image decode failure.
+  - Reattaching `/tmp/carevault-live-tauri-bad-preview.png` through the native picker produced a healthy pre-state: `carevault-live-tauri-bad-preview.png 앱 보관 파일 확인됨`.
+  - Clicking `미리보기` visibly produced `이미지 미리보기 실패`, but direct SQLite readback still stayed healthy:
+    - `app_state` document `attachmentStatus`: `파일 확인됨`.
+    - Last history: `첨부 재연결|carevault-live-tauri-bad-preview.png: 파일 확인됨`.
+    - `care_documents.attachment_status`: `파일 확인됨`.
+  - Keyboard activation of the same preview path also left SQLite unchanged.
+  - Result: live invalid-image SQLite readback remains NOT VERIFIED and is kept as the next target.
+- Code/design changes:
+  - Updated `src/attachmentRecovery.ts`.
+    - Added image extension parsing, byte-signature checks for PNG/JPEG/WebP, bounded preview-probe timeouts, and optional `readFile`/`loadImage` runtime adapters.
+  - Updated `src/App.tsx`.
+    - Tauri saved-image preview now passes `readFile` and a browser `Image` probe that rejects load errors, decode failures, and zero decoded dimensions before accepting the preview.
+  - Updated `src-tauri/capabilities/default.json`.
+    - Added `fs:allow-read-file` for the saved sandbox image byte preflight.
+  - Updated `src/attachmentRecovery.test.ts`.
+    - Added fixture coverage for preview load failure, byte-signature failure, supported signatures, and stalled preview probes.
+  - Updated `README.md` and `DESIGN.md`.
+    - Documented the automated hardening while keeping the live invalid-image SQLite readback gap explicit.
+- Cleanup:
+  - Stopped the live Tauri/Vite runtime and killed the remaining CareVault process.
+  - Confirmed port 1420 had no listener.
+  - Restored the original sandbox database and confirmed the original profile/document again: `나의 건강 기록|혈액검사 메모`.
+  - Removed the temporary invalid PNG fixtures.
+- Verification before staging:
+  - PASS: `npm test -- src/attachmentRecovery.test.ts`, 1 file and 10 tests.
+  - PASS: `npm run test`, 55 files and 401 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/attachmentRecovery.ts src/attachmentRecovery.test.ts src-tauri/capabilities/default.json`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Existing cmux `암관리` right-side in-app browser reused the existing CareVault pane at `http://127.0.0.1:1420/#dashboard`.
+    - No new browser tab was opened.
+    - Browser storage label, dashboard metrics, care queue, cervical-care panel, timeline, lab tracking, nutrition, and document controls were visible.
+  - PASS: Stopped the temporary Vite server after the cmux check and confirmed port 1420 had no listener.
+  - PASS: Confirmed no CareVault/Tauri process remained after runtime checks.

@@ -1,4 +1,5 @@
 const recoveryStatusTerms = ["파일 없음", "재첨부 필요", "열기 실패", "확인 실패"];
+const defaultPreviewProbeTimeoutMs = 4000;
 
 export type AttachmentRecoveryReason =
   | "missing-file"
@@ -43,6 +44,70 @@ export type RuntimeAttachmentPreviewResult =
       title: string;
       type: "preview";
     };
+
+function getAttachmentExtension(attachmentName?: string) {
+  return attachmentName?.trim().toLowerCase().match(/\.([^.\\/]+)$/)?.[1] ?? "";
+}
+
+export function hasSupportedImageSignature(attachmentName: string | undefined, bytes: ArrayLike<number>) {
+  const extension = getAttachmentExtension(attachmentName);
+
+  if (extension === "png") {
+    return (
+      bytes.length >= 8 &&
+      bytes[0] === 0x89 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x4e &&
+      bytes[3] === 0x47 &&
+      bytes[4] === 0x0d &&
+      bytes[5] === 0x0a &&
+      bytes[6] === 0x1a &&
+      bytes[7] === 0x0a
+    );
+  }
+
+  if (extension === "jpg" || extension === "jpeg") {
+    return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  }
+
+  if (extension === "webp") {
+    return (
+      bytes.length >= 12 &&
+      bytes[0] === 0x52 &&
+      bytes[1] === 0x49 &&
+      bytes[2] === 0x46 &&
+      bytes[3] === 0x46 &&
+      bytes[8] === 0x57 &&
+      bytes[9] === 0x45 &&
+      bytes[10] === 0x42 &&
+      bytes[11] === 0x50
+    );
+  }
+
+  return false;
+}
+
+function withPreviewProbeTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs = defaultPreviewProbeTimeoutMs,
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeout = globalThis.setTimeout(
+      () => reject(new Error("attachment preview probe timed out")),
+      timeoutMs,
+    );
+
+    promise
+      .then((result) => {
+        globalThis.clearTimeout(timeout);
+        resolve(result);
+      })
+      .catch((error) => {
+        globalThis.clearTimeout(timeout);
+        reject(error);
+      });
+  });
+}
 
 const attachmentRecoveryUpdates: Record<
   AttachmentRecoveryReason,
@@ -114,6 +179,9 @@ export async function resolveRuntimeAttachmentPreview(
   runtime: {
     convertFileSrc: (path: string) => string;
     exists: (path: string) => Promise<boolean>;
+    loadImage?: (previewUrl: string) => Promise<void>;
+    previewProbeTimeoutMs?: number;
+    readFile?: (path: string) => Promise<ArrayLike<number>>;
   },
 ): Promise<RuntimeAttachmentPreviewResult> {
   const attachmentPath = document.attachmentPath ?? "";
@@ -126,10 +194,27 @@ export async function resolveRuntimeAttachmentPreview(
   }
 
   try {
+    const previewProbeTimeoutMs =
+      runtime.previewProbeTimeoutMs ?? defaultPreviewProbeTimeoutMs;
+    if (runtime.readFile) {
+      const bytes = await withPreviewProbeTimeout(
+        runtime.readFile(attachmentPath),
+        previewProbeTimeoutMs,
+      );
+      if (!hasSupportedImageSignature(document.attachmentName, bytes)) {
+        throw new Error("unsupported image signature");
+      }
+    }
+
+    const previewUrl = runtime.convertFileSrc(attachmentPath);
+    if (runtime.loadImage) {
+      await withPreviewProbeTimeout(runtime.loadImage(previewUrl), previewProbeTimeoutMs);
+    }
+
     return {
       attachmentName: document.attachmentName ?? "첨부",
       documentId: document.id,
-      previewUrl: runtime.convertFileSrc(attachmentPath),
+      previewUrl,
       sourceLabel: "앱 샌드박스 이미지 미리보기",
       statusLabel: "이미지 미리보기 열림",
       title: document.title,

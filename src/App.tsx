@@ -417,6 +417,38 @@ type AttachmentPreviewState = {
   sourceLabel: string;
 };
 
+function loadAttachmentPreviewImage(previewUrl: string) {
+  return new Promise<void>((resolve, reject) => {
+    const image = new Image();
+    let settled = false;
+    const fail = (error: unknown) => {
+      if (settled) return;
+      settled = true;
+      reject(error instanceof Error ? error : new Error("attachment preview image load failed"));
+    };
+    const pass = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+
+    image.onload = () => {
+      const decode = typeof image.decode === "function" ? image.decode() : Promise.resolve();
+      decode
+        .then(() => {
+          if (image.naturalWidth <= 0 || image.naturalHeight <= 0) {
+            fail(new Error("attachment preview image has no decoded dimensions"));
+            return;
+          }
+          pass();
+        })
+        .catch(fail);
+    };
+    image.onerror = () => fail(new Error("attachment preview image load failed"));
+    image.src = previewUrl;
+  });
+}
+
 type ExportPreviewState = {
   caregiverShareContentFingerprint?: string;
   caregiverShareSettingsFingerprint?: string;
@@ -2614,11 +2646,16 @@ function App() {
     }
 
     try {
-      const [{ convertFileSrc }, { exists }] = await Promise.all([
+      const [{ convertFileSrc }, { exists, readFile }] = await Promise.all([
         import("@tauri-apps/api/core"),
         import("@tauri-apps/plugin-fs"),
       ]);
-      const result = await resolveRuntimeAttachmentPreview(document, { convertFileSrc, exists });
+      const result = await resolveRuntimeAttachmentPreview(document, {
+        convertFileSrc,
+        exists,
+        loadImage: loadAttachmentPreviewImage,
+        readFile,
+      });
       if (result.type === "recovery") {
         const { recovery } = result;
         updateDocumentAttachmentStatus(
