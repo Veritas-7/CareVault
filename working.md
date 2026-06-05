@@ -15512,3 +15512,52 @@
   - PASS: `npm run test`, 56 files and 410 tests.
   - PASS: `git diff --check -- working.md workingd.md`.
   - PASS: committed and pushed to `origin/main` as `ffb829e` (`Add workingd resume pointer`); `git ls-remote origin refs/heads/main` returned `ffb829e3631ca4146369660fc6616440b183ba3a`.
+
+## 2026-06-05 16:27 KST - Active Tauri Dev Verification And IPv4 Dev Host
+
+- Improvement target:
+  - Prove `npm run tauri:dev:clean` as a real long-running current-source desktop path, not just a help/preflight command.
+  - Close the verification hazards found during the live run:
+    - Computer Use can relaunch the installed release `CareVault.app`, causing stale visual evidence even while `target/debug/carevault` is running.
+    - Vite's previous default listener came up on IPv6 `::1`, while the single existing cmux `암관리` browser pane points at `http://127.0.0.1:1420/#documents`.
+- Findings:
+  - PASS: `npm run tauri:dev:clean` first ran `runtime:doctor`, then started Vite and `target/debug/carevault`.
+  - BLOCKED before fix: Computer Use attached to a release-bundle process from `src-tauri/target/release/bundle/macos/CareVault.app/.../carevault`, showing stale `다음 개발 슬라이스` copy and generic `첨부`/`삭제` buttons.
+  - BLOCKED before fix: existing cmux `암관리` browser `surface:9` could not load `http://127.0.0.1:1420/#documents` while Vite listened on `[::1]:1420`.
+- Change:
+  - Added `--expect-dev` mode to `scripts/verify_runtime_clean.sh`.
+    - Requires no installed/release `CareVault.app` process.
+    - Requires port 1420 to be served by this repo's Vite process.
+    - Requires this repo's Tauri dev CLI and debug `target/debug/carevault` binary to be running.
+    - Detects Tauri's relative debug command form `target/debug/carevault`.
+  - Added `npm run runtime:doctor:dev`.
+  - Bound default Vite dev host to `127.0.0.1` while preserving `TAURI_DEV_HOST` for explicit external-host runs.
+  - Changed Tauri `devUrl` to `http://127.0.0.1:1420`.
+  - Updated `README.md` and `DESIGN.md` to document the clean preflight, active-dev verification, release-shadow warning, and single cmux-pane host contract.
+- Runtime verification:
+  - PASS: after restart, `npm run tauri:dev:clean` printed Vite `Local: http://127.0.0.1:1420/` and ran `target/debug/carevault`.
+  - PASS: `npm run runtime:doctor:dev`.
+    - No installed/release `CareVault.app` process.
+    - `lsof` showed `node` listening on `127.0.0.1:1420`.
+    - Tauri CLI, Vite, and debug `target/debug/carevault` PIDs were all detected.
+  - PASS: `curl -s -o /dev/null -w "%{http_code} %{remote_ip}\n" http://127.0.0.1:1420/#documents` returned `200 127.0.0.1`.
+  - PASS: Existing cmux `암관리` browser surface reused as `surface:9`; no new browser pane was opened.
+    - `cmux browser surface:9 url` returned `http://127.0.0.1:1420/#documents`.
+    - DOM assertion returned `hasNextStep:false`, `hasBoundary:true`, `archiveButtons:1`, `exactAttachButtons:0`, and `documentSection:true`.
+    - `cmux browser surface:9 errors list` returned `No browser errors`.
+- Automated verification:
+  - PASS: `bash -n scripts/verify_runtime_clean.sh`.
+  - PASS: `npm run runtime:doctor` after shutdown.
+  - PASS: `npm run test`, 56 files and 410 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md package.json scripts/verify_runtime_clean.sh src-tauri/tauri.conf.json vite.config.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330`.
+- Cleanup:
+  - PASS: stopped the long-running Tauri dev session.
+  - PASS: post-shutdown `npm run runtime:doctor` confirmed port 1420 was free and no CareVault release/dev processes remained.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `7ef5563` (`Add active Tauri dev verification`); `git ls-remote origin refs/heads/main` returned `7ef5563456c328c248c5621a6b65c3e4be2d2e17`.
