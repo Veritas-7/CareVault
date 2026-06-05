@@ -3831,6 +3831,7 @@ textarea:focus-visible {
 .document-actions button {
   color: #0f4c5c;
   background: #eef7f7;
+  min-height: 44px;
   min-width: 88px;
   max-width: 100%;
   line-height: 1.25;

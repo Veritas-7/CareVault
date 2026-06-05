@@ -5,6 +5,7 @@ import {
   formatDocumentArchiveStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
+  formatDocumentAttachmentPreviewActionLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
   formatDocumentAttachmentPreviewOpenedStatusLabel,
   formatDocumentAttachmentPreviewUnavailableStatusLabel,
@@ -194,6 +195,18 @@ describe("documentActionLabels", () => {
     expect(formatDocumentAttachmentPreviewOpenedStatusLabel(documentWithAttachment)).toBe(
       "혈액검사 메모 검사 서류 이미지 미리보기 열림 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
     );
+    expect(formatDocumentAttachmentPreviewActionLabel(documentWithAttachment, true)).toBe(
+      "혈액검사 메모 검사 서류 이미지 첨부 미리보기 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
+    );
+    expect(
+      formatDocumentAttachmentPreviewActionLabel(
+        { ...documentWithAttachment, attachmentName: "icon.png", attachmentStatus: "브라우저 파일명 참조" },
+        false,
+        "저장된 경로 또는 데스크톱 런타임 필요",
+      ),
+    ).toBe(
+      "혈액검사 메모 검사 서류 이미지 첨부 미리보기 불가 · 현재 첨부 icon.png · 첨부 상태 브라우저 파일명 참조 · 이유 저장된 경로 또는 데스크톱 런타임 필요",
+    );
     expect(formatDocumentAttachmentRemovalFailedStatusLabel(documentWithAttachment)).toBe(
       "혈액검사 메모 검사 서류 첨부 파일 삭제 실패 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
     );
@@ -221,6 +234,9 @@ describe("documentActionLabels", () => {
     );
     expect(formatDocumentActionButtonLabel(documentWithAttachment, "check-attachment")).toBe(
       "혈액검사 메모 검사 서류 첨부 확인 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
+    );
+    expect(formatDocumentActionButtonLabel(documentWithAttachment, "preview-attachment")).toBe(
+      "혈액검사 메모 검사 서류 이미지 첨부 미리보기 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
     );
     expect(formatDocumentActionButtonLabel(documentWithAttachment, "open-attachment")).toBe(
       "혈액검사 메모 검사 서류 첨부 파일 열기 · 현재 첨부 blood-result.pdf",

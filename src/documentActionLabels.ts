@@ -160,6 +160,23 @@ export function formatDocumentAttachmentPreviewOpenedStatusLabel(document: CareD
   )}`;
 }
 
+export function formatDocumentAttachmentPreviewActionLabel(
+  document: CareDocument,
+  canPreview: boolean,
+  unavailableReason?: string,
+) {
+  if (canPreview) {
+    return `${formatDocumentContext(document)} 이미지 첨부 미리보기 · ${formatCurrentAttachmentContext(
+      document,
+    )}`;
+  }
+
+  const reason = unavailableReason?.trim() || "이유 미확인";
+  return `${formatDocumentContext(document)} 이미지 첨부 미리보기 불가 · ${formatCurrentAttachmentContext(
+    document,
+  )} · 이유 ${reason}`;
+}
+
 export function formatDocumentAttachmentRemovalFailedStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 첨부 파일 삭제 실패 · ${formatCurrentAttachmentContext(
     document,
@@ -183,7 +200,7 @@ export function formatDocumentActionButtonLabel(
     "add-attachment": `${documentContext} 첨부 추가 · ${reviewContext}`,
     "replace-attachment": `${documentContext} 첨부 재연결 · ${attachmentContext} · ${reviewContext}`,
     "check-attachment": `${documentContext} 첨부 확인 · ${attachmentContext} · ${attachmentStatusContext}`,
-    "preview-attachment": `${documentContext} 이미지 첨부 미리보기 · ${attachmentContext}`,
+    "preview-attachment": formatDocumentAttachmentPreviewActionLabel(document, true),
     "open-attachment": `${documentContext} 첨부 파일 열기 · ${attachmentContext}`,
     "remove-attachment": `${documentContext} 첨부 연결 제거 · ${attachmentContext}`,
     "archive-document": `${documentContext} 삭제 보관함으로 이동 · ${reviewContext}`,

@@ -165,6 +165,7 @@ import {
   formatDocumentActionButtonLabel,
   formatDocumentArchiveStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
+  formatDocumentAttachmentPreviewActionLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
   formatDocumentAttachmentPreviewOpenedStatusLabel,
   formatDocumentAttachmentPreviewUnavailableStatusLabel,
@@ -6476,7 +6477,24 @@ function App() {
             </div>
             <div className="document-list">
               {filteredDocuments.length ? (
-                filteredDocuments.map((document) => (
+                filteredDocuments.map((document) => {
+                  const isPreviewableDocumentImage =
+                    document.attachmentName &&
+                    isPreviewableImageAttachment(document.attachmentName);
+                  const canPreviewDocumentImage = Boolean(
+                    isPreviewableDocumentImage &&
+                      (browserAttachmentPreviewUrls[document.id] ||
+                        (document.attachmentPath && canUseTauriRuntime())),
+                  );
+                  const documentPreviewActionLabel = isPreviewableDocumentImage
+                    ? formatDocumentAttachmentPreviewActionLabel(
+                        document,
+                        canPreviewDocumentImage,
+                        "저장된 경로 또는 데스크톱 런타임 필요",
+                      )
+                    : "";
+
+                  return (
                   <article className="document-item" key={document.id}>
                     <div>
                       <span>{document.date}</span>
@@ -6595,16 +6613,15 @@ function App() {
                           첨부 확인
                         </button>
                       ) : null}
-                      {document.attachmentName &&
-                      isPreviewableImageAttachment(document.attachmentName) ? (
+                      {isPreviewableDocumentImage ? (
                         <button
                           type="button"
                           onClick={() => previewDocumentAttachment(document)}
-                          aria-label={formatDocumentActionButtonLabel(document, "preview-attachment")}
-                          title={formatDocumentActionButtonLabel(document, "preview-attachment")}
+                          aria-label={documentPreviewActionLabel}
+                          title={documentPreviewActionLabel}
                         >
                           <ImageIcon aria-hidden="true" />
-                          미리보기
+                          {canPreviewDocumentImage ? "미리보기" : "미리보기 불가"}
                         </button>
                       ) : null}
                       {document.attachmentPath ? (
@@ -6641,7 +6658,8 @@ function App() {
                       </button>
                     </div>
                   </article>
-                ))
+                  );
+                })
               ) : (
                 <div className="document-empty" role="status" aria-label="저장된 서류 필터 결과 없음">
                   <p>
