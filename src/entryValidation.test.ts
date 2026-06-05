@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatLabRequiredFieldMessage,
   formatRecordFormFeedbackAriaLabel,
   formatRecordFormFeedbackClearedStatus,
   hasRequiredTextValues,
@@ -27,6 +28,21 @@ describe("recordRequiredFieldMessages", () => {
     expect(recordRequiredFieldMessages.symptom).toContain("증상");
     expect(recordRequiredFieldMessages.question).toContain("질문 주제");
     expect(recordRequiredFieldMessages.lab).toContain("검사 항목");
+  });
+});
+
+describe("formatLabRequiredFieldMessage", () => {
+  it("keeps the combined guidance when both required lab fields are blank", () => {
+    expect(formatLabRequiredFieldMessage("", " ")).toBe(recordRequiredFieldMessages.lab);
+  });
+
+  it("narrows the guidance to the missing lab item or value", () => {
+    expect(formatLabRequiredFieldMessage("", "3.4")).toBe("검사 항목을 입력해주세요.");
+    expect(formatLabRequiredFieldMessage("CRP", "")).toBe("검사 값을 입력해주세요.");
+  });
+
+  it("returns no guidance when the lab item and value are both present", () => {
+    expect(formatLabRequiredFieldMessage(" CRP ", " 1.2 ")).toBeNull();
   });
 });
 

@@ -241,6 +241,7 @@ import {
 } from "./sidebarNavigation";
 import { buildAppointmentReminders } from "./appointmentReminders";
 import {
+  formatLabRequiredFieldMessage,
   formatRecordFormFeedbackAriaLabel,
   hasRequiredTextValues,
   recordRequiredFieldMessages,
@@ -3033,8 +3034,9 @@ function App() {
   };
 
   const addLabResult = () => {
-    if (!hasRequiredTextValues(labDraft.name, labDraft.value)) {
-      setRecordFormValidationFeedback("lab", recordRequiredFieldMessages.lab);
+    const requiredFieldMessage = formatLabRequiredFieldMessage(labDraft.name, labDraft.value);
+    if (requiredFieldMessage) {
+      setRecordFormValidationFeedback("lab", requiredFieldMessage);
       return;
     }
 

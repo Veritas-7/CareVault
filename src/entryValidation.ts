@@ -48,3 +48,17 @@ export function shouldClearRecordFormFeedback(
 export function hasRequiredTextValues(...values: Array<string | undefined>) {
   return values.every((value) => Boolean(value?.trim()));
 }
+
+export function formatLabRequiredFieldMessage(
+  labName: string | undefined,
+  labValue: string | undefined,
+) {
+  const hasLabName = hasRequiredTextValues(labName);
+  const hasLabValue = hasRequiredTextValues(labValue);
+
+  if (hasLabName && hasLabValue) return null;
+  if (!hasLabName && !hasLabValue) return recordRequiredFieldMessages.lab;
+  if (!hasLabName) return "검사 항목을 입력해주세요.";
+
+  return "검사 값을 입력해주세요.";
+}

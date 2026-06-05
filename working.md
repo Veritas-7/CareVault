@@ -15291,6 +15291,38 @@
   - PASS: `npm run build`.
   - PASS: `cargo check` in `src-tauri`.
   - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+
+## 2026-06-06 06:16 KST - Lab Required Field Specific Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires invalid input feedback to render as immediate, local, user-correctable status near the affected form.
+  - Real cmux QA found `검사 수치 입력` still used the generic `검사 항목과 값을 입력해주세요.` message when the lab item was present but the value was missing.
+- Change:
+  - Added `formatLabRequiredFieldMessage()` in `src/entryValidation.ts` to split lab required-field feedback into missing item, missing value, both missing, and valid cases.
+  - Updated `src/App.tsx` lab save validation to surface the specific message from that helper.
+  - Added focused regression coverage in `src/entryValidation.test.ts` for blank drafts, missing name, missing value, and valid lab drafts.
+  - Added a `DESIGN.md` decisions-log entry for the partial lab-draft feedback rule.
+- Runtime/browser notes:
+  - PASS: reused only the existing right cmux in-app browser; no new browser pane or tab was opened.
+  - PASS: before accepting evidence, Computer Use confirmed the visible cmux window was `암관리`, the selected right tab was CareVault, and the right pane URL was `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: symptom empty-submit showed local `증상·부작용 기록 필수 항목 안내 · 증상을 입력해주세요.` and a filled `피로` draft cleared local feedback without saving.
+  - PASS baseline: question empty-submit showed local `진료 전 질문 필수 항목 안내 · 질문 주제와 내용을 입력해주세요.` and a filled `식사` question draft cleared local feedback without saving.
+  - RED/IMPROVEMENT: in visible `암관리`, typed lab item `CRP`, left the value empty, clicked `검사 수치 추가`, and the app showed the generic `검사 항목과 값을 입력해주세요.` message instead of naming the missing value.
+  - PASS after fix: with the same visible cmux path, `CRP` plus empty value showed global `검사 값을 입력해주세요.` and local `검사 수치 입력 필수 항목 안내 · 검사 값을 입력해주세요.`.
+  - PASS after fix: entering value `1.2` cleared the local error and changed the button to `검사 수치 추가 · CRP 1.2 입력 준비됨` without saving.
+  - PASS cleanup in browser: clicked `검사 입력 프리셋과 값 초기화`; the draft fields cleared and the browser showed `검사 입력 초기화됨`.
+- Automated verification:
+  - PASS: `npm run test -- src/entryValidation.test.ts`, 10 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 61 files and 479 tests.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/entryValidation.ts src/entryValidation.test.ts DESIGN.md working.md`.
+- Cleanup:
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+  - PENDING: commit and push.
   - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/attachmentRecovery.ts src/attachmentRecovery.test.ts`.
   - PASS: Playwright seeded recovery smoke at 390x884.
     - `document.title`: `CareVault`.
