@@ -151,6 +151,16 @@ export function formatDocumentAttachmentFileNameOnlyStatusLabel(document: CareDo
   )}`;
 }
 
+export function formatDocumentAttachmentCheckedStatusLabel(
+  document: CareDocument,
+  attachmentStatus: string,
+) {
+  const status = attachmentStatus.trim() || "첨부 상태 미확인";
+  return `${formatDocumentContext(document)} 첨부 확인됨 · 현재 첨부 ${formatAttachmentFileName(
+    document.attachmentName,
+  )} · 첨부 상태 ${status}`;
+}
+
 export function formatDocumentAttachmentReconnectFailedStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 첨부 재연결 실패 · ${formatCurrentAttachmentContext(document)}`;
 }

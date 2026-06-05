@@ -5,6 +5,7 @@ import {
   formatDocumentArchiveStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
+  formatDocumentAttachmentCheckedStatusLabel,
   formatDocumentAttachmentPreviewActionLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
   formatDocumentAttachmentPreviewOpenedStatusLabel,
@@ -184,6 +185,14 @@ describe("documentActionLabels", () => {
       }),
     ).toBe(
       "혈액검사 메모 검사 서류 첨부는 파일명 참조만 저장됨 · 현재 첨부 browser-scan.png",
+    );
+    expect(
+      formatDocumentAttachmentCheckedStatusLabel(
+        { ...baseDocument, attachmentName: "blood-result.pdf" },
+        "파일 확인됨",
+      ),
+    ).toBe(
+      "혈액검사 메모 검사 서류 첨부 확인됨 · 현재 첨부 blood-result.pdf · 첨부 상태 파일 확인됨",
     );
   });
 

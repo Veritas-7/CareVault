@@ -3867,6 +3867,20 @@ textarea:focus-visible {
   background: #ffe1db;
 }
 
+.document-action-feedback {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
 .deleted-document-panel {
   display: grid;
   gap: 10px;

@@ -164,6 +164,7 @@ import {
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
   formatDocumentArchiveStatusLabel,
+  formatDocumentAttachmentCheckedStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
   formatDocumentAttachmentPreviewActionLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
@@ -804,6 +805,10 @@ function App() {
   const [labDraft, setLabDraft] = useState<LabResult>(emptyLabResult);
   const [labQuestionFeedback, setLabQuestionFeedback] = useState<{
     labId: string;
+    message: string;
+  } | null>(null);
+  const [documentActionFeedback, setDocumentActionFeedback] = useState<{
+    documentId: string;
     message: string;
   } | null>(null);
   const [documentActionBaselines, setDocumentActionBaselines] = useState<Record<string, string>>(
@@ -2140,8 +2145,10 @@ function App() {
 
     if (!document.attachmentPath || !canUseTauriRuntime()) {
       const status = "파일명 참조만 저장됨";
+      const feedback = formatDocumentAttachmentFileNameOnlyStatusLabel(document);
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-      setActionSaveLabel(status);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
       return;
     }
 
@@ -2156,13 +2163,16 @@ function App() {
           recovery.historyDetail,
           recovery.historyLabel,
         );
+        setDocumentActionFeedback({ documentId: document.id, message: recovery.status });
         setActionSaveLabel(recovery.status);
         return;
       }
 
       const status = "파일 확인됨";
+      const feedback = formatDocumentAttachmentCheckedStatusLabel(document, status);
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-      setActionSaveLabel(status);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
     } catch (error) {
       console.error("Document attachment check failed", error);
       const recovery = buildAttachmentRecoveryUpdate("check-failure", document.attachmentName);
@@ -2172,6 +2182,7 @@ function App() {
         recovery.historyDetail,
         recovery.historyLabel,
       );
+      setDocumentActionFeedback({ documentId: document.id, message: recovery.status });
       setActionSaveLabel(recovery.status);
     }
   };
@@ -6704,6 +6715,11 @@ function App() {
                         <Trash2 aria-hidden="true" />
                         삭제 보관
                       </button>
+                      {documentActionFeedback?.documentId === document.id ? (
+                        <div className="document-action-feedback" role="status">
+                          {documentActionFeedback.message}
+                        </div>
+                      ) : null}
                     </div>
                   </article>
                   );
