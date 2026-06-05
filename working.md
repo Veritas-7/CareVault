@@ -15763,3 +15763,35 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `662d47c` (`Move app state normalization out of App`); `git ls-remote origin refs/heads/main` returned `662d47caf0a00531b0942112ae04e7e46f2b2fe9`.
+
+## 2026-06-05 17:41 KST - Timeline Source Evidence Link Names
+
+- Improvement target:
+  - Page-wide cmux DOM audit found four recent-timeline source links with the identical accessible name `HPV 백신 가족 안내 · 3/10 기록 근거 질병관리청 국가건강정보포털 자궁경부암 백신 열기`.
+  - The duplicated generated symptom records also shared the same date and detail, so source links needed timeline-row context instead of only title/date/source text.
+- Change:
+  - Added `formatTimelineSourceEvidenceLabel` and `formatTimelineSourceEvidenceOpenLabel`.
+  - Updated recent-timeline source-evidence row and link labels to include date plus `최근 타임라인 N번째` row position.
+  - Added regression coverage proving same-day repeated timeline evidence links become distinct.
+  - Updated `DESIGN.md` with the timeline source-label uniqueness rule.
+- Real-browser/runtime verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: navigated the same surface to `http://127.0.0.1:1420/#documents`.
+  - PASS: before fix, page-wide DOM audit returned four identical HPV timeline source-link labels.
+  - PASS: after fix, cmux DOM audit returned the four labels as `2026-06-04 최근 타임라인 2번째...`, `3번째...`, `4번째...`, and `5번째...` with `duplicateCount:0`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: browser console showed normal Vite hot updates for `src/App.tsx`.
+- Automated verification:
+  - PASS: `npm run test -- src/timelineSourceEvidenceLabels.test.ts`, 1 test.
+  - PASS: `npm run test`, 58 files and 419 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/timelineSourceEvidenceLabels.ts src/timelineSourceEvidenceLabels.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `69470ca` (`Disambiguate timeline source evidence labels`); `git ls-remote origin refs/heads/main` returned `69470caca4b76e71d3cd730babf7610eec15dde8`.
