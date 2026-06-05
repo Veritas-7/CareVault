@@ -16229,3 +16229,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `373ba14` (`Cover fever infection standard action labels`).
+
+## 2026-06-05 19:30 KST - Vital Question Action Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires the vital input helper to expose a source-backed clinician-question draft shortcut before saving a vital record.
+  - Source audit found the vital `질문 초안` button had correct visible text and scoped `aria-label`/`title`, but the action sentence was built inline in `App.tsx` without focused regression coverage.
+- Change:
+  - Added `formatVitalStandardQuestionDraftActionLabel()` in `src/healthStandards.ts`.
+  - Updated `App.tsx` to compute the vital question-draft action label once and reuse it for both `aria-label` and `title`.
+  - Added focused tests for blood-pressure, temperature, and empty-label fallback action wording.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `cmux browser surface:9 get title` returned `CareVault` after navigation to `http://127.0.0.1:1420/`.
+  - BLOCKED: same-surface snapshot still returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, empty `title`, `.app-shell` count `0`, vital question button count `0`, and empty body text, while `curl -I` returned HTTP `200`.
+  - PASS: `cmux browser surface:9 console` returned `No console entries` and `cmux browser surface:9 errors` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/healthStandards.test.ts`, 29 tests.
+  - PASS: `npm run test`, 60 files and 436 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `413107a` (`Cover vital question action labels`).
