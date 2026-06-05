@@ -15245,3 +15245,5 @@
   - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
   - PASS: Stopped the local Vite dev server after runtime checks by ending PID `84377`, then confirmed port 1420 had no listener.
   - PASS: Confirmed no `carevault` process remained after runtime checks.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged six-file diff.
+  - PASS: committed and pushed to `origin/main` as `c0a4c6a` (`Add attachment runtime fixture`).
