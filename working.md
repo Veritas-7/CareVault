@@ -17446,3 +17446,41 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `822327e` (`Focus export preview after generation`).
+
+## 2026-06-05 23:18 KST - Question Draft Required Action Label cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires required add/save validation feedback to be local and clear, and adjacent form actions should state their scoped missing-field requirement before the user clicks.
+  - Real cmux QA found that visit, symptom, lab, and document add/save buttons named their missing required fields up front, but the empty `진료 전 질문 추가` action only said `우선순위 다음 진료` until after it was clicked.
+- Change:
+  - Updated `formatQuestionDraftAddActionLabel()` in `src/questionPriority.ts` to include `질문 주제와 내용 필요` when the draft is missing required fields.
+  - Updated `App.tsx` to pass the live question draft validity into the question add action description.
+  - Added focused regression coverage in `src/questionPriority.test.ts`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PASS: used Computer Use on the existing cmux window only to verify the real right pane state; it showed the page body was blank before a same-pane refresh, then the actual CareVault UI after clicking the browser refresh button.
+  - PASS: `cmux browser surface:9 screenshot --out /tmp/carevault-surface9-iter2-live.png` captured the live app.
+  - PASS: clicked `입력 기록` in the same `surface:9`; screenshot `/tmp/carevault-surface9-iter2-records.png` and `scrollY=12089` confirmed the actual form area was reached.
+  - PASS: clicked empty `방문 기록 추가`; screenshot `/tmp/carevault-surface9-iter2-visit-required.png` showed local form feedback beside the visited form action.
+  - PASS: filled the required visit fields without saving; screenshot `/tmp/carevault-surface9-iter2-visit-ready.png` confirmed local feedback cleared and the top status changed to `병원 방문 기록 필수 입력 확인됨`.
+  - PASS: saved browser state before testing empty `진료 전 질문 추가`; clicking it did not create a blank question and showed local feedback `질문 주제와 내용을 입력해주세요.`
+  - RED/IMPROVEMENT: before the patch, the empty question button aria/title was only `진료 전 질문 추가 · 우선순위 다음 진료`, unlike adjacent required-field actions.
+  - PASS after fix: `cmux browser surface:9 eval` returned `aria` and `title` as `진료 전 질문 추가 · 질문 주제와 내용 필요 · 우선순위 다음 진료`; screenshot `/tmp/carevault-surface9-iter2-question-label-fixed.png` captured the updated state.
+  - PASS: reloaded the same right pane; snapshot showed `진료 전 질문 추가 · 질문 주제와 내용 필요 · 우선순위 다음 진료` persisted after reload, screenshot `/tmp/carevault-surface9-iter2-reloaded.png`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug connection and HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/questionPriority.test.ts`, 7 tests.
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/questionPriority.ts src/questionPriority.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating only the port-1420 Vite node process.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `c5add99` (`Clarify empty question draft action`).
