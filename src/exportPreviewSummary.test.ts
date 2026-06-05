@@ -7,6 +7,7 @@ import {
   formatExportPreviewDisabledActionDescription,
   formatExportPreviewDownloadDescription,
   formatExportPreviewDownloadStatus,
+  formatExportPreviewFreshActionDescription,
   formatExportPreviewPrintDescription,
   formatExportPreviewPrintStatus,
 } from "./exportPreviewSummary";
@@ -108,6 +109,24 @@ describe("exportPreviewSummary", () => {
     );
     expect(formatExportPreviewDisabledActionDescription(actionDescription)).toBe(
       actionDescription,
+    );
+  });
+
+  it("keeps stale preview refresh labels scoped to preview type and changed state", () => {
+    expect(formatExportPreviewFreshActionDescription("caregiver-settings")).toBe(
+      "새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용",
+    );
+    expect(formatExportPreviewFreshActionDescription("caregiver-content")).toBe(
+      "새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용",
+    );
+    expect(formatExportPreviewFreshActionDescription("visit-range")).toBe(
+      "새 미리보기 생성 · 진료 요약 · 변경된 범위 적용",
+    );
+    expect(formatExportPreviewFreshActionDescription("visit-content")).toBe(
+      "새 미리보기 생성 · 진료 요약 · 변경된 기록 적용",
+    );
+    expect(formatExportPreviewFreshActionDescription("csv-content")).toBe(
+      "새 미리보기 생성 · CSV · 변경된 기록 적용",
     );
   });
 });

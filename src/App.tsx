@@ -272,6 +272,7 @@ import {
   formatExportPreviewDisabledActionDescription,
   formatExportPreviewDownloadDescription,
   formatExportPreviewDownloadStatus,
+  formatExportPreviewFreshActionDescription,
   formatExportPreviewPrintDescription,
   formatExportPreviewPrintStatus,
 } from "./exportPreviewSummary";
@@ -3268,15 +3269,19 @@ function App() {
   const visitPacketPreviewDescription = formatVisitPacketPreviewDescription(visitPacketRange);
   const csvExportDescription = formatCsvExportDescription(state);
   const csvPreviewDescription = formatCsvPreviewDescription(state);
-  const caregiverSettingsFreshPreviewDescription =
-    "새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용";
-  const caregiverContentFreshPreviewDescription =
-    "새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용";
-  const visitPacketRangeFreshPreviewDescription =
-    "새 미리보기 생성 · 진료 요약 · 변경된 범위 적용";
-  const visitPacketContentFreshPreviewDescription =
-    "새 미리보기 생성 · 진료 요약 · 변경된 기록 적용";
-  const csvFreshPreviewDescription = "새 미리보기 생성 · CSV · 변경된 기록 적용";
+  const caregiverSettingsFreshPreviewDescription = formatExportPreviewFreshActionDescription(
+    "caregiver-settings",
+  );
+  const caregiverContentFreshPreviewDescription = formatExportPreviewFreshActionDescription(
+    "caregiver-content",
+  );
+  const visitPacketRangeFreshPreviewDescription = formatExportPreviewFreshActionDescription(
+    "visit-range",
+  );
+  const visitPacketContentFreshPreviewDescription = formatExportPreviewFreshActionDescription(
+    "visit-content",
+  );
+  const csvFreshPreviewDescription = formatExportPreviewFreshActionDescription("csv-content");
   const caregiverPreviewSettingDifferences =
     exportPreviewHasStaleCaregiverSettings && exportPreview?.caregiverShareSettingsSnapshot
       ? buildCaregiverShareSettingsDifferences(

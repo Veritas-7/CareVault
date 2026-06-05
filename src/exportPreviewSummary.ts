@@ -9,7 +9,22 @@ export type ExportPreviewSummary = {
   sourceMarkerLabel: string;
 };
 
+export type ExportPreviewFreshActionReason =
+  | "caregiver-settings"
+  | "caregiver-content"
+  | "visit-range"
+  | "visit-content"
+  | "csv-content";
+
 const koreanNumberFormatter = new Intl.NumberFormat("ko-KR");
+
+const exportPreviewFreshActionDescriptions: Record<ExportPreviewFreshActionReason, string> = {
+  "caregiver-settings": "새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용",
+  "caregiver-content": "새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용",
+  "visit-range": "새 미리보기 생성 · 진료 요약 · 변경된 범위 적용",
+  "visit-content": "새 미리보기 생성 · 진료 요약 · 변경된 기록 적용",
+  "csv-content": "새 미리보기 생성 · CSV · 변경된 기록 적용",
+};
 
 function formatCount(value: number, unit: string) {
   return `${koreanNumberFormatter.format(value)}${unit}`;
@@ -55,6 +70,12 @@ export function formatExportPreviewDisabledActionDescription(
 ) {
   const trimmedReason = disabledReason?.trim();
   return trimmedReason ? `${actionDescription} · 비활성: ${trimmedReason}` : actionDescription;
+}
+
+export function formatExportPreviewFreshActionDescription(
+  reason: ExportPreviewFreshActionReason,
+) {
+  return exportPreviewFreshActionDescriptions[reason];
 }
 
 export function formatExportPreviewCopyStatus(format: string, summary: ExportPreviewSummary) {
