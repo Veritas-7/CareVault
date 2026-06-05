@@ -15322,7 +15322,7 @@
   - PASS: `git diff --check -- src/App.tsx src/entryValidation.ts src/entryValidation.test.ts DESIGN.md working.md`.
 - Cleanup:
   - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
-  - PENDING: commit and push.
+  - PASS: committed and pushed source to `origin/main` as `ed8ecc7` (`Clarify lab validation feedback`).
   - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/attachmentRecovery.ts src/attachmentRecovery.test.ts`.
   - PASS: Playwright seeded recovery smoke at 390x884.
     - `document.title`: `CareVault`.
