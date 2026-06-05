@@ -17004,3 +17004,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `55d416b` (`Clarify document draft attachment feedback`).
+
+## 2026-06-05 21:44 KST - Document Filter Reset Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires saved-document controls and status feedback to preserve the user's current filtering context instead of returning generic status text.
+  - Source audit found the reset button aria/title included search/category/status context, but the post-reset status still reported only `서류 필터 초기화됨`.
+- Change:
+  - Added `formatDocumentFilterResetStatusLabel()` in `src/documentFilterActions.ts`, sharing the same search/category/status context used by the reset action label.
+  - Updated `App.tsx` reset handling to capture the current search text, category, and review status before clearing the filters.
+  - Added focused tests for filtered and default reset status feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM/console/error first query set timed out.
+  - PASS after retry: `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/documentFilterActions.test.ts`, 7 tests.
+  - PASS: `npm run test`, 60 files and 468 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/documentFilterActions.ts src/documentFilterActions.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite `node` listener on port 1420 and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `4848f67` (`Clarify document filter reset feedback`).
