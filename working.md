@@ -14817,6 +14817,43 @@
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `50e7718` (`Guard restored document history timestamps`).
 
+## 2026-06-05 13:08 KST - Restored Caregiver Preset ID Guard Iteration Note
+
+- Improvement target:
+  - Caregiver-share settings normalized non-string preset IDs, but a restored unknown string such as a retired preset ID could survive hydration.
+  - That left the caregiver preset select carrying a value with no matching option while summary chips showed `직접 설정`.
+- Code/design changes:
+  - Updated `src/caregiverShareSettings.ts`.
+    - Added a static caregiver preset ID allow-list and routed restored `presetId` through it.
+    - Unknown restored preset IDs now become the direct-setting empty value while memo and section choices are preserved.
+  - Updated `src/caregiverShareSettings.test.ts`.
+    - Added RED/GREEN coverage for retired/unknown restored preset IDs and panel-summary fallback.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for unknown restored caregiver preset ID guarding.
+- Verification so far:
+  - PASS: RED baseline before implementation: `npm test -- src/caregiverShareSettings.test.ts` failed because `retired-preset` survived normalization.
+  - PASS: GREEN after implementation: `npm test -- src/caregiverShareSettings.test.ts`, 1 file and 20 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 390 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright unknown-caregiver-preset smoke at `http://127.0.0.1:1420/#dashboard`.
+    - `document.title`: `CareVault`.
+    - H1 count: 1; H1 text followed the restored profile name.
+    - Body client width and scroll width: 390 / 390.
+    - Restored `retired-preset` normalized to an empty preset select value.
+    - Caregiver memo stayed `진료 준비만 공유해주세요.` and the disabled documents section stayed disabled.
+    - Summary label showed `직접 설정`, profile visible, memo included, 6 included sections, and 1 excluded section.
+    - Page errors and console errors: none.
+  - PASS: Existing cmux right-side in-app browser in workspace `암관리` stayed on the existing CareVault tab and navigated in-place to `http://127.0.0.1:1420/#dashboard`.
+    - No new browser tab was opened.
+    - Caregiver preset control showed current preset unselected, and the caregiver settings summary showed direct setting, profile visible, memo included, 7 included sections, and no excluded sections in the live browser state.
+    - Dashboard metrics, caregiver-share controls, care queue, cervical-care note, and record panels were visible.
+  - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+
 ## 2026-06-05 12:50 KST - Restored Record Date Guard Iteration Note
 
 - Improvement target:

@@ -82,6 +82,13 @@ export const caregiverShareSectionOptions: CaregiverShareSectionOption[] = [
   { id: "vitals", label: "혈압·혈당·체온" },
 ];
 
+const caregiverSharePresetIds = [
+  "family-overview",
+  "meal-symptom",
+  "clinic-prep",
+  "privacy-minimal",
+] as const;
+
 export function createDefaultCaregiverShareSettings(): CaregiverShareSettings {
   return {
     coverMemo: "",
@@ -160,6 +167,11 @@ export function getCaregiverShareSettingsPreset(id: string) {
   return caregiverShareSettingPresets.find((preset) => preset.id === id);
 }
 
+function normalizeCaregiverSharePresetId(value: unknown) {
+  if (typeof value !== "string") return "";
+  return caregiverSharePresetIds.some((id) => id === value) ? value : "";
+}
+
 export function normalizeCaregiverShareSettings(
   input: CaregiverShareSettingsInput | undefined | unknown,
 ): CaregiverShareSettings {
@@ -168,7 +180,7 @@ export function normalizeCaregiverShareSettings(
 
   return {
     coverMemo: typeof settings.coverMemo === "string" ? settings.coverMemo : "",
-    presetId: typeof settings.presetId === "string" ? settings.presetId : "",
+    presetId: normalizeCaregiverSharePresetId(settings.presetId),
     redactProfile: settings.redactProfile === true,
     sections: Object.fromEntries(
       caregiverExportSectionIds.map((id) => [

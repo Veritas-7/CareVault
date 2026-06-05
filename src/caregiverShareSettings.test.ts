@@ -67,6 +67,26 @@ describe("caregiverShareSettings", () => {
     expect(Object.keys(settings.sections)).toEqual(Object.keys(caregiverExportSectionDefaults));
   });
 
+  it("drops unknown persisted preset ids so the select stays in a valid option state", () => {
+    const settings = normalizeCaregiverShareSettings({
+      coverMemo: "진료 준비만 공유해주세요.",
+      presetId: "retired-preset",
+      sections: {
+        documents: false,
+      },
+    });
+
+    expect(settings.presetId).toBe("");
+    expect(settings.coverMemo).toBe("진료 준비만 공유해주세요.");
+    expect(settings.sections.documents).toBe(false);
+    expect(buildCaregiverShareSettingsPanelSummary(settings).items[0]).toEqual({
+      id: "preset",
+      label: "의도",
+      title: "직접 설정",
+      value: "직접 설정",
+    });
+  });
+
   it("detects custom settings that can be reset", () => {
     expect(hasCustomCaregiverShareSettings(undefined)).toBe(false);
     expect(hasCustomCaregiverShareSettings({ coverMemo: "확인 부탁" })).toBe(true);
