@@ -15590,3 +15590,33 @@
   - PASS: `git diff --check -- README.md DESIGN.md package.json scripts/test_runtime_doctor.sh`.
   - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
   - PASS: committed and pushed to `origin/main` as `4e46100` (`Add runtime doctor fixture tests`); `git ls-remote origin refs/heads/main` returned `4e461005e8956176cf17695ac7c5d6d25a30b342`.
+
+## 2026-06-05 16:46 KST - Sidebar Hash Deep-Link Scroll
+
+- Improvement target:
+  - The existing cmux `암관리` browser pane was at `http://127.0.0.1:1420/#documents`, but direct hash-load evidence showed the app stayed at the top of the dashboard.
+  - Before fix: `location.hash` was `#documents`, `window.scrollY` was `0`, and the `#documents` section was about `15980px` below the viewport.
+- Change:
+  - Moved sidebar hash parsing into `src/sidebarNavigation.ts`.
+  - Added `src/sidebarNavigation.test.ts` coverage for recognized sidebar hashes, unknown hash rejection, and active-section fallback.
+  - Updated `src/App.tsx` so recognized hash targets scroll after React render and re-scroll after persisted-state hydration changes section layout.
+  - Updated `DESIGN.md` with the deep-link behavior.
+- Real-browser verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: after navigating the same surface to `http://127.0.0.1:1420/#documents`, cmux DOM evidence returned `hash:"#documents"`, `scrollY:15917`, `documentsTop:63`, and active nav `서류 보관`.
+  - PASS: visible text at the viewport started with `일자별 서류 수기 보관`, proving the documents section was actually visible.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - NOTE: a temporary cmux state-save diagnostic file was removed immediately because browser state exports can contain cookies; do not use state-save output for CareVault QA evidence.
+- Automated verification:
+  - PASS: `npm run test -- src/sidebarNavigation.test.ts`.
+  - PASS: `npm run test`, 57 files and 413 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/sidebarNavigation.ts src/sidebarNavigation.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: committed and pushed to `origin/main` as `7a42f51` (`Fix sidebar hash deep links`); `git ls-remote origin refs/heads/main` returned `7a42f51cdbde685f64912f22e4a87f68d53921a9`.
