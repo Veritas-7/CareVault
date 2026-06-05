@@ -16539,3 +16539,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `690f06a` (`Clarify saved question update feedback`).
+
+## 2026-06-05 20:16 KST - Question Added Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` asks for exact Korean status feedback and saved-question flows that preserve topic, priority, and status context.
+  - Source audit found the question-add button label had priority scope, but the successful add feedback still only said `질문 추가됨`, making repeated question entry less auditable after autosave.
+- Change:
+  - Added `formatQuestionDraftAddedStatus()` in `src/questionPriority.ts` with topic, priority, blank-topic fallback, and `질문` suffix de-duplication.
+  - Updated `App.tsx` question add success feedback to reuse the shared formatter.
+  - Added focused tests for topic-specific high/next-visit/routine add feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, empty `title`, `.app-shell` count `0`, question-add status text absent, and empty body text.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/questionPriority.test.ts`, 7 tests.
+  - PASS: `npm run test`, 60 files and 446 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/questionPriority.ts src/questionPriority.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `9228b3c` (`Clarify question added feedback`).
