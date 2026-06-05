@@ -807,6 +807,7 @@ function App() {
     labId: string;
     message: string;
   } | null>(null);
+  const [careActionQueueFeedback, setCareActionQueueFeedback] = useState<string | null>(null);
   const [documentActionFeedback, setDocumentActionFeedback] = useState<{
     documentId: string;
     message: string;
@@ -2957,14 +2958,23 @@ function App() {
 
   const copyCareActionQueue = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel(formatCareActionQueueCopyUnsupportedStatus(careActions));
+      const feedback = formatCareActionQueueCopyUnsupportedStatus(careActions);
+      setCareActionQueueFeedback(feedback);
+      setSaveLabel(feedback);
       return;
     }
 
     navigator.clipboard
       .writeText(formatCareActionQueueClipboardText(careActions, today))
-      .then(() => setTransientSaveLabel(careActionQueueCopyStatus))
-      .catch(() => setSaveLabel(formatCareActionQueueCopyFailedStatus(careActions)));
+      .then(() => {
+        setCareActionQueueFeedback(careActionQueueCopyStatus);
+        setTransientSaveLabel(careActionQueueCopyStatus);
+      })
+      .catch(() => {
+        const feedback = formatCareActionQueueCopyFailedStatus(careActions);
+        setCareActionQueueFeedback(feedback);
+        setSaveLabel(feedback);
+      });
   };
 
   const copyHealthStandards = () => {
@@ -4148,6 +4158,11 @@ function App() {
               </button>
             </div>
           </div>
+          {careActionQueueFeedback ? (
+            <div className="action-queue-feedback" role="status">
+              {careActionQueueFeedback}
+            </div>
+          ) : null}
           <div className="action-queue-summary" aria-label={careActionQueuePanelSummary.ariaLabel}>
             {careActionQueuePanelSummary.items.map((item) => (
               <span className={`action-queue-summary-chip summary-${item.id}`} key={item.id}>

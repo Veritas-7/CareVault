@@ -3867,6 +3867,7 @@ textarea:focus-visible {
   background: #ffe1db;
 }
 
+.action-queue-feedback,
 .document-action-feedback,
 .question-action-feedback {
   width: 100%;
