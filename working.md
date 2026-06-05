@@ -14283,3 +14283,32 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - PASS: committed and pushed to `origin/main` as `eebd559` (`Guard export preview copy support`).
+
+## 2026-06-05 11:08 KST - SQLite App State Table Initialization Iteration Note
+
+- Improvement target:
+  - A persistence code read found that `loadPersistedState()` selects from `app_state` and `savePersistedState()` inserts into `app_state`, but `storage.ts` did not create that table.
+  - In a first-run Tauri SQLite environment, the app could fail before hydration or first save if the DB existed but `app_state` did not.
+- Code/design changes:
+  - Updated `src/storage.ts`.
+    - Added the `CREATE TABLE IF NOT EXISTS app_state` statement for `key`, `value`, and `updated_at`.
+    - Added `ensureAppStateTable()` and called it before SQLite load and save.
+    - Exported `buildAppStateTableStatement()` so the schema contract is testable.
+  - Updated `src/storage.test.ts`.
+    - Added a schema contract test for the main app state table.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for first-run SQLite app-state table initialization.
+- Verification so far:
+  - PASS: `npm test -- storage`, 1 file and 5 tests.
+  - PASS: Playwright app-load smoke at `http://127.0.0.1:1420/`.
+    - Title: `CareVault`.
+    - `나의 건강 기록` H1 count: 1.
+    - Page errors: 0; console errors: 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
+  - PASS: `npm run test`, 54 files and 370 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - Pending: commit and push.

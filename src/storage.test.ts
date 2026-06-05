@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildAppStateTableStatement,
   buildNormalizedMirrorStatements,
   buildNormalizedSearchStatements,
   buildSqlLikePattern,
@@ -175,6 +176,15 @@ describe("storage normalized mirror", () => {
   it("builds escaped SQLite LIKE patterns", () => {
     expect(buildSqlLikePattern(" WBC_100% ")).toBe("%WBC\\_100\\%%");
     expect(buildSqlLikePattern("")).toBeNull();
+  });
+
+  it("builds the main app state table before SQLite load/save", () => {
+    const statement = buildAppStateTableStatement();
+
+    expect(statement.query).toContain("CREATE TABLE IF NOT EXISTS app_state");
+    expect(statement.query).toContain("key TEXT PRIMARY KEY NOT NULL");
+    expect(statement.query).toContain("value TEXT NOT NULL");
+    expect(statement.query).toContain("updated_at TEXT NOT NULL");
   });
 
   it("builds normalized search count statements", () => {

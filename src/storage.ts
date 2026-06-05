@@ -171,6 +171,14 @@ export type NormalizedSearchStatement = SqlStatement & {
 
 let dbPromise: Promise<SqlDatabase | null> | null = null;
 
+const appStateTableStatement: SqlStatement = {
+  query: `CREATE TABLE IF NOT EXISTS app_state (
+    key TEXT PRIMARY KEY NOT NULL,
+    value TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`,
+};
+
 function canUseLocalStorage() {
   try {
     return typeof window !== "undefined" && "localStorage" in window;
@@ -194,6 +202,10 @@ async function getDatabase() {
       .catch(() => null);
   }
   return dbPromise;
+}
+
+export function buildAppStateTableStatement(): SqlStatement {
+  return appStateTableStatement;
 }
 
 const normalizedTableStatements: SqlStatement[] = [
@@ -818,6 +830,10 @@ async function ensureQuestionColumns(db: SqlDatabase) {
   }
 }
 
+async function ensureAppStateTable(db: SqlDatabase) {
+  await db.execute(appStateTableStatement.query, appStateTableStatement.bindValues);
+}
+
 async function mirrorNormalizedState(
   db: SqlDatabase,
   mirror: NormalizedCareVaultMirror,
@@ -968,6 +984,7 @@ export async function loadPersistedState<T>(fallback: T): Promise<PersistedState
   const db = await getDatabase();
   if (!db) return loadFromLocalStorage(fallback);
 
+  await ensureAppStateTable(db);
   const rows = (await db.select("SELECT value FROM app_state WHERE key = $1 LIMIT 1", [
     SQL_STATE_KEY,
   ])) as Array<{ value: string }>;
@@ -992,6 +1009,7 @@ export async function savePersistedState<T>(
   const db = await getDatabase();
   if (db) {
     const updatedAt = new Date().toISOString();
+    await ensureAppStateTable(db);
     await db.execute(
       `INSERT INTO app_state (key, value, updated_at)
        VALUES ($1, $2, $3)
