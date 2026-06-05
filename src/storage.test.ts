@@ -9,6 +9,7 @@ import {
   type NormalizedCareVaultMirror,
   parseSqlCount,
   parseSqlCountRow,
+  sqlColumnExists,
 } from "./storage";
 
 afterEach(() => {
@@ -241,6 +242,16 @@ describe("storage normalized mirror", () => {
     expect(parseSqlCountRow({ count: 4 })).toBe(0);
     expect(parseSqlCountRow(["bad-row"])).toBe(0);
     expect(parseSqlCountRow([[{ count: 9 }]])).toBe(0);
+  });
+
+  it("checks SQLite schema columns defensively", () => {
+    expect(sqlColumnExists([{ name: "waist_cm" }], "waist_cm")).toBe(true);
+    expect(sqlColumnExists([{ name: "temperature_c" }], "waist_cm")).toBe(false);
+    expect(sqlColumnExists([], "waist_cm")).toBe(false);
+    expect(sqlColumnExists(null, "waist_cm")).toBe(false);
+    expect(sqlColumnExists({ name: "waist_cm" }, "waist_cm")).toBe(false);
+    expect(sqlColumnExists(["bad-row"], "waist_cm")).toBe(false);
+    expect(sqlColumnExists([[{ name: "waist_cm" }]], "waist_cm")).toBe(false);
   });
 
   it("builds escaped SQLite LIKE patterns", () => {

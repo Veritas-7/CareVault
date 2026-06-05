@@ -14629,4 +14629,35 @@
   - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `d966f9b` (`Guard SQLite count rows`).
+
+## 2026-06-05 12:03 KST - SQLite Schema Row Shape Guard Iteration Note
+
+- Improvement target:
+  - After guarding normalized count rows, the adjacent SQLite migration path still cast `PRAGMA table_info(...)` results to arrays and called `.some()` directly.
+  - A malformed plugin or compatibility result container could break normalized mirror table migration before the app could save/load via SQLite.
+- Code/design changes:
+  - Updated `src/storage.ts`.
+    - Added guarded SQLite row-list parsing shared by first-row and column checks.
+    - Added exported `sqlColumnExists()` and routed profile, vital, and question schema migration checks through it.
+  - Updated `src/storage.test.ts`.
+    - Added regression coverage for schema-column checks against valid rows plus empty, null, plain-object, string-row, and nested-array malformed results.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for SQLite schema column check fallback.
+- Verification so far:
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: `npm test -- storage`, 1 file and 10 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright app-load smoke at 390x884.
+    - `document.title`: `CareVault`.
+    - `나의 건강 기록` H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - Browser storage text and `검사 수치 입력` heading visible.
+    - Page errors: 0; console errors: 0.
+  - PASS: existing cmux `암관리` right-side in-app browser stayed on the existing CareVault pane at `http://127.0.0.1:1420/#labs` with the H1, browser storage label, dashboard, records, labs, nutrition, and document controls visible.
+  - PASS: `npm run test`, 55 files and 378 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
+  - PASS: stopped the local Vite dev server before staging.

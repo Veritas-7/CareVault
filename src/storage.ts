@@ -382,15 +382,24 @@ export function parseSqlCount(value: unknown) {
   return 0;
 }
 
-function readFirstSqlRow(rows: unknown) {
+function readSqlRows(rows: unknown) {
   if (!Array.isArray(rows)) return undefined;
-  const firstRow = rows[0];
-  if (!firstRow || typeof firstRow !== "object" || Array.isArray(firstRow)) return undefined;
-  return firstRow as Record<string, unknown>;
+  return rows.filter(
+    (row): row is Record<string, unknown> =>
+      Boolean(row) && typeof row === "object" && !Array.isArray(row),
+  );
+}
+
+function readFirstSqlRow(rows: unknown) {
+  return readSqlRows(rows)?.[0];
 }
 
 export function parseSqlCountRow(rows: unknown) {
   return parseSqlCount(readFirstSqlRow(rows)?.count);
+}
+
+export function sqlColumnExists(rows: unknown, columnName: string) {
+  return readSqlRows(rows)?.some((row) => row.name === columnName) ?? false;
 }
 
 export function buildSqlLikePattern(input: string) {
@@ -827,30 +836,30 @@ async function ensureNormalizedTables(db: SqlDatabase) {
 }
 
 async function ensureProfileSnapshotColumns(db: SqlDatabase) {
-  const rows = (await db.select("PRAGMA table_info(profile_snapshot)")) as Array<{
-    name?: unknown;
-  }>;
-  const hasWaistColumn = rows.some((row) => row.name === "waist_cm");
+  const hasWaistColumn = sqlColumnExists(
+    await db.select("PRAGMA table_info(profile_snapshot)"),
+    "waist_cm",
+  );
   if (!hasWaistColumn) {
     await db.execute("ALTER TABLE profile_snapshot ADD COLUMN waist_cm TEXT NOT NULL DEFAULT ''");
   }
 }
 
 async function ensureVitalColumns(db: SqlDatabase) {
-  const rows = (await db.select("PRAGMA table_info(vitals)")) as Array<{
-    name?: unknown;
-  }>;
-  const hasTemperatureColumn = rows.some((row) => row.name === "temperature_c");
+  const hasTemperatureColumn = sqlColumnExists(
+    await db.select("PRAGMA table_info(vitals)"),
+    "temperature_c",
+  );
   if (!hasTemperatureColumn) {
     await db.execute("ALTER TABLE vitals ADD COLUMN temperature_c REAL");
   }
 }
 
 async function ensureQuestionColumns(db: SqlDatabase) {
-  const rows = (await db.select("PRAGMA table_info(questions)")) as Array<{
-    name?: unknown;
-  }>;
-  const hasPriorityColumn = rows.some((row) => row.name === "priority");
+  const hasPriorityColumn = sqlColumnExists(
+    await db.select("PRAGMA table_info(questions)"),
+    "priority",
+  );
   if (!hasPriorityColumn) {
     await db.execute(
       "ALTER TABLE questions ADD COLUMN priority TEXT NOT NULL DEFAULT 'next-visit'",
