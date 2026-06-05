@@ -2318,9 +2318,12 @@ function App() {
 
   const previewDocumentAttachment = async (document: CareDocument) => {
     if (!document.attachmentName || !isPreviewableImageAttachment(document.attachmentName)) {
-      setSaveLabel(
-        formatDocumentAttachmentPreviewUnavailableStatusLabel(document, "이미지 첨부 아님"),
+      const feedback = formatDocumentAttachmentPreviewUnavailableStatusLabel(
+        document,
+        "이미지 첨부 아님",
       );
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setSaveLabel(feedback);
       return;
     }
 
@@ -2333,17 +2336,19 @@ function App() {
         previewUrl: browserPreviewUrl,
         sourceLabel: "브라우저 세션 미리보기",
       });
-      setSaveLabel(formatDocumentAttachmentPreviewOpenedStatusLabel(document));
+      const feedback = formatDocumentAttachmentPreviewOpenedStatusLabel(document);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setSaveLabel(feedback);
       return;
     }
 
     if (!document.attachmentPath || !canUseTauriRuntime()) {
-      setSaveLabel(
-        formatDocumentAttachmentPreviewUnavailableStatusLabel(
-          document,
-          "저장된 경로 또는 데스크톱 런타임 필요",
-        ),
+      const feedback = formatDocumentAttachmentPreviewUnavailableStatusLabel(
+        document,
+        "저장된 경로 또는 데스크톱 런타임 필요",
       );
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setSaveLabel(feedback);
       return;
     }
 
@@ -2366,6 +2371,7 @@ function App() {
           recovery.historyDetail,
           recovery.historyLabel,
         );
+        setDocumentActionFeedback({ documentId: document.id, message: recovery.status });
         setActionSaveLabel(recovery.status);
         return;
       }
@@ -2377,6 +2383,7 @@ function App() {
         previewUrl: result.previewUrl,
         sourceLabel: result.sourceLabel,
       });
+      setDocumentActionFeedback({ documentId: document.id, message: result.statusLabel });
       setSaveLabel(result.statusLabel);
     } catch (error) {
       console.error("Document attachment preview failed", error);
@@ -2387,6 +2394,7 @@ function App() {
         recovery.historyDetail,
         recovery.historyLabel,
       );
+      setDocumentActionFeedback({ documentId: document.id, message: recovery.status });
       setActionSaveLabel(recovery.status);
     }
   };
