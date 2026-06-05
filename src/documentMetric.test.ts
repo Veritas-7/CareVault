@@ -64,8 +64,8 @@ describe("documentMetric", () => {
         { id: "total", label: "전체", value: "0개" },
         { id: "empty", label: "상태", value: "서류 없음" },
         { id: "open-next-action", label: "열린 조치", value: "없음" },
-        { id: "recovery", label: "첨부 복구", value: "없음" },
-        { id: "deleted", label: "삭제 보관", value: "없음" },
+        { id: "recovery-none", label: "첨부 복구", value: "없음" },
+        { id: "deleted-none", label: "삭제 보관", value: "없음" },
       ],
       needsReviewCount: 0,
       openNextActionCount: 0,
@@ -73,5 +73,32 @@ describe("documentMetric", () => {
       totalCount: 0,
       waitingResultCount: 0,
     });
+  });
+
+  it("keeps zero-count recovery and archive chips visually neutral", () => {
+    expect(
+      buildDocumentPanelSummary(
+        [
+          {
+            attachmentStatus: "브라우저 파일명 참조",
+            nextAction: "다음 진료 때 질문",
+            reviewStatus: "care-question",
+          },
+        ],
+        [],
+      ).items,
+    ).toContainEqual({ id: "recovery-none", label: "첨부 복구", value: "없음" });
+    expect(
+      buildDocumentPanelSummary(
+        [
+          {
+            attachmentStatus: "브라우저 파일명 참조",
+            nextAction: "다음 진료 때 질문",
+            reviewStatus: "care-question",
+          },
+        ],
+        [],
+      ).items,
+    ).toContainEqual({ id: "deleted-none", label: "삭제 보관", value: "없음" });
   });
 });

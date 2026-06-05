@@ -70,12 +70,12 @@ export function buildDocumentPanelSummary(
       value: openNextActionCount ? `${openNextActionCount}개` : "없음",
     },
     {
-      id: "recovery",
+      id: recoveryCount ? "recovery" : "recovery-none",
       label: "첨부 복구",
       value: recoveryCount ? `${recoveryCount}개` : "없음",
     },
     {
-      id: "deleted",
+      id: deletedCount ? "deleted" : "deleted-none",
       label: "삭제 보관",
       value: deletedCount ? `${deletedCount}개` : "없음",
     },
