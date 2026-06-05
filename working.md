@@ -16416,3 +16416,33 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `26cb027` (`Cover stale preview fresh action labels`).
+
+## 2026-06-05 20:00 KST - Question Draft Add Action Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires repeated form actions to expose scoped accessible labels and matching hover titles when visible labels can repeat elsewhere.
+  - Source audit found the `질문 추가` primary action already included the selected priority in `aria-label`/title, but the sentence was built inline in `App.tsx` and lacked focused regression coverage for the priority-specific wording.
+- Change:
+  - Added `formatQuestionDraftAddActionLabel()` in `src/questionPriority.ts`.
+  - Updated `App.tsx` to use the shared question-draft add action label for both `aria-label` and `title`.
+  - Added focused tests for high, next-visit, and routine question-draft add action labels.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document. DOM eval timed out waiting for JavaScript result, and `cmux browser surface:9 console list` plus `cmux browser surface:9 errors list` timed out.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/questionPriority.test.ts`, 4 tests.
+  - PASS: `npm run test`, 60 files and 440 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/questionPriority.ts src/questionPriority.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `a9e1084` (`Cover question draft add action label`).
