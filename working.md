@@ -17892,3 +17892,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `bceba09` (`Show lab question local feedback`).
+
+## 2026-06-06 01:09 KST - Document Attachment Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires immediate status feedback near the affected action and saved-document row actions to expose document-specific context.
+  - Real cmux QA found the saved-document `첨부 확인` action only updated the offscreen top status chip with generic `파일명 참조만 저장됨`; the document row had no local `role=status` confirmation and the feedback did not name the target document.
+- Change:
+  - Added `formatDocumentAttachmentCheckedStatusLabel()` in `src/documentActionLabels.ts`.
+  - Updated `checkDocumentAttachment()` in `src/App.tsx` to use document-specific status feedback for file-name-only and checked attachments.
+  - Added document action local feedback state and rendered `.document-action-feedback` beside saved-document row actions.
+  - Added compact local status styling in `src/App.css` and regression coverage in `src/documentActionLabels.test.ts`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `working.md` and the right pane was Worklog, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#documents`, then the existing surface was used for saved-document attachment checks.
+  - RED/IMPROVEMENT: clicked `혈액검사 메모 검사 서류 첨부 확인`; the only action feedback was an offscreen global status `파일명 참조만 저장됨`, with no nearby document-row status. Screenshot `/tmp/carevault-surface9-iter15-document-attachment-local-feedback-red.png` captured the missing local feedback.
+  - PASS after fix: reloaded the same `surface:9`, clicked the same attachment check action, and a nearby local `role=status` row appeared with `혈액검사 메모 검사 서류 첨부는 파일명 참조만 저장됨 · 현재 첨부 icon.png`. Screenshot `/tmp/carevault-surface9-iter15-document-attachment-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: restored the dev-browser localStorage saved document attachment status to `브라우저 파일명 참조`, removed test `파일명 참조만 저장됨` history entries, reloaded, and verified no `.document-action-feedback` remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/documentActionLabels.test.ts`, 16 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css src/documentActionLabels.ts src/documentActionLabels.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `60fbdf8` (`Show document attachment local feedback`).
