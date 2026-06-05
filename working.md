@@ -16109,3 +16109,33 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `9fd3506` (`Cover cervical side list labels`); `git ls-remote origin refs/heads/main` returned `9fd350683da555b4cf98e75c12a22f9856e881ac`.
+
+## 2026-06-05 19:05 KST - Cervical Draft Action Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` asks cervical symptom/question draft buttons to expose item-specific accessible names and hover titles instead of generic visible labels.
+  - Source audit found alert, prompt, and side-list record-draft button labels were correct but built inline in `App.tsx`, leaving those item-specific `aria-label`/`title` sentences without focused regression coverage.
+- Change:
+  - Added `formatCervicalCancerCareAlertDraftActionLabel()`, `formatCervicalCancerCarePromptDraftActionLabel()`, and `formatCervicalCancerCareItemDraftActionLabel()` in `src/cervicalCancerCare.ts`.
+  - Updated `App.tsx` cervical alert, prompt, and side-list draft buttons to use the shared helpers for both `aria-label` and `title`.
+  - Added focused tests for each draft-button label type.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - BLOCKED: same-surface navigation to `http://127.0.0.1:1420/` returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, `.app-shell` count `0`, cervical draft button count `0`, cervical alert button count `0`, and empty body text, while `curl -I` returned HTTP `200`.
+  - PASS: `cmux browser surface:9 console` returned `No console entries` and `cmux browser surface:9 errors` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/cervicalCancerCare.test.ts`, 24 tests.
+  - PASS: `npm run test`, 60 files and 432 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/cervicalCancerCare.ts src/cervicalCancerCare.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `1f1849b` (`Cover cervical draft action labels`); `git ls-remote origin refs/heads/main` returned `1f1849b42b4b1f36688e04f93cab8f5d88e585f4`.
