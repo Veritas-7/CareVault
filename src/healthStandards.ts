@@ -1341,6 +1341,21 @@ export function formatVitalStandardQuestionDraftActionLabel(measurementLabel: st
   return `${normalizedLabel} 기준 진료 질문 초안 만들기`;
 }
 
+export function formatVitalStandardQuestionDraftStatusLabel(
+  input: VitalStandardQuestionDraftInput,
+) {
+  const standard = getHealthStandardCoverage(input.standardId);
+  const measurementLabel = input.measurementLabel.trim() || "활력 기록";
+  const assessmentLabel = input.assessmentLabel.trim() || "판정 미확인";
+  if (!standard) {
+    return `활력 기준 질문 초안 준비 실패 · ${measurementLabel} · 판정 ${assessmentLabel} · 기준 ${input.standardId || "미확인"}`;
+  }
+
+  return `활력 기준 질문 초안 준비됨 · ${measurementLabel} · 판정 ${assessmentLabel} · 기준 ${formatVitalStandardQuestionDraftStandardText(
+    standard,
+  )} · 근거 ${standard.sourceLabel}`;
+}
+
 function formatVitalStandardQuestionDraftTopic(standardId: string) {
   if (standardId === "infection-fever") return "체온·감염 기준 확인";
   return standardId.includes("blood-pressure") ? "혈압 기준 확인" : "혈당 기준 확인";

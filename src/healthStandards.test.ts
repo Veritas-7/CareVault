@@ -30,6 +30,7 @@ import {
   formatVitalInputStandardHelp,
   formatVitalSavePreviewLabel,
   formatVitalStandardQuestionDraftActionLabel,
+  formatVitalStandardQuestionDraftStatusLabel,
   getHealthStandardCoverage,
   getImplementedStandardCount,
   healthStandardRangeFilterOptions,
@@ -687,6 +688,27 @@ describe("healthStandards", () => {
     expect(formatVitalStandardQuestionDraftActionLabel("")).toBe(
       "활력 기준 진료 질문 초안 만들기",
     );
+  });
+
+  it("formats vital standard question draft statuses with measurement and standard context", () => {
+    expect(
+      formatVitalStandardQuestionDraftStatusLabel({
+        assessmentLabel: "고혈압 위기 가능 범위",
+        assessmentSummary: "즉시 재측정 후 진료팀 연락 기준을 확인해야 합니다.",
+        measurementLabel: "혈압 182/121 mmHg",
+        standardId: "blood-pressure",
+      }),
+    ).toBe(
+      "활력 기준 질문 초안 준비됨 · 혈압 182/121 mmHg · 판정 고혈압 위기 가능 범위 · 기준 성인 남녀 공통 한국 성인 혈압 기준 · 근거 질병관리청 국가건강정보포털 고혈압",
+    );
+    expect(
+      formatVitalStandardQuestionDraftStatusLabel({
+        assessmentLabel: "정보 부족",
+        assessmentSummary: "기준 없음",
+        measurementLabel: "혈당 0 mg/dL",
+        standardId: "unknown",
+      }),
+    ).toBe("활력 기준 질문 초안 준비 실패 · 혈당 0 mg/dL · 판정 정보 부족 · 기준 unknown");
   });
 
   it("builds source-backed clinician question drafts from vital input standards", () => {

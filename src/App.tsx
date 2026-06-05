@@ -85,6 +85,7 @@ import {
   formatVitalInputStandardHelp,
   formatVitalSavePreviewLabel,
   formatVitalStandardQuestionDraftActionLabel,
+  formatVitalStandardQuestionDraftStatusLabel,
   getHealthStandardCoverage,
   healthStandardStatusLabel,
   healthStandardRangeFilterOptions,
@@ -1749,16 +1750,17 @@ function App() {
         : vitalDraft.type === "temperature"
           ? `체온 ${validation.values.temperatureC}℃`
           : `혈당 ${validation.values.glucoseMgDl} mg/dL (${vitalQuestionGlucoseContextLabel[glucoseContext]})`;
-    const draft = buildVitalStandardQuestionDraft({
+    const draftInput = {
       assessmentLabel: assessment.label,
       assessmentSummary: assessment.summary,
       measurementLabel,
       note: vitalDraft.note,
       standardId: vitalDraftStandardId,
-    });
+    };
+    const draft = buildVitalStandardQuestionDraft(draftInput);
 
     if (!draft) {
-      setSaveLabel("혈압·혈당·체온 기준 질문 초안을 만들 수 없습니다.");
+      setSaveLabel(formatVitalStandardQuestionDraftStatusLabel(draftInput));
       return;
     }
 
@@ -1771,7 +1773,7 @@ function App() {
       topic: draft.topic,
     }));
     clearRecordFormValidationFeedback("vital");
-    setSaveLabel(`${vitalTypeLabel[vitalDraft.type]} 기준 질문 초안 준비됨`);
+    setSaveLabel(formatVitalStandardQuestionDraftStatusLabel(draftInput));
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
