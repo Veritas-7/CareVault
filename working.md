@@ -15674,3 +15674,29 @@
   - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: committed and pushed to `origin/main` as `fa81466` (`Fix native select hit targets`); `git ls-remote origin refs/heads/main` returned `fa8146662e97786c907a8de1daa457c7fa598a89`.
+
+## 2026-06-05 17:09 KST - Source Evidence Link Target Height
+
+- Improvement target:
+  - A live DOM audit in the existing cmux `암관리` browser pane found the saved-lab official source link `서울아산병원 전혈구검사 참고치` rendered as a 16px text-only target.
+  - `DESIGN.md` already requires source links to stay right-pane-friendly at 28px on desktop and 44px on mobile.
+- Change:
+  - Added desktop `min-height: 28px` to compact metric, timeline, lab, and question source-evidence links.
+  - Updated `DESIGN.md` with the source-evidence link target-height changelog entry.
+- Real-browser verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: after navigating the same surface to `http://127.0.0.1:1420/#labs`, `.lab-source-evidence a` measured `height:28` and `computedMinHeight:"28px"`.
+  - PASS: related `.metric-source-evidence a` measured `height:28`; timeline source evidence measured `height:32`; all reported computed min-height `28px`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+- Automated verification:
+  - PASS: `npm run test`, 57 files and 414 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: committed and pushed to `origin/main` as `7d8d194` (`Raise source evidence link targets`); `git ls-remote origin refs/heads/main` returned `7d8d194e6e0f46fdf928ef6dbefea7eb22d040ac`.
