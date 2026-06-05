@@ -15824,3 +15824,35 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `e37b102` (`Raise profile mode toggle targets`); `git ls-remote origin refs/heads/main` returned `e37b102898342504c064eeb5175d5f9fd183e1a8`.
+
+## 2026-06-05 17:54 KST - Sidebar Page-Flow Order
+
+- Improvement target:
+  - Section position audit showed actual page order was `dashboard -> records -> care-plan -> labs -> nutrition -> documents`.
+  - Sidebar/tracking order still placed `nutrition` before `care-plan` and `labs`, so the visible next nav item did not consistently move farther down the page.
+- Change:
+  - Reordered `sidebarSectionIds` to match actual DOM scroll flow.
+  - Reordered the visible sidebar links so `증상·질문` and `검사 수치` appear before `음식 판단`.
+  - Added regression coverage for the sidebar tracking order.
+  - Updated `DESIGN.md` so sidebar order is explicitly tied to real page flow.
+- Real-browser/runtime verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: before fix, live position audit showed `nutrition` top after `labs` despite appearing before it in the sidebar.
+  - PASS: after fix, live sidebar order was `대시보드`, `입력 기록`, `증상·질문`, `검사 수치`, `음식 판단`, `서류 보관`, with section document positions increasing in the same order.
+  - PASS: clicked `검사 수치`, which moved to `#labs` at `scrollY:14821` with active `검사 수치`.
+  - PASS: clicked the next sidebar item `음식 판단`, which moved downward to `#nutrition` at `scrollY:15476` with active `음식 판단`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+- Automated verification:
+  - PASS: `npm run test -- src/sidebarNavigation.test.ts`, 4 tests.
+  - PASS: `npm run test`, 58 files and 420 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/sidebarNavigation.ts src/sidebarNavigation.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `0f73f96` (`Align sidebar order with page flow`); `git ls-remote origin refs/heads/main` returned `0f73f96cc263bdb9aef6b7c65e988efedcb279df`.
