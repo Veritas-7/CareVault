@@ -17556,3 +17556,36 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `d40387b` (`Clarify attachment preview unavailable action`).
+
+## 2026-06-05 23:41 KST - Responsive Sticky Navigation cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires sticky desktop navigation, destination-specific sidebar labels, and current click/hash/scroll-backed section state with `aria-current="page"` plus visible active state.
+  - Real cmux QA found that `aria-current="page"` correctly followed `#documents`, but in the constrained right cmux pane the `max-width: 1120px` breakpoint made `.sidebar` static. After long scrolling to documents, every nav link was off-screen at about y=-15638, so the current section was not visible.
+- Change:
+  - Kept `.sidebar` sticky at the `max-width: 1120px` breakpoint instead of making it static.
+  - Converted the constrained breakpoint sidebar into a compact sticky brand-plus-nav bar with 66px height, hidden privacy note, and visible active section.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use showed the active cmux workspace had returned to `블로그`/WriteFlow, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was the `CareVault` browser tab at `http://127.0.0.1:1420/#documents`.
+  - RED/IMPROVEMENT: screenshot `/tmp/carevault-surface9-iter5-nav-documents.png` showed the document section but no visible nav; DOM eval still showed `서류 보관` had `aria-current="page"` while all nav link rects were off-screen.
+  - PASS after first fix: `.sidebar` became `position: sticky`, but screenshot `/tmp/carevault-surface9-iter5-sticky-nav-applied.png` showed the sticky header was 211px tall and covered too much task content.
+  - PASS after compact fix: DOM eval showed `.sidebar` as `position: sticky`, `display: grid`, height 66px, y=0, hidden privacy note, and `서류 보관` active at y=12 with 42px height. Screenshot `/tmp/carevault-surface9-iter5-sticky-nav-compact-applied.png` captured the compact sticky nav.
+  - PASS: clicked `검사 수치` in the same right pane; hash changed to `#labs`, scrollY updated, active link changed to `검사 수치`, and sticky bar stayed y=0/height 66. Screenshot `/tmp/carevault-surface9-iter5-sticky-nav-labs-click.png` captured the click result.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug/HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `c4ab8f0` (`Keep responsive navigation sticky`).
