@@ -2771,6 +2771,7 @@ textarea:focus-visible {
 }
 
 .metric-source-evidence a {
+  min-height: 28px;
   text-decoration: none;
 }
 
@@ -3228,6 +3229,7 @@ textarea:focus-visible {
 }
 
 .timeline-source-evidence a {
+  min-height: 28px;
   text-decoration: none;
 }
 
@@ -4088,6 +4090,7 @@ textarea:focus-visible {
 }
 
 .lab-source-evidence a {
+  min-height: 28px;
   text-decoration: none;
 }
 
@@ -4181,6 +4184,7 @@ textarea:focus-visible {
 }
 
 .question-source-evidence a {
+  min-height: 28px;
   text-decoration: none;
 }
 

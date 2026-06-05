@@ -707,6 +707,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Fixed sidebar hash deep links so direct URLs such as `#documents` scroll to the intended section after React render and persisted-state hydration, with the active nav state kept in sync.
 - 2026-06-05: Made saved-document summary chips keep zero-count `첨부 복구 없음` and `삭제 보관 없음` states visually neutral so only real recovery or archive counts receive warning/archive emphasis.
 - 2026-06-05: Gave native select controls explicit desktop and mobile heights so WKWebView keeps document form, filter, and update selects aligned with neighboring input hit targets.
+- 2026-06-05: Raised compact metric, timeline, lab, and question source-evidence links to the 28px right-pane target height so saved lab source links no longer render as 16px text-only targets.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.
