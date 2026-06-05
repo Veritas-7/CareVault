@@ -191,6 +191,7 @@ import {
   defaultSidebarSectionId,
   getSidebarHashSectionId,
   normalizeSidebarSectionHash,
+  sidebarNavigationItems,
   sidebarSectionIds,
   type SidebarSectionId,
 } from "./sidebarNavigation";
@@ -689,6 +690,15 @@ function renderMetricStandardEvidence(evidence: DashboardMetricStandardEvidence 
     </small>
   );
 }
+
+const sidebarNavigationIcon = {
+  dashboard: LineChartIcon,
+  records: ClipboardList,
+  "care-plan": Pill,
+  labs: ClipboardList,
+  nutrition: Apple,
+  documents: FileText,
+} satisfies Record<SidebarSectionId, typeof LineChartIcon>;
 
 function formatStorageReadyLabel(backend: PersistenceBackend) {
   if (backend === "sqlite") return "SQLite 저장 준비";
@@ -3306,66 +3316,23 @@ function App() {
           </div>
         </div>
         <nav className="nav-stack" aria-label="앱 섹션">
-          <a
-            href="#dashboard"
-            aria-current={activeSectionId === "dashboard" ? "page" : undefined}
-            aria-label="대시보드 섹션으로 이동"
-            title="대시보드 섹션으로 이동"
-            onClick={() => setActiveSectionId("dashboard")}
-          >
-            <LineChartIcon aria-hidden="true" />
-            대시보드
-          </a>
-          <a
-            href="#records"
-            aria-current={activeSectionId === "records" ? "page" : undefined}
-            aria-label="입력 기록 섹션으로 이동"
-            title="입력 기록 섹션으로 이동"
-            onClick={() => setActiveSectionId("records")}
-          >
-            <ClipboardList aria-hidden="true" />
-            입력 기록
-          </a>
-          <a
-            href="#care-plan"
-            aria-current={activeSectionId === "care-plan" ? "page" : undefined}
-            aria-label="증상·질문 섹션으로 이동"
-            title="증상·질문 섹션으로 이동"
-            onClick={() => setActiveSectionId("care-plan")}
-          >
-            <Pill aria-hidden="true" />
-            증상·질문
-          </a>
-          <a
-            href="#labs"
-            aria-current={activeSectionId === "labs" ? "page" : undefined}
-            aria-label="검사 수치 섹션으로 이동"
-            title="검사 수치 섹션으로 이동"
-            onClick={() => setActiveSectionId("labs")}
-          >
-            <ClipboardList aria-hidden="true" />
-            검사 수치
-          </a>
-          <a
-            href="#nutrition"
-            aria-current={activeSectionId === "nutrition" ? "page" : undefined}
-            aria-label="음식 판단 섹션으로 이동"
-            title="음식 판단 섹션으로 이동"
-            onClick={() => setActiveSectionId("nutrition")}
-          >
-            <Apple aria-hidden="true" />
-            음식 판단
-          </a>
-          <a
-            href="#documents"
-            aria-current={activeSectionId === "documents" ? "page" : undefined}
-            aria-label="서류 보관 섹션으로 이동"
-            title="서류 보관 섹션으로 이동"
-            onClick={() => setActiveSectionId("documents")}
-          >
-            <FileText aria-hidden="true" />
-            서류 보관
-          </a>
+          {sidebarNavigationItems.map((item) => {
+            const SidebarIcon = sidebarNavigationIcon[item.id];
+
+            return (
+              <a
+                href={item.href}
+                aria-current={activeSectionId === item.id ? "page" : undefined}
+                aria-label={item.actionLabel}
+                title={item.actionLabel}
+                onClick={() => setActiveSectionId(item.id)}
+                key={item.id}
+              >
+                <SidebarIcon aria-hidden="true" />
+                {item.visibleLabel}
+              </a>
+            );
+          })}
         </nav>
         <div className="privacy-note">
           <ShieldCheck aria-hidden="true" />
