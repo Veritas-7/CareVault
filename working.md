@@ -14777,6 +14777,7 @@
   - PASS: existing cmux `암관리` right-side in-app browser reused the existing CareVault pane, clicked the `증상·질문` section link, and showed `http://127.0.0.1:1420/#care-plan` with saved symptom summary, severity slider `3/10`, care queue, and symptom/question controls visible.
   - PASS: stopped the local Vite dev server before staging and confirmed port `1420` was closed.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - PASS: committed and pushed to `origin/main` as `dcb2b9e` (`Clamp restored symptom severity`).
 
 ## 2026-06-05 12:07 KST - SQLite Count Integer Parsing Iteration Note
 
