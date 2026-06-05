@@ -2165,6 +2165,7 @@ textarea:focus-visible {
 }
 
 .lab-save-feedback,
+.question-save-feedback,
 .symptom-save-feedback,
 .visit-save-feedback {
   margin-top: 10px;

@@ -825,6 +825,7 @@ function App() {
     string | null
   >(null);
   const [symptomSaveFeedback, setSymptomSaveFeedback] = useState<string | null>(null);
+  const [questionSaveFeedback, setQuestionSaveFeedback] = useState<string | null>(null);
   const [visitSaveFeedback, setVisitSaveFeedback] = useState<string | null>(null);
   const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
   const [labPresetFeedback, setLabPresetFeedback] = useState<string | null>(null);
@@ -1869,6 +1870,7 @@ function App() {
       return;
     }
 
+    setQuestionSaveFeedback(null);
     setQuestionDraft((current) => ({
       ...current,
       date: getNextQuestionDate(state.visits, today),
@@ -2632,6 +2634,11 @@ function App() {
     setSymptomSaveFeedback(null);
   };
 
+  const updateQuestionDraft = (updates: Partial<CareQuestion>) => {
+    setQuestionDraft((current) => ({ ...current, ...updates }));
+    setQuestionSaveFeedback(null);
+  };
+
   const addSymptom = () => {
     if (!hasRequiredTextValues(symptomDraft.symptom)) {
       setSymptomSaveFeedback(null);
@@ -2659,23 +2666,27 @@ function App() {
 
   const addQuestion = () => {
     if (!hasRequiredTextValues(questionDraft.topic, questionDraft.question)) {
+      setQuestionSaveFeedback(null);
       setRecordFormValidationFeedback("question", recordRequiredFieldMessages.question);
       return;
     }
 
+    const feedback = formatQuestionDraftAddedStatus(questionDraft.topic, questionDraft.priority);
     setState((current) => ({
       ...current,
       questions: [...current.questions, { ...questionDraft, id: createId("question") }],
     }));
     setQuestionDraft({ ...emptyQuestion, date: today });
     clearRecordFormValidationFeedback("question");
-    setActionSaveLabel(formatQuestionDraftAddedStatus(questionDraft.topic, questionDraft.priority));
+    setQuestionSaveFeedback(feedback);
+    setActionSaveLabel(feedback);
   };
 
   const applySymptomSupportTemplate = () => {
     if (!symptomSupportTemplate) return;
     const feedback = formatSymptomSupportQuestionDraftReadyStatus(symptomSupportTemplate);
 
+    setQuestionSaveFeedback(null);
     setQuestionDraft((current) => ({
       ...current,
       date: getNextQuestionDate(state.visits, today),
@@ -2731,6 +2742,7 @@ function App() {
 
     const generatedQuestion = buildSymptomSupportQuestion(template, "체온 38℃ 이상 또는 오한");
     const feedback = formatSymptomSupportQuestionDraftReadyStatus(template);
+    setQuestionSaveFeedback(null);
     setQuestionDraft((current) => {
       const currentQuestion = current.question.trim();
       const hasExistingQuestionDraft = current.topic.trim() || currentQuestion;
@@ -2757,6 +2769,7 @@ function App() {
   const applyCervicalCancerCarePrompt = (prompt: CervicalCancerCarePrompt) => {
     const feedback = `자궁경부암 질문 초안 준비됨: ${prompt.topic}`;
 
+    setQuestionSaveFeedback(null);
     setQuestionDraft((current) => ({
       ...current,
       date: getNextQuestionDate(state.visits, today),
@@ -2775,6 +2788,7 @@ function App() {
       cervicalCancerScreeningSummary,
     );
 
+    setQuestionSaveFeedback(null);
     setQuestionDraft((current) => ({
       ...current,
       date: getNextQuestionDate(state.visits, today),
@@ -2796,6 +2810,7 @@ function App() {
       return;
     }
 
+    setQuestionSaveFeedback(null);
     setQuestionDraft((current) => ({
       ...current,
       date: getNextQuestionDate(state.visits, today),
@@ -5904,9 +5919,7 @@ function App() {
                   value={questionDraft.date}
                   aria-label={formControlDescriptions.questionDate}
                   title={formControlDescriptions.questionDate}
-                  onChange={(event) =>
-                    setQuestionDraft({ ...questionDraft, date: event.currentTarget.value })
-                  }
+                  onChange={(event) => updateQuestionDraft({ date: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -5915,9 +5928,7 @@ function App() {
                   value={questionDraft.topic}
                   aria-label={formControlDescriptions.questionTopic}
                   title={formControlDescriptions.questionTopic}
-                  onChange={(event) =>
-                    setQuestionDraft({ ...questionDraft, topic: event.currentTarget.value })
-                  }
+                  onChange={(event) => updateQuestionDraft({ topic: event.currentTarget.value })}
                   placeholder="예: 식단, 검사수치, 부작용"
                 />
               </label>
@@ -5928,8 +5939,7 @@ function App() {
                   aria-label={formControlDescriptions.questionPriority}
                   title={formControlDescriptions.questionPriority}
                   onChange={(event) =>
-                    setQuestionDraft({
-                      ...questionDraft,
+                    updateQuestionDraft({
                       priority: normalizeQuestionPriority(event.currentTarget.value),
                     })
                   }
@@ -5950,7 +5960,7 @@ function App() {
                 aria-label={formControlDescriptions.questionBody}
                 title={formControlDescriptions.questionBody}
                 onChange={(event) =>
-                  setQuestionDraft({ ...questionDraft, question: event.currentTarget.value })
+                  updateQuestionDraft({ question: event.currentTarget.value })
                 }
                 placeholder="의료진에게 물어볼 내용을 그대로 입력"
               />
@@ -5962,7 +5972,7 @@ function App() {
                 aria-label={formControlDescriptions.questionAnswer}
                 title={formControlDescriptions.questionAnswer}
                 onChange={(event) =>
-                  setQuestionDraft({ ...questionDraft, answer: event.currentTarget.value })
+                  updateQuestionDraft({ answer: event.currentTarget.value })
                 }
                 placeholder="진료 후 답변을 여기에 남김"
               />
@@ -5977,6 +5987,11 @@ function App() {
               <Plus aria-hidden="true" />
               질문 추가
             </button>
+            {questionSaveFeedback ? (
+              <div className="question-save-feedback" role="status">
+                {questionSaveFeedback}
+              </div>
+            ) : null}
             {renderRecordFormFeedback("question")}
             <div className="question-list">
               {[...state.questions]
