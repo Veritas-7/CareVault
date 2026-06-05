@@ -18608,3 +18608,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `e49e42d` (`Show lab preset reset local feedback`).
+
+## 2026-06-06 04:16 KST - Lab Result Save Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires required add/save validation feedback to stay local and visible near the form, with the global topbar acting only as scoped ready/status context.
+  - Real cmux QA found saving a direct-entry lab result updated the global top status and added the result card, but the lab input form had no local `role=status` success feedback after the save.
+- Change:
+  - Added transient `labSaveFeedback` state in `src/App.tsx`.
+  - Added `updateLabDraft()` so user edits clear stale save feedback while preserving existing draft behavior.
+  - Updated `addLabResult()` to clear preset feedback, clear form validation feedback, and show the exact saved status locally below the lab form actions.
+  - Added `.lab-save-feedback` styling in `src/App.css` as a compact wrapping teal status row for the cmux right pane.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PASS: before accepting evidence, Computer Use confirmed the visible cmux window was `암관리`, the selected right tab was `CareVault`, and the right pane URL was `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: entered `WBC` and `5.0` in the visible `암관리` browser and saved. The top status showed `WBC 검사 수치 추가됨 · 5.0 · 판정 기준 범위 없음 · 근거 포함`, but no local `.lab-save-feedback` existed under the lab form. Screenshot `/tmp/carevault-surface9-iter36-lab-result-save-local-feedback-red.png` captured the missing local save feedback.
+  - CORRECTED: one Computer Use click result reported the visible cmux workspace as `working.md`; that immediate output was rejected as invalid CareVault evidence, then the surface was switched back to `암관리` before accepting the visible PASS proof.
+  - PASS after fix: the same visible `암관리` right browser showed local `.lab-save-feedback[role=status]` with `WBC 검사 수치 추가됨 · 5.0 · 판정 기준 범위 없음 · 근거 포함` below the lab form, plus the saved result card. Screenshot `/tmp/carevault-surface9-iter36-lab-result-save-local-feedback-pass.png` captured the local save feedback.
+  - PASS cleanup in browser: the reload-scoped baseline variable was unavailable, so the test-added `2026-06-05 / WBC / 5.0` row was removed directly from `localStorage.carevault.v1.labResults`; after reload, Computer Use confirmed visible `암관리`, top status `브라우저 자동 저장됨`, 8 total records, and one lab result.
+  - PASS: `cmux browser surface:9 errors` returned `No browser errors`.
+  - PASS: Stitch project context remained `projects/10602093894318676839`, private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/labMetric.test.ts src/entryValidation.test.ts`, 15 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `b77baf0` (`Show lab result save local feedback`).
