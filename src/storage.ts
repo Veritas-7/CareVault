@@ -382,6 +382,17 @@ export function parseSqlCount(value: unknown) {
   return 0;
 }
 
+function readFirstSqlRow(rows: unknown) {
+  if (!Array.isArray(rows)) return undefined;
+  const firstRow = rows[0];
+  if (!firstRow || typeof firstRow !== "object" || Array.isArray(firstRow)) return undefined;
+  return firstRow as Record<string, unknown>;
+}
+
+export function parseSqlCountRow(rows: unknown) {
+  return parseSqlCount(readFirstSqlRow(rows)?.count);
+}
+
 export function buildSqlLikePattern(input: string) {
   const trimmed = input.trim();
   if (!trimmed) return null;
@@ -871,8 +882,7 @@ async function mirrorNormalizedState(
 }
 
 async function selectCount(db: SqlDatabase, query: string, bindValues?: unknown[]) {
-  const rows = (await db.select(query, bindValues)) as Array<{ count?: unknown }>;
-  return parseSqlCount(rows[0]?.count);
+  return parseSqlCountRow(await db.select(query, bindValues));
 }
 
 export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStatus | null> {
@@ -904,7 +914,7 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
   const questionRows = await selectCount(db, "SELECT COUNT(*) AS count FROM questions");
   const labResultRows = await selectCount(db, "SELECT COUNT(*) AS count FROM lab_results");
   const foodCheckRows = await selectCount(db, "SELECT COUNT(*) AS count FROM food_checks");
-  const latestRows = (await db.select(`SELECT MAX(mirror_updated_at) AS latestUpdatedAt
+  const latestRows = await db.select(`SELECT MAX(mirror_updated_at) AS latestUpdatedAt
     FROM (
       SELECT updated_at AS mirror_updated_at FROM profile_snapshot
       UNION ALL SELECT updated_at FROM vitals
@@ -916,7 +926,7 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
       UNION ALL SELECT updated_at FROM questions
       UNION ALL SELECT updated_at FROM lab_results
       UNION ALL SELECT checked_at FROM food_checks
-    )`)) as Array<{ latestUpdatedAt?: unknown }>;
+    )`);
 
   return {
     checkedAt: new Date().toISOString(),
@@ -931,7 +941,7 @@ export async function loadNormalizedMirrorStatus(): Promise<NormalizedMirrorStat
     questionRows,
     labResultRows,
     foodCheckRows,
-    latestUpdatedAt: parseOptionalText(latestRows[0]?.latestUpdatedAt),
+    latestUpdatedAt: parseOptionalText(readFirstSqlRow(latestRows)?.latestUpdatedAt),
   };
 }
 

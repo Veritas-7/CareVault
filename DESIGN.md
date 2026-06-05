@@ -674,6 +674,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Made backup import/export scope summaries count only usable object records so malformed array junk does not overstate imported or exported record counts.
 - 2026-06-05: Split stable health-standards, cervical-care, and export helper modules into named production chunks so the main app chunk stays below Vite's warning threshold.
 - 2026-06-05: Corrected active runtime evidence back to CareVault's fixed local Vite/Tauri port `1420` after cmux verification.
+- 2026-06-05: Guarded SQLite mirror/search count rows so malformed plugin result containers fall back to zero instead of breaking normalized status reads.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.

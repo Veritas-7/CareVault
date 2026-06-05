@@ -8,6 +8,7 @@ import {
   savePersistedState,
   type NormalizedCareVaultMirror,
   parseSqlCount,
+  parseSqlCountRow,
 } from "./storage";
 
 afterEach(() => {
@@ -230,6 +231,16 @@ describe("storage normalized mirror", () => {
     expect(parseSqlCount(BigInt(5))).toBe(5);
     expect(parseSqlCount(null)).toBe(0);
     expect(parseSqlCount("not-a-count")).toBe(0);
+  });
+
+  it("normalizes SQLite count result rows defensively", () => {
+    expect(parseSqlCountRow([{ count: "7" }])).toBe(7);
+    expect(parseSqlCountRow([{ count: BigInt(8) }])).toBe(8);
+    expect(parseSqlCountRow([])).toBe(0);
+    expect(parseSqlCountRow(null)).toBe(0);
+    expect(parseSqlCountRow({ count: 4 })).toBe(0);
+    expect(parseSqlCountRow(["bad-row"])).toBe(0);
+    expect(parseSqlCountRow([[{ count: 9 }]])).toBe(0);
   });
 
   it("builds escaped SQLite LIKE patterns", () => {

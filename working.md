@@ -14598,3 +14598,34 @@
   - PASS: post-correction `rg "Runtime QA|runtime:|1431|1420" -n DESIGN.md` shows active runtime and Runtime QA on `1420`; only historical changelog text still mentions `1431`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged two-file diff.
   - PASS: committed and pushed to `origin/main` as `c93a90d` (`Correct design runtime port evidence`).
+
+## 2026-06-05 12:00 KST - SQLite Count Row Shape Guard Iteration Note
+
+- Improvement target:
+  - Storage review found `selectCount()` assumed `db.select()` always returned an array with a first row object.
+  - If the Tauri SQLite plugin or a compatibility mock returned malformed values such as `null`, a plain object, string, or nested array, normalized mirror status and normalized search summary reads could throw instead of treating the count as unavailable.
+- Code/design changes:
+  - Updated `src/storage.ts`.
+    - Added a guarded first-row reader for SQLite result containers.
+    - Added exported `parseSqlCountRow()` and routed normalized count reads through it.
+    - Reused the same first-row guard for the latest mirror update timestamp read.
+  - Updated `src/storage.test.ts`.
+    - Added regression coverage for valid count rows plus empty, null, plain-object, string-row, and nested-array malformed results.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for SQLite mirror/search count row fallback.
+- Verification so far:
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: `npm test -- storage`, 1 file and 9 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright app-load smoke at 390x884.
+    - `document.title`: `CareVault`.
+    - `나의 건강 기록` H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - Page errors: 0; console errors: 0.
+  - PASS: existing cmux `암관리` right-side in-app browser reused the existing CareVault pane at `http://127.0.0.1:1420/#labs` with the H1, browser storage label, dashboard, records, labs, nutrition, and document controls visible.
+  - PASS: `npm run test`, 55 files and 377 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
