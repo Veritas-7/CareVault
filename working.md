@@ -14311,4 +14311,4 @@
   - PASS: `npm run build`.
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `c632f40` (`Ensure SQLite app state table`).
