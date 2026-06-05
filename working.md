@@ -14629,3 +14629,4 @@
   - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - PASS: committed and pushed to `origin/main` as `d966f9b` (`Guard SQLite count rows`).
