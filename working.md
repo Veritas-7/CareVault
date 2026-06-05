@@ -14665,6 +14665,7 @@
     - Profile metric remained `56세 · 여성 164cm / 62kg · 허리 82cm`.
     - BMI, waist metric, source links, caregiver-share controls, care queue, vital inputs, timeline, lab tracking, nutrition, and document controls were visible.
   - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+  - PASS: committed and pushed to `origin/main` as `b723a18` (`Tighten profile input parsing`).
 
 ## 2026-06-05 12:16 KST - Strict Lab Number Text Parsing Iteration Note
 
