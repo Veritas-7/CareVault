@@ -146,8 +146,10 @@ import {
   hasActiveDocumentFilters as hasActiveDocumentFilterState,
 } from "./documentFilterActions";
 import {
+  formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
   formatDocumentArchiveStatusLabel,
+  formatDocumentAttachmentRemovedStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
   formatDocumentReviewStatusUpdatedLabel,
   formatDocumentRestoreStatusLabel,
@@ -2336,7 +2338,7 @@ function App() {
           : item,
       ),
     }));
-    setActionSaveLabel("첨부 제거됨");
+    setActionSaveLabel(formatDocumentAttachmentRemovedStatusLabel(document));
   };
 
   const removeDeletedDocumentAttachment = async (document: CareDocument) => {
@@ -2370,7 +2372,7 @@ function App() {
           : item,
       ),
     }));
-    setActionSaveLabel("삭제 보관함 첨부 정리됨");
+    setActionSaveLabel(formatDeletedDocumentAttachmentCleanedStatusLabel(document));
   };
 
   const deleteDocument = async (document: CareDocument) => {

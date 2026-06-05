@@ -3,6 +3,8 @@ import { type CareDocument } from "./appState";
 import {
   formatDocumentActionButtonLabel,
   formatDocumentArchiveStatusLabel,
+  formatDeletedDocumentAttachmentCleanedStatusLabel,
+  formatDocumentAttachmentRemovedStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
   formatDocumentReviewStatusUpdatedLabel,
   formatDocumentRestoreStatusLabel,
@@ -88,6 +90,30 @@ describe("documentActionLabels", () => {
     );
     expect(formatDocumentRestoreStatusLabel(deletedDocument)).toBe(
       "복부 CT 영상 서류 저장된 서류로 복구됨 · 상태 정리 완료",
+    );
+  });
+
+  it("builds document-specific attachment removal status feedback", () => {
+    const documentWithAttachment: CareDocument = {
+      ...baseDocument,
+      attachmentName: "blood-result.pdf",
+      attachmentPath: "/private/path/blood-result.pdf",
+    };
+    const deletedDocumentWithAttachment: CareDocument = {
+      ...documentWithAttachment,
+      title: "복부 CT",
+      category: "imaging",
+      attachmentName: "ct.png",
+    };
+
+    expect(formatDocumentAttachmentRemovedStatusLabel(documentWithAttachment)).toBe(
+      "혈액검사 메모 검사 서류 첨부 제거됨 · 제거한 첨부 blood-result.pdf",
+    );
+    expect(formatDeletedDocumentAttachmentCleanedStatusLabel(deletedDocumentWithAttachment)).toBe(
+      "복부 CT 영상 서류 삭제 보관함 첨부 정리됨 · 제거한 첨부 ct.png",
+    );
+    expect(formatDocumentAttachmentRemovedStatusLabel({ ...baseDocument, attachmentName: "  " })).toBe(
+      "혈액검사 메모 검사 서류 첨부 제거됨 · 제거한 첨부 파일명 미확인",
     );
   });
 

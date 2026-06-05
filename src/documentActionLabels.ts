@@ -62,6 +62,20 @@ export function formatDocumentRestoreStatusLabel(document: CareDocument) {
   }`;
 }
 
+function formatRemovedAttachmentContext(document: CareDocument) {
+  return document.attachmentName?.trim()
+    ? `제거한 첨부 ${document.attachmentName.trim()}`
+    : "제거한 첨부 파일명 미확인";
+}
+
+export function formatDocumentAttachmentRemovedStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 첨부 제거됨 · ${formatRemovedAttachmentContext(document)}`;
+}
+
+export function formatDeletedDocumentAttachmentCleanedStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 삭제 보관함 첨부 정리됨 · ${formatRemovedAttachmentContext(document)}`;
+}
+
 export function formatDocumentActionButtonLabel(
   document: CareDocument,
   kind: DocumentActionLabelKind,
