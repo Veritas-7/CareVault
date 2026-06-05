@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildVisitPanelSummary } from "./visitMetric";
+import { buildVisitPanelSummary, formatVisitAddedStatus } from "./visitMetric";
 
 describe("visitMetric", () => {
   it("builds visit panel summary chips from upcoming appointments and planned notes", () => {
@@ -65,5 +65,27 @@ describe("visitMetric", () => {
       totalCount: 0,
       upcomingCount: 0,
     });
+  });
+
+  it("formats visit added feedback with hospital, reason, and schedule context", () => {
+    expect(
+      formatVisitAddedStatus({
+        date: "2026-06-10",
+        hospital: "서울암센터",
+        nextDate: "2026-06-24",
+        reason: "항암 후 추적",
+      }),
+    ).toBe("서울암센터 방문 기록 추가됨 · 항암 후 추적 · 방문일 2026-06-10 · 다음 일정 2026-06-24");
+  });
+
+  it("formats visit added feedback with stable fallback context", () => {
+    expect(
+      formatVisitAddedStatus({
+        date: "",
+        hospital: "  ",
+        nextDate: "",
+        reason: "",
+      }),
+    ).toBe("병원/과 미입력 방문 기록 추가됨 · 방문 이유 미입력 · 방문일 날짜 미입력");
   });
 });

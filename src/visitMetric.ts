@@ -20,10 +20,31 @@ export type VisitPanelSummary = {
   upcomingCount: number;
 };
 
+export type VisitAddedStatusSource = Pick<
+  VisitPanelSummarySource,
+  "date" | "hospital" | "nextDate" | "reason"
+>;
+
 function dateToUtcDay(dateIso: string) {
   const [year, month, day] = dateIso.split("-").map(Number);
   if (!year || !month || !day) return Number.NaN;
   return Date.UTC(year, month - 1, day);
+}
+
+export function formatVisitAddedStatus(visit: VisitAddedStatusSource) {
+  const hospital = visit.hospital.trim() || "병원/과 미입력";
+  const reason = visit.reason.trim() || "방문 이유 미입력";
+  const date = visit.date.trim() || "날짜 미입력";
+  const nextDate = visit.nextDate.trim();
+
+  return [
+    `${hospital} 방문 기록 추가됨`,
+    reason,
+    `방문일 ${date}`,
+    nextDate ? `다음 일정 ${nextDate}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 export function buildVisitPanelSummary(

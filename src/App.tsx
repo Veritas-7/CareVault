@@ -257,7 +257,7 @@ import {
   visitPacketRangeLabels,
   type VisitPacketRange,
 } from "./visitPacket";
-import { buildVisitPanelSummary } from "./visitMetric";
+import { buildVisitPanelSummary, formatVisitAddedStatus } from "./visitMetric";
 import {
   buildCareVaultCsv,
   buildCsvExportFingerprint,
@@ -1751,7 +1751,7 @@ function App() {
     }));
     setVisitDraft({ ...emptyVisit, date: today });
     clearRecordFormValidationFeedback("visit");
-    setActionSaveLabel("방문 기록 추가됨");
+    setActionSaveLabel(formatVisitAddedStatus(visitDraft));
   };
 
   const createDocumentHistory = (
