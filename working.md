@@ -17519,3 +17519,40 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `83379c4` (`Raise document empty reset hit target`).
+
+## 2026-06-05 23:34 KST - Attachment Preview Unavailable Action cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires saved-document row actions to expose document-specific labels with attachment filename/status where relevant and to reserve enough action-column space for icon plus full Korean action labels.
+  - Real cmux QA found that a browser-file-name-only image attachment exposed an active `미리보기` action. Clicking it correctly produced a reasoned unavailable status, but the visible pre-click button did not warn that preview was unavailable and the row action height was only 36px.
+- Change:
+  - Added `formatDocumentAttachmentPreviewActionLabel()` in `src/documentActionLabels.ts` so preview actions can state available versus unavailable context.
+  - Updated saved-document rendering in `src/App.tsx` to show `미리보기 불가` and reason-bearing aria/title when the image has no browser preview URL and no usable Tauri attachment path/runtime.
+  - Raised `.document-actions button` minimum height to 44px in `src/App.css`.
+  - Added regression coverage in `src/documentActionLabels.test.ts`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace was `working.md` and the right pane was Worklog, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window to `암관리`; the right pane showed the selected `CareVault` browser tab at `http://127.0.0.1:1420/#documents`.
+  - PASS: screenshot `/tmp/carevault-surface9-iter4-doc-actions.png` captured the real saved-document row and actions in the right pane.
+  - RED/IMPROVEMENT: before the patch, DOM measurement showed the `미리보기` action aria/title as `혈액검사 메모 검사 서류 이미지 첨부 미리보기 · 현재 첨부 icon.png`, rect height 36px, and text `미리보기`.
+  - PASS baseline behavior: clicking `미리보기` produced no dialog and set a reasoned status, `혈액검사 메모 검사 서류 이미지 미리보기 불가 · 현재 첨부 icon.png · 첨부 상태 브라우저 파일명 참조 · 이유 저장된 경로 또는 데스크톱 런타임 필요`.
+  - PASS after fix: HMR updated the same right pane; DOM eval returned text `미리보기 불가`, min-height `44px`, rect height 44px, and aria/title with the unavailable reason. Screenshot `/tmp/carevault-surface9-iter4-preview-unavailable-label.png` captured the changed button.
+  - PASS after fix: clicking `미리보기 불가` kept `hasDialog=false` and preserved the same reasoned status feedback. Screenshot `/tmp/carevault-surface9-iter4-preview-unavailable-clicked.png` captured the clicked state.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug/HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/documentActionLabels.test.ts`, 15 tests.
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css src/documentActionLabels.ts src/documentActionLabels.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `d40387b` (`Clarify attachment preview unavailable action`).
