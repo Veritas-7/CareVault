@@ -1273,6 +1273,25 @@ export function formatDashboardMetricStandardCopyStatus(
   ].join(" · ");
 }
 
+export function formatDashboardMetricStandardCopyUnsupportedStatus(
+  evidences: readonly (DashboardMetricStandardEvidence | null | undefined)[],
+) {
+  return [
+    "대시보드 건강 기준 복사 미지원",
+    "브라우저 클립보드 없음",
+    formatDashboardMetricStandardCompactSummary(evidences),
+  ].join(" · ");
+}
+
+export function formatDashboardMetricStandardCopyFailedStatus(
+  evidences: readonly (DashboardMetricStandardEvidence | null | undefined)[],
+) {
+  return [
+    "대시보드 건강 기준 복사 실패",
+    formatDashboardMetricStandardCompactSummary(evidences),
+  ].join(" · ");
+}
+
 export function formatDashboardMetricStandardClipboardText(
   evidences: readonly (DashboardMetricStandardEvidence | null | undefined)[],
 ) {
@@ -1505,6 +1524,27 @@ export function formatHealthStandardRangeFilterCopyStatus(
   ].join(" · ");
 }
 
+export function formatHealthStandardRangeFilterCopyUnsupportedStatus(
+  filterLabel: string,
+  summary: readonly HealthStandardRangeFilterSummaryItem[],
+) {
+  return [
+    `한국 성인 건강 기준 ${filterLabel} 범위 복사 미지원`,
+    "브라우저 클립보드 없음",
+    ...buildCompactHealthStandardRangeFilterSummaryParts(summary),
+  ].join(" · ");
+}
+
+export function formatHealthStandardRangeFilterCopyFailedStatus(
+  filterLabel: string,
+  summary: readonly HealthStandardRangeFilterSummaryItem[],
+) {
+  return [
+    `${filterLabel} 기준 복사 실패`,
+    ...buildCompactHealthStandardRangeFilterSummaryParts(summary),
+  ].join(" · ");
+}
+
 export function formatProfileWaistStandardNote(sex: string) {
   const waistStandard = getHealthStandardCoverage("waist");
   const sourceLabel = waistStandard?.sourceLabel ?? "한국 성인 허리둘레 기준";
@@ -1728,6 +1768,31 @@ export function formatProfileMetricSexStandardCopyStatus(
 ) {
   return [
     "프로필 성별 기준 복사됨",
+    formatProfileMetricSexStandardCompactSummary(sexLabel, chips),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+export function formatProfileMetricSexStandardCopyUnsupportedStatus(
+  sexLabel: string,
+  chips: readonly ProfileMetricSexStandardChip[],
+) {
+  return [
+    "프로필 성별 기준 복사 미지원",
+    "브라우저 클립보드 없음",
+    formatProfileMetricSexStandardCompactSummary(sexLabel, chips),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+export function formatProfileMetricSexStandardCopyFailedStatus(
+  sexLabel: string,
+  chips: readonly ProfileMetricSexStandardChip[],
+) {
+  return [
+    "프로필 성별 기준 복사 실패",
     formatProfileMetricSexStandardCompactSummary(sexLabel, chips),
   ]
     .filter(Boolean)

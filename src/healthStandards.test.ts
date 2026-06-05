@@ -16,16 +16,22 @@ import {
   formatDashboardMetricStandardClipboardText,
   formatDashboardMetricStandardCompactSummary,
   formatDashboardMetricStandardCopyDescription,
+  formatDashboardMetricStandardCopyFailedStatus,
   formatDashboardMetricStandardCopyStatus,
+  formatDashboardMetricStandardCopyUnsupportedStatus,
   formatHealthStandardRangeFilterCopyDescription,
+  formatHealthStandardRangeFilterCopyFailedStatus,
   formatHealthStandardRangeFilterCopyStatus,
+  formatHealthStandardRangeFilterCopyUnsupportedStatus,
   formatHealthStandardsClipboardText,
   formatDashboardMetricStandardNote,
   formatHealthStandardCoverage,
   formatHealthStandardSource,
   formatProfileMetricSexStandardClipboardText,
   formatProfileMetricSexStandardCopyDescription,
+  formatProfileMetricSexStandardCopyFailedStatus,
   formatProfileMetricSexStandardCopyStatus,
+  formatProfileMetricSexStandardCopyUnsupportedStatus,
   formatProfileWaistStandardNote,
   formatVitalInputStandardHelp,
   formatVitalSavePreviewLabel,
@@ -616,6 +622,12 @@ describe("healthStandards", () => {
     );
     expect(formatDashboardMetricStandardCopyStatus(evidences)).toBe(
       "대시보드 건강 기준 복사됨 · 4개 기준 · 근거 3개",
+    );
+    expect(formatDashboardMetricStandardCopyUnsupportedStatus(evidences)).toBe(
+      "대시보드 건강 기준 복사 미지원 · 브라우저 클립보드 없음 · 4개 기준 · 근거 3개",
+    );
+    expect(formatDashboardMetricStandardCopyFailedStatus(evidences)).toBe(
+      "대시보드 건강 기준 복사 실패 · 4개 기준 · 근거 3개",
     );
 
     const text = formatDashboardMetricStandardClipboardText(evidences);
@@ -1420,6 +1432,12 @@ describe("healthStandards", () => {
     expect(formatHealthStandardRangeFilterCopyStatus("당뇨·지질", diabetesSummary)).toBe(
       "당뇨·지질 기준 복사됨 · 표시 7/26 · 주의 8 · 성별 분리 1개 · 출처 5개",
     );
+    expect(formatHealthStandardRangeFilterCopyUnsupportedStatus("암환자", cancerSummary)).toBe(
+      "한국 성인 건강 기준 암환자 범위 복사 미지원 · 브라우저 클립보드 없음 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개",
+    );
+    expect(formatHealthStandardRangeFilterCopyFailedStatus("당뇨·지질", diabetesSummary)).toBe(
+      "당뇨·지질 기준 복사 실패 · 표시 7/26 · 주의 8 · 성별 분리 1개 · 출처 5개",
+    );
     expect(formatHealthStandardRangeFilterCopyDescription("암환자", cancerSummary)).toBe(
       "한국 성인 건강 기준 암환자 범위 복사 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개",
     );
@@ -1685,6 +1703,12 @@ describe("healthStandards", () => {
     );
     expect(formatProfileMetricSexStandardCopyStatus("여성", femaleChips)).toBe(
       "프로필 성별 기준 복사됨 · 여성 · 5개 기준 · 근거 5개",
+    );
+    expect(formatProfileMetricSexStandardCopyUnsupportedStatus("여성", femaleChips)).toBe(
+      "프로필 성별 기준 복사 미지원 · 브라우저 클립보드 없음 · 여성 · 5개 기준 · 근거 5개",
+    );
+    expect(formatProfileMetricSexStandardCopyFailedStatus("여성", femaleChips)).toBe(
+      "프로필 성별 기준 복사 실패 · 여성 · 5개 기준 · 근거 5개",
     );
 
     const text = formatProfileMetricSexStandardClipboardText("여성", femaleChips);

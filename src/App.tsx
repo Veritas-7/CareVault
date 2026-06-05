@@ -70,17 +70,23 @@ import {
   formatDashboardMetricStandardClipboardText,
   formatDashboardMetricStandardCompactSummary,
   formatDashboardMetricStandardCopyDescription,
+  formatDashboardMetricStandardCopyFailedStatus,
   formatDashboardMetricStandardCopyStatus,
+  formatDashboardMetricStandardCopyUnsupportedStatus,
   formatDashboardMetricStandardNote,
   feverInfectionStandardQuestionDraftActionLabel,
   feverInfectionStandardSymptomDraftActionLabel,
   formatHealthStandardRangeFilterCopyDescription,
+  formatHealthStandardRangeFilterCopyFailedStatus,
   formatHealthStandardRangeFilterCopyStatus,
+  formatHealthStandardRangeFilterCopyUnsupportedStatus,
   formatHealthStandardsClipboardText,
   formatHealthStandardSource,
   formatProfileMetricSexStandardClipboardText,
   formatProfileMetricSexStandardCopyDescription,
+  formatProfileMetricSexStandardCopyFailedStatus,
   formatProfileMetricSexStandardCopyStatus,
+  formatProfileMetricSexStandardCopyUnsupportedStatus,
   formatProfileWaistStandardNote,
   formatVitalInputStandardHelp,
   formatVitalSavePreviewLabel,
@@ -2858,38 +2864,68 @@ function App() {
 
   const copyHealthStandards = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel("한국 건강 기준 복사를 지원하지 않는 브라우저입니다.");
+      setSaveLabel(
+        formatHealthStandardRangeFilterCopyUnsupportedStatus(
+          selectedHealthStandardRangeFilter.label,
+          healthStandardRangeSummary,
+        ),
+      );
       return;
     }
 
     navigator.clipboard
       .writeText(formatHealthStandardsClipboardText(state.profile.sex, standardRangeFilter))
       .then(() => setTransientSaveLabel(healthStandardsCopyStatus))
-      .catch(() => setSaveLabel("한국 건강 기준 복사 실패"));
+      .catch(() =>
+        setSaveLabel(
+          formatHealthStandardRangeFilterCopyFailedStatus(
+            selectedHealthStandardRangeFilter.label,
+            healthStandardRangeSummary,
+          ),
+        ),
+      );
   };
 
   const copyProfileMetricSexStandards = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel("프로필 성별 기준 복사를 지원하지 않는 브라우저입니다.");
+      setSaveLabel(
+        formatProfileMetricSexStandardCopyUnsupportedStatus(
+          profileMetricSexLabel,
+          profileMetricSexStandardChips,
+        ),
+      );
       return;
     }
 
     navigator.clipboard
       .writeText(profileMetricSexStandardClipboardText)
       .then(() => setTransientSaveLabel(profileMetricSexStandardCopyStatus))
-      .catch(() => setSaveLabel("프로필 성별 기준 복사 실패"));
+      .catch(() =>
+        setSaveLabel(
+          formatProfileMetricSexStandardCopyFailedStatus(
+            profileMetricSexLabel,
+            profileMetricSexStandardChips,
+          ),
+        ),
+      );
   };
 
   const copyDashboardMetricStandards = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel("대시보드 건강 기준 복사를 지원하지 않는 브라우저입니다.");
+      setSaveLabel(
+        formatDashboardMetricStandardCopyUnsupportedStatus(dashboardMetricStandardEvidences),
+      );
       return;
     }
 
     navigator.clipboard
       .writeText(dashboardMetricStandardClipboardText)
       .then(() => setTransientSaveLabel(dashboardMetricStandardCopyStatus))
-      .catch(() => setSaveLabel("대시보드 건강 기준 복사 실패"));
+      .catch(() =>
+        setSaveLabel(
+          formatDashboardMetricStandardCopyFailedStatus(dashboardMetricStandardEvidences),
+        ),
+      );
   };
 
   const storageText =
