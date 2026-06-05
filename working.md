@@ -15497,3 +15497,4 @@
   - PASS: `cargo check` in `src-tauri`.
   - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
   - PASS: `git diff --check -- README.md DESIGN.md working.md package.json`.
+  - PASS: committed and pushed to `origin/main` as `faf3a78` (`Add clean Tauri dev entrypoint`); `git ls-remote origin refs/heads/main` returned `faf3a78732f6ab85101b76663590de1a98e84d75`.
