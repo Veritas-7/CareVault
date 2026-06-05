@@ -24,6 +24,20 @@ export function formatRecordFormFeedbackAriaLabel(
   return `${recordFormFeedbackLabels[formId]} 필수 항목 안내 · ${message}`;
 }
 
+export function formatRecordFormFeedbackClearedStatus(formId: RecordFormFeedbackId) {
+  return `${recordFormFeedbackLabels[formId]} 필수 입력 확인됨`;
+}
+
+export function resolveRecordFormFeedbackClearedSaveLabel(
+  formId: RecordFormFeedbackId,
+  clearedMessage: string | undefined,
+  currentSaveLabel: string,
+) {
+  if (!clearedMessage || currentSaveLabel !== clearedMessage) return currentSaveLabel;
+
+  return formatRecordFormFeedbackClearedStatus(formId);
+}
+
 export function shouldClearRecordFormFeedback(
   currentMessage: string | undefined,
   isFormValid: boolean,

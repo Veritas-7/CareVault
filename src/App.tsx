@@ -198,6 +198,7 @@ import {
   formatRecordFormFeedbackAriaLabel,
   hasRequiredTextValues,
   recordRequiredFieldMessages,
+  resolveRecordFormFeedbackClearedSaveLabel,
   shouldClearRecordFormFeedback,
   type RecordFormFeedbackId,
 } from "./entryValidation";
@@ -800,12 +801,23 @@ function App() {
     }, 0);
   };
 
-  const clearRecordFormValidationFeedback = (formId: RecordFormFeedbackId) => {
+  const clearRecordFormValidationFeedback = (
+    formId: RecordFormFeedbackId,
+    options: { refreshStaleSaveLabel?: boolean } = {},
+  ) => {
+    const previousMessage = recordFormFeedback[formId];
+
     setRecordFormFeedback((current) => {
       if (!current[formId]) return current;
       const { [formId]: _removed, ...rest } = current;
       return rest;
     });
+
+    if (options.refreshStaleSaveLabel) {
+      setSaveLabel((current) =>
+        resolveRecordFormFeedbackClearedSaveLabel(formId, previousMessage, current),
+      );
+    }
   };
 
   const renderRecordFormFeedback = (formId: RecordFormFeedbackId) => {
@@ -832,7 +844,7 @@ function App() {
         validateVitalDraft(vitalDraft).type === "ok",
       )
     ) {
-      clearRecordFormValidationFeedback("vital");
+      clearRecordFormValidationFeedback("vital", { refreshStaleSaveLabel: true });
     }
   }, [recordFormFeedback.vital, vitalDraft]);
 
@@ -843,7 +855,7 @@ function App() {
         hasRequiredTextValues(visitDraft.hospital, visitDraft.reason),
       )
     ) {
-      clearRecordFormValidationFeedback("visit");
+      clearRecordFormValidationFeedback("visit", { refreshStaleSaveLabel: true });
     }
   }, [recordFormFeedback.visit, visitDraft.hospital, visitDraft.reason]);
 
@@ -854,7 +866,7 @@ function App() {
         hasRequiredTextValues(symptomDraft.symptom),
       )
     ) {
-      clearRecordFormValidationFeedback("symptom");
+      clearRecordFormValidationFeedback("symptom", { refreshStaleSaveLabel: true });
     }
   }, [recordFormFeedback.symptom, symptomDraft.symptom]);
 
@@ -865,7 +877,7 @@ function App() {
         hasRequiredTextValues(questionDraft.topic, questionDraft.question),
       )
     ) {
-      clearRecordFormValidationFeedback("question");
+      clearRecordFormValidationFeedback("question", { refreshStaleSaveLabel: true });
     }
   }, [recordFormFeedback.question, questionDraft.question, questionDraft.topic]);
 
@@ -876,7 +888,7 @@ function App() {
         hasRequiredTextValues(labDraft.name, labDraft.value),
       )
     ) {
-      clearRecordFormValidationFeedback("lab");
+      clearRecordFormValidationFeedback("lab", { refreshStaleSaveLabel: true });
     }
   }, [labDraft.name, labDraft.value, recordFormFeedback.lab]);
 
@@ -887,7 +899,7 @@ function App() {
         hasRequiredTextValues(documentDraft.title, documentDraft.body),
       )
     ) {
-      clearRecordFormValidationFeedback("document");
+      clearRecordFormValidationFeedback("document", { refreshStaleSaveLabel: true });
     }
   }, [documentDraft.body, documentDraft.title, recordFormFeedback.document]);
 

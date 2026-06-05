@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   formatRecordFormFeedbackAriaLabel,
+  formatRecordFormFeedbackClearedStatus,
   hasRequiredTextValues,
   recordRequiredFieldMessages,
   recordFormFeedbackLabels,
+  resolveRecordFormFeedbackClearedSaveLabel,
   shouldClearRecordFormFeedback,
 } from "./entryValidation";
 
@@ -43,5 +45,39 @@ describe("shouldClearRecordFormFeedback", () => {
     expect(shouldClearRecordFormFeedback(recordRequiredFieldMessages.visit, true)).toBe(true);
     expect(shouldClearRecordFormFeedback(recordRequiredFieldMessages.visit, false)).toBe(false);
     expect(shouldClearRecordFormFeedback(undefined, true)).toBe(false);
+  });
+});
+
+describe("formatRecordFormFeedbackClearedStatus", () => {
+  it("uses scoped ready feedback without claiming the record was saved", () => {
+    expect(formatRecordFormFeedbackClearedStatus("visit")).toBe("병원 방문 기록 필수 입력 확인됨");
+    expect(formatRecordFormFeedbackClearedStatus("document")).toBe(
+      "서류 수기 보관 필수 입력 확인됨",
+    );
+    expect(formatRecordFormFeedbackClearedStatus("lab")).not.toContain("저장");
+  });
+});
+
+describe("resolveRecordFormFeedbackClearedSaveLabel", () => {
+  it("replaces only the stale required-field save chip message", () => {
+    expect(
+      resolveRecordFormFeedbackClearedSaveLabel(
+        "visit",
+        recordRequiredFieldMessages.visit,
+        recordRequiredFieldMessages.visit,
+      ),
+    ).toBe("병원 방문 기록 필수 입력 확인됨");
+
+    expect(
+      resolveRecordFormFeedbackClearedSaveLabel(
+        "visit",
+        recordRequiredFieldMessages.visit,
+        "질문 추가됨",
+      ),
+    ).toBe("질문 추가됨");
+
+    expect(resolveRecordFormFeedbackClearedSaveLabel("visit", undefined, "SQLite 자동 저장됨")).toBe(
+      "SQLite 자동 저장됨",
+    );
   });
 });
