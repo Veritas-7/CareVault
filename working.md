@@ -16199,3 +16199,33 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `e82c03e` (`Cover symptom support action labels`); `git ls-remote origin refs/heads/main` returned `e82c03eba9b3a8e9fa0000e64f7478365d9fa393`.
+
+## 2026-06-05 19:28 KST - Fever Infection Standard Action Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` asks the fever/infection standards card to provide source-backed symptom-record and clinician-question draft shortcuts that are safe to scan and reuse.
+  - Source audit found both standards-card shortcut labels were still hardcoded directly in `App.tsx`, so the accessible names and hover titles could drift without focused coverage.
+- Change:
+  - Added `feverInfectionStandardSymptomDraftActionLabel` and `feverInfectionStandardQuestionDraftActionLabel` in `src/healthStandards.ts`.
+  - Updated `App.tsx` standards-card shortcut buttons to use the shared constants for both `aria-label` and `title`.
+  - Added a focused `src/healthStandards.test.ts` assertion that pins both fever/infection shortcut action labels.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - BLOCKED: same-surface navigation to `http://127.0.0.1:1420/` returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, `.app-shell` count `0`, standards-card action button count `0`, and empty body text, while `curl -I` returned HTTP `200`.
+  - PASS: `cmux browser surface:9 console` returned `No console entries` and `cmux browser surface:9 errors` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/healthStandards.test.ts`, 28 tests.
+  - PASS: `npm run test`, 60 files and 435 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `373ba14` (`Cover fever infection standard action labels`).
