@@ -15901,3 +15901,32 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `1d1b65a` (`Show local required-field feedback`); `git ls-remote origin refs/heads/main` returned `1d1b65aca4972ae4d1245d7cb85bc5e4a91af3f6`.
+
+## 2026-06-05 18:22 KST - Local Validation Feedback Clearing
+
+- Improvement target:
+  - The previous local required-field feedback slice made empty-form clicks visible near the affected form action.
+  - A source-level follow-up found those local feedback rows could remain visible after the user corrected the missing fields, until the add/save action was clicked again.
+- Change:
+  - Added `shouldClearRecordFormFeedback()` to keep feedback-clearing behavior explicit and tested.
+  - Added local clearing effects for vital, visit, symptom, question, lab, and document draft forms once their guarded values become valid.
+  - Updated `DESIGN.md` so required local validation feedback must clear automatically when the draft becomes valid.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - BLOCKED: the allowed cmux surface stayed on an empty document after navigating to `http://127.0.0.1:1420/`, with `cmux browser surface:9 errors list` returning `No browser errors`, `console list` returning `No console entries`, and `curl` returning HTTP `200` from Vite.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/entryValidation.test.ts`, 5 tests.
+  - PASS: `npm run test`, 58 files and 422 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/entryValidation.ts src/entryValidation.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `3aff514` (`Clear local validation feedback when valid`); `git ls-remote origin refs/heads/main` returned `3aff51418b7ff8bacfbbeb9885a9877f462520c2`.
