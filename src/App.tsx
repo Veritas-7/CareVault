@@ -131,6 +131,13 @@ import {
   formatDocumentFilterResetActionLabel,
 } from "./documentFilterActions";
 import {
+  formatCervicalCarePreventionDisclosureLabel,
+  formatCervicalCarePromptDisclosureLabel,
+  formatCervicalCareRecoveryDisclosureLabel,
+  formatExportPreviewRawHtmlDisclosureLabel,
+  healthStandardsCoverageDisclosureLabel,
+} from "./disclosureLabels";
+import {
   buildSymptomSupportActionNote,
   buildSymptomSupportQuestion,
   buildSymptomSupportQueueHint,
@@ -4278,7 +4285,14 @@ function App() {
                   </div>
                 </div>
                 <details className="cervical-care-disclosure cervical-prompt-disclosure">
-                  <summary>
+                  <summary
+                    aria-label={formatCervicalCarePromptDisclosureLabel(
+                      cervicalCancerCarePrompts.length,
+                    )}
+                    title={formatCervicalCarePromptDisclosureLabel(
+                      cervicalCancerCarePrompts.length,
+                    )}
+                  >
                     <strong>다음 진료 질문 초안</strong>
                     <span>{cervicalCancerCarePrompts.length}개 · 출처 포함</span>
                   </summary>
@@ -4340,7 +4354,14 @@ function App() {
                   </ul>
                 </div>
                 <details className="cervical-care-disclosure">
-                  <summary>
+                  <summary
+                    aria-label={formatCervicalCareRecoveryDisclosureLabel(
+                      cervicalCancerCareRecoveryGuides.length,
+                    )}
+                    title={formatCervicalCareRecoveryDisclosureLabel(
+                      cervicalCancerCareRecoveryGuides.length,
+                    )}
+                  >
                     <strong>회복 일정 메모</strong>
                     <span>{cervicalCancerCareRecoveryGuides.length}개 항목</span>
                   </summary>
@@ -4355,7 +4376,14 @@ function App() {
                   </ul>
                 </details>
                 <details className="cervical-care-disclosure">
-                  <summary>
+                  <summary
+                    aria-label={formatCervicalCarePreventionDisclosureLabel(
+                      cervicalCancerCarePreventionGuides.length,
+                    )}
+                    title={formatCervicalCarePreventionDisclosureLabel(
+                      cervicalCancerCarePreventionGuides.length,
+                    )}
+                  >
                     <strong>검진·예방 메모</strong>
                     <span>{cervicalCancerCarePreventionGuides.length}개 항목</span>
                   </summary>
@@ -4614,7 +4642,12 @@ function App() {
                 })}
               </div>
               <details className="standards-coverage">
-                <summary>적용 범위</summary>
+                <summary
+                  aria-label={healthStandardsCoverageDisclosureLabel}
+                  title={healthStandardsCoverageDisclosureLabel}
+                >
+                  적용 범위
+                </summary>
                 <ul>
                   {koreanHealthStandardCoverage.map((item) => {
                     const sourceLinkLabels = buildHealthStandardSourceLinkLabels(
@@ -6810,7 +6843,12 @@ function App() {
                   />
                 </div>
                 <details className="export-preview-source">
-                  <summary>원본 HTML 보기</summary>
+                  <summary
+                    aria-label={formatExportPreviewRawHtmlDisclosureLabel(exportPreview.title)}
+                    title={formatExportPreviewRawHtmlDisclosureLabel(exportPreview.title)}
+                  >
+                    원본 HTML 보기
+                  </summary>
                   <pre>{exportPreview.content}</pre>
                 </details>
               </>

@@ -14002,3 +14002,38 @@
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
   - Git staging, commit, and push were performed after this verification note using explicit paths only; see the final assistant report for pushed-head evidence.
+
+## 2026-06-05 10:03 KST - Disclosure Summary Accessible Label Iteration Note
+
+- Improvement target:
+  - The remaining disclosure `<summary>` controls in `src/App.tsx` had visible text but did not all carry scoped `aria-label` and matching hover `title` text.
+  - This left cervical-care lists, Korean-standard coverage, and rendered export raw HTML less explicit for keyboard/screen-reader users than the rest of the app's control surface.
+- Stitch MCP:
+  - Rechecked Stitch project `CareVault UI UX AutoResearch` (`10602093894318676839`) and confirmed the uploaded 390px CareVault DESIGN.md screen instance `7814555668945736330` remains the active UI/UX evidence surface.
+- Code/design changes:
+  - Added `src/disclosureLabels.ts`.
+    - Centralized cervical-care disclosure labels, the health-standard coverage disclosure label, and the active export-preview raw HTML disclosure label.
+  - Added `src/disclosureLabels.test.ts`.
+    - Locked count/context formatting and the export-preview title suffix.
+  - Updated `src/App.tsx`.
+    - Added matching `aria-label` and `title` text to cervical prompt, recovery, prevention, health-standard coverage, and export raw HTML summaries.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for scoped summary labels and matching hover titles.
+- Verification:
+  - PASS: `npm run test -- src/disclosureLabels.test.ts`, 1 file and 3 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/disclosureLabels.ts src/disclosureLabels.test.ts`.
+  - PASS: App summary scan: all `src/App.tsx` `<summary>` controls have both `aria-label` and `title`.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser only; no additional cmux browser tab was created.
+    - Omnibar stayed on `http://127.0.0.1:1420/#nutrition`.
+    - The live accessibility tree exposed the CareVault page, cervical-care panel, standards area, and document area from the existing right browser.
+  - PASS: Supplemental DOM assertion against the same running local dev server at 390x884.
+    - Summary labels found: `자궁경부암 다음 진료 질문 초안 10개 보기 · 출처 포함`, `자궁경부암 회복 일정 메모 9개 보기`, `자궁경부암 검진·예방 메모 5개 보기`, `한국 성인 건강 기준 적용 범위 보기 · 성별 적용과 공식 기준 경계 확인`, and existing chart raw-data label.
+    - Prompt, standards, and export raw HTML summaries each measured 44px high.
+    - Caregiver preview creation exposed `내보내기 미리보기 원본 HTML 보기 · 보호자 공유본 미리보기`; its `aria-label` and `title` matched, and clicking it opened the raw HTML disclosure.
+  - PASS: `npm run test`, 54 files and 367 tests.
+  - PASS: `npm run build`.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
+  - Git commit and push will be reported in the final assistant output.
