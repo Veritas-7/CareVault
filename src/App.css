@@ -3406,6 +3406,19 @@ textarea:focus-visible {
   font-weight: 900;
 }
 
+.food-question-draft-feedback {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .food-chip.ok {
   color: #0b5c4b;
   background: #e4f7ef;

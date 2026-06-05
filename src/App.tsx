@@ -815,6 +815,7 @@ function App() {
   const [healthStandardsCopyFeedback, setHealthStandardsCopyFeedback] = useState<string | null>(
     null,
   );
+  const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
   const [cervicalCancerCareCopyFeedback, setCervicalCancerCareCopyFeedback] = useState<
     string | null
   >(null);
@@ -2728,7 +2729,9 @@ function App() {
 
   const applyFoodQuestionDraft = () => {
     if (!foodQuestionDraft) {
-      setSaveLabel(formatFoodQuestionDraftUnavailableStatus(foodQuestionDraftInput));
+      const feedback = formatFoodQuestionDraftUnavailableStatus(foodQuestionDraftInput);
+      setFoodQuestionDraftFeedback(feedback);
+      setSaveLabel(feedback);
       return;
     }
 
@@ -2740,7 +2743,9 @@ function App() {
       status: "open",
       topic: foodQuestionDraft.topic,
     }));
-    setSaveLabel(formatFoodQuestionDraftReadyStatus(foodQuestionDraftInput, foodQuestionDraft));
+    const feedback = formatFoodQuestionDraftReadyStatus(foodQuestionDraftInput, foodQuestionDraft);
+    setFoodQuestionDraftFeedback(feedback);
+    setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
@@ -6326,6 +6331,7 @@ function App() {
                     ...current,
                     foodQuery,
                   }));
+                  setFoodQuestionDraftFeedback(null);
                   setActionSaveLabel(
                     formatFoodJudgmentUpdatedStatusLabel(
                       foodQuery,
@@ -6378,6 +6384,11 @@ function App() {
                 <MessageSquare aria-hidden="true" />
                 {foodQuestionButtonLabels.visibleLabel}
               </button>
+            </div>
+          ) : null}
+          {foodQuestionDraftFeedback ? (
+            <div className="food-question-draft-feedback" role="status">
+              {foodQuestionDraftFeedback}
             </div>
           ) : null}
           <p className="medical-disclaimer">
