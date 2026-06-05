@@ -18022,3 +18022,36 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `226ecbf` (`Show document review status local feedback`).
+
+## 2026-06-06 01:42 KST - Document Next Action Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires saved-document row edits, including multiline next-action edits, to expose document-specific local feedback in the constrained cmux right-pane layout.
+  - Real cmux QA found saved-document next-action blur persisted the edit and wrote history, but only the offscreen global save-status chip changed; the saved-document row had no nearby local `role=status` confirmation.
+- Change:
+  - Updated `recordDocumentNextActionBlur()` in `src/App.tsx` to reuse `formatDocumentNextActionHistoryStatusLabel()` for both the global save status and document-specific local action feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PASS: verified the cmux workspace was `암관리` before accepting CareVault evidence; when cmux switched to `사업보고서` or stale terminal focus paths, those states were rejected as invalid evidence.
+  - RED/IMPROVEMENT: edited `혈액검사 메모 다음 조치` to `백혈구 수치 낮을 때 외식 기준 재확인` in the same cmux surface and triggered blur; next-action history recorded `다음 조치 변경`, but local `.document-action-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter19-document-next-action-local-feedback-red.png` captured the missing local feedback.
+  - PASS after fix: repeated the saved-document next-action edit in `암관리`; a visible local `role=status` row appeared beside the saved document with `혈액검사 메모 검사 서류 다음 조치 이력 기록됨 · 백혈구 수치 낮을 때 외식 기준 재확인`. Screenshot `/tmp/carevault-surface9-iter19-document-next-action-local-feedback-pass.png` captured the first post-fix local feedback.
+  - CORRECTED: a native Computer Use `super+a` attempt still selected the left terminal instead of the right webview, so no native typed text from that path was accepted as CareVault evidence.
+  - CORRECTED: `cmux browser surface:9 focus-webview` returned `internal_error: Focus did not move into web view`; subsequent `fill`, `body` click, and `Tab` attempts changed the textarea value but did not blur it, so screenshot `/tmp/carevault-surface9-iter19-document-next-action-local-feedback-pass-real.png` was not used as final blur evidence.
+  - PASS stronger surface proof: in the same right cmux `surface:9`, `fill` changed the real textarea value, then explicit `activeElement.blur()` ran the app blur handler; JSON showed `nextAction=백혈구 수치 낮을 때 외식 기준 재확인`, history tail `다음 조치 변경`, active element `BODY`, and visible local `.document-action-feedback`. Screenshot `/tmp/carevault-surface9-iter19-document-next-action-local-feedback-pass-real-blur.png` captured the final state.
+  - PASS cleanup in browser: restored the dev-browser localStorage snapshot, reloaded, and verified original `nextAction=백혈구 수치가 낮을 때 식사 제한 기준 질문`, no `외식 기준 재확인` history entry, and no stale `.document-action-feedback`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `7bec5d2` (`Show document next action local feedback`).
