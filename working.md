@@ -14814,6 +14814,7 @@
     - `혈압·혈당·체온 입력`, visit summary, recent timeline, lab tracking, and document controls were visible after refresh.
   - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - PASS: committed and pushed to `origin/main` as `0273f7a` (`Guard restored record dates`).
 
 ## 2026-06-05 12:41 KST - Restored Vital Measurement Guard Iteration Note
 
