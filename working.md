@@ -14855,6 +14855,42 @@
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `fb75c28` (`Guard caregiver preset hydration`).
 
+## 2026-06-05 13:15 KST - Vital Input Decimal Parsing Guard Iteration Note
+
+- Improvement target:
+  - Blood-pressure, glucose, and temperature draft fields parsed browser number-input strings with `Number()`.
+  - Non-decimal clinical strings such as `0x80` or `1e2` could become saved measurements even though the UI should only accept ordinary decimal values users can read directly.
+- Code/design changes:
+  - Updated `src/vitalValidation.ts`.
+    - Restricted `parseOptionalNumberInput()` to plain decimal text before converting with `Number()`.
+    - Hex, exponent, and unit-suffixed strings now resolve to empty/invalid values and are blocked by the existing vital validation messages.
+  - Updated `src/vitalValidation.test.ts`.
+    - Added RED/GREEN regression coverage for `0x80`, `1e2`, and `128mmHg`.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for strict vital-entry number input parsing.
+- Verification so far:
+  - PASS: RED baseline before implementation: `npm test -- src/vitalValidation.test.ts` failed because `0x80` parsed to `128`.
+  - PASS: GREEN after implementation: `npm test -- src/vitalValidation.test.ts`, 1 file and 7 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 391 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright vital exponent-input smoke at `http://127.0.0.1:1420/#records`.
+    - `document.title`: `CareVault`.
+    - H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - Filling systolic blood pressure with `1e2` cleared the controlled input instead of saving `100`.
+    - Save status showed `혈압 수축기와 이완기를 0보다 크게 입력해주세요.`.
+    - Vital record count stayed 3 before and after the click; no exponent-derived blood-pressure row was saved.
+    - Page errors and console errors: none.
+  - PASS: Existing cmux right-side in-app browser in workspace `암관리` stayed on the existing CareVault tab and navigated in-place to `http://127.0.0.1:1420/#records`.
+    - No new browser tab was opened.
+    - `혈압·혈당·체온 입력`, saved vital summary, systolic/diastolic fields, save-preview standard check, vital add button, recent timeline, lab tracking, nutrition, and document controls were visible.
+  - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+
 ## 2026-06-05 12:50 KST - Restored Record Date Guard Iteration Note
 
 - Improvement target:

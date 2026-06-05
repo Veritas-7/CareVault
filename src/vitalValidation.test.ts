@@ -11,6 +11,12 @@ describe("parseOptionalNumberInput", () => {
     expect(parseOptionalNumberInput("128")).toBe(128);
     expect(parseOptionalNumberInput("146.5")).toBe(146.5);
   });
+
+  it("rejects non-decimal clinical input strings", () => {
+    expect(parseOptionalNumberInput("0x80")).toBeUndefined();
+    expect(parseOptionalNumberInput("1e2")).toBeUndefined();
+    expect(parseOptionalNumberInput("128mmHg")).toBeUndefined();
+  });
 });
 
 describe("validateVitalDraft", () => {
