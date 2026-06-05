@@ -14580,3 +14580,21 @@
   - PASS: stopped the local Vite preview server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - PASS: committed and pushed to `origin/main` as `838a7e6` (`Split production helper chunks`).
+
+## 2026-06-05 11:55 KST - Design Runtime Evidence Port Correction Iteration Note
+
+- Improvement target:
+  - A fresh design-contract sweep found the active `DESIGN.md` runtime evidence still pointed at `http://127.0.0.1:1431/`.
+  - The current verified CareVault browser and fixed Vite/Tauri port are `http://127.0.0.1:1420/`.
+- Code/design changes:
+  - Updated `DESIGN.md`.
+    - Corrected frontmatter `evidence.runtime` to `http://127.0.0.1:1420/`.
+    - Corrected the Runtime QA section to `http://127.0.0.1:1420/`.
+    - Added a changelog line for the runtime evidence port correction.
+- Verification so far:
+  - PASS: `rg "Runtime QA|runtime:|1431|1420" -n DESIGN.md` located the stale active runtime fields before the correction.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md`.
+  - PASS: post-correction `rg "Runtime QA|runtime:|1431|1420" -n DESIGN.md` shows active runtime and Runtime QA on `1420`; only historical changelog text still mentions `1431`.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged two-file diff.
+  - Pending: commit and push.

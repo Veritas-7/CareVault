@@ -62,7 +62,7 @@ performance:
   chunks: "Recharts, Lucide, health standards, cervical-care, and export helpers split below Vite warning threshold"
 evidence:
   source: "src/App.tsx, src/App.css, src/healthStandards.ts, src/cervicalCancerCare.ts, src/symptomSupportTemplates.ts"
-  runtime: "cmux workspace 암관리 right in-app browser at http://127.0.0.1:1431/"
+  runtime: "cmux workspace 암관리 right in-app browser at http://127.0.0.1:1420/"
 ---
 
 # DESIGN.md
@@ -402,7 +402,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - Korean standards: `src/healthStandards.ts`.
 - Cervical cancer care data: `src/cervicalCancerCare.ts`.
 - Symptom support data: `src/symptomSupportTemplates.ts`.
-- Runtime QA: cmux workspace `암관리` right in-app browser at `http://127.0.0.1:1431/`.
+- Runtime QA: cmux workspace `암관리` right in-app browser at `http://127.0.0.1:1420/`.
 - Worklog: `working.md`.
 
 ## Decisions Log
@@ -673,6 +673,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Normalized malformed persisted record scalar fields at hydration so bad dates, enum values, attachment fields, history entries, numbers, and labels cannot reach render or mirror paths.
 - 2026-06-05: Made backup import/export scope summaries count only usable object records so malformed array junk does not overstate imported or exported record counts.
 - 2026-06-05: Split stable health-standards, cervical-care, and export helper modules into named production chunks so the main app chunk stays below Vite's warning threshold.
+- 2026-06-05: Corrected active runtime evidence back to CareVault's fixed local Vite/Tauri port `1420` after cmux verification.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.
