@@ -14629,7 +14629,38 @@
   - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `26b1dc3` (`Guard SQLite schema rows`).
+
+## 2026-06-05 12:07 KST - SQLite Count Integer Parsing Iteration Note
+
+- Improvement target:
+  - `parseSqlCount()` was still using `Number.parseInt()`, which could silently accept partial strings such as `4 rows`, decimals such as `4.5`, or negative values.
+  - Normalized mirror/search count summaries should accept only trustworthy count values and treat malformed count output as unavailable.
+- Code/design changes:
+  - Updated `src/storage.ts`.
+    - Added a non-negative safe-integer count normalizer.
+    - Tightened number, bigint, and string count parsing so partial strings, decimals, negatives, and unsafe integers fall back to zero.
+  - Updated `src/storage.test.ts`.
+    - Added regression coverage for trimmed integer strings, negative numbers, decimals, unsafe integers, negative bigints, oversized bigints, partial strings, decimal strings, and negative strings.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for stricter SQLite count parsing.
+- Verification so far:
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: `npm test -- storage`, 1 file and 10 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright app-load smoke at 390x884.
+    - `document.title`: `CareVault`.
+    - `나의 건강 기록` H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - `진료 큐 복사` button visible.
+    - Page errors: 0; console errors: 0.
+  - PASS: existing cmux `암관리` right-side in-app browser stayed on the existing CareVault pane at `http://127.0.0.1:1420/#labs` with the H1, browser storage label, dashboard, records, labs, nutrition, and document controls visible.
+  - PASS: `npm run test`, 55 files and 378 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
+  - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `d966f9b` (`Guard SQLite count rows`).
 

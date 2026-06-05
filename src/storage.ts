@@ -372,12 +372,20 @@ function optionalText(value: string | undefined) {
   return value ?? null;
 }
 
+function normalizeSqlCountNumber(value: number) {
+  return Number.isSafeInteger(value) && value >= 0 ? value : 0;
+}
+
 export function parseSqlCount(value: unknown) {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "bigint") return Number(value);
+  if (typeof value === "number") return normalizeSqlCountNumber(value);
+  if (typeof value === "bigint") {
+    if (value < BigInt(0) || value > BigInt(Number.MAX_SAFE_INTEGER)) return 0;
+    return Number(value);
+  }
   if (typeof value === "string") {
-    const parsed = Number.parseInt(value, 10);
-    return Number.isFinite(parsed) ? parsed : 0;
+    const trimmed = value.trim();
+    if (!/^\d+$/.test(trimmed)) return 0;
+    return normalizeSqlCountNumber(Number(trimmed));
   }
   return 0;
 }

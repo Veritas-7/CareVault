@@ -229,9 +229,18 @@ describe("storage normalized mirror", () => {
   it("normalizes SQLite count return values", () => {
     expect(parseSqlCount(3)).toBe(3);
     expect(parseSqlCount("4")).toBe(4);
+    expect(parseSqlCount(" 6 ")).toBe(6);
     expect(parseSqlCount(BigInt(5))).toBe(5);
+    expect(parseSqlCount(-1)).toBe(0);
+    expect(parseSqlCount(1.5)).toBe(0);
+    expect(parseSqlCount(Number.MAX_SAFE_INTEGER + 1)).toBe(0);
+    expect(parseSqlCount(BigInt(-1))).toBe(0);
+    expect(parseSqlCount(BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1))).toBe(0);
     expect(parseSqlCount(null)).toBe(0);
     expect(parseSqlCount("not-a-count")).toBe(0);
+    expect(parseSqlCount("4 rows")).toBe(0);
+    expect(parseSqlCount("4.5")).toBe(0);
+    expect(parseSqlCount("-1")).toBe(0);
   });
 
   it("normalizes SQLite count result rows defensively", () => {
