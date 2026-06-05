@@ -244,6 +244,7 @@ import {
   formatCaregiverShareExportStatus,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
+  formatCaregiverShareResetDescription,
   getCaregiverShareSettingsPreset,
   hasCustomCaregiverShareSettings,
   normalizeCaregiverShareSettings,
@@ -3348,6 +3349,9 @@ function App() {
   const caregiverSharePreviewDescription = formatCaregiverSharePreviewDescription(
     state.caregiverShareSettings,
   );
+  const caregiverShareResetDescription = formatCaregiverShareResetDescription(
+    state.caregiverShareSettings,
+  );
   const backupExportDescription = formatCareVaultBackupExportDescription(state);
   const backupImportDescription = formatCareVaultBackupImportDescription();
   const visitPacketExportDescription = formatVisitPacketExportDescription(visitPacketRange);
@@ -3638,8 +3642,8 @@ function App() {
               className="caregiver-reset-button"
               onClick={resetCaregiverShareSettings}
               disabled={!hasCustomCaregiverSettings}
-              aria-label="보호자 공유 설정 초기화"
-              title="보호자 공유 설정 초기화"
+              aria-label={caregiverShareResetDescription}
+              title={caregiverShareResetDescription}
             >
               <RotateCcw aria-hidden="true" />
               공유 설정 초기화

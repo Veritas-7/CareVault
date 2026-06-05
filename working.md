@@ -14037,3 +14037,38 @@
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
   - Git commit and push will be reported in the final assistant output.
+
+## 2026-06-05 10:12 KST - Caregiver Reset Disabled Reason Iteration Note
+
+- Improvement target:
+  - The caregiver-share reset button correctly disabled itself when settings were already default, but its accessible name and hover title only said `보호자 공유 설정 초기화`.
+  - This made the disabled state less explicit than stale export-preview controls and hid why the reset action could not run.
+- Code/design changes:
+  - Updated `src/caregiverShareSettings.ts`.
+    - Added `formatCaregiverShareResetDescription()` to produce an action-context label for resettable settings and a disabled reason for default settings.
+  - Updated `src/caregiverShareSettings.test.ts`.
+    - Locked the custom-settings reset label and the default disabled-reason label.
+  - Updated `src/App.tsx`.
+    - Reused the reset description for both `aria-label` and `title` on the caregiver-share reset button.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for caregiver reset label/title disabled-reason parity.
+- Verification:
+  - PASS: `npm run test -- src/caregiverShareSettings.test.ts`, 1 file and 18 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: Disabled-button source scan.
+    - Caregiver reset now uses `caregiverShareResetDescription` for both `aria-label` and `title`.
+    - Stale export-preview copy/print/download controls remain backed by their shared disabled-action descriptions.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser only; no additional cmux browser tab was created.
+    - Omnibar stayed on `http://127.0.0.1:1420/#nutrition`.
+    - The reset button exposed `보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다` while disabled.
+  - PASS: Supplemental DOM assertion against the same running local dev server at 390x884.
+    - Initial reset button: disabled, 44px high, `aria-label` and `title` both `보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다`.
+    - After toggling profile redaction: enabled, 44px high, `aria-label` and `title` both included `프로필 가림` and ended with `기본값으로 되돌립니다`.
+    - After clicking reset: disabled again with the default disabled-reason label/title.
+  - PASS: `npm run test`, 54 files and 368 tests.
+  - PASS: `npm run build`.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
+  - Git commit and push will be reported in the final assistant output.

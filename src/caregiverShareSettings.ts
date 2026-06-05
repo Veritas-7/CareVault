@@ -297,6 +297,18 @@ export function formatCaregiverSharePreviewDescription(
   return `보호자 공유본 미리보기 · ${formatCaregiverShareSettingsCompactSummary(input)}`;
 }
 
+export function formatCaregiverShareResetDescription(
+  input: CaregiverShareSettingsInput | undefined,
+) {
+  if (!hasCustomCaregiverShareSettings(input)) {
+    return "보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다";
+  }
+
+  return `보호자 공유 설정 초기화 · ${formatCaregiverShareSettingsCompactSummary(
+    input,
+  )} · 기본값으로 되돌립니다`;
+}
+
 export function formatCaregiverShareExportStatus(
   input: CaregiverShareSettingsInput | undefined,
 ) {

@@ -13,6 +13,7 @@ import {
   formatCaregiverShareExportStatus,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
+  formatCaregiverShareResetDescription,
   formatCaregiverShareSettingsCompactSummary,
   getCaregiverShareSettingsPreset,
   hasCustomCaregiverShareSettings,
@@ -225,6 +226,17 @@ describe("caregiverShareSettings", () => {
     );
     expect(formatCaregiverSharePreviewStatus(settings)).toBe(
       `보호자 공유본 미리보기 생성 · ${compactSummary}`,
+    );
+  });
+
+  it("formats caregiver reset labels with action context and disabled reason", () => {
+    const settings = getCaregiverShareSettingsPreset("privacy-minimal")?.settings;
+
+    expect(formatCaregiverShareResetDescription(settings)).toBe(
+      "보호자 공유 설정 초기화 · 의도 정보 최소 · 프로필 가림 · 메모 포함 · 포함 5개 · 제외 2개 · 기본값으로 되돌립니다",
+    );
+    expect(formatCaregiverShareResetDescription(undefined)).toBe(
+      "보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다",
     );
   });
 
