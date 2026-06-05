@@ -828,6 +828,7 @@ function App() {
   const [symptomSaveFeedback, setSymptomSaveFeedback] = useState<string | null>(null);
   const [questionSaveFeedback, setQuestionSaveFeedback] = useState<string | null>(null);
   const [visitSaveFeedback, setVisitSaveFeedback] = useState<string | null>(null);
+  const [documentSaveFeedback, setDocumentSaveFeedback] = useState<string | null>(null);
   const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
   const [labPresetFeedback, setLabPresetFeedback] = useState<string | null>(null);
   const [labSaveFeedback, setLabSaveFeedback] = useState<string | null>(null);
@@ -1952,8 +1953,14 @@ function App() {
     });
   };
 
+  const updateDocumentDraft = (updates: Partial<CareDocument>) => {
+    setDocumentDraft((current) => ({ ...current, ...updates }));
+    setDocumentSaveFeedback(null);
+  };
+
   const addDocument = () => {
     if (!hasRequiredTextValues(documentDraft.title, documentDraft.body)) {
+      setDocumentSaveFeedback(null);
       setRecordFormValidationFeedback("document", recordRequiredFieldMessages.document);
       return;
     }
@@ -1998,7 +2005,9 @@ function App() {
     }
     setDocumentDraft({ ...emptyDocument, date: today });
     clearRecordFormValidationFeedback("document");
-    setActionSaveLabel(formatDocumentSavedStatusLabel(savedDocument));
+    const feedback = formatDocumentSavedStatusLabel(savedDocument);
+    setDocumentSaveFeedback(feedback);
+    setActionSaveLabel(feedback);
   };
 
   const updateDocumentReviewStatus = (
@@ -2096,13 +2105,12 @@ function App() {
       const attachmentExists = await exists(selected).catch(() => false);
       const attachmentName = extractFileName(selected);
       const attachmentStatus = attachmentExists ? "앱 샌드박스 복사됨" : "앱 샌드박스 경로 저장됨";
-      setDocumentDraft((current) => ({
-        ...current,
+      updateDocumentDraft({
         attachmentName,
         attachmentPath: selected,
         attachmentStorage: "tauri-sandbox",
         attachmentStatus,
-      }));
+      });
       documentDraftAttachmentFileRef.current = null;
       setSaveLabel(
         formatDocumentDraftAttachmentReadyStatusLabel(attachmentName, attachmentStatus),
@@ -2121,13 +2129,12 @@ function App() {
     documentDraftAttachmentPreviewUrlRef.current = isPreviewableImageAttachment(file.name)
       ? URL.createObjectURL(file)
       : null;
-    setDocumentDraft((current) => ({
-      ...current,
+    updateDocumentDraft({
       attachmentName: file.name,
       attachmentPath: undefined,
       attachmentStorage: "browser-reference",
       attachmentStatus: "브라우저 파일명 참조",
-    }));
+    });
     setSaveLabel(formatDocumentDraftAttachmentReferenceReadyStatusLabel(file.name));
   };
 
@@ -2136,13 +2143,12 @@ function App() {
     const attachmentStatus = documentDraft.attachmentStatus;
     documentDraftAttachmentFileRef.current = null;
     clearDocumentDraftAttachmentPreviewUrl();
-    setDocumentDraft((current) => ({
-      ...current,
+    updateDocumentDraft({
       attachmentName: undefined,
       attachmentPath: undefined,
       attachmentStorage: undefined,
       attachmentStatus: undefined,
-    }));
+    });
     setSaveLabel(
       formatDocumentDraftAttachmentClearedStatusLabel(attachmentName, attachmentStatus),
     );
@@ -6556,9 +6562,7 @@ function App() {
                   value={documentDraft.date}
                   aria-label={formControlDescriptions.documentDate}
                   title={formControlDescriptions.documentDate}
-                  onChange={(event) =>
-                    setDocumentDraft({ ...documentDraft, date: event.currentTarget.value })
-                  }
+                  onChange={(event) => updateDocumentDraft({ date: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -6568,8 +6572,7 @@ function App() {
                   aria-label={formControlDescriptions.documentCategory}
                   title={formControlDescriptions.documentCategory}
                   onChange={(event) =>
-                    setDocumentDraft({
-                      ...documentDraft,
+                    updateDocumentDraft({
                       category: event.currentTarget.value as DocumentCategory,
                     })
                   }
@@ -6588,8 +6591,7 @@ function App() {
                   aria-label={formControlDescriptions.documentReviewStatus}
                   title={formControlDescriptions.documentReviewStatus}
                   onChange={(event) =>
-                    setDocumentDraft({
-                      ...documentDraft,
+                    updateDocumentDraft({
                       reviewStatus: event.currentTarget.value as DocumentReviewStatus,
                     })
                   }
@@ -6608,9 +6610,7 @@ function App() {
                 value={documentDraft.title}
                 aria-label={formControlDescriptions.documentTitle}
                 title={formControlDescriptions.documentTitle}
-                onChange={(event) =>
-                  setDocumentDraft({ ...documentDraft, title: event.currentTarget.value })
-                }
+                onChange={(event) => updateDocumentDraft({ title: event.currentTarget.value })}
                 placeholder="예: 6월 혈액검사 결과"
               />
             </label>
@@ -6620,9 +6620,7 @@ function App() {
                 value={documentDraft.body}
                 aria-label={formControlDescriptions.documentBody}
                 title={formControlDescriptions.documentBody}
-                onChange={(event) =>
-                  setDocumentDraft({ ...documentDraft, body: event.currentTarget.value })
-                }
+                onChange={(event) => updateDocumentDraft({ body: event.currentTarget.value })}
                 placeholder="검사 수치, 의사 설명, 다음 질문을 그대로 입력"
               />
             </label>
@@ -6632,9 +6630,7 @@ function App() {
                 value={documentDraft.nextAction}
                 aria-label={formControlDescriptions.documentNextAction}
                 title={formControlDescriptions.documentNextAction}
-                onChange={(event) =>
-                  setDocumentDraft({ ...documentDraft, nextAction: event.currentTarget.value })
-                }
+                onChange={(event) => updateDocumentDraft({ nextAction: event.currentTarget.value })}
                 placeholder="예: 다음 진료 때 간수치 변화 기준 질문"
               />
             </label>
@@ -6644,9 +6640,7 @@ function App() {
                 value={documentDraft.tags}
                 aria-label={formControlDescriptions.documentTags}
                 title={formControlDescriptions.documentTags}
-                onChange={(event) =>
-                  setDocumentDraft({ ...documentDraft, tags: event.currentTarget.value })
-                }
+                onChange={(event) => updateDocumentDraft({ tags: event.currentTarget.value })}
                 placeholder="예: 혈액검사,항암,부작용"
               />
             </label>
@@ -6713,6 +6707,11 @@ function App() {
               <Plus aria-hidden="true" />
               서류 메모 저장
             </button>
+            {documentSaveFeedback ? (
+              <div className="document-save-feedback" role="status">
+                {documentSaveFeedback}
+              </div>
+            ) : null}
             {renderRecordFormFeedback("document")}
           </section>
 

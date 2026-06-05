@@ -2165,6 +2165,7 @@ textarea:focus-visible {
 }
 
 .lab-save-feedback,
+.document-save-feedback,
 .question-save-feedback,
 .symptom-save-feedback,
 .vital-save-feedback,
