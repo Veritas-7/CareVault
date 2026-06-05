@@ -17624,3 +17624,35 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `85d24b4` (`Focus stale export preview alerts`).
+
+## 2026-06-05 23:58 KST - Export Preview Action Target cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` says compact desktop actions must stay at least 32px high, while narrow cmux and mobile layouts require 44px visible control height.
+  - Real cmux QA found the export preview header actions were still 36px high in the constrained right pane.
+- Change:
+  - Added an export-preview-scoped CSS rule so `.export-preview-actions` secondary and text-icon buttons use a 44px minimum hit target.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `working.md` and the right pane was Worklog, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#labs`.
+  - RED/IMPROVEMENT: screenshot `/tmp/carevault-surface9-iter7-export-actions-36-red.png` captured the open caregiver export preview, and DOM measurement showed copy, print, download, and close preview actions all had `minHeight: 36px` and height 36px.
+  - PASS after fix: reloaded the same `surface:9` so the updated stylesheet contained `.export-preview-actions .secondary-inline-button, .export-preview-actions .text-icon-button { min-height: 44px; }`.
+  - PASS after fix: opened the caregiver preview again in the same right pane; copy, print, download, and close preview actions all measured `minHeight: 44px` and height 44px.
+  - PASS after fix: screenshot `/tmp/carevault-surface9-iter7-export-actions-44-after-reload.png` captured the 44px preview actions.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug/HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating only the port-1420 Vite node process after stdin was closed.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `baef913` (`Raise export preview action targets`).
