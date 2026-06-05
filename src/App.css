@@ -4149,6 +4149,19 @@ textarea:focus-visible {
   margin-top: 10px;
 }
 
+.lab-followup-feedback {
+  flex: 1 1 100%;
+  padding: 9px 11px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .lab-item mark {
   border-radius: 8px;
   padding: 4px 8px;

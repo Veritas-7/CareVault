@@ -107,7 +107,6 @@ import {
   buildLabQuestionPrompt,
   formatLabFollowupQuestionAddedStatus,
   getNextQuestionDate,
-  type LabQuestionSource,
 } from "./labQuestionPrompts";
 import {
   buildLabPanelSummary,
@@ -803,6 +802,10 @@ function App() {
   const [questionDraft, setQuestionDraft] = useState<CareQuestion>(emptyQuestion);
   const [questionDraftFocusRequest, setQuestionDraftFocusRequest] = useState(0);
   const [labDraft, setLabDraft] = useState<LabResult>(emptyLabResult);
+  const [labQuestionFeedback, setLabQuestionFeedback] = useState<{
+    labId: string;
+    message: string;
+  } | null>(null);
   const [documentActionBaselines, setDocumentActionBaselines] = useState<Record<string, string>>(
     {},
   );
@@ -2839,10 +2842,12 @@ function App() {
     setActionSaveLabel(formatLabResultSavedStatusLabel(savedLabResult));
   };
 
-  const addLabQuestion = (
-    lab: LabQuestionSource,
-    assessment: ReturnType<typeof assessLabTextValue>,
-  ) => {
+  const addLabQuestion = (lab: LabResult, assessment: ReturnType<typeof assessLabTextValue>) => {
+    const feedback = formatLabFollowupQuestionAddedStatus(
+      lab.name,
+      Boolean(buildLabSourceEvidenceParts(lab).sourceLabel),
+    );
+
     setState((current) => ({
       ...current,
       questions: [
@@ -2858,12 +2863,8 @@ function App() {
         },
       ],
     }));
-    setActionSaveLabel(
-      formatLabFollowupQuestionAddedStatus(
-        lab.name,
-        Boolean(buildLabSourceEvidenceParts(lab).sourceLabel),
-      ),
-    );
+    setLabQuestionFeedback({ labId: lab.id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const updateQuestionStatus = (id: string, status: QuestionStatus) => {
@@ -6115,6 +6116,11 @@ function App() {
                             <MessageSquare aria-hidden="true" />
                             질문으로 추가
                           </button>
+                          {labQuestionFeedback?.labId === result.id ? (
+                            <div className="lab-followup-feedback" role="status">
+                              {labQuestionFeedback.message}
+                            </div>
+                          ) : null}
                         </div>
                       ) : null}
                     </div>
