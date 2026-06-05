@@ -2931,11 +2931,12 @@ function App() {
     const presetLabel = labPresetChoice
       ? labPresets.find((candidate) => candidate.id === labPresetChoice)?.label
       : "";
+    const feedback = formatLabDraftResetStatusLabel(labDraft, presetLabel, today);
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
-    setLabPresetFeedback(null);
+    setLabPresetFeedback(feedback);
     clearRecordFormValidationFeedback("lab");
-    setSaveLabel(formatLabDraftResetStatusLabel(labDraft, presetLabel, today));
+    setSaveLabel(feedback);
   };
 
   const addLabResult = () => {
