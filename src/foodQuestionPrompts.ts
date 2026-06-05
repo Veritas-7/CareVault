@@ -1,6 +1,6 @@
 import type { FoodAssessment, FoodMatch } from "./healthRules";
 import type { ImmuneFoodSafetyContext } from "./immuneFoodContext";
-import type { QuestionPriority } from "./questionPriority";
+import { questionPriorityLabel, type QuestionPriority } from "./questionPriority";
 
 export type FoodQuestionDraftInput = {
   assessment: FoodAssessment;
@@ -101,4 +101,32 @@ export function buildFoodQuestionButtonLabels(sourceCount: number): FoodQuestion
     title: actionLabel,
     visibleLabel: "질문 초안",
   };
+}
+
+function formatFoodQuestionDraftSummary(
+  { assessment, foodQuery, immuneContext }: FoodQuestionDraftInput,
+  draft?: FoodQuestionDraft | null,
+) {
+  const queryLabel = foodQuery.trim() || "음식 입력 없음";
+  const sourceCount = draft?.sourceCount ?? countSources(assessment.matches, immuneContext);
+
+  return [
+    `입력 ${queryLabel}`,
+    `일치 ${assessment.matches.length}개`,
+    immuneContext ? `검사 연결 ${immuneContext.labValueLabel}` : "검사 연결 없음",
+    `근거 ${sourceCount}개`,
+  ].join(" · ");
+}
+
+export function formatFoodQuestionDraftReadyStatus(
+  input: FoodQuestionDraftInput,
+  draft: FoodQuestionDraft,
+) {
+  return `음식 판단 질문 초안 준비됨 · ${draft.topic} · 우선순위 ${questionPriorityLabel[
+    draft.priority
+  ]} · ${formatFoodQuestionDraftSummary(input, draft)}`;
+}
+
+export function formatFoodQuestionDraftUnavailableStatus(input: FoodQuestionDraftInput) {
+  return `음식 판단 질문 초안 준비 실패 · ${formatFoodQuestionDraftSummary(input)}`;
 }

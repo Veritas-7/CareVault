@@ -117,6 +117,8 @@ import {
 import {
   buildFoodQuestionButtonLabels,
   buildFoodQuestionDraft,
+  formatFoodQuestionDraftReadyStatus,
+  formatFoodQuestionDraftUnavailableStatus,
 } from "./foodQuestionPrompts";
 import {
   buildCareActionQueue,
@@ -1111,14 +1113,17 @@ function App() {
     () => buildFoodPanelSummary(foodAssessment.matches, immuneFoodSafetyContext?.sourceLabels),
     [foodAssessment.matches, immuneFoodSafetyContext],
   );
-  const foodQuestionDraft = useMemo(
-    () =>
-      buildFoodQuestionDraft({
-        assessment: foodAssessment,
-        foodQuery: state.foodQuery,
-        immuneContext: immuneFoodSafetyContext,
-      }),
+  const foodQuestionDraftInput = useMemo(
+    () => ({
+      assessment: foodAssessment,
+      foodQuery: state.foodQuery,
+      immuneContext: immuneFoodSafetyContext,
+    }),
     [foodAssessment, immuneFoodSafetyContext, state.foodQuery],
+  );
+  const foodQuestionDraft = useMemo(
+    () => buildFoodQuestionDraft(foodQuestionDraftInput),
+    [foodQuestionDraftInput],
   );
   const foodQuestionButtonLabels = useMemo(
     () => buildFoodQuestionButtonLabels(foodQuestionDraft?.sourceCount ?? 0),
@@ -2629,7 +2634,7 @@ function App() {
 
   const applyFoodQuestionDraft = () => {
     if (!foodQuestionDraft) {
-      setSaveLabel("음식 판단 질문 초안을 만들 수 없습니다.");
+      setSaveLabel(formatFoodQuestionDraftUnavailableStatus(foodQuestionDraftInput));
       return;
     }
 
@@ -2641,7 +2646,7 @@ function App() {
       status: "open",
       topic: foodQuestionDraft.topic,
     }));
-    setSaveLabel("음식 판단 질문 초안 준비됨");
+    setSaveLabel(formatFoodQuestionDraftReadyStatus(foodQuestionDraftInput, foodQuestionDraft));
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 

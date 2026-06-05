@@ -4,6 +4,8 @@ import { buildImmuneFoodSafetyContext } from "./immuneFoodContext";
 import {
   buildFoodQuestionButtonLabels,
   buildFoodQuestionDraft,
+  formatFoodQuestionDraftReadyStatus,
+  formatFoodQuestionDraftUnavailableStatus,
 } from "./foodQuestionPrompts";
 import { formatQuestionClipboardText } from "./questionClipboard";
 
@@ -20,11 +22,12 @@ describe("foodQuestionPrompts", () => {
         note: "면역저하 식품 안전 질문과 연결",
       },
     ]);
-    const draft = buildFoodQuestionDraft({
+    const input = {
       assessment: assessCancerFood("브로콜리, 생굴, 자몽 주스"),
       foodQuery: "브로콜리, 생굴, 자몽 주스",
       immuneContext,
-    });
+    };
+    const draft = buildFoodQuestionDraft(input);
 
     expect(draft).toMatchObject({
       priority: "high",
@@ -41,6 +44,9 @@ describe("foodQuestionPrompts", () => {
     );
     expect(draft?.question).not.toContain("먹지 마세요");
     expect(draft?.question).not.toContain("치료하세요");
+    expect(draft ? formatFoodQuestionDraftReadyStatus(input, draft) : "").toBe(
+      "음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 브로콜리, 생굴, 자몽 주스 · 일치 3개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 4개",
+    );
 
     const copied = formatQuestionClipboardText({
       answer: "",
@@ -77,20 +83,25 @@ describe("foodQuestionPrompts", () => {
   });
 
   it("returns null for an empty or unclassified food check", () => {
-    expect(
-      buildFoodQuestionDraft({
-        assessment: assessCancerFood(""),
-        foodQuery: "",
-        immuneContext: null,
-      }),
-    ).toBeNull();
-    expect(
-      buildFoodQuestionDraft({
-        assessment: assessCancerFood("흰쌀밥"),
-        foodQuery: "흰쌀밥",
-        immuneContext: null,
-      }),
-    ).toBeNull();
+    const emptyInput = {
+      assessment: assessCancerFood(""),
+      foodQuery: "",
+      immuneContext: null,
+    };
+    const unclassifiedInput = {
+      assessment: assessCancerFood("흰쌀밥"),
+      foodQuery: "흰쌀밥",
+      immuneContext: null,
+    };
+
+    expect(buildFoodQuestionDraft(emptyInput)).toBeNull();
+    expect(formatFoodQuestionDraftUnavailableStatus(emptyInput)).toBe(
+      "음식 판단 질문 초안 준비 실패 · 입력 음식 입력 없음 · 일치 0개 · 검사 연결 없음 · 근거 0개",
+    );
+    expect(buildFoodQuestionDraft(unclassifiedInput)).toBeNull();
+    expect(formatFoodQuestionDraftUnavailableStatus(unclassifiedInput)).toBe(
+      "음식 판단 질문 초안 준비 실패 · 입력 흰쌀밥 · 일치 0개 · 검사 연결 없음 · 근거 0개",
+    );
   });
 
   it("builds accessible food question button labels with evidence scope", () => {
