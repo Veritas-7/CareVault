@@ -6,6 +6,7 @@ import {
   formatCareVaultBackupExportDescription,
   formatCareVaultBackupExportStatus,
   formatCareVaultBackupImportDescription,
+  formatCareVaultBackupImportFailureStatus,
   formatCareVaultBackupImportStatus,
   formatCareVaultBackupImportSuccessDetail,
   formatCareVaultBackupScopeCompactSummary,
@@ -220,6 +221,9 @@ describe("backupState", () => {
     );
     expect(formatCareVaultBackupImportStatus(importedState)).toBe(
       "백업 가져옴 · 프로필 포함 · 기록 6개 · 공유 설정 포함 · 첨부 파일명 2개",
+    );
+    expect(formatCareVaultBackupImportFailureStatus()).toBe(
+      "백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음",
     );
     expect(formatCareVaultBackupImportSuccessDetail(importedState)).not.toContain(
       "/Users/wj/private",

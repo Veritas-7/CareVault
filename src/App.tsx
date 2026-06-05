@@ -334,6 +334,7 @@ import {
   formatCareVaultBackupExportDescription,
   formatCareVaultBackupExportStatus,
   formatCareVaultBackupImportDescription,
+  formatCareVaultBackupImportFailureStatus,
   formatCareVaultBackupImportStatus,
   formatCareVaultBackupImportSuccessDetail,
   prepareCareVaultBackupImport,
@@ -3265,7 +3266,7 @@ function App() {
         title: "백업 가져오기 실패",
         tone: "error",
       });
-      setSaveLabel("가져오기 실패: 기존 기록 유지");
+      setSaveLabel(formatCareVaultBackupImportFailureStatus());
     };
 
     const reader = new FileReader();

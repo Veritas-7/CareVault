@@ -160,6 +160,10 @@ export function formatCareVaultBackupImportStatus(state: BackupState) {
   return `백업 가져옴 · ${formatCareVaultBackupScopeCompactSummary(state)}`;
 }
 
+export function formatCareVaultBackupImportFailureStatus() {
+  return "백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음";
+}
+
 export function extractCareVaultBackupState(payload: unknown) {
   if (!isRecord(payload)) return null;
   const candidate = isRecord(payload.state) ? payload.state : payload;
