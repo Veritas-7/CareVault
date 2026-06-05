@@ -17350,3 +17350,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `c0e4e3e` (`Clarify symptom support draft feedback`).
+
+## 2026-06-05 22:48 KST - Cervical Screening Draft Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires profile-based cervical screening quick-checks and question drafts to preserve the screening status plus official source context.
+  - Source audit found `buildCervicalCancerScreeningQuestion()` already preserved status, detail, action, and source URLs in the draft body, but the post-action feedback still collapsed to generic `자궁경부암 검진 질문 초안 준비됨`.
+- Change:
+  - Added `formatCervicalCancerScreeningQuestionDraftReadyStatus()` in `src/cervicalCancerCare.ts`.
+  - Updated `App.tsx` screening-question draft handler to include the current screening summary status, source count, and official source labels in ready feedback.
+  - Added focused regression coverage in `src/cervicalCancerCare.test.ts` beside the source-retaining clinician-question test.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM eval timed out waiting for JavaScript result.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` on standalone retry and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/cervicalCancerCare.test.ts`, 24 tests.
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/cervicalCancerCare.ts src/cervicalCancerCare.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `d8278e9` (`Clarify cervical screening draft feedback`).
