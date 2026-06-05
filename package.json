@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "runtime:doctor": "bash scripts/verify_runtime_clean.sh",
     "runtime:doctor:dev": "bash scripts/verify_runtime_clean.sh --expect-dev",
+    "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
     "tauri:dev:clean": "npm run runtime:doctor && npm run tauri -- dev",
     "preview": "vite preview",
     "tauri": "tauri"

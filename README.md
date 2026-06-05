@@ -119,6 +119,7 @@ npm install
 npm run runtime:doctor
 npm run tauri:dev:clean
 npm run runtime:doctor:dev
+npm run runtime:doctor:test
 npm run test
 npm run build
 ```
@@ -129,6 +130,9 @@ attachment can relaunch the built `CareVault.app`; if that happens,
 `runtime:doctor:dev` fails until the release-bundle process is closed. The dev
 server intentionally binds to `127.0.0.1:1420` so the existing cmux `암관리`
 browser pane and Tauri dev runtime inspect the same current-source server.
+`runtime:doctor:test` runs fake-process fixtures for the release-shadow,
+wrong-port-owner, and relative-debug-command cases so the guard stays covered
+without launching Tauri.
 
 ## Storage Notes
 
