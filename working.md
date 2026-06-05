@@ -18706,3 +18706,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `b77baf0` (`Show lab result save local feedback`).
+
+## 2026-06-06 04:46 KST - Question Save Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires add/save validation and success feedback to render as local visible `role=status` feedback next to the affected form action, not only in the global topbar.
+  - Real cmux QA found saving a new `진료 전 질문` updated the global top status, counts, and timeline, but no local `.question-save-feedback` appeared next to the `질문 추가` action.
+- Change:
+  - Added transient `questionSaveFeedback` state in `src/App.tsx`.
+  - Added `updateQuestionDraft()` so user edits clear stale local save feedback while preserving existing draft behavior.
+  - Updated `addQuestion()` to compute the saved status once and show it both in the global save chip and local `.question-save-feedback[role=status]`.
+  - Cleared stale question save feedback when question draft helper actions replace the draft.
+  - Added `.question-save-feedback` to the compact wrapping save-feedback style in `src/App.css`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the visible cmux window was `블로그`; that evidence was rejected and the flow continued only after switching back to the visible `암관리` workspace.
+  - RED/IMPROVEMENT: in visible `암관리`, entered topic `항암 부작용` and question `피로가 심할 때 항암 일정 조정 기준은 무엇인가요?`, then clicked `질문 추가`. The top status showed `항암 부작용 질문 추가됨 · 우선순위 다음 진료`, counts and timeline updated, but local `.question-save-feedback` was absent. Screenshot `/tmp/carevault-surface9-iter39-question-save-local-feedback-red.png` captured the missing local feedback.
+  - PASS after fix: repeated the same visible `암관리` flow; the local status row next to the question action showed `항암 부작용 질문 추가됨 · 우선순위 다음 진료`, the saved question appeared in the list, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter39-question-save-local-feedback-pass.png` captured the local feedback.
+  - PASS cleanup in browser: restored the saved `window.__carevaultBaselineQuestion` localStorage snapshot and re-verified visible `암관리` had 8 total records, 1 saved question, no stale question save feedback, and the default `질문 추가` action label.
+  - PASS: `cmux browser surface:9 errors` returned `No browser errors`.
+  - PASS: Stitch project context remained `projects/10602093894318676839`, private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/entryValidation.test.ts src/questionClipboard.test.ts src/questionDisplay.test.ts src/questionMetric.test.ts src/questionPriority.test.ts src/questionStatus.test.ts`, 34 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server via its running session after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `c9eb2be` (`Show question save local feedback`).
