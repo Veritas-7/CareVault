@@ -15561,3 +15561,32 @@
   - PASS: post-shutdown `npm run runtime:doctor` confirmed port 1420 was free and no CareVault release/dev processes remained.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `7ef5563` (`Add active Tauri dev verification`); `git ls-remote origin refs/heads/main` returned `7ef5563456c328c248c5621a6b65c3e4be2d2e17`.
+
+## 2026-06-05 16:35 KST - Runtime Doctor Fixture Coverage
+
+- Improvement target:
+  - The active runtime doctor now protects current-source desktop verification, but the shell guard itself had no fixture coverage.
+  - Add deterministic fake-process tests for the exact hazards found during live QA so future guard edits do not silently trust stale release windows or wrong port owners.
+- Change:
+  - Added `scripts/test_runtime_doctor.sh`.
+    - Uses temporary fake `ps` and `lsof` commands instead of starting Tauri.
+    - Covers clean runtime success, active current-source dev success, release-bundle shadow failure, wrong port-owner failure, and relative `target/debug/carevault` process detection.
+  - Added `npm run runtime:doctor:test`.
+  - Updated `README.md` and `DESIGN.md` with the fixture-test contract.
+- Verification:
+  - PASS: `npm run runtime:doctor:test`.
+    - PASS: `clean-empty-runtime`.
+    - PASS: `dev-current-source-runtime`.
+    - PASS: `dev-release-shadow`.
+    - PASS: `dev-port-owner-mismatch`.
+    - PASS: `clean-relative-debug-detected`.
+  - PASS: `bash -n scripts/verify_runtime_clean.sh scripts/test_runtime_doctor.sh`.
+  - PASS: `npm run runtime:doctor`.
+  - PASS: `npm run test`, 56 files and 410 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md package.json scripts/test_runtime_doctor.sh`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+  - PASS: committed and pushed to `origin/main` as `4e46100` (`Add runtime doctor fixture tests`); `git ls-remote origin refs/heads/main` returned `4e461005e8956176cf17695ac7c5d6d25a30b342`.
