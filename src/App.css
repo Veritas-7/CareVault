@@ -4077,6 +4077,10 @@ textarea:focus-visible {
   line-height: 1.5;
 }
 
+.lab-followup-actions .secondary-inline-button {
+  min-height: 44px;
+}
+
 .lab-note-body {
   display: block;
   white-space: pre-line;
