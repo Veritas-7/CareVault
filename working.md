@@ -18741,3 +18741,39 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `c9eb2be` (`Show question save local feedback`).
+
+## 2026-06-06 04:58 KST - Vital Save Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires add/save success feedback to render as a local visible `role=status` row next to the affected form action, not only in the global topbar.
+  - Real cmux QA found saving a blood pressure record updated the global top status, counts, chart, and timeline, but no local `.vital-save-feedback` appeared below the `혈압 기록 추가` action.
+- Change:
+  - Added transient `vitalSaveFeedback` state in `src/App.tsx`.
+  - Added `updateVitalDraft()` so user edits clear stale local save feedback while preserving existing draft behavior.
+  - Updated `addVital()` to compute the saved status once and show it both in the global save chip and local `.vital-save-feedback[role=status]`.
+  - Cleared stale vital save feedback on vital validation errors and when the vital-standard helper action creates or declines a question draft.
+  - Added `.vital-save-feedback` to the compact wrapping save-feedback style in `src/App.css`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the visible cmux window was `블로그`; that evidence was rejected and the flow continued only after switching back to the visible `암관리` workspace.
+  - RED/IMPROVEMENT: in visible `암관리`, clicked `혈압 기록 추가 · 혈압 128/78 mmHg · 주의혈압 범위`. The top status showed `혈압 기록 추가됨 · 주의혈압 범위`, counts and timeline updated, but local `.vital-save-feedback` was absent. Screenshot `/tmp/carevault-surface9-iter40-vital-save-local-feedback-red.png` captured the missing local feedback.
+  - PASS after fix: repeated the same visible `암관리` flow; the local status row below the vital action showed `혈압 기록 추가됨 · 주의혈압 범위`, while the top status and saved record state matched. Screenshot `/tmp/carevault-surface9-iter40-vital-save-local-feedback-pass.png` captured the local feedback.
+  - CORRECTED: after PASS screenshot and browser-error capture, Computer Use showed the visible cmux workspace had switched to `working.md`; any post-switch browser evidence was rejected until `암관리` was selected and verified again.
+  - PASS cleanup in browser: the reload-scoped baseline variable was unavailable, so the test-added `2026-06-05` blood pressure row was filtered from `localStorage.carevault.v1.vitals`; after reload, Computer Use confirmed visible `암관리` had 8 total records, 3 vitals, no stale vital save feedback, and the default `혈압 기록 추가` action.
+  - PASS: `cmux browser surface:9 errors` returned `No browser errors`.
+  - PASS: Stitch project context remained `projects/10602093894318676839`, private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/entryValidation.test.ts src/vitalAssessmentEvidence.test.ts src/vitalChartData.test.ts src/vitalMetric.test.ts src/vitalRecordLabels.test.ts src/vitalTimelineDisplay.test.ts src/vitalValidation.test.ts`, 34 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `6a46b9b` (`Show vital save local feedback`).
