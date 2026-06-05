@@ -16385,3 +16385,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `697065a` (`Clarify caregiver preset select labels`).
+
+## 2026-06-05 19:57 KST - Stale Preview Fresh Action Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires stale-alert fresh-preview buttons to expose scoped visible labels plus preview-specific accessible names and hover titles that name the changed state being applied.
+  - Source audit found the five fresh-preview `aria-label`/title strings were correct but built inline in `App.tsx`, so the caregiver-settings, caregiver-records, visit-range, visit-records, and CSV-records refresh labels had no focused regression coverage.
+- Change:
+  - Added `ExportPreviewFreshActionReason` and `formatExportPreviewFreshActionDescription()` in `src/exportPreviewSummary.ts`.
+  - Updated `App.tsx` stale-preview refresh button descriptions to reuse the shared helper while preserving the existing Korean strings.
+  - Added focused tests for all five stale-preview fresh action descriptions.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, and `cmux browser surface:9 get title` returned `CareVault`.
+  - BLOCKED: same-surface snapshot still returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, empty `title`, `.app-shell` count `0`, fresh-preview button count `0`, and empty body text.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/exportPreviewSummary.test.ts`, 7 tests.
+  - PASS: `npm run test`, 60 files and 439 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/exportPreviewSummary.ts src/exportPreviewSummary.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `26cb027` (`Cover stale preview fresh action labels`).
