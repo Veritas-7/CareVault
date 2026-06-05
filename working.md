@@ -17589,3 +17589,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `c4ab8f0` (`Keep responsive navigation sticky`).
+
+## 2026-06-05 23:52 KST - Caregiver Stale Preview Alert cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires stale caregiver previews to block copy/print/download when shared settings or records change until regenerated, with settings-change alerts taking precedence.
+  - Real cmux QA found the stale state logic correctly disabled preview actions after changing the caregiver section selection, but the alert and action buttons stayed far below the visible viewport.
+- Change:
+  - Added focus and immediate scroll handling for stale export preview alerts in `src/App.tsx`.
+  - Made stale alert containers programmatically focusable so the disabled-action reason becomes the current visible feedback after a stale preview transition.
+  - Scoped the scroll target to the first stale alert inside the active preview panel, preserving the existing alert precedence order.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `working.md` and the right pane was Worklog, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#labs`.
+  - RED/IMPROVEMENT: after generating a caregiver preview and toggling the `질문` section off, stale alert existed with aria `보호자 공유본 미리보기 변경 감지`, but it remained off-screen around y=16155 while the visible scroll position stayed near the top controls.
+  - PASS after fix: restored `질문` to included, regenerated the caregiver preview, toggled `질문` off again, and the stale alert moved into view at y=412 with focus on `.export-preview-stale-alert`.
+  - PASS after fix: copy, print, and download preview actions were disabled with reason `공유 설정이 바뀌어 다시 생성이 필요합니다.` while the close action remained enabled.
+  - PASS after fix: screenshot `/tmp/carevault-surface9-iter6-stale-alert-visible.png` captured the visible stale alert and disabled preview actions in the same right cmux pane.
+  - PASS cleanup in browser: restored `질문` to included; all seven caregiver share sections were checked again. Screenshot `/tmp/carevault-surface9-iter6-question-restored.png` captured the restored state.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug/HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `85d24b4` (`Focus stale export preview alerts`).
