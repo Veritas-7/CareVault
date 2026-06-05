@@ -824,6 +824,7 @@ function App() {
   const [symptomSupportQuestionFeedback, setSymptomSupportQuestionFeedback] = useState<
     string | null
   >(null);
+  const [visitSaveFeedback, setVisitSaveFeedback] = useState<string | null>(null);
   const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
   const [labPresetFeedback, setLabPresetFeedback] = useState<string | null>(null);
   const [labSaveFeedback, setLabSaveFeedback] = useState<string | null>(null);
@@ -1882,19 +1883,27 @@ function App() {
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
+  const updateVisitDraft = (updates: Partial<VisitEntry>) => {
+    setVisitDraft((current) => ({ ...current, ...updates }));
+    setVisitSaveFeedback(null);
+  };
+
   const addVisit = () => {
     if (!hasRequiredTextValues(visitDraft.hospital, visitDraft.reason)) {
+      setVisitSaveFeedback(null);
       setRecordFormValidationFeedback("visit", recordRequiredFieldMessages.visit);
       return;
     }
 
+    const feedback = formatVisitAddedStatus(visitDraft);
     setState((current) => ({
       ...current,
       visits: [...current.visits, { ...visitDraft, id: createId("visit") }],
     }));
     setVisitDraft({ ...emptyVisit, date: today });
     clearRecordFormValidationFeedback("visit");
-    setActionSaveLabel(formatVisitAddedStatus(visitDraft));
+    setVisitSaveFeedback(feedback);
+    setActionSaveLabel(feedback);
   };
 
   const createDocumentHistory = (
@@ -5417,7 +5426,7 @@ function App() {
                   value={visitDraft.date}
                   aria-label={formControlDescriptions.visitDate}
                   title={formControlDescriptions.visitDate}
-                  onChange={(event) => setVisitDraft({ ...visitDraft, date: event.currentTarget.value })}
+                  onChange={(event) => updateVisitDraft({ date: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -5426,7 +5435,7 @@ function App() {
                   value={visitDraft.hospital}
                   aria-label={formControlDescriptions.visitHospital}
                   title={formControlDescriptions.visitHospital}
-                  onChange={(event) => setVisitDraft({ ...visitDraft, hospital: event.currentTarget.value })}
+                  onChange={(event) => updateVisitDraft({ hospital: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -5435,7 +5444,7 @@ function App() {
                   value={visitDraft.reason}
                   aria-label={formControlDescriptions.visitReason}
                   title={formControlDescriptions.visitReason}
-                  onChange={(event) => setVisitDraft({ ...visitDraft, reason: event.currentTarget.value })}
+                  onChange={(event) => updateVisitDraft({ reason: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -5445,7 +5454,7 @@ function App() {
                   value={visitDraft.nextDate}
                   aria-label={formControlDescriptions.visitNextDate}
                   title={formControlDescriptions.visitNextDate}
-                  onChange={(event) => setVisitDraft({ ...visitDraft, nextDate: event.currentTarget.value })}
+                  onChange={(event) => updateVisitDraft({ nextDate: event.currentTarget.value })}
                 />
               </label>
             </div>
@@ -5455,7 +5464,7 @@ function App() {
                 value={visitDraft.summary}
                 aria-label={formControlDescriptions.visitSummary}
                 title={formControlDescriptions.visitSummary}
-                onChange={(event) => setVisitDraft({ ...visitDraft, summary: event.currentTarget.value })}
+                onChange={(event) => updateVisitDraft({ summary: event.currentTarget.value })}
               />
             </label>
             <label className="wide-label">
@@ -5464,7 +5473,7 @@ function App() {
                 value={visitDraft.plan}
                 aria-label={formControlDescriptions.visitPlan}
                 title={formControlDescriptions.visitPlan}
-                onChange={(event) => setVisitDraft({ ...visitDraft, plan: event.currentTarget.value })}
+                onChange={(event) => updateVisitDraft({ plan: event.currentTarget.value })}
               />
             </label>
             <button
@@ -5477,6 +5486,11 @@ function App() {
               <Plus aria-hidden="true" />
               방문 기록 추가
             </button>
+            {visitSaveFeedback ? (
+              <div className="visit-save-feedback" role="status">
+                {visitSaveFeedback}
+              </div>
+            ) : null}
             {renderRecordFormFeedback("visit")}
           </section>
         </section>

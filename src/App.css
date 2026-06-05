@@ -2164,7 +2164,8 @@ textarea:focus-visible {
   overflow-wrap: anywhere;
 }
 
-.lab-save-feedback {
+.lab-save-feedback,
+.visit-save-feedback {
   margin-top: 10px;
   padding: 9px 11px;
   border: 1px solid #b9dfd6;
