@@ -307,6 +307,7 @@ import {
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
   formatCaregiverShareResetDescription,
+  formatCaregiverShareSectionSummaryAriaLabel,
   formatCaregiverShareSectionToggleLabel,
   getCaregiverShareSettingsPreset,
   hasCustomCaregiverShareSettings,
@@ -3240,6 +3241,8 @@ function App() {
   const caregiverShareSectionSummary = buildCaregiverShareSectionSummary(
     state.caregiverShareSettings,
   );
+  const caregiverShareSectionSummaryAriaLabel =
+    formatCaregiverShareSectionSummaryAriaLabel(caregiverShareSectionSummary);
   const caregiverShareSettingsPanelSummary = buildCaregiverShareSettingsPanelSummary(
     state.caregiverShareSettings,
   );
@@ -3567,7 +3570,11 @@ function App() {
                 );
               })}
             </fieldset>
-            <div className="caregiver-section-summary" role="status" aria-label="보호자 공유본 포함 요약">
+            <div
+              className="caregiver-section-summary"
+              role="status"
+              aria-label={caregiverShareSectionSummaryAriaLabel}
+            >
               <strong>공유 섹션</strong>
               <span>{caregiverShareSectionSummary.includedText}</span>
               <small>제외 {caregiverShareSectionSummary.excludedText}</small>

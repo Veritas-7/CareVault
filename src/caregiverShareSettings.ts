@@ -223,6 +223,16 @@ export function buildCaregiverShareSectionSummary(
   };
 }
 
+export function formatCaregiverShareSectionSummaryAriaLabel(
+  summary: CaregiverShareSectionSummary,
+) {
+  return [
+    "보호자 공유본 포함 요약",
+    `포함 ${summary.included.length}개: ${summary.includedText}`,
+    `제외 ${summary.excluded.length}개: ${summary.excludedText}`,
+  ].join(" · ");
+}
+
 export function buildCaregiverShareSettingsFingerprint(
   input: CaregiverShareSettingsInput | undefined,
 ) {

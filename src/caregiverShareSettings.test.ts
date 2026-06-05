@@ -16,6 +16,7 @@ import {
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
   formatCaregiverShareResetDescription,
+  formatCaregiverShareSectionSummaryAriaLabel,
   formatCaregiverShareSectionToggleLabel,
   formatCaregiverShareSettingsCompactSummary,
   getCaregiverShareSettingsPreset,
@@ -147,6 +148,9 @@ describe("caregiverShareSettings", () => {
     ]);
     expect(summary.includedText).toBe("진료, 질문, 서류, 검사");
     expect(summary.excludedText).toBe("증상, 음식, 혈압·혈당·체온");
+    expect(formatCaregiverShareSectionSummaryAriaLabel(summary)).toBe(
+      "보호자 공유본 포함 요약 · 포함 4개: 진료, 질문, 서류, 검사 · 제외 3개: 증상, 음식, 혈압·혈당·체온",
+    );
   });
 
   it("shows no excluded sections when all caregiver sections are included", () => {
