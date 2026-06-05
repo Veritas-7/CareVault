@@ -18332,3 +18332,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `082f414` (`Show cervical care copy local feedback`).
+
+## 2026-06-06 03:02 KST - Food Question Draft Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires food-judgment question-draft controls to fill the editable pre-visit question form with food reasons, low-lab context, and parseable source lines; every new control also needs visible feedback or a clear state change in the constrained cmux right pane.
+  - Real cmux QA found `음식 판단 진료 질문 초안 만들기` filled the question form and updated the top save-status chip, but the `암환자 음식 판단` panel had no local `role=status` confirmation near the action.
+- Change:
+  - Added transient `foodQuestionDraftFeedback` UI state in `src/App.tsx`.
+  - Updated `applyFoodQuestionDraft()` so unavailable and ready branches both set local nutrition-panel feedback while preserving existing top save-status behavior.
+  - Cleared stale food-question draft feedback when the food query changes.
+  - Rendered `.food-question-draft-feedback` inside the food panel and styled it as a compact wrapping status row.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use showed cmux had switched to `블로그`, so that WriteFlow pane was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: clicked `음식 판단 진료 질문 초안 만들기`; the top status showed `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 브로콜리, 현미밥, 베이컨, 자몽 주스 · 일치 4개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 4개`, and the question form filled, but local `.food-question-draft-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter28-food-question-draft-local-feedback-red.png` captured the missing panel feedback.
+  - PASS after fix: reloaded the same surface and clicked the same food question draft button; the food panel showed visible local `role=status` feedback with the same matched-food, low-lab, priority, and source-count summary, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter28-food-question-draft-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: reloaded `surface:9` and verified no stale `.food-question-draft-feedback`, the question button returned to default `질문 추가`, and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/foodQuestionPrompts.test.ts src/foodMetric.test.ts`, 10 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `64a6a71` (`Show food question draft local feedback`).
