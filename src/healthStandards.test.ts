@@ -29,6 +29,7 @@ import {
   formatProfileWaistStandardNote,
   formatVitalInputStandardHelp,
   formatVitalSavePreviewLabel,
+  formatVitalStandardQuestionDraftActionLabel,
   getHealthStandardCoverage,
   getImplementedStandardCount,
   healthStandardRangeFilterOptions,
@@ -674,6 +675,18 @@ describe("healthStandards", () => {
         standardSexApplicability: "성인 남녀 공통",
       }),
     ).toBe("혈당 191 mg/dL (식후 2시간) · 식후 목표 초과 · 성인 남녀 공통 · 당뇨 추적 혈당");
+  });
+
+  it("formats vital standard question draft action labels", () => {
+    expect(formatVitalStandardQuestionDraftActionLabel("혈압")).toBe(
+      "혈압 기준 진료 질문 초안 만들기",
+    );
+    expect(formatVitalStandardQuestionDraftActionLabel(" 체온 ")).toBe(
+      "체온 기준 진료 질문 초안 만들기",
+    );
+    expect(formatVitalStandardQuestionDraftActionLabel("")).toBe(
+      "활력 기준 진료 질문 초안 만들기",
+    );
   });
 
   it("builds source-backed clinician question drafts from vital input standards", () => {

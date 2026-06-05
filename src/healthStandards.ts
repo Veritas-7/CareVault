@@ -1336,6 +1336,11 @@ export function formatVitalSavePreviewLabel(input: VitalSavePreviewLabelInput) {
     .join(" · ");
 }
 
+export function formatVitalStandardQuestionDraftActionLabel(measurementLabel: string) {
+  const normalizedLabel = measurementLabel.trim() || "활력";
+  return `${normalizedLabel} 기준 진료 질문 초안 만들기`;
+}
+
 export function buildVitalStandardQuestionDraft(
   input: VitalStandardQuestionDraftInput,
 ): VitalStandardQuestionDraft | null {

@@ -84,6 +84,7 @@ import {
   formatProfileWaistStandardNote,
   formatVitalInputStandardHelp,
   formatVitalSavePreviewLabel,
+  formatVitalStandardQuestionDraftActionLabel,
   getHealthStandardCoverage,
   healthStandardStatusLabel,
   healthStandardRangeFilterOptions,
@@ -1501,6 +1502,9 @@ function App() {
     vitalDraftAssessment && vitalDraftSavePreviewLabel
       ? `저장 전 기준 확인: ${vitalDraftSavePreviewLabel}. ${vitalDraftAssessment.summary}`
       : undefined;
+  const vitalDraftQuestionDraftActionLabel = formatVitalStandardQuestionDraftActionLabel(
+    vitalTypeLabel[vitalDraft.type],
+  );
   const vitalDraftSaveActionLabel = formatVitalRecordSaveActionLabel(vitalDraft);
   const vitalDraftSaveActionDescription = vitalDraftSavePreviewLabel
     ? `${vitalDraftSaveActionLabel} · ${vitalDraftSavePreviewLabel}`
@@ -4899,8 +4903,8 @@ function App() {
                 className="secondary-inline-button vital-standard-question-button"
                 type="button"
                 onClick={applyVitalStandardQuestion}
-                aria-label={`${vitalTypeLabel[vitalDraft.type]} 기준 진료 질문 초안 만들기`}
-                title={`${vitalTypeLabel[vitalDraft.type]} 기준 진료 질문 초안 만들기`}
+                aria-label={vitalDraftQuestionDraftActionLabel}
+                title={vitalDraftQuestionDraftActionLabel}
               >
                 <MessageSquare aria-hidden="true" />
                 질문 초안
