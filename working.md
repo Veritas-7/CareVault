@@ -15156,3 +15156,4 @@
   - PASS: Stopped the local Vite dev server after cmux verification and confirmed port 1420 had no listener.
   - PASS: Confirmed no `carevault` process remained after all runtime checks.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - PASS: committed and pushed to `origin/main` as `51bc0d7` (`Record Tauri SQLite readback`).
