@@ -62,7 +62,7 @@ performance:
   chunks: "Recharts, Lucide, health standards, cervical-care, and export helpers split below Vite warning threshold"
 evidence:
   source: "src/App.tsx, src/App.css, src/healthStandards.ts, src/cervicalCancerCare.ts, src/symptomSupportTemplates.ts"
-  runtime: "cmux workspace 암관리 right in-app browser at http://127.0.0.1:1420/ and Tauri desktop SQLite readback at tauri://localhost"
+  runtime: "cmux workspace 암관리 right in-app browser at http://127.0.0.1:1420/ and Tauri desktop SQLite readback at tauri://localhost, both served by the current-source 127.0.0.1:1420 dev listener during QA"
 ---
 
 # DESIGN.md
@@ -701,6 +701,8 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Reserved saved-document desktop action-column width so recoverable archive buttons keep the full `삭제 보관` label instead of collapsing to `삭제`.
 - 2026-06-05: Added a runtime doctor preflight for current-source desktop verification so stale port 1420 listeners, installed release windows, and leftover CareVault dev processes are caught before live evidence is trusted.
 - 2026-06-05: Added `npm run tauri:dev:clean` so current-source desktop runs go through the runtime doctor before `tauri dev` starts.
+- 2026-06-05: Added `npm run runtime:doctor:dev` active-session verification so live Tauri QA must prove this repo's Vite listener, Tauri CLI, and debug binary are running while no release-bundle `CareVault.app` shadow is present.
+- 2026-06-05: Bound current-source dev to `127.0.0.1:1420` and aligned the Tauri dev URL so the single existing cmux `암관리` browser pane can reach the same server as Tauri dev.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.
