@@ -14779,6 +14779,38 @@
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `dcb2b9e` (`Clamp restored symptom severity`).
 
+## 2026-06-05 12:41 KST - Restored Vital Measurement Guard Iteration Note
+
+- Improvement target:
+  - Backup/import hydration accepted any finite vital measurement, while the live vital form already requires blood pressure, glucose, and temperature values to be greater than zero.
+  - Malformed backups could restore impossible readings such as negative blood pressure, negative glucose, or `0℃` temperature and let them distort dashboard, queue, chart, and export surfaces.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added `normalizeOptionalPositiveFiniteNumber()` and routed restored systolic, diastolic, glucose, and temperature values through it.
+  - Updated `src/appStateNormalization.test.ts`.
+    - Added regression coverage proving non-positive restored vital measurements become `undefined` while valid positive measurements survive.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for restored vital measurement guarding.
+- Verification so far:
+  - PASS: `npm test -- src/appStateNormalization.test.ts`, 1 file and 3 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 387 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright malformed-restored-vital smoke at `http://127.0.0.1:1420/#records`.
+    - `document.title`: `CareVault`.
+    - Body client width and scroll width: 390 / 390.
+    - Valid restored blood pressure remained visible.
+    - Bad restored values for blood pressure, glucose, and temperature were absent.
+    - Missing-value labels for blood pressure, glucose, and temperature were visible.
+    - Page errors and console errors: none.
+  - PASS: Existing cmux right-side in-app browser in workspace `암관리` stayed on CareVault and reached `http://127.0.0.1:1420/#records`.
+    - `혈압·혈당·체온 입력`, saved vital summary, and recent timeline were visible.
+  - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+
 ## 2026-06-05 12:07 KST - SQLite Count Integer Parsing Iteration Note
 
 - Improvement target:

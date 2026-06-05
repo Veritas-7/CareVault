@@ -911,6 +911,11 @@ function normalizeOptionalFiniteNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
 
+function normalizeOptionalPositiveFiniteNumber(value: unknown) {
+  const numberValue = normalizeOptionalFiniteNumber(value);
+  return numberValue !== undefined && numberValue > 0 ? numberValue : undefined;
+}
+
 function normalizeFiniteNumber(value: unknown, fallback: number) {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
@@ -985,11 +990,11 @@ function normalizeVitalEntry(vital: Record<string, unknown>, index: number): Vit
     id: normalizeRecordId(vital.id, "vital", index),
     date: normalizeTextValue(vital.date),
     type: normalizeEnumValue(vital.type, vitalTypeIds, "blood-pressure"),
-    systolic: normalizeOptionalFiniteNumber(vital.systolic),
-    diastolic: normalizeOptionalFiniteNumber(vital.diastolic),
-    glucoseMgDl: normalizeOptionalFiniteNumber(vital.glucoseMgDl),
+    systolic: normalizeOptionalPositiveFiniteNumber(vital.systolic),
+    diastolic: normalizeOptionalPositiveFiniteNumber(vital.diastolic),
+    glucoseMgDl: normalizeOptionalPositiveFiniteNumber(vital.glucoseMgDl),
     glucoseContext: normalizeOptionalEnumValue(vital.glucoseContext, glucoseContextIds),
-    temperatureC: normalizeOptionalFiniteNumber(vital.temperatureC),
+    temperatureC: normalizeOptionalPositiveFiniteNumber(vital.temperatureC),
     note: normalizeTextValue(vital.note),
   };
 }

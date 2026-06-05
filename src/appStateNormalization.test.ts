@@ -222,4 +222,49 @@ describe("normalizeAppState", () => {
 
     expect(state.symptoms.map((symptom) => symptom.severity)).toEqual([0, 10, 5, 3]);
   });
+
+  it("drops non-positive restored vital measurements before rendering", () => {
+    const state = normalizeAppState({
+      vitals: [
+        {
+          id: "bp",
+          type: "blood-pressure",
+          systolic: -128,
+          diastolic: 0,
+        },
+        {
+          glucoseMgDl: -90,
+          id: "glucose",
+          type: "glucose",
+        },
+        {
+          id: "temperature",
+          temperatureC: 0,
+          type: "temperature",
+        },
+        {
+          diastolic: 78,
+          glucoseMgDl: 146,
+          id: "valid",
+          systolic: 126,
+          temperatureC: 36.8,
+          type: "blood-pressure",
+        },
+      ],
+    });
+
+    expect(state.vitals[0]).toMatchObject({
+      diastolic: undefined,
+      id: "bp",
+      systolic: undefined,
+    });
+    expect(state.vitals[1].glucoseMgDl).toBeUndefined();
+    expect(state.vitals[2].temperatureC).toBeUndefined();
+    expect(state.vitals[3]).toMatchObject({
+      diastolic: 78,
+      glucoseMgDl: 146,
+      systolic: 126,
+      temperatureC: 36.8,
+    });
+  });
 });
