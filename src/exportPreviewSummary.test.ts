@@ -3,13 +3,16 @@ import {
   buildExportPreviewSummary,
   formatExportPreviewCompactSummary,
   formatExportPreviewCopyDescription,
+  formatExportPreviewCopyFailedStatus,
   formatExportPreviewCopyStatus,
+  formatExportPreviewCopyUnsupportedStatus,
   formatExportPreviewDisabledActionDescription,
   formatExportPreviewDownloadDescription,
   formatExportPreviewDownloadStatus,
   formatExportPreviewFreshActionDescription,
   formatExportPreviewPrintDescription,
   formatExportPreviewPrintStatus,
+  formatExportPreviewStaleStatus,
 } from "./exportPreviewSummary";
 
 describe("exportPreviewSummary", () => {
@@ -81,6 +84,12 @@ describe("exportPreviewSummary", () => {
     expect(formatExportPreviewCopyStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 복사됨 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
+    expect(formatExportPreviewCopyUnsupportedStatus("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 복사 미지원 · 브라우저 클립보드 없음 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewCopyFailedStatus("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 복사 실패 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
     expect(formatExportPreviewPrintDescription("진료 요약", summary)).toBe(
       "진료 요약 인쇄 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
@@ -127,6 +136,20 @@ describe("exportPreviewSummary", () => {
     );
     expect(formatExportPreviewFreshActionDescription("csv-content")).toBe(
       "새 미리보기 생성 · CSV · 변경된 기록 적용",
+    );
+  });
+
+  it("formats stale preview status feedback with preview type and compact summary", () => {
+    const summary = buildExportPreviewSummary("a\n근거: x");
+
+    expect(formatExportPreviewStaleStatus("보호자 공유본", summary, "caregiver-settings")).toBe(
+      "보호자 공유본 미리보기 새로 생성 필요 · 변경된 공유 설정 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewStaleStatus("진료 요약", summary, "visit-range")).toBe(
+      "진료 요약 미리보기 새로 생성 필요 · 변경된 진료 요약 범위 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewStaleStatus("CSV", summary, "csv-content")).toBe(
+      "CSV 미리보기 새로 생성 필요 · 변경된 CSV 기록 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
   });
 });

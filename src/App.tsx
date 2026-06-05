@@ -302,13 +302,17 @@ import {
 import {
   buildExportPreviewSummary,
   formatExportPreviewCopyDescription,
+  formatExportPreviewCopyFailedStatus,
   formatExportPreviewCopyStatus,
+  formatExportPreviewCopyUnsupportedStatus,
   formatExportPreviewDisabledActionDescription,
   formatExportPreviewDownloadDescription,
   formatExportPreviewDownloadStatus,
   formatExportPreviewFreshActionDescription,
   formatExportPreviewPrintDescription,
   formatExportPreviewPrintStatus,
+  formatExportPreviewStaleStatus,
+  type ExportPreviewFreshActionReason,
 } from "./exportPreviewSummary";
 import {
   buildCaregiverExportContentFingerprint,
@@ -3100,25 +3104,36 @@ function App() {
         preview.csvExportFingerprint !== buildCsvExportFingerprint(state),
     );
 
+  const setExportPreviewStaleSaveLabel = (reason: ExportPreviewFreshActionReason) => {
+    if (!exportPreview) return;
+    setSaveLabel(
+      formatExportPreviewStaleStatus(
+        exportPreview.format,
+        buildExportPreviewSummary(exportPreview.content),
+        reason,
+      ),
+    );
+  };
+
   const guardFreshExportPreview = () => {
     if (isCaregiverExportPreviewStale(exportPreview)) {
-      setSaveLabel("공유 설정이 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      setExportPreviewStaleSaveLabel("caregiver-settings");
       return false;
     }
     if (isCaregiverExportPreviewContentStale(exportPreview)) {
-      setSaveLabel("보호자 공유본 기록이 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      setExportPreviewStaleSaveLabel("caregiver-content");
       return false;
     }
     if (isVisitPacketExportPreviewRangeStale(exportPreview)) {
-      setSaveLabel("진료 요약 범위가 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      setExportPreviewStaleSaveLabel("visit-range");
       return false;
     }
     if (isVisitPacketExportPreviewContentStale(exportPreview)) {
-      setSaveLabel("진료 요약 기록이 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      setExportPreviewStaleSaveLabel("visit-content");
       return false;
     }
     if (isCsvExportPreviewStale(exportPreview)) {
-      setSaveLabel("CSV 기록이 바뀌었습니다. 새 미리보기를 생성해주세요.");
+      setExportPreviewStaleSaveLabel("csv-content");
       return false;
     }
     return true;
@@ -3134,8 +3149,10 @@ function App() {
   const copyExportPreview = () => {
     if (!exportPreview) return;
     if (!guardFreshExportPreview()) return;
+    const summary = buildExportPreviewSummary(exportPreview.content);
+
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel("미리보기 복사를 지원하지 않는 브라우저입니다.");
+      setSaveLabel(formatExportPreviewCopyUnsupportedStatus(exportPreview.format, summary));
       return;
     }
 
@@ -3144,7 +3161,9 @@ function App() {
       .then(() =>
         setTransientSaveLabel(exportPreviewCopyStatus || `${exportPreview.format} 미리보기 복사됨`),
       )
-      .catch(() => setSaveLabel("미리보기 복사 실패"));
+      .catch(() =>
+        setSaveLabel(formatExportPreviewCopyFailedStatus(exportPreview.format, summary)),
+      );
   };
 
   const printExportPreview = () => {

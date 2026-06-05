@@ -26,6 +26,14 @@ const exportPreviewFreshActionDescriptions: Record<ExportPreviewFreshActionReaso
   "csv-content": "새 미리보기 생성 · CSV · 변경된 기록 적용",
 };
 
+const exportPreviewStaleStatusDescriptions: Record<ExportPreviewFreshActionReason, string> = {
+  "caregiver-settings": "변경된 공유 설정",
+  "caregiver-content": "변경된 보호자 공유 기록",
+  "visit-range": "변경된 진료 요약 범위",
+  "visit-content": "변경된 진료 요약 기록",
+  "csv-content": "변경된 CSV 기록",
+};
+
 function formatCount(value: number, unit: string) {
   return `${koreanNumberFormatter.format(value)}${unit}`;
 }
@@ -80,6 +88,32 @@ export function formatExportPreviewFreshActionDescription(
 
 export function formatExportPreviewCopyStatus(format: string, summary: ExportPreviewSummary) {
   return `${format} 미리보기 복사됨 · ${formatExportPreviewCompactSummary(summary)}`;
+}
+
+export function formatExportPreviewCopyUnsupportedStatus(
+  format: string,
+  summary: ExportPreviewSummary,
+) {
+  return `${format} 미리보기 복사 미지원 · 브라우저 클립보드 없음 · ${formatExportPreviewCompactSummary(
+    summary,
+  )}`;
+}
+
+export function formatExportPreviewCopyFailedStatus(
+  format: string,
+  summary: ExportPreviewSummary,
+) {
+  return `${format} 미리보기 복사 실패 · ${formatExportPreviewCompactSummary(summary)}`;
+}
+
+export function formatExportPreviewStaleStatus(
+  format: string,
+  summary: ExportPreviewSummary,
+  reason: ExportPreviewFreshActionReason,
+) {
+  return `${format} 미리보기 새로 생성 필요 · ${exportPreviewStaleStatusDescriptions[reason]} · ${formatExportPreviewCompactSummary(
+    summary,
+  )}`;
 }
 
 export function formatExportPreviewPrintDescription(
