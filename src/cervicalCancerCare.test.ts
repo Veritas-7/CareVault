@@ -14,6 +14,7 @@ import {
   cervicalCancerCarePrompts,
   cervicalCancerCareRecoveryGuides,
   cervicalCancerCareSources,
+  formatCervicalCancerCareListItemAriaLabel,
   formatCervicalCancerCareSourceLinkLabel,
   formatCervicalCancerCareSourceEvidence,
   formatCervicalCancerCarePriorityEvidence,
@@ -306,6 +307,19 @@ describe("cervicalCancerCare", () => {
       title: "자궁경부암 케어 공식 출처 공식 자궁경부암 케어 자료 열기",
       visibleLabel: "출처: 공식 자궁경부암 케어 자료",
     });
+  });
+
+  it("builds spaced accessible labels for cervical care side-list items", () => {
+    expect(formatCervicalCancerCareListItemAriaLabel(cervicalCancerCareRecoveryGuides[0])).toBe(
+      "원추절제술 후 생활 제한. 6~8주 질분비물·간헐 출혈 가능 기간에 성관계, 수영/탕목욕, 무리한 운동, 변비 주의가 내게 적용되는지 퇴원 안내서와 진료팀 지시로 대조합니다. 출처: 국가암정보센터 자궁경부암 치료 후 생활.",
+    );
+    expect(
+      formatCervicalCancerCareListItemAriaLabel({
+        label: "직접 확인",
+        detail: "문장 끝 정리。.",
+        sourceId: "missing-source",
+      }),
+    ).toBe("직접 확인. 문장 끝 정리.");
   });
 
   it("builds symptom drafts from warning cards with source labels and URLs", () => {

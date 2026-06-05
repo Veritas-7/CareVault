@@ -380,6 +380,7 @@ import {
   cervicalCancerCarePrompts,
   cervicalCancerCareRecoveryGuides,
   cervicalCancerCareSources,
+  formatCervicalCancerCareListItemAriaLabel,
   formatCervicalCancerCareSourceLinkLabel,
   getCervicalCancerCareSource,
   type CervicalCancerCareAlert,
@@ -2614,16 +2615,6 @@ function App() {
     );
   };
 
-  const formatCervicalCareListItemAriaLabel = (
-    item: CervicalCancerCareRecordDraftItem,
-  ) => {
-    const source = getCervicalCancerCareSource(item.sourceId);
-    const detail = item.detail.trim().replace(/[.。]+$/, "");
-    const sourceText = source ? ` 출처: ${source.label}.` : "";
-
-    return `${item.label}. ${detail}.${sourceText}`;
-  };
-
   const renderCervicalCareItemActions = (item: CervicalCancerCareRecordDraftItem) => (
     <div className="cervical-check-actions">
       <button
@@ -4242,7 +4233,10 @@ function App() {
                   </div>
                   <ul className="cervical-check-list">
                     {cervicalCancerCareChecks.map((item) => (
-                      <li key={item.label} aria-label={formatCervicalCareListItemAriaLabel(item)}>
+                      <li
+                        key={item.label}
+                        aria-label={formatCervicalCancerCareListItemAriaLabel(item)}
+                      >
                         <span>{item.label}</span>
                         <small>{item.detail}</small>
                         {renderCervicalCareItemActions(item)}
@@ -4264,7 +4258,10 @@ function App() {
                   </summary>
                   <ul className="cervical-check-list">
                     {cervicalCancerCareRecoveryGuides.map((item) => (
-                      <li key={item.label} aria-label={formatCervicalCareListItemAriaLabel(item)}>
+                      <li
+                        key={item.label}
+                        aria-label={formatCervicalCancerCareListItemAriaLabel(item)}
+                      >
                         <span>{item.label}</span>
                         <small>{item.detail}</small>
                         {renderCervicalCareItemActions(item)}
@@ -4286,7 +4283,10 @@ function App() {
                   </summary>
                   <ul className="cervical-check-list">
                     {cervicalCancerCarePreventionGuides.map((item) => (
-                      <li key={item.label} aria-label={formatCervicalCareListItemAriaLabel(item)}>
+                      <li
+                        key={item.label}
+                        aria-label={formatCervicalCancerCareListItemAriaLabel(item)}
+                      >
                         <span>{item.label}</span>
                         <small>{item.detail}</small>
                         {renderCervicalCareItemActions(item)}

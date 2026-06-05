@@ -529,6 +529,16 @@ export function buildCervicalCancerCareSourceLinkLabels(
   };
 }
 
+export function formatCervicalCancerCareListItemAriaLabel(
+  item: CervicalCancerCareRecordDraftItem,
+) {
+  const source = getCervicalCancerCareSource(item.sourceId);
+  const detail = item.detail.trim().replace(/[.。]+$/, "");
+  const sourceText = source ? ` 출처: ${source.label}.` : "";
+
+  return `${item.label}. ${detail}.${sourceText}`;
+}
+
 export function formatCervicalCancerCareSourceEvidence(sourceId: string) {
   const source = getCervicalCancerCareSource(sourceId);
   return source
