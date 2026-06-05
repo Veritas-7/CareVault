@@ -824,6 +824,7 @@ function App() {
   const [symptomSupportQuestionFeedback, setSymptomSupportQuestionFeedback] = useState<
     string | null
   >(null);
+  const [vitalSaveFeedback, setVitalSaveFeedback] = useState<string | null>(null);
   const [symptomSaveFeedback, setSymptomSaveFeedback] = useState<string | null>(null);
   const [questionSaveFeedback, setQuestionSaveFeedback] = useState<string | null>(null);
   const [visitSaveFeedback, setVisitSaveFeedback] = useState<string | null>(null);
@@ -1794,9 +1795,15 @@ function App() {
     );
   };
 
+  const updateVitalDraft = (updates: Partial<VitalEntry>) => {
+    setVitalDraft((current) => ({ ...current, ...updates }));
+    setVitalSaveFeedback(null);
+  };
+
   const addVital = () => {
     const validation = validateVitalDraft(vitalDraft);
     if (validation.type === "error") {
+      setVitalSaveFeedback(null);
       setRecordFormValidationFeedback("vital", validation.message);
       return;
     }
@@ -1825,16 +1832,17 @@ function App() {
     }));
     setVitalDraft({ ...emptyVital, date: today });
     clearRecordFormValidationFeedback("vital");
-    setActionSaveLabel(
-      formatVitalRecordSavedStatusLabel(savedVital, {
-        diabetes: state.profile.diabetes,
-      }),
-    );
+    const feedback = formatVitalRecordSavedStatusLabel(savedVital, {
+      diabetes: state.profile.diabetes,
+    });
+    setVitalSaveFeedback(feedback);
+    setActionSaveLabel(feedback);
   };
 
   const applyVitalStandardQuestion = () => {
     const validation = validateVitalDraft(vitalDraft);
     if (validation.type === "error") {
+      setVitalSaveFeedback(null);
       setRecordFormValidationFeedback("vital", validation.message);
       return;
     }
@@ -1865,11 +1873,13 @@ function App() {
 
     if (!draft) {
       const feedback = formatVitalStandardQuestionDraftStatusLabel(draftInput);
+      setVitalSaveFeedback(null);
       setVitalStandardQuestionFeedback(feedback);
       setSaveLabel(feedback);
       return;
     }
 
+    setVitalSaveFeedback(null);
     setQuestionSaveFeedback(null);
     setQuestionDraft((current) => ({
       ...current,
@@ -5243,7 +5253,7 @@ function App() {
                   value={vitalDraft.date}
                   aria-label={formControlDescriptions.vitalDate}
                   title={formControlDescriptions.vitalDate}
-                  onChange={(event) => setVitalDraft({ ...vitalDraft, date: event.currentTarget.value })}
+                  onChange={(event) => updateVitalDraft({ date: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -5253,7 +5263,7 @@ function App() {
                   aria-label={formControlDescriptions.vitalType}
                   title={formControlDescriptions.vitalType}
                   onChange={(event) =>
-                    setVitalDraft({ ...vitalDraft, type: event.currentTarget.value as VitalType })
+                    updateVitalDraft({ type: event.currentTarget.value as VitalType })
                   }
                 >
                   <option value="blood-pressure">혈압</option>
@@ -5271,8 +5281,7 @@ function App() {
                       aria-label={formControlDescriptions.vitalSystolic}
                       title={formControlDescriptions.vitalSystolic}
                       onChange={(event) =>
-                        setVitalDraft({
-                          ...vitalDraft,
+                        updateVitalDraft({
                           systolic: parseOptionalNumberInput(event.currentTarget.value),
                         })
                       }
@@ -5286,8 +5295,7 @@ function App() {
                       aria-label={formControlDescriptions.vitalDiastolic}
                       title={formControlDescriptions.vitalDiastolic}
                       onChange={(event) =>
-                        setVitalDraft({
-                          ...vitalDraft,
+                        updateVitalDraft({
                           diastolic: parseOptionalNumberInput(event.currentTarget.value),
                         })
                       }
@@ -5304,8 +5312,7 @@ function App() {
                     aria-label={formControlDescriptions.vitalTemperature}
                     title={formControlDescriptions.vitalTemperature}
                     onChange={(event) =>
-                      setVitalDraft({
-                        ...vitalDraft,
+                      updateVitalDraft({
                         temperatureC: parseOptionalNumberInput(event.currentTarget.value),
                       })
                     }
@@ -5321,8 +5328,7 @@ function App() {
                       aria-label={formControlDescriptions.vitalGlucose}
                       title={formControlDescriptions.vitalGlucose}
                       onChange={(event) =>
-                        setVitalDraft({
-                          ...vitalDraft,
+                        updateVitalDraft({
                           glucoseMgDl: parseOptionalNumberInput(event.currentTarget.value),
                         })
                       }
@@ -5335,8 +5341,7 @@ function App() {
                       aria-label={formControlDescriptions.vitalGlucoseContext}
                       title={formControlDescriptions.vitalGlucoseContext}
                       onChange={(event) =>
-                        setVitalDraft({
-                          ...vitalDraft,
+                        updateVitalDraft({
                           glucoseContext: event.currentTarget.value as GlucoseContext,
                         })
                       }
@@ -5401,7 +5406,7 @@ function App() {
                 value={vitalDraft.note}
                 aria-label={formControlDescriptions.vitalNote}
                 title={formControlDescriptions.vitalNote}
-                onChange={(event) => setVitalDraft({ ...vitalDraft, note: event.currentTarget.value })}
+                onChange={(event) => updateVitalDraft({ note: event.currentTarget.value })}
                 placeholder="예: 운동 후, 약 복용 전, 식후 2시간, 오한 동반"
               />
             </label>
@@ -5427,6 +5432,11 @@ function App() {
               <Plus aria-hidden="true" />
               {vitalDraftSaveActionLabel}
             </button>
+            {vitalSaveFeedback ? (
+              <div className="vital-save-feedback" role="status">
+                {vitalSaveFeedback}
+              </div>
+            ) : null}
             {renderRecordFormFeedback("vital")}
           </section>
 
