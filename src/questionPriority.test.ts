@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   defaultQuestionPriority,
+  formatQuestionDraftAddActionLabel,
   normalizeQuestionPriority,
   questionPriorityLabel,
   questionPrioritySortRank,
@@ -26,6 +27,18 @@ describe("questionPriority", () => {
     expect(questionPrioritySortRank.high).toBeLessThan(questionPrioritySortRank["next-visit"]);
     expect(questionPrioritySortRank["next-visit"]).toBeLessThan(
       questionPrioritySortRank.routine,
+    );
+  });
+
+  it("formats draft add action labels with the selected priority scope", () => {
+    expect(formatQuestionDraftAddActionLabel("high")).toBe(
+      "진료 전 질문 추가 · 우선순위 이번 진료 우선",
+    );
+    expect(formatQuestionDraftAddActionLabel("next-visit")).toBe(
+      "진료 전 질문 추가 · 우선순위 다음 진료",
+    );
+    expect(formatQuestionDraftAddActionLabel("routine")).toBe(
+      "진료 전 질문 추가 · 우선순위 일반 확인",
     );
   });
 });

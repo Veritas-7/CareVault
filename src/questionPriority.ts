@@ -19,3 +19,7 @@ export function normalizeQuestionPriority(value: unknown): QuestionPriority {
     ? value
     : defaultQuestionPriority;
 }
+
+export function formatQuestionDraftAddActionLabel(priority: QuestionPriority) {
+  return `진료 전 질문 추가 · 우선순위 ${questionPriorityLabel[priority]}`;
+}

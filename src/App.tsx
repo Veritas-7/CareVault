@@ -318,6 +318,7 @@ import {
   type CaregiverShareSettingsPreviewSummary,
 } from "./caregiverShareSettings";
 import {
+  formatQuestionDraftAddActionLabel,
   normalizeQuestionPriority,
   questionPriorityLabel,
   type QuestionPriority,
@@ -3282,6 +3283,7 @@ function App() {
     "visit-content",
   );
   const csvFreshPreviewDescription = formatExportPreviewFreshActionDescription("csv-content");
+  const questionDraftAddActionLabel = formatQuestionDraftAddActionLabel(questionDraft.priority);
   const caregiverPreviewSettingDifferences =
     exportPreviewHasStaleCaregiverSettings && exportPreview?.caregiverShareSettingsSnapshot
       ? buildCaregiverShareSettingsDifferences(
@@ -5515,8 +5517,8 @@ function App() {
               className="primary-button"
               type="button"
               onClick={addQuestion}
-              aria-label={`진료 전 질문 추가 · 우선순위 ${questionPriorityLabel[questionDraft.priority]}`}
-              title={`진료 전 질문 추가 · 우선순위 ${questionPriorityLabel[questionDraft.priority]}`}
+              aria-label={questionDraftAddActionLabel}
+              title={questionDraftAddActionLabel}
             >
               <Plus aria-hidden="true" />
               질문 추가
