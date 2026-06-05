@@ -19,6 +19,7 @@ import {
   formatCaregiverSharePresetStatus,
   formatCaregiverShareResetDescription,
   formatCaregiverShareResetStatus,
+  formatCaregiverShareSectionStatus,
   formatCaregiverShareSectionSummaryAriaLabel,
   formatCaregiverShareSectionToggleLabel,
   formatCaregiverShareSettingsCompactSummary,
@@ -339,6 +340,22 @@ describe("caregiverShareSettings", () => {
     );
     expect(formatCaregiverShareSectionToggleLabel("검사", true, true)).toBe(
       "보호자 공유본 포함 섹션 검사 포함됨 · 최소 1개 섹션은 포함해야 해서 해제할 수 없습니다",
+    );
+  });
+
+  it("formats caregiver section update statuses with the resulting compact summary", () => {
+    const settings = normalizeCaregiverShareSettings({
+      sections: {
+        ...caregiverExportSectionDefaults,
+        food: false,
+      },
+    });
+
+    expect(formatCaregiverShareSectionStatus("음식", false, settings)).toBe(
+      "공유 섹션 제외: 음식 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 6개 · 제외 1개",
+    );
+    expect(formatCaregiverShareSectionStatus("", true, undefined)).toBe(
+      "공유 섹션 포함: 공유 섹션 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개",
     );
   });
 

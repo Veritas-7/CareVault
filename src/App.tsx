@@ -324,6 +324,7 @@ import {
   formatCaregiverSharePresetStatus,
   formatCaregiverShareResetDescription,
   formatCaregiverShareResetStatus,
+  formatCaregiverShareSectionStatus,
   formatCaregiverShareSectionSummaryAriaLabel,
   formatCaregiverShareSectionToggleLabel,
   getCaregiverShareSettingsPreset,
@@ -3210,22 +3211,22 @@ function App() {
   };
 
   const updateCaregiverShareSection = (id: CaregiverExportSectionId, checked: boolean) => {
-    setState((current) => {
-      const currentSettings = normalizeCaregiverShareSettings(current.caregiverShareSettings);
-      return {
-        ...current,
-        caregiverShareSettings: {
-          ...currentSettings,
-          presetId: "",
-          sections: {
-            ...currentSettings.sections,
-            [id]: checked,
-          },
-        },
-      };
+    const currentSettings = normalizeCaregiverShareSettings(state.caregiverShareSettings);
+    const nextSettings = normalizeCaregiverShareSettings({
+      ...currentSettings,
+      presetId: "",
+      sections: {
+        ...currentSettings.sections,
+        [id]: checked,
+      },
     });
+
+    setState((current) => ({
+      ...current,
+      caregiverShareSettings: nextSettings,
+    }));
     setActionSaveLabel(
-      `공유 섹션 ${checked ? "포함" : "제외"}: ${getCaregiverShareSectionLabel(id)}`,
+      formatCaregiverShareSectionStatus(getCaregiverShareSectionLabel(id), checked, nextSettings),
     );
   };
 

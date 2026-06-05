@@ -373,6 +373,17 @@ export function formatCaregiverShareSectionToggleLabel(
     : `보호자 공유본 포함 섹션 ${label} 제외됨 · 선택하면 공유본에 포함됩니다`;
 }
 
+export function formatCaregiverShareSectionStatus(
+  label: string,
+  included: boolean,
+  input: CaregiverShareSettingsInput | undefined,
+) {
+  const sectionLabel = label.trim() || "공유 섹션";
+  return `공유 섹션 ${included ? "포함" : "제외"}: ${sectionLabel} · ${formatCaregiverShareSettingsCompactSummary(
+    input,
+  )}`;
+}
+
 export function formatCaregiverShareExportStatus(
   input: CaregiverShareSettingsInput | undefined,
 ) {
