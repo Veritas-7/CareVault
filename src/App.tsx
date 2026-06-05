@@ -2468,7 +2468,9 @@ function App() {
           : item,
       ),
     }));
-    setActionSaveLabel(formatDocumentAttachmentRemovedStatusLabel(document));
+    const feedback = formatDocumentAttachmentRemovedStatusLabel(document);
+    setDocumentActionFeedback({ documentId: document.id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const removeDeletedDocumentAttachment = async (document: CareDocument) => {
