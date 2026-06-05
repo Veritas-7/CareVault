@@ -808,6 +808,10 @@ function App() {
     message: string;
   } | null>(null);
   const [careActionQueueFeedback, setCareActionQueueFeedback] = useState<string | null>(null);
+  const [profileMetricCopyFeedback, setProfileMetricCopyFeedback] = useState<string | null>(null);
+  const [dashboardMetricCopyFeedback, setDashboardMetricCopyFeedback] = useState<string | null>(
+    null,
+  );
   const [documentActionFeedback, setDocumentActionFeedback] = useState<{
     documentId: string;
     message: string;
@@ -3003,44 +3007,54 @@ function App() {
 
   const copyProfileMetricSexStandards = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel(
-        formatProfileMetricSexStandardCopyUnsupportedStatus(
-          profileMetricSexLabel,
-          profileMetricSexStandardChips,
-        ),
+      const feedback = formatProfileMetricSexStandardCopyUnsupportedStatus(
+        profileMetricSexLabel,
+        profileMetricSexStandardChips,
       );
+      setProfileMetricCopyFeedback(feedback);
+      setSaveLabel(feedback);
       return;
     }
 
     navigator.clipboard
       .writeText(profileMetricSexStandardClipboardText)
-      .then(() => setTransientSaveLabel(profileMetricSexStandardCopyStatus))
-      .catch(() =>
-        setSaveLabel(
-          formatProfileMetricSexStandardCopyFailedStatus(
-            profileMetricSexLabel,
-            profileMetricSexStandardChips,
-          ),
-        ),
-      );
+      .then(() => {
+        setProfileMetricCopyFeedback(profileMetricSexStandardCopyStatus);
+        setTransientSaveLabel(profileMetricSexStandardCopyStatus);
+      })
+      .catch(() => {
+        const feedback = formatProfileMetricSexStandardCopyFailedStatus(
+          profileMetricSexLabel,
+          profileMetricSexStandardChips,
+        );
+        setProfileMetricCopyFeedback(feedback);
+        setSaveLabel(feedback);
+      });
   };
 
   const copyDashboardMetricStandards = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel(
-        formatDashboardMetricStandardCopyUnsupportedStatus(dashboardMetricStandardEvidences),
+      const feedback = formatDashboardMetricStandardCopyUnsupportedStatus(
+        dashboardMetricStandardEvidences,
       );
+      setDashboardMetricCopyFeedback(feedback);
+      setSaveLabel(feedback);
       return;
     }
 
     navigator.clipboard
       .writeText(dashboardMetricStandardClipboardText)
-      .then(() => setTransientSaveLabel(dashboardMetricStandardCopyStatus))
-      .catch(() =>
-        setSaveLabel(
-          formatDashboardMetricStandardCopyFailedStatus(dashboardMetricStandardEvidences),
-        ),
-      );
+      .then(() => {
+        setDashboardMetricCopyFeedback(dashboardMetricStandardCopyStatus);
+        setTransientSaveLabel(dashboardMetricStandardCopyStatus);
+      })
+      .catch(() => {
+        const feedback = formatDashboardMetricStandardCopyFailedStatus(
+          dashboardMetricStandardEvidences,
+        );
+        setDashboardMetricCopyFeedback(feedback);
+        setSaveLabel(feedback);
+      });
   };
 
   const storageText =
@@ -3991,6 +4005,11 @@ function App() {
                 <Copy aria-hidden="true" />
                 성별 기준 복사
               </button>
+              {profileMetricCopyFeedback ? (
+                <div className="metric-profile-copy-feedback" role="status">
+                  {profileMetricCopyFeedback}
+                </div>
+              ) : null}
             </div>
             <div
               className="metric-dashboard-standard-actions"
@@ -4010,6 +4029,11 @@ function App() {
                 <Copy aria-hidden="true" />
                 대시보드 기준 복사
               </button>
+              {dashboardMetricCopyFeedback ? (
+                <div className="metric-dashboard-standard-feedback" role="status">
+                  {dashboardMetricCopyFeedback}
+                </div>
+              ) : null}
             </div>
           </article>
           <article className={`metric-card status-${bmi.level}`}>

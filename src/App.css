@@ -718,6 +718,20 @@ label,
   overflow-wrap: anywhere;
 }
 
+.metric-profile-copy-feedback,
+.metric-dashboard-standard-feedback {
+  flex: 1 1 100%;
+  padding: 7px 9px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .metric-record-label,
 .timeline-record-label,
 .metric-record-evidence-label,
