@@ -15200,3 +15200,5 @@
     - Browser storage label, dashboard metrics, care queue, cervical-care panel, timeline, lab tracking, nutrition, and document controls were visible.
   - PASS: Stopped the local Vite dev server after runtime checks and confirmed port 1420 had no listener.
   - PASS: Confirmed no `carevault` process remained after runtime checks.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged six-file diff.
+  - PASS: committed and pushed to `origin/main` as `29ad239` (`Harden attachment recovery statuses`).
