@@ -17857,3 +17857,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `b9429aa` (`Clarify ready document action`).
+
+## 2026-06-06 01:01 KST - Lab Question Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires immediate status feedback near the affected action, so users do not need to scroll back to the topbar after an action.
+  - Real cmux QA found the `WBC 검사 질문 추가` button added a source-backed question, but the success feedback only appeared in the offscreen top status area; the button area had no local `role=status` confirmation.
+- Change:
+  - Added lab-question local feedback state in `src/App.tsx`.
+  - Rendered the generated question success message directly under the lab follow-up button as `.lab-followup-feedback` with `role=status`.
+  - Added compact local status styling in `src/App.css`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `working.md` and the right pane was Worklog, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#documents`, then the existing surface was used for lab follow-up flow checks.
+  - PASS side checks before fixing: document controls had no aria/title mismatch, no visible under-32px buttons, document filter empty state rendered as a visible `role=status`, CSV stale preview disabled old actions after food-query changes, and caregiver stale preview disabled old actions after share-setting changes.
+  - RED/IMPROVEMENT: clicked `WBC 검사 질문 추가 · 메모와 근거 포함`; the global status updated to `WBC 검사 질문 추가됨 · 메모와 근거 포함`, but it was offscreen and no nearby status existed beside the clicked lab button. Screenshot `/tmp/carevault-surface9-iter14-lab-question-local-feedback-red.png` captured the missing local feedback.
+  - PASS after fix: clicked the same lab follow-up button and a nearby local `role=status` row appeared under the button with `WBC 검사 질문 추가됨 · 메모와 근거 포함`. Screenshot `/tmp/carevault-surface9-iter14-lab-question-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: removed the test-generated `검사 수치` WBC question from dev-browser `localStorage`, reloaded the page, and verified local state was back to 1 saved question with no generated WBC test question.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/labQuestionPrompts.test.ts`, 8 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `bceba09` (`Show lab question local feedback`).
