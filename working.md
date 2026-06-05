@@ -15334,3 +15334,5 @@
     - Browser storage label, dashboard metrics, care queue, cervical-care panel, timeline, lab tracking, nutrition, and document controls were visible.
   - PASS: Stopped the temporary Vite server after the cmux check and confirmed port 1420 had no listener.
   - PASS: Confirmed no CareVault/Tauri process remained after runtime checks.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged seven-file diff.
+  - PASS: committed and pushed to `origin/main` as `8237c8a` (`Harden image preview recovery`).
