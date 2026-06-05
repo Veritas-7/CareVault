@@ -18298,3 +18298,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `95ec351` (`Show health standards copy local feedback`).
+
+## 2026-06-06 02:55 KST - Cervical Care Copy Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires saved-question checks, profile/form copy checks, and every new control to provide visible feedback or a clear state change in the constrained cmux right pane.
+  - Real cmux QA found `자궁경부암 케어 노트 공식 출처 포함 복사` updated only the top save-status chip, so users focused on the `자궁경부암 케어 노트` panel had no local `role=status` confirmation near the copied note scope.
+- Change:
+  - Added transient `cervicalCancerCareCopyFeedback` UI state in `src/App.tsx`.
+  - Updated `copyCervicalCancerCareNote()` so clipboard unsupported, successful copy, and copy failure branches all set local cervical-care panel feedback while preserving existing top save-status behavior.
+  - Rendered `.cervical-care-copy-feedback` inside the `자궁경부암 케어 노트` panel and styled it as a compact wrapping source-scope status row.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use showed cmux had switched to `working.md`, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: clicked `자궁경부암 케어 노트 공식 출처 포함 복사`; the top status showed `자궁경부암 케어 노트 복사됨 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개`, but local `.cervical-care-copy-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter27-cervical-care-copy-local-feedback-red.png` captured the missing panel feedback.
+  - PASS after fix: reloaded the same surface, scrolled the target into view, and clicked the same copy button; the cervical-care panel showed visible local `role=status` feedback `자궁경부암 케어 노트 복사됨 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개`, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter27-cervical-care-copy-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: reloaded `surface:9` and verified no stale `.cervical-care-copy-feedback` and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts`, 6 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `082f414` (`Show cervical care copy local feedback`).
