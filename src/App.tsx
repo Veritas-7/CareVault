@@ -225,6 +225,8 @@ import {
   buildSymptomSupportSourceLinkLabels,
   findSymptomSupportTemplate,
   formatSymptomSupportQuestionDraftActionLabel,
+  formatSymptomSupportQuestionDraftReadyStatus,
+  formatSymptomSupportSymptomDraftReadyStatus,
 } from "./symptomSupportTemplates";
 import {
   defaultSidebarSectionId,
@@ -2549,7 +2551,7 @@ function App() {
         ? current.action
         : buildSymptomSupportActionNote(symptomSupportTemplate),
     }));
-    setSaveLabel(`부작용 질문 초안 준비됨: ${symptomSupportTemplate.label}`);
+    setSaveLabel(formatSymptomSupportQuestionDraftReadyStatus(symptomSupportTemplate));
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
@@ -2575,7 +2577,7 @@ function App() {
         symptom: current.symptom.trim() ? current.symptom : "발열·오한/감염 의심",
       };
     });
-    setSaveLabel("체온·감염 증상 초안 준비됨");
+    setSaveLabel(formatSymptomSupportSymptomDraftReadyStatus(template));
     setSymptomDraftFocusRequest((request) => request + 1);
   };
 
@@ -2602,7 +2604,7 @@ function App() {
         topic: current.topic.trim() ? current.topic : `부작용: ${template.label}`,
       };
     });
-    setSaveLabel("체온·감염 질문 초안 준비됨");
+    setSaveLabel(formatSymptomSupportQuestionDraftReadyStatus(template));
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 

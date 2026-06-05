@@ -299,6 +299,22 @@ export function formatSymptomSupportQuestionDraftActionLabel(
   return `${template.label} 질문 초안 채우기`;
 }
 
+export function formatSymptomSupportSymptomDraftReadyStatus(
+  template: SymptomSupportTemplate,
+) {
+  return `${template.label} 증상 초안 준비됨 · 근거 ${template.sourceLabel} · ${buildSymptomSupportQueueHint(
+    template,
+  )}`;
+}
+
+export function formatSymptomSupportQuestionDraftReadyStatus(
+  template: SymptomSupportTemplate,
+) {
+  return `${template.label} 질문 초안 준비됨 · 근거 ${template.sourceLabel} · ${buildSymptomSupportQueueHint(
+    template,
+  )}`;
+}
+
 export function formatSymptomSupportCitation(template: SymptomSupportTemplate) {
   return `${formatSymptomSupportSource(template)} - ${template.sourceUrl}`;
 }

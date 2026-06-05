@@ -6,8 +6,10 @@ import {
   buildSymptomSupportSourceLinkLabels,
   findSymptomSupportTemplate,
   formatSymptomSupportQuestionDraftActionLabel,
+  formatSymptomSupportQuestionDraftReadyStatus,
   formatSymptomSupportCitation,
   formatSymptomSupportSource,
+  formatSymptomSupportSymptomDraftReadyStatus,
   symptomSupportTemplates,
 } from "./symptomSupportTemplates";
 
@@ -73,6 +75,12 @@ describe("symptomSupportTemplates", () => {
     });
     expect(formatSymptomSupportQuestionDraftActionLabel(template)).toBe(
       "발열·오한/감염 의심 질문 초안 채우기",
+    );
+    expect(formatSymptomSupportSymptomDraftReadyStatus(template)).toBe(
+      "발열·오한/감염 의심 증상 초안 준비됨 · 근거 국가암정보센터 감염 의료진 상담 기준 · 저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(formatSymptomSupportQuestionDraftReadyStatus(template)).toBe(
+      "발열·오한/감염 의심 질문 초안 준비됨 · 근거 국가암정보센터 감염 의료진 상담 기준 · 저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
     );
   });
 
