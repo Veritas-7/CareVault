@@ -15620,3 +15620,31 @@
   - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: committed and pushed to `origin/main` as `7a42f51` (`Fix sidebar hash deep links`); `git ls-remote origin refs/heads/main` returned `7a42f51cdbde685f64912f22e4a87f68d53921a9`.
+
+## 2026-06-05 16:54 KST - Neutral Saved-Document Zero Chips
+
+- Improvement target:
+  - In the existing cmux `암관리` document view, the saved-document summary showed `첨부 복구 없음` with the same warning tone used for real recovery work.
+  - Zero-count states should remain visible for scanability, but they should not look like active warnings.
+- Change:
+  - Updated `buildDocumentPanelSummary` so real recovery/archive counts keep `summary-recovery`/`summary-deleted`, while zero-count states use neutral `summary-recovery-none`/`summary-deleted-none` IDs.
+  - Added `documentMetric` regression coverage for neutral zero-count recovery and archive chips.
+  - Updated `DESIGN.md` with the zero-count chip tone rule.
+- Real-browser verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: DOM evidence for saved-document summary chips returned `첨부 복구없음` with class `document-panel-summary-chip summary-recovery-none`, color `rgb(47, 83, 87)`, and background `rgb(244, 250, 248)`.
+  - PASS: `삭제 보관없음` also used `document-panel-summary-chip summary-deleted-none` with the same neutral color/background.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+- Automated verification:
+  - PASS: `npm run test -- src/documentMetric.test.ts`.
+  - PASS: `npm run test`, 57 files and 414 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/documentMetric.ts src/documentMetric.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: committed and pushed to `origin/main` as `91abf03` (`Neutralize empty document summary chips`); `git ls-remote origin refs/heads/main` returned `91abf0338d0bb924d78cdec47e6664e3bcf07ad7`.
