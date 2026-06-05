@@ -18125,3 +18125,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `7b1b8ba` (`Show document attachment open local feedback`).
+
+## 2026-06-06 02:14 KST - Saved Question Action Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires repeated saved-question status controls to be item-specific and every state-changing control to show visible feedback or a clear state change in the constrained cmux right-pane layout.
+  - Real cmux QA found saved-question status buttons updated the row active state and the top save-status chip, but the affected question row had no local `role=status` feedback confirming the exact status change.
+- Change:
+  - Added `questionActionFeedback` state in `src/App.tsx`.
+  - Updated saved-question status and priority updates to set row-local feedback using the existing item-specific status/priority messages.
+  - Rendered `.question-action-feedback` inside each saved-question row and reused the existing local action feedback styling from document rows.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed cmux had switched to the `working.md` workspace with a Worklog browser pane, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#care-plan`.
+  - RED/IMPROVEMENT: clicked `혈액검사 질문 상태를 답변 완료로 변경`; the row active button changed to `답변 완료` and the top status showed `혈액검사 질문 상태: 답변 완료`, but local `.question-action-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter22-question-status-local-feedback-red.png` captured the missing row feedback.
+  - PASS after fix: reloaded the same surface and changed the saved question to `보류`; the question row showed visible local `role=status` feedback `혈액검사 질문 상태: 보류`, and the top status preserved the same action plus `브라우저 자동 저장됨`.
+  - PASS priority proof: changed the saved-question priority to `일반 확인`; the row showed local feedback `혈액검사 우선순위: 일반 확인`, and the top status matched it with the browser auto-save suffix. Screenshot `/tmp/carevault-surface9-iter22-question-action-local-feedback-pass.png` captured the final row feedback state.
+  - PASS cleanup in browser: restored `surface:9` localStorage from runtime DB `app_state.main`, reloaded, and verified the saved question was back to `확인 필요`, priority `next-visit`, and no stale `.question-action-feedback` remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/questionStatus.test.ts src/questionPriority.test.ts`, 10 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `717710d` (`Show saved question action local feedback`).
