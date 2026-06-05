@@ -145,7 +145,10 @@ import {
   formatDocumentFilterResetActionLabel,
   hasActiveDocumentFilters as hasActiveDocumentFilterState,
 } from "./documentFilterActions";
-import { formatDocumentActionButtonLabel } from "./documentActionLabels";
+import {
+  formatDocumentActionButtonLabel,
+  formatDocumentSavedStatusLabel,
+} from "./documentActionLabels";
 import {
   attachmentStorageLabel,
   defaultState,
@@ -1799,6 +1802,11 @@ function App() {
       "서류 저장",
       `${documentDraft.title.trim()} 기록 생성`,
     );
+    const savedDocument: CareDocument = {
+      ...documentDraft,
+      id: documentId,
+      history: appendDocumentHistory(documentDraft.history, createdEntry),
+    };
     const browserAttachmentFile = documentDraftAttachmentFileRef.current;
     const draftPreviewUrl = documentDraftAttachmentPreviewUrlRef.current;
     let draftPreviewTransferred = false;
@@ -1820,14 +1828,7 @@ function App() {
     }
     setState((current) => ({
       ...current,
-      documents: [
-        ...current.documents,
-        {
-          ...documentDraft,
-          id: documentId,
-          history: appendDocumentHistory(documentDraft.history, createdEntry),
-        },
-      ],
+      documents: [...current.documents, savedDocument],
     }));
     documentDraftAttachmentFileRef.current = null;
     if (!draftPreviewTransferred) {
@@ -1835,7 +1836,7 @@ function App() {
     }
     setDocumentDraft({ ...emptyDocument, date: today });
     clearRecordFormValidationFeedback("document");
-    setActionSaveLabel("서류 메모 저장됨");
+    setActionSaveLabel(formatDocumentSavedStatusLabel(savedDocument));
   };
 
   const updateDocumentReviewStatus = (

@@ -15,11 +15,25 @@ export type DocumentActionLabelKind =
   | "restore-document"
   | "clean-deleted-attachment";
 
+function formatDocumentContext(document: CareDocument) {
+  const title = document.title.trim() || "제목 없는 서류";
+  return `${title} ${documentLabel[document.category]} 서류`;
+}
+
+export function formatDocumentSavedStatusLabel(document: CareDocument) {
+  const reviewContext = `상태 ${documentReviewStatusLabel[document.reviewStatus]}`;
+  const attachmentContext = document.attachmentName?.trim()
+    ? `첨부 파일 ${document.attachmentName.trim()}`
+    : "첨부 없음";
+
+  return `${formatDocumentContext(document)} 저장됨 · ${reviewContext} · ${attachmentContext}`;
+}
+
 export function formatDocumentActionButtonLabel(
   document: CareDocument,
   kind: DocumentActionLabelKind,
 ) {
-  const documentContext = `${document.title} ${documentLabel[document.category]} 서류`;
+  const documentContext = formatDocumentContext(document);
   const reviewContext = `상태 ${documentReviewStatusLabel[document.reviewStatus]}`;
   const attachmentContext = document.attachmentName
     ? `현재 첨부 ${document.attachmentName}`

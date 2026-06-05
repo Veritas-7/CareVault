@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { type CareDocument } from "./appState";
-import { formatDocumentActionButtonLabel } from "./documentActionLabels";
+import {
+  formatDocumentActionButtonLabel,
+  formatDocumentSavedStatusLabel,
+} from "./documentActionLabels";
 
 const baseDocument: CareDocument = {
   id: "doc-1",
@@ -14,6 +17,31 @@ const baseDocument: CareDocument = {
 };
 
 describe("documentActionLabels", () => {
+  it("builds document-specific saved status feedback without an attachment", () => {
+    expect(formatDocumentSavedStatusLabel(baseDocument)).toBe(
+      "혈액검사 메모 검사 서류 저장됨 · 상태 의료진 질문 · 첨부 없음",
+    );
+  });
+
+  it("includes the attachment filename in document saved status feedback", () => {
+    const documentWithAttachment: CareDocument = {
+      ...baseDocument,
+      attachmentName: "blood-result.pdf",
+      attachmentPath: "/private/path/blood-result.pdf",
+      attachmentStorage: "tauri-sandbox",
+    };
+
+    expect(formatDocumentSavedStatusLabel(documentWithAttachment)).toBe(
+      "혈액검사 메모 검사 서류 저장됨 · 상태 의료진 질문 · 첨부 파일 blood-result.pdf",
+    );
+  });
+
+  it("uses a stable saved status fallback when a title is missing", () => {
+    expect(formatDocumentSavedStatusLabel({ ...baseDocument, title: "   " })).toBe(
+      "제목 없는 서류 검사 서류 저장됨 · 상태 의료진 질문 · 첨부 없음",
+    );
+  });
+
   it("builds document-specific add and archive labels when no attachment exists", () => {
     expect(formatDocumentActionButtonLabel(baseDocument, "add-attachment")).toBe(
       "혈액검사 메모 검사 서류 첨부 추가 · 상태 의료진 질문",
