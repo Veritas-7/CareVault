@@ -343,6 +343,15 @@ describe("healthStandards", () => {
       title: "건강 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
       visibleLabel: "대한당뇨병학회 당뇨병 관리 목표",
     });
+    expect(
+      buildHealthStandardSourceLinkLabels("질병관리청 국가건강정보포털 고혈압", "혈압 기준", {
+        surfaceLabel: "기준 빠른 보기",
+      }),
+    ).toEqual({
+      ariaLabel: "기준 빠른 보기 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
+      title: "기준 빠른 보기 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
+      visibleLabel: "질병관리청 국가건강정보포털 고혈압",
+    });
   });
 
   it("marks standards with real sex-specific thresholds", () => {
@@ -535,8 +544,8 @@ describe("healthStandards", () => {
     expect(buildDashboardMetricStandardEvidence("blood-pressure", "최근 혈압 기준")).toEqual({
       contextLabel: "최근 혈압 기준",
       linkLabels: {
-        ariaLabel: "최근 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
-        title: "최근 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
+        ariaLabel: "대시보드 지표 최근 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
+        title: "대시보드 지표 최근 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
         visibleLabel: "질병관리청 국가건강정보포털 고혈압",
       },
       note: "성인 남녀 공통 · 한국 성인 혈압",
@@ -554,8 +563,8 @@ describe("healthStandards", () => {
     expect(buildDashboardMetricStandardEvidence("glucose-care", "최근 혈당 기준")).toMatchObject({
       contextLabel: "최근 혈당 기준",
       linkLabels: {
-        ariaLabel: "최근 혈당 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
-        title: "최근 혈당 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
+        ariaLabel: "대시보드 지표 최근 혈당 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
+        title: "대시보드 지표 최근 혈당 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
         visibleLabel: "대한당뇨병학회 당뇨병 관리 목표",
       },
       note: "성인 남녀 공통 · 당뇨 추적 혈당",

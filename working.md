@@ -14312,3 +14312,42 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `c632f40` (`Ensure SQLite app state table`).
+
+## 2026-06-05 11:13 KST - Health Standard Source Link Accessible Name Iteration Note
+
+- Improvement target:
+  - A real-browser mobile DOM audit at 390x884 found no overflow, unnamed controls, small controls, or title/name mismatches.
+  - It did find repeated health-standard source link accessible names for official standard links that appear both in dashboard evidence and the profile standards quick-range/coverage surfaces.
+  - Duplicate source-link names make Playwright strict locators and screen-reader link lists less precise even though the visible labels and URLs are valid.
+- Code/design changes:
+  - Updated `src/healthStandards.ts`.
+    - Added an optional `surfaceLabel` to `buildHealthStandardSourceLinkLabels()`.
+    - Dashboard metric source evidence now prefixes source-link names with `대시보드 지표`.
+  - Updated `src/App.tsx`.
+    - Added `활력 입력`, `기준 빠른 보기`, and `적용 범위` surface context to repeated health-standard source links while preserving visible link text and URLs.
+  - Updated `src/healthStandards.test.ts`.
+    - Locked the surface-context label contract and updated dashboard evidence expectations.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for health-standard source-link accessible-name disambiguation.
+- Verification so far:
+  - PASS: `npm test -- healthStandards`, 1 file and 27 tests.
+  - PASS: Focused Playwright profile source-link audit at 390x884.
+    - `duplicateSourceLinks`: 0.
+    - `bodyScrollWidth`: 390; `documentScrollWidth`: 390.
+    - Small controls: 0.
+  - PASS: Full route Playwright duplicate source-link audit at 390x884 across `/`, `#dashboard`, `#profile`, `#timeline`, `#symptoms`, `#labs`, `#nutrition`, and `#documents`.
+    - `duplicateSourceLinks`: 0 for every route.
+    - `bodyScrollWidth`: 390; `documentScrollWidth`: 390 for every route.
+    - Small controls: 0; unnamed controls: 0; title/name mismatches: 0.
+    - Page errors: 0.
+  - PASS: `npm run typecheck`.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace browser only; no new cmux browser was created.
+    - The live accessibility tree exposed disambiguated source-link names such as `대시보드 지표 ... 공식 기준 출처 ... 열기` and `활력 입력 ... 공식 기준 출처 ... 열기`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx src/healthStandards.ts src/healthStandards.test.ts`.
+  - PASS: `npm run test`, 54 files and 370 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
+  - Pending: commit and push.

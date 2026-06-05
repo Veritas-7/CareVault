@@ -76,6 +76,10 @@ export type HealthStandardSourceLinkLabels = {
   visibleLabel: string;
 };
 
+export type HealthStandardSourceLinkLabelOptions = {
+  surfaceLabel?: string;
+};
+
 export type DashboardMetricStandardEvidence = {
   contextLabel: string;
   note: string;
@@ -1170,9 +1174,12 @@ export function formatHealthStandardSource(item: HealthStandardCoverage) {
 export function buildHealthStandardSourceLinkLabels(
   sourceLabel: string,
   contextLabel: string,
+  options: HealthStandardSourceLinkLabelOptions = {},
 ): HealthStandardSourceLinkLabels {
   const context = contextLabel.trim() || "건강 기준";
-  const label = `${context} 공식 기준 출처 ${sourceLabel} 열기`;
+  const surface = options.surfaceLabel?.trim();
+  const labelContext = surface ? `${surface} ${context}` : context;
+  const label = `${labelContext} 공식 기준 출처 ${sourceLabel} 열기`;
   return {
     ariaLabel: label,
     title: label,
@@ -1208,7 +1215,9 @@ export function buildDashboardMetricStandardEvidence(
 
   return {
     contextLabel,
-    linkLabels: buildHealthStandardSourceLinkLabels(standard.sourceLabel, contextLabel),
+    linkLabels: buildHealthStandardSourceLinkLabels(standard.sourceLabel, contextLabel, {
+      surfaceLabel: "대시보드 지표",
+    }),
     note: formatDashboardMetricStandardNote(id),
     sourceLabel: standard.sourceLabel,
     sourceUrl: standard.sourceUrl,

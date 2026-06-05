@@ -1612,6 +1612,7 @@ function App() {
     ? buildHealthStandardSourceLinkLabels(
         vitalDraftStandard.sourceLabel,
         `${vitalTypeLabel[vitalDraft.type]} 입력 기준`,
+        { surfaceLabel: "활력 입력" },
       )
     : null;
   const vitalDraftSourceLink =
@@ -4602,6 +4603,7 @@ function App() {
                   const sourceLinkLabels = buildHealthStandardSourceLinkLabels(
                     section.sourceLabel,
                     section.label,
+                    { surfaceLabel: "기준 빠른 보기" },
                   );
                   return (
                     <section key={section.id}>
@@ -4672,6 +4674,7 @@ function App() {
                     const sourceLinkLabels = buildHealthStandardSourceLinkLabels(
                       item.sourceLabel,
                       item.label,
+                      { surfaceLabel: "적용 범위" },
                     );
                     const sexBadge = buildHealthStandardSexApplicabilityBadge(item);
                     return (
