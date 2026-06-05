@@ -6,9 +6,13 @@ import {
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
+  formatDocumentAttachmentPreviewOpenedStatusLabel,
+  formatDocumentAttachmentPreviewUnavailableStatusLabel,
   formatDocumentAttachmentReconnectStatusLabel,
+  formatDocumentAttachmentReconnectFailedStatusLabel,
   formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
+  formatDocumentAttachmentRemovalFailedStatusLabel,
   formatDocumentDraftAttachmentReadyStatusLabel,
   formatDocumentDraftAttachmentReferenceReadyStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
@@ -166,6 +170,32 @@ describe("documentActionLabels", () => {
       }),
     ).toBe(
       "혈액검사 메모 검사 서류 첨부는 파일명 참조만 저장됨 · 현재 첨부 browser-scan.png",
+    );
+  });
+
+  it("builds saved attachment failure and preview feedback with document context", () => {
+    const documentWithAttachment: CareDocument = {
+      ...baseDocument,
+      attachmentName: "blood-result.pdf",
+      attachmentStatus: "재첨부 필요",
+    };
+
+    expect(formatDocumentAttachmentReconnectFailedStatusLabel(documentWithAttachment)).toBe(
+      "혈액검사 메모 검사 서류 첨부 재연결 실패 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
+    );
+    expect(
+      formatDocumentAttachmentPreviewUnavailableStatusLabel(
+        documentWithAttachment,
+        "이미지 첨부 아님",
+      ),
+    ).toBe(
+      "혈액검사 메모 검사 서류 이미지 미리보기 불가 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요 · 이유 이미지 첨부 아님",
+    );
+    expect(formatDocumentAttachmentPreviewOpenedStatusLabel(documentWithAttachment)).toBe(
+      "혈액검사 메모 검사 서류 이미지 미리보기 열림 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
+    );
+    expect(formatDocumentAttachmentRemovalFailedStatusLabel(documentWithAttachment)).toBe(
+      "혈액검사 메모 검사 서류 첨부 파일 삭제 실패 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
     );
   });
 

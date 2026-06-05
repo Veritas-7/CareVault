@@ -76,6 +76,12 @@ function formatAttachmentStatusContext(attachmentStatus: string | undefined) {
   return attachmentStatus?.trim() ? ` · 첨부 상태 ${attachmentStatus.trim()}` : "";
 }
 
+function formatCurrentAttachmentContext(document: CareDocument) {
+  return `현재 첨부 ${formatAttachmentFileName(document.attachmentName)}${formatAttachmentStatusContext(
+    document.attachmentStatus,
+  )}`;
+}
+
 export function formatDocumentAttachmentRemovedStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 첨부 제거됨 · ${formatRemovedAttachmentContext(document)}`;
 }
@@ -131,6 +137,32 @@ export function formatDocumentDraftAttachmentReferenceReadyStatusLabel(
 export function formatDocumentAttachmentFileNameOnlyStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 첨부는 파일명 참조만 저장됨 · 현재 첨부 ${formatAttachmentFileName(
     document.attachmentName,
+  )}`;
+}
+
+export function formatDocumentAttachmentReconnectFailedStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 첨부 재연결 실패 · ${formatCurrentAttachmentContext(document)}`;
+}
+
+export function formatDocumentAttachmentPreviewUnavailableStatusLabel(
+  document: CareDocument,
+  reason: string,
+) {
+  const reasonText = reason.trim() || "이유 미확인";
+  return `${formatDocumentContext(document)} 이미지 미리보기 불가 · ${formatCurrentAttachmentContext(
+    document,
+  )} · 이유 ${reasonText}`;
+}
+
+export function formatDocumentAttachmentPreviewOpenedStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 이미지 미리보기 열림 · ${formatCurrentAttachmentContext(
+    document,
+  )}`;
+}
+
+export function formatDocumentAttachmentRemovalFailedStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 첨부 파일 삭제 실패 · ${formatCurrentAttachmentContext(
+    document,
   )}`;
 }
 

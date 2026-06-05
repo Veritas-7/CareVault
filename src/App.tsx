@@ -155,9 +155,13 @@ import {
   formatDocumentArchiveStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
+  formatDocumentAttachmentPreviewOpenedStatusLabel,
+  formatDocumentAttachmentPreviewUnavailableStatusLabel,
   formatDocumentAttachmentReconnectStatusLabel,
+  formatDocumentAttachmentReconnectFailedStatusLabel,
   formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
+  formatDocumentAttachmentRemovalFailedStatusLabel,
   formatDocumentDraftAttachmentReadyStatusLabel,
   formatDocumentDraftAttachmentReferenceReadyStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
@@ -2236,13 +2240,15 @@ function App() {
       );
     } catch (error) {
       console.error("Saved document attachment replacement failed", error);
-      setSaveLabel("저장된 서류 첨부 재연결 실패");
+      setSaveLabel(formatDocumentAttachmentReconnectFailedStatusLabel(document));
     }
   };
 
   const previewDocumentAttachment = async (document: CareDocument) => {
     if (!document.attachmentName || !isPreviewableImageAttachment(document.attachmentName)) {
-      setSaveLabel("이미지 첨부만 미리보기 가능");
+      setSaveLabel(
+        formatDocumentAttachmentPreviewUnavailableStatusLabel(document, "이미지 첨부 아님"),
+      );
       return;
     }
 
@@ -2255,12 +2261,17 @@ function App() {
         previewUrl: browserPreviewUrl,
         sourceLabel: "브라우저 세션 미리보기",
       });
-      setSaveLabel("이미지 미리보기 열림");
+      setSaveLabel(formatDocumentAttachmentPreviewOpenedStatusLabel(document));
       return;
     }
 
     if (!document.attachmentPath || !canUseTauriRuntime()) {
-      setSaveLabel("저장된 경로가 있는 이미지 첨부만 미리보기 가능");
+      setSaveLabel(
+        formatDocumentAttachmentPreviewUnavailableStatusLabel(
+          document,
+          "저장된 경로 또는 데스크톱 런타임 필요",
+        ),
+      );
       return;
     }
 
@@ -2343,7 +2354,7 @@ function App() {
       return true;
     } catch (error) {
       console.error("Document attachment removal failed", error);
-      setSaveLabel("첨부 파일 삭제 실패");
+      setSaveLabel(formatDocumentAttachmentRemovalFailedStatusLabel(document));
       return false;
     }
   };
