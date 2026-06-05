@@ -268,6 +268,11 @@ import {
   savePersistedState,
   type PersistenceBackend,
 } from "./storage";
+import {
+  formatStorageReadyLabel,
+  formatStorageSaveFailedLabel,
+  formatStorageSavedLabel,
+} from "./storageStatus";
 import { persistedSaveQueue } from "./persistedSaveQueue";
 import {
   parseOptionalNumberInput,
@@ -759,18 +764,6 @@ const sidebarNavigationIcon = {
   documents: FileText,
 } satisfies Record<SidebarSectionId, typeof LineChartIcon>;
 
-function formatStorageReadyLabel(backend: PersistenceBackend) {
-  if (backend === "sqlite") return "SQLite 저장 준비";
-  if (backend === "localStorage") return "브라우저 저장 준비";
-  return "임시 메모리 저장 준비";
-}
-
-function formatStorageSavedLabel(backend: PersistenceBackend, automatic = false) {
-  const storageLabel =
-    backend === "sqlite" ? "SQLite" : backend === "localStorage" ? "브라우저" : "임시 메모리";
-  return `${storageLabel} ${automatic ? "자동 저장됨" : "저장됨"}`;
-}
-
 function logPersistedSaveError(error: unknown) {
   console.error("CareVault persisted state save failed", error);
 }
@@ -1161,7 +1154,7 @@ function App() {
         },
         onError: (error) => {
           logPersistedSaveError(error);
-          setSaveLabel("저장 실패");
+          setSaveLabel(formatStorageSaveFailedLabel(storageBackend, true));
         },
       });
     }, 250);
@@ -2969,7 +2962,7 @@ function App() {
       },
       onError: (error) => {
         logPersistedSaveError(error);
-        setSaveLabel("저장 실패");
+        setSaveLabel(formatStorageSaveFailedLabel(storageBackend));
       },
     });
   };
