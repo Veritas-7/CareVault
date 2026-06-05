@@ -14000,4 +14000,5 @@
     - Their `aria-label` and `title` matched and included `비활성: 진료 요약 범위가 바뀌어 새 미리보기가 필요합니다.`
   - PASS: `npm run test`, 53 files and 364 tests.
   - PASS: `npm run build`.
-  - Pending: staged secret scan before commit and push.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
+  - Git staging, commit, and push were performed after this verification note using explicit paths only; see the final assistant report for pushed-head evidence.
