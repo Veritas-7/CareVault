@@ -86,6 +86,22 @@ export function formatCervicalCancerCareClipboardStatus(
   return `자궁경부암 케어 노트 복사됨 · ${formatCervicalCancerCareClipboardCompactSummary(summary)}`;
 }
 
+export function formatCervicalCancerCareClipboardUnsupportedStatus(
+  summary: CervicalCancerCareClipboardSummary,
+) {
+  return `자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · ${formatCervicalCancerCareClipboardCompactSummary(
+    summary,
+  )}`;
+}
+
+export function formatCervicalCancerCareClipboardFailedStatus(
+  summary: CervicalCancerCareClipboardSummary,
+) {
+  return `자궁경부암 케어 노트 복사 실패 · ${formatCervicalCancerCareClipboardCompactSummary(
+    summary,
+  )}`;
+}
+
 export function formatCervicalCancerCareClipboardText(
   profile?: CervicalCancerScreeningProfile,
 ) {

@@ -459,8 +459,10 @@ import {
   buildCervicalCancerCareClipboardSummary,
   formatCervicalCancerCareClipboardCompactSummary,
   formatCervicalCancerCareClipboardDescription,
+  formatCervicalCancerCareClipboardFailedStatus,
   formatCervicalCancerCareClipboardStatus,
   formatCervicalCancerCareClipboardText,
+  formatCervicalCancerCareClipboardUnsupportedStatus,
 } from "./cervicalCancerCareClipboard";
 import { buildCervicalCancerCarePanelSummary } from "./cervicalCancerCareMetric";
 
@@ -2693,14 +2695,20 @@ function App() {
 
   const copyCervicalCancerCareNote = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel("자궁경부암 케어 노트 복사를 지원하지 않는 브라우저입니다.");
+      setSaveLabel(
+        formatCervicalCancerCareClipboardUnsupportedStatus(cervicalCancerCareClipboardSummary),
+      );
       return;
     }
 
     navigator.clipboard
       .writeText(formatCervicalCancerCareClipboardText(state.profile))
       .then(() => setTransientSaveLabel(cervicalCancerCareClipboardStatus))
-      .catch(() => setSaveLabel("자궁경부암 케어 노트 복사 실패"));
+      .catch(() =>
+        setSaveLabel(
+          formatCervicalCancerCareClipboardFailedStatus(cervicalCancerCareClipboardSummary),
+        ),
+      );
   };
 
   const renderCervicalCareItemSourceLink = (sourceId: string, itemLabel: string) => {

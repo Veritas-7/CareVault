@@ -3,8 +3,10 @@ import {
   buildCervicalCancerCareClipboardSummary,
   formatCervicalCancerCareClipboardCompactSummary,
   formatCervicalCancerCareClipboardDescription,
+  formatCervicalCancerCareClipboardFailedStatus,
   formatCervicalCancerCareClipboardStatus,
   formatCervicalCancerCareClipboardText,
+  formatCervicalCancerCareClipboardUnsupportedStatus,
 } from "./cervicalCancerCareClipboard";
 
 describe("cervicalCancerCareClipboard", () => {
@@ -176,6 +178,12 @@ describe("cervicalCancerCareClipboard", () => {
     );
     expect(formatCervicalCancerCareClipboardStatus(profileSummary)).toBe(
       "자궁경부암 케어 노트 복사됨 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개",
+    );
+    expect(formatCervicalCancerCareClipboardUnsupportedStatus(profileSummary)).toBe(
+      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개",
+    );
+    expect(formatCervicalCancerCareClipboardFailedStatus(profileSummary)).toBe(
+      "자궁경부암 케어 노트 복사 실패 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개",
     );
     expect(formatCervicalCancerCareClipboardCompactSummary(genericSummary)).toBe(
       "총 44개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개",
