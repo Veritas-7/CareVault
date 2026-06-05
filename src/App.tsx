@@ -821,6 +821,9 @@ function App() {
   const [vitalStandardQuestionFeedback, setVitalStandardQuestionFeedback] = useState<string | null>(
     null,
   );
+  const [symptomSupportQuestionFeedback, setSymptomSupportQuestionFeedback] = useState<
+    string | null
+  >(null);
   const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
   const [cervicalCancerCareCopyFeedback, setCervicalCancerCareCopyFeedback] = useState<
     string | null
@@ -960,6 +963,10 @@ function App() {
       clearRecordFormValidationFeedback("symptom", { refreshStaleSaveLabel: true });
     }
   }, [recordFormFeedback.symptom, symptomDraft.symptom]);
+
+  useEffect(() => {
+    setSymptomSupportQuestionFeedback(null);
+  }, [symptomDraft.body, symptomDraft.symptom]);
 
   useEffect(() => {
     if (
@@ -2647,6 +2654,7 @@ function App() {
 
   const applySymptomSupportTemplate = () => {
     if (!symptomSupportTemplate) return;
+    const feedback = formatSymptomSupportQuestionDraftReadyStatus(symptomSupportTemplate);
 
     setQuestionDraft((current) => ({
       ...current,
@@ -2662,7 +2670,8 @@ function App() {
         ? current.action
         : buildSymptomSupportActionNote(symptomSupportTemplate),
     }));
-    setSaveLabel(formatSymptomSupportQuestionDraftReadyStatus(symptomSupportTemplate));
+    setSymptomSupportQuestionFeedback(feedback);
+    setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
@@ -5810,6 +5819,11 @@ function App() {
                   <MessageSquare aria-hidden="true" />
                   질문 초안
                 </button>
+                {symptomSupportQuestionFeedback ? (
+                  <div className="symptom-template-draft-feedback" role="status">
+                    {symptomSupportQuestionFeedback}
+                  </div>
+                ) : null}
               </div>
             ) : null}
             <button

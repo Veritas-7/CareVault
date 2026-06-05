@@ -2806,6 +2806,7 @@ textarea:focus-visible {
 
 .symptom-template-band {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
@@ -3010,6 +3011,19 @@ textarea:focus-visible {
 .symptom-template-band button svg {
   width: 15px;
   height: 15px;
+}
+
+.symptom-template-draft-feedback {
+  flex: 1 0 100%;
+  padding: 8px 10px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .chart-box {
