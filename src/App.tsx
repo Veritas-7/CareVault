@@ -144,9 +144,9 @@ import {
   formatDocumentDraftAttachmentRemoveActionLabel,
 } from "./documentAttachmentActions";
 import {
-  documentFilterResetStatusLabel,
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
+  formatDocumentFilterResetStatusLabel,
   hasActiveDocumentFilters as hasActiveDocumentFilterState,
 } from "./documentFilterActions";
 import {
@@ -1603,10 +1603,19 @@ function App() {
   };
 
   const resetDocumentFilters = () => {
+    const statusLabel = formatDocumentFilterResetStatusLabel({
+      categoryLabel:
+        documentCategoryFilter === "all" ? "전체 분류" : documentLabel[documentCategoryFilter],
+      searchText: documentFilter,
+      statusLabel:
+        documentStatusFilter === "all"
+          ? "전체 상태"
+          : documentReviewStatusLabel[documentStatusFilter],
+    });
     setDocumentFilter("");
     setDocumentCategoryFilter("all");
     setDocumentStatusFilter("all");
-    setSaveLabel(documentFilterResetStatusLabel);
+    setSaveLabel(statusLabel);
   };
 
   const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>

@@ -3,6 +3,7 @@ import {
   documentFilterResetStatusLabel,
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
+  formatDocumentFilterResetStatusLabel,
   hasActiveDocumentFilters,
 } from "./documentFilterActions";
 
@@ -64,6 +65,20 @@ describe("documentFilterActions", () => {
 
   it("keeps the reset feedback explicit", () => {
     expect(documentFilterResetStatusLabel).toBe("서류 필터 초기화됨");
+    expect(
+      formatDocumentFilterResetStatusLabel({
+        categoryLabel: "검사",
+        searchText: "백혈구",
+        statusLabel: "의료진 질문",
+      }),
+    ).toBe("서류 필터 초기화됨 · 검색어 백혈구 · 분류 검사 · 상태 의료진 질문");
+    expect(
+      formatDocumentFilterResetStatusLabel({
+        categoryLabel: "전체 분류",
+        searchText: "",
+        statusLabel: "전체 상태",
+      }),
+    ).toBe("서류 필터 초기화됨 · 검색어 없음 · 분류 전체 분류 · 상태 전체 상태");
   });
 
   it("filters saved documents by trimmed search text across visible fields", () => {

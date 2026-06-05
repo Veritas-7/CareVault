@@ -1,5 +1,3 @@
-export const documentFilterResetStatusLabel = "서류 필터 초기화됨";
-
 type DocumentFilterSource = {
   attachmentName?: string;
   attachmentStatus?: string;
@@ -18,7 +16,7 @@ type DocumentFilterResetActionParts = {
   statusLabel: string;
 };
 
-export function formatDocumentFilterResetActionLabel({
+function formatDocumentFilterResetContext({
   categoryLabel,
   searchText,
   statusLabel,
@@ -26,7 +24,25 @@ export function formatDocumentFilterResetActionLabel({
   const trimmedSearch = searchText?.trim();
   const searchContext = trimmedSearch ? `검색어 ${trimmedSearch}` : "검색어 없음";
 
-  return `저장된 서류 필터 초기화 · ${searchContext} · 분류 ${categoryLabel} · 상태 ${statusLabel}`;
+  return `${searchContext} · 분류 ${categoryLabel} · 상태 ${statusLabel}`;
+}
+
+export const documentFilterResetStatusLabel = "서류 필터 초기화됨";
+
+export function formatDocumentFilterResetActionLabel({
+  categoryLabel,
+  searchText,
+  statusLabel,
+}: DocumentFilterResetActionParts) {
+  return `저장된 서류 필터 초기화 · ${formatDocumentFilterResetContext({
+    categoryLabel,
+    searchText,
+    statusLabel,
+  })}`;
+}
+
+export function formatDocumentFilterResetStatusLabel(parts: DocumentFilterResetActionParts) {
+  return `서류 필터 초기화됨 · ${formatDocumentFilterResetContext(parts)}`;
 }
 
 export function hasActiveDocumentFilters({
