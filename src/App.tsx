@@ -50,6 +50,7 @@ import {
   buildFoodMatchSourceLinkLabels,
   calculateBmi,
   koreanHealthStandardSummary,
+  parseFiniteNumberText,
   type FoodAssessment,
   type GlucoseContext,
   type LabFlag,
@@ -1484,15 +1485,15 @@ function App() {
   const bmi = useMemo(
     () =>
       calculateBmi(
-        Number.parseFloat(state.profile.heightCm),
-        Number.parseFloat(state.profile.weightKg),
+        parseFiniteNumberText(state.profile.heightCm) ?? Number.NaN,
+        parseFiniteNumberText(state.profile.weightKg) ?? Number.NaN,
       ),
     [state.profile.heightCm, state.profile.weightKg],
   );
   const waistStatus = useMemo(
     () =>
       assessWaistCircumference(
-        Number.parseFloat(state.profile.waistCm),
+        parseFiniteNumberText(state.profile.waistCm) ?? Number.NaN,
         state.profile.sex,
       ),
     [state.profile.sex, state.profile.waistCm],

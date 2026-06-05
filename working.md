@@ -14713,6 +14713,39 @@
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `ccecd5c` (`Tighten cervical age parsing`).
 
+## 2026-06-05 12:29 KST - Strict Profile Metric Parsing Iteration Note
+
+- Improvement target:
+  - Dashboard BMI/waist and visit-packet BMI calculations still used `Number.parseFloat()` on profile metric text.
+  - Partial strings such as `164cm` or `62kg` could be treated as valid height/weight values and produce a false BMI category.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Routed dashboard BMI and waist calculations through `parseFiniteNumberText()`.
+  - Updated `src/visitPacket.ts`.
+    - Routed visit-packet BMI calculation through `parseFiniteNumberText()`.
+  - Updated `src/visitPacket.test.ts`.
+    - Added regression coverage proving partial height/weight text exports `BMI: 계산 불가` instead of `23.1 - 비만전단계`.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for strict profile metric parsing.
+- Verification so far:
+  - PASS: `npm test -- src/visitPacket.test.ts`, 1 file and 21 tests.
+  - PASS: no remaining `Number.parseFloat` or `parseFloat` call sites in `src`.
+  - PASS: `npm run typecheck`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright dashboard smoke at 390x884.
+    - `document.title`: `CareVault`.
+    - `나의 건강 기록` H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - Dashboard BMI metric, waist metric, care-queue copy, and browser storage label visible.
+    - Page errors: 0; console errors: 0.
+  - PASS: existing cmux `암관리` right-side in-app browser stayed on the existing CareVault pane, navigated in-app to `http://127.0.0.1:1420/#dashboard`, and showed profile metrics, BMI `23.1`, waist `82 cm`, and the care queue.
+  - PASS: `npm run test`, 55 files and 385 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: stopped the local Vite dev server before staging and confirmed port `1420` was closed.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
+
 ## 2026-06-05 12:07 KST - SQLite Count Integer Parsing Iteration Note
 
 - Improvement target:

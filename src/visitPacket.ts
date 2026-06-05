@@ -3,6 +3,7 @@ import {
   assessLabTextValue,
   calculateBmi,
   formatFoodMatchEvidence,
+  parseFiniteNumberText,
   type GlucoseContext,
 } from "./healthRules";
 import {
@@ -275,8 +276,8 @@ export function buildVisitPacketMarkdown(
   const range = options.range ?? "all";
   const rangeStartDate = getRangeStartDate(exportedAt, range);
   const bmi = calculateBmi(
-    Number.parseFloat(state.profile.heightCm),
-    Number.parseFloat(state.profile.weightKg),
+    parseFiniteNumberText(state.profile.heightCm) ?? Number.NaN,
+    parseFiniteNumberText(state.profile.weightKg) ?? Number.NaN,
   );
 
   const vitalLines = latestFirst(filterByRange(state.vitals, rangeStartDate))

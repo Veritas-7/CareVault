@@ -480,6 +480,23 @@ describe("visit packet", () => {
     );
   });
 
+  it("does not calculate BMI from partial profile metric text in Markdown", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        profile: {
+          ...sampleState.profile,
+          heightCm: "164cm",
+          weightKg: "62kg",
+        },
+      },
+      { exportedAt: "2026-06-03T08:00:00.000Z" },
+    );
+
+    expect(markdown).toContain("- BMI: 계산 불가 - 정보 부족");
+    expect(markdown).not.toContain("- BMI: 23.1 - 비만전단계");
+  });
+
   it("exports generated vital standard questions with separated evidence in Markdown", () => {
     const vitalQuestion = buildVitalStandardQuestionDraft({
       assessmentLabel: "주의혈압 범위",
