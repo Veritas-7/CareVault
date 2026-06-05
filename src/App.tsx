@@ -137,7 +137,9 @@ import {
 } from "./documentAttachmentActions";
 import {
   documentFilterResetStatusLabel,
+  filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
+  hasActiveDocumentFilters as hasActiveDocumentFilterState,
 } from "./documentFilterActions";
 import {
   formatCervicalCarePreventionDisclosureLabel,
@@ -1981,19 +1983,18 @@ function App() {
   const chartSummary = buildVitalChartSummary(chartData);
   const chartAccessibleRows = buildVitalChartAccessibleRows(chartData);
 
-  const filteredDocuments = state.documents.filter((document) => {
-    const categoryMatches =
-      documentCategoryFilter === "all" || document.category === documentCategoryFilter;
-    const statusMatches =
-      documentStatusFilter === "all" || document.reviewStatus === documentStatusFilter;
-    const haystack =
-      `${document.date} ${documentLabel[document.category]} ${document.title} ${document.body} ${document.tags} ${document.nextAction} ${documentReviewStatusLabel[document.reviewStatus]} ${document.attachmentName ?? ""} ${document.attachmentStatus ?? ""}`.toLowerCase();
-    return categoryMatches && statusMatches && haystack.includes(documentFilter.toLowerCase());
+  const filteredDocuments = filterDocumentsBySearchAndReview(state.documents, {
+    categoryFilter: documentCategoryFilter,
+    categoryLabels: documentLabel,
+    searchText: documentFilter,
+    statusFilter: documentStatusFilter,
+    statusLabels: documentReviewStatusLabel,
   });
-  const hasActiveDocumentFilters =
-    Boolean(documentFilter.trim()) ||
-    documentCategoryFilter !== "all" ||
-    documentStatusFilter !== "all";
+  const hasActiveDocumentFilters = hasActiveDocumentFilterState({
+    categoryFilter: documentCategoryFilter,
+    searchText: documentFilter,
+    statusFilter: documentStatusFilter,
+  });
   const documentFilterResetActionLabel = formatDocumentFilterResetActionLabel({
     categoryLabel:
       documentCategoryFilter === "all" ? "전체 분류" : documentLabel[documentCategoryFilter],
