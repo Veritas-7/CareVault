@@ -16477,3 +16477,33 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `e49fdeb` (`Cover saved question priority labels`).
+
+## 2026-06-05 20:07 KST - Saved Question Evidence Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires source-backed saved questions to split raw `출처:` text into a separate compact `근거:` row and to keep saved answer memos as a labeled `답변 메모` row.
+  - Source audit found the saved-question evidence and answer-memo accessible labels were built inline in `App.tsx`, so blank topics or topics already ending in `질문` could produce weak or duplicated accessible names.
+- Change:
+  - Added saved-question display label helpers in `src/questionDisplay.ts` for source evidence rows, source evidence links, and answer memo rows.
+  - Updated `App.tsx` saved-question source evidence and answer memo elements to reuse the shared labels.
+  - Added focused tests that cover topic-specific labels, `질문` suffix de-duplication, blank-topic fallback, and blank-source fallback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document. DOM eval, `cmux browser surface:9 console list`, and `cmux browser surface:9 errors list` timed out.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/questionDisplay.test.ts`, 6 tests.
+  - PASS: `npm run test`, 60 files and 443 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/questionDisplay.ts src/questionDisplay.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `d873f46` (`Clarify saved question evidence labels`).
