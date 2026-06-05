@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   buildQuestionDisplayParts,
   buildQuestionTimelineDisplayParts,
+  formatQuestionAnswerMemoLabel,
   formatQuestionAnswerMemoDisplay,
+  formatQuestionSourceEvidenceLabel,
+  formatQuestionSourceEvidenceOpenLabel,
 } from "./questionDisplay";
 
 describe("questionDisplay", () => {
@@ -49,5 +52,21 @@ describe("questionDisplay", () => {
     );
     expect(formatQuestionAnswerMemoDisplay("   ")).toBe("");
     expect(formatQuestionAnswerMemoDisplay(undefined)).toBe("");
+  });
+
+  it("formats saved question evidence labels without duplicating question context", () => {
+    expect(formatQuestionSourceEvidenceLabel("혈액검사", "대한당뇨병학회")).toBe(
+      "혈액검사 질문 근거 대한당뇨병학회",
+    );
+    expect(formatQuestionSourceEvidenceOpenLabel("혈액검사 질문", "대한당뇨병학회")).toBe(
+      "혈액검사 질문 근거 대한당뇨병학회 열기",
+    );
+    expect(formatQuestionSourceEvidenceLabel("  ", "")).toBe("진료 전 질문 근거 공식 출처");
+  });
+
+  it("formats saved question answer memo labels with fallback context", () => {
+    expect(formatQuestionAnswerMemoLabel("진료 전 질문")).toBe("진료 전 질문 답변 메모");
+    expect(formatQuestionAnswerMemoLabel("식사 상담")).toBe("식사 상담 질문 답변 메모");
+    expect(formatQuestionAnswerMemoLabel("  ")).toBe("진료 전 질문 답변 메모");
   });
 });

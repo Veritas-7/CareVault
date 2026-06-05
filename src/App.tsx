@@ -337,7 +337,10 @@ import {
 import {
   buildQuestionDisplayParts,
   buildQuestionTimelineDisplayParts,
+  formatQuestionAnswerMemoLabel,
   formatQuestionAnswerMemoDisplay,
+  formatQuestionSourceEvidenceLabel,
+  formatQuestionSourceEvidenceOpenLabel,
 } from "./questionDisplay";
 import { buildQuestionListSummary, buildQuestionMetricSummary } from "./questionMetric";
 import {
@@ -5533,6 +5536,15 @@ function App() {
                     formatQuestionClipboardCopyDescription(question);
                   const questionDisplay = buildQuestionDisplayParts(question.question);
                   const answerMemoDisplay = formatQuestionAnswerMemoDisplay(question.answer);
+                  const questionSourceEvidenceLabel = formatQuestionSourceEvidenceLabel(
+                    question.topic,
+                    questionDisplay.sourceLabel,
+                  );
+                  const questionSourceEvidenceOpenLabel = formatQuestionSourceEvidenceOpenLabel(
+                    question.topic,
+                    questionDisplay.sourceLabel,
+                  );
+                  const questionAnswerMemoLabel = formatQuestionAnswerMemoLabel(question.topic);
                   const questionPriorityControlDescription =
                     formatQuestionPriorityControlDescription(question.topic, question.priority);
 
@@ -5547,7 +5559,7 @@ function App() {
                         {questionDisplay.sourceEvidence ? (
                           <small
                             className="question-source-evidence"
-                            aria-label={`${question.topic} 질문 근거 ${questionDisplay.sourceLabel}`}
+                            aria-label={questionSourceEvidenceLabel}
                           >
                             <ShieldCheck aria-hidden="true" />
                             {questionDisplay.sourceUrl ? (
@@ -5555,8 +5567,8 @@ function App() {
                                 href={questionDisplay.sourceUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                aria-label={`${question.topic} 질문 근거 ${questionDisplay.sourceLabel} 열기`}
-                                title={`${question.topic} 질문 근거 ${questionDisplay.sourceLabel} 열기`}
+                                aria-label={questionSourceEvidenceOpenLabel}
+                                title={questionSourceEvidenceOpenLabel}
                               >
                                 {questionDisplay.sourceEvidence}
                               </a>
@@ -5568,7 +5580,7 @@ function App() {
                         {answerMemoDisplay ? (
                           <small
                             className="question-answer-memo"
-                            aria-label={`${question.topic} 질문 답변 메모`}
+                            aria-label={questionAnswerMemoLabel}
                           >
                             <span>답변 메모</span>
                             <b>{answerMemoDisplay}</b>
