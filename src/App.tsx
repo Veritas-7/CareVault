@@ -826,6 +826,7 @@ function App() {
   >(null);
   const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
   const [labPresetFeedback, setLabPresetFeedback] = useState<string | null>(null);
+  const [labSaveFeedback, setLabSaveFeedback] = useState<string | null>(null);
   const [cervicalCancerCareCopyFeedback, setCervicalCancerCareCopyFeedback] = useState<
     string | null
   >(null);
@@ -2905,6 +2906,7 @@ function App() {
 
   const applyLabPreset = (presetId: string) => {
     setLabPresetChoice(presetId);
+    setLabSaveFeedback(null);
     const preset = resolveLabPreset(presetId, state.profile.sex);
     if (!preset) {
       setLabPresetFeedback(null);
@@ -2927,6 +2929,11 @@ function App() {
     setSaveLabel(feedback);
   };
 
+  const updateLabDraft = (updates: Partial<LabResult>) => {
+    setLabDraft((current) => ({ ...current, ...updates }));
+    setLabSaveFeedback(null);
+  };
+
   const resetLabDraft = () => {
     const presetLabel = labPresetChoice
       ? labPresets.find((candidate) => candidate.id === labPresetChoice)?.label
@@ -2935,6 +2942,7 @@ function App() {
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
     setLabPresetFeedback(feedback);
+    setLabSaveFeedback(null);
     clearRecordFormValidationFeedback("lab");
     setSaveLabel(feedback);
   };
@@ -2952,8 +2960,11 @@ function App() {
     }));
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
+    setLabPresetFeedback(null);
     clearRecordFormValidationFeedback("lab");
-    setActionSaveLabel(formatLabResultSavedStatusLabel(savedLabResult));
+    const feedback = formatLabResultSavedStatusLabel(savedLabResult);
+    setLabSaveFeedback(feedback);
+    setActionSaveLabel(feedback);
   };
 
   const addLabQuestion = (lab: LabResult, assessment: ReturnType<typeof assessLabTextValue>) => {
@@ -6163,7 +6174,7 @@ function App() {
                   value={labDraft.date}
                   aria-label={formControlDescriptions.labDate}
                   title={formControlDescriptions.labDate}
-                  onChange={(event) => setLabDraft({ ...labDraft, date: event.currentTarget.value })}
+                  onChange={(event) => updateLabDraft({ date: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -6172,7 +6183,7 @@ function App() {
                   value={labDraft.name}
                   aria-label={formControlDescriptions.labName}
                   title={formControlDescriptions.labName}
-                  onChange={(event) => setLabDraft({ ...labDraft, name: event.currentTarget.value })}
+                  onChange={(event) => updateLabDraft({ name: event.currentTarget.value })}
                   placeholder="예: WBC, RBC, Hct, PLT, HbA1c, BUN, Cr, eGFR, UACR, Alb, TP, Ca, P, UA, Na, K, AST, ALT"
                 />
               </label>
@@ -6183,7 +6194,7 @@ function App() {
                   value={labDraft.value}
                   aria-label={formControlDescriptions.labValue}
                   title={formControlDescriptions.labValue}
-                  onChange={(event) => setLabDraft({ ...labDraft, value: event.currentTarget.value })}
+                  onChange={(event) => updateLabDraft({ value: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -6192,7 +6203,7 @@ function App() {
                   value={labDraft.unit}
                   aria-label={formControlDescriptions.labUnit}
                   title={formControlDescriptions.labUnit}
-                  onChange={(event) => setLabDraft({ ...labDraft, unit: event.currentTarget.value })}
+                  onChange={(event) => updateLabDraft({ unit: event.currentTarget.value })}
                   placeholder="예: mg/dL, 10^3/uL"
                 />
               </label>
@@ -6203,7 +6214,7 @@ function App() {
                   value={labDraft.lower}
                   aria-label={formControlDescriptions.labLower}
                   title={formControlDescriptions.labLower}
-                  onChange={(event) => setLabDraft({ ...labDraft, lower: event.currentTarget.value })}
+                  onChange={(event) => updateLabDraft({ lower: event.currentTarget.value })}
                 />
               </label>
               <label>
@@ -6213,7 +6224,7 @@ function App() {
                   value={labDraft.upper}
                   aria-label={formControlDescriptions.labUpper}
                   title={formControlDescriptions.labUpper}
-                  onChange={(event) => setLabDraft({ ...labDraft, upper: event.currentTarget.value })}
+                  onChange={(event) => updateLabDraft({ upper: event.currentTarget.value })}
                 />
               </label>
             </div>
@@ -6223,7 +6234,7 @@ function App() {
                 value={labDraft.note}
                 aria-label={formControlDescriptions.labNote}
                 title={formControlDescriptions.labNote}
-                onChange={(event) => setLabDraft({ ...labDraft, note: event.currentTarget.value })}
+                onChange={(event) => updateLabDraft({ note: event.currentTarget.value })}
                 placeholder="예: 다음 진료 때 질문, 약 변경 후 추적"
               />
             </label>
@@ -6249,6 +6260,11 @@ function App() {
                 검사 입력 초기화
               </button>
             </div>
+            {labSaveFeedback ? (
+              <div className="lab-save-feedback" role="status">
+                {labSaveFeedback}
+              </div>
+            ) : null}
             {renderRecordFormFeedback("lab")}
           </section>
 
