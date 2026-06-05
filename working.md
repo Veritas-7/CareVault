@@ -15202,3 +15202,46 @@
   - PASS: Confirmed no `carevault` process remained after runtime checks.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged six-file diff.
   - PASS: committed and pushed to `origin/main` as `29ad239` (`Harden attachment recovery statuses`).
+
+## 2026-06-05 13:56 KST - Attachment Runtime Fixture Iteration Note
+
+- Improvement target:
+  - The README's current durable slice asked for a disposable Tauri desktop fixture covering saved-attachment missing-file, opener-failure, and image-preview-failure recovery.
+  - Live code review found a second image-preview failure path: a rendered asset image `onError` closed the preview with a transient label but did not mark the saved document card/history for reattachment.
+- Code/design changes:
+  - Updated `src/attachmentRecovery.ts`.
+    - Added runtime adapter helpers for saved attachment open and image preview flows.
+    - The helpers accept disposable `exists`, `openPath`, and `convertFileSrc` adapters so Tauri-like failure paths can be tested without real medical files or desktop file-opener side effects.
+  - Updated `src/attachmentRecovery.test.ts`.
+    - Added fixture coverage for missing-file open recovery, opener-failure recovery, and image-preview conversion-failure recovery.
+  - Updated `src/App.tsx`.
+    - Routed Tauri saved-attachment open and preview handlers through the runtime adapter helpers.
+    - Routed rendered image load errors through the shared preview-failure recovery status so the document card and history no longer stay healthy after a failed asset load.
+  - Updated `README.md`.
+    - Documented disposable runtime fixture coverage, rendered image-load recovery, and moved the next durable app slice to a live Tauri seeded click-through plus direct SQLite history readback.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for the runtime fixtures and rendered image-load recovery behavior.
+- Verification so far:
+  - PASS: `npm test -- src/attachmentRecovery.test.ts`, 1 file and 6 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 397 tests.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/attachmentRecovery.ts src/attachmentRecovery.test.ts`.
+  - PASS: Playwright seeded recovery smoke at 390x884.
+    - `document.title`: `CareVault`.
+    - Body client width and scroll width: 390 / 390.
+    - Seeded saved document: `런타임 첨부 복구 테스트`.
+    - Recovery summary chip visible: 1.
+    - Recovery prompt visible: 1.
+    - Preview-failure history visible: 1.
+    - Preview-failure status visible: 1.
+    - `재첨부` button visible: 1.
+    - Page errors: 0; console errors: 0.
+  - PASS: Existing cmux `암관리` right-side in-app browser reused the existing CareVault pane at `http://127.0.0.1:1420/#dashboard`.
+    - No new browser tab was opened.
+    - Browser storage label, dashboard metrics, care queue, cervical-care panel, timeline, lab tracking, nutrition, and document controls were visible.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Stopped the local Vite dev server after runtime checks by ending PID `84377`, then confirmed port 1420 had no listener.
+  - PASS: Confirmed no `carevault` process remained after runtime checks.

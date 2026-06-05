@@ -125,7 +125,12 @@ import {
 } from "./attachmentPreview";
 import { formatLabReferenceRangeLabel } from "./exportSourceLabels";
 import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
-import { buildAttachmentRecoveryUpdate, needsAttachmentRecovery } from "./attachmentRecovery";
+import {
+  buildAttachmentRecoveryUpdate,
+  needsAttachmentRecovery,
+  resolveRuntimeAttachmentOpen,
+  resolveRuntimeAttachmentPreview,
+} from "./attachmentRecovery";
 import {
   documentDraftAttachmentClearedStatusLabel,
   formatDocumentDraftAttachmentRemoveActionLabel,
@@ -2374,9 +2379,9 @@ function App() {
         import("@tauri-apps/plugin-opener"),
         import("@tauri-apps/plugin-fs"),
       ]);
-      const attachmentExists = await exists(document.attachmentPath).catch(() => false);
-      if (!attachmentExists) {
-        const recovery = buildAttachmentRecoveryUpdate("missing-file", document.attachmentName);
+      const result = await resolveRuntimeAttachmentOpen(document, { exists, openPath });
+      if (result.type === "recovery") {
+        const { recovery } = result;
         updateDocumentAttachmentStatus(
           document.id,
           recovery.status,
@@ -2387,8 +2392,7 @@ function App() {
         return;
       }
 
-      await openPath(document.attachmentPath);
-      setSaveLabel("첨부 파일 열기 요청됨");
+      setSaveLabel(result.statusLabel);
     } catch (error) {
       console.error("Document attachment open failed", error);
       const recovery = buildAttachmentRecoveryUpdate("open-failure", document.attachmentName);
@@ -2614,9 +2618,9 @@ function App() {
         import("@tauri-apps/api/core"),
         import("@tauri-apps/plugin-fs"),
       ]);
-      const attachmentExists = await exists(document.attachmentPath).catch(() => false);
-      if (!attachmentExists) {
-        const recovery = buildAttachmentRecoveryUpdate("missing-file", document.attachmentName);
+      const result = await resolveRuntimeAttachmentPreview(document, { convertFileSrc, exists });
+      if (result.type === "recovery") {
+        const { recovery } = result;
         updateDocumentAttachmentStatus(
           document.id,
           recovery.status,
@@ -2628,13 +2632,13 @@ function App() {
       }
 
       setAttachmentPreview({
-        documentId: document.id,
-        title: document.title,
-        attachmentName: document.attachmentName,
-        previewUrl: convertFileSrc(document.attachmentPath),
-        sourceLabel: "앱 샌드박스 이미지 미리보기",
+        documentId: result.documentId,
+        title: result.title,
+        attachmentName: result.attachmentName,
+        previewUrl: result.previewUrl,
+        sourceLabel: result.sourceLabel,
       });
-      setSaveLabel("이미지 미리보기 열림");
+      setSaveLabel(result.statusLabel);
     } catch (error) {
       console.error("Document attachment preview failed", error);
       const recovery = buildAttachmentRecoveryUpdate("preview-failure", document.attachmentName);
@@ -2646,6 +2650,18 @@ function App() {
       );
       setActionSaveLabel(recovery.status);
     }
+  };
+
+  const handleAttachmentPreviewImageError = (preview: AttachmentPreviewState) => {
+    const recovery = buildAttachmentRecoveryUpdate("preview-failure", preview.attachmentName);
+    updateDocumentAttachmentStatus(
+      preview.documentId,
+      recovery.status,
+      recovery.historyDetail,
+      recovery.historyLabel,
+    );
+    setAttachmentPreview(null);
+    setActionSaveLabel(recovery.status);
   };
 
   const closeAttachmentPreview = () => {
@@ -7195,10 +7211,7 @@ function App() {
               <img
                 src={attachmentPreview.previewUrl}
                 alt={`${attachmentPreview.title} 첨부 이미지 미리보기`}
-                onError={() => {
-                  setAttachmentPreview(null);
-                  setSaveLabel("이미지 미리보기 실패");
-                }}
+                onError={() => handleAttachmentPreviewImageError(attachmentPreview)}
               />
               <figcaption>{attachmentPreview.sourceLabel}</figcaption>
             </figure>
