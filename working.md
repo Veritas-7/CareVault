@@ -18505,3 +18505,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `0ae3350` (`Show infection standard draft local feedback`).
+
+## 2026-06-06 03:46 KST - Symptom Support Question Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires source-backed symptom support to create clinician-question drafts with immediate visible feedback and source-retaining evidence in the constrained cmux right pane.
+  - Real cmux QA found entering `38도 발열과 오한` opened the source-backed support band and `질문 초안` filled the question draft, but the support band had no local post-action `role=status` confirmation near the button.
+- Change:
+  - Added transient `symptomSupportQuestionFeedback` UI state in `src/App.tsx`.
+  - Updated `applySymptomSupportTemplate()` so support-band clinician-question drafts set local band feedback while preserving existing top save-status behavior.
+  - Cleared stale support feedback when the symptom name or body changes.
+  - Rendered `.symptom-template-draft-feedback` inside the support band and let the band wrap so the feedback row stays readable in the cmux right pane.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: one intermediate PASS-looking command started while `current-workspace` reported `workspace:3`, so that evidence was explicitly discarded and the PASS was rerun after `cmux workspace select workspace:4`.
+  - PASS: Computer Use confirmed the active workspace was `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: filled `증상·부작용 기록 증상명` with `38도 발열과 오한`, then clicked the support-band `질문 초안`; the top status showed `발열·오한/감염 의심 질문 초안 준비됨 · 근거 국가암정보센터 감염 의료진 상담 기준 · 저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.`, but local `.symptom-template-draft-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter33-symptom-support-question-local-feedback-red.png` captured the missing band feedback.
+  - PASS after fix: reloaded the same surface in `암관리`, repeated the same input and click flow, and the support band showed visible local `role=status` feedback with the same question-draft/source summary. Screenshot `/tmp/carevault-surface9-iter33-symptom-support-question-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: forced reload on `surface:9` and verified no stale `.symptom-template-draft-feedback`, the symptom field returned to empty, the question button returned to default `질문 추가`, and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/symptomSupportTemplates.test.ts src/healthStandards.test.ts`, 49 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `13a54b6` (`Show symptom support question local feedback`).
