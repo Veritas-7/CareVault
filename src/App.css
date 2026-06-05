@@ -1885,7 +1885,8 @@ label,
 }
 
 .cervical-care-copy-feedback,
-.cervical-care-question-feedback {
+.cervical-care-question-feedback,
+.cervical-care-symptom-feedback {
   margin: -4px 0 12px;
   padding: 8px 10px;
   border: 1px solid #b9dfd6;

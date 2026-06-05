@@ -825,6 +825,9 @@ function App() {
   const [cervicalCancerCareQuestionFeedback, setCervicalCancerCareQuestionFeedback] = useState<
     string | null
   >(null);
+  const [cervicalCancerCareSymptomFeedback, setCervicalCancerCareSymptomFeedback] = useState<
+    string | null
+  >(null);
   const [documentActionFeedback, setDocumentActionFeedback] = useState<{
     documentId: string;
     message: string;
@@ -2771,6 +2774,7 @@ function App() {
 
   const applyCervicalCancerCareAlert = (alert: CervicalCancerCareAlert) => {
     const draft = buildCervicalCancerAlertSymptomDraft(alert);
+    const feedback = `자궁경부암 증상 초안 준비됨: ${alert.title}`;
 
     setSymptomDraft((current) => {
       const currentBody = current.body.trim();
@@ -2788,12 +2792,14 @@ function App() {
         symptom: current.symptom.trim() ? current.symptom : draft.symptom,
       };
     });
-    setSaveLabel(`자궁경부암 증상 초안 준비됨: ${alert.title}`);
+    setCervicalCancerCareSymptomFeedback(feedback);
+    setSaveLabel(feedback);
     setSymptomDraftFocusRequest((request) => request + 1);
   };
 
   const applyCervicalCancerCareItemDraft = (item: CervicalCancerCareRecordDraftItem) => {
     const draft = buildCervicalCancerCareItemSymptomDraft(item);
+    const feedback = `자궁경부암 기록 메모 초안 준비됨: ${item.label}`;
 
     setSymptomDraft((current) => {
       const currentBody = current.body.trim();
@@ -2813,7 +2819,8 @@ function App() {
         symptom: current.symptom.trim() ? current.symptom : draft.symptom,
       };
     });
-    setSaveLabel(`자궁경부암 기록 메모 초안 준비됨: ${item.label}`);
+    setCervicalCancerCareSymptomFeedback(feedback);
+    setSaveLabel(feedback);
     setSymptomDraftFocusRequest((request) => request + 1);
   };
 
@@ -4359,6 +4366,11 @@ function App() {
             {cervicalCancerCareQuestionFeedback ? (
               <div className="cervical-care-question-feedback" role="status">
                 {cervicalCancerCareQuestionFeedback}
+              </div>
+            ) : null}
+            {cervicalCancerCareSymptomFeedback ? (
+              <div className="cervical-care-symptom-feedback" role="status">
+                {cervicalCancerCareSymptomFeedback}
               </div>
             ) : null}
             <div
