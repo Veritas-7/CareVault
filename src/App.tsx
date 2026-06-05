@@ -175,6 +175,7 @@ import {
   formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
   formatDocumentAttachmentRemovalFailedStatusLabel,
+  formatDocumentDraftAddActionLabel,
   formatDocumentDraftAttachmentReadyStatusLabel,
   formatDocumentDraftAttachmentReferenceReadyStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
@@ -1388,6 +1389,14 @@ function App() {
   const documentPanelSummary = useMemo(
     () => buildDocumentPanelSummary(state.documents, state.deletedDocuments),
     [state.documents, state.deletedDocuments],
+  );
+  const documentDraftHasRequiredFields = hasRequiredTextValues(
+    documentDraft.title,
+    documentDraft.body,
+  );
+  const documentDraftAddActionLabel = formatDocumentDraftAddActionLabel(
+    documentDraft,
+    documentDraftHasRequiredFields,
   );
   const documentDraftAttachmentRemoveActionLabel = formatDocumentDraftAttachmentRemoveActionLabel(
     documentDraft.attachmentName,
@@ -6413,8 +6422,8 @@ function App() {
               className="primary-button"
               type="button"
               onClick={addDocument}
-              aria-label="서류 메모 저장 · 제목과 내용 필요"
-              title="서류 메모 저장 · 제목과 내용 필요"
+              aria-label={documentDraftAddActionLabel}
+              title={documentDraftAddActionLabel}
             >
               <Plus aria-hidden="true" />
               서류 메모 저장

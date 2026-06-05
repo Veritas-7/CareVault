@@ -14,6 +14,7 @@ import {
   formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
   formatDocumentAttachmentRemovalFailedStatusLabel,
+  formatDocumentDraftAddActionLabel,
   formatDocumentDraftAttachmentReadyStatusLabel,
   formatDocumentDraftAttachmentReferenceReadyStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
@@ -160,6 +161,18 @@ describe("documentActionLabels", () => {
     );
     expect(formatDocumentDraftAttachmentReferenceReadyStatusLabel("browser-scan.png")).toBe(
       "서류 첨부 파일명 참조 준비됨 · 현재 첨부 browser-scan.png · 첨부 상태 브라우저 파일명 참조",
+    );
+  });
+
+  it("builds document draft add action labels from required-field readiness", () => {
+    expect(formatDocumentDraftAddActionLabel(baseDocument, false)).toBe(
+      "서류 메모 저장 · 제목과 내용 필요",
+    );
+    expect(formatDocumentDraftAddActionLabel({ ...baseDocument, title: "  " }, true)).toBe(
+      "서류 메모 저장 · 제목과 내용 필요",
+    );
+    expect(formatDocumentDraftAddActionLabel(baseDocument, true)).toBe(
+      "서류 메모 저장 · 혈액검사 메모 입력 준비됨",
     );
   });
 

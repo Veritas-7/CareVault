@@ -134,6 +134,17 @@ export function formatDocumentDraftAttachmentReferenceReadyStatusLabel(
   )} · 첨부 상태 브라우저 파일명 참조`;
 }
 
+export function formatDocumentDraftAddActionLabel(
+  draft: Pick<CareDocument, "title" | "body">,
+  hasRequiredFields: boolean,
+) {
+  const title = draft.title.trim();
+  const body = draft.body.trim();
+  if (!hasRequiredFields || !title || !body) return "서류 메모 저장 · 제목과 내용 필요";
+
+  return `서류 메모 저장 · ${title} 입력 준비됨`;
+}
+
 export function formatDocumentAttachmentFileNameOnlyStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 첨부는 파일명 참조만 저장됨 · 현재 첨부 ${formatAttachmentFileName(
     document.attachmentName,
