@@ -1,7 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { isPreviewableImageAttachment } from "./attachmentPreview";
+import {
+  attachmentPreviewCloseActionLabel,
+  attachmentPreviewClosedStatusLabel,
+  isPreviewableImageAttachment,
+} from "./attachmentPreview";
 
 describe("attachmentPreview", () => {
+  it("keeps the close action label scoped for both aria-label and hover title", () => {
+    expect(attachmentPreviewCloseActionLabel).toBe("첨부 미리보기 닫기");
+  });
+
+  it("keeps the close status explicit after the dialog is dismissed", () => {
+    expect(attachmentPreviewClosedStatusLabel).toBe("이미지 미리보기 닫힘");
+  });
+
   it("accepts supported image attachment extensions", () => {
     expect(isPreviewableImageAttachment("scan.JPG")).toBe(true);
     expect(isPreviewableImageAttachment("pathology-slide.webp")).toBe(true);

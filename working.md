@@ -13874,3 +13874,36 @@
       - lab evidence `서울아산병원 전혈구검사 참고치`
       - parseable source line `출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do`
   - No git staging or commit was performed in this verification note.
+
+## 2026-06-05 09:26 KST - Attachment Preview Close Label Iteration Note
+
+- Improvement target:
+  - The attachment image preview dialog had a scoped `aria-label` for its close action, but unlike the export-preview close action it did not expose the same sentence as a hover `title`.
+  - This left a small mismatch against the `DESIGN.md` rule that action `aria-label` and hover title text should match when both are relevant.
+  - Live cmux testing also showed a stale status: after closing the preview dialog, the dialog disappeared but the status still said `이미지 미리보기 열림`.
+- Stitch MCP:
+  - Rechecked Stitch project `CareVault UI UX AutoResearch` (`10602093894318676839`) and confirmed the uploaded 390px CareVault DESIGN.md screen instance `7814555668945736330` is still the active UI/UX evidence surface.
+- Code/design changes:
+  - Updated `src/attachmentPreview.ts`.
+    - Added shared `attachmentPreviewCloseActionLabel` and `attachmentPreviewClosedStatusLabel`.
+  - Updated `src/App.tsx`.
+    - Reused the shared close label for both the attachment preview dialog `aria-label` and `title`.
+    - Routed the close button through `closeAttachmentPreview()` so the status changes to `이미지 미리보기 닫힘`.
+  - Updated `src/attachmentPreview.test.ts`.
+    - Locked the scoped Korean close-action and close-status sentences.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for the attachment preview close hover-title parity and closed-status fix.
+- Verification:
+  - PASS: `npm run test -- src/attachmentPreview.test.ts`, 1 file and 4 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx src/attachmentPreview.ts src/attachmentPreview.test.ts`.
+  - PASS: `npm run test`, 51 files and 357 tests.
+  - PASS: `npm run build`.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser only; no additional cmux browser tab was created.
+    - Omnibar stayed on `http://127.0.0.1:1420/#nutrition`.
+    - Reattached `/Users/wj/Ai/System/10_Projects/CareVault/src-tauri/icons/icon.png` to the saved `혈액검사 메모` document as a browser-session test attachment.
+    - Opened the saved-document image preview and saw `혈액검사 메모 첨부 미리보기`, `icon.png`, close action `첨부 미리보기 닫기`, image alt `혈액검사 메모 첨부 이미지 미리보기`, and source label `브라우저 세션 미리보기`.
+    - Closed the dialog with `첨부 미리보기 닫기`; the dialog disappeared and the live status changed to `이미지 미리보기 닫힘`.
+  - No git staging or commit was performed in this verification note.

@@ -114,7 +114,11 @@ import {
 import { buildCareActionQueuePanelSummary } from "./careActionQueueMetric";
 import { careActionQueueEmptyRecoveryLinks } from "./careActionQueueEmptyState";
 import { buildCareActionVisibleDetailParts } from "./careActionVisibleDetail";
-import { isPreviewableImageAttachment } from "./attachmentPreview";
+import {
+  attachmentPreviewCloseActionLabel,
+  attachmentPreviewClosedStatusLabel,
+  isPreviewableImageAttachment,
+} from "./attachmentPreview";
 import { formatLabReferenceRangeLabel } from "./exportSourceLabels";
 import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
 import { needsAttachmentRecovery } from "./attachmentRecovery";
@@ -2331,6 +2335,11 @@ function App() {
       console.error("Document attachment preview failed", error);
       setSaveLabel("이미지 미리보기 실패");
     }
+  };
+
+  const closeAttachmentPreview = () => {
+    setAttachmentPreview(null);
+    setSaveLabel(attachmentPreviewClosedStatusLabel);
   };
 
   const removeSandboxAttachment = async (document: CareDocument) => {
@@ -6786,8 +6795,9 @@ function App() {
               <button
                 className="text-icon-button"
                 type="button"
-                onClick={() => setAttachmentPreview(null)}
-                aria-label="첨부 미리보기 닫기"
+                onClick={closeAttachmentPreview}
+                aria-label={attachmentPreviewCloseActionLabel}
+                title={attachmentPreviewCloseActionLabel}
               >
                 <X aria-hidden="true" />
                 닫기
