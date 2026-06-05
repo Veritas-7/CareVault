@@ -15157,3 +15157,46 @@
   - PASS: Confirmed no `carevault` process remained after all runtime checks.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - PASS: committed and pushed to `origin/main` as `51bc0d7` (`Record Tauri SQLite readback`).
+
+## 2026-06-05 13:47 KST - Attachment Recovery Status Contract Iteration Note
+
+- Improvement target:
+  - Saved Tauri attachment missing-file and opener-failure recovery used inline status strings in `App.tsx`.
+  - Image preview failures only showed a transient failure label, so a failed Tauri asset preview could leave the saved-document card looking healthy instead of prompting reattachment.
+- Code/design changes:
+  - Updated `src/attachmentRecovery.ts`.
+    - Added `buildAttachmentRecoveryUpdate()` for shared missing-file, opener-failure, check-failure, and image-preview-failure status/history text.
+  - Updated `src/attachmentRecovery.test.ts`.
+    - Added RED/GREEN coverage for stable recovery status, history label, and history detail text.
+  - Updated `src/App.tsx`.
+    - Routed saved attachment missing-file, open failure, check failure, and Tauri image-preview failure handlers through the shared recovery update.
+    - Let attachment history labels distinguish reattachment needed, opener failure, check failure, and preview failure while preserving the `attachment-check` history kind.
+  - Updated `README.md`.
+    - Documented image-preview-failure recovery and moved the next durable app slice to a disposable Tauri desktop fixture for the recovery paths.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for centralized attachment recovery statuses.
+- Verification so far:
+  - PASS: RED baseline before implementation: `npm test -- src/attachmentRecovery.test.ts` failed because `buildAttachmentRecoveryUpdate` did not exist.
+  - PASS: GREEN after implementation: `npm test -- src/attachmentRecovery.test.ts`, 1 file and 3 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 394 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md src/App.tsx src/attachmentRecovery.ts src/attachmentRecovery.test.ts`.
+  - PASS: Playwright seeded recovery smoke at 390x884.
+    - `document.title`: `CareVault`.
+    - Body client width and scroll width: 390 / 390.
+    - Seeded saved document: `영상 첨부 복구 테스트`.
+    - Recovery chip label matches: 5.
+    - Recovery value matches: 16.
+    - Reattachment prompt count: 1.
+    - `첨부 교체` button count: 1.
+    - Preview-failure history count: 1.
+    - Preview-failure status count: 2.
+    - Page errors: 0; console errors: 0.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Existing cmux `암관리` right-side in-app browser reused the existing CareVault pane at `http://127.0.0.1:1420/#dashboard`.
+    - No new browser tab was opened.
+    - Browser storage label, dashboard metrics, care queue, cervical-care panel, timeline, lab tracking, nutrition, and document controls were visible.
+  - PASS: Stopped the local Vite dev server after runtime checks and confirmed port 1420 had no listener.
+  - PASS: Confirmed no `carevault` process remained after runtime checks.

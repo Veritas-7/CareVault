@@ -125,7 +125,7 @@ import {
 } from "./attachmentPreview";
 import { formatLabReferenceRangeLabel } from "./exportSourceLabels";
 import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
-import { needsAttachmentRecovery } from "./attachmentRecovery";
+import { buildAttachmentRecoveryUpdate, needsAttachmentRecovery } from "./attachmentRecovery";
 import {
   documentDraftAttachmentClearedStatusLabel,
   formatDocumentDraftAttachmentRemoveActionLabel,
@@ -2376,9 +2376,14 @@ function App() {
       ]);
       const attachmentExists = await exists(document.attachmentPath).catch(() => false);
       if (!attachmentExists) {
-        const status = "파일 없음 - 재첨부 필요";
-        updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-        setActionSaveLabel(status);
+        const recovery = buildAttachmentRecoveryUpdate("missing-file", document.attachmentName);
+        updateDocumentAttachmentStatus(
+          document.id,
+          recovery.status,
+          recovery.historyDetail,
+          recovery.historyLabel,
+        );
+        setActionSaveLabel(recovery.status);
         return;
       }
 
@@ -2386,9 +2391,14 @@ function App() {
       setSaveLabel("첨부 파일 열기 요청됨");
     } catch (error) {
       console.error("Document attachment open failed", error);
-      const status = "첨부 열기 실패 - 재첨부 필요";
-      updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-      setActionSaveLabel(status);
+      const recovery = buildAttachmentRecoveryUpdate("open-failure", document.attachmentName);
+      updateDocumentAttachmentStatus(
+        document.id,
+        recovery.status,
+        recovery.historyDetail,
+        recovery.historyLabel,
+      );
+      setActionSaveLabel(recovery.status);
     }
   };
 
@@ -2396,10 +2406,11 @@ function App() {
     documentId: string,
     attachmentStatus: string,
     historyDetail: string,
+    historyLabel = "첨부 확인",
   ) => {
     const historyEntry = createDocumentHistory(
       "attachment-check",
-      "첨부 확인",
+      historyLabel,
       historyDetail,
     );
     setState((current) => ({
@@ -2429,14 +2440,31 @@ function App() {
     try {
       const { exists } = await import("@tauri-apps/plugin-fs");
       const attachmentExists = await exists(document.attachmentPath).catch(() => false);
-      const status = attachmentExists ? "파일 확인됨" : "파일 없음 - 재첨부 필요";
+      if (!attachmentExists) {
+        const recovery = buildAttachmentRecoveryUpdate("missing-file", document.attachmentName);
+        updateDocumentAttachmentStatus(
+          document.id,
+          recovery.status,
+          recovery.historyDetail,
+          recovery.historyLabel,
+        );
+        setActionSaveLabel(recovery.status);
+        return;
+      }
+
+      const status = "파일 확인됨";
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
       setActionSaveLabel(status);
     } catch (error) {
       console.error("Document attachment check failed", error);
-      const status = "첨부 확인 실패";
-      updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-      setActionSaveLabel(status);
+      const recovery = buildAttachmentRecoveryUpdate("check-failure", document.attachmentName);
+      updateDocumentAttachmentStatus(
+        document.id,
+        recovery.status,
+        recovery.historyDetail,
+        recovery.historyLabel,
+      );
+      setActionSaveLabel(recovery.status);
     }
   };
 
@@ -2588,9 +2616,14 @@ function App() {
       ]);
       const attachmentExists = await exists(document.attachmentPath).catch(() => false);
       if (!attachmentExists) {
-        const status = "파일 없음 - 재첨부 필요";
-        updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
-        setActionSaveLabel(status);
+        const recovery = buildAttachmentRecoveryUpdate("missing-file", document.attachmentName);
+        updateDocumentAttachmentStatus(
+          document.id,
+          recovery.status,
+          recovery.historyDetail,
+          recovery.historyLabel,
+        );
+        setActionSaveLabel(recovery.status);
         return;
       }
 
@@ -2604,7 +2637,14 @@ function App() {
       setSaveLabel("이미지 미리보기 열림");
     } catch (error) {
       console.error("Document attachment preview failed", error);
-      setSaveLabel("이미지 미리보기 실패");
+      const recovery = buildAttachmentRecoveryUpdate("preview-failure", document.attachmentName);
+      updateDocumentAttachmentStatus(
+        document.id,
+        recovery.status,
+        recovery.historyDetail,
+        recovery.historyLabel,
+      );
+      setActionSaveLabel(recovery.status);
     }
   };
 
