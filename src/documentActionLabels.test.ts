@@ -1,0 +1,64 @@
+import { describe, expect, it } from "vitest";
+import { type CareDocument } from "./appState";
+import { formatDocumentActionButtonLabel } from "./documentActionLabels";
+
+const baseDocument: CareDocument = {
+  id: "doc-1",
+  date: "2026-06-05",
+  title: "혈액검사 메모",
+  category: "lab",
+  body: "WBC 추적",
+  tags: "혈액검사",
+  reviewStatus: "care-question",
+  nextAction: "진료 때 질문",
+};
+
+describe("documentActionLabels", () => {
+  it("builds document-specific add and archive labels when no attachment exists", () => {
+    expect(formatDocumentActionButtonLabel(baseDocument, "add-attachment")).toBe(
+      "혈액검사 메모 검사 서류 첨부 추가 · 상태 의료진 질문",
+    );
+    expect(formatDocumentActionButtonLabel(baseDocument, "archive-document")).toBe(
+      "혈액검사 메모 검사 서류 삭제 보관함으로 이동 · 상태 의료진 질문",
+    );
+  });
+
+  it("includes attachment name and status for saved attachment actions", () => {
+    const documentWithAttachment: CareDocument = {
+      ...baseDocument,
+      attachmentName: "blood-result.pdf",
+      attachmentPath: "/private/path/blood-result.pdf",
+      attachmentStatus: "재첨부 필요",
+    };
+
+    expect(formatDocumentActionButtonLabel(documentWithAttachment, "replace-attachment")).toBe(
+      "혈액검사 메모 검사 서류 첨부 재연결 · 현재 첨부 blood-result.pdf · 상태 의료진 질문",
+    );
+    expect(formatDocumentActionButtonLabel(documentWithAttachment, "check-attachment")).toBe(
+      "혈액검사 메모 검사 서류 첨부 확인 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
+    );
+    expect(formatDocumentActionButtonLabel(documentWithAttachment, "open-attachment")).toBe(
+      "혈액검사 메모 검사 서류 첨부 파일 열기 · 현재 첨부 blood-result.pdf",
+    );
+    expect(formatDocumentActionButtonLabel(documentWithAttachment, "remove-attachment")).toBe(
+      "혈액검사 메모 검사 서류 첨부 연결 제거 · 현재 첨부 blood-result.pdf",
+    );
+  });
+
+  it("keeps deleted-document actions scoped to restore or cleanup intent", () => {
+    const deletedDocument: CareDocument = {
+      ...baseDocument,
+      title: "복부 CT",
+      category: "imaging",
+      reviewStatus: "done",
+      attachmentName: "ct.png",
+    };
+
+    expect(formatDocumentActionButtonLabel(deletedDocument, "restore-document")).toBe(
+      "복부 CT 영상 서류 삭제 보관함에서 복구 · 상태 정리 완료",
+    );
+    expect(formatDocumentActionButtonLabel(deletedDocument, "clean-deleted-attachment")).toBe(
+      "복부 CT 영상 서류 삭제 보관함 첨부 연결 정리 · 현재 첨부 ct.png",
+    );
+  });
+});
