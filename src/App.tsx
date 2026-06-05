@@ -184,6 +184,7 @@ import {
   savePersistedState,
   type PersistenceBackend,
 } from "./storage";
+import { persistedSaveQueue } from "./persistedSaveQueue";
 import {
   parseOptionalNumberInput,
   validateVitalDraft,
@@ -1304,6 +1305,10 @@ function formatStorageSavedLabel(backend: PersistenceBackend, automatic = false)
   return `${storageLabel} ${automatic ? "자동 저장됨" : "저장됨"}`;
 }
 
+function logPersistedSaveError(error: unknown) {
+  console.error("CareVault persisted state save failed", error);
+}
+
 function App() {
   const [state, setState] = useState<AppState>(defaultState);
   const [hydrated, setHydrated] = useState(false);
@@ -1509,8 +1514,9 @@ function App() {
     if (!hydrated) return;
 
     const handle = window.setTimeout(() => {
-      savePersistedState(state, { normalizedMirror })
-        .then((backend) => {
+      persistedSaveQueue.enqueue({
+        run: () => savePersistedState(state, { normalizedMirror }),
+        onSuccess: async (backend) => {
           setStorageBackend(backend);
           const savedLabel = formatStorageSavedLabel(backend, true);
           const actionLabel = pendingActionLabelRef.current;
@@ -1519,18 +1525,24 @@ function App() {
             setSaveLabel(actionLabel ? `${actionLabel} · ${savedLabel}` : savedLabel);
           }
           if (backend === "sqlite") {
-            return loadNormalizedMirrorStatus()
-              .then(setNormalizedMirrorStatus)
-              .catch(() => setNormalizedMirrorStatus(null));
+            try {
+              setNormalizedMirrorStatus(await loadNormalizedMirrorStatus());
+            } catch {
+              setNormalizedMirrorStatus(null);
+            }
+            return;
           }
           setNormalizedMirrorStatus(null);
-          return undefined;
-        })
-        .catch(() => setSaveLabel("저장 실패"));
+        },
+        onError: (error) => {
+          logPersistedSaveError(error);
+          setSaveLabel("저장 실패");
+        },
+      });
     }, 250);
 
     return () => window.clearTimeout(handle);
-  }, [hydrated, normalizedMirror, state]);
+  }, [hydrated, normalizedMirror, persistedSaveQueue, state]);
 
   useEffect(() => {
     if (!hydrated || storageBackend !== "sqlite" || !documentFilter.trim()) {
@@ -3269,19 +3281,26 @@ function App() {
       : null;
 
   const saveNow = () => {
-    savePersistedState(state, { normalizedMirror })
-      .then((backend) => {
+    persistedSaveQueue.enqueue({
+      run: () => savePersistedState(state, { normalizedMirror }),
+      onSuccess: async (backend) => {
         setStorageBackend(backend);
         setSaveLabel(formatStorageSavedLabel(backend));
         if (backend === "sqlite") {
-          return loadNormalizedMirrorStatus()
-            .then(setNormalizedMirrorStatus)
-            .catch(() => setNormalizedMirrorStatus(null));
+          try {
+            setNormalizedMirrorStatus(await loadNormalizedMirrorStatus());
+          } catch {
+            setNormalizedMirrorStatus(null);
+          }
+          return;
         }
         setNormalizedMirrorStatus(null);
-        return undefined;
-      })
-      .catch(() => setSaveLabel("저장 실패"));
+      },
+      onError: (error) => {
+        logPersistedSaveError(error);
+        setSaveLabel("저장 실패");
+      },
+    });
   };
 
   const downloadTextFile = (content: string, filename: string, mimeType: string) => {

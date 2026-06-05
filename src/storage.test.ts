@@ -1,9 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   buildAppStateTableStatement,
+  buildAppStateUpsertStatement,
+  buildNormalizedMirrorDataStatements,
   buildNormalizedMirrorStatements,
   buildNormalizedSearchStatements,
+  buildSqliteBusyTimeoutStatement,
   buildSqlLikePattern,
+  isSqliteBusyError,
   loadPersistedState,
   savePersistedState,
   type NormalizedCareVaultMirror,
@@ -277,6 +281,20 @@ describe("storage normalized mirror", () => {
     expect(statement.query).toContain("updated_at TEXT NOT NULL");
   });
 
+  it("builds a SQLite busy timeout statement for Tauri database connections", () => {
+    expect(buildSqliteBusyTimeoutStatement()).toEqual({
+      query: "PRAGMA busy_timeout = 5000",
+    });
+  });
+
+  it("recognizes SQLite busy errors for bounded save retries", () => {
+    expect(isSqliteBusyError(new Error("error returned from database: (code: 5) database is locked")))
+      .toBe(true);
+    expect(isSqliteBusyError("SQLITE_BUSY: database is locked")).toBe(true);
+    expect(isSqliteBusyError(new Error("constraint failed"))).toBe(false);
+    expect(isSqliteBusyError(null)).toBe(false);
+  });
+
   it("builds normalized search count statements", () => {
     const statements = buildNormalizedSearchStatements("혈액검사");
 
@@ -388,6 +406,47 @@ describe("storage normalized mirror", () => {
       "다음 조치 변경",
       "cmux direct next action",
       0,
+      "2026-06-03T00:00:00.000Z",
+    ]);
+  });
+
+  it("builds mirror data statements without table DDL for transactional saves", () => {
+    const statements = buildNormalizedMirrorDataStatements(
+      mirror,
+      "2026-06-03T00:00:00.000Z",
+    );
+    const sql = statements.map((statement) => statement.query).join("\n");
+
+    expect(sql).not.toContain("CREATE TABLE");
+    expect(statements[0].query).toContain("INSERT INTO profile_snapshot");
+    expect(statements).toContainEqual({ query: "DELETE FROM care_documents" });
+    expect(
+      statements.find(
+        (statement) =>
+          statement.query.includes("INSERT INTO document_attachments") &&
+          statement.bindValues?.[0] === "doc-1",
+      )?.bindValues,
+    ).toEqual([
+      "doc-1",
+      "blood.png",
+      "tauri-sandbox",
+      "파일 확인됨",
+      0,
+      "2026-06-03T00:00:00.000Z",
+    ]);
+  });
+
+  it("builds an app state upsert statement for ordered SQLite saves", () => {
+    const statement = buildAppStateUpsertStatement(
+      { documents: [{ id: "doc-1", attachmentStatus: "파일 확인됨" }] },
+      "2026-06-03T00:00:00.000Z",
+    );
+
+    expect(statement.query).toContain("INSERT INTO app_state");
+    expect(statement.query).toContain("ON CONFLICT(key) DO UPDATE SET");
+    expect(statement.bindValues).toEqual([
+      "main",
+      JSON.stringify({ documents: [{ id: "doc-1", attachmentStatus: "파일 확인됨" }] }),
       "2026-06-03T00:00:00.000Z",
     ]);
   });

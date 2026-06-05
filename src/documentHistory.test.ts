@@ -21,4 +21,23 @@ describe("documentHistory", () => {
       "4",
     ]);
   });
+
+  it("skips consecutive duplicate history entries", () => {
+    const history = [entry("1")];
+    const duplicate = { ...entry("1"), id: "2" };
+
+    expect(appendDocumentHistory(history, duplicate)).toEqual(history);
+  });
+
+  it("keeps repeated details when another history entry appears between them", () => {
+    const first = entry("1");
+    const middle = { ...entry("2"), detail: "다른 조치" };
+    const repeated = { ...entry("3"), detail: first.detail };
+
+    expect(appendDocumentHistory([first, middle], repeated).map((item) => item.id)).toEqual([
+      "1",
+      "2",
+      "3",
+    ]);
+  });
 });

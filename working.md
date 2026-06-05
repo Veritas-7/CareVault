@@ -15336,3 +15336,55 @@
   - PASS: Confirmed no CareVault/Tauri process remained after runtime checks.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged seven-file diff.
   - PASS: committed and pushed to `origin/main` as `8237c8a` (`Harden image preview recovery`).
+
+## 2026-06-05 15:34 KST - Live Tauri Invalid-Image SQLite Readback Closure Note
+
+- Improvement target:
+  - The previous live desktop run proved that a picker-granted invalid PNG could visibly show `이미지 미리보기 실패`, but direct SQLite readback stayed healthy at `파일 확인됨`.
+  - This slice needed to make the Tauri save path durable under the preview-failure state transition and prove JSON `app_state` plus normalized SQLite rows agree after the real native picker flow.
+- Root cause and implementation:
+  - `src/storage.ts` previously wrote the compatible JSON `app_state` before the normalized mirror, then ran the mirror through manual `BEGIN`/`COMMIT` statements across Tauri SQL `execute()` calls.
+  - Live debugging exposed `database is locked` during the mirror write, leaving a newer JSON save possible without matching normalized attachment/history rows.
+  - Reworked SQLite saves to:
+    - Set `PRAGMA busy_timeout = 5000` on the Tauri SQL connection.
+    - Retry bounded `SQLITE_BUSY` / `database is locked` failures.
+    - Build normalized mirror data statements separately from table DDL.
+    - Write normalized mirror rows before the compatible JSON `app_state` upsert.
+    - Avoid manual JavaScript-level `BEGIN`/`COMMIT` around separate Tauri SQL calls.
+  - Added `src/persistedSaveQueue.ts`.
+    - Provides a module-level latest-only persisted save queue.
+    - Serializes autosave and manual-save calls across React dev StrictMode remounts.
+    - Skips stale queued saves and suppresses stale callbacks when a newer save is already queued.
+  - Updated `src/App.tsx`.
+    - Autosave and manual save now go through the shared persisted save queue.
+    - Save failures are logged to the console with the exact underlying error while the UI keeps the generic Korean `저장 실패` status.
+  - Updated `src/documentHistory.ts`.
+    - Consecutive duplicate history entries with the same kind, label, and detail are coalesced so repeated preview clicks or retry paths do not inflate the audit trail.
+- Automated verification before live retest:
+  - PASS: `npm test -- src/storage.test.ts src/persistedSaveQueue.test.ts src/attachmentRecovery.test.ts`, 3 files and 27 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm test -- src/documentHistory.test.ts src/storage.test.ts src/persistedSaveQueue.test.ts src/attachmentRecovery.test.ts`, 4 files and 31 tests.
+  - PASS: `npm run typecheck`.
+- Live Tauri verification:
+  - Backed up the current sandbox database to `/tmp/carevault-live-preview-pass-db.CEpHwm`.
+  - Seeded `~/Library/Application Support/app.veritas.carevault/carevault.db` with one disposable document:
+    - Title: `실기기 이미지 미리보기 실패 테스트`.
+    - Starting attachment status: `파일 확인됨`.
+    - Starting history length: 1.
+  - PASS: launched `npm run tauri dev` and confirmed the initial SQLite mirror:
+    - JSON `app_state` document: `doc-live-tauri-preview-failure|1`.
+    - `care_documents`: one seeded document row.
+    - `document_attachments`: no row before reattachment.
+    - `document_history`: one `서류 저장` row.
+  - PASS: reattached `/tmp/carevault-live-tauri-bad-preview.png` through the native file picker.
+    - JSON `app_state`: `carevault-live-tauri-bad-preview.png|파일 확인됨|첨부 재연결|...|2`.
+    - `care_documents`: `doc-live-tauri-preview-failure|carevault-live-tauri-bad-preview.png|파일 확인됨`.
+    - `document_attachments`: `doc-live-tauri-preview-failure|carevault-live-tauri-bad-preview.png|파일 확인됨`.
+    - `document_history`: `서류 저장|첨부 재연결`.
+  - PASS: clicked `미리보기` once on the invalid PNG and waited for autosave.
+    - JSON `app_state`: `이미지 미리보기 실패 - 재첨부 필요|첨부 미리보기 실패|carevault-live-tauri-bad-preview.png: 이미지 미리보기 실패 - 재첨부 필요|3`.
+    - `care_documents`: `doc-live-tauri-preview-failure|carevault-live-tauri-bad-preview.png|이미지 미리보기 실패 - 재첨부 필요`.
+    - `document_attachments`: `doc-live-tauri-preview-failure|carevault-live-tauri-bad-preview.png|이미지 미리보기 실패 - 재첨부 필요`.
+    - `document_history`: exactly `3` rows, ending with `첨부 미리보기 실패`.
+  - PASS: stopped the live Tauri/Vite runtime, restored the original sandbox database, and verified original data again: `나의 건강 기록|혈액검사 메모`.
+  - PASS: confirmed no CareVault/Tauri process remained after cleanup.

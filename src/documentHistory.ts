@@ -21,5 +21,15 @@ export function appendDocumentHistory(
   entry: DocumentHistoryEntry,
   maxItems = 8,
 ) {
-  return [...(history ?? []), entry].slice(-maxItems);
+  const currentHistory = history ?? [];
+  const latestEntry = currentHistory[currentHistory.length - 1];
+  if (
+    latestEntry?.kind === entry.kind &&
+    latestEntry.label === entry.label &&
+    latestEntry.detail === entry.detail
+  ) {
+    return currentHistory.slice(-maxItems);
+  }
+
+  return [...currentHistory, entry].slice(-maxItems);
 }

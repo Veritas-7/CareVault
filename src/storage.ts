@@ -154,6 +154,7 @@ type SaveOptions = {
 const STORAGE_KEY = "carevault.v1";
 const SQL_CONNECTION = "sqlite:carevault.db";
 const SQL_STATE_KEY = "main";
+const SQLITE_BUSY_RETRY_DELAYS_MS = [75, 150, 300, 600] as const;
 
 type SqlDatabase = {
   select: (query: string, bindValues?: unknown[]) => Promise<unknown>;
@@ -170,6 +171,10 @@ export type NormalizedSearchStatement = SqlStatement & {
 };
 
 let dbPromise: Promise<SqlDatabase | null> | null = null;
+
+const sqliteBusyTimeoutStatement: SqlStatement = {
+  query: "PRAGMA busy_timeout = 5000",
+};
 
 const appStateTableStatement: SqlStatement = {
   query: `CREATE TABLE IF NOT EXISTS app_state (
@@ -215,7 +220,11 @@ async function getDatabase() {
   if (!canUseTauri()) return null;
   if (!dbPromise) {
     dbPromise = import("@tauri-apps/plugin-sql")
-      .then(async (module) => module.default.load(SQL_CONNECTION) as Promise<SqlDatabase>)
+      .then(async (module) => {
+        const db = (await module.default.load(SQL_CONNECTION)) as SqlDatabase;
+        await db.execute(sqliteBusyTimeoutStatement.query).catch(() => undefined);
+        return db;
+      })
       .catch(() => null);
   }
   return dbPromise;
@@ -223,6 +232,10 @@ async function getDatabase() {
 
 export function buildAppStateTableStatement(): SqlStatement {
   return appStateTableStatement;
+}
+
+export function buildSqliteBusyTimeoutStatement(): SqlStatement {
+  return sqliteBusyTimeoutStatement;
 }
 
 const normalizedTableStatements: SqlStatement[] = [
@@ -410,6 +423,38 @@ export function sqlColumnExists(rows: unknown, columnName: string) {
   return readSqlRows(rows)?.some((row) => row.name === columnName) ?? false;
 }
 
+export function isSqliteBusyError(error: unknown) {
+  const message =
+    error instanceof Error ? error.message : typeof error === "string" ? error : String(error);
+  return (
+    message.includes("database is locked") ||
+    message.includes("SQLITE_BUSY") ||
+    message.includes("code: 5")
+  );
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function retrySqliteBusy<T>(operation: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= SQLITE_BUSY_RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      const retryDelay = SQLITE_BUSY_RETRY_DELAYS_MS[attempt];
+      if (!isSqliteBusyError(error) || retryDelay === undefined) {
+        throw error;
+      }
+      await sleep(retryDelay);
+    }
+  }
+
+  throw lastError;
+}
+
 export function buildSqlLikePattern(input: string) {
   const trimmed = input.trim();
   if (!trimmed) return null;
@@ -534,8 +579,14 @@ export function buildNormalizedMirrorStatements(
   mirror: NormalizedCareVaultMirror,
   updatedAt: string,
 ): SqlStatement[] {
+  return [...normalizedTableStatements, ...buildNormalizedMirrorDataStatements(mirror, updatedAt)];
+}
+
+export function buildNormalizedMirrorDataStatements(
+  mirror: NormalizedCareVaultMirror,
+  updatedAt: string,
+): SqlStatement[] {
   const statements: SqlStatement[] = [
-    ...normalizedTableStatements,
     {
       query: `INSERT INTO profile_snapshot (
         id,
@@ -834,6 +885,17 @@ export function buildNormalizedMirrorStatements(
   return statements;
 }
 
+export function buildAppStateUpsertStatement<T>(state: T, updatedAt: string): SqlStatement {
+  return {
+    query: `INSERT INTO app_state (key, value, updated_at)
+       VALUES ($1, $2, $3)
+       ON CONFLICT(key) DO UPDATE SET
+         value = excluded.value,
+         updated_at = excluded.updated_at`,
+    bindValues: [SQL_STATE_KEY, JSON.stringify(state), updatedAt],
+  };
+}
+
 async function ensureNormalizedTables(db: SqlDatabase) {
   for (const statement of normalizedTableStatements) {
     await db.execute(statement.query, statement.bindValues);
@@ -879,23 +941,25 @@ async function ensureAppStateTable(db: SqlDatabase) {
   await db.execute(appStateTableStatement.query, appStateTableStatement.bindValues);
 }
 
-async function mirrorNormalizedState(
+async function writeSqliteState<T>(
   db: SqlDatabase,
-  mirror: NormalizedCareVaultMirror,
+  state: T,
   updatedAt: string,
+  mirror?: NormalizedCareVaultMirror,
 ) {
-  await ensureNormalizedTables(db);
-  const statements = buildNormalizedMirrorStatements(mirror, updatedAt);
-  await db.execute("BEGIN");
-  try {
-    for (const statement of statements) {
-      await db.execute(statement.query, statement.bindValues);
-    }
-    await db.execute("COMMIT");
-  } catch (error) {
-    await db.execute("ROLLBACK").catch(() => undefined);
-    throw error;
+  await ensureAppStateTable(db);
+  const appStateStatement = buildAppStateUpsertStatement(state, updatedAt);
+
+  if (!mirror) {
+    await db.execute(appStateStatement.query, appStateStatement.bindValues);
+    return;
   }
+
+  await ensureNormalizedTables(db);
+  for (const statement of buildNormalizedMirrorDataStatements(mirror, updatedAt)) {
+    await db.execute(statement.query, statement.bindValues);
+  }
+  await db.execute(appStateStatement.query, appStateStatement.bindValues);
 }
 
 async function selectCount(db: SqlDatabase, query: string, bindValues?: unknown[]) {
@@ -1060,18 +1124,7 @@ export async function savePersistedState<T>(
   const db = await getDatabase();
   if (db) {
     const updatedAt = new Date().toISOString();
-    await ensureAppStateTable(db);
-    await db.execute(
-      `INSERT INTO app_state (key, value, updated_at)
-       VALUES ($1, $2, $3)
-       ON CONFLICT(key) DO UPDATE SET
-         value = excluded.value,
-         updated_at = excluded.updated_at`,
-      [SQL_STATE_KEY, JSON.stringify(state), updatedAt],
-    );
-    if (options.normalizedMirror) {
-      await mirrorNormalizedState(db, options.normalizedMirror, updatedAt);
-    }
+    await retrySqliteBusy(() => writeSqliteState(db, state, updatedAt, options.normalizedMirror));
     return "sqlite";
   }
 
