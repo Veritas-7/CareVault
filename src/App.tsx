@@ -3804,7 +3804,7 @@ function App() {
                   key={item.id}
                   className="metric-profile-standard-chip"
                   aria-label={`${item.label}: ${item.detail}. 근거: ${item.sourceLabel}`}
-                  title={`${item.label}: ${item.detail} · 근거: ${item.sourceLabel}`}
+                  title={`${item.label}: ${item.detail}. 근거: ${item.sourceLabel}`}
                 >
                   <b>{item.label}</b>
                   <span className="metric-profile-standard-separator" aria-hidden="true">
@@ -4064,7 +4064,7 @@ function App() {
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${action.title} 근거 ${source.sourceLabel} 열기`}
-                              title={`${action.title} 근거: ${source.sourceLabel}`}
+                              title={`${action.title} 근거 ${source.sourceLabel} 열기`}
                             >
                               근거: {source.sourceLabel}
                             </a>
@@ -5789,7 +5789,7 @@ function App() {
                         target="_blank"
                         rel="noreferrer"
                         aria-label={`${selectedLabPresetPreview.label} 프리셋 근거 ${selectedLabPresetPreview.sourceLabel} 열기`}
-                        title={`${selectedLabPresetPreview.label} 프리셋 근거: ${selectedLabPresetPreview.sourceLabel}`}
+                        title={`${selectedLabPresetPreview.label} 프리셋 근거 ${selectedLabPresetPreview.sourceLabel} 열기`}
                       >
                         {selectedLabPresetPreview.sourceLabel}
                         <ExternalLink aria-hidden="true" />
@@ -5953,7 +5953,7 @@ function App() {
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${result.name} 검사 근거 ${labSourceEvidence.sourceLabel} 열기`}
-                              title={`${result.name} 검사 근거: ${labSourceEvidence.sourceLabel}`}
+                              title={`${result.name} 검사 근거 ${labSourceEvidence.sourceLabel} 열기`}
                             >
                               {labSourceEvidence.sourceLabel}
                               <ExternalLink aria-hidden="true" />
@@ -6024,7 +6024,7 @@ function App() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`면역저하 검사 근거 ${immuneFoodSafetyContext.labSourceLabel} 열기`}
-                    title={`면역저하 검사 근거: ${immuneFoodSafetyContext.labSourceLabel}`}
+                    title={`면역저하 검사 근거 ${immuneFoodSafetyContext.labSourceLabel} 열기`}
                   >
                     {immuneFoodSafetyContext.labSourceLabel}
                     <ExternalLink aria-hidden="true" />
@@ -6035,7 +6035,7 @@ function App() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={`면역저하 식품 안전 근거 ${immuneFoodSafetyContext.foodSafetySourceLabel} 열기`}
-                  title={`면역저하 식품 안전 근거: ${immuneFoodSafetyContext.foodSafetySourceLabel}`}
+                  title={`면역저하 식품 안전 근거 ${immuneFoodSafetyContext.foodSafetySourceLabel} 열기`}
                 >
                   {immuneFoodSafetyContext.foodSafetySourceLabel}
                   <ExternalLink aria-hidden="true" />

@@ -14111,3 +14111,37 @@
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
   - Git commit and push will be reported in the final assistant output.
+
+## 2026-06-05 10:21 KST - Shared Source Helper Title Parity Iteration Note
+
+- Improvement target:
+  - The previous broader DOM sweep found shared source-link helpers whose `aria-label` ended with an action phrase, while the hover `title` still used older colon wording.
+  - This created inconsistent names for repeated standards, cervical-care, and nutrition evidence links even though every link already had both attributes.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Aligned care-queue evidence, lab preset, saved-lab, immune-food context, and profile-standard evidence `title` text with the same accessible-name sentence.
+  - Updated `src/healthStandards.ts`.
+    - `buildHealthStandardSourceLinkLabels()` now returns the same action-oriented sentence for `ariaLabel` and `title`.
+  - Updated `src/cervicalCancerCare.ts`.
+    - `buildCervicalCancerCareSourceLinkLabels()` now returns matching accessible and hover text.
+  - Updated `src/healthRules.ts`.
+    - `buildFoodMatchSourceLinkLabels()` now keeps the food evidence reason in one shared label/title sentence.
+  - Updated the matching unit tests in `src/healthStandards.test.ts`, `src/cervicalCancerCare.test.ts`, and `src/healthRules.test.ts`.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for shared source-link helper title parity.
+- Verification so far:
+  - PASS: `npm run test -- src/cervicalCancerCare.test.ts src/healthStandards.test.ts src/healthRules.test.ts`, 3 files and 60 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Interactive-tag source scan: buttons, links, inputs, selects, textareas, and summaries all have both `aria-label` and `title` in `src/App.tsx`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx src/cervicalCancerCare.ts src/cervicalCancerCare.test.ts src/healthStandards.ts src/healthStandards.test.ts src/healthRules.ts src/healthRules.test.ts`.
+  - PASS: Stitch project check for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser at `http://127.0.0.1:1420/#nutrition`; no new cmux browser was created.
+    - Live accessibility tree exposed matched action names for source links including care-queue WBC/BP/cervical evidence, health-standard metric links, and immune-food evidence links.
+  - PASS: Supplemental rendered DOM parity sweep at 390x884 with Playwright.
+    - Checked rendered anchors and profile-standard chips for missing or mismatched `aria-label`/`title`; findings: 0.
+  - PASS: `npm run test`, 54 files and 369 tests.
+  - PASS: `npm run build`.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged nine-file diff.
+  - Pending: commit and push.

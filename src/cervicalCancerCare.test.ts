@@ -293,17 +293,17 @@ describe("cervicalCancerCare", () => {
   it("builds context-specific accessible labels for official source links", () => {
     expect(buildCervicalCancerCareSourceLinkLabels("nccSymptoms", "비정상 질출혈")).toEqual({
       ariaLabel: "비정상 질출혈 공식 출처 국가암정보센터 자궁경부암 일반적 증상 열기",
-      title: "비정상 질출혈 공식 출처: 국가암정보센터 자궁경부암 일반적 증상",
+      title: "비정상 질출혈 공식 출처 국가암정보센터 자궁경부암 일반적 증상 열기",
       visibleLabel: "출처: 국가암정보센터 자궁경부암 일반적 증상",
     });
     expect(buildCervicalCancerCareSourceLinkLabels("nccScreeningSchedule", "검진 기준 빠른 확인")).toEqual({
       ariaLabel: "검진 기준 빠른 확인 공식 출처 국가암정보센터 국가암검진 검진주기 및 검진방법 열기",
-      title: "검진 기준 빠른 확인 공식 출처: 국가암정보센터 국가암검진 검진주기 및 검진방법",
+      title: "검진 기준 빠른 확인 공식 출처 국가암정보센터 국가암검진 검진주기 및 검진방법 열기",
       visibleLabel: "출처: 국가암정보센터 국가암검진 검진주기 및 검진방법",
     });
     expect(buildCervicalCancerCareSourceLinkLabels("missing")).toEqual({
       ariaLabel: "자궁경부암 케어 공식 출처 공식 자궁경부암 케어 자료 열기",
-      title: "자궁경부암 케어 공식 출처: 공식 자궁경부암 케어 자료",
+      title: "자궁경부암 케어 공식 출처 공식 자궁경부암 케어 자료 열기",
       visibleLabel: "출처: 공식 자궁경부암 케어 자료",
     });
   });

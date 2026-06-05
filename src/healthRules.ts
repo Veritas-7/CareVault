@@ -63,9 +63,10 @@ export const formatFoodMatchEvidence = (
 export function buildFoodMatchSourceLinkLabels(
   match: Pick<FoodMatch, "reason" | "sourceLabel" | "term">,
 ): FoodMatchSourceLinkLabels {
+  const label = `${match.term} 음식 판단 근거 ${match.sourceLabel} 열기 - ${match.reason}`;
   return {
-    ariaLabel: `${match.term} 음식 판단 근거 ${match.sourceLabel} 열기 - ${match.reason}`,
-    title: `${match.term} 음식 판단 근거: ${match.sourceLabel} - ${match.reason}`,
+    ariaLabel: label,
+    title: label,
     visibleLabel: match.sourceLabel,
   };
 }

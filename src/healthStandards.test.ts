@@ -335,12 +335,12 @@ describe("healthStandards", () => {
       buildHealthStandardSourceLinkLabels("질병관리청 국가건강정보포털 고혈압", "혈압 기준"),
     ).toEqual({
       ariaLabel: "혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
-      title: "혈압 기준 공식 기준 출처: 질병관리청 국가건강정보포털 고혈압",
+      title: "혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
       visibleLabel: "질병관리청 국가건강정보포털 고혈압",
     });
     expect(buildHealthStandardSourceLinkLabels("대한당뇨병학회 당뇨병 관리 목표", "")).toEqual({
       ariaLabel: "건강 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
-      title: "건강 기준 공식 기준 출처: 대한당뇨병학회 당뇨병 관리 목표",
+      title: "건강 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
       visibleLabel: "대한당뇨병학회 당뇨병 관리 목표",
     });
   });
@@ -536,7 +536,7 @@ describe("healthStandards", () => {
       contextLabel: "최근 혈압 기준",
       linkLabels: {
         ariaLabel: "최근 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
-        title: "최근 혈압 기준 공식 기준 출처: 질병관리청 국가건강정보포털 고혈압",
+        title: "최근 혈압 기준 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기",
         visibleLabel: "질병관리청 국가건강정보포털 고혈압",
       },
       note: "성인 남녀 공통 · 한국 성인 혈압",
@@ -555,7 +555,7 @@ describe("healthStandards", () => {
       contextLabel: "최근 혈당 기준",
       linkLabels: {
         ariaLabel: "최근 혈당 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
-        title: "최근 혈당 기준 공식 기준 출처: 대한당뇨병학회 당뇨병 관리 목표",
+        title: "최근 혈당 기준 공식 기준 출처 대한당뇨병학회 당뇨병 관리 목표 열기",
         visibleLabel: "대한당뇨병학회 당뇨병 관리 목표",
       },
       note: "성인 남녀 공통 · 당뇨 추적 혈당",

@@ -1172,9 +1172,10 @@ export function buildHealthStandardSourceLinkLabels(
   contextLabel: string,
 ): HealthStandardSourceLinkLabels {
   const context = contextLabel.trim() || "건강 기준";
+  const label = `${context} 공식 기준 출처 ${sourceLabel} 열기`;
   return {
-    ariaLabel: `${context} 공식 기준 출처 ${sourceLabel} 열기`,
-    title: `${context} 공식 기준 출처: ${sourceLabel}`,
+    ariaLabel: label,
+    title: label,
     visibleLabel: sourceLabel,
   };
 }

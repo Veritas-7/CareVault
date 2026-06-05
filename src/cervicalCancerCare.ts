@@ -518,10 +518,11 @@ export function buildCervicalCancerCareSourceLinkLabels(
   const sourceLabel = source?.label ?? "공식 자궁경부암 케어 자료";
   const context = contextLabel?.trim() || "자궁경부암 케어";
   const prefix = `${context} 공식 출처`;
+  const label = `${prefix} ${sourceLabel} 열기`;
 
   return {
-    ariaLabel: `${prefix} ${sourceLabel} 열기`,
-    title: `${prefix}: ${sourceLabel}`,
+    ariaLabel: label,
+    title: label,
     visibleLabel: formatCervicalCancerCareSourceLinkLabel(sourceId),
   };
 }
