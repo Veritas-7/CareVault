@@ -55,7 +55,7 @@ import {
   type GlucoseContext,
   type LabFlag,
 } from "./healthRules";
-import { buildFoodPanelSummary } from "./foodMetric";
+import { buildFoodPanelSummary, formatFoodJudgmentUpdatedStatusLabel } from "./foodMetric";
 import {
   buildDashboardMetricStandardEvidence,
   buildHealthStandardSourceLinkLabels,
@@ -5999,7 +5999,13 @@ function App() {
                     ...current,
                     foodQuery,
                   }));
-                  setActionSaveLabel("음식 판단 업데이트됨");
+                  setActionSaveLabel(
+                    formatFoodJudgmentUpdatedStatusLabel(
+                      foodQuery,
+                      assessCancerFood(foodQuery),
+                      immuneFoodSafetyContext?.sourceLabels,
+                    ),
+                  );
                 }}
                 placeholder="예: 두부, 블루베리, 소시지, 술, 생굴"
               />

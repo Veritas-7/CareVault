@@ -1,4 +1,4 @@
-import type { FoodMatch } from "./healthRules";
+import type { FoodAssessment, FoodMatch } from "./healthRules";
 
 export type FoodPanelSummaryItem = {
   id: string;
@@ -53,4 +53,22 @@ export function buildFoodPanelSummary(
     sourceCount,
     supportCount,
   };
+}
+
+function formatFoodQueryPreview(foodQuery: string) {
+  const normalized = foodQuery.trim().replace(/\s+/g, " ");
+  if (!normalized) return "입력 없음";
+  return normalized.length > 30 ? `${normalized.slice(0, 30).trimEnd()}...` : normalized;
+}
+
+export function formatFoodJudgmentUpdatedStatusLabel(
+  foodQuery: string,
+  assessment: Pick<FoodAssessment, "label" | "matches">,
+  extraSourceLabels: string[] = [],
+) {
+  const summary = buildFoodPanelSummary(assessment.matches, extraSourceLabels);
+  const matchCount = summary.itemCount ? `${summary.itemCount}개` : "없음";
+  const sourceCount = summary.sourceCount ? `${summary.sourceCount}개` : "없음";
+
+  return `음식 판단 업데이트됨 · ${formatFoodQueryPreview(foodQuery)} · ${assessment.label} · 매칭 ${matchCount} · 공식 출처 ${sourceCount}`;
 }

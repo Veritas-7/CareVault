@@ -1,8 +1,35 @@
 import { describe, expect, it } from "vitest";
 import { assessCancerFood } from "./healthRules";
-import { buildFoodPanelSummary } from "./foodMetric";
+import { buildFoodPanelSummary, formatFoodJudgmentUpdatedStatusLabel } from "./foodMetric";
 
 describe("foodMetric", () => {
+  it("builds food judgment update feedback from query, verdict, matches, and sources", () => {
+    const query = "브로콜리, 베이컨, 자몽 주스, 생굴";
+
+    expect(formatFoodJudgmentUpdatedStatusLabel(query, assessCancerFood(query))).toBe(
+      "음식 판단 업데이트됨 · 브로콜리, 베이컨, 자몽 주스, 생굴 · 의료진 확인 필요 · 매칭 4개 · 공식 출처 3개",
+    );
+  });
+
+  it("builds empty food judgment update feedback", () => {
+    expect(formatFoodJudgmentUpdatedStatusLabel("   ", assessCancerFood(""))).toBe(
+      "음식 판단 업데이트됨 · 입력 없음 · 판단 근거 부족 · 매칭 없음 · 공식 출처 없음",
+    );
+  });
+
+  it("includes lab-linked immune food context sources in update feedback", () => {
+    const query = "브로콜리, 생굴";
+
+    expect(
+      formatFoodJudgmentUpdatedStatusLabel(query, assessCancerFood(query), [
+        "서울아산병원 전혈구검사 참고치",
+        "국가암정보센터 증상별 식생활 - 면역기능의 저하",
+      ]),
+    ).toBe(
+      "음식 판단 업데이트됨 · 브로콜리, 생굴 · 의료진 확인 필요 · 매칭 2개 · 공식 출처 3개",
+    );
+  });
+
   it("builds cancer-food panel summary chips from matched categories and official sources", () => {
     expect(
       buildFoodPanelSummary(assessCancerFood("브로콜리, 베이컨, 자몽 주스, 생굴").matches),
