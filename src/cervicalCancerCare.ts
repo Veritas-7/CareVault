@@ -1,3 +1,5 @@
+import { parseFiniteNumberText } from "./healthRules";
+
 export type CervicalCancerCareSource = {
   label: string;
   url: string;
@@ -434,8 +436,8 @@ export const cervicalCancerCarePriorityItems: CervicalCancerCarePriorityItem[] =
 ];
 
 function parseProfileAge(age: string) {
-  const parsed = Number.parseInt(age, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+  const parsed = parseFiniteNumberText(age);
+  return parsed !== undefined && Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
 export function buildCervicalCancerScreeningSummary(

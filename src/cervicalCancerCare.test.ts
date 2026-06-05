@@ -527,6 +527,15 @@ describe("cervicalCancerCare", () => {
     expect(summary.sourceIds).toEqual(["nccScreeningEligibility", "nccScreeningSchedule"]);
   });
 
+  it("does not treat partial or non-integer age text as screening-eligible", () => {
+    for (const age of ["20abc", "20.5", "-20", "0x20"]) {
+      expect(buildCervicalCancerScreeningSummary({ age, sex: "female" })).toMatchObject({
+        status: "나이 입력 필요",
+        sourceIds: ["nccScreeningEligibility", "nccScreeningSchedule"],
+      });
+    }
+  });
+
   it("keeps non-female profile screening copy as clinician-confirmation guidance", () => {
     const summary = buildCervicalCancerScreeningSummary({
       age: "56",

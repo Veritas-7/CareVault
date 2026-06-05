@@ -14677,6 +14677,41 @@
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged 15-file diff.
   - PASS: committed and pushed to `origin/main` as `ba6d0d8` (`Tighten lab number parsing`).
 
+## 2026-06-05 12:22 KST - Strict Cervical Screening Age Parsing Iteration Note
+
+- Improvement target:
+  - `buildCervicalCancerScreeningSummary()` used `Number.parseInt()` on profile age text.
+  - Partial or non-integer strings such as `20abc` or `20.5` could be treated as age 20 and show a false national-screening eligibility result.
+- Code/design changes:
+  - Updated `src/cervicalCancerCare.ts`.
+    - Reused `parseFiniteNumberText()` and required a positive safe integer before deciding screening status.
+  - Updated `src/cervicalCancerCare.test.ts`.
+    - Added regression coverage for partial, decimal, negative, and hexadecimal-like age text.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for strict cervical screening age parsing.
+- Verification so far:
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: `npm test -- src/cervicalCancerCare.test.ts`, 1 file and 22 tests.
+  - PASS: no remaining `Number.parseInt` or `parseInt` call sites in `src`.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright app-load smoke at 390x884 against `http://127.0.0.1:1420/#care-plan`.
+    - `document.title`: `CareVault`.
+    - `나의 건강 기록` H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - Care queue visible.
+    - Cervical care panel visible.
+    - Screening summary visible.
+    - Browser storage label visible.
+    - URL hash: `#care-plan`.
+    - Page errors: 0; console errors: 0.
+  - PASS: existing cmux `암관리` right-side in-app browser reused the existing CareVault pane, clicked the `증상·질문` section link, and stayed on `http://127.0.0.1:1420/#care-plan` with the H1, care queue, cervical care note, screening summary, labs, nutrition, and document controls visible.
+  - PASS: `npm run test`, 55 files and 384 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: stopped the local Vite dev server before staging and confirmed port `1420` was closed.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+
 ## 2026-06-05 12:07 KST - SQLite Count Integer Parsing Iteration Note
 
 - Improvement target:
