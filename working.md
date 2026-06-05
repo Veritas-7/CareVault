@@ -15388,3 +15388,4 @@
     - `document_history`: exactly `3` rows, ending with `첨부 미리보기 실패`.
   - PASS: stopped the live Tauri/Vite runtime, restored the original sandbox database, and verified original data again: `나의 건강 기록|혈액검사 메모`.
   - PASS: confirmed no CareVault/Tauri process remained after cleanup.
+  - PASS: after docs, full local verification, Stitch refresh, existing cmux browser check, staged gitleaks, and commit, pushed implementation commit `10f83f5` (`Stabilize SQLite preview recovery saves`) to `origin/main`; `git ls-remote origin refs/heads/main` returned `10f83f52fbe0e4c42ba6b9e172645c687ed764db`.
