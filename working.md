@@ -14519,4 +14519,4 @@
   - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx src/appStateNormalization.test.ts`.
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `c6e5503` (`Normalize persisted record fields`).
