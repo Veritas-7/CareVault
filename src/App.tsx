@@ -303,6 +303,7 @@ import {
   formatCaregiverShareExportDescription,
   formatCaregiverShareExportStatus,
   formatCaregiverShareMemoPresetActionLabel,
+  formatCaregiverSharePresetSelectDescription,
   formatCaregiverShareProfileRedactionToggleLabel,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
@@ -3249,7 +3250,9 @@ function App() {
   const selectedCaregiverSharePresetLabel =
     getCaregiverShareSettingsPreset(state.caregiverShareSettings.presetId)?.label ??
     "프리셋 미선택";
-  const caregiverSharePresetSelectDescription = `보호자 공유 설정 프리셋 · 현재 ${selectedCaregiverSharePresetLabel}`;
+  const caregiverSharePresetSelectDescription = formatCaregiverSharePresetSelectDescription(
+    selectedCaregiverSharePresetLabel,
+  );
   const caregiverShareExportDescription = formatCaregiverShareExportDescription(
     state.caregiverShareSettings,
   );

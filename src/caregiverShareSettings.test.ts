@@ -12,6 +12,7 @@ import {
   formatCaregiverShareExportDescription,
   formatCaregiverShareExportStatus,
   formatCaregiverShareMemoPresetActionLabel,
+  formatCaregiverSharePresetSelectDescription,
   formatCaregiverShareProfileRedactionToggleLabel,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
@@ -306,6 +307,15 @@ describe("caregiverShareSettings", () => {
     );
     expect(formatCaregiverShareMemoPresetActionLabel("")).toBe(
       "보호자 공유본 전달 메모 프리셋 적용",
+    );
+  });
+
+  it("formats caregiver share preset select descriptions", () => {
+    expect(formatCaregiverSharePresetSelectDescription("정보 최소")).toBe(
+      "보호자 공유 설정 프리셋 · 현재 정보 최소 · 선택하면 해당 공유 설정을 적용합니다",
+    );
+    expect(formatCaregiverSharePresetSelectDescription("")).toBe(
+      "보호자 공유 설정 프리셋 · 현재 프리셋 미선택 · 선택하면 해당 공유 설정을 적용합니다",
     );
   });
 

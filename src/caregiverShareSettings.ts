@@ -354,6 +354,11 @@ export function formatCaregiverShareMemoPresetActionLabel(label: string) {
   return `보호자 공유본 ${presetLabel} 메모 프리셋 적용`;
 }
 
+export function formatCaregiverSharePresetSelectDescription(label: string) {
+  const selectedLabel = label.trim() || "프리셋 미선택";
+  return `보호자 공유 설정 프리셋 · 현재 ${selectedLabel} · 선택하면 해당 공유 설정을 적용합니다`;
+}
+
 export function formatCaregiverShareSectionToggleLabel(
   label: string,
   checked: boolean,
