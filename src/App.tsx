@@ -127,6 +127,10 @@ import {
   formatDocumentDraftAttachmentRemoveActionLabel,
 } from "./documentAttachmentActions";
 import {
+  documentFilterResetStatusLabel,
+  formatDocumentFilterResetActionLabel,
+} from "./documentFilterActions";
+import {
   buildSymptomSupportActionNote,
   buildSymptomSupportQuestion,
   buildSymptomSupportQueueHint,
@@ -1663,6 +1667,15 @@ function App() {
     Boolean(documentFilter.trim()) ||
     documentCategoryFilter !== "all" ||
     documentStatusFilter !== "all";
+  const documentFilterResetActionLabel = formatDocumentFilterResetActionLabel({
+    categoryLabel:
+      documentCategoryFilter === "all" ? "전체 분류" : documentLabel[documentCategoryFilter],
+    searchText: documentFilter,
+    statusLabel:
+      documentStatusFilter === "all"
+        ? "전체 상태"
+        : documentReviewStatusLabel[documentStatusFilter],
+  });
 
   const setActionSaveLabel = (label: string) => {
     transientSaveLabelUntilRef.current = 0;
@@ -1680,7 +1693,7 @@ function App() {
     setDocumentFilter("");
     setDocumentCategoryFilter("all");
     setDocumentStatusFilter("all");
-    setSaveLabel("서류 필터 초기화됨");
+    setSaveLabel(documentFilterResetStatusLabel);
   };
 
   const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>
@@ -6472,9 +6485,11 @@ function App() {
                       className="secondary-inline-button document-empty-reset"
                       type="button"
                       onClick={resetDocumentFilters}
+                      aria-label={documentFilterResetActionLabel}
+                      title={documentFilterResetActionLabel}
                     >
                       <RotateCcw aria-hidden="true" />
-                      필터 초기화
+                      서류 필터 초기화
                     </button>
                   ) : null}
                 </div>

@@ -13936,3 +13936,33 @@
     - The selected attachment exposed `icon.png 파일명 참조` and the remove action `서류 메모 첨부 선택 제거 · 현재 선택 icon.png`.
     - Clicking the remove action restored `첨부 없음` and changed the live status to `첨부 선택 제거됨`.
   - Git staging, commit, and push will be reported in the final assistant output.
+
+## 2026-06-05 09:46 KST - Saved Document Filter Reset Label Iteration Note
+
+- Improvement target:
+  - The saved-document empty-state reset button only said `필터 초기화` and had no scoped `aria-label` or hover `title`.
+  - The button appears only after active search/category/status filters hide all saved documents, so the reset action needs to name the current filter context.
+- Stitch MCP:
+  - Rechecked Stitch project `CareVault UI UX AutoResearch` (`10602093894318676839`) and confirmed the uploaded 390px CareVault DESIGN.md screen instance `7814555668945736330` remains the active UI/UX evidence surface.
+- Code/design changes:
+  - Added `src/documentFilterActions.ts`.
+    - Centralized the saved-document filter reset action label and reset-status sentence.
+  - Added `src/documentFilterActions.test.ts`.
+    - Locked search trimming, empty-search fallback, category/status context, and reset feedback.
+  - Updated `src/App.tsx`.
+    - Reused the shared reset status label.
+    - Added search/category/status-scoped `aria-label` and `title` to the empty-state reset button.
+    - Changed the visible action from `필터 초기화` to `서류 필터 초기화`.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for the saved-document filter reset action label and visible wording fix.
+- Verification:
+  - PASS: `npm run test -- src/documentFilterActions.test.ts`, 1 file and 3 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: App button scan: all `src/App.tsx` buttons have an `aria-label`.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser only; no additional cmux browser tab was created.
+    - Omnibar stayed on `http://127.0.0.1:1420/#nutrition`.
+    - Set saved-document search to `없는서류필터테스트`, producing `0 / 1 개 기록` and the empty result message.
+    - The reset action exposed `저장된 서류 필터 초기화 · 검색어 없는서류필터테스트 · 분류 전체 분류 · 상태 전체 상태`.
+    - Clicking reset restored `1 / 1 개 기록`, cleared the search field, and changed the live status to `서류 필터 초기화됨`.
+  - Git staging, commit, and push will be reported in the final assistant output.
