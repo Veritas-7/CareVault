@@ -829,6 +829,7 @@ function App() {
   const transientSaveLabelUntilRef = useRef(0);
   const symptomDraftInputRef = useRef<HTMLInputElement>(null);
   const questionDraftTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const exportPreviewPanelRef = useRef<HTMLElement>(null);
 
   const setRecordFormValidationFeedback = (
     formId: RecordFormFeedbackId,
@@ -1104,6 +1105,23 @@ function App() {
 
     return () => window.clearTimeout(handle);
   }, [questionDraftFocusRequest]);
+
+  useEffect(() => {
+    if (!exportPreview) return;
+
+    const handle = window.setTimeout(() => {
+      const target = exportPreviewPanelRef.current;
+      if (!target) return;
+
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 0);
+
+    return () => window.clearTimeout(handle);
+  }, [exportPreview]);
 
   const foodAssessment = useMemo(
     () => assessCancerFood(state.foodQuery),
@@ -6699,7 +6717,12 @@ function App() {
           </p>
         </section>
         {exportPreview ? (
-          <section className="export-preview-panel" aria-label="내보내기 미리보기">
+          <section
+            ref={exportPreviewPanelRef}
+            className="export-preview-panel"
+            aria-label="내보내기 미리보기"
+            tabIndex={-1}
+          >
             <div className="export-preview-header">
               <div>
                 <p className="eyebrow">{exportPreview.format}</p>
