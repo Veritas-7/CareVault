@@ -3867,7 +3867,8 @@ textarea:focus-visible {
   background: #ffe1db;
 }
 
-.document-action-feedback {
+.document-action-feedback,
+.question-action-feedback {
   width: 100%;
   padding: 9px 10px;
   border: 1px solid #b9dfd6;

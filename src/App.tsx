@@ -811,6 +811,10 @@ function App() {
     documentId: string;
     message: string;
   } | null>(null);
+  const [questionActionFeedback, setQuestionActionFeedback] = useState<{
+    questionId: string;
+    message: string;
+  } | null>(null);
   const [documentActionBaselines, setDocumentActionBaselines] = useState<Record<string, string>>(
     {},
   );
@@ -2911,7 +2915,9 @@ function App() {
         question.id === id ? { ...question, status } : question,
       ),
     }));
-    setActionSaveLabel(formatQuestionStatusUpdateStatus(targetQuestion?.topic ?? "", status));
+    const feedback = formatQuestionStatusUpdateStatus(targetQuestion?.topic ?? "", status);
+    setQuestionActionFeedback({ questionId: id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const updateQuestionPriority = (id: string, priority: QuestionPriority) => {
@@ -2922,7 +2928,9 @@ function App() {
         question.id === id ? { ...question, priority } : question,
       ),
     }));
-    setActionSaveLabel(formatQuestionPriorityUpdateStatus(targetQuestion?.topic ?? "", priority));
+    const feedback = formatQuestionPriorityUpdateStatus(targetQuestion?.topic ?? "", priority);
+    setQuestionActionFeedback({ questionId: id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const copyQuestionForVisit = (question: CareQuestion) => {
@@ -5894,6 +5902,11 @@ function App() {
                             );
                           })}
                         </div>
+                        {questionActionFeedback?.questionId === question.id ? (
+                          <div className="question-action-feedback" role="status">
+                            {questionActionFeedback.message}
+                          </div>
+                        ) : null}
                       </div>
                     </article>
                   );
