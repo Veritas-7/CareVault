@@ -295,6 +295,7 @@ import {
   createDefaultCaregiverShareSettings,
   formatCaregiverShareExportDescription,
   formatCaregiverShareExportStatus,
+  formatCaregiverShareProfileRedactionToggleLabel,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
   formatCaregiverShareResetDescription,
@@ -1580,11 +1581,6 @@ function App() {
 
   const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>
     caregiverShareSectionOptions.find((option) => option.id === id)?.label ?? id;
-
-  const getCaregiverShareProfileRedactionToggleLabel = (redactProfile: boolean) =>
-    redactProfile
-      ? "보호자 공유본 프로필 가리기 켜짐 · 이름과 기본 프로필 정보를 숨깁니다"
-      : "보호자 공유본 프로필 가리기 꺼짐 · 이름과 기본 프로필 정보를 표시합니다";
 
   const getCaregiverShareSectionToggleLabel = (
     label: string,
@@ -3534,10 +3530,10 @@ function App() {
               <input
                 type="checkbox"
                 checked={state.caregiverShareSettings.redactProfile}
-                aria-label={getCaregiverShareProfileRedactionToggleLabel(
+                aria-label={formatCaregiverShareProfileRedactionToggleLabel(
                   state.caregiverShareSettings.redactProfile,
                 )}
-                title={getCaregiverShareProfileRedactionToggleLabel(
+                title={formatCaregiverShareProfileRedactionToggleLabel(
                   state.caregiverShareSettings.redactProfile,
                 )}
                 onChange={(event) =>

@@ -332,6 +332,12 @@ export function formatCaregiverShareResetDescription(
   )} · 기본값으로 되돌립니다`;
 }
 
+export function formatCaregiverShareProfileRedactionToggleLabel(redactProfile: boolean) {
+  return redactProfile
+    ? "보호자 공유본 프로필 가리기 켜짐 · 선택 해제하면 이름과 기본 프로필 정보를 표시합니다"
+    : "보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다";
+}
+
 export function formatCaregiverShareExportStatus(
   input: CaregiverShareSettingsInput | undefined,
 ) {

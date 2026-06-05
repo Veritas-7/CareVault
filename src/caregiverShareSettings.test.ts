@@ -11,6 +11,7 @@ import {
   createDefaultCaregiverShareSettings,
   formatCaregiverShareExportDescription,
   formatCaregiverShareExportStatus,
+  formatCaregiverShareProfileRedactionToggleLabel,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
   formatCaregiverShareResetDescription,
@@ -278,6 +279,15 @@ describe("caregiverShareSettings", () => {
     );
     expect(formatCaregiverShareResetDescription(undefined)).toBe(
       "보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다",
+    );
+  });
+
+  it("formats caregiver profile redaction toggles with current state and next action", () => {
+    expect(formatCaregiverShareProfileRedactionToggleLabel(true)).toBe(
+      "보호자 공유본 프로필 가리기 켜짐 · 선택 해제하면 이름과 기본 프로필 정보를 표시합니다",
+    );
+    expect(formatCaregiverShareProfileRedactionToggleLabel(false)).toBe(
+      "보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다",
     );
   });
 
