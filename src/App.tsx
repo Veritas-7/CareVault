@@ -111,6 +111,7 @@ import {
 } from "./labQuestionPrompts";
 import {
   buildLabPanelSummary,
+  formatLabAddActionLabel,
   formatLabDraftResetStatusLabel,
   formatLabResultSavedStatusLabel,
 } from "./labMetric";
@@ -3480,6 +3481,7 @@ function App() {
     questionDraft.priority,
     questionDraftHasRequiredFields,
   );
+  const labAddActionLabel = formatLabAddActionLabel(labDraft);
   const caregiverPreviewSettingDifferences =
     exportPreviewHasStaleCaregiverSettings && exportPreview?.caregiverShareSettingsSnapshot
       ? buildCaregiverShareSettingsDifferences(
@@ -5997,8 +5999,8 @@ function App() {
                 className="primary-button"
                 type="button"
                 onClick={addLabResult}
-                aria-label="검사 수치 추가 · 검사명과 수치 필요"
-                title="검사 수치 추가 · 검사명과 수치 필요"
+                aria-label={labAddActionLabel}
+                title={labAddActionLabel}
               >
                 <Plus aria-hidden="true" />
                 검사 수치 추가

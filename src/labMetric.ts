@@ -55,6 +55,19 @@ export function formatLabResultSavedStatusLabel(result: LabResultSavedStatusSour
   return `${prefix} · ${formatLabResultValue(result)} · 판정 ${assessment.label} · ${evidenceContext}`;
 }
 
+export function formatLabAddActionLabel(
+  draft: Pick<LabResultSavedStatusSource, "name" | "unit" | "value">,
+) {
+  const name = draft.name.trim();
+  const value = draft.value.trim();
+
+  if (!name || !value) {
+    return "검사 수치 추가 · 검사명과 수치 필요";
+  }
+
+  return `검사 수치 추가 · ${name} ${formatLabResultValue(draft)} 입력 준비됨`;
+}
+
 export function formatLabDraftResetStatusLabel(
   draft: LabDraftResetStatusSource,
   presetLabel: string | undefined,

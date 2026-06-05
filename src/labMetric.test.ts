@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildLabPanelSummary,
+  formatLabAddActionLabel,
   formatLabDraftResetStatusLabel,
   formatLabResultSavedStatusLabel,
 } from "./labMetric";
@@ -45,6 +46,15 @@ describe("labMetric", () => {
         value: "",
       }),
     ).toBe("검사 수치 추가됨 · 값 없음 · 판정 값 없음 · 근거 없음");
+  });
+
+  it("formats lab add action labels from required draft readiness", () => {
+    expect(formatLabAddActionLabel({ name: "", unit: "", value: "" })).toBe(
+      "검사 수치 추가 · 검사명과 수치 필요",
+    );
+    expect(formatLabAddActionLabel({ name: "WBC", unit: "10^3/uL", value: "4.2" })).toBe(
+      "검사 수치 추가 · WBC 4.2 10^3/uL 입력 준비됨",
+    );
   });
 
   it("formats lab reset feedback with preset context and cleared draft summary", () => {
