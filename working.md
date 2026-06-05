@@ -17721,3 +17721,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `19018ce` (`Raise lab form control targets`).
+
+## 2026-06-06 00:24 KST - Lab Add Ready Label cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: test in the actual right cmux in-app browser like a person, not only through CLI smoke output.
+  - `DESIGN.md` requires required add/save validation feedback to clear once fields become valid, and the current action/status text should not keep stale required-field warnings.
+  - Real cmux QA found the lab local feedback cleared after entering required fields, but the `검사 수치 추가` button still exposed `검사명과 수치 필요` in aria/title while the draft was ready to add.
+- Change:
+  - Added `formatLabAddActionLabel()` in `src/labMetric.ts`.
+  - Updated the lab add button in `src/App.tsx` to use the dynamic label for both aria-label and hover title.
+  - Added regression coverage in `src/labMetric.test.ts`.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed the active cmux workspace had switched to `working.md` and the right pane was Worklog, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the existing cmux window back to `암관리`; the right pane showed CareVault at `http://127.0.0.1:1420/#labs`.
+  - RED/IMPROVEMENT: clicked empty `검사 수치 추가`; the local lab feedback rendered as `검사 항목과 값을 입력해주세요.`, then entering `QA-WBC` and `4.2` cleared the feedback while the button still said `검사 수치 추가 · 검사명과 수치 필요`.
+  - PASS after fix: with `QA-WBC` and `4.2` entered in the same right pane, the add button aria/title became `검사 수치 추가 · QA-WBC 4.2 입력 준비됨`. Screenshot `/tmp/carevault-surface9-iter10-lab-add-ready-label.png` captured the ready label state.
+  - PASS cleanup in browser: clicked `검사 입력 초기화`; the draft name/value returned to empty and the add button reverted to `검사 수치 추가 · 검사명과 수치 필요`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`; console contained only Vite debug/HMR messages while the dev server was running.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/labMetric.test.ts`, 8 tests.
+  - PASS: `npm run test`, 61 files and 474 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/labMetric.ts src/labMetric.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `26fea22` (`Clarify ready lab add action`).
