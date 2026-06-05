@@ -1894,6 +1894,10 @@ textarea {
   background: #ffffff;
 }
 
+select {
+  height: 40px;
+}
+
 button:focus,
 button:focus-visible,
 a:focus,
@@ -4650,6 +4654,7 @@ textarea:focus-visible {
   .document-filter-row select,
   .document-update-controls input,
   .document-update-controls select {
+    height: 44px;
     padding-block: 9px;
   }
 

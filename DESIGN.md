@@ -141,7 +141,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - At 1120px, broad layouts collapse to two columns and the topbar becomes a stacked grid so the Korean page title keeps a normal readable line box above dense export/caregiver-share controls.
 - Above 1120px, constrained cmux right-pane desktop widths keep the topbar as a two-column grid with a protected title column so `나의 건강 기록` does not collapse into single-character Korean lines beside wrapped actions.
 - At 760px, all content grids collapse to one column.
-- Mobile and narrow cmux widths require at least 44px touch height for visible controls, including primary/secondary buttons, disclosure summaries, text/date/number inputs, native selects, checkbox labels, and official-source links.
+- Mobile and narrow cmux widths require at least 44px touch height for visible controls, including primary/secondary buttons, disclosure summaries, text/date/number inputs, native selects, checkbox labels, and official-source links. Native selects need explicit `height`, not only `min-height`, because WKWebView can otherwise render them below the intended hit area.
 - Long Korean source labels and question buttons must wrap without horizontal overflow.
 - Korean standards applicability chips, saved-document next-action editors, and saved-document archive action buttons must avoid visible text clipping at 320px, 375px, 760px, cmux right-pane, and desktop widths.
 - Saved-document search fields must keep the leading search icon vertically centered inside the input at mobile, cmux right-pane, and desktop widths.
@@ -706,6 +706,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Added `npm run runtime:doctor:test` fake-process fixtures for clean mode, active-dev mode, release-bundle shadowing, wrong port ownership, and Tauri's relative `target/debug/carevault` command form.
 - 2026-06-05: Fixed sidebar hash deep links so direct URLs such as `#documents` scroll to the intended section after React render and persisted-state hydration, with the active nav state kept in sync.
 - 2026-06-05: Made saved-document summary chips keep zero-count `첨부 복구 없음` and `삭제 보관 없음` states visually neutral so only real recovery or archive counts receive warning/archive emphasis.
+- 2026-06-05: Gave native select controls explicit desktop and mobile heights so WKWebView keeps document form, filter, and update selects aligned with neighboring input hit targets.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.
