@@ -7,6 +7,17 @@ import {
 } from "./sidebarNavigation";
 
 describe("sidebarNavigation", () => {
+  it("keeps sidebar tracking order aligned to the app scroll flow", () => {
+    expect(sidebarSectionIds).toEqual([
+      "dashboard",
+      "records",
+      "care-plan",
+      "labs",
+      "nutrition",
+      "documents",
+    ]);
+  });
+
   it("recognizes every sidebar hash target used by the app shell", () => {
     expect(sidebarSectionIds.map((sectionId) => getSidebarHashSectionId(`#${sectionId}`))).toEqual(
       sidebarSectionIds,

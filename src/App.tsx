@@ -3269,16 +3269,6 @@ function App() {
             입력 기록
           </a>
           <a
-            href="#nutrition"
-            aria-current={activeSectionId === "nutrition" ? "page" : undefined}
-            aria-label="음식 판단 섹션으로 이동"
-            title="음식 판단 섹션으로 이동"
-            onClick={() => setActiveSectionId("nutrition")}
-          >
-            <Apple aria-hidden="true" />
-            음식 판단
-          </a>
-          <a
             href="#care-plan"
             aria-current={activeSectionId === "care-plan" ? "page" : undefined}
             aria-label="증상·질문 섹션으로 이동"
@@ -3297,6 +3287,16 @@ function App() {
           >
             <ClipboardList aria-hidden="true" />
             검사 수치
+          </a>
+          <a
+            href="#nutrition"
+            aria-current={activeSectionId === "nutrition" ? "page" : undefined}
+            aria-label="음식 판단 섹션으로 이동"
+            title="음식 판단 섹션으로 이동"
+            onClick={() => setActiveSectionId("nutrition")}
+          >
+            <Apple aria-hidden="true" />
+            음식 판단
           </a>
           <a
             href="#documents"

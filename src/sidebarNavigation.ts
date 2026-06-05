@@ -1,9 +1,9 @@
 export const sidebarSectionIds = [
   "dashboard",
   "records",
-  "nutrition",
   "care-plan",
   "labs",
+  "nutrition",
   "documents",
 ] as const;
 
