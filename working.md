@@ -16323,3 +16323,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `eeccbd7` (`Cover caregiver memo preset labels`).
+
+## 2026-06-05 19:45 KST - Caregiver Section Summary Aria Label
+
+- Improvement target:
+  - `DESIGN.md` requires caregiver-share setting summaries to expose preset intent, profile redaction, memo presence, included section count, and excluded section count without relying only on visible text.
+  - Source audit found the `caregiver-section-summary` `role=status` region used a static `aria-label`, so the dynamic included/excluded section lists could be under-described to assistive technology.
+- Change:
+  - Added `formatCaregiverShareSectionSummaryAriaLabel()` in `src/caregiverShareSettings.ts`.
+  - Updated `App.tsx` to use the dynamic section-summary aria label with included/excluded counts and section names.
+  - Extended `src/caregiverShareSettings.test.ts` to pin the caregiver section summary aria sentence for the clinic-prep preset.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `cmux browser surface:9 get title` returned `CareVault` after navigation to `http://127.0.0.1:1420/`.
+  - BLOCKED: same-surface snapshot still returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, empty `title`, `.app-shell` count `0`, caregiver section summary count `0`, and empty body text, while `curl -I` returned HTTP `200`.
+  - PASS: `cmux browser surface:9 console` returned `No console entries` and `cmux browser surface:9 errors` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/caregiverShareSettings.test.ts`, 23 tests.
+  - PASS: `npm run test`, 60 files and 437 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `7b68cdf` (`Summarize caregiver section aria labels`).
