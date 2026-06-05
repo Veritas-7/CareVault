@@ -831,6 +831,7 @@ function App() {
   const symptomDraftInputRef = useRef<HTMLInputElement>(null);
   const questionDraftTextareaRef = useRef<HTMLTextAreaElement>(null);
   const exportPreviewPanelRef = useRef<HTMLElement>(null);
+  const exportPreviewStaleAlertRef = useRef<HTMLDivElement>(null);
 
   const setRecordFormValidationFeedback = (
     formId: RecordFormFeedbackId,
@@ -3409,6 +3410,23 @@ function App() {
           : exportPreviewHasStaleCsvState
             ? "CSV 기록이 바뀌어 다시 생성이 필요합니다."
             : undefined;
+  useEffect(() => {
+    if (!exportPreview || !exportPreviewHasStaleState) return;
+
+    const timeoutId = window.setTimeout(() => {
+      const target =
+        exportPreviewPanelRef.current?.querySelector<HTMLElement>(
+          ".export-preview-stale-alert",
+        ) ??
+        exportPreviewStaleAlertRef.current ??
+        exportPreviewPanelRef.current;
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ behavior: "auto", block: "center" });
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [exportPreview, exportPreviewDisabledReason, exportPreviewHasStaleState]);
+
   const activeCaregiverSectionCount = Object.values(
     state.caregiverShareSettings.sections,
   ).filter(Boolean).length;
@@ -6826,9 +6844,11 @@ function App() {
             ) : null}
             {exportPreviewHasStaleCaregiverSettings ? (
               <div
+                ref={exportPreviewStaleAlertRef}
                 className="export-preview-stale-alert"
                 role="status"
                 aria-label="보호자 공유본 미리보기 변경 감지"
+                tabIndex={-1}
               >
                 <AlertTriangle aria-hidden="true" />
                 <div>
@@ -6849,9 +6869,11 @@ function App() {
             ) : null}
             {exportPreviewHasStaleCaregiverContent ? (
               <div
+                ref={exportPreviewStaleAlertRef}
                 className="export-preview-stale-alert"
                 role="status"
                 aria-label="보호자 공유본 미리보기 기록 변경 감지"
+                tabIndex={-1}
               >
                 <AlertTriangle aria-hidden="true" />
                 <div>
@@ -6872,9 +6894,11 @@ function App() {
             ) : null}
             {exportPreviewHasStaleVisitPacketRange ? (
               <div
+                ref={exportPreviewStaleAlertRef}
                 className="export-preview-stale-alert"
                 role="status"
                 aria-label="진료 요약 미리보기 범위 변경 감지"
+                tabIndex={-1}
               >
                 <AlertTriangle aria-hidden="true" />
                 <div>
@@ -6895,9 +6919,11 @@ function App() {
             ) : null}
             {exportPreviewHasStaleVisitPacketContent ? (
               <div
+                ref={exportPreviewStaleAlertRef}
                 className="export-preview-stale-alert"
                 role="status"
                 aria-label="진료 요약 미리보기 기록 변경 감지"
+                tabIndex={-1}
               >
                 <AlertTriangle aria-hidden="true" />
                 <div>
@@ -6918,9 +6944,11 @@ function App() {
             ) : null}
             {exportPreviewHasStaleCsvState ? (
               <div
+                ref={exportPreviewStaleAlertRef}
                 className="export-preview-stale-alert"
                 role="status"
                 aria-label="CSV 미리보기 기록 변경 감지"
+                tabIndex={-1}
               >
                 <AlertTriangle aria-hidden="true" />
                 <div>
