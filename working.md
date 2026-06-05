@@ -15648,3 +15648,29 @@
   - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: committed and pushed to `origin/main` as `91abf03` (`Neutralize empty document summary chips`); `git ls-remote origin refs/heads/main` returned `91abf0338d0bb924d78cdec47e6664e3bcf07ad7`.
+
+## 2026-06-05 17:04 KST - Native Select Hit Targets
+
+- Improvement target:
+  - In the existing cmux `암관리` document view, native `select` controls rendered shorter than neighboring text inputs in WKWebView.
+  - Before fix, document selects measured as low as 20-31px despite stylesheet `min-height` rules, leaving uneven form/filter rows and smaller hit targets.
+- Change:
+  - Added explicit desktop `height: 40px` for native `select` controls in `src/App.css`.
+  - Added explicit mobile/narrow `height: 44px` for priority, document-filter, and document-update selects so the touch-target contract does not depend on WebKit honoring `min-height`.
+  - Updated `DESIGN.md` to state that native selects require explicit height in WKWebView.
+- Real-browser verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: after navigating the same surface to `http://127.0.0.1:1420/#documents`, all five document selects measured `height:40` and `computedHeight:"40px"`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+- Automated verification:
+  - PASS: `npm run test`, 57 files and 414 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: committed and pushed to `origin/main` as `fa81466` (`Fix native select hit targets`); `git ls-remote origin refs/heads/main` returned `fa8146662e97786c907a8de1daa457c7fa598a89`.
