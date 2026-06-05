@@ -18367,3 +18367,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `64a6a71` (`Show food question draft local feedback`).
+
+## 2026-06-06 03:13 KST - Vital Standard Question Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires the vital input helper to expose active Korean standards, source-backed clinician-question draft shortcuts, and immediate visible feedback or a clear state change in the constrained cmux right pane.
+  - Real cmux QA found `혈압 기준 진료 질문 초안 만들기` filled the question form and updated the top save-status chip, but the `혈압 혈당 체온 입력 기준` helper had no local `role=status` confirmation near the action.
+- Change:
+  - Added transient `vitalStandardQuestionFeedback` UI state in `src/App.tsx`.
+  - Updated `applyVitalStandardQuestion()` so unsupported/no-draft and ready branches both set local vital-helper feedback while preserving existing top save-status behavior.
+  - Cleared stale vital-standard question feedback when the vital draft changes.
+  - Rendered `.vital-standard-question-feedback` inside the vital standard helper and styled it as a compact wrapping status row.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use showed cmux had switched to `블로그`, so that WriteFlow pane was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: clicked `혈압 기준 진료 질문 초안 만들기`; the top status showed `활력 기준 질문 초안 준비됨 · 혈압 128/78 mmHg · 판정 주의혈압 범위 · 기준 성인 남녀 공통 한국 성인 혈압 기준 · 근거 질병관리청 국가건강정보포털 고혈압`, and the question form filled, but local `.vital-standard-question-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter29-vital-standard-question-local-feedback-red.png` captured the missing helper feedback.
+  - PASS after fix: reloaded the same surface and clicked the same `혈압 기준 진료 질문 초안` button; the vital helper showed visible local `role=status` feedback with the same measurement, assessment, standard, and source summary, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter29-vital-standard-question-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: reloaded `surface:9` and verified no stale `.vital-standard-question-feedback`, the question button returned to default `질문 추가`, and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/healthStandards.test.ts src/vitalValidation.test.ts`, 37 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `7f25c2f` (`Show vital question draft local feedback`).
