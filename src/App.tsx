@@ -874,6 +874,10 @@ function normalizeObjectArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value.filter(isObjectRecord) as T[]) : [];
 }
 
+function normalizeDocumentHistory(value: unknown) {
+  return normalizeObjectArray<DocumentHistoryEntry>(value);
+}
+
 function normalizeAppState(input: unknown): AppState {
   const persisted = isObjectRecord(input) ? (input as Partial<AppState>) : {};
   const profileInput = isObjectRecord(persisted.profile) ? persisted.profile : {};
@@ -910,13 +914,13 @@ function normalizeAppState(input: unknown): AppState {
       ...document,
       reviewStatus: document.reviewStatus ?? "needs-review",
       nextAction: document.nextAction ?? "",
-      history: document.history ?? [],
+      history: normalizeDocumentHistory(document.history),
     })),
     deletedDocuments: deletedDocuments.map((document) => ({
       ...document,
       reviewStatus: document.reviewStatus ?? "needs-review",
       nextAction: document.nextAction ?? "",
-      history: document.history ?? [],
+      history: normalizeDocumentHistory(document.history),
     })),
     symptoms: normalizeObjectArray<AppState["symptoms"][number]>(persisted.symptoms),
     questions: questions.map((question) => ({

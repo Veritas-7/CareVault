@@ -14431,3 +14431,29 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - PASS: committed and pushed to `origin/main` as `b98e4b8` (`Harden persisted state normalization`).
+
+## 2026-06-05 11:31 KST - Persisted Document History Shape Guard Iteration Note
+
+- Improvement target:
+  - Follow-up shape review found that persisted document entries were now object-guarded, but nested `document.history` could still be a string or mixed array.
+  - Later document rendering and normalized mirror generation call `.map()` on document history, so malformed nested history could still break the documents path.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added `normalizeDocumentHistory()`.
+    - Active and deleted document normalization now keeps only object history entries and falls back to an empty history array when malformed.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for persisted document history shape fallback.
+- Verification so far:
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright malformed document-history smoke at 390x884.
+    - `나의 건강 기록` H1 count: 1.
+    - `저장된 서류` heading count: 1.
+    - Malformed-history document archive action count: 1.
+    - Page errors: 0; console errors: 0; scroll width 390.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx`.
+  - PASS: `npm run test`, 54 files and 373 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - Pending: commit and push.
