@@ -1341,6 +1341,18 @@ export function formatVitalStandardQuestionDraftActionLabel(measurementLabel: st
   return `${normalizedLabel} 기준 진료 질문 초안 만들기`;
 }
 
+function formatVitalStandardQuestionDraftTopic(standardId: string) {
+  if (standardId === "infection-fever") return "체온·감염 기준 확인";
+  return standardId.includes("blood-pressure") ? "혈압 기준 확인" : "혈당 기준 확인";
+}
+
+function formatVitalStandardQuestionDraftStandardText(standard: HealthStandardCoverage) {
+  const standardLabel = standard.label.endsWith("기준")
+    ? standard.label
+    : `${standard.label} 기준`;
+  return `${standard.sexApplicability} ${standardLabel}`;
+}
+
 export function buildVitalStandardQuestionDraft(
   input: VitalStandardQuestionDraftInput,
 ): VitalStandardQuestionDraft | null {
@@ -1350,10 +1362,11 @@ export function buildVitalStandardQuestionDraft(
   const assessmentSummary = input.assessmentSummary.trim().replace(/[.。]+$/, "");
   const note = input.note?.trim().replace(/[.。]+$/, "");
   const noteText = note ? ` 사용자 메모: ${note}.` : "";
+  const standardText = formatVitalStandardQuestionDraftStandardText(standard);
 
   return {
-    topic: input.standardId.includes("blood-pressure") ? "혈압 기준 확인" : "혈당 기준 확인",
-    question: `${input.measurementLabel} 기록을 ${standard.sexApplicability} ${standard.label} 기준과 제 치료 상황에 맞춰 어떻게 해석해야 할까요? 반복 측정 시점, 약·식사·활동 영향, 진료팀 연락 기준을 확인하고 싶습니다. 앱 참고 판정: ${input.assessmentLabel} - ${assessmentSummary}.${noteText}\n출처: ${standard.sourceLabel} - ${standard.sourceUrl}`,
+    topic: formatVitalStandardQuestionDraftTopic(input.standardId),
+    question: `${input.measurementLabel} 기록을 ${standardText}과 제 치료 상황에 맞춰 어떻게 해석해야 할까요? 반복 측정 시점, 약·식사·활동 영향, 진료팀 연락 기준을 확인하고 싶습니다. 앱 참고 판정: ${input.assessmentLabel} - ${assessmentSummary}.${noteText}\n출처: ${standard.sourceLabel} - ${standard.sourceUrl}`,
   };
 }
 

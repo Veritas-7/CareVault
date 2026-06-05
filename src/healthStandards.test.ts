@@ -726,6 +726,13 @@ describe("healthStandards", () => {
       measurementLabel: "혈당 250 mg/dL (수시)",
       standardId: "marked-hyperglycemia",
     });
+    const temperatureDraft = buildVitalStandardQuestionDraft({
+      assessmentLabel: "감염 연락 기준",
+      assessmentSummary:
+        "암환자 공통 감염 연락 기준에서 체온 38℃ 이상 또는 오한이 있으면 진료팀 연락 기준을 확인해야 합니다.",
+      measurementLabel: "체온 38.2℃",
+      standardId: "infection-fever",
+    });
 
     expect(bloodPressureDraft?.topic).toBe("혈압 기준 확인");
     expect(bloodPressureDraft?.question).toContain("혈압 182/121 mmHg");
@@ -756,6 +763,11 @@ describe("healthStandards", () => {
     expect(markedHyperglycemiaDraft?.question).toContain("혈당 250 mg/dL (수시)");
     expect(markedHyperglycemiaDraft?.question).toContain("질병관리청 국가건강정보포털 고혈당");
     expect(markedHyperglycemiaDraft?.question).toContain("cntnts_sn=5304");
+    expect(temperatureDraft?.topic).toBe("체온·감염 기준 확인");
+    expect(temperatureDraft?.question).toContain("체온 38.2℃");
+    expect(temperatureDraft?.question).toContain("암환자 공통 체온·감염 연락 기준과");
+    expect(temperatureDraft?.question).toContain("국가암정보센터 감염 의료진 상담 기준");
+    expect(temperatureDraft?.question).not.toContain("기준 기준");
     expect(buildVitalStandardQuestionDraft({
       assessmentLabel: "정보 부족",
       assessmentSummary: "기준 없음",
