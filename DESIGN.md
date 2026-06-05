@@ -704,6 +704,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Added `npm run runtime:doctor:dev` active-session verification so live Tauri QA must prove this repo's Vite listener, Tauri CLI, and debug binary are running while no release-bundle `CareVault.app` shadow is present.
 - 2026-06-05: Bound current-source dev to `127.0.0.1:1420` and aligned the Tauri dev URL so the single existing cmux `암관리` browser pane can reach the same server as Tauri dev.
 - 2026-06-05: Added `npm run runtime:doctor:test` fake-process fixtures for clean mode, active-dev mode, release-bundle shadowing, wrong port ownership, and Tauri's relative `target/debug/carevault` command form.
+- 2026-06-05: Fixed sidebar hash deep links so direct URLs such as `#documents` scroll to the intended section after React render and persisted-state hydration, with the active nav state kept in sync.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.

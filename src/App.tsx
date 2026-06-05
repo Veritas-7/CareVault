@@ -153,6 +153,13 @@ import {
   findSymptomSupportTemplate,
   formatSymptomSupportSource,
 } from "./symptomSupportTemplates";
+import {
+  defaultSidebarSectionId,
+  getSidebarHashSectionId,
+  normalizeSidebarSectionHash,
+  sidebarSectionIds,
+  type SidebarSectionId,
+} from "./sidebarNavigation";
 import { buildAppointmentReminders } from "./appointmentReminders";
 import {
   hasRequiredTextValues,
@@ -871,26 +878,6 @@ const formControlDescriptions = {
   documentStatusFilter: "저장된 서류 상태 필터",
 } as const;
 
-const sidebarSectionIds = [
-  "dashboard",
-  "records",
-  "nutrition",
-  "care-plan",
-  "labs",
-  "documents",
-] as const;
-
-type SidebarSectionId = (typeof sidebarSectionIds)[number];
-
-const defaultSidebarSectionId: SidebarSectionId = "dashboard";
-
-function normalizeSidebarSectionHash(hash: string): SidebarSectionId {
-  const sectionId = hash.replace(/^#/, "");
-  return sidebarSectionIds.includes(sectionId as SidebarSectionId)
-    ? (sectionId as SidebarSectionId)
-    : defaultSidebarSectionId;
-}
-
 const createId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -1362,6 +1349,7 @@ function App() {
 
   useEffect(() => {
     let activeSectionFrame = 0;
+    let hashScrollFrame = 0;
 
     const getActiveSectionFromScroll = () => {
       const anchorY = Math.min(window.innerHeight * 0.35, 220);
@@ -1391,24 +1379,64 @@ function App() {
       });
     };
 
-    const syncActiveSectionFromHash = () => {
-      setActiveSectionId(normalizeSidebarSectionHash(window.location.hash));
+    const scrollToCurrentHashSection = (behavior: ScrollBehavior) => {
+      const sectionId = getSidebarHashSectionId(window.location.hash);
+      if (!sectionId) return;
+
+      if (hashScrollFrame) {
+        window.cancelAnimationFrame(hashScrollFrame);
+      }
+
+      hashScrollFrame = window.requestAnimationFrame(() => {
+        hashScrollFrame = 0;
+        document.getElementById(sectionId)?.scrollIntoView({
+          behavior,
+          block: "start",
+        });
+      });
     };
 
-    syncActiveSectionFromHash();
-    window.addEventListener("hashchange", syncActiveSectionFromHash);
+    const syncActiveSectionFromHash = (behavior: ScrollBehavior = "smooth") => {
+      setActiveSectionId(normalizeSidebarSectionHash(window.location.hash));
+      scrollToCurrentHashSection(behavior);
+    };
+
+    const handleHashChange = () => syncActiveSectionFromHash("smooth");
+
+    syncActiveSectionFromHash("auto");
+    window.addEventListener("hashchange", handleHashChange);
     window.addEventListener("resize", syncActiveSectionFromScroll);
     window.addEventListener("scroll", syncActiveSectionFromScroll, { passive: true });
 
     return () => {
-      window.removeEventListener("hashchange", syncActiveSectionFromHash);
+      window.removeEventListener("hashchange", handleHashChange);
       window.removeEventListener("resize", syncActiveSectionFromScroll);
       window.removeEventListener("scroll", syncActiveSectionFromScroll);
       if (activeSectionFrame) {
         window.cancelAnimationFrame(activeSectionFrame);
       }
+      if (hashScrollFrame) {
+        window.cancelAnimationFrame(hashScrollFrame);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    const sectionId = getSidebarHashSectionId(window.location.hash);
+    if (!sectionId) return;
+
+    const handle = window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+      setActiveSectionId(sectionId);
+    }, 0);
+
+    return () => window.clearTimeout(handle);
+  }, [hydrated]);
 
   useEffect(() => {
     let active = true;
