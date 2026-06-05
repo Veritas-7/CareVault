@@ -3,6 +3,7 @@ import {
   assessBloodGlucose,
   assessBloodPressure,
   assessCancerFood,
+  assessLabTextValue,
   assessLabValue,
   assessTemperature,
   assessWaistCircumference,
@@ -10,6 +11,7 @@ import {
   calculateBmi,
   formatFoodMatchEvidence,
   foodGuidanceSources,
+  parseFiniteNumberText,
 } from "./healthRules";
 
 describe("healthRules", () => {
@@ -157,5 +159,26 @@ describe("healthRules", () => {
     expect(assessLabValue(3.1, 4, 10).label).toBe("기준보다 낮음");
     expect(assessLabValue(14, 4, 10).label).toBe("기준보다 높음");
     expect(assessLabValue(14).flag).toBe("unknown");
+  });
+
+  it("strictly parses lab number text before classification", () => {
+    expect(parseFiniteNumberText(" 3.4 ")).toBe(3.4);
+    expect(parseFiniteNumberText(".5")).toBe(0.5);
+    expect(parseFiniteNumberText("1e3")).toBe(1000);
+    expect(parseFiniteNumberText("3.4 low")).toBeUndefined();
+    expect(parseFiniteNumberText("4abc")).toBeUndefined();
+    expect(parseFiniteNumberText("0x10")).toBeUndefined();
+    expect(parseFiniteNumberText("Infinity")).toBeUndefined();
+    expect(parseFiniteNumberText("")).toBeUndefined();
+
+    expect(assessLabTextValue("3.4", "4", "10").label).toBe("기준보다 낮음");
+    expect(assessLabTextValue("3.4 low", "4", "10")).toMatchObject({
+      flag: "unknown",
+      label: "값 없음",
+    });
+    expect(assessLabTextValue("3.4", "4abc", "10")).toMatchObject({
+      flag: "normal",
+      label: "기준 범위 내",
+    });
   });
 });

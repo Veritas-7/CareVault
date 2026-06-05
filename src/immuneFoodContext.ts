@@ -1,6 +1,7 @@
 import {
-  assessLabValue,
+  assessLabTextValue,
   foodGuidanceSources,
+  parseFiniteNumberText,
   type LabFlag,
 } from "./healthRules";
 import { buildLabSourceEvidenceParts, resolveLabPresetSourceEvidence } from "./labSourceEvidence";
@@ -30,11 +31,6 @@ export type ImmuneFoodSafetyContext = {
   summary: string;
 };
 
-function parseFiniteNumber(value: string) {
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
 function formatValueWithUnit(value: string, unit: string) {
   return [value, unit].map((part) => part.trim()).filter(Boolean).join(" ");
 }
@@ -45,14 +41,7 @@ function isImmuneLabName(name: string) {
 }
 
 function getLabFlag(lab: ImmuneFoodLabResult): LabFlag {
-  const value = parseFiniteNumber(lab.value);
-  if (value === null) return "unknown";
-
-  return assessLabValue(
-    value,
-    lab.lower ? Number.parseFloat(lab.lower) : undefined,
-    lab.upper ? Number.parseFloat(lab.upper) : undefined,
-  ).flag;
+  return assessLabTextValue(lab.value, lab.lower, lab.upper).flag;
 }
 
 function sortContextCandidates(a: ImmuneFoodLabResult, b: ImmuneFoodLabResult) {
@@ -66,8 +55,8 @@ function sortContextCandidates(a: ImmuneFoodLabResult, b: ImmuneFoodLabResult) {
 function findImmuneFoodLabContext(labs: ImmuneFoodLabResult[]) {
   return [...labs]
     .filter((lab) => {
-      const lower = parseFiniteNumber(lab.lower);
-      return lower !== null && isImmuneLabName(lab.name) && getLabFlag(lab) === "low";
+      const lower = parseFiniteNumberText(lab.lower);
+      return lower !== undefined && isImmuneLabName(lab.name) && getLabFlag(lab) === "low";
     })
     .sort(sortContextCandidates)[0];
 }

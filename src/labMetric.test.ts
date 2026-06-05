@@ -77,4 +77,26 @@ describe("labMetric", () => {
       unknownCount: 0,
     });
   });
+
+  it("does not classify partial lab number text as an abnormal numeric value", () => {
+    expect(
+      buildLabPanelSummary([
+        {
+          lower: "4",
+          name: "WBC",
+          note: "",
+          upper: "10",
+          value: "3.2 low",
+        },
+      ]),
+    ).toMatchObject({
+      abnormalCount: 0,
+      highCount: 0,
+      lowCount: 0,
+      normalCount: 0,
+      questionCandidateCount: 1,
+      totalCount: 1,
+      unknownCount: 1,
+    });
+  });
 });

@@ -44,7 +44,7 @@ import {
   assessBloodGlucose,
   assessBloodPressure,
   assessCancerFood,
-  assessLabValue,
+  assessLabTextValue,
   assessTemperature,
   assessWaistCircumference,
   buildFoodMatchSourceLinkLabels,
@@ -1596,11 +1596,7 @@ function App() {
     latestSymptom?.severity >= 7 ? "risk" : latestSymptom?.severity >= 4 ? "watch" : "ok";
   const labAssessments = state.labResults.map((result) => ({
     result,
-    assessment: assessLabValue(
-      Number.parseFloat(result.value),
-      result.lower ? Number.parseFloat(result.lower) : undefined,
-      result.upper ? Number.parseFloat(result.upper) : undefined,
-    ),
+    assessment: assessLabTextValue(result.value, result.lower, result.upper),
   }));
   const timelinePanelSummary = useMemo(
     () =>
@@ -3021,7 +3017,10 @@ function App() {
     setActionSaveLabel("검사 수치 추가됨");
   };
 
-  const addLabQuestion = (lab: LabQuestionSource, assessment: ReturnType<typeof assessLabValue>) => {
+  const addLabQuestion = (
+    lab: LabQuestionSource,
+    assessment: ReturnType<typeof assessLabTextValue>,
+  ) => {
     setState((current) => ({
       ...current,
       questions: [

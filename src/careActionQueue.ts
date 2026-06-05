@@ -1,7 +1,7 @@
 import {
   assessBloodGlucose,
   assessBloodPressure,
-  assessLabValue,
+  assessLabTextValue,
   assessTemperature,
   type GlucoseContext,
 } from "./healthRules";
@@ -408,11 +408,7 @@ export function buildCareActionQueue(
     });
 
   const labActions = state.labResults.flatMap<CareAction>((lab, index) => {
-    const assessment = assessLabValue(
-      Number.parseFloat(lab.value),
-      lab.lower ? Number.parseFloat(lab.lower) : undefined,
-      lab.upper ? Number.parseFloat(lab.upper) : undefined,
-    );
+    const assessment = assessLabTextValue(lab.value, lab.lower, lab.upper);
     if (assessment.flag === "normal") return [];
 
     return [

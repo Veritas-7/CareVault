@@ -88,4 +88,20 @@ describe("immuneFoodContext", () => {
       ]),
     ).toBeNull();
   });
+
+  it("does not create food-safety context from partial lab number text", () => {
+    expect(
+      buildImmuneFoodSafetyContext([
+        {
+          date: "2026-06-01",
+          name: "WBC",
+          value: "3.4 low",
+          unit: "10^3/uL",
+          lower: "4.0",
+          upper: "10.0",
+          note: "",
+        },
+      ]),
+    ).toBeNull();
+  });
 });

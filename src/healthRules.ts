@@ -52,6 +52,16 @@ export type LabAssessment = HealthAssessment & {
   flag: LabFlag;
 };
 
+const finiteNumberTextPattern = /^[+-]?(?:(?:\d+\.?\d*)|(?:\.\d+))(?:[eE][+-]?\d+)?$/;
+
+export function parseFiniteNumberText(value: string | undefined): number | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed || !finiteNumberTextPattern.test(trimmed)) return undefined;
+
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 export type FoodAssessment = HealthAssessment & {
   matches: FoodMatch[];
 };
@@ -553,6 +563,18 @@ export function assessLabValue(value: number, lower?: number, upper?: number): L
     label: "기준 범위 내",
     summary: "입력한 검사실 기준 범위 안입니다.",
   };
+}
+
+export function assessLabTextValue(
+  value: string,
+  lower?: string,
+  upper?: string,
+): LabAssessment {
+  return assessLabValue(
+    parseFiniteNumberText(value) ?? Number.NaN,
+    parseFiniteNumberText(lower),
+    parseFiniteNumberText(upper),
+  );
 }
 
 export function assessCancerFood(input: string): FoodAssessment {

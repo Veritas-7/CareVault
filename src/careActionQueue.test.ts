@@ -323,6 +323,42 @@ describe("careActionQueue", () => {
     expect(actions.some((action) => action.source === "visit")).toBe(false);
   });
 
+  it("keeps partial lab number text from becoming a false abnormal queue item", () => {
+    const actions = buildCareActionQueue(
+      {
+        ...state,
+        documents: [],
+        labResults: [
+          {
+            id: "lab-partial-number",
+            date: "2026-06-03",
+            name: "WBC",
+            value: "3.4 low",
+            unit: "10^3/uL",
+            lower: "4.0",
+            upper: "10.0",
+            note: "원문 확인 필요",
+          },
+        ],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-03",
+    );
+
+    expect(actions).toEqual([
+      expect.objectContaining({
+        id: "lab:lab-partial-number",
+        label: "값 없음",
+        tone: "neutral",
+      }),
+    ]);
+    expect(actions[0].detail).toContain("검사 수치를 숫자로 입력하세요.");
+    expect(actions[0].detail).not.toContain("검사실 기준보다 낮습니다.");
+  });
+
   it("formats source-backed open question details as separated evidence", () => {
     const actions = buildCareActionQueue(
       {

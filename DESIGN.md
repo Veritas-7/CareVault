@@ -677,6 +677,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Guarded SQLite mirror/search count rows so malformed plugin result containers fall back to zero instead of breaking normalized status reads.
 - 2026-06-05: Guarded SQLite schema column checks so malformed `PRAGMA table_info` result containers do not break normalized mirror table migration.
 - 2026-06-05: Tightened SQLite count parsing to accept only non-negative safe integer counts, rejecting partial strings, decimals, negatives, and unsafe integers.
+- 2026-06-05: Tightened saved lab number parsing so partial text like `3.4 low` no longer becomes a false low/high lab assessment in summaries, queues, exports, or immune-food context.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.

@@ -1,6 +1,6 @@
 import {
   assessCancerFood,
-  assessLabValue,
+  assessLabTextValue,
   calculateBmi,
   formatFoodMatchEvidence,
   type GlucoseContext,
@@ -322,11 +322,7 @@ export function buildVisitPacketMarkdown(
   const labLines = latestFirst(filterByRange(state.labResults, rangeStartDate))
     .slice(0, maxItems)
     .map((lab) => {
-      const assessment = assessLabValue(
-        Number.parseFloat(lab.value),
-        lab.lower ? Number.parseFloat(lab.lower) : undefined,
-        lab.upper ? Number.parseFloat(lab.upper) : undefined,
-      );
+      const assessment = assessLabTextValue(lab.value, lab.lower, lab.upper);
       const labRangeLabel = formatLabReferenceRangeLabel(lab.lower, lab.upper, lab.unit);
       const labRange = labRangeLabel ? ` (기준 ${labRangeLabel})` : "";
       const sourceLabel = getLabRangeSourceLabel(lab.lower, lab.upper);

@@ -1175,4 +1175,38 @@ describe("csvExport", () => {
       `"vital","2026-06-04","혈당","181 mg/dL","식후 목표 초과 · 식후 2시간 · 성인 남녀 공통 당뇨 추적 혈당","점심 식후 2시간 | 성인 남녀 공통 식후 2시간 목표를 넘었습니다. 식사 내용, 약, 활동량과 함께 추세를 확인하세요. | 근거: 대한당뇨병학회 당뇨병 관리 목표 (${kdaCareTargetUrl})"`,
     );
   });
+
+  it("does not export partial lab number text as an abnormal numeric result", () => {
+    const csv = buildCareVaultCsv(
+      {
+        ...state,
+        documents: [],
+        foodQuery: "",
+        labResults: [
+          {
+            date: "2026-06-01",
+            name: "WBC",
+            value: "3.4 low",
+            unit: "10^3/uL",
+            lower: "4.0",
+            upper: "10.0",
+            note: "원문 확인 필요",
+          },
+        ],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-03T10:00:00.000Z",
+    );
+
+    expect(csv).toContain(
+      `"care_queue","2026-06-01","검사 · 값 없음","WBC 3.4 low 10^3/uL","neutral","원문 확인 필요 / 검사 수치를 숫자로 입력하세요. / 근거: 서울아산병원 전혈구검사 참고치 (https://ent.amc.seoul.kr/asan/mobile/healthinfo/management/managementDetail.do?managementId=126)"`,
+    );
+    expect(csv).toContain(
+      `"lab","2026-06-01","WBC","3.4 low 10^3/uL","사용자 입력 기준 범위 4.0~10.0 10^3/uL","값 없음 | 원문 확인 필요 / 근거: 서울아산병원 전혈구검사 참고치 (https://ent.amc.seoul.kr/asan/mobile/healthinfo/management/managementDetail.do?managementId=126)"`,
+    );
+    expect(csv).not.toContain("검사실 기준보다 낮습니다.");
+  });
 });

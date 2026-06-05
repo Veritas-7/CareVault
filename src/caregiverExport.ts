@@ -5,7 +5,7 @@ import {
 } from "./exportSourceLabels";
 import {
   assessCancerFood,
-  assessLabValue,
+  assessLabTextValue,
   type FoodMatch,
   type GlucoseContext,
 } from "./healthRules";
@@ -443,11 +443,7 @@ export function buildCaregiverExportHtml(
   );
   const labItems = latestByDate(state.labResults, 5).map(
     (lab) => {
-      const assessment = assessLabValue(
-        Number.parseFloat(lab.value),
-        lab.lower ? Number.parseFloat(lab.lower) : undefined,
-        lab.upper ? Number.parseFloat(lab.upper) : undefined,
-      );
+      const assessment = assessLabTextValue(lab.value, lab.lower, lab.upper);
       const rangeSource = getLabRangeSourceLabel(lab.lower, lab.upper);
       const rangeLabel = formatLabReferenceRangeLabel(lab.lower, lab.upper, lab.unit);
       const noteEvidence = formatLabNoteWithSourceEvidence(lab.note, lab.name);

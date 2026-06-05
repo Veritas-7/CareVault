@@ -5,7 +5,7 @@ import {
 } from "./exportSourceLabels";
 import {
   assessCancerFood,
-  assessLabValue,
+  assessLabTextValue,
   formatFoodMatchEvidence,
   type GlucoseContext,
 } from "./healthRules";
@@ -339,11 +339,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
   });
 
   state.labResults.forEach((lab) => {
-    const assessment = assessLabValue(
-      Number.parseFloat(lab.value),
-      lab.lower ? Number.parseFloat(lab.lower) : undefined,
-      lab.upper ? Number.parseFloat(lab.upper) : undefined,
-    );
+    const assessment = assessLabTextValue(lab.value, lab.lower, lab.upper);
     const range = formatLabReferenceRangeLabel(lab.lower, lab.upper, lab.unit);
     const rangeSource = getLabRangeSourceLabel(lab.lower, lab.upper);
     rows.push(

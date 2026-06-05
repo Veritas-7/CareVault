@@ -1,4 +1,4 @@
-import { assessLabValue } from "./healthRules";
+import { assessLabTextValue } from "./healthRules";
 import { buildLabSourceEvidenceParts } from "./labSourceEvidence";
 
 export type LabPanelSummarySource = {
@@ -29,11 +29,7 @@ export type LabPanelSummary = {
 };
 
 function assessLabSummarySource(result: LabPanelSummarySource) {
-  return assessLabValue(
-    Number.parseFloat(result.value),
-    result.lower ? Number.parseFloat(result.lower) : undefined,
-    result.upper ? Number.parseFloat(result.upper) : undefined,
-  );
+  return assessLabTextValue(result.value, result.lower, result.upper);
 }
 
 export function buildLabPanelSummary(results: LabPanelSummarySource[]): LabPanelSummary {
