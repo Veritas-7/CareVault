@@ -187,6 +187,23 @@ function canUseLocalStorage() {
   }
 }
 
+function readLocalStorageValue(key: string): { ok: true; value: string | null } | { ok: false } {
+  try {
+    return { ok: true, value: localStorage.getItem(key) };
+  } catch {
+    return { ok: false };
+  }
+}
+
+function writeLocalStorageState<T>(key: string, state: T) {
+  try {
+    localStorage.setItem(key, JSON.stringify(state));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function canUseTauri() {
   return (
     typeof window !== "undefined" &&
@@ -966,17 +983,24 @@ function loadFromLocalStorage<T>(fallback: T): PersistedState<T> {
     return { state: fallback, backend: "memory" };
   }
 
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(fallback));
-    return { state: fallback, backend: "localStorage" };
+  const raw = readLocalStorageValue(STORAGE_KEY);
+  if (!raw.ok) {
+    return { state: fallback, backend: "memory" };
+  }
+  if (!raw.value) {
+    return {
+      state: fallback,
+      backend: writeLocalStorageState(STORAGE_KEY, fallback) ? "localStorage" : "memory",
+    };
   }
 
   try {
-    return { state: JSON.parse(raw) as T, backend: "localStorage" };
+    return { state: JSON.parse(raw.value) as T, backend: "localStorage" };
   } catch {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(fallback));
-    return { state: fallback, backend: "localStorage" };
+    return {
+      state: fallback,
+      backend: writeLocalStorageState(STORAGE_KEY, fallback) ? "localStorage" : "memory",
+    };
   }
 }
 
@@ -1024,8 +1048,7 @@ export async function savePersistedState<T>(
     return "sqlite";
   }
 
-  if (canUseLocalStorage()) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  if (canUseLocalStorage() && writeLocalStorageState(STORAGE_KEY, state)) {
     return "localStorage";
   }
 

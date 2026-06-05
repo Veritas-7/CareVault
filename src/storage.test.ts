@@ -1,12 +1,23 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   buildAppStateTableStatement,
   buildNormalizedMirrorStatements,
   buildNormalizedSearchStatements,
   buildSqlLikePattern,
+  loadPersistedState,
+  savePersistedState,
   type NormalizedCareVaultMirror,
   parseSqlCount,
 } from "./storage";
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+function stubBrowserLocalStorage(storage: Pick<Storage, "getItem" | "setItem">) {
+  vi.stubGlobal("window", { localStorage: storage });
+  vi.stubGlobal("localStorage", storage);
+}
 
 const mirror: NormalizedCareVaultMirror = {
   profile: {
@@ -165,6 +176,54 @@ const mirror: NormalizedCareVaultMirror = {
 };
 
 describe("storage normalized mirror", () => {
+  it("falls back to memory when browser localStorage reads are blocked", async () => {
+    const fallback = { profile: "fallback" };
+    const storage = {
+      getItem: vi.fn(() => {
+        throw new Error("blocked");
+      }),
+      setItem: vi.fn(),
+    };
+    stubBrowserLocalStorage(storage);
+
+    await expect(loadPersistedState(fallback)).resolves.toEqual({
+      state: fallback,
+      backend: "memory",
+    });
+    expect(storage.setItem).not.toHaveBeenCalled();
+  });
+
+  it("falls back to memory when browser localStorage writes are blocked during load", async () => {
+    const fallback = { profile: "fallback" };
+    const storage = {
+      getItem: vi.fn(() => null),
+      setItem: vi.fn(() => {
+        throw new Error("quota exceeded");
+      }),
+    };
+    stubBrowserLocalStorage(storage);
+
+    await expect(loadPersistedState(fallback)).resolves.toEqual({
+      state: fallback,
+      backend: "memory",
+    });
+    expect(storage.setItem).toHaveBeenCalledWith("carevault.v1", JSON.stringify(fallback));
+  });
+
+  it("falls back to memory when browser localStorage writes are blocked during save", async () => {
+    const state = { profile: "saved" };
+    const storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(() => {
+        throw new Error("quota exceeded");
+      }),
+    };
+    stubBrowserLocalStorage(storage);
+
+    await expect(savePersistedState(state)).resolves.toBe("memory");
+    expect(storage.setItem).toHaveBeenCalledWith("carevault.v1", JSON.stringify(state));
+  });
+
   it("normalizes SQLite count return values", () => {
     expect(parseSqlCount(3)).toBe(3);
     expect(parseSqlCount("4")).toBe(4);

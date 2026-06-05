@@ -14351,3 +14351,33 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
   - PASS: committed and pushed to `origin/main` as `e78ce41` (`Disambiguate health standard source links`).
+
+## 2026-06-05 11:18 KST - Browser Storage Failure Fallback Iteration Note
+
+- Improvement target:
+  - A persistence code read found that SQLite parse failures and missing `app_state` are now guarded, but browser `localStorage.getItem()` and `setItem()` could still throw in blocked-storage, private, or quota-limited environments.
+  - A thrown storage access during hydrate/save could break the app even though a memory backend already exists.
+- Code/design changes:
+  - Updated `src/storage.ts`.
+    - Added guarded localStorage read/write helpers.
+    - `loadPersistedState()` now returns the fallback state with backend `memory` when localStorage reads are blocked.
+    - Missing or corrupt browser storage still rewrites fallback when possible; if the rewrite is blocked, the backend is `memory`.
+    - `savePersistedState()` now returns `memory` when browser localStorage writes fail instead of throwing.
+  - Updated `src/storage.test.ts`.
+    - Added localStorage read-blocked, load-write-blocked, and save-write-blocked regression tests.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for blocked/quota-limited browser storage fallback.
+- Verification so far:
+  - PASS: `npm test -- storage`, 1 file and 8 tests.
+  - PASS: Playwright blocked-localStorage smoke at 390x884.
+    - App loaded with `현재 데이터는 임시 메모리에만 있습니다.`.
+    - `나의 건강 기록` H1 count: 1.
+    - Page errors: 0; console errors: 0.
+  - PASS: `npm run typecheck`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/storage.ts src/storage.test.ts`.
+  - PASS: `npm run test`, 54 files and 373 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - Pending: commit and push.
