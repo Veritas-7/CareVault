@@ -14173,3 +14173,36 @@
   - PASS: `npm run build`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - Pending: commit and push.
+
+## 2026-06-05 10:37 KST - Nutrition Question Action Target Iteration Note
+
+- Improvement target:
+  - A stricter rendered 390x884 mobile target audit found one remaining effective control under 44px high:
+    - `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함`, measured 101x38.
+  - Horizontal overflow audits at 320, 390, and 760px were already clean, so the issue was target height rather than clipping.
+- Code/design changes:
+  - Updated `src/App.css`.
+    - Raised `.food-question-actions .secondary-inline-button` from 38px to 44px.
+    - Kept the existing compact font weight/size and scoped the change to the nutrition question action area.
+  - Updated `DESIGN.md`.
+    - Added a change-log line for the nutrition `질문 초안` 44px target floor.
+- Verification so far:
+  - PASS: Supplemental horizontal-overflow audit at 320, 390, and 760px.
+    - `scrollWidth` matched `clientWidth`; overflow offenders: 0 at every width.
+  - PASS: Supplemental rendered control label/title parity at 390x884.
+    - Rendered aria/title mismatches: 0.
+  - PASS: Supplemental console/page-error smoke during food-question, CSV-preview, and caregiver-preview actions.
+    - Console warnings/errors: 0; page errors: 0.
+  - PASS: Supplemental rendered mobile target audit at 390x884.
+    - Effective targets under 44px high: 0.
+    - Food question button measured 101x44.
+  - PASS: Computer Use cmux live UI verification.
+    - Reused the existing `암관리` workspace right browser at `http://127.0.0.1:1420/#nutrition`; no new cmux browser was created.
+    - The live accessibility tree exposed the `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함` action after the CSS HMR update.
+  - PASS: Stitch project check for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.css`.
+  - PASS: `npm run test`, 54 files and 369 tests.
+  - PASS: `npm run build`.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - Pending: commit and push.

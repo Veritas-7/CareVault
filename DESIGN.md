@@ -660,6 +660,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-05: Added scoped accessible labels and matching hover titles to source-evidence and empty-queue recovery links.
 - 2026-06-05: Matched hover titles to accessible names for shared and inline health-standard, cervical-care, food, care-queue, lab, immune-food, and profile-standard evidence labels.
 - 2026-06-05: Hid backing file inputs from the accessibility tree so backup and document attachment flows expose only their visible, full-size buttons.
+- 2026-06-05: Raised the nutrition `질문 초안` action to the 44px mobile target floor while keeping the compact inline style.
 - 2026-06-05: Added source-backed cervical warning-record field cards for when/what/how-much/with-what to record and preserved them in copied text, Markdown, CSV, and caregiver HTML exports.
 - 2026-06-05: Made cervical warning-card recording drafts reuse the same warning-record field guide while preserving one parseable official source line.
 - 2026-06-05: Split care-queue copied detail text into readable memo/assessment/record-basis/evidence lines and made long copy status chips wrap without mobile overflow.
