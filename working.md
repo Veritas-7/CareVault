@@ -15990,3 +15990,32 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `a933209` (`Clarify caregiver profile redaction toggle`); `git ls-remote origin refs/heads/main` returned `a93320963b7c51cbf49fa0cdbe87976e2eaca955`.
+
+## 2026-06-05 18:43 KST - Caregiver Section Toggle Label Coverage
+
+- Improvement target:
+  - The caregiver profile redaction toggle label was moved into tested helper coverage in the previous slice.
+  - The caregiver section toggle label still lived inline in `App.tsx`, so the already-correct next-action and locked-only-section copy had no focused regression coverage.
+- Change:
+  - Added `formatCaregiverShareSectionToggleLabel()` in `src/caregiverShareSettings.ts`.
+  - Updated `App.tsx` to use the shared section-toggle label helper.
+  - Added tests for included, excluded, and only-included locked section states.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - BLOCKED: same-surface navigation to `http://127.0.0.1:1420/` returned an empty document; `.caregiver-section-options input` count was `0`, while `curl` returned HTTP `200`, and `errors list` plus `console list` returned no entries.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/caregiverShareSettings.test.ts`, 22 tests.
+  - PASS: `npm run test`, 58 files and 426 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `d0805a8` (`Cover caregiver section toggle labels`); `git ls-remote origin refs/heads/main` returned `d0805a812008b384888673ba68f3ba35b36ceebb`.
