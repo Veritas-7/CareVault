@@ -16973,3 +16973,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `493b3ef` (`Clarify lab preset feedback`).
+
+## 2026-06-05 21:37 KST - Document Draft Attachment Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires saved-document and attachment actions plus status feedback to preserve attachment filename/status and intended action.
+  - Source audit found new document draft attachment feedback still reported generic strings such as `첨부 파일 앱 보관 준비`, `첨부 경로 저장 준비`, `첨부 파일명 참조 준비`, and `이 첨부는 파일명 참조만 저장됨`.
+- Change:
+  - Added `formatDocumentDraftAttachmentReadyStatusLabel()`, `formatDocumentDraftAttachmentReferenceReadyStatusLabel()`, and `formatDocumentAttachmentFileNameOnlyStatusLabel()` in `src/documentActionLabels.ts`.
+  - Updated `App.tsx` Tauri draft attachment selection, browser-reference attachment selection, and filename-only attachment open fallback to report filename/status context.
+  - Added focused tests for draft attachment readiness, browser filename-reference readiness, and saved filename-only fallback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200` and `cmux browser surface:9 get title` returned `CareVault`.
+  - BLOCKED: same-surface navigation timed out; follow-up DOM eval showed `href: about:blank`, empty title/body, and no root child count.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/documentActionLabels.test.ts`, 14 tests.
+  - PASS: `npm run test`, 60 files and 468 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/documentActionLabels.ts src/documentActionLabels.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite `node` listener on port 1420 and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `55d416b` (`Clarify document draft attachment feedback`).
