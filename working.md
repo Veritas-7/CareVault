@@ -15476,3 +15476,4 @@
   - PASS: `cargo check` in `src-tauri`.
   - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
   - PASS: `git diff --check -- README.md DESIGN.md working.md package.json scripts/verify_runtime_clean.sh`.
+  - PASS: committed and pushed to `origin/main` as `9a86cc0` (`Add CareVault runtime doctor`); `git ls-remote origin refs/heads/main` returned `9a86cc0cdcc65f4f0fefd940f1b3ed80f65c1ed1`.
