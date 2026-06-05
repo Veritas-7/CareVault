@@ -238,6 +238,7 @@ import {
   isProfileNumberField,
   validateProfileNumberInput,
 } from "./profileValidation";
+import { formatProfileModeToggleLabel } from "./profileModeToggle";
 import { buildVitalPanelSummary } from "./vitalMetric";
 import {
   buildVisitPacketExportFingerprint,
@@ -1582,21 +1583,6 @@ function App() {
 
   const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>
     caregiverShareSectionOptions.find((option) => option.id === id)?.label ?? id;
-
-  const getProfileModeToggleLabel = (
-    field: "cancerCareMode" | "diabetes" | "hypertension",
-    checked: boolean,
-  ) => {
-    const labels: Record<typeof field, string> = {
-      cancerCareMode: "암환자 관리",
-      diabetes: "당뇨 추적",
-      hypertension: "혈압 추적",
-    };
-    const stateText = checked ? "켜짐" : "꺼짐";
-    const actionText = checked ? "선택 해제하면 끕니다" : "선택하면 켭니다";
-
-    return `${labels[field]} ${stateText} · ${actionText}`;
-  };
 
   const getProfileActionLabel = (field: keyof Profile, value: Profile[keyof Profile]) => {
     if (field === "cancerCareMode") {
@@ -4644,11 +4630,11 @@ function App() {
                 <input
                   type="checkbox"
                   checked={state.profile.cancerCareMode}
-                  aria-label={getProfileModeToggleLabel(
+                  aria-label={formatProfileModeToggleLabel(
                     "cancerCareMode",
                     state.profile.cancerCareMode,
                   )}
-                  title={getProfileModeToggleLabel(
+                  title={formatProfileModeToggleLabel(
                     "cancerCareMode",
                     state.profile.cancerCareMode,
                   )}
@@ -4660,8 +4646,8 @@ function App() {
                 <input
                   type="checkbox"
                   checked={state.profile.diabetes}
-                  aria-label={getProfileModeToggleLabel("diabetes", state.profile.diabetes)}
-                  title={getProfileModeToggleLabel("diabetes", state.profile.diabetes)}
+                  aria-label={formatProfileModeToggleLabel("diabetes", state.profile.diabetes)}
+                  title={formatProfileModeToggleLabel("diabetes", state.profile.diabetes)}
                   onChange={(event) => saveProfile("diabetes", event.currentTarget.checked)}
                 />
                 당뇨 추적
@@ -4670,8 +4656,14 @@ function App() {
                 <input
                   type="checkbox"
                   checked={state.profile.hypertension}
-                  aria-label={getProfileModeToggleLabel("hypertension", state.profile.hypertension)}
-                  title={getProfileModeToggleLabel("hypertension", state.profile.hypertension)}
+                  aria-label={formatProfileModeToggleLabel(
+                    "hypertension",
+                    state.profile.hypertension,
+                  )}
+                  title={formatProfileModeToggleLabel(
+                    "hypertension",
+                    state.profile.hypertension,
+                  )}
                   onChange={(event) => saveProfile("hypertension", event.currentTarget.checked)}
                 />
                 혈압 추적
