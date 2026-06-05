@@ -1988,6 +1988,20 @@ textarea:focus-visible {
   line-height: 1.35;
 }
 
+.lab-panel select,
+.lab-panel input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]) {
+  min-height: 44px;
+}
+
+.lab-panel select {
+  height: 44px;
+}
+
+.lab-panel .form-actions .primary-button,
+.lab-panel .form-actions .secondary-inline-button {
+  min-height: 44px;
+}
+
 .lab-preset-preview {
   display: grid;
   gap: 8px;

@@ -5842,7 +5842,7 @@ function App() {
         </section>
 
         <section id="labs" className="content-grid two-columns">
-          <section className="panel">
+          <section className="panel lab-panel">
             <div className="section-title">
               <h2>검사 수치 입력</h2>
               <span>검사실 기준 범위와 항암·당뇨 추적 항목을 함께 기록</span>
