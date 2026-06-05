@@ -1996,7 +1996,9 @@ function App() {
       ),
     }));
     clearDocumentActionBaseline(document.id);
-    setActionSaveLabel(formatDocumentNextActionHistoryStatusLabel(document, nextAction));
+    const feedback = formatDocumentNextActionHistoryStatusLabel(document, nextAction);
+    setDocumentActionFeedback({ documentId: document.id, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const attachDocumentFile = async () => {
