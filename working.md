@@ -14550,3 +14550,33 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `4acf6d2` (`Count usable backup records`).
+
+## 2026-06-05 11:51 KST - Production Chunk Split Iteration Note
+
+- Improvement target:
+  - Repeated production builds still emitted Vite's chunk-size warning because the main app chunk sat just above the 500 kB minified warning threshold.
+  - Existing config already split Lucide and Recharts, but stable source-heavy helper modules remained bundled into the main app chunk.
+- Code/design changes:
+  - Updated `vite.config.ts`.
+    - Replaced the static `manualChunks` object with a path-aware `manualChunks(id)` function.
+    - Preserved `vendor-icons` and `vendor-recharts`.
+    - Added named chunks for `care-cervical`, `health-standards`, and `export-tools`.
+  - Updated `DESIGN.md`.
+    - Updated the performance chunk note and added a changelog line for the production chunk split.
+- Verification so far:
+  - PASS: `npm run build`.
+    - No Vite chunk-size warning emitted.
+    - Largest app chunk changed from about `500.44 kB` minified to `358.44 kB` minified.
+    - New named chunks: `care-cervical` `22.35 kB`, `health-standards` `39.46 kB`, `export-tools` `82.09 kB`.
+  - PASS: Playwright production-preview smoke at 390x884.
+    - `나의 건강 기록` H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - Browser requested `care-cervical`, `health-standards`, `export-tools`, and `vendor-recharts` chunks.
+    - Page errors: 0; console errors: 0.
+  - PASS: existing cmux `암관리` browser workspace refreshed the same CareVault browser tab against the production preview server at `http://127.0.0.1:1420/#labs` and rendered the H1, browser storage label, dashboard, records, and document controls.
+  - PASS: `npm run test`, 55 files and 376 tests.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md vite.config.ts`.
+  - PASS: stopped the local Vite preview server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
+  - Pending: commit and push.

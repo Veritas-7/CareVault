@@ -11,9 +11,23 @@ export default defineConfig(async () => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          "vendor-icons": ["lucide-react"],
-          "vendor-recharts": ["recharts"],
+        manualChunks(id) {
+          const normalizedId = id.replace(/\\/g, "/");
+
+          if (normalizedId.includes("/node_modules/lucide-react/")) return "vendor-icons";
+          if (normalizedId.includes("/node_modules/recharts/")) return "vendor-recharts";
+          if (normalizedId.includes("/src/cervicalCancerCare")) return "care-cervical";
+          if (normalizedId.includes("/src/healthStandards")) return "health-standards";
+          if (
+            normalizedId.includes("/src/caregiverExport") ||
+            normalizedId.includes("/src/csvExport") ||
+            normalizedId.includes("/src/visitPacket") ||
+            normalizedId.includes("/src/exportPreviewSummary")
+          ) {
+            return "export-tools";
+          }
+
+          return undefined;
         },
       },
     },
