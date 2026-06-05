@@ -30,6 +30,15 @@ export function buildLabFollowupQuestionButtonLabels(
   };
 }
 
+export function formatLabFollowupQuestionAddedStatus(
+  labName: string,
+  includesSourceEvidence: boolean,
+) {
+  const labelName = labName.trim() ? `${labName.trim()} 검사` : "검사 수치";
+  const inclusionLabel = includesSourceEvidence ? "메모와 근거 포함" : "메모 포함";
+  return `${labelName} 질문 추가됨 · ${inclusionLabel}`;
+}
+
 function formatLabValue(lab: LabQuestionSource) {
   return `${lab.name} ${lab.value}${lab.unit ? ` ${lab.unit}` : ""}`.trim();
 }

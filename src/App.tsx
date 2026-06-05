@@ -98,6 +98,7 @@ import {
 import {
   buildLabFollowupQuestionButtonLabels,
   buildLabQuestionPrompt,
+  formatLabFollowupQuestionAddedStatus,
   getNextQuestionDate,
   type LabQuestionSource,
 } from "./labQuestionPrompts";
@@ -2732,7 +2733,12 @@ function App() {
         },
       ],
     }));
-    setActionSaveLabel("검사 질문 추가됨");
+    setActionSaveLabel(
+      formatLabFollowupQuestionAddedStatus(
+        lab.name,
+        Boolean(buildLabSourceEvidenceParts(lab).sourceLabel),
+      ),
+    );
   };
 
   const updateQuestionStatus = (id: string, status: QuestionStatus) => {

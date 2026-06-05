@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildLabFollowupQuestionButtonLabels,
   buildLabQuestionPrompt,
+  formatLabFollowupQuestionAddedStatus,
   getNextQuestionDate,
 } from "./labQuestionPrompts";
 
@@ -99,6 +100,18 @@ describe("labQuestionPrompts", () => {
       ariaLabel: "검사 수치 질문 추가 · 메모와 근거 포함",
       title: "검사 수치 질문 추가 · 메모와 근거 포함",
     });
+  });
+
+  it("formats lab follow-up question added feedback with the same evidence scope", () => {
+    expect(formatLabFollowupQuestionAddedStatus("WBC", true)).toBe(
+      "WBC 검사 질문 추가됨 · 메모와 근거 포함",
+    );
+    expect(formatLabFollowupQuestionAddedStatus("HDL-C", false)).toBe(
+      "HDL-C 검사 질문 추가됨 · 메모 포함",
+    );
+    expect(formatLabFollowupQuestionAddedStatus("  ", true)).toBe(
+      "검사 수치 질문 추가됨 · 메모와 근거 포함",
+    );
   });
 
   it("uses the next upcoming appointment date for generated questions", () => {
