@@ -64,6 +64,10 @@ type CaregiverShareSettingsInput = Partial<Omit<CaregiverShareSettings, "section
   sections?: Partial<CaregiverExportSections>;
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 const caregiverExportSectionIds = Object.keys(
   caregiverExportSectionDefaults,
 ) as CaregiverExportSectionId[];
@@ -157,16 +161,23 @@ export function getCaregiverShareSettingsPreset(id: string) {
 }
 
 export function normalizeCaregiverShareSettings(
-  input: CaregiverShareSettingsInput | undefined,
+  input: CaregiverShareSettingsInput | undefined | unknown,
 ): CaregiverShareSettings {
+  const settings = isRecord(input) ? input : {};
+  const sectionsInput = isRecord(settings.sections) ? settings.sections : {};
+
   return {
-    coverMemo: input?.coverMemo ?? "",
-    presetId: input?.presetId ?? "",
-    redactProfile: input?.redactProfile ?? false,
-    sections: {
-      ...caregiverExportSectionDefaults,
-      ...(input?.sections ?? {}),
-    },
+    coverMemo: typeof settings.coverMemo === "string" ? settings.coverMemo : "",
+    presetId: typeof settings.presetId === "string" ? settings.presetId : "",
+    redactProfile: settings.redactProfile === true,
+    sections: Object.fromEntries(
+      caregiverExportSectionIds.map((id) => [
+        id,
+        typeof sectionsInput[id] === "boolean"
+          ? sectionsInput[id]
+          : caregiverExportSectionDefaults[id],
+      ]),
+    ) as CaregiverExportSections,
   };
 }
 

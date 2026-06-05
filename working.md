@@ -14457,3 +14457,33 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged three-file diff.
   - PASS: committed and pushed to `origin/main` as `5aa6029` (`Guard persisted document history`).
+
+## 2026-06-05 11:35 KST - Caregiver Share Settings Shape Guard Iteration Note
+
+- Improvement target:
+  - A persisted-settings review found `normalizeCaregiverShareSettings()` handled partial settings, but not malformed valid JSON values such as numeric `coverMemo`, array `presetId`, string `redactProfile`, or non-boolean section flags.
+  - Those malformed values could later break `.trim()` calls or misreport caregiver share visibility.
+- Code/design changes:
+  - Updated `src/caregiverShareSettings.ts`.
+    - Added record guards and explicit primitive validation for memo, preset, redaction, and section values.
+    - Only boolean section overrides are honored; malformed section values fall back to current defaults.
+  - Updated `src/caregiverShareSettings.test.ts`.
+    - Added a malformed persisted settings regression case.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for caregiver-share settings shape fallback.
+- Verification so far:
+  - PASS: `npm test -- caregiverShareSettings`, 1 file and 19 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright malformed caregiver-share settings smoke at 390x884.
+    - `나의 건강 기록` H1 count: 1.
+    - Memo reset to empty string.
+    - Profile redaction toggle remained false.
+    - Boolean `labs: false` was preserved while malformed section values fell back.
+    - Page errors: 0; console errors: 0.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts`.
+  - PASS: `npm run test`, 54 files and 374 tests.
+  - PASS: `npm run build`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - Pending: commit and push.

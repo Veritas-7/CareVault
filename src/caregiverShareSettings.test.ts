@@ -46,6 +46,27 @@ describe("caregiverShareSettings", () => {
     expect(settings.sections.documents).toBe(true);
   });
 
+  it("normalizes malformed persisted settings back to safe defaults", () => {
+    const settings = normalizeCaregiverShareSettings({
+      coverMemo: 42,
+      presetId: ["clinic-prep"],
+      redactProfile: "true",
+      sections: {
+        food: "false",
+        labs: false,
+        vitals: true,
+      },
+    });
+
+    expect(settings.coverMemo).toBe("");
+    expect(settings.presetId).toBe("");
+    expect(settings.redactProfile).toBe(false);
+    expect(settings.sections.food).toBe(true);
+    expect(settings.sections.labs).toBe(false);
+    expect(settings.sections.vitals).toBe(true);
+    expect(Object.keys(settings.sections)).toEqual(Object.keys(caregiverExportSectionDefaults));
+  });
+
   it("detects custom settings that can be reset", () => {
     expect(hasCustomCaregiverShareSettings(undefined)).toBe(false);
     expect(hasCustomCaregiverShareSettings({ coverMemo: "확인 부탁" })).toBe(true);
