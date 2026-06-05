@@ -870,64 +870,233 @@ function isObjectRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function normalizeObjectArray<T>(value: unknown): T[] {
-  return Array.isArray(value) ? (value.filter(isObjectRecord) as T[]) : [];
+const sexIds = Object.keys(sexLabel) as Sex[];
+const vitalTypeIds = Object.keys(vitalTypeLabel) as VitalType[];
+const glucoseContextIds: GlucoseContext[] = [
+  "fasting",
+  "before-meal",
+  "after-meal",
+  "bedtime",
+  "random",
+];
+const documentCategoryIds = Object.keys(documentLabel) as DocumentCategory[];
+const attachmentStorageIds = Object.keys(attachmentStorageLabel) as AttachmentStorage[];
+const documentReviewStatusIds = Object.keys(documentReviewStatusLabel) as DocumentReviewStatus[];
+const documentHistoryKindIds: DocumentHistoryKind[] = [
+  "created",
+  "review-status",
+  "next-action",
+  "attachment-check",
+  "attachment-replaced",
+  "attachment-removed",
+  "archived",
+  "restored",
+];
+const questionStatusIds = Object.keys(questionStatusLabel) as QuestionStatus[];
+
+function normalizeTextValue(value: unknown, fallback = "") {
+  return typeof value === "string" ? value : fallback;
+}
+
+function normalizeOptionalTextValue(value: unknown) {
+  return typeof value === "string" ? value : undefined;
+}
+
+function normalizeBooleanValue(value: unknown, fallback: boolean) {
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function normalizeOptionalFiniteNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function normalizeFiniteNumber(value: unknown, fallback: number) {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function normalizeEnumValue<T extends string>(
+  value: unknown,
+  allowedValues: readonly T[],
+  fallback: T,
+) {
+  return typeof value === "string" && allowedValues.includes(value as T)
+    ? (value as T)
+    : fallback;
+}
+
+function normalizeOptionalEnumValue<T extends string>(
+  value: unknown,
+  allowedValues: readonly T[],
+) {
+  return typeof value === "string" && allowedValues.includes(value as T)
+    ? (value as T)
+    : undefined;
+}
+
+function normalizeRecordId(value: unknown, prefix: string, index: number) {
+  const id = normalizeTextValue(value).trim();
+  return id || `${prefix}-restored-${index + 1}`;
+}
+
+function normalizeRecordArray<T>(
+  value: unknown,
+  normalizeRecord: (record: Record<string, unknown>, index: number) => T,
+): T[] {
+  return Array.isArray(value)
+    ? value.filter(isObjectRecord).map((record, index) => normalizeRecord(record, index))
+    : [];
+}
+
+function normalizeProfile(value: unknown): Profile {
+  const profile = isObjectRecord(value) ? value : {};
+
+  return {
+    name: normalizeTextValue(profile.name, defaultState.profile.name),
+    age: sanitizeProfileNumberInput("age", profile.age, defaultState.profile.age),
+    sex: normalizeEnumValue(profile.sex, sexIds, "other"),
+    heightCm: sanitizeProfileNumberInput(
+      "heightCm",
+      profile.heightCm,
+      defaultState.profile.heightCm,
+    ),
+    weightKg: sanitizeProfileNumberInput(
+      "weightKg",
+      profile.weightKg,
+      defaultState.profile.weightKg,
+    ),
+    waistCm: sanitizeProfileNumberInput("waistCm", profile.waistCm, defaultState.profile.waistCm),
+    cancerCareMode: normalizeBooleanValue(
+      profile.cancerCareMode,
+      defaultState.profile.cancerCareMode,
+    ),
+    diabetes: normalizeBooleanValue(profile.diabetes, defaultState.profile.diabetes),
+    hypertension: normalizeBooleanValue(profile.hypertension, defaultState.profile.hypertension),
+  };
+}
+
+function normalizeVitalEntry(vital: Record<string, unknown>, index: number): VitalEntry {
+  return {
+    id: normalizeRecordId(vital.id, "vital", index),
+    date: normalizeTextValue(vital.date),
+    type: normalizeEnumValue(vital.type, vitalTypeIds, "blood-pressure"),
+    systolic: normalizeOptionalFiniteNumber(vital.systolic),
+    diastolic: normalizeOptionalFiniteNumber(vital.diastolic),
+    glucoseMgDl: normalizeOptionalFiniteNumber(vital.glucoseMgDl),
+    glucoseContext: normalizeOptionalEnumValue(vital.glucoseContext, glucoseContextIds),
+    temperatureC: normalizeOptionalFiniteNumber(vital.temperatureC),
+    note: normalizeTextValue(vital.note),
+  };
+}
+
+function normalizeVisitEntry(visit: Record<string, unknown>, index: number): VisitEntry {
+  return {
+    id: normalizeRecordId(visit.id, "visit", index),
+    date: normalizeTextValue(visit.date),
+    hospital: normalizeTextValue(visit.hospital),
+    reason: normalizeTextValue(visit.reason),
+    summary: normalizeTextValue(visit.summary),
+    plan: normalizeTextValue(visit.plan),
+    nextDate: normalizeTextValue(visit.nextDate),
+  };
+}
+
+function normalizeDocumentHistoryEntry(
+  history: Record<string, unknown>,
+  index: number,
+): DocumentHistoryEntry {
+  return {
+    id: normalizeRecordId(history.id, "history", index),
+    at: normalizeTextValue(history.at),
+    kind: normalizeEnumValue(history.kind, documentHistoryKindIds, "created"),
+    label: normalizeTextValue(history.label),
+    detail: normalizeTextValue(history.detail),
+  };
 }
 
 function normalizeDocumentHistory(value: unknown) {
-  return normalizeObjectArray<DocumentHistoryEntry>(value);
+  return normalizeRecordArray(value, normalizeDocumentHistoryEntry);
 }
 
-function normalizeAppState(input: unknown): AppState {
+function normalizeDocumentEntry(document: Record<string, unknown>, index: number): CareDocument {
+  return {
+    id: normalizeRecordId(document.id, "document", index),
+    date: normalizeTextValue(document.date),
+    title: normalizeTextValue(document.title),
+    category: normalizeEnumValue(document.category, documentCategoryIds, "other"),
+    body: normalizeTextValue(document.body),
+    tags: normalizeTextValue(document.tags),
+    reviewStatus: normalizeEnumValue(
+      document.reviewStatus,
+      documentReviewStatusIds,
+      "needs-review",
+    ),
+    nextAction: normalizeTextValue(document.nextAction),
+    attachmentName: normalizeOptionalTextValue(document.attachmentName),
+    attachmentPath: normalizeOptionalTextValue(document.attachmentPath),
+    attachmentStorage: normalizeOptionalEnumValue(document.attachmentStorage, attachmentStorageIds),
+    attachmentStatus: normalizeOptionalTextValue(document.attachmentStatus),
+    history: normalizeDocumentHistory(document.history),
+  };
+}
+
+function normalizeSymptomEntry(symptom: Record<string, unknown>, index: number): SymptomEntry {
+  return {
+    id: normalizeRecordId(symptom.id, "symptom", index),
+    date: normalizeTextValue(symptom.date),
+    symptom: normalizeTextValue(symptom.symptom),
+    severity: normalizeFiniteNumber(symptom.severity, emptySymptom.severity),
+    medication: normalizeTextValue(symptom.medication),
+    body: normalizeTextValue(symptom.body),
+    action: normalizeTextValue(symptom.action),
+  };
+}
+
+function normalizeQuestionEntry(question: Record<string, unknown>, index: number): CareQuestion {
+  return {
+    id: normalizeRecordId(question.id, "question", index),
+    date: normalizeTextValue(question.date),
+    topic: normalizeTextValue(question.topic),
+    question: normalizeTextValue(question.question),
+    priority: normalizeQuestionPriority(question.priority),
+    status: normalizeEnumValue(question.status, questionStatusIds, "open"),
+    answer: normalizeTextValue(question.answer),
+  };
+}
+
+function normalizeLabResultEntry(labResult: Record<string, unknown>, index: number): LabResult {
+  return {
+    id: normalizeRecordId(labResult.id, "lab", index),
+    date: normalizeTextValue(labResult.date),
+    name: normalizeTextValue(labResult.name),
+    value: normalizeTextValue(labResult.value),
+    unit: normalizeTextValue(labResult.unit),
+    lower: normalizeTextValue(labResult.lower),
+    upper: normalizeTextValue(labResult.upper),
+    note: normalizeTextValue(labResult.note),
+  };
+}
+
+export function normalizeAppState(input: unknown): AppState {
   const persisted = isObjectRecord(input) ? (input as Partial<AppState>) : {};
-  const profileInput = isObjectRecord(persisted.profile) ? persisted.profile : {};
-  const profile = { ...defaultState.profile, ...profileInput };
-  const documents = normalizeObjectArray<AppState["documents"][number]>(persisted.documents);
-  const deletedDocuments = normalizeObjectArray<AppState["deletedDocuments"][number]>(
+  const documents = normalizeRecordArray(persisted.documents, normalizeDocumentEntry);
+  const deletedDocuments = normalizeRecordArray(
     persisted.deletedDocuments,
+    normalizeDocumentEntry,
   );
-  const questions = normalizeObjectArray<AppState["questions"][number]>(persisted.questions);
 
   return {
     ...defaultState,
     ...persisted,
-    profile: {
-      ...profile,
-      age: sanitizeProfileNumberInput("age", profile.age, defaultState.profile.age),
-      heightCm: sanitizeProfileNumberInput(
-        "heightCm",
-        profile.heightCm,
-        defaultState.profile.heightCm,
-      ),
-      waistCm: sanitizeProfileNumberInput("waistCm", profile.waistCm, defaultState.profile.waistCm),
-      weightKg: sanitizeProfileNumberInput(
-        "weightKg",
-        profile.weightKg,
-        defaultState.profile.weightKg,
-      ),
-    },
+    profile: normalizeProfile(persisted.profile),
     foodQuery:
       typeof persisted.foodQuery === "string" ? persisted.foodQuery : defaultState.foodQuery,
-    vitals: normalizeObjectArray<AppState["vitals"][number]>(persisted.vitals),
-    visits: normalizeObjectArray<AppState["visits"][number]>(persisted.visits),
-    documents: documents.map((document) => ({
-      ...document,
-      reviewStatus: document.reviewStatus ?? "needs-review",
-      nextAction: document.nextAction ?? "",
-      history: normalizeDocumentHistory(document.history),
-    })),
-    deletedDocuments: deletedDocuments.map((document) => ({
-      ...document,
-      reviewStatus: document.reviewStatus ?? "needs-review",
-      nextAction: document.nextAction ?? "",
-      history: normalizeDocumentHistory(document.history),
-    })),
-    symptoms: normalizeObjectArray<AppState["symptoms"][number]>(persisted.symptoms),
-    questions: questions.map((question) => ({
-      ...question,
-      priority: normalizeQuestionPriority(question.priority),
-    })),
-    labResults: normalizeObjectArray<AppState["labResults"][number]>(persisted.labResults),
+    vitals: normalizeRecordArray(persisted.vitals, normalizeVitalEntry),
+    visits: normalizeRecordArray(persisted.visits, normalizeVisitEntry),
+    documents,
+    deletedDocuments,
+    symptoms: normalizeRecordArray(persisted.symptoms, normalizeSymptomEntry),
+    questions: normalizeRecordArray(persisted.questions, normalizeQuestionEntry),
+    labResults: normalizeRecordArray(persisted.labResults, normalizeLabResultEntry),
     caregiverShareSettings: normalizeCaregiverShareSettings(
       isObjectRecord(persisted.caregiverShareSettings)
         ? persisted.caregiverShareSettings

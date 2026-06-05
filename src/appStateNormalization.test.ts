@@ -1,0 +1,200 @@
+import { describe, expect, it } from "vitest";
+
+import { normalizeAppState } from "./App";
+
+describe("normalizeAppState", () => {
+  it("normalizes malformed persisted record scalar fields before rendering", () => {
+    const state = normalizeAppState({
+      caregiverShareSettings: {
+        coverMemo: 42,
+        sections: {
+          labs: false,
+        },
+      },
+      documents: [
+        {
+          attachmentName: 42,
+          attachmentPath: ["/tmp/result.png"],
+          attachmentStatus: 99,
+          attachmentStorage: "cloud",
+          body: 10,
+          category: "unknown",
+          date: 20260601,
+          history: [
+            {
+              at: [],
+              detail: null,
+              id: 9,
+              kind: "unknown",
+              label: 7,
+            },
+            "skip",
+          ],
+          id: null,
+          nextAction: null,
+          reviewStatus: "unknown",
+          tags: false,
+          title: ["검사"],
+        },
+        "skip",
+      ],
+      foodQuery: 77,
+      labResults: [
+        {
+          date: false,
+          id: "",
+          lower: 4,
+          name: ["WBC"],
+          note: null,
+          unit: 123,
+          upper: 10,
+          value: 3.4,
+        },
+      ],
+      profile: {
+        age: "abc",
+        cancerCareMode: false,
+        diabetes: "true",
+        heightCm: 164,
+        hypertension: false,
+        name: 123,
+        sex: "unknown",
+        waistCm: "",
+        weightKg: "-1",
+      },
+      questions: [
+        {
+          answer: 1,
+          date: {},
+          id: undefined,
+          priority: "urgent",
+          question: 2,
+          status: "unknown",
+          topic: 3,
+        },
+      ],
+      symptoms: [
+        {
+          action: [],
+          body: 1,
+          date: 2,
+          id: "",
+          medication: {},
+          severity: "bad",
+          symptom: false,
+        },
+      ],
+      vitals: [
+        {
+          date: 123,
+          diastolic: 80,
+          glucoseContext: "bedtime",
+          glucoseMgDl: Number.NaN,
+          id: 42,
+          note: false,
+          systolic: "130",
+          temperatureC: 36.7,
+          type: "pulse",
+        },
+      ],
+      visits: [
+        {
+          date: null,
+          hospital: ["병원"],
+          id: {},
+          nextDate: 7,
+          plan: false,
+          reason: 3,
+          summary: 4,
+        },
+      ],
+    });
+
+    expect(state.profile.name).toBe("나의 건강 기록");
+    expect(state.profile.age).toBe("56");
+    expect(state.profile.sex).toBe("other");
+    expect(state.profile.diabetes).toBe(true);
+    expect(state.profile.hypertension).toBe(false);
+    expect(state.profile.weightKg).toBe("62");
+    expect(state.foodQuery).toBe("브로콜리, 현미밥, 베이컨, 자몽 주스");
+
+    expect(state.vitals).toEqual([
+      {
+        date: "",
+        diastolic: 80,
+        glucoseContext: "bedtime",
+        glucoseMgDl: undefined,
+        id: "vital-restored-1",
+        note: "",
+        systolic: undefined,
+        temperatureC: 36.7,
+        type: "blood-pressure",
+      },
+    ]);
+    expect(state.visits[0]).toMatchObject({
+      date: "",
+      hospital: "",
+      id: "visit-restored-1",
+      nextDate: "",
+      plan: "",
+      reason: "",
+      summary: "",
+    });
+
+    expect(state.documents).toHaveLength(1);
+    expect(state.documents[0]).toMatchObject({
+      attachmentName: undefined,
+      attachmentPath: undefined,
+      attachmentStatus: undefined,
+      attachmentStorage: undefined,
+      body: "",
+      category: "other",
+      date: "",
+      id: "document-restored-1",
+      nextAction: "",
+      reviewStatus: "needs-review",
+      tags: "",
+      title: "",
+    });
+    expect(state.documents[0].history).toEqual([
+      {
+        at: "",
+        detail: "",
+        id: "history-restored-1",
+        kind: "created",
+        label: "",
+      },
+    ]);
+
+    expect(state.symptoms[0]).toMatchObject({
+      action: "",
+      body: "",
+      date: "",
+      id: "symptom-restored-1",
+      medication: "",
+      severity: 3,
+      symptom: "",
+    });
+    expect(state.questions[0]).toMatchObject({
+      answer: "",
+      date: "",
+      id: "question-restored-1",
+      priority: "next-visit",
+      question: "",
+      status: "open",
+      topic: "",
+    });
+    expect(state.labResults[0]).toMatchObject({
+      date: "",
+      id: "lab-restored-1",
+      lower: "",
+      name: "",
+      note: "",
+      unit: "",
+      upper: "",
+      value: "",
+    });
+    expect(state.caregiverShareSettings.coverMemo).toBe("");
+    expect(state.caregiverShareSettings.sections.labs).toBe(false);
+  });
+});

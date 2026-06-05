@@ -14487,3 +14487,36 @@
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `731d48d` (`Harden caregiver share settings`).
+
+## 2026-06-05 11:43 KST - Persisted Record Scalar Normalization Iteration Note
+
+- Improvement target:
+  - Follow-up persistence review found `normalizeAppState()` now filtered non-object array entries, but still trusted scalar fields inside object records.
+  - A valid JSON backup or localStorage value with non-string dates/titles/statuses, invalid enum values, non-number vital values, or numeric attachment names could still reach render, `localeCompare()`, `.trim()`, label maps, or the SQLite mirror.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added typed scalar normalization helpers for text, optional text, booleans, finite numbers, enum values, ids, and record arrays.
+    - Normalized persisted profile, vitals, visits, documents, document history, symptoms, questions, and lab results before they enter app state.
+    - Exported `normalizeAppState()` for focused regression coverage.
+  - Added `src/appStateNormalization.test.ts`.
+    - Covers malformed persisted record scalar values across all record collections.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for persisted record scalar normalization.
+- Verification so far:
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: `npm test -- appStateNormalization`, 1 file and 1 test.
+  - PASS: `npm run typecheck`.
+  - PASS: Playwright malformed persisted-record smoke at 390x884.
+    - `나의 건강 기록` H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - No visible `undefined`, `unknown`, or malformed button labels.
+    - Sanitized document, history, vital, and question rows were autosaved back into browser storage.
+    - Page errors: 0; console errors: 0.
+  - PASS: existing cmux `암관리` browser workspace rendered the running CareVault app at `http://127.0.0.1:1420/#nutrition` with the browser storage label, H1, dashboard, records, and document controls visible.
+  - PASS: `npm run test`, 55 files and 375 tests.
+  - PASS: `npm run build` with the existing Vite chunk-size warning.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx src/appStateNormalization.test.ts`.
+  - PASS: stopped the local Vite dev server before staging.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - Pending: commit and push.
