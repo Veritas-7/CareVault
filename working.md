@@ -1,5 +1,36 @@
 # CareVault Working Notes
 
+## 2026-06-06 04:25 KST - Visit Save Local Feedback cmux QA
+
+- Completed slice: add local visible feedback for hospital visit saves.
+- Source commit: `e650647` (`Show visit save local feedback`), pushed to `origin main`.
+- Changed files:
+  - `src/App.tsx`
+  - `src/App.css`
+- Implementation:
+  - Added `visitSaveFeedback` state and a `updateVisitDraft()` helper that clears stale local save feedback when visit form fields change.
+  - `addVisit()` now computes the existing visit-added status once, shows it both in the global save label and in a local `.visit-save-feedback[role=status]` row next to the visit form action.
+  - Reused the existing lab save feedback styling for visit save feedback.
+- cmux in-app browser QA, single right-pane `surface:9`:
+  - Rejected evidence while the visible cmux workspace was not `암관리`; accepted evidence only after Computer Use showed window/sidebar workspace `암관리`.
+  - RED before the patch: entered `세브란스 종양내과` / `추적 상담`, clicked `방문 기록 추가`, top status and timeline updated, but no local `.visit-save-feedback` existed.
+  - RED screenshot: `/tmp/carevault-surface9-iter37-visit-save-local-feedback-red.png`.
+  - PASS after the patch: same visible `암관리` browser flow produced `.visit-save-feedback[role=status]` with `세브란스 종양내과 방문 기록 추가됨 · 추적 상담 · 방문일 2026-06-05`.
+  - PASS screenshot: `/tmp/carevault-surface9-iter37-visit-save-local-feedback-pass.png`.
+  - Restored the browser localStorage baseline after PASS; visible `암관리` returned to 8 records / 1 visit and no local visit feedback.
+  - `cmux browser surface:9 errors`: `No browser errors`.
+- Verification:
+  - `npm run test -- src/entryValidation.test.ts`: PASS, 1 file / 7 tests.
+  - `npm run test`: PASS, 61 files / 476 tests.
+  - `npm run typecheck`: PASS after correcting the helper type to `Partial<VisitEntry>`.
+  - `npm run build`: PASS.
+  - `cargo check` in `src-tauri`: PASS.
+  - `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`: PASS.
+  - `git diff --check -- src/App.tsx src/App.css`: PASS.
+  - `npm run runtime:doctor`: PASS after stopping the Vite dev server on port 1420.
+  - DB sanity: `main`, `나의 건강 기록`, `1|0`.
+  - `gitleaks protect --staged --no-banner --redact`: PASS, no leaks found.
+
 ## 2026-06-03 21:48 KST - Resume Point
 
 - Correct app root: `/Users/wj/Ai/System/10_Projects/CareVault`
