@@ -18091,3 +18091,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `446fbdf` (`Show document archive local feedback`).
+
+## 2026-06-06 02:06 KST - Document Attachment Open Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires every document row action to expose immediate visible feedback near the affected row, not only an offscreen or topbar save chip.
+  - Real cmux QA found the saved-document `첨부 파일 열기` branch for a stored attachment path in the browser/no-Tauri runtime updated the global save-status chip, but the saved-document row had no local `role=status` feedback.
+- Change:
+  - Updated `openDocumentAttachment()` in `src/App.tsx` so no-runtime/file-name-only, runtime recovery, successful open, and open-failure branches all set document-specific local row feedback.
+  - Switched the open-attachment no-runtime and success statuses to `setActionSaveLabel()` so the action message is preserved alongside the browser auto-save suffix.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed cmux had switched back to the `working.md` workspace with a Worklog browser pane, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#documents`.
+  - PASS baseline check: document form required-field validation already showed local `.record-form-feedback`, so that candidate was not changed. Screenshot `/tmp/carevault-surface9-iter21-document-form-validation-check.png` captured the existing local validation behavior.
+  - RED/IMPROVEMENT: injected a saved-document attachment path into the same cmux surface state, clicked `혈액검사 메모 검사 서류 첨부 파일 열기`, and found global status `혈액검사 메모 검사 서류 첨부는 파일명 참조만 저장됨 · 현재 첨부 icon.png` with empty local `.document-action-feedback`. Screenshot `/tmp/carevault-surface9-iter21-document-open-attachment-local-feedback-red.png` captured the missing row feedback.
+  - PASS after fix: reloaded the same surface, clicked the same `첨부 파일 열기` button with `cmux browser click --snapshot-after`, and the row showed visible local `role=status` feedback `혈액검사 메모 검사 서류 첨부는 파일명 참조만 저장됨 · 현재 첨부 icon.png`; the top status preserved the same action plus `브라우저 자동 저장됨`. Screenshot `/tmp/carevault-surface9-iter21-document-open-attachment-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: `surface:9` was restored from the runtime DB `app_state.main` clean snapshot after the synthetic attachment-path test; the document row no longer exposed the test-only `첨부 파일 열기` button.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/documentActionLabels.test.ts`, 16 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `7b1b8ba` (`Show document attachment open local feedback`).
