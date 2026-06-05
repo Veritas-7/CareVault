@@ -15930,3 +15930,33 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `3aff514` (`Clear local validation feedback when valid`); `git ls-remote origin refs/heads/main` returned `3aff51418b7ff8bacfbbeb9885a9877f462520c2`.
+
+## 2026-06-05 18:33 KST - Stale Topbar Validation Warning Clear
+
+- Improvement target:
+  - The previous slice cleared local required-field feedback once a draft became valid.
+  - A source-level follow-up found the topbar save chip could still show the old required-field warning after the nearby feedback row disappeared, which made the corrected form look unresolved.
+- Change:
+  - Added `formatRecordFormFeedbackClearedStatus()` and `resolveRecordFormFeedbackClearedSaveLabel()` so stale topbar warnings change to scoped ready feedback such as `병원 방문 기록 필수 입력 확인됨`.
+  - Updated the auto-clear path for vital, visit, symptom, question, lab, and document feedback to refresh the topbar only when it still matches the exact warning that just cleared.
+  - Used a functional save-label update so a newer status such as another action or auto-save is preserved.
+  - Updated `DESIGN.md` so the topbar must not keep a stale required-field warning after the corrected draft becomes valid.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - BLOCKED: the allowed cmux surface stayed inconsistent. `get-url` reported `http://127.0.0.1:1420/`, but `snapshot --compact` returned an empty `about:blank` document, `.app-shell` count was `0`, and `errors list` plus `console list` returned no entries.
+  - PASS: Vite served `http://127.0.0.1:1420/` with HTTP `200`, but because opening another in-app browser pane was prohibited, this slice used source-level verification and automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/entryValidation.test.ts`, 7 tests.
+  - PASS: `npm run test`, 58 files and 424 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.tsx src/entryValidation.ts src/entryValidation.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `6011a51` (`Refresh topbar after validation clears`); `git ls-remote origin refs/heads/main` returned `6011a5182c62d592d43a0f211f5e705ef6d66c26`.
