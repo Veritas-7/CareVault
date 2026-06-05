@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { hasRequiredTextValues, recordRequiredFieldMessages } from "./entryValidation";
+import {
+  formatRecordFormFeedbackAriaLabel,
+  hasRequiredTextValues,
+  recordRequiredFieldMessages,
+  recordFormFeedbackLabels,
+} from "./entryValidation";
 
 describe("hasRequiredTextValues", () => {
   it("accepts non-empty trimmed field values", () => {
@@ -19,5 +24,15 @@ describe("recordRequiredFieldMessages", () => {
     expect(recordRequiredFieldMessages.symptom).toContain("증상");
     expect(recordRequiredFieldMessages.question).toContain("질문 주제");
     expect(recordRequiredFieldMessages.lab).toContain("검사 항목");
+  });
+});
+
+describe("formatRecordFormFeedbackAriaLabel", () => {
+  it("scopes local validation feedback to the form that needs attention", () => {
+    expect(
+      formatRecordFormFeedbackAriaLabel("visit", recordRequiredFieldMessages.visit),
+    ).toBe("병원 방문 기록 필수 항목 안내 · 병원/과와 방문 이유를 입력해주세요.");
+    expect(recordFormFeedbackLabels.document).toBe("서류 수기 보관");
+    expect(recordFormFeedbackLabels.vital).toContain("혈압");
   });
 });

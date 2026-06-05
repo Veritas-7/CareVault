@@ -195,8 +195,10 @@ import {
 } from "./sidebarNavigation";
 import { buildAppointmentReminders } from "./appointmentReminders";
 import {
+  formatRecordFormFeedbackAriaLabel,
   hasRequiredTextValues,
   recordRequiredFieldMessages,
+  type RecordFormFeedbackId,
 } from "./entryValidation";
 import {
   appendDocumentHistory,
@@ -739,6 +741,9 @@ function App() {
   const [normalizedSearchSummary, setNormalizedSearchSummary] =
     useState<NormalizedSearchSummary | null>(null);
   const [saveLabel, setSaveLabel] = useState("저장소 확인 중");
+  const [recordFormFeedback, setRecordFormFeedback] = useState<
+    Partial<Record<RecordFormFeedbackId, string>>
+  >({});
   const [vitalDraft, setVitalDraft] = useState<VitalEntry>(emptyVital);
   const [visitDraft, setVisitDraft] = useState<VisitEntry>(emptyVisit);
   const [documentDraft, setDocumentDraft] = useState<CareDocument>(emptyDocument);
@@ -780,6 +785,44 @@ function App() {
   const transientSaveLabelUntilRef = useRef(0);
   const symptomDraftInputRef = useRef<HTMLInputElement>(null);
   const questionDraftTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const setRecordFormValidationFeedback = (
+    formId: RecordFormFeedbackId,
+    message: string,
+  ) => {
+    setRecordFormFeedback((current) => ({ ...current, [formId]: message }));
+    setSaveLabel(message);
+    window.setTimeout(() => {
+      document
+        .querySelector<HTMLElement>(`[data-record-form-feedback="${formId}"]`)
+        ?.scrollIntoView({ behavior: "auto", block: "center" });
+    }, 0);
+  };
+
+  const clearRecordFormValidationFeedback = (formId: RecordFormFeedbackId) => {
+    setRecordFormFeedback((current) => {
+      if (!current[formId]) return current;
+      const { [formId]: _removed, ...rest } = current;
+      return rest;
+    });
+  };
+
+  const renderRecordFormFeedback = (formId: RecordFormFeedbackId) => {
+    const message = recordFormFeedback[formId];
+    if (!message) return null;
+
+    return (
+      <p
+        className="record-form-feedback"
+        role="status"
+        aria-live="polite"
+        data-record-form-feedback={formId}
+        aria-label={formatRecordFormFeedbackAriaLabel(formId, message)}
+      >
+        {message}
+      </p>
+    );
+  };
 
   useEffect(() => {
     let activeSectionFrame = 0;
@@ -1560,7 +1603,7 @@ function App() {
   const addVital = () => {
     const validation = validateVitalDraft(vitalDraft);
     if (validation.type === "error") {
-      setSaveLabel(validation.message);
+      setRecordFormValidationFeedback("vital", validation.message);
       return;
     }
 
@@ -1587,6 +1630,7 @@ function App() {
       vitals: [...current.vitals, savedVital],
     }));
     setVitalDraft({ ...emptyVital, date: today });
+    clearRecordFormValidationFeedback("vital");
     setActionSaveLabel(
       formatVitalRecordSavedStatusLabel(savedVital, {
         diabetes: state.profile.diabetes,
@@ -1597,7 +1641,7 @@ function App() {
   const applyVitalStandardQuestion = () => {
     const validation = validateVitalDraft(vitalDraft);
     if (validation.type === "error") {
-      setSaveLabel(validation.message);
+      setRecordFormValidationFeedback("vital", validation.message);
       return;
     }
 
@@ -1637,13 +1681,14 @@ function App() {
       status: "open",
       topic: draft.topic,
     }));
+    clearRecordFormValidationFeedback("vital");
     setSaveLabel(`${vitalTypeLabel[vitalDraft.type]} 기준 질문 초안 준비됨`);
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
   const addVisit = () => {
     if (!hasRequiredTextValues(visitDraft.hospital, visitDraft.reason)) {
-      setSaveLabel(recordRequiredFieldMessages.visit);
+      setRecordFormValidationFeedback("visit", recordRequiredFieldMessages.visit);
       return;
     }
 
@@ -1652,6 +1697,7 @@ function App() {
       visits: [...current.visits, { ...visitDraft, id: createId("visit") }],
     }));
     setVisitDraft({ ...emptyVisit, date: today });
+    clearRecordFormValidationFeedback("visit");
     setActionSaveLabel("방문 기록 추가됨");
   };
 
@@ -1690,7 +1736,7 @@ function App() {
 
   const addDocument = () => {
     if (!hasRequiredTextValues(documentDraft.title, documentDraft.body)) {
-      setSaveLabel(recordRequiredFieldMessages.document);
+      setRecordFormValidationFeedback("document", recordRequiredFieldMessages.document);
       return;
     }
 
@@ -1735,6 +1781,7 @@ function App() {
       clearDocumentDraftAttachmentPreviewUrl();
     }
     setDocumentDraft({ ...emptyDocument, date: today });
+    clearRecordFormValidationFeedback("document");
     setActionSaveLabel("서류 메모 저장됨");
   };
 
@@ -2320,7 +2367,7 @@ function App() {
 
   const addSymptom = () => {
     if (!hasRequiredTextValues(symptomDraft.symptom)) {
-      setSaveLabel(recordRequiredFieldMessages.symptom);
+      setRecordFormValidationFeedback("symptom", recordRequiredFieldMessages.symptom);
       return;
     }
 
@@ -2336,12 +2383,13 @@ function App() {
       ],
     }));
     setSymptomDraft({ ...emptySymptom, date: today });
+    clearRecordFormValidationFeedback("symptom");
     setActionSaveLabel(formatSymptomRecordSavedStatusLabel(symptomDraft));
   };
 
   const addQuestion = () => {
     if (!hasRequiredTextValues(questionDraft.topic, questionDraft.question)) {
-      setSaveLabel(recordRequiredFieldMessages.question);
+      setRecordFormValidationFeedback("question", recordRequiredFieldMessages.question);
       return;
     }
 
@@ -2350,6 +2398,7 @@ function App() {
       questions: [...current.questions, { ...questionDraft, id: createId("question") }],
     }));
     setQuestionDraft({ ...emptyQuestion, date: today });
+    clearRecordFormValidationFeedback("question");
     setActionSaveLabel("질문 추가됨");
   };
 
@@ -2602,12 +2651,13 @@ function App() {
   const resetLabDraft = () => {
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
+    clearRecordFormValidationFeedback("lab");
     setSaveLabel("검사 입력 초기화됨");
   };
 
   const addLabResult = () => {
     if (!hasRequiredTextValues(labDraft.name, labDraft.value)) {
-      setSaveLabel(recordRequiredFieldMessages.lab);
+      setRecordFormValidationFeedback("lab", recordRequiredFieldMessages.lab);
       return;
     }
 
@@ -2617,6 +2667,7 @@ function App() {
     }));
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
+    clearRecordFormValidationFeedback("lab");
     setActionSaveLabel("검사 수치 추가됨");
   };
 
@@ -4889,6 +4940,7 @@ function App() {
               <Plus aria-hidden="true" />
               {vitalDraftSaveActionLabel}
             </button>
+            {renderRecordFormFeedback("vital")}
           </section>
 
           <section className="panel">
@@ -4975,6 +5027,7 @@ function App() {
               <Plus aria-hidden="true" />
               방문 기록 추가
             </button>
+            {renderRecordFormFeedback("visit")}
           </section>
         </section>
 
@@ -5347,6 +5400,7 @@ function App() {
               <Plus aria-hidden="true" />
               {symptomDraftSaveActionLabel}
             </button>
+            {renderRecordFormFeedback("symptom")}
           </section>
 
           <section className="panel">
@@ -5446,6 +5500,7 @@ function App() {
               <Plus aria-hidden="true" />
               질문 추가
             </button>
+            {renderRecordFormFeedback("question")}
             <div className="question-list">
               {[...state.questions]
                 .sort((a, b) => a.date.localeCompare(b.date))
@@ -5732,6 +5787,7 @@ function App() {
                 검사 입력 초기화
               </button>
             </div>
+            {renderRecordFormFeedback("lab")}
           </section>
 
           <section className="panel">
@@ -6115,6 +6171,7 @@ function App() {
               <Plus aria-hidden="true" />
               서류 메모 저장
             </button>
+            {renderRecordFormFeedback("document")}
           </section>
 
           <section className="panel document-list-panel">
