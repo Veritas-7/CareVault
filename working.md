@@ -18814,3 +18814,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `484e51f` (`Show document save local feedback`).
+
+## 2026-06-06 05:29 KST - Profile Number Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires invalid input feedback to render as local visible `role=status` feedback near the affected form, not only in the global topbar.
+  - Real cmux QA found entering an invalid profile number draft such as `1e2` in the age field produced no local profile-field feedback.
+- Change:
+  - Added draft retention for profile numeric fields in `src/App.tsx` so invalid typed values remain visible for correction instead of being silently discarded.
+  - Added `profileFieldFeedback` state and local `.profile-field-feedback[role=status]` output below the profile numeric form grid.
+  - Added `aria-invalid` and `aria-describedby` to the active invalid numeric input.
+  - Reused the existing compact validation feedback styling in `src/App.css` for profile numeric feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PASS: before accepting evidence, Computer Use confirmed the visible cmux window was `암관리`, the selected right tab was CareVault, and the right pane URL was `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: in visible `암관리`, typed `1e2` into the age input. The invalid draft remained in the input, but no local profile feedback appeared under the numeric form. Screenshot `/tmp/carevault-surface9-iter42-profile-number-local-feedback-red.png` captured the missing local feedback.
+  - PASS after fix: in visible `암관리`, typed `1e2` into the age input and the local status row showed `나이는 0보다 크게 입력해주세요.` with `aria-invalid="true"` and `aria-describedby="profile-field-feedback"` on the age input. Screenshot `/tmp/carevault-surface9-iter42-profile-number-local-feedback-pass.png` captured the local feedback.
+  - CORRECTED: one browser command switched the visible cmux workspace to `working.md`; that DOM-only output was rejected until `암관리` was selected again and the visible CareVault UI showed the local feedback.
+  - PASS cleanup in browser: reset the age field to valid `59`; the local profile feedback cleared.
+  - PASS: `cmux browser surface:9 errors` returned `No browser errors`.
+- Automated verification:
+  - PASS: `npm run test -- src/profileValidation.test.ts src/profileModeToggle.test.ts src/entryValidation.test.ts src/storageStatus.test.ts`, 19 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `073931a` (`Show profile number local feedback`).
