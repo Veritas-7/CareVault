@@ -18402,3 +18402,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `7f25c2f` (`Show vital question draft local feedback`).
+
+## 2026-06-06 03:21 KST - Cervical Question Draft Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires cervical cancer screening and care-prompt shortcuts to fill the editable pre-visit question form with source-backed context and immediate visible feedback in the constrained cmux right pane.
+  - Real cmux QA found `현재 프로필 기준 자궁경부암 검진 질문 초안 만들기` filled the question form and updated the top save-status chip, but the `자궁경부암 케어 노트` panel had no local `role=status` confirmation near the action.
+- Change:
+  - Added transient `cervicalCancerCareQuestionFeedback` UI state in `src/App.tsx`.
+  - Updated both `applyCervicalCancerCarePrompt()` and `applyCervicalCancerScreeningQuestion()` so prompt-based and profile-screening question drafts set local panel feedback while preserving existing top save-status behavior.
+  - Rendered `.cervical-care-question-feedback` inside the cervical care panel and reused the compact wrapping status styling from the existing cervical copy feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use showed cmux had switched to `블로그`, so that WriteFlow pane was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: clicked `현재 프로필 기준 자궁경부암 검진 질문 초안 만들기`; the top status showed `자궁경부암 검진 질문 초안 준비됨 · 국가암검진 대상 기준 해당 · 근거 2개: 국가암정보센터 국가암검진 대상자 선정 및 통보, 국가암정보센터 국가암검진 검진주기 및 검진방법`, and the question form filled, but local `.cervical-care-question-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter30-cervical-question-draft-local-feedback-red.png` captured the missing panel feedback.
+  - PASS after fix: reloaded the same surface and clicked the same screening question draft button; the cervical care panel showed visible local `role=status` feedback with the same screening-readiness and source summary, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter30-cervical-question-draft-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: reloaded `surface:9` and verified no stale `.cervical-care-question-feedback`, the question button returned to default `질문 추가`, and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context remained `projects/10602093894318676839`, the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareMetric.test.ts`, 26 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `f5b9664` (`Show cervical question draft local feedback`).
