@@ -43,6 +43,9 @@ describe("questionPriority", () => {
     expect(formatQuestionDraftAddActionLabel("routine")).toBe(
       "진료 전 질문 추가 · 우선순위 일반 확인",
     );
+    expect(formatQuestionDraftAddActionLabel("next-visit", false)).toBe(
+      "진료 전 질문 추가 · 질문 주제와 내용 필요 · 우선순위 다음 진료",
+    );
   });
 
   it("formats question draft added feedback with topic and priority scope", () => {

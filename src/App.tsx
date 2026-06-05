@@ -3453,7 +3453,14 @@ function App() {
     "visit-content",
   );
   const csvFreshPreviewDescription = formatExportPreviewFreshActionDescription("csv-content");
-  const questionDraftAddActionLabel = formatQuestionDraftAddActionLabel(questionDraft.priority);
+  const questionDraftHasRequiredFields = hasRequiredTextValues(
+    questionDraft.topic,
+    questionDraft.question,
+  );
+  const questionDraftAddActionLabel = formatQuestionDraftAddActionLabel(
+    questionDraft.priority,
+    questionDraftHasRequiredFields,
+  );
   const caregiverPreviewSettingDifferences =
     exportPreviewHasStaleCaregiverSettings && exportPreview?.caregiverShareSettingsSnapshot
       ? buildCaregiverShareSettingsDifferences(
