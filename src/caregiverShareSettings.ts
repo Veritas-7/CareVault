@@ -338,6 +338,20 @@ export function formatCaregiverShareProfileRedactionToggleLabel(redactProfile: b
     : "보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다";
 }
 
+export function formatCaregiverShareSectionToggleLabel(
+  label: string,
+  checked: boolean,
+  isOnlyIncludedSection: boolean,
+) {
+  if (checked && isOnlyIncludedSection) {
+    return `보호자 공유본 포함 섹션 ${label} 포함됨 · 최소 1개 섹션은 포함해야 해서 해제할 수 없습니다`;
+  }
+
+  return checked
+    ? `보호자 공유본 포함 섹션 ${label} 포함됨 · 선택 해제하면 공유본에서 제외됩니다`
+    : `보호자 공유본 포함 섹션 ${label} 제외됨 · 선택하면 공유본에 포함됩니다`;
+}
+
 export function formatCaregiverShareExportStatus(
   input: CaregiverShareSettingsInput | undefined,
 ) {

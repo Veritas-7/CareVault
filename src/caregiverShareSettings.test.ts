@@ -15,6 +15,7 @@ import {
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
   formatCaregiverShareResetDescription,
+  formatCaregiverShareSectionToggleLabel,
   formatCaregiverShareSettingsCompactSummary,
   getCaregiverShareSettingsPreset,
   hasCustomCaregiverShareSettings,
@@ -288,6 +289,18 @@ describe("caregiverShareSettings", () => {
     );
     expect(formatCaregiverShareProfileRedactionToggleLabel(false)).toBe(
       "보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다",
+    );
+  });
+
+  it("formats caregiver section toggles with state, next action, and locked reason", () => {
+    expect(formatCaregiverShareSectionToggleLabel("검사", true, false)).toBe(
+      "보호자 공유본 포함 섹션 검사 포함됨 · 선택 해제하면 공유본에서 제외됩니다",
+    );
+    expect(formatCaregiverShareSectionToggleLabel("검사", false, false)).toBe(
+      "보호자 공유본 포함 섹션 검사 제외됨 · 선택하면 공유본에 포함됩니다",
+    );
+    expect(formatCaregiverShareSectionToggleLabel("검사", true, true)).toBe(
+      "보호자 공유본 포함 섹션 검사 포함됨 · 최소 1개 섹션은 포함해야 해서 해제할 수 없습니다",
     );
   });
 

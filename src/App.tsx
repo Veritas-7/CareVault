@@ -299,6 +299,7 @@ import {
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
   formatCaregiverShareResetDescription,
+  formatCaregiverShareSectionToggleLabel,
   getCaregiverShareSettingsPreset,
   hasCustomCaregiverShareSettings,
   normalizeCaregiverShareSettings,
@@ -1581,20 +1582,6 @@ function App() {
 
   const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>
     caregiverShareSectionOptions.find((option) => option.id === id)?.label ?? id;
-
-  const getCaregiverShareSectionToggleLabel = (
-    label: string,
-    checked: boolean,
-    isOnlyIncludedSection: boolean,
-  ) => {
-    if (checked && isOnlyIncludedSection) {
-      return `보호자 공유본 포함 섹션 ${label} 포함됨 · 최소 1개 섹션은 포함해야 해서 해제할 수 없습니다`;
-    }
-
-    return checked
-      ? `보호자 공유본 포함 섹션 ${label} 포함됨 · 선택 해제하면 공유본에서 제외됩니다`
-      : `보호자 공유본 포함 섹션 ${label} 제외됨 · 선택하면 공유본에 포함됩니다`;
-  };
 
   const getProfileModeToggleLabel = (
     field: "cancerCareMode" | "diabetes" | "hypertension",
@@ -3631,7 +3618,7 @@ function App() {
               {caregiverShareSectionOptions.map((option) => {
                 const checked = state.caregiverShareSettings.sections[option.id];
                 const isOnlyIncludedSection = checked && activeCaregiverSectionCount === 1;
-                const toggleLabel = getCaregiverShareSectionToggleLabel(
+                const toggleLabel = formatCaregiverShareSectionToggleLabel(
                   option.label,
                   checked,
                   isOnlyIncludedSection,
