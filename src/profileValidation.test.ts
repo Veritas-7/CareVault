@@ -70,4 +70,10 @@ describe("profileValidation", () => {
     expect(sanitizeProfileNumberInput("waistCm", "", "82")).toBe("");
     expect(sanitizeProfileNumberInput("waistCm", 83, "82")).toBe("83");
   });
+
+  it("trims restored profile number strings to stable input values", () => {
+    expect(sanitizeProfileNumberInput("age", " 56 ", "40")).toBe("56");
+    expect(sanitizeProfileNumberInput("heightCm", " 164.5 ", "160")).toBe("164.5");
+    expect(sanitizeProfileNumberInput("weightKg", "   ", "62")).toBe("");
+  });
 });

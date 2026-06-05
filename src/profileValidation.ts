@@ -49,8 +49,9 @@ export function sanitizeProfileNumberInput(
   fallback: string,
 ) {
   const valueText = typeof value === "string" ? value : value == null ? "" : String(value);
+  const trimmedValue = valueText.trim();
   const validation = validateProfileNumberInput(field, valueText);
-  return validation.type === "error" ? fallback : valueText;
+  return validation.type === "error" ? fallback : trimmedValue;
 }
 
 export function formatProfileNumberDisplay(

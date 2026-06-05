@@ -14667,6 +14667,40 @@
   - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
   - PASS: committed and pushed to `origin/main` as `b723a18` (`Tighten profile input parsing`).
 
+## 2026-06-05 13:28 KST - Restored Profile Number Trim Guard Iteration Note
+
+- Improvement target:
+  - Restored profile number strings could pass validation while retaining leading/trailing whitespace.
+  - The display helpers trimmed those values, but hydrated `input[type=number]` controls and persistence state were not canonicalized.
+- Code/design changes:
+  - Updated `src/profileValidation.ts`.
+    - `sanitizeProfileNumberInput()` now returns the trimmed decimal string for valid restored profile number values.
+    - Whitespace-only restored values still become the editable empty string, and invalid values still use the configured fallback.
+  - Updated `src/profileValidation.test.ts`.
+    - Added RED/GREEN coverage for padded age, padded height, and whitespace-only weight values.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for restored profile-number trimming.
+- Verification so far:
+  - PASS: RED baseline before implementation: `npm test -- src/profileValidation.test.ts` failed because `sanitizeProfileNumberInput("age", " 56 ", "40")` returned `" 56 "`.
+  - PASS: GREEN after implementation: `npm test -- src/profileValidation.test.ts`, 1 file and 9 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 393 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright seeded padded-profile smoke at `http://127.0.0.1:1420/#dashboard`.
+    - Seeded localStorage profile values: age ` 57 `, height ` 165.5 `, weight ` 63 `, waist ` 84 `.
+    - Hydrated inputs showed trimmed values `57`, `165.5`, `63`, and `84`.
+    - After the 250ms autosave window, localStorage rewrote the same trimmed profile values.
+    - Dashboard metric evidence showed `57세`, `165.5cm`, `63kg`, and `허리 84cm`.
+    - Body client width and scroll width: 390 / 390.
+    - Page errors and console errors: none.
+  - PASS: Existing cmux right-side in-app browser in workspace `암관리` stayed on the existing CareVault tab and showed `http://127.0.0.1:1420/#dashboard`.
+    - No new browser tab was opened.
+    - Profile metric, BMI, waist metric, caregiver-share controls, care queue, vital inputs, timeline, lab tracking, nutrition, and document controls were visible.
+  - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+
 ## 2026-06-05 12:16 KST - Strict Lab Number Text Parsing Iteration Note
 
 - Improvement target:
