@@ -16049,3 +16049,33 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `452a8ff` (`Cover profile mode toggle labels`); `git ls-remote origin refs/heads/main` returned `452a8ff8f25e689e4390897eb60ed47eafd37da4`.
+
+## 2026-06-05 18:55 KST - Document Action Label Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires saved-document and deleted-archive row actions to expose document-specific `aria-label` and hover `title` text with title, category/status, attachment filename/status, and intended action.
+  - Source audit found the document action label builder was correct but lived inline in `App.tsx`, so add/replace/check/open/remove/archive/restore cleanup wording had no focused regression coverage.
+- Change:
+  - Added `src/documentActionLabels.ts` with `formatDocumentActionButtonLabel()` and `DocumentActionLabelKind`.
+  - Updated `App.tsx` document action buttons to use the shared helper.
+  - Added focused tests for no-attachment add/archive labels, attachment name/status actions, and deleted-document restore/cleanup labels.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - BLOCKED: same-surface navigation to `http://127.0.0.1:1420/` returned an empty document. DOM eval reported `url: about:blank`, `readyState: complete`, `.app-shell` count `0`, saved-document action button count `0`, deleted-document action button count `0`, and empty body text, while `curl -I` returned HTTP `200`.
+  - PASS: `cmux browser surface:9 console` returned `No console entries` and `cmux browser surface:9 errors` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/documentActionLabels.test.ts`, 3 tests.
+  - PASS: `npm run test`, 60 files and 430 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/documentActionLabels.ts src/documentActionLabels.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `813ce23` (`Cover document action labels`); `git ls-remote origin refs/heads/main` returned `813ce23eff055ae50eb7429233c9a7ab82d1d0aa`.
