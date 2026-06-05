@@ -339,4 +339,37 @@ describe("normalizeAppState", () => {
     ]);
     expect(state.vitals.map((vital) => vital.date)).toEqual(["", "2026-06-05"]);
   });
+
+  it("drops malformed restored document history timestamps before timeline display", () => {
+    const state = normalizeAppState({
+      documents: [
+        {
+          history: [
+            {
+              at: "2026-06-05T03:04:05.006Z",
+              id: "history-valid",
+            },
+            {
+              at: "2026-02-31T00:00:00.000Z",
+              id: "history-invalid-day",
+            },
+            {
+              at: "not-a-timestamp",
+              id: "history-invalid-text",
+            },
+          ],
+          id: "document",
+        },
+      ],
+    });
+
+    const [document] = state.documents;
+
+    expect(document).toBeDefined();
+    expect((document?.history ?? []).map((history) => history.at)).toEqual([
+      "2026-06-05T03:04:05.006Z",
+      "",
+      "",
+    ]);
+  });
 });

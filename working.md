@@ -14779,6 +14779,43 @@
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `dcb2b9e` (`Clamp restored symptom severity`).
 
+## 2026-06-05 12:58 KST - Restored Document History Timestamp Guard Iteration Note
+
+- Improvement target:
+  - Document change history timestamps are created by the app with `new Date().toISOString()`, but backup/import hydration accepted arbitrary restored `history[].at` strings.
+  - Malformed restored values such as impossible calendar timestamps or free text could leak into saved-document history displays through date slicing.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added `normalizeIsoTimestampValue()` and routed restored document history `at` values through it.
+    - Only canonical millisecond UTC ISO timestamps survive; malformed timestamps become empty strings.
+  - Updated `src/appStateNormalization.test.ts`.
+    - Added RED/GREEN regression coverage for valid, impossible-date, and free-text restored document history timestamps.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for restored document history timestamp guarding.
+- Verification so far:
+  - PASS: RED baseline before implementation: `npm test -- src/appStateNormalization.test.ts` failed on invalid restored `history[].at` values leaking through.
+  - PASS: GREEN after implementation: `npm test -- src/appStateNormalization.test.ts`, 1 file and 5 tests.
+  - PASS: `npm run typecheck`.
+    - One intermediate run caught a test-only optional-property narrowing issue; the test was tightened and the fresh run passed.
+  - PASS: `npm run test`, 55 files and 389 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright malformed-restored-history smoke at `http://127.0.0.1:1420/#documents`.
+    - `document.title`: `CareVault`.
+    - H1 count: 1; H1 text followed the restored profile name.
+    - Body client width and scroll width: 390 / 390.
+    - Saved document heading, seeded document title, and valid `2026-06-05` history date were visible.
+    - Invalid restored history values `2026-02-31T00:00:00.000Z` and `not-a-timestamp` were absent from the UI.
+    - Re-saved localStorage history timestamps were `2026-06-05T03:04:05.006Z`, empty string, empty string.
+    - Page errors and console errors: none.
+  - PASS: Existing cmux right-side in-app browser in workspace `암관리` stayed on the existing CareVault tab at `http://127.0.0.1:1420/#documents`.
+    - No new browser tab was opened.
+    - Saved document section, change history, document action controls, and attachment controls were visible.
+  - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+
 ## 2026-06-05 12:50 KST - Restored Record Date Guard Iteration Note
 
 - Improvement target:

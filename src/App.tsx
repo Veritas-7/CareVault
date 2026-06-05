@@ -917,6 +917,18 @@ function normalizeDateValue(value: unknown, fallback = "") {
   return normalizedDate === date ? date : fallback;
 }
 
+function normalizeIsoTimestampValue(value: unknown, fallback = "") {
+  const timestamp = normalizeTextValue(value, fallback).trim();
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(timestamp)) {
+    return fallback;
+  }
+
+  const parsed = new Date(timestamp);
+  if (Number.isNaN(parsed.getTime())) return fallback;
+
+  return parsed.toISOString() === timestamp ? timestamp : fallback;
+}
+
 function normalizeBooleanValue(value: unknown, fallback: boolean) {
   return typeof value === "boolean" ? value : fallback;
 }
@@ -1031,7 +1043,7 @@ function normalizeDocumentHistoryEntry(
 ): DocumentHistoryEntry {
   return {
     id: normalizeRecordId(history.id, "history", index),
-    at: normalizeTextValue(history.at),
+    at: normalizeIsoTimestampValue(history.at),
     kind: normalizeEnumValue(history.kind, documentHistoryKindIds, "created"),
     label: normalizeTextValue(history.label),
     detail: normalizeTextValue(history.detail),
