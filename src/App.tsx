@@ -903,6 +903,20 @@ function normalizeOptionalTextValue(value: unknown) {
   return typeof value === "string" ? value : undefined;
 }
 
+function normalizeDateValue(value: unknown, fallback = "") {
+  const date = normalizeTextValue(value, fallback).trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  if (!match) return fallback;
+
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const normalizedDate = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+
+  return normalizedDate === date ? date : fallback;
+}
+
 function normalizeBooleanValue(value: unknown, fallback: boolean) {
   return typeof value === "boolean" ? value : fallback;
 }
@@ -988,7 +1002,7 @@ function normalizeProfile(value: unknown): Profile {
 function normalizeVitalEntry(vital: Record<string, unknown>, index: number): VitalEntry {
   return {
     id: normalizeRecordId(vital.id, "vital", index),
-    date: normalizeTextValue(vital.date),
+    date: normalizeDateValue(vital.date),
     type: normalizeEnumValue(vital.type, vitalTypeIds, "blood-pressure"),
     systolic: normalizeOptionalPositiveFiniteNumber(vital.systolic),
     diastolic: normalizeOptionalPositiveFiniteNumber(vital.diastolic),
@@ -1002,12 +1016,12 @@ function normalizeVitalEntry(vital: Record<string, unknown>, index: number): Vit
 function normalizeVisitEntry(visit: Record<string, unknown>, index: number): VisitEntry {
   return {
     id: normalizeRecordId(visit.id, "visit", index),
-    date: normalizeTextValue(visit.date),
+    date: normalizeDateValue(visit.date),
     hospital: normalizeTextValue(visit.hospital),
     reason: normalizeTextValue(visit.reason),
     summary: normalizeTextValue(visit.summary),
     plan: normalizeTextValue(visit.plan),
-    nextDate: normalizeTextValue(visit.nextDate),
+    nextDate: normalizeDateValue(visit.nextDate),
   };
 }
 
@@ -1031,7 +1045,7 @@ function normalizeDocumentHistory(value: unknown) {
 function normalizeDocumentEntry(document: Record<string, unknown>, index: number): CareDocument {
   return {
     id: normalizeRecordId(document.id, "document", index),
-    date: normalizeTextValue(document.date),
+    date: normalizeDateValue(document.date),
     title: normalizeTextValue(document.title),
     category: normalizeEnumValue(document.category, documentCategoryIds, "other"),
     body: normalizeTextValue(document.body),
@@ -1053,7 +1067,7 @@ function normalizeDocumentEntry(document: Record<string, unknown>, index: number
 function normalizeSymptomEntry(symptom: Record<string, unknown>, index: number): SymptomEntry {
   return {
     id: normalizeRecordId(symptom.id, "symptom", index),
-    date: normalizeTextValue(symptom.date),
+    date: normalizeDateValue(symptom.date),
     symptom: normalizeTextValue(symptom.symptom),
     severity: normalizeSeverityScore(symptom.severity, emptySymptom.severity),
     medication: normalizeTextValue(symptom.medication),
@@ -1065,7 +1079,7 @@ function normalizeSymptomEntry(symptom: Record<string, unknown>, index: number):
 function normalizeQuestionEntry(question: Record<string, unknown>, index: number): CareQuestion {
   return {
     id: normalizeRecordId(question.id, "question", index),
-    date: normalizeTextValue(question.date),
+    date: normalizeDateValue(question.date),
     topic: normalizeTextValue(question.topic),
     question: normalizeTextValue(question.question),
     priority: normalizeQuestionPriority(question.priority),
@@ -1077,7 +1091,7 @@ function normalizeQuestionEntry(question: Record<string, unknown>, index: number
 function normalizeLabResultEntry(labResult: Record<string, unknown>, index: number): LabResult {
   return {
     id: normalizeRecordId(labResult.id, "lab", index),
-    date: normalizeTextValue(labResult.date),
+    date: normalizeDateValue(labResult.date),
     name: normalizeTextValue(labResult.name),
     value: normalizeTextValue(labResult.value),
     unit: normalizeTextValue(labResult.unit),

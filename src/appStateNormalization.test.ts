@@ -267,4 +267,76 @@ describe("normalizeAppState", () => {
       temperatureC: 36.8,
     });
   });
+
+  it("drops malformed restored dates before sorting and reminder logic sees them", () => {
+    const state = normalizeAppState({
+      deletedDocuments: [
+        {
+          date: "2026-06-06",
+          id: "deleted-valid",
+        },
+        {
+          date: "2026-99-99",
+          id: "deleted-invalid",
+        },
+      ],
+      documents: [
+        {
+          date: "2026-02-31",
+          id: "document-invalid",
+        },
+      ],
+      labResults: [
+        {
+          date: "2026-6-5",
+          id: "lab-invalid",
+        },
+      ],
+      questions: [
+        {
+          date: "2026-06-05T00:00:00Z",
+          id: "question-invalid",
+        },
+      ],
+      symptoms: [
+        {
+          date: " 2026-06-05 ",
+          id: "symptom-valid-trimmed",
+        },
+      ],
+      visits: [
+        {
+          date: "not-a-date",
+          id: "visit-invalid",
+          nextDate: "2026-13-01",
+        },
+        {
+          date: "2026-06-05",
+          id: "visit-valid",
+          nextDate: "2026-06-15",
+        },
+      ],
+      vitals: [
+        {
+          date: "9999-99-99",
+          id: "vital-invalid",
+        },
+        {
+          date: "2026-06-05",
+          id: "vital-valid",
+        },
+      ],
+    });
+
+    expect(state.deletedDocuments.map((document) => document.date)).toEqual(["2026-06-06", ""]);
+    expect(state.documents[0].date).toBe("");
+    expect(state.labResults[0].date).toBe("");
+    expect(state.questions[0].date).toBe("");
+    expect(state.symptoms[0].date).toBe("2026-06-05");
+    expect(state.visits.map((visit) => ({ date: visit.date, nextDate: visit.nextDate }))).toEqual([
+      { date: "", nextDate: "" },
+      { date: "2026-06-05", nextDate: "2026-06-15" },
+    ]);
+    expect(state.vitals.map((vital) => vital.date)).toEqual(["", "2026-06-05"]);
+  });
 });

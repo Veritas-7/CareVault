@@ -14779,6 +14779,42 @@
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
   - PASS: committed and pushed to `origin/main` as `dcb2b9e` (`Clamp restored symptom severity`).
 
+## 2026-06-05 12:50 KST - Restored Record Date Guard Iteration Note
+
+- Improvement target:
+  - Backup/import hydration accepted arbitrary date strings even though the app's date inputs, sorting, reminders, and visit-summary range filters expect `YYYY-MM-DD` calendar dates.
+  - Malformed restored dates such as `2026-99-99`, `2026-02-31`, or timestamp strings could sort ahead of valid records or leak into reminder and export logic.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added `normalizeDateValue()` and routed restored record date fields plus visit `nextDate` through it.
+    - Invalid or non-calendar date strings now become empty strings instead of being treated as real record dates.
+  - Updated `src/appStateNormalization.test.ts`.
+    - Added RED/GREEN regression coverage for invalid restored dates across vitals, visits, documents, deleted documents, symptoms, questions, and labs.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for restored record date guarding.
+- Verification so far:
+  - PASS: RED baseline before implementation: `npm test -- src/appStateNormalization.test.ts` failed on invalid restored `deletedDocuments` date leaking through.
+  - PASS: GREEN after implementation: `npm test -- src/appStateNormalization.test.ts`, 1 file and 4 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 388 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright malformed-restored-date smoke at `http://127.0.0.1:1420/#records`.
+    - `document.title`: `CareVault`.
+    - H1 count: 1; H1 text followed the restored profile name.
+    - Body client width and scroll width: 390 / 390.
+    - `혈압·혈당·체온 입력` and valid `2026-06-05` date were visible.
+    - Invalid restored dates `9999-99-99`, `2026-99-99`, `2026-13-01`, `2026-02-31`, `2026-06-05T00:00:00Z`, and `2026-6-5` were absent from the UI.
+    - Re-saved localStorage dates were normalized to empty strings for invalid dates and `2026-06-05` for the trimmed valid symptom date.
+    - Page errors and console errors: none.
+  - PASS: Existing cmux right-side in-app browser in workspace `암관리` stayed on the existing CareVault tab at `http://127.0.0.1:1420/#records`.
+    - No new browser tab was opened.
+    - `혈압·혈당·체온 입력`, visit summary, recent timeline, lab tracking, and document controls were visible after refresh.
+  - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+
 ## 2026-06-05 12:41 KST - Restored Vital Measurement Guard Iteration Note
 
 - Improvement target:
