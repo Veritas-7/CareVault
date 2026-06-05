@@ -15795,3 +15795,32 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `69470ca` (`Disambiguate timeline source evidence labels`); `git ls-remote origin refs/heads/main` returned `69470caca4b76e71d3cd730babf7610eec15dde8`.
+
+## 2026-06-05 17:46 KST - Profile Mode Toggle Target Height
+
+- Improvement target:
+  - Page-wide cmux DOM sizing audit confirmed the visible profile mode toggle labels were the real click targets, but they measured only 34px high on desktop while adjacent CareVault controls follow a 40px rhythm.
+  - The existing mobile/narrow stylesheet already preserves the 44px checkbox-label touch contract; the desktop profile toggle pills needed the same consistency as nearby controls.
+- Change:
+  - Raised `.toggle-row label` desktop `min-height` from 34px to 40px.
+  - Updated `DESIGN.md` to state the 40px desktop profile-mode toggle target and existing 44px mobile contract.
+- Real-browser/runtime verification:
+  - PASS: reused only existing cmux browser `surface:9` in workspace `암관리`; no new browser pane was opened.
+  - PASS: navigated the same surface to `http://127.0.0.1:1420/#documents`.
+  - PASS: before fix, `.toggle-row label` heights measured 34px for `암환자 관리`, `당뇨 추적`, and `혈압 추적`.
+  - PASS: after fix, all three labels measured `labelHeight:40` and `computedMinHeight:"40px"`, with stateful aria/title text still matching.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: browser console showed a normal Vite hot update for `src/App.css`.
+- Automated verification:
+  - PASS: `npm run test`, 58 files and 419 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite browser-runtime process and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `e37b102` (`Raise profile mode toggle targets`); `git ls-remote origin refs/heads/main` returned `e37b102898342504c064eeb5175d5f9fd183e1a8`.
