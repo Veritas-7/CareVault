@@ -9,6 +9,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "runtime:doctor": "bash scripts/verify_runtime_clean.sh",
+    "tauri:dev:clean": "npm run runtime:doctor && npm run tauri -- dev",
     "preview": "vite preview",
     "tauri": "tauri"
   },

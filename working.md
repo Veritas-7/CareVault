@@ -15477,3 +15477,23 @@
   - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
   - PASS: `git diff --check -- README.md DESIGN.md working.md package.json scripts/verify_runtime_clean.sh`.
   - PASS: committed and pushed to `origin/main` as `9a86cc0` (`Add CareVault runtime doctor`); `git ls-remote origin refs/heads/main` returned `9a86cc0cdcc65f4f0fefd940f1b3ed80f65c1ed1`.
+
+## 2026-06-05 16:10 KST - Clean Tauri Dev Entrypoint
+
+- Improvement target:
+  - The runtime doctor catches ambiguous desktop-verification state, but the default developer habit can still jump straight to `npm run tauri dev`.
+  - Add a discoverable current-source desktop entrypoint that runs the doctor before starting Tauri dev.
+- Change:
+  - Added `npm run tauri:dev:clean`.
+    - Command: `npm run runtime:doctor && npm run tauri -- dev`.
+    - This keeps the long-running Tauri dev command behind the clean-runtime preflight.
+  - Updated `README.md` and `DESIGN.md` so current-source desktop checks point to the guarded path, not only the standalone doctor.
+- Verification:
+  - PASS: `npm run tauri:dev:clean -- --help`.
+    - Confirmed `runtime:doctor` runs first and the command then reaches `tauri dev --help` without starting a long-running dev app.
+  - PASS: `npm run test`, 56 files and 410 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- README.md DESIGN.md working.md package.json`.
