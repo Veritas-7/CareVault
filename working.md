@@ -14549,4 +14549,4 @@
   - PASS: `git diff --check -- DESIGN.md working.md src/backupState.ts src/backupState.test.ts`.
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `4acf6d2` (`Count usable backup records`).
