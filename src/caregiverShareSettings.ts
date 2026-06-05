@@ -338,6 +338,12 @@ export function formatCaregiverShareProfileRedactionToggleLabel(redactProfile: b
     : "보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다";
 }
 
+export function formatCaregiverShareMemoPresetActionLabel(label: string) {
+  const presetLabel = label.trim();
+  if (!presetLabel) return "보호자 공유본 전달 메모 프리셋 적용";
+  return `보호자 공유본 ${presetLabel} 메모 프리셋 적용`;
+}
+
 export function formatCaregiverShareSectionToggleLabel(
   label: string,
   checked: boolean,

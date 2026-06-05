@@ -302,6 +302,7 @@ import {
   createDefaultCaregiverShareSettings,
   formatCaregiverShareExportDescription,
   formatCaregiverShareExportStatus,
+  formatCaregiverShareMemoPresetActionLabel,
   formatCaregiverShareProfileRedactionToggleLabel,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
@@ -3478,24 +3479,27 @@ function App() {
               placeholder="보호자에게 전달할 메모"
             />
             <div className="caregiver-memo-presets" aria-label="보호자 공유본 메모 프리셋">
-              {caregiverMemoPresets.map((preset) => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  className="memo-preset-button"
-                  aria-label={`보호자 공유본 ${preset.label} 메모 프리셋 적용`}
-                  title={`보호자 공유본 ${preset.label} 메모 프리셋 적용`}
-                  onClick={() =>
-                    updateCaregiverShareSettings(
-                      { coverMemo: preset.text },
-                      `전달 메모 프리셋 적용: ${preset.label}`,
-                    )
-                  }
-                >
-                  <MessageSquare aria-hidden="true" />
-                  {preset.label} 적용
-                </button>
-              ))}
+              {caregiverMemoPresets.map((preset) => {
+                const actionLabel = formatCaregiverShareMemoPresetActionLabel(preset.label);
+                return (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    className="memo-preset-button"
+                    aria-label={actionLabel}
+                    title={actionLabel}
+                    onClick={() =>
+                      updateCaregiverShareSettings(
+                        { coverMemo: preset.text },
+                        `전달 메모 프리셋 적용: ${preset.label}`,
+                      )
+                    }
+                  >
+                    <MessageSquare aria-hidden="true" />
+                    {preset.label} 적용
+                  </button>
+                );
+              })}
             </div>
             <button
               type="button"

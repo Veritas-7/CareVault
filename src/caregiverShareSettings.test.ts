@@ -11,6 +11,7 @@ import {
   createDefaultCaregiverShareSettings,
   formatCaregiverShareExportDescription,
   formatCaregiverShareExportStatus,
+  formatCaregiverShareMemoPresetActionLabel,
   formatCaregiverShareProfileRedactionToggleLabel,
   formatCaregiverSharePreviewDescription,
   formatCaregiverSharePreviewStatus,
@@ -289,6 +290,18 @@ describe("caregiverShareSettings", () => {
     );
     expect(formatCaregiverShareProfileRedactionToggleLabel(false)).toBe(
       "보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다",
+    );
+  });
+
+  it("formats caregiver memo preset action labels", () => {
+    expect(formatCaregiverShareMemoPresetActionLabel("식사")).toBe(
+      "보호자 공유본 식사 메모 프리셋 적용",
+    );
+    expect(formatCaregiverShareMemoPresetActionLabel(" 증상 ")).toBe(
+      "보호자 공유본 증상 메모 프리셋 적용",
+    );
+    expect(formatCaregiverShareMemoPresetActionLabel("")).toBe(
+      "보호자 공유본 전달 메모 프리셋 적용",
     );
   });
 
