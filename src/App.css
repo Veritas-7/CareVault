@@ -2671,6 +2671,19 @@ textarea:focus-visible {
   height: 14px;
 }
 
+.standard-range-draft-feedback {
+  flex: 1 0 100%;
+  padding: 7px 9px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .standards-coverage {
   margin-top: 4px;
 }

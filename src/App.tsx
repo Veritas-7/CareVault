@@ -815,6 +815,9 @@ function App() {
   const [healthStandardsCopyFeedback, setHealthStandardsCopyFeedback] = useState<string | null>(
     null,
   );
+  const [infectionFeverStandardDraftFeedback, setInfectionFeverStandardDraftFeedback] = useState<
+    string | null
+  >(null);
   const [vitalStandardQuestionFeedback, setVitalStandardQuestionFeedback] = useState<string | null>(
     null,
   );
@@ -2666,6 +2669,7 @@ function App() {
   const applyInfectionFeverStandardDraft = () => {
     const template = findSymptomSupportTemplate("체온 38℃ 이상 오한 감염");
     if (!template) return;
+    const feedback = formatSymptomSupportSymptomDraftReadyStatus(template);
 
     setSymptomDraft((current) => {
       const currentBody = current.body.trim();
@@ -2685,7 +2689,8 @@ function App() {
         symptom: current.symptom.trim() ? current.symptom : "발열·오한/감염 의심",
       };
     });
-    setSaveLabel(formatSymptomSupportSymptomDraftReadyStatus(template));
+    setInfectionFeverStandardDraftFeedback(feedback);
+    setSaveLabel(feedback);
     setSymptomDraftFocusRequest((request) => request + 1);
   };
 
@@ -2694,6 +2699,7 @@ function App() {
     if (!template) return;
 
     const generatedQuestion = buildSymptomSupportQuestion(template, "체온 38℃ 이상 또는 오한");
+    const feedback = formatSymptomSupportQuestionDraftReadyStatus(template);
     setQuestionDraft((current) => {
       const currentQuestion = current.question.trim();
       const hasExistingQuestionDraft = current.topic.trim() || currentQuestion;
@@ -2712,7 +2718,8 @@ function App() {
         topic: current.topic.trim() ? current.topic : `부작용: ${template.label}`,
       };
     });
-    setSaveLabel(formatSymptomSupportQuestionDraftReadyStatus(template));
+    setInfectionFeverStandardDraftFeedback(feedback);
+    setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
@@ -4919,6 +4926,11 @@ function App() {
                             <MessageSquare aria-hidden="true" />
                             질문 초안
                           </button>
+                          {infectionFeverStandardDraftFeedback ? (
+                            <div className="standard-range-draft-feedback" role="status">
+                              {infectionFeverStandardDraftFeedback}
+                            </div>
+                          ) : null}
                         </div>
                       ) : null}
                     </section>
