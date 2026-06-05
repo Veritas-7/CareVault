@@ -14486,4 +14486,4 @@
   - PASS: `npm run build`.
   - PASS: stopped the local Vite dev server before staging.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `731d48d` (`Harden caregiver share settings`).
