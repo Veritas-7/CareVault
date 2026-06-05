@@ -18540,3 +18540,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `13a54b6` (`Show symptom support question local feedback`).
+
+## 2026-06-06 03:55 KST - Lab Preset Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires lab preset feedback to name the exact preset plus female/male/default criteria, not only update the global topbar status.
+  - Real cmux QA found selecting `Hgb 헤모글로빈` filled the lab draft and updated the top save-status chip, but the lab preset area had no local `role=status` confirmation near the selected preview.
+- Change:
+  - Added transient `labPresetFeedback` UI state in `src/App.tsx`.
+  - Updated `applyLabPreset()` so valid presets set local lab-preset feedback while preserving the existing top save-status behavior.
+  - Cleared stale lab-preset feedback when the selector is cleared or the lab draft is reset.
+  - Rendered `.lab-preset-feedback` under the selected preset preview and styled it as a compact wrapping status row for the cmux right pane.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: a first PASS-looking command after the patch ran while the visible cmux workspace had switched to `블로그`; that evidence was rejected and the browser proof was rerun only after Computer Use showed the visible workspace was `암관리`.
+  - PASS: Computer Use confirmed the active window was `암관리`, the selected right tab was `CareVault`, and the right pane URL was `http://127.0.0.1:1420/#dashboard` before accepting PASS evidence.
+  - RED/IMPROVEMENT: selected `Hgb 헤모글로빈`; the top status showed `검사 프리셋 적용: Hgb 헤모글로빈 · 기준 12-16 g/dL · 여성 기준 적용 · 근거 서울아산병원 혈색소 검사 참고치`, but local `.lab-preset-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter34-lab-preset-local-feedback-red.png` captured the missing local feedback.
+  - PASS after fix: reloaded the same surface in `암관리`, selected `Hgb 헤모글로빈` again, and verified local `.lab-preset-feedback[role=status]` contained the same exact Hgb, range, female-criteria, and source wording as the top status. Screenshot `/tmp/carevault-surface9-iter34-lab-preset-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: forced reload on `surface:9` and verified no stale `.lab-preset-feedback`, empty preset selector, empty lab item field, and no mojibake.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/labPresets.test.ts src/labMetric.test.ts`, 19 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `0fc98cd` (`Show lab preset local feedback`).
