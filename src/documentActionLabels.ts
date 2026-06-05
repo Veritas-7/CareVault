@@ -50,6 +50,18 @@ export function formatDocumentNextActionHistoryStatusLabel(
   return `${formatDocumentContext(document)} 다음 조치 이력 기록됨 · ${formatDocumentNextActionPreview(nextAction)}`;
 }
 
+export function formatDocumentArchiveStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 삭제 보관함으로 이동됨 · 상태 ${
+    documentReviewStatusLabel[document.reviewStatus]
+  }`;
+}
+
+export function formatDocumentRestoreStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 저장된 서류로 복구됨 · 상태 ${
+    documentReviewStatusLabel[document.reviewStatus]
+  }`;
+}
+
 export function formatDocumentActionButtonLabel(
   document: CareDocument,
   kind: DocumentActionLabelKind,

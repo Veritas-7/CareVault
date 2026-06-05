@@ -147,8 +147,10 @@ import {
 } from "./documentFilterActions";
 import {
   formatDocumentActionButtonLabel,
+  formatDocumentArchiveStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
   formatDocumentReviewStatusUpdatedLabel,
+  formatDocumentRestoreStatusLabel,
   formatDocumentSavedStatusLabel,
 } from "./documentActionLabels";
 import {
@@ -2397,7 +2399,7 @@ function App() {
         ...current.deletedDocuments.filter((item) => item.id !== document.id),
       ],
     }));
-    setActionSaveLabel("서류 기록이 삭제 보관함으로 이동됨");
+    setActionSaveLabel(formatDocumentArchiveStatusLabel(document));
   };
 
   const restoreDocument = (document: CareDocument) => {
@@ -2418,7 +2420,7 @@ function App() {
       ],
       deletedDocuments: current.deletedDocuments.filter((item) => item.id !== document.id),
     }));
-    setActionSaveLabel("서류 기록 복구됨");
+    setActionSaveLabel(formatDocumentRestoreStatusLabel(document));
   };
 
   const addSymptom = () => {

@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import { type CareDocument } from "./appState";
 import {
   formatDocumentActionButtonLabel,
+  formatDocumentArchiveStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
   formatDocumentReviewStatusUpdatedLabel,
+  formatDocumentRestoreStatusLabel,
   formatDocumentSavedStatusLabel,
 } from "./documentActionLabels";
 
@@ -70,6 +72,22 @@ describe("documentActionLabels", () => {
     );
     expect(formatDocumentNextActionHistoryStatusLabel(baseDocument, "  ")).toBe(
       "혈액검사 메모 검사 서류 다음 조치 이력 기록됨 · 다음 조치 비움",
+    );
+  });
+
+  it("builds document-specific archive and restore status feedback", () => {
+    const deletedDocument: CareDocument = {
+      ...baseDocument,
+      title: "복부 CT",
+      category: "imaging",
+      reviewStatus: "done",
+    };
+
+    expect(formatDocumentArchiveStatusLabel(deletedDocument)).toBe(
+      "복부 CT 영상 서류 삭제 보관함으로 이동됨 · 상태 정리 완료",
+    );
+    expect(formatDocumentRestoreStatusLabel(deletedDocument)).toBe(
+      "복부 CT 영상 서류 저장된 서류로 복구됨 · 상태 정리 완료",
     );
   });
 
