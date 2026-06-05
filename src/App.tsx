@@ -147,6 +147,8 @@ import {
 } from "./documentFilterActions";
 import {
   formatDocumentActionButtonLabel,
+  formatDocumentNextActionHistoryStatusLabel,
+  formatDocumentReviewStatusUpdatedLabel,
   formatDocumentSavedStatusLabel,
 } from "./documentActionLabels";
 import {
@@ -1840,13 +1842,13 @@ function App() {
   };
 
   const updateDocumentReviewStatus = (
-    documentId: string,
+    targetDocument: CareDocument,
     reviewStatus: DocumentReviewStatus,
   ) => {
     setState((current) => ({
       ...current,
       documents: current.documents.map((document) => {
-        if (document.id !== documentId || document.reviewStatus === reviewStatus) {
+        if (document.id !== targetDocument.id || document.reviewStatus === reviewStatus) {
           return document;
         }
 
@@ -1862,7 +1864,7 @@ function App() {
         };
       }),
     }));
-    setActionSaveLabel("서류 조치 업데이트됨");
+    setActionSaveLabel(formatDocumentReviewStatusUpdatedLabel(targetDocument, reviewStatus));
   };
 
   const updateDocumentNextAction = (targetDocument: CareDocument, nextAction: string) => {
@@ -1899,7 +1901,7 @@ function App() {
       ),
     }));
     clearDocumentActionBaseline(document.id);
-    setActionSaveLabel("서류 조치 이력 기록됨");
+    setActionSaveLabel(formatDocumentNextActionHistoryStatusLabel(document, nextAction));
   };
 
   const attachDocumentFile = async () => {
@@ -6334,7 +6336,7 @@ function App() {
                             value={document.reviewStatus}
                             onChange={(event) =>
                               updateDocumentReviewStatus(
-                                document.id,
+                                document,
                                 event.currentTarget.value as DocumentReviewStatus,
                               )
                             }

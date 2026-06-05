@@ -1,5 +1,6 @@
 import {
   type CareDocument,
+  type DocumentReviewStatus,
   documentLabel,
   documentReviewStatusLabel,
 } from "./appState";
@@ -27,6 +28,26 @@ export function formatDocumentSavedStatusLabel(document: CareDocument) {
     : "첨부 없음";
 
   return `${formatDocumentContext(document)} 저장됨 · ${reviewContext} · ${attachmentContext}`;
+}
+
+export function formatDocumentReviewStatusUpdatedLabel(
+  document: CareDocument,
+  reviewStatus: DocumentReviewStatus,
+) {
+  return `${formatDocumentContext(document)} 상태 ${documentReviewStatusLabel[reviewStatus]}로 업데이트됨`;
+}
+
+function formatDocumentNextActionPreview(nextAction: string) {
+  const normalized = nextAction.trim().replace(/\s+/g, " ");
+  if (!normalized) return "다음 조치 비움";
+  return normalized.length > 32 ? `${normalized.slice(0, 32).trimEnd()}...` : normalized;
+}
+
+export function formatDocumentNextActionHistoryStatusLabel(
+  document: CareDocument,
+  nextAction: string,
+) {
+  return `${formatDocumentContext(document)} 다음 조치 이력 기록됨 · ${formatDocumentNextActionPreview(nextAction)}`;
 }
 
 export function formatDocumentActionButtonLabel(

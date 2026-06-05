@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { type CareDocument } from "./appState";
 import {
   formatDocumentActionButtonLabel,
+  formatDocumentNextActionHistoryStatusLabel,
+  formatDocumentReviewStatusUpdatedLabel,
   formatDocumentSavedStatusLabel,
 } from "./documentActionLabels";
 
@@ -39,6 +41,35 @@ describe("documentActionLabels", () => {
   it("uses a stable saved status fallback when a title is missing", () => {
     expect(formatDocumentSavedStatusLabel({ ...baseDocument, title: "   " })).toBe(
       "제목 없는 서류 검사 서류 저장됨 · 상태 의료진 질문 · 첨부 없음",
+    );
+  });
+
+  it("builds document-specific review status update feedback", () => {
+    expect(formatDocumentReviewStatusUpdatedLabel(baseDocument, "done")).toBe(
+      "혈액검사 메모 검사 서류 상태 정리 완료로 업데이트됨",
+    );
+  });
+
+  it("builds document-specific next-action history feedback", () => {
+    expect(
+      formatDocumentNextActionHistoryStatusLabel(
+        baseDocument,
+        "다음 종양내과 방문 때 WBC 추적 질문",
+      ),
+    ).toBe("혈액검사 메모 검사 서류 다음 조치 이력 기록됨 · 다음 종양내과 방문 때 WBC 추적 질문");
+  });
+
+  it("summarizes long or empty next-action history feedback", () => {
+    expect(
+      formatDocumentNextActionHistoryStatusLabel(
+        baseDocument,
+        "다음 방문 때 검사 결과 원본과 이전 수치 변화 그래프를 함께 보여주고 추가 확인할 질문 준비",
+      ),
+    ).toBe(
+      "혈액검사 메모 검사 서류 다음 조치 이력 기록됨 · 다음 방문 때 검사 결과 원본과 이전 수치 변화 그래프를...",
+    );
+    expect(formatDocumentNextActionHistoryStatusLabel(baseDocument, "  ")).toBe(
+      "혈액검사 메모 검사 서류 다음 조치 이력 기록됨 · 다음 조치 비움",
     );
   });
 
