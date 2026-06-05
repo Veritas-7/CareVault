@@ -18229,3 +18229,38 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `6dde18e` (`Show care queue copy local feedback`).
+
+## 2026-06-06 02:37 KST - Profile Standards Copy Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires profile metric criteria copy controls to keep source-backed scope visible, and every new control needs visible feedback or a clear state change in the constrained cmux right pane.
+  - Real cmux QA found `성별 기준 복사` updated only the top save-status chip, so users focused on the profile card had no local `role=status` confirmation near the copied criteria.
+- Change:
+  - Added transient `profileMetricCopyFeedback` and `dashboardMetricCopyFeedback` UI state in `src/App.tsx`.
+  - Updated `copyProfileMetricSexStandards()` and `copyDashboardMetricStandards()` so clipboard unsupported, successful copy, and copy failure branches all set local card feedback while preserving existing top save-status behavior.
+  - Rendered `.metric-profile-copy-feedback` and `.metric-dashboard-standard-feedback` inside the profile card and styled them as compact source-scope status rows.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed cmux had switched to `사업보고서`, so that Research Flow pane was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: clicked `성별 기준 복사`; the top status showed `프로필 성별 기준 복사됨 · 여성 · 5개 기준 · 근거 5개`, but local profile-card feedback was empty. Screenshot `/tmp/carevault-surface9-iter25-profile-standards-copy-local-feedback-red.png` captured the missing card feedback.
+  - PASS after fix: reloaded the same surface and clicked `성별 기준 복사`; the profile card showed visible local `role=status` feedback `프로필 성별 기준 복사됨 · 여성 · 5개 기준 · 근거 5개`.
+  - PASS paired proof: clicked `대시보드 기준 복사`; the profile card showed visible local `role=status` feedback `대시보드 건강 기준 복사됨 · 5개 기준 · 근거 4개`, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter25-profile-standards-copy-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: reloaded `surface:9` and verified no stale `.metric-profile-copy-feedback`, no stale `.metric-dashboard-standard-feedback`, and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/healthStandards.test.ts`, 30 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `ba94e98` (`Show profile standards copy local feedback`).
