@@ -18055,3 +18055,39 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `7bec5d2` (`Show document next action local feedback`).
+
+## 2026-06-06 01:51 KST - Document Archive Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires saved-document and deleted-archive row actions to expose document-specific names/titles and immediate local feedback in the constrained cmux right-pane layout.
+  - Real cmux QA found the saved-document `삭제 보관` action moved the document into the deleted archive and updated the global save-status chip, but the affected archive row had no nearby local `role=status` confirmation.
+- Change:
+  - Updated `deleteDocument()` in `src/App.tsx` to reuse `formatDocumentArchiveStatusLabel()` for both the global save status and document-specific local row feedback.
+  - Updated `restoreDocument()` in `src/App.tsx` to reuse `formatDocumentRestoreStatusLabel()` for both the global save status and document-specific local row feedback.
+  - Updated `removeDeletedDocumentAttachment()` in `src/App.tsx` to reuse `formatDeletedDocumentAttachmentCleanedStatusLabel()` for both the global save status and deleted-archive local row feedback.
+  - Rendered `.document-action-feedback` inside deleted-document row actions so archive, restore, and deleted-attachment cleanup flows have nearby feedback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PASS: verified the cmux workspace was `암관리` before accepting CareVault evidence; earlier workspace switches to non-CareVault panes were rejected as invalid evidence.
+  - RED/IMPROVEMENT: clicked `혈액검사 메모 검사 서류 삭제 보관함으로 이동` in the same cmux surface; the document moved to the deleted archive and the global status read `혈액검사 메모 검사 서류 삭제 보관함으로 이동됨 · 상태 의료진 질문 · 브라우저 자동 저장됨`, but local `.document-action-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter20-document-archive-local-feedback-red.png` captured the missing row feedback.
+  - PASS after fix: clicked the same delete-archive action in `암관리`; the deleted archive row showed visible local `role=status` feedback `혈액검사 메모 검사 서류 삭제 보관함으로 이동됨 · 상태 의료진 질문`, and the global status matched the same document-specific action. Screenshot `/tmp/carevault-surface9-iter20-document-archive-local-feedback-pass-rerun.png` captured the updated feedback.
+  - PASS restore proof: clicked `혈액검사 메모 검사 서류 삭제 보관함에서 복구`; the restored saved-document row showed visible local feedback `혈액검사 메모 검사 서류 저장된 서류로 복구됨 · 상태 의료진 질문`. Screenshot `/tmp/carevault-surface9-iter20-document-restore-local-feedback-pass.png` captured the restore feedback.
+  - PASS deleted-attachment cleanup proof: after archiving the document, clicked `혈액검사 메모 검사 서류 삭제 보관함 첨부 연결 정리`; the deleted archive row showed visible local feedback `혈액검사 메모 검사 서류 삭제 보관함 첨부 정리됨 · 제거한 첨부 icon.png`. Screenshot `/tmp/carevault-surface9-iter20-document-deleted-attachment-cleanup-local-feedback-pass.png` captured the cleanup feedback.
+  - PASS cleanup in browser: restored the dev-browser localStorage snapshot, reloaded, and verified `activeExists=true`, `deletedExists=false`, no archive/restore test history, and no stale `.document-action-feedback`.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/documentActionLabels.test.ts`, 16 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server with Ctrl-C after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `446fbdf` (`Show document archive local feedback`).
