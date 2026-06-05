@@ -184,8 +184,9 @@ import {
   buildSymptomSupportActionNote,
   buildSymptomSupportQuestion,
   buildSymptomSupportQueueHint,
+  buildSymptomSupportSourceLinkLabels,
   findSymptomSupportTemplate,
-  formatSymptomSupportSource,
+  formatSymptomSupportQuestionDraftActionLabel,
 } from "./symptomSupportTemplates";
 import {
   defaultSidebarSectionId,
@@ -1510,6 +1511,12 @@ function App() {
     () => findSymptomSupportTemplate(`${symptomDraft.symptom} ${symptomDraft.body}`),
     [symptomDraft.body, symptomDraft.symptom],
   );
+  const symptomSupportSourceLinkLabels = symptomSupportTemplate
+    ? buildSymptomSupportSourceLinkLabels(symptomSupportTemplate)
+    : null;
+  const symptomSupportQuestionDraftActionLabel = symptomSupportTemplate
+    ? formatSymptomSupportQuestionDraftActionLabel(symptomSupportTemplate)
+    : "";
   const cervicalCancerScreeningSummary = useMemo(
     () => buildCervicalCancerScreeningSummary(state.profile),
     [state.profile.age, state.profile.sex],
@@ -5361,18 +5368,18 @@ function App() {
                     href={symptomSupportTemplate.sourceUrl}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`${symptomSupportTemplate.label} 공식 출처 ${symptomSupportTemplate.sourceLabel} 열기`}
-                    title={`${symptomSupportTemplate.label} 공식 출처 ${symptomSupportTemplate.sourceLabel} 열기`}
+                    aria-label={symptomSupportSourceLinkLabels?.ariaLabel}
+                    title={symptomSupportSourceLinkLabels?.title}
                   >
-                    {formatSymptomSupportSource(symptomSupportTemplate)}
+                    {symptomSupportSourceLinkLabels?.visibleLabel}
                     <ExternalLink aria-hidden="true" />
                   </a>
                 </div>
                 <button
                   type="button"
                   onClick={applySymptomSupportTemplate}
-                  aria-label={`${symptomSupportTemplate.label} 질문 초안 채우기`}
-                  title={`${symptomSupportTemplate.label} 질문 초안 채우기`}
+                  aria-label={symptomSupportQuestionDraftActionLabel}
+                  title={symptomSupportQuestionDraftActionLabel}
                 >
                   <MessageSquare aria-hidden="true" />
                   질문 초안

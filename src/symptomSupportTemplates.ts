@@ -10,6 +10,12 @@ export type SymptomSupportTemplate = {
   priorityKeywords?: string[];
 };
 
+export type SymptomSupportSourceLinkLabels = {
+  ariaLabel: string;
+  title: string;
+  visibleLabel: string;
+};
+
 const safetyNote = "치료 지시가 아니라 진료 전 확인용 기록 후보입니다.";
 const careQueueSymptomTemplateIds = new Set([
   "cervical-bowel-obstruction",
@@ -273,6 +279,24 @@ export function buildSymptomSupportQuestion(
 
 export function formatSymptomSupportSource(template: SymptomSupportTemplate) {
   return `출처: ${template.sourceLabel}`;
+}
+
+export function buildSymptomSupportSourceLinkLabels(
+  template: SymptomSupportTemplate,
+): SymptomSupportSourceLinkLabels {
+  const actionLabel = `${template.label} 공식 출처 ${template.sourceLabel} 열기`;
+
+  return {
+    ariaLabel: actionLabel,
+    title: actionLabel,
+    visibleLabel: formatSymptomSupportSource(template),
+  };
+}
+
+export function formatSymptomSupportQuestionDraftActionLabel(
+  template: SymptomSupportTemplate,
+) {
+  return `${template.label} 질문 초안 채우기`;
 }
 
 export function formatSymptomSupportCitation(template: SymptomSupportTemplate) {

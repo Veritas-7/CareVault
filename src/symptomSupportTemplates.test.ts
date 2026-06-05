@@ -3,7 +3,9 @@ import {
   buildSymptomSupportActionNote,
   buildSymptomSupportQuestion,
   buildSymptomSupportQueueHint,
+  buildSymptomSupportSourceLinkLabels,
   findSymptomSupportTemplate,
+  formatSymptomSupportQuestionDraftActionLabel,
   formatSymptomSupportCitation,
   formatSymptomSupportSource,
   symptomSupportTemplates,
@@ -58,6 +60,19 @@ describe("symptomSupportTemplates", () => {
     );
     expect(formatSymptomSupportCitation(template!)).toBe(
       "출처: 국가암정보센터 증상별 식생활 - 변비 - https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+    );
+  });
+
+  it("builds template-specific source and question-draft action labels", () => {
+    const template = findSymptomSupportTemplate("38도 발열과 심한 오한")!;
+
+    expect(buildSymptomSupportSourceLinkLabels(template)).toEqual({
+      ariaLabel: "발열·오한/감염 의심 공식 출처 국가암정보센터 감염 의료진 상담 기준 열기",
+      title: "발열·오한/감염 의심 공식 출처 국가암정보센터 감염 의료진 상담 기준 열기",
+      visibleLabel: "출처: 국가암정보센터 감염 의료진 상담 기준",
+    });
+    expect(formatSymptomSupportQuestionDraftActionLabel(template)).toBe(
+      "발열·오한/감염 의심 질문 초안 채우기",
     );
   });
 
