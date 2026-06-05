@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   defaultQuestionPriority,
   formatQuestionDraftAddActionLabel,
+  formatQuestionPriorityControlDescription,
   normalizeQuestionPriority,
   questionPriorityLabel,
   questionPrioritySortRank,
@@ -39,6 +40,18 @@ describe("questionPriority", () => {
     );
     expect(formatQuestionDraftAddActionLabel("routine")).toBe(
       "진료 전 질문 추가 · 우선순위 일반 확인",
+    );
+  });
+
+  it("formats saved question priority controls with topic and current priority", () => {
+    expect(formatQuestionPriorityControlDescription("혈액검사 질문", "high")).toBe(
+      "혈액검사 질문 우선순위 변경 · 현재 이번 진료 우선",
+    );
+    expect(formatQuestionPriorityControlDescription("  ", "next-visit")).toBe(
+      "진료 전 질문 우선순위 변경 · 현재 다음 진료",
+    );
+    expect(formatQuestionPriorityControlDescription("식사 상담", "routine")).toBe(
+      "식사 상담 우선순위 변경 · 현재 일반 확인",
     );
   });
 });

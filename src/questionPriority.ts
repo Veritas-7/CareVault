@@ -23,3 +23,11 @@ export function normalizeQuestionPriority(value: unknown): QuestionPriority {
 export function formatQuestionDraftAddActionLabel(priority: QuestionPriority) {
   return `진료 전 질문 추가 · 우선순위 ${questionPriorityLabel[priority]}`;
 }
+
+export function formatQuestionPriorityControlDescription(
+  topic: string,
+  priority: QuestionPriority,
+) {
+  const context = topic.trim() || "진료 전 질문";
+  return `${context} 우선순위 변경 · 현재 ${questionPriorityLabel[priority]}`;
+}

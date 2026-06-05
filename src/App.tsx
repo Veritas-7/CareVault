@@ -319,6 +319,7 @@ import {
 } from "./caregiverShareSettings";
 import {
   formatQuestionDraftAddActionLabel,
+  formatQuestionPriorityControlDescription,
   normalizeQuestionPriority,
   questionPriorityLabel,
   type QuestionPriority,
@@ -5532,9 +5533,8 @@ function App() {
                     formatQuestionClipboardCopyDescription(question);
                   const questionDisplay = buildQuestionDisplayParts(question.question);
                   const answerMemoDisplay = formatQuestionAnswerMemoDisplay(question.answer);
-                  const questionPriorityControlDescription = `${
-                    question.topic || "진료 전 질문"
-                  } 우선순위 변경 · 현재 ${questionPriorityLabel[question.priority]}`;
+                  const questionPriorityControlDescription =
+                    formatQuestionPriorityControlDescription(question.topic, question.priority);
 
                   return (
                     <article className="question-item" key={question.id}>
