@@ -815,6 +815,9 @@ function App() {
   const [healthStandardsCopyFeedback, setHealthStandardsCopyFeedback] = useState<string | null>(
     null,
   );
+  const [cervicalCancerCareCopyFeedback, setCervicalCancerCareCopyFeedback] = useState<
+    string | null
+  >(null);
   const [documentActionFeedback, setDocumentActionFeedback] = useState<{
     documentId: string;
     message: string;
@@ -2791,20 +2794,27 @@ function App() {
 
   const copyCervicalCancerCareNote = () => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel(
-        formatCervicalCancerCareClipboardUnsupportedStatus(cervicalCancerCareClipboardSummary),
+      const feedback = formatCervicalCancerCareClipboardUnsupportedStatus(
+        cervicalCancerCareClipboardSummary,
       );
+      setCervicalCancerCareCopyFeedback(feedback);
+      setSaveLabel(feedback);
       return;
     }
 
     navigator.clipboard
       .writeText(formatCervicalCancerCareClipboardText(state.profile))
-      .then(() => setTransientSaveLabel(cervicalCancerCareClipboardStatus))
-      .catch(() =>
-        setSaveLabel(
-          formatCervicalCancerCareClipboardFailedStatus(cervicalCancerCareClipboardSummary),
-        ),
-      );
+      .then(() => {
+        setCervicalCancerCareCopyFeedback(cervicalCancerCareClipboardStatus);
+        setTransientSaveLabel(cervicalCancerCareClipboardStatus);
+      })
+      .catch(() => {
+        const feedback = formatCervicalCancerCareClipboardFailedStatus(
+          cervicalCancerCareClipboardSummary,
+        );
+        setCervicalCancerCareCopyFeedback(feedback);
+        setSaveLabel(feedback);
+      });
   };
 
   const renderCervicalCareItemSourceLink = (sourceId: string, itemLabel: string) => {
@@ -4316,6 +4326,11 @@ function App() {
                 </button>
               </div>
             </div>
+            {cervicalCancerCareCopyFeedback ? (
+              <div className="cervical-care-copy-feedback" role="status">
+                {cervicalCancerCareCopyFeedback}
+              </div>
+            ) : null}
             <div
               className="cervical-care-summary"
               aria-label={`자궁경부암 케어 노트 요약 ${cervicalCancerCarePanelSummary.ariaLabel}`}

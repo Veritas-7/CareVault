@@ -1884,6 +1884,19 @@ label,
   font-size: 0.8rem;
 }
 
+.cervical-care-copy-feedback {
+  margin: -4px 0 12px;
+  padding: 8px 10px;
+  border: 1px solid #b9dfd6;
+  border-radius: 8px;
+  color: #0f4c3f;
+  background: #f0fdfa;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
