@@ -915,6 +915,11 @@ function normalizeFiniteNumber(value: unknown, fallback: number) {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
+function normalizeSeverityScore(value: unknown, fallback: number) {
+  const severity = normalizeFiniteNumber(value, fallback);
+  return Math.min(Math.max(Math.round(severity), 0), 10);
+}
+
 function normalizeEnumValue<T extends string>(
   value: unknown,
   allowedValues: readonly T[],
@@ -1045,7 +1050,7 @@ function normalizeSymptomEntry(symptom: Record<string, unknown>, index: number):
     id: normalizeRecordId(symptom.id, "symptom", index),
     date: normalizeTextValue(symptom.date),
     symptom: normalizeTextValue(symptom.symptom),
-    severity: normalizeFiniteNumber(symptom.severity, emptySymptom.severity),
+    severity: normalizeSeverityScore(symptom.severity, emptySymptom.severity),
     medication: normalizeTextValue(symptom.medication),
     body: normalizeTextValue(symptom.body),
     action: normalizeTextValue(symptom.action),

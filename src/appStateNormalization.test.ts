@@ -197,4 +197,29 @@ describe("normalizeAppState", () => {
     expect(state.caregiverShareSettings.coverMemo).toBe("");
     expect(state.caregiverShareSettings.sections.labs).toBe(false);
   });
+
+  it("clamps restored symptom severity to the 0-10 slider scale", () => {
+    const state = normalizeAppState({
+      symptoms: [
+        {
+          id: "negative",
+          severity: -3,
+        },
+        {
+          id: "oversized",
+          severity: 999,
+        },
+        {
+          id: "decimal",
+          severity: 4.6,
+        },
+        {
+          id: "malformed",
+          severity: "8",
+        },
+      ],
+    });
+
+    expect(state.symptoms.map((symptom) => symptom.severity)).toEqual([0, 10, 5, 3]);
+  });
 });

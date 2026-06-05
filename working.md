@@ -14747,6 +14747,37 @@
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
   - PASS: committed and pushed to `origin/main` as `043c5a8` (`Tighten profile metric parsing`).
 
+## 2026-06-05 12:35 KST - Symptom Severity Clamp Iteration Note
+
+- Improvement target:
+  - Persisted/imported symptom severity values were normalized as finite numbers but not bounded to the UI slider's 0-10 scale.
+  - Malformed backups could restore impossible symptom states such as `-3/10`, `999/10`, or decimal severity values and distort dashboard, care-queue, and symptom-summary risk signals.
+- Code/design changes:
+  - Updated `src/App.tsx`.
+    - Added `normalizeSeverityScore()` and routed restored symptom severity through a rounded 0-10 clamp.
+  - Updated `src/appStateNormalization.test.ts`.
+    - Added regression coverage for negative, oversized, decimal, and string severity values during app-state hydration.
+  - Updated `DESIGN.md`.
+    - Added a changelog line for restored symptom severity clamping.
+- Verification so far:
+  - PASS: `npm test -- src/appStateNormalization.test.ts`, 1 file and 2 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run test`, 55 files and 386 tests.
+  - PASS: `npm run build`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check`.
+  - PASS: Stitch project refresh for `CareVault UI UX AutoResearch`, screen instance `7814555668945736330` at 390x884.
+  - PASS: Playwright seeded malformed-severity smoke at 390x884 against `http://127.0.0.1:1420/#care-plan`.
+    - Rendered clamped `10/10`, `0/10`, and rounded `5/10` symptom values.
+    - Confirmed no `999/10`, `-3/10`, or `4.6/10` text leaked into the UI.
+    - `document.title`: `CareVault`.
+    - `나의 건강 기록` H1 count: 1.
+    - Body client width and scroll width: 390 / 390.
+    - Page errors: 0; console errors: 0.
+  - PASS: existing cmux `암관리` right-side in-app browser reused the existing CareVault pane, clicked the `증상·질문` section link, and showed `http://127.0.0.1:1420/#care-plan` with saved symptom summary, severity slider `3/10`, care queue, and symptom/question controls visible.
+  - PASS: stopped the local Vite dev server before staging and confirmed port `1420` was closed.
+  - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+
 ## 2026-06-05 12:07 KST - SQLite Count Integer Parsing Iteration Note
 
 - Improvement target:
