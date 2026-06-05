@@ -17256,3 +17256,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `52d0dc8` (`Clarify storage failure feedback`).
+
+## 2026-06-05 22:28 KST - Cervical Clipboard Failure Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires the cervical cancer care note copy action and post-copy status to summarize copied item and official-source counts.
+  - Source audit found the success path preserved the full care-note summary, but unsupported-browser and write-failure paths still reported generic strings such as `자궁경부암 케어 노트 복사를 지원하지 않는 브라우저입니다.` and `자궁경부암 케어 노트 복사 실패`.
+- Change:
+  - Added `formatCervicalCancerCareClipboardUnsupportedStatus()` and `formatCervicalCancerCareClipboardFailedStatus()` in `src/cervicalCancerCareClipboard.ts`.
+  - Updated `App.tsx` cervical care note copy handler to preserve total item, priority, screening-summary, record-field, warning, question, record/recovery/prevention, and official-source counts in failure feedback.
+  - Added focused tests for unsupported-browser and write-failure copy statuses with profile-based screening summary included.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL: `curl -I http://127.0.0.1:1420/` returned HTTP `200`, `cmux browser surface:9 get title` returned `CareVault`, and same-surface navigation to the dev URL returned `OK`.
+  - BLOCKED: same-surface snapshot still returned an empty document, and DOM eval timed out waiting for JavaScript result.
+  - PASS: `cmux browser surface:9 console list` returned `No console entries` and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - Because opening another in-app browser pane was prohibited, this slice used source-level verification plus automated gates rather than claiming a fresh visual browser pass.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/cervicalCancerCareClipboard.test.ts`, 4 tests.
+  - PASS: `npm run test`, 61 files and 473 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/cervicalCancerCareClipboard.ts src/cervicalCancerCareClipboard.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `653a1c9` (`Clarify cervical clipboard failure feedback`).
