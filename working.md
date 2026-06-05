@@ -14700,6 +14700,7 @@
     - No new browser tab was opened.
     - Profile metric, BMI, waist metric, caregiver-share controls, care queue, vital inputs, timeline, lab tracking, nutrition, and document controls were visible.
   - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
+  - PASS: committed and pushed to `origin/main` as `f650d80` (`Trim restored profile numbers`).
 
 ## 2026-06-05 12:16 KST - Strict Lab Number Text Parsing Iteration Note
 
