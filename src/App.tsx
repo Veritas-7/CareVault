@@ -2935,14 +2935,24 @@ function App() {
 
   const copyQuestionForVisit = (question: CareQuestion) => {
     if (!navigator.clipboard?.writeText) {
-      setSaveLabel(formatQuestionClipboardCopyUnsupportedStatus(question));
+      const feedback = formatQuestionClipboardCopyUnsupportedStatus(question);
+      setQuestionActionFeedback({ questionId: question.id, message: feedback });
+      setSaveLabel(feedback);
       return;
     }
 
     navigator.clipboard
       .writeText(formatQuestionClipboardText(question))
-      .then(() => setTransientSaveLabel(formatQuestionClipboardCopyStatus(question)))
-      .catch(() => setSaveLabel(formatQuestionClipboardCopyFailedStatus(question)));
+      .then(() => {
+        const feedback = formatQuestionClipboardCopyStatus(question);
+        setQuestionActionFeedback({ questionId: question.id, message: feedback });
+        setTransientSaveLabel(feedback);
+      })
+      .catch(() => {
+        const feedback = formatQuestionClipboardCopyFailedStatus(question);
+        setQuestionActionFeedback({ questionId: question.id, message: feedback });
+        setSaveLabel(feedback);
+      });
   };
 
   const copyCareActionQueue = () => {
