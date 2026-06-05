@@ -153,10 +153,13 @@ import {
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
   formatDocumentArchiveStatusLabel,
+  formatDocumentAttachmentFileNameOnlyStatusLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
   formatDocumentAttachmentReconnectStatusLabel,
   formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
+  formatDocumentDraftAttachmentReadyStatusLabel,
+  formatDocumentDraftAttachmentReferenceReadyStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
   formatDocumentReviewStatusUpdatedLabel,
   formatDocumentRestoreStatusLabel,
@@ -1945,15 +1948,19 @@ function App() {
       if (typeof selected !== "string") return;
 
       const attachmentExists = await exists(selected).catch(() => false);
+      const attachmentName = extractFileName(selected);
+      const attachmentStatus = attachmentExists ? "앱 샌드박스 복사됨" : "앱 샌드박스 경로 저장됨";
       setDocumentDraft((current) => ({
         ...current,
-        attachmentName: extractFileName(selected),
+        attachmentName,
         attachmentPath: selected,
         attachmentStorage: "tauri-sandbox",
-        attachmentStatus: attachmentExists ? "앱 샌드박스 복사됨" : "앱 샌드박스 경로 저장됨",
+        attachmentStatus,
       }));
       documentDraftAttachmentFileRef.current = null;
-      setSaveLabel(attachmentExists ? "첨부 파일 앱 보관 준비" : "첨부 경로 저장 준비");
+      setSaveLabel(
+        formatDocumentDraftAttachmentReadyStatusLabel(attachmentName, attachmentStatus),
+      );
     } catch (error) {
       console.error("Document attachment selection failed", error);
       setSaveLabel("첨부 선택 실패. 파일명 참조 가능");
@@ -1975,7 +1982,7 @@ function App() {
       attachmentStorage: "browser-reference",
       attachmentStatus: "브라우저 파일명 참조",
     }));
-    setSaveLabel("첨부 파일명 참조 준비");
+    setSaveLabel(formatDocumentDraftAttachmentReferenceReadyStatusLabel(file.name));
   };
 
   const clearDocumentAttachment = () => {
@@ -1993,7 +2000,7 @@ function App() {
 
   const openDocumentAttachment = async (document: CareDocument) => {
     if (!document.attachmentPath || !canUseTauriRuntime()) {
-      setSaveLabel("이 첨부는 파일명 참조만 저장됨");
+      setSaveLabel(formatDocumentAttachmentFileNameOnlyStatusLabel(document));
       return;
     }
 

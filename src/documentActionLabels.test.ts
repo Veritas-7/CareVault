@@ -4,10 +4,13 @@ import {
   formatDocumentActionButtonLabel,
   formatDocumentArchiveStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
+  formatDocumentAttachmentFileNameOnlyStatusLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
   formatDocumentAttachmentReconnectStatusLabel,
   formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
+  formatDocumentDraftAttachmentReadyStatusLabel,
+  formatDocumentDraftAttachmentReferenceReadyStatusLabel,
   formatDocumentNextActionHistoryStatusLabel,
   formatDocumentReviewStatusUpdatedLabel,
   formatDocumentRestoreStatusLabel,
@@ -140,6 +143,29 @@ describe("documentActionLabels", () => {
     );
     expect(formatDocumentAttachmentReferenceStatusLabel(baseDocument, "  ")).toBe(
       "혈액검사 메모 검사 서류 첨부 파일명 참조 갱신됨 · 현재 첨부 첨부 파일명 미확인",
+    );
+  });
+
+  it("builds draft attachment readiness feedback with filename and status context", () => {
+    expect(
+      formatDocumentDraftAttachmentReadyStatusLabel("blood-result.pdf", "앱 샌드박스 복사됨"),
+    ).toBe("서류 첨부 준비됨 · 현재 첨부 blood-result.pdf · 첨부 상태 앱 샌드박스 복사됨");
+    expect(formatDocumentDraftAttachmentReadyStatusLabel("  ")).toBe(
+      "서류 첨부 준비됨 · 현재 첨부 첨부 파일명 미확인",
+    );
+    expect(formatDocumentDraftAttachmentReferenceReadyStatusLabel("browser-scan.png")).toBe(
+      "서류 첨부 파일명 참조 준비됨 · 현재 첨부 browser-scan.png · 첨부 상태 브라우저 파일명 참조",
+    );
+  });
+
+  it("builds saved attachment filename-only feedback with document context", () => {
+    expect(
+      formatDocumentAttachmentFileNameOnlyStatusLabel({
+        ...baseDocument,
+        attachmentName: "browser-scan.png",
+      }),
+    ).toBe(
+      "혈액검사 메모 검사 서류 첨부는 파일명 참조만 저장됨 · 현재 첨부 browser-scan.png",
     );
   });
 

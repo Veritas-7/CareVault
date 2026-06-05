@@ -111,6 +111,29 @@ export function formatDocumentAttachmentPathUpdatedStatusLabel(
   )}${formatAttachmentStatusContext(attachmentStatus)}`;
 }
 
+export function formatDocumentDraftAttachmentReadyStatusLabel(
+  attachmentName: string | undefined,
+  attachmentStatus?: string,
+) {
+  return `서류 첨부 준비됨 · 현재 첨부 ${formatAttachmentFileName(
+    attachmentName,
+  )}${formatAttachmentStatusContext(attachmentStatus)}`;
+}
+
+export function formatDocumentDraftAttachmentReferenceReadyStatusLabel(
+  attachmentName: string | undefined,
+) {
+  return `서류 첨부 파일명 참조 준비됨 · 현재 첨부 ${formatAttachmentFileName(
+    attachmentName,
+  )} · 첨부 상태 브라우저 파일명 참조`;
+}
+
+export function formatDocumentAttachmentFileNameOnlyStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 첨부는 파일명 참조만 저장됨 · 현재 첨부 ${formatAttachmentFileName(
+    document.attachmentName,
+  )}`;
+}
+
 export function formatDocumentActionButtonLabel(
   document: CareDocument,
   kind: DocumentActionLabelKind,
