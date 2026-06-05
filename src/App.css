@@ -1884,7 +1884,8 @@ label,
   font-size: 0.8rem;
 }
 
-.cervical-care-copy-feedback {
+.cervical-care-copy-feedback,
+.cervical-care-question-feedback {
   margin: -4px 0 12px;
   padding: 8px 10px;
   border: 1px solid #b9dfd6;

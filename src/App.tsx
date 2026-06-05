@@ -822,6 +822,9 @@ function App() {
   const [cervicalCancerCareCopyFeedback, setCervicalCancerCareCopyFeedback] = useState<
     string | null
   >(null);
+  const [cervicalCancerCareQuestionFeedback, setCervicalCancerCareQuestionFeedback] = useState<
+    string | null
+  >(null);
   const [documentActionFeedback, setDocumentActionFeedback] = useState<{
     documentId: string;
     message: string;
@@ -2711,6 +2714,8 @@ function App() {
   };
 
   const applyCervicalCancerCarePrompt = (prompt: CervicalCancerCarePrompt) => {
+    const feedback = `자궁경부암 질문 초안 준비됨: ${prompt.topic}`;
+
     setQuestionDraft((current) => ({
       ...current,
       date: getNextQuestionDate(state.visits, today),
@@ -2719,11 +2724,16 @@ function App() {
       priority: "next-visit",
       status: "open",
     }));
-    setSaveLabel(`자궁경부암 질문 초안 준비됨: ${prompt.topic}`);
+    setCervicalCancerCareQuestionFeedback(feedback);
+    setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
   const applyCervicalCancerScreeningQuestion = () => {
+    const feedback = formatCervicalCancerScreeningQuestionDraftReadyStatus(
+      cervicalCancerScreeningSummary,
+    );
+
     setQuestionDraft((current) => ({
       ...current,
       date: getNextQuestionDate(state.visits, today),
@@ -2732,9 +2742,8 @@ function App() {
       priority: "next-visit",
       status: "open",
     }));
-    setSaveLabel(
-      formatCervicalCancerScreeningQuestionDraftReadyStatus(cervicalCancerScreeningSummary),
-    );
+    setCervicalCancerCareQuestionFeedback(feedback);
+    setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
   };
 
@@ -4345,6 +4354,11 @@ function App() {
             {cervicalCancerCareCopyFeedback ? (
               <div className="cervical-care-copy-feedback" role="status">
                 {cervicalCancerCareCopyFeedback}
+              </div>
+            ) : null}
+            {cervicalCancerCareQuestionFeedback ? (
+              <div className="cervical-care-question-feedback" role="status">
+                {cervicalCancerCareQuestionFeedback}
               </div>
             ) : null}
             <div
