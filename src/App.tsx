@@ -320,12 +320,14 @@ import {
 import {
   formatQuestionDraftAddActionLabel,
   formatQuestionPriorityControlDescription,
+  formatQuestionPriorityUpdateStatus,
   normalizeQuestionPriority,
   questionPriorityLabel,
   type QuestionPriority,
 } from "./questionPriority";
 import {
   buildQuestionStatusButtonLabels,
+  formatQuestionStatusUpdateStatus,
   questionStatusLabel,
   type QuestionStatus,
 } from "./questionStatus";
@@ -2733,23 +2735,25 @@ function App() {
   };
 
   const updateQuestionStatus = (id: string, status: QuestionStatus) => {
+    const targetQuestion = state.questions.find((question) => question.id === id);
     setState((current) => ({
       ...current,
       questions: current.questions.map((question) =>
         question.id === id ? { ...question, status } : question,
       ),
     }));
-    setActionSaveLabel(`질문 상태: ${questionStatusLabel[status]}`);
+    setActionSaveLabel(formatQuestionStatusUpdateStatus(targetQuestion?.topic ?? "", status));
   };
 
   const updateQuestionPriority = (id: string, priority: QuestionPriority) => {
+    const targetQuestion = state.questions.find((question) => question.id === id);
     setState((current) => ({
       ...current,
       questions: current.questions.map((question) =>
         question.id === id ? { ...question, priority } : question,
       ),
     }));
-    setActionSaveLabel(`질문 우선순위: ${questionPriorityLabel[priority]}`);
+    setActionSaveLabel(formatQuestionPriorityUpdateStatus(targetQuestion?.topic ?? "", priority));
   };
 
   const copyQuestionForVisit = (question: CareQuestion) => {

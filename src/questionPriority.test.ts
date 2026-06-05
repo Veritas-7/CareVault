@@ -3,6 +3,7 @@ import {
   defaultQuestionPriority,
   formatQuestionDraftAddActionLabel,
   formatQuestionPriorityControlDescription,
+  formatQuestionPriorityUpdateStatus,
   normalizeQuestionPriority,
   questionPriorityLabel,
   questionPrioritySortRank,
@@ -52,6 +53,18 @@ describe("questionPriority", () => {
     );
     expect(formatQuestionPriorityControlDescription("식사 상담", "routine")).toBe(
       "식사 상담 우선순위 변경 · 현재 일반 확인",
+    );
+  });
+
+  it("formats saved question priority update feedback with target context", () => {
+    expect(formatQuestionPriorityUpdateStatus("혈액검사 질문", "high")).toBe(
+      "혈액검사 질문 우선순위: 이번 진료 우선",
+    );
+    expect(formatQuestionPriorityUpdateStatus("식사 상담", "routine")).toBe(
+      "식사 상담 우선순위: 일반 확인",
+    );
+    expect(formatQuestionPriorityUpdateStatus("  ", "next-visit")).toBe(
+      "진료 전 질문 우선순위: 다음 진료",
     );
   });
 });

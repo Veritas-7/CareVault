@@ -18,11 +18,17 @@ const questionStatusButtonVisibleLabel: Record<QuestionStatus, string> = {
   deferred: "보류 처리",
 };
 
+function formatQuestionStatusContext(topic: string) {
+  const trimmedTopic = topic.trim();
+  if (!trimmedTopic) return "진료 전 질문";
+  return trimmedTopic.endsWith("질문") ? trimmedTopic : `${trimmedTopic} 질문`;
+}
+
 export function buildQuestionStatusButtonLabels(
   topic: string,
   status: QuestionStatus,
 ): QuestionStatusButtonLabels {
-  const context = topic.trim() ? `${topic.trim()} 질문` : "진료 전 질문";
+  const context = formatQuestionStatusContext(topic);
   const statusLabel = questionStatusLabel[status];
   const visibleLabel = questionStatusButtonVisibleLabel[status];
   const actionLabel = `${context} 상태를 ${statusLabel}로 변경`;
@@ -32,4 +38,8 @@ export function buildQuestionStatusButtonLabels(
     title: actionLabel,
     visibleLabel,
   };
+}
+
+export function formatQuestionStatusUpdateStatus(topic: string, status: QuestionStatus) {
+  return `${formatQuestionStatusContext(topic)} 상태: ${questionStatusLabel[status]}`;
 }
