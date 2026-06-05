@@ -14597,4 +14597,4 @@
   - PASS: `git diff --check -- DESIGN.md working.md`.
   - PASS: post-correction `rg "Runtime QA|runtime:|1431|1420" -n DESIGN.md` shows active runtime and Runtime QA on `1420`; only historical changelog text still mentions `1431`.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged two-file diff.
-  - Pending: commit and push.
+  - PASS: committed and pushed to `origin/main` as `c93a90d` (`Correct design runtime port evidence`).
