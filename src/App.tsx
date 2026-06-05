@@ -825,6 +825,7 @@ function App() {
     string | null
   >(null);
   const [foodQuestionDraftFeedback, setFoodQuestionDraftFeedback] = useState<string | null>(null);
+  const [labPresetFeedback, setLabPresetFeedback] = useState<string | null>(null);
   const [cervicalCancerCareCopyFeedback, setCervicalCancerCareCopyFeedback] = useState<
     string | null
   >(null);
@@ -2905,8 +2906,12 @@ function App() {
   const applyLabPreset = (presetId: string) => {
     setLabPresetChoice(presetId);
     const preset = resolveLabPreset(presetId, state.profile.sex);
-    if (!preset) return;
+    if (!preset) {
+      setLabPresetFeedback(null);
+      return;
+    }
     const presetPreview = buildLabPresetPreview(presetId, state.profile.sex);
+    const feedback = formatLabPresetAppliedStatusLabel(presetId, state.profile.sex);
 
     setLabDraft((current) => ({
       ...current,
@@ -2918,7 +2923,8 @@ function App() {
         ? current.note
         : formatLabPresetNoteWithSource(preset, presetPreview?.applicabilityLabel),
     }));
-    setSaveLabel(formatLabPresetAppliedStatusLabel(presetId, state.profile.sex));
+    setLabPresetFeedback(feedback);
+    setSaveLabel(feedback);
   };
 
   const resetLabDraft = () => {
@@ -2927,6 +2933,7 @@ function App() {
       : "";
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
+    setLabPresetFeedback(null);
     clearRecordFormValidationFeedback("lab");
     setSaveLabel(formatLabDraftResetStatusLabel(labDraft, presetLabel, today));
   };
@@ -6142,6 +6149,11 @@ function App() {
                 </p>
               )}
             </div>
+            {labPresetFeedback ? (
+              <div className="lab-preset-feedback" role="status">
+                {labPresetFeedback}
+              </div>
+            ) : null}
             <div className="form-grid">
               <label>
                 날짜
