@@ -14853,6 +14853,7 @@
     - Dashboard metrics, caregiver-share controls, care queue, cervical-care note, and record panels were visible.
   - PASS: Stopped the local dev server and confirmed port 1420 had no listener.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged four-file diff.
+  - PASS: committed and pushed to `origin/main` as `fb75c28` (`Guard caregiver preset hydration`).
 
 ## 2026-06-05 12:50 KST - Restored Record Date Guard Iteration Note
 
