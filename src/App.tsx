@@ -336,6 +336,10 @@ import { buildSymptomDisplayParts } from "./symptomDisplay";
 import { buildSymptomPanelSummary } from "./symptomMetric";
 import { buildTimelinePanelSummary } from "./timelineMetric";
 import {
+  formatTimelineSourceEvidenceLabel,
+  formatTimelineSourceEvidenceOpenLabel,
+} from "./timelineSourceEvidenceLabels";
+import {
   assessVitalRecord,
   formatVitalMetricRecordLabel,
   formatVitalMetricValue,
@@ -5125,59 +5129,70 @@ function App() {
               }),
             ])
               .slice(0, 8)
-              .map((item) => (
-                <article className="timeline-item" key={item.id}>
-                  <time>{item.date}</time>
-                  {item.icon}
-                  <div>
-                    {item.recordLabel ? (
-                      <div className="timeline-record-badges">
-                        <span
-                          className={`timeline-record-label ${
-                            item.recordLabelTone
-                              ? `timeline-record-label-${item.recordLabelTone}`
-                              : ""
-                          }`}
-                        >
-                          {item.recordLabel}
-                        </span>
-                        {item.hasSourceEvidence ? (
-                          <span className="timeline-record-evidence-label">근거 포함</span>
-                        ) : null}
-                      </div>
-                    ) : null}
-                    <strong>{item.title}</strong>
-                    <p>{item.detail || "세부 메모 없음"}</p>
-                    {item.sourceEvidence ? (
-                      <small
-                        className="timeline-source-evidence"
-                        aria-label={`${item.title} ${
-                          item.sourceEvidenceTypeLabel || "기록"
-                        } 근거 ${item.sourceLabel}`}
-                      >
-                        <ShieldCheck aria-hidden="true" />
-                        {item.sourceUrl ? (
-                          <a
-                            href={item.sourceUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label={`${item.title} ${
-                              item.sourceEvidenceTypeLabel || "기록"
-                            } 근거 ${item.sourceLabel} 열기`}
-                            title={`${item.title} ${
-                              item.sourceEvidenceTypeLabel || "기록"
-                            } 근거 ${item.sourceLabel} 열기`}
+              .map((item, timelineIndex) => {
+                const sourceEvidenceLabel = formatTimelineSourceEvidenceLabel({
+                  date: item.date,
+                  position: timelineIndex + 1,
+                  title: item.title,
+                  sourceEvidenceTypeLabel: item.sourceEvidenceTypeLabel,
+                  sourceLabel: item.sourceLabel,
+                });
+                const sourceEvidenceOpenLabel = formatTimelineSourceEvidenceOpenLabel({
+                  date: item.date,
+                  position: timelineIndex + 1,
+                  title: item.title,
+                  sourceEvidenceTypeLabel: item.sourceEvidenceTypeLabel,
+                  sourceLabel: item.sourceLabel,
+                });
+
+                return (
+                  <article className="timeline-item" key={item.id}>
+                    <time>{item.date}</time>
+                    {item.icon}
+                    <div>
+                      {item.recordLabel ? (
+                        <div className="timeline-record-badges">
+                          <span
+                            className={`timeline-record-label ${
+                              item.recordLabelTone
+                                ? `timeline-record-label-${item.recordLabelTone}`
+                                : ""
+                            }`}
                           >
-                            {item.sourceEvidence}
-                          </a>
-                        ) : (
-                          <span>{item.sourceEvidence}</span>
-                        )}
-                      </small>
-                    ) : null}
-                  </div>
-                </article>
-              ))}
+                            {item.recordLabel}
+                          </span>
+                          {item.hasSourceEvidence ? (
+                            <span className="timeline-record-evidence-label">근거 포함</span>
+                          ) : null}
+                        </div>
+                      ) : null}
+                      <strong>{item.title}</strong>
+                      <p>{item.detail || "세부 메모 없음"}</p>
+                      {item.sourceEvidence ? (
+                        <small
+                          className="timeline-source-evidence"
+                          aria-label={sourceEvidenceLabel}
+                        >
+                          <ShieldCheck aria-hidden="true" />
+                          {item.sourceUrl ? (
+                            <a
+                              href={item.sourceUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={sourceEvidenceOpenLabel}
+                              title={sourceEvidenceOpenLabel}
+                            >
+                              {item.sourceEvidence}
+                            </a>
+                          ) : (
+                            <span>{item.sourceEvidence}</span>
+                          )}
+                        </small>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
           </div>
         </section>
 
