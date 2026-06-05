@@ -14745,6 +14745,7 @@
   - PASS: `git diff --check`.
   - PASS: stopped the local Vite dev server before staging and confirmed port `1420` was closed.
   - PASS: `gitleaks protect --staged --no-banner --redact`, no leaks found in the staged five-file diff.
+  - PASS: committed and pushed to `origin/main` as `043c5a8` (`Tighten profile metric parsing`).
 
 ## 2026-06-05 12:07 KST - SQLite Count Integer Parsing Iteration Note
 
