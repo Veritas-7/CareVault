@@ -102,7 +102,7 @@ import {
   getNextQuestionDate,
   type LabQuestionSource,
 } from "./labQuestionPrompts";
-import { buildLabPanelSummary } from "./labMetric";
+import { buildLabPanelSummary, formatLabResultSavedStatusLabel } from "./labMetric";
 import {
   buildFoodQuestionButtonLabels,
   buildFoodQuestionDraft,
@@ -2705,14 +2705,15 @@ function App() {
       return;
     }
 
+    const savedLabResult = { ...labDraft, id: createId("lab") };
     setState((current) => ({
       ...current,
-      labResults: [...current.labResults, { ...labDraft, id: createId("lab") }],
+      labResults: [...current.labResults, savedLabResult],
     }));
     setLabDraft({ ...emptyLabResult, date: today });
     setLabPresetChoice("");
     clearRecordFormValidationFeedback("lab");
-    setActionSaveLabel("검사 수치 추가됨");
+    setActionSaveLabel(formatLabResultSavedStatusLabel(savedLabResult));
   };
 
   const addLabQuestion = (

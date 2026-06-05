@@ -1,7 +1,48 @@
 import { describe, expect, it } from "vitest";
-import { buildLabPanelSummary } from "./labMetric";
+import { buildLabPanelSummary, formatLabResultSavedStatusLabel } from "./labMetric";
 
 describe("labMetric", () => {
+  it("builds lab-result saved status feedback from value, assessment, and source evidence", () => {
+    expect(
+      formatLabResultSavedStatusLabel({
+        lower: "4",
+        name: "WBC",
+        note: "",
+        unit: "10^3/uL",
+        upper: "10",
+        value: "3.2",
+      }),
+    ).toBe("WBC 검사 수치 추가됨 · 3.2 10^3/uL · 판정 기준보다 낮음 · 근거 포함");
+  });
+
+  it("keeps custom lab saved status concise when there is no source evidence", () => {
+    expect(
+      formatLabResultSavedStatusLabel({
+        lower: "8.8",
+        name: "Custom mineral",
+        note: "",
+        unit: "mg/dL",
+        upper: "10.5",
+        value: "9.1",
+      }),
+    ).toBe(
+      "Custom mineral 검사 수치 추가됨 · 9.1 mg/dL · 판정 기준 범위 내 · 근거 없음",
+    );
+  });
+
+  it("uses stable lab saved status fallbacks for missing name, value, and unit", () => {
+    expect(
+      formatLabResultSavedStatusLabel({
+        lower: "",
+        name: "   ",
+        note: "",
+        unit: "  ",
+        upper: "",
+        value: "",
+      }),
+    ).toBe("검사 수치 추가됨 · 값 없음 · 판정 값 없음 · 근거 없음");
+  });
+
   it("builds saved-lab panel summary chips from lab flags, evidence, and question candidates", () => {
     expect(
       buildLabPanelSummary([

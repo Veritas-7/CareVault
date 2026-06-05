@@ -9,6 +9,10 @@ export type LabPanelSummarySource = {
   value: string;
 };
 
+export type LabResultSavedStatusSource = LabPanelSummarySource & {
+  unit: string;
+};
+
 export type LabPanelSummaryItem = {
   id: string;
   label: string;
@@ -30,6 +34,21 @@ export type LabPanelSummary = {
 
 function assessLabSummarySource(result: LabPanelSummarySource) {
   return assessLabTextValue(result.value, result.lower, result.upper);
+}
+
+function formatLabResultValue(result: Pick<LabResultSavedStatusSource, "unit" | "value">) {
+  const value = result.value.trim() || "값 없음";
+  const unit = result.unit.trim();
+  return unit && value !== "값 없음" ? `${value} ${unit}` : value;
+}
+
+export function formatLabResultSavedStatusLabel(result: LabResultSavedStatusSource) {
+  const name = result.name.trim();
+  const prefix = name ? `${name} 검사 수치 추가됨` : "검사 수치 추가됨";
+  const assessment = assessLabSummarySource(result);
+  const evidenceContext = buildLabSourceEvidenceParts(result).sourceLabel ? "근거 포함" : "근거 없음";
+
+  return `${prefix} · ${formatLabResultValue(result)} · 판정 ${assessment.label} · ${evidenceContext}`;
 }
 
 export function buildLabPanelSummary(results: LabPanelSummarySource[]): LabPanelSummary {
