@@ -18264,3 +18264,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `ba94e98` (`Show profile standards copy local feedback`).
+
+## 2026-06-06 02:47 KST - Health Standards Copy Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires saved-question checks, profile/form copy checks, and every new control to provide visible feedback or a clear state change in the constrained cmux right pane.
+  - Real cmux QA found `전체 기준 복사` updated only the top save-status chip, so users focused on the `한국 성인 기준` panel had no local `role=status` confirmation near the copied standards scope.
+- Change:
+  - Added transient `healthStandardsCopyFeedback` UI state in `src/App.tsx`.
+  - Updated `copyHealthStandards()` so clipboard unsupported, successful copy, and copy failure branches all set local standards-panel feedback while preserving existing top save-status behavior.
+  - Rendered `.health-standards-copy-feedback` inside the `한국 성인 기준` panel and styled it as a compact wrapping source-scope status row.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use first showed cmux had switched to `블로그` with a WriteFlow browser pane, so that state was rejected as invalid CareVault evidence.
+  - PASS: switched the same cmux window back to `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: clicked `한국 성인 건강 기준 전체 범위 복사`; the top status showed `전체 기준 복사됨 · 표시 26/26 · 주의 35 · 성별 분리 5개 · 출처 15개`, but local `.health-standards-copy-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter26-health-standards-copy-local-feedback-red.png` captured the missing panel feedback.
+  - PASS after fix: reloaded the same surface and clicked the same `전체 기준 복사` button; the standards panel showed visible local `role=status` feedback `전체 기준 복사됨 · 표시 26/26 · 주의 35 · 성별 분리 5개 · 출처 15개`, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter26-health-standards-copy-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: reloaded `surface:9` and verified no stale `.health-standards-copy-feedback` and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/healthStandards.test.ts`, 30 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `95ec351` (`Show health standards copy local feedback`).
