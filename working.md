@@ -18575,3 +18575,36 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `0fc98cd` (`Show lab preset local feedback`).
+
+## 2026-06-06 04:00 KST - Lab Preset Reset Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires preset-derived lab drafts to expose a reset action that returns the selector and fields to direct input without saving a record.
+  - Real cmux QA found the reset action cleared the Hgb preset draft and updated the top save-status chip, but the lab preset area had no local `role=status` reset confirmation near the affected controls.
+- Change:
+  - Updated `resetLabDraft()` in `src/App.tsx` to calculate the reset status once and reuse it for both the global save chip and local `labPresetFeedback`.
+  - Preserved the existing draft reset behavior: selector clears to direct input, fields clear, form validation feedback clears, and no record is saved.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use showed the visible cmux workspace had switched to `블로그`; that surface was rejected as invalid CareVault evidence before RED/PASS work continued.
+  - PASS: Computer Use switched back to and confirmed the visible workspace was `암관리`; the selected right tab was `CareVault` at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: selected `Hgb 헤모글로빈`, clicked `검사 입력 프리셋과 값 초기화`, and verified fields cleared plus the top status showed `검사 입력 초기화됨 · 프리셋 Hgb 헤모글로빈 해제 · 이전 Hgb 값 없음 · 판정 값 없음 · 근거 포함 · 날짜 2026-06-05`, but local `.lab-preset-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter35-lab-preset-reset-local-feedback-red.png` captured the missing local reset feedback.
+  - PASS after fix: repeated the same Hgb select then reset flow in `암관리`; local `.lab-preset-feedback[role=status]` and the top status both showed the same reset status, while selector, item, unit, and range fields were empty. Screenshot `/tmp/carevault-surface9-iter35-lab-preset-reset-local-feedback-pass.png` captured the local reset feedback.
+  - PASS cleanup in browser: forced reload on `surface:9` and verified no stale `.lab-preset-feedback`, empty preset selector, empty lab item field, and no mojibake.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/labPresets.test.ts src/labMetric.test.ts`, 19 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `e49e42d` (`Show lab preset reset local feedback`).
