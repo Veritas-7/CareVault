@@ -18436,3 +18436,37 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed source to `origin/main` as `f5b9664` (`Show cervical question draft local feedback`).
+
+## 2026-06-06 03:28 KST - Cervical Symptom Draft Local Feedback cmux QA
+
+- Improvement target:
+  - User correction remained the operating rule: keep the right cmux in-app browser open and test the app like a real user while fixing and improving.
+  - `DESIGN.md` requires cervical warning-card recording-draft buttons to prefill the same source-backed warning-record field guide and keep immediate visible feedback in the constrained cmux right pane.
+  - Real cmux QA found `비정상 질출혈 자궁경부암 증상 기록 초안 만들기` filled the symptom form and updated the top save-status chip, but the `자궁경부암 케어 노트` panel had no local `role=status` confirmation near the action.
+- Change:
+  - Added transient `cervicalCancerCareSymptomFeedback` UI state in `src/App.tsx`.
+  - Updated both `applyCervicalCancerCareAlert()` and `applyCervicalCancerCareItemDraft()` so warning-card and record-check symptom drafts set local panel feedback while preserving existing top save-status behavior.
+  - Rendered `.cervical-care-symptom-feedback` inside the cervical care panel and reused the compact wrapping status styling from the existing cervical feedback rows.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - CORRECTED: Computer Use showed cmux had switched to `working.md`, so that Worklog Tracker pane was rejected as invalid CareVault evidence.
+  - PASS: `cmux list-workspaces` and Computer Use confirmed the active workspace was `암관리`; the right pane was reused at `http://127.0.0.1:1420/#dashboard`.
+  - RED/IMPROVEMENT: clicked `비정상 질출혈 자궁경부암 증상 기록 초안 만들기`; the top status showed `자궁경부암 증상 초안 준비됨: 비정상 질출혈`, but local `.cervical-care-symptom-feedback` was empty. Screenshot `/tmp/carevault-surface9-iter31-cervical-symptom-draft-local-feedback-red.png` captured the missing panel feedback.
+  - PASS after fix: reloaded the same surface and clicked the same warning-card draft button; the cervical care panel showed visible local `role=status` feedback with `자궁경부암 증상 초안 준비됨: 비정상 질출혈`, and the top status matched it. Screenshot `/tmp/carevault-surface9-iter31-cervical-symptom-draft-local-feedback-pass.png` captured the updated feedback.
+  - PASS cleanup in browser: forced reload on `surface:9` and verified no stale `.cervical-care-symptom-feedback`, the symptom save button returned to default `증상 기록 추가`, and no mojibake remained.
+  - PASS: `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the private 390x884 CareVault UI UX AutoResearch screen instance `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareMetric.test.ts`, 26 tests.
+  - PASS: `npm run test`, 61 files and 476 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/App.css`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped the Vite dev server by terminating the single port 1420 node listener after the final cmux proof.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed source to `origin/main` as `d9b70d2` (`Show cervical symptom draft local feedback`).
