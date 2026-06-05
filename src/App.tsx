@@ -2083,7 +2083,9 @@ function App() {
 
   const openDocumentAttachment = async (document: CareDocument) => {
     if (!document.attachmentPath || !canUseTauriRuntime()) {
-      setSaveLabel(formatDocumentAttachmentFileNameOnlyStatusLabel(document));
+      const feedback = formatDocumentAttachmentFileNameOnlyStatusLabel(document);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
       return;
     }
 
@@ -2101,11 +2103,13 @@ function App() {
           recovery.historyDetail,
           recovery.historyLabel,
         );
+        setDocumentActionFeedback({ documentId: document.id, message: recovery.status });
         setActionSaveLabel(recovery.status);
         return;
       }
 
-      setSaveLabel(result.statusLabel);
+      setDocumentActionFeedback({ documentId: document.id, message: result.statusLabel });
+      setActionSaveLabel(result.statusLabel);
     } catch (error) {
       console.error("Document attachment open failed", error);
       const recovery = buildAttachmentRecoveryUpdate("open-failure", document.attachmentName);
@@ -2115,6 +2119,7 @@ function App() {
         recovery.historyDetail,
         recovery.historyLabel,
       );
+      setDocumentActionFeedback({ documentId: document.id, message: recovery.status });
       setActionSaveLabel(recovery.status);
     }
   };
