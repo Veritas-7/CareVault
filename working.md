@@ -16942,3 +16942,34 @@
   - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
   - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
   - PASS: committed and pushed to `origin/main` as `6b8ecb7` (`Clarify lab reset feedback`).
+
+## 2026-06-05 21:32 KST - Lab Preset Feedback Coverage
+
+- Improvement target:
+  - `DESIGN.md` requires lab/standards workflows to preserve scan-friendly status, selected sex applicability, range context, and official-source context.
+  - Source audit found `applyLabPreset()` still reported only `검사 프리셋 적용: <label>`, losing range, sex applicability, and source label after the user selected a preset.
+- Change:
+  - Added `formatLabPresetAppliedStatusLabel()` in `src/labPresets.ts`.
+  - Updated `App.tsx` lab preset application feedback to report preset label, range label, applicability label, and source label.
+  - Added focused tests for sex-specific Hgb preset status and unknown-preset fallback.
+- Runtime/browser notes:
+  - PASS: reused only existing cmux browser `surface:9`; no new browser pane or tab was opened.
+  - PARTIAL/PASS: `curl -I http://127.0.0.1:1420/` returned HTTP `200`; first title lookup returned the URL string, then same-surface navigation returned `OK`.
+  - PARTIAL: same-surface snapshot showed only a `새로고침` button, but DOM eval returned `title: CareVault`, `rootChildCount: 1`, and loaded CareVault body text.
+  - PASS: same-surface DOM interaction selected the Hgb preset and verified the body contained `검사 프리셋 적용: Hgb 헤모글로빈 · 기준 12-16 g/dL · 여성 기준 적용 · 근거 서울아산병원 혈색소 검사 참고치`.
+  - PASS: console contained only Vite debug connection logs and `cmux browser surface:9 errors list` returned `No browser errors`.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; the project still contains the 390x884 CareVault UI UX AutoResearch screen instance.
+- Automated verification:
+  - PASS: `npm run test -- src/labPresets.test.ts`, 11 tests.
+  - PASS: `npm run test`, 60 files and 466 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/labPresets.ts src/labPresets.test.ts`.
+  - PASS: staged `gitleaks protect --staged --no-banner --redact`, no leaks found.
+- Cleanup:
+  - PASS: stopped only the Vite `node` listener on port 1420 and confirmed port 1420 was free.
+  - PASS: `npm run runtime:doctor` confirmed no port 1420 listener, no release app, and no CareVault dev processes.
+  - PASS: sandbox DB sanity check returned key `main`, profile `나의 건강 기록`, and normalized document count `1|0`.
+  - PASS: committed and pushed to `origin/main` as `493b3ef` (`Clarify lab preset feedback`).
