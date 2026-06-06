@@ -23201,6 +23201,43 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 03:26 KST - Browser Attachment Preview Remove Direct QA
+
+- Current Goal:
+  - Verify the positive saved-document browser-reference image attachment path in the real existing `암관리` `surface:7` browser.
+  - Cover real file reattachment, saved image preview open/close, normal attachment removal, row/global feedback, backup scope count changes, persistence restoration, and browser diagnostics.
+- Context:
+  - Repo started clean and synced at `6ba685c` (`Log CareVault cervical note copy QA status`).
+  - `DESIGN.md` requires saved-document attachment actions to keep document-specific aria/title text, row feedback, filename-only export boundaries, and local-first privacy.
+  - Recent direct slices covered attachment failure/recovery, backup restore reattachment, and saved-document archive/restore; the current positive browser-reference image preview/open-close/remove path still needs fresh same-surface evidence.
+- Progress:
+  - Selected this as a non-duplicate saved-document workflow because it exercises a normal user path with reversible localStorage cleanup.
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; reused only `workspace:4` and the existing `surface:7`.
+  - PASS baseline: `surface:7` was at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, with documents `1`, deleted documents `0`, vitals `4`, visits `1`, symptoms `1`, questions `1`, labs `1`, no attachment metadata, and backup scope `첨부 파일명 0개`.
+  - PASS real saved-document `첨부 추가` click: button label/aria was `혈액검사 메모 검사 서류 첨부 추가 · 상태 의료진 질문` and the hit target was 44px high.
+  - PASS same-WebView file selection: dispatched a valid 1x1 PNG `File` named `cmux-positive-preview.png` through the real hidden `저장된 서류 첨부 파일 재연결 입력`; the saved document became filename-only `browser-reference` with status `브라우저 파일명 참조`, history added `첨부 재연결`, row/global feedback named the file, backup scope changed to `첨부 파일명 1개`, and localStorage contained no `attachmentPath`, `/Users/wj`, or `blob:`.
+  - PASS real `미리보기` click: attachment preview dialog opened with `role="dialog"`, `aria-modal="true"`, aria label `혈액검사 메모 첨부 미리보기`, image alt `혈액검사 메모 첨부 이미지 미리보기`, source label `브라우저 세션 미리보기`, and close button aria/title `첨부 미리보기 닫기`.
+  - PASS image render: preview image completed with natural size 1x1; the blob URL stayed in the dialog DOM only and was not persisted.
+  - PASS close action: real `첨부 미리보기 닫기` click closed the dialog and set save chip `이미지 미리보기 닫힘`.
+  - PASS real `첨부 제거` click with captured confirm acceptance: confirm text was `"혈액검사 메모" 첨부 파일 연결을 제거할까요?`; attachment metadata was cleared, history added `첨부 제거`, row/global feedback named removed file, backup scope returned to `첨부 파일명 0개`, and no preview/recovery prompt stayed open.
+  - PASS cleanup: restored the full baseline `carevault.v1`, removed `carevault.__testAttachmentPositiveBaseline`, removed the temporary confirm stub, reloaded only the same `surface:7`, and confirmed final baseline state with no test filename, temp keys, preview dialog, export preview, stale alert, dialog, local path, or blob text.
+- Changes:
+  - `working.md` only; no source patch was needed because the positive browser-reference image attachment flow matched the documented contract.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite: port `1420` free, no installed/release CareVault app, no dev process.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, `get title`, and `wait --selector '.document-list-panel'`.
+  - PASS same-surface baseline capture, real `첨부 추가` click, hidden input file dispatch, preview open/close, confirm-accepted attachment removal, and full baseline cleanup.
+  - PASS final cleanup eval: URL `http://127.0.0.1:1420/#care-plan`, title `CareVault`, ready `complete`, localStorage keys only `carevault.v1`, no session test keys, counts restored, document attachment fields empty, backup scope `첨부 파일명 0개`, save chip `브라우저 자동 저장됨`.
+  - PASS `timeout 20 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 20 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+- Issues:
+  - Must use only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite server, run runtime/diff/focused attachment checks, stage only `working.md`, run staged secret checks, commit, push, and record post-push status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
