@@ -290,7 +290,7 @@ import {
 import {
   formatStorageReadyLabel,
   formatStorageSaveFailedLabel,
-  formatStorageSavedLabel,
+  formatStorageSavedWithActionLabel,
 } from "./storageStatus";
 import { persistedSaveQueue } from "./persistedSaveQueue";
 import {
@@ -1261,11 +1261,10 @@ function App() {
         run: () => savePersistedState(state, { normalizedMirror }),
         onSuccess: async (backend) => {
           setStorageBackend(backend);
-          const savedLabel = formatStorageSavedLabel(backend, true);
           const actionLabel = pendingActionLabelRef.current;
           pendingActionLabelRef.current = null;
           if (Date.now() >= transientSaveLabelUntilRef.current) {
-            setSaveLabel(actionLabel ? `${actionLabel} · ${savedLabel}` : savedLabel);
+            setSaveLabel(formatStorageSavedWithActionLabel(backend, actionLabel, true));
           }
           if (backend === "sqlite") {
             try {
@@ -2161,10 +2160,12 @@ function App() {
     const nextState = { ...state, documents: result.documents };
     setState(nextState);
     const changedDocument = result.changedDocuments[result.changedDocuments.length - 1];
-    setDocumentActionFeedback({
+    const feedback = {
       documentId: changedDocument.id,
       message: formatDocumentNextActionHistoryStatusLabel(changedDocument, changedDocument.nextAction),
-    });
+    };
+    setDocumentActionFeedback(feedback);
+    setActionSaveLabel(feedback.message);
     return nextState;
   };
 
@@ -3368,7 +3369,9 @@ function App() {
       run: () => savePersistedState(stateToSave, { normalizedMirror: normalizedMirrorToSave }),
       onSuccess: async (backend) => {
         setStorageBackend(backend);
-        setSaveLabel(formatStorageSavedLabel(backend));
+        const actionLabel = pendingActionLabelRef.current;
+        pendingActionLabelRef.current = null;
+        setSaveLabel(formatStorageSavedWithActionLabel(backend, actionLabel));
         if (backend === "sqlite") {
           try {
             setNormalizedMirrorStatus(await loadNormalizedMirrorStatus());

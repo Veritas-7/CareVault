@@ -21461,3 +21461,28 @@
 - Next durable app slice:
   - Commit/push this focused fix after staged secret checks.
   - When `surface:7` responds again, re-run the saved-document next-action focused-textarea manual-save flow and verify the `다음 조치 변경` history entry appears before moving to delete/restore or export-preview stale-guard QA.
+
+## 2026-06-06 22:37 KST - Manual Save Action Feedback Consistency
+
+- Improvement target:
+  - Continue the manual-save durability slice after committing `aed7983`.
+  - Preserve the pending row/action feedback in the global save chip when a manual save succeeds, matching the existing autosave behavior.
+- Runtime/browser notes:
+  - BLOCKED single-surface QA: the existing `surface:7` still timed out on the combined `get-url`/`get title`/`snapshot` probe. `cmux ping` returned `PONG`, `cmux browser-status` returned `enabled`, and `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
+  - Runtime guard: no new browser pane/tab/surface was opened, no cmux app restart/kill/quit was attempted, and no user health record was modified in this slice.
+- Changes:
+  - `src/storageStatus.ts`: added `formatStorageSavedWithActionLabel()` so save-success messages can consistently combine pending action feedback with the backend save label.
+  - `src/App.tsx`: autosave now uses the shared formatter, and manual save now consumes `pendingActionLabelRef` before setting the global save chip.
+  - `src/App.tsx`: pending document next-action manual-save flush now calls `setActionSaveLabel()` so the flushed history message is available to the manual-save success label.
+  - `src/storageStatus.test.ts`: added regression coverage for manual and automatic action+save label composition, including blank pending labels.
+  - `DESIGN.md`: documented the manual-save success feedback contract.
+- Verification:
+  - PASS `npm test -- src/storageStatus.test.ts src/documentHistory.test.ts src/documentActionLabels.test.ts` (`3 passed`, `25 passed`).
+  - PASS `npm run typecheck`.
+  - PASS `git diff --check -- src/App.tsx src/storageStatus.ts src/storageStatus.test.ts`.
+- Current state:
+  - The repo is dirty with `src/App.tsx`, `src/storageStatus.ts`, `src/storageStatus.test.ts`, `DESIGN.md`, and this `working.md` entry.
+  - This slice is source-level verified only; direct cmux verification remains pending until the same `surface:7` recovers.
+- Next durable app slice:
+  - Run DESIGN validation, staged secret checks, then commit/push this feedback-consistency patch.
+  - When `surface:7` responds again, re-run the saved-document next-action focused-textarea manual-save flow and verify both document history and global save-chip feedback.
