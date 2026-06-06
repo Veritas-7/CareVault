@@ -25618,3 +25618,23 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 08:02 KST - Document Archive Cancel Direct QA
+
+- Current Goal:
+  - Verify the saved-document `삭제 보관` confirm-cancel branch on the existing single cmux in-app browser, without opening another browser, tab, pane, workspace, or surface.
+  - Confirm canceling the archive prompt leaves the persisted CareVault document state unchanged and leaves no QA instrumentation behind.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `workspace:4` / `pane:8` / `surface:7` browser and navigated it to `http://127.0.0.1:1420/#documents`.
+  - NOTE: One first long cmux eval timed out and briefly produced the known split where `get-url` showed the CareVault URL while the snapshot saw `about:blank`; the same `surface:7` recovered via `location.href = "http://127.0.0.1:1420/#documents"` without opening any new surface.
+  - PASS baseline: stored the current `localStorage["carevault.v1"]` in a session-only test key; baseline length was `1871`, localStorage keys remained only `carevault.v1`, and the documents view showed the real saved row action `혈액검사 메모 검사 서류 삭제 보관함으로 이동 · 상태 의료진 질문`.
+  - PASS cancel path: installed a temporary `window.confirm` recorder that returns `false`, clicked the real saved-row `삭제 보관` button, and captured exactly one prompt: `"혈액검사 메모" 서류 기록을 삭제 보관함으로 이동할까요?`.
+  - PASS non-mutation: after the cancel click, `localStorage["carevault.v1"]` still matched the baseline byte-for-byte, storage length stayed `1871`, active `documents` stayed `1`, `deletedDocuments` stayed `0`, no deleted-document panel appeared, and the same archive button remained visible.
+  - PASS cleanup: restored `window.confirm`, deleted the prompt recorder globals, removed the session-only `carevault.__testDocumentArchiveCancelBaseline` key, and confirmed no `carevault.__test*` keys or confirm globals remained.
+  - PASS final browser state: same-surface eval showed `CareVault` at `http://127.0.0.1:1420/#documents`, storage keys only `carevault.v1`, no dialog, no export preview, no stale alert, no document action feedback, active `documents` `1`, `deletedDocuments` `0`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/documentActionLabels.test.ts src/documentHistory.test.ts src/documentFilterActions.test.ts` => `3 passed`, `29 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this saved-document archive cancel QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret scan, commit/push this focused QA log, then record post-push status.
