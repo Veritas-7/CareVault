@@ -23343,6 +23343,21 @@
 - Next Steps:
   - Stage only `src/App.tsx`, `src/labPresets.test.ts`, and `working.md`, run staged secret checks, commit, push, and record post-push status.
 
+## 2026-06-07 03:48 KST - Post-Push Profile Sex Lab Preset Sync Status
+
+- Current Goal:
+  - Record the post-push state after the profile-sex lab-preset sync fix and direct QA.
+- Git state:
+  - PASS source/log commit pushed: `a1ea3f2` (`Sync lab preset feedback on profile sex changes`) reached `origin/main`.
+  - PASS repo sync after the source/log commit: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, local and origin short SHAs both resolved to `a1ea3f2`, and `git ls-remote origin HEAD` resolved to `a1ea3f26623e0c70364c886e16f4499e4514e045`.
+- Runtime state:
+  - PASS post-push `npm run runtime:doctor`: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+- Notes:
+  - The stale local HDL preset feedback bug is fixed and verified in the same existing `암관리` `surface:7` browser.
+  - The browser localStorage/sessionStorage cleanup was confirmed before stopping Vite.
+- Next Steps:
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
