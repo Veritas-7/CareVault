@@ -64,8 +64,6 @@ function countAttachmentNames(documents: unknown) {
 }
 
 function sanitizeBackupDocument<T extends BackupDocument>(document: T): T {
-  if (!("attachmentPath" in document)) return document;
-
   const { attachmentPath: _attachmentPath, ...safeDocument } = document;
   if (!hasAttachmentName(safeDocument)) return safeDocument as T;
 

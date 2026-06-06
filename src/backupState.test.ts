@@ -52,6 +52,35 @@ describe("backupState", () => {
     expect(JSON.stringify(backup)).not.toContain("attachmentPath");
   });
 
+  it("marks filename-only backup attachments as needing reattachment", () => {
+    const backup = sanitizeCareVaultBackupState({
+      documents: [
+        {
+          attachmentName: "scan.pdf",
+          attachmentStorage: "browser-reference",
+          attachmentStatus: "파일 확인됨",
+        },
+      ],
+      deletedDocuments: [
+        {
+          attachmentName: "old-result.pdf",
+          attachmentStatus: "브라우저 파일명 참조",
+        },
+      ],
+    });
+
+    expect(backup.documents?.[0]).toMatchObject({
+      attachmentName: "scan.pdf",
+      attachmentStorage: "browser-reference",
+      attachmentStatus: restoredAttachmentStatus,
+    });
+    expect(backup.deletedDocuments?.[0]).toMatchObject({
+      attachmentName: "old-result.pdf",
+      attachmentStorage: "browser-reference",
+      attachmentStatus: restoredAttachmentStatus,
+    });
+  });
+
   it("extracts wrapped CareVault backup payloads and sanitizes stale paths", () => {
     const extracted = extractCareVaultBackupState({
       app: "CareVault",

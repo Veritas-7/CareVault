@@ -22230,6 +22230,46 @@
   - Continue direct-click QA from the same existing `암관리` CareVault browser if more CareVault polish is requested.
   - Start with `working.md`, `DESIGN.md`, current git/runtime state, and the existing `surface:7` browser identity before editing.
 
+## 2026-06-07 01:29 KST - Backup Filename-Only Reattachment Scope
+
+- Current Goal:
+  - Continue backup/import hardening from the same clean/synced CareVault repo state.
+  - Make the backup sanitizer match the visible import contract that attachment filenames are retained but require reattachment after backup restore.
+- Context:
+  - Repo started clean and synced at `9395b86` (`Log CareVault CSV visit id status`).
+  - Runtime doctor was clean before this slice: port `1420` free, no CareVault dev process, no installed/release CareVault.app process.
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+- Progress:
+  - Found that `sanitizeBackupDocument()` only converted attachments to `백업에서 복원됨 - 재첨부 필요` when a stale `attachmentPath` key existed.
+  - Filename-only backup documents with `attachmentName` but no local path could keep statuses like `파일 확인됨` or `브라우저 파일명 참조`, which conflicts with the import copy saying attachment filenames require reattachment.
+- Changes:
+  - `src/backupState.test.ts`: added RED/GREEN coverage for filename-only active and deleted-document attachments.
+  - `src/backupState.ts`: now removes any stale `attachmentPath` and marks every document with an attachment filename as `browser-reference` plus `백업에서 복원됨 - 재첨부 필요`.
+  - `DESIGN.md`: documented that backup-sanitized attachment filenames always become filename-only reattachment-needed records after export/import.
+- Tests:
+  - RED `npm test -- src/backupState.test.ts` failed before implementation on `marks filename-only backup attachments as needing reattachment`.
+  - PASS `npm test -- src/backupState.test.ts` => 1 file, 9 tests.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => 62 files, 529 tests.
+  - PASS `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS `git diff --check -- src/backupState.ts src/backupState.test.ts DESIGN.md working.md`.
+  - PASS `npm run build` => 2475 modules transformed; build completed without dirtying `dist/`.
+  - PASS same-browser direct QA on existing `암관리` CareVault `surface:7`:
+    - Backed up browser-local `carevault.v1`, imported a controlled JSON backup payload through the existing backup file input change handler, with a document that had `attachmentName: qa-backup-scan.pdf` and stale `attachmentStatus: 파일 확인됨` but no local path.
+    - Import success feedback appeared, the QA document rendered, storage/body contained `백업에서 복원됨 - 재첨부 필요`, and neither storage nor body kept `파일 확인됨`.
+    - The QA document `첨부 확인` action label included the restored reattachment status; clicking it showed `첨부 확인 실패` plus reattachment guidance and persisted the check-failure status after the save queue settled.
+    - Restored/cleaned browser-local state, removed `carevault.__test*` keys, and verified storage/body no longer contained the QA backup markers.
+    - `cmux browser --surface surface:7 errors list` => `No browser errors`; console list only showed Vite connect messages.
+- Issues:
+  - No new browser, headless browser, pane, tab, workspace, or surface opened in this slice.
+  - During QA, visible cmux workspace was first `working.md` with a Worklog browser. That browser was not used for CareVault; the session was switched back to the existing `암관리` CareVault tab before import QA.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun final runtime/diff checks, then stage only focused paths.
+  - Run staged secret scan, commit, push, and record the pushed state if green.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
