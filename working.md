@@ -24287,6 +24287,44 @@
   - Only `working.md` is dirty with this direct QA evidence.
   - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
 
+## 2026-06-07 05:46 KST - Caregiver Closed Question Direct QA
+
+- Current Goal:
+  - Resolve the previously source-only caregiver closed-question fingerprint slice with direct same-surface cmux QA.
+  - Verify that adding or changing an `answered` question does not stale an already-open caregiver preview, because answered/deferred questions are not rendered in the caregiver HTML open-question section or care queue.
+- Context:
+  - `2026-06-06 23:47 KST - Caregiver Closed-Question Fingerprint Scope` added the source/test/design contract while direct cmux control was blocked.
+  - The live question UI adds a question as `open` first, then the saved question card exposes real status buttons for `open`, `answered`, and `deferred`.
+  - Repo is clean and synced before this QA; `npm run runtime:doctor` reports port `1420` free and no CareVault app/dev processes.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture browser-local `carevault.v1` baseline in `sessionStorage`.
+  - Generate a fresh caregiver preview with the real `보호자 공유본 미리보기` action.
+  - Use real question form controls to add `cmux 답변완료 질문 QA`, then use the saved card status button to mark it `answered`; confirm the open caregiver preview has no stale alert, copy/print/download remain enabled, and the answered QA question/answer text is absent from preview HTML.
+  - Use real saved-question status controls on an existing rendered `open` question as the positive control; confirm the same preview raises the caregiver content stale alert and disables old preview actions until regeneration.
+  - Click the real `공유 기록 반영` action; confirm the refreshed preview reflects only open-question content.
+  - Restore the captured browser-local baseline, remove temporary keys, reload/recover only `surface:7`, and confirm no preview/dialog/stale or QA question residue.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS baseline capture: stored browser-local `carevault.v1` in `sessionStorage["carevault.__testCaregiverClosedQuestionBaseline"]`; baseline had 1 open question (`question-1` / `혈액검사`), 1 document, 4 vitals, and 1 visit.
+  - PASS initial caregiver preview: clicked the real `보호자 공유본 미리보기` action; preview opened with no stale alert, copy/print/download enabled, summary aria `98줄 · 49,711자 · 72,883B · 근거/출처 111개`, and the baseline open question was present in `.export-preview-rendered.innerHTML`.
+  - PASS answered-question freshness: used real `진료 전 질문` controls to save `cmux 답변완료 질문 QA` with answer text, then clicked the saved card's real `답변 완료` status action. The transient open-question stale alert disappeared after the question became `answered`; the open preview had no `.export-preview-stale-alert`, copy/print/download stayed enabled with the same summary, and the QA topic/body/answer were absent from the preview HTML.
+  - PASS rendered-open-question positive stale guard: clicked the existing `혈액검사` question card's real `답변 완료` action. The open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 기록 변경 감지`, exposed `공유 기록 반영`, and disabled copy/print/download with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.` in each aria/title.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled with summary aria `98줄 · 49,468자 · 72,513B · 근거/출처 111개`, and the refreshed preview did not contain the exact baseline question text or the QA topic/body/answer. A shorter `백혈구 수치가 낮을 때 식사 제한 기준 질문` phrase remained only as an unrelated document care-queue memo, not as the closed question.
+  - PASS cleanup: restored the captured baseline, removed the temporary session key, reloaded/recovered only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, question count restored to `1`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no QA question text in storage or DOM, no preview/dialog/stale alert, and `No browser errors`.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS focused tests: `npm test -- src/caregiverExport.test.ts src/questionStatus.test.ts src/questionMetric.test.ts src/questionClipboard.test.ts` => `4 passed`, `64 passed`.
+  - PASS diff check: `git diff --check -- working.md`.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 05:36 KST - Post-Push Caregiver Old Normal Lab QA
 
 - Improvement target:
