@@ -23386,6 +23386,21 @@
   - Stop the temporary Vite runtime.
   - Run focused appointment/visit tests, diff checks, staged secret checks, then commit and push this QA-only `working.md` update.
 
+## 2026-06-07 03:54 KST - Post-Push Future Visit Reminder QA Status
+
+- Current Goal:
+  - Record the post-push state after the future-visit appointment reminder direct QA.
+- Git state:
+  - PASS QA log commit pushed: `91aecce` (`Log future visit reminder QA`) reached `origin/main`.
+  - PASS repo sync after the QA log commit: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, local and origin short SHAs both resolved to `91aecce`, and `git ls-remote origin HEAD` resolved to `91aeccec5e16f7163e4e79910194db31d3de1acb`.
+- Runtime state:
+  - PASS post-push `npm run runtime:doctor`: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+- Notes:
+  - This slice changed only `working.md`; no source patch was needed.
+  - The same existing `암관리` `surface:7` browser directly proved that a future visit with blank `nextDate` still creates a visible appointment reminder from the visit date itself, sorted before later reminders, and cleanup restored the original browser storage.
+- Next Steps:
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
