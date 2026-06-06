@@ -176,6 +176,25 @@ function normalizeCaregiverShareMemoForExport(value: string) {
   return value.trim();
 }
 
+function normalizeCaregiverShareSections(
+  sectionsInput: Record<string, unknown>,
+): CaregiverExportSections {
+  const sections = Object.fromEntries(
+    caregiverExportSectionIds.map((id) => [
+      id,
+      typeof sectionsInput[id] === "boolean"
+        ? sectionsInput[id]
+        : caregiverExportSectionDefaults[id],
+    ]),
+  ) as CaregiverExportSections;
+
+  if (!Object.values(sections).some(Boolean)) {
+    sections[caregiverShareSectionOptions[0].id] = true;
+  }
+
+  return sections;
+}
+
 export function normalizeCaregiverShareSettings(
   input: CaregiverShareSettingsInput | undefined | unknown,
 ): CaregiverShareSettings {
@@ -186,14 +205,7 @@ export function normalizeCaregiverShareSettings(
     coverMemo: typeof settings.coverMemo === "string" ? settings.coverMemo : "",
     presetId: normalizeCaregiverSharePresetId(settings.presetId),
     redactProfile: settings.redactProfile === true,
-    sections: Object.fromEntries(
-      caregiverExportSectionIds.map((id) => [
-        id,
-        typeof sectionsInput[id] === "boolean"
-          ? sectionsInput[id]
-          : caregiverExportSectionDefaults[id],
-      ]),
-    ) as CaregiverExportSections,
+    sections: normalizeCaregiverShareSections(sectionsInput),
   };
 }
 

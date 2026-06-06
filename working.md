@@ -21273,3 +21273,30 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for native desktop attachment recovery friction, backup export/download behavior, caregiver-share imported all-off recovery behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 21:35 KST - Caregiver All-Off Import Recovery Fix
+
+- Improvement target:
+  - Keep the caregiver-share minimum-section rule consistent when settings arrive through backup import or persisted state normalization, not only through the live checkbox UI.
+- RED browser evidence:
+  - Reused only the existing `암관리` browser `surface:7`; no new browser pane/tab/surface was opened. Baseline was `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, counts vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, all seven caregiver sections included, no export preview, no dialog, no stale alert, and `No browser errors`.
+  - Imported a valid wrapped CareVault JSON backup through the real `백업 가져오기` button and hidden `CareVault 백업 JSON 파일 선택` input, with all caregiver sections set to `false`.
+  - RED: the import succeeded with `백업 가져오기 완료`, but the UI entered `포함 0개: 없음 · 제외 7개: 진료, 질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온`. Export/preview aria labels also reported `포함 0개 · 제외 7개`, and every section checkbox was unchecked and enabled, bypassing the visible minimum-1-section guard.
+  - RED unit test: after updating the expected behavior, `npm test -- src/caregiverShareSettings.test.ts` failed as expected because `buildCaregiverShareSectionSummary()` returned no included sections for all-off imported settings.
+- Changes:
+  - `src/caregiverShareSettings.ts`: added `normalizeCaregiverShareSections()` so all-off caregiver section maps recover to the first safe section, `visits`, while preserving ordinary custom section choices.
+  - `src/caregiverShareSettings.test.ts`: changed the imported-all-off test to expect `진료` as the recovered included section and the remaining six sections excluded.
+  - `src/appStateNormalization.test.ts`: added a persisted-state regression proving all-off restored caregiver settings normalize to `visits: true` while preserving the imported cover memo.
+- PASS browser evidence:
+  - Reloaded the same `surface:7` on patched source and repeated the same valid all-off backup import through the real controls.
+  - PASS: the import still succeeded, but the caregiver section summary recovered to `포함 1개: 진료 · 제외 6개: 질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온`. Export/preview aria labels reported `포함 1개 · 제외 6개`, and the `진료` checkbox was checked and disabled with aria/title `최소 1개 섹션은 포함해야 해서 해제할 수 없습니다`.
+  - PASS cleanup: clicked the real `공유 설정 초기화` action, restored the captured baseline defensively, removed `carevault.__testCaregiverAllOffImportBaseline`, reloaded only the same `surface:7`, and confirmed final baseline `#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, all seven caregiver sections included, no backup feedback, no export preview, no dialog, no stale alert, no test sessionStorage keys, and `No browser errors`.
+  - Runtime note: one final browser state probe timed out after the source/HMR reload. Used only the existing `workspace:4`, `pane:8`, and `surface:7` focus path, then confirmed the same clean final baseline; no cmux restart and no new browser were used.
+- Automated verification:
+  - PASS `npm test -- src/caregiverShareSettings.test.ts src/appStateNormalization.test.ts src/backupState.test.ts` (`3 passed`, `39 passed`).
+  - PASS `npm run typecheck`.
+- Current state:
+  - The CareVault repo is dirty with this code/test change and this `working.md` entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for native desktop attachment recovery friction, backup export/download behavior, or another low-risk patient workflow not already covered in the recent worklog tail.

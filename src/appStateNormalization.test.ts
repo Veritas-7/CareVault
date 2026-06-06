@@ -198,6 +198,36 @@ describe("normalizeAppState", () => {
     expect(state.caregiverShareSettings.sections.labs).toBe(false);
   });
 
+  it("recovers restored caregiver share settings that disable every section", () => {
+    const state = normalizeAppState({
+      caregiverShareSettings: {
+        coverMemo: "가져온 공유 설정",
+        sections: {
+          visits: false,
+          questions: false,
+          documents: false,
+          symptoms: false,
+          labs: false,
+          food: false,
+          vitals: false,
+        },
+      },
+      profile: { name: "나의 건강 기록" },
+      vitals: [],
+    });
+
+    expect(state.caregiverShareSettings.coverMemo).toBe("가져온 공유 설정");
+    expect(state.caregiverShareSettings.sections).toEqual({
+      visits: true,
+      questions: false,
+      documents: false,
+      symptoms: false,
+      labs: false,
+      food: false,
+      vitals: false,
+    });
+  });
+
   it("clamps restored symptom severity to the 0-10 slider scale", () => {
     const state = normalizeAppState({
       symptoms: [

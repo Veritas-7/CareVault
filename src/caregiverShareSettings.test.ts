@@ -166,7 +166,7 @@ describe("caregiverShareSettings", () => {
     expect(summary.excludedText).toBe("없음");
   });
 
-  it("handles imported settings with no caregiver sections enabled", () => {
+  it("recovers imported settings with no caregiver sections enabled to one safe section", () => {
     const summary = buildCaregiverShareSectionSummary({
       sections: {
         visits: false,
@@ -179,9 +179,12 @@ describe("caregiverShareSettings", () => {
       },
     });
 
-    expect(summary.included).toEqual([]);
-    expect(summary.includedText).toBe("없음");
-    expect(summary.excludedText).toBe("진료, 질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온");
+    expect(summary.included.map((option) => option.id)).toEqual(["visits"]);
+    expect(summary.includedText).toBe("진료");
+    expect(summary.excludedText).toBe("질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온");
+    expect(formatCaregiverShareSectionSummaryAriaLabel(summary)).toBe(
+      "보호자 공유본 포함 요약 · 포함 1개: 진료 · 제외 6개: 질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온",
+    );
   });
 
   it("builds stable fingerprints for stale caregiver preview detection", () => {
