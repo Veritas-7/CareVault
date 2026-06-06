@@ -24775,6 +24775,38 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 06:36 KST - Common Lab Preset Sex-Change Direct QA
+
+- Current Goal:
+  - Fill the direct current-surface evidence gap for common lab presets when the profile sex changes.
+  - Verify that a sex-agnostic `총콜레스테롤` preset keeps its draft range/memo after changing profile sex through the real profile control.
+- Context:
+  - Earlier evidence on old `surface:513` only confirmed the common preset preview copy, and source tests cover the helper text.
+  - The remaining direct gap was the current single `surface:7` user flow: choose a common preset, change profile sex, and confirm the existing draft is not overwritten.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture the current browser-local `carevault.v1` baseline.
+  - Use the real `검사 수치 입력 프리셋 선택` combobox to choose `총콜레스테롤`.
+  - Use the real `기본 정보 성별` combobox to change female to male.
+  - Confirm draft item/unit/range/memo and the common applicability preview remain stable, then restore baseline UI/storage.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only `workspace:4` / `pane:8` / `surface:7`; captured `localStorage["carevault.v1"]` baseline length `1871`.
+  - PASS common preset selection: selected `total-cholesterol` through the real lab preset combobox. Draft fields became `Total cholesterol`, unit `mg/dL`, lower blank, upper `199`, and memo included `적용 기준: 성인 공통 입력 보조값` with KDCA source text.
+  - PASS common preview text: the page showed the common-helper note `성별과 관계없이 같은 참고 범위를 채웁니다` and `프로필 성별을 바꿔도 자동 범위가 달라지지 않습니다`.
+  - PASS profile sex change: selected `male` through the real profile sex combobox. The profile state and UI changed to male, while the selected preset stayed `total-cholesterol` and the same `Total cholesterol` / `mg/dL` / upper `199` / common applicability memo stayed unchanged.
+  - PASS no-save boundary: no lab record was added; this was draft-only and used no save button.
+  - PASS cleanup: a direct localStorage restore was immediately overwritten by the active React autosave, so cleanup used the real `검사 입력 프리셋과 값 초기화` action and restored the profile sex to female. Final state was `http://127.0.0.1:1420/#care-plan`, title `CareVault`, profile sex `female`, stored sex `female`, blank lab preset/draft fields, no temporary session key, no `Total cholesterol`/`total-cholesterol` residue in storage, storage length `1871`, and `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/labPresets.test.ts` => `1 passed`, `11 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+  - PASS cmux same-surface diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 06:32 KST - Export Preview Copy Failure Direct QA
 
 - Current Goal:
