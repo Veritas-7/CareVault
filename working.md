@@ -24250,3 +24250,38 @@
 - Current state:
   - Source tree is clean and synced after the focused QA-log push.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 05:15 KST - Caregiver Undated Visit Direct QA
+
+- Current Goal:
+  - Resolve another previously blocked direct browser confirmation for caregiver-share visit fingerprints.
+  - Verify that an open caregiver preview stays fresh when a visit has neither `date` nor `nextDate` and therefore is not rendered, while a dated visit still raises the stale-preview guard.
+- Context:
+  - `2026-06-07 00:14 KST - Caregiver Undated-Visit Fingerprint Scope` added the source/test contract but left direct caregiver-share fresh-preview confirmation blocked by cmux `surface:7` control.
+  - Visit validation requires only `병원/과` and `방문 이유`, so the real form can save an undated visit by clearing both date inputs.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture the browser-local `carevault.v1` baseline in `sessionStorage`.
+  - Use real UI controls to generate a caregiver preview, then add an undated visit with hospital/reason text and no date/next date.
+  - Confirm the open caregiver preview has no stale alert, copy/print/download remain enabled, and the undated QA visit does not appear in the preview HTML.
+  - Add a dated visit through the real visit form and confirm the same open preview raises the caregiver content stale alert with old actions disabled until regeneration.
+  - Restore the captured browser-local baseline, remove temporary keys, reload/recover only `surface:7`, and confirm no preview/dialog/stale residue.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS recovered the known stale JS context by setting `location.href` on the same `surface:7`; cmux was not restarted, quit, force-quit, replaced, or signaled.
+  - PASS baseline: stored `localStorage["carevault.v1"]` in `sessionStorage["carevault.__testCaregiverUndatedVisitBaseline"]`; counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, with no preview/stale state and visit draft date `2026-06-06`.
+  - PASS initial caregiver preview: clicked the real `보호자 공유본 미리보기` action; preview opened with no stale alert, copy/print/download enabled, summary aria `98줄 · 49,711자 · 72,883B · 근거/출처 111개`, and no QA visit text.
+  - PASS undated visit save: cleared real `병원 방문 기록 날짜` and `병원 방문 기록 다음 일정`, filled real hospital/reason fields with `cmux 미기재 방문 QA 병원` / `cmux 미기재 방문 QA 사유`, and clicked the real `방문 기록 추가` button. The saved visit persisted with `date: ""` and `nextDate: ""`, visit count became `2`, and local/topbar feedback said `방문일 날짜 미입력`.
+  - PASS undated freshness: the open caregiver preview showed no `.export-preview-stale-alert`; copy/print/download stayed enabled with the same `98줄 · 49,711자 · 72,883B · 근거/출처 111개` summary; the preview HTML did not contain the undated QA hospital or reason.
+  - PASS dated positive stale guard: added a second real visit with `date: "2026-06-20"`, `cmux 날짜방문 QA 병원`, and `cmux 날짜방문 QA 사유`. The open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 기록 변경 감지`, exposed `공유 기록 반영`, and disabled copy/print/download with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.` in each aria/title.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled, the refreshed preview contained `cmux 날짜방문 QA 병원`, `cmux 날짜방문 QA 사유`, and `2026-06-20`, and still did not contain the undated QA hospital/reason.
+  - PASS cleanup: restored the captured `carevault.v1`, removed the temporary session key, reloaded/recovered only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, counts restored, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no preview/dialog/stale alert, no QA visit text in storage or DOM, and `No browser errors`.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
