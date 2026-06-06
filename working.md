@@ -21358,3 +21358,26 @@
   - The dev server remains healthy on `http://127.0.0.1:1420/`, but the existing cmux surface automation path needs to recover before the next real browser QA claim.
 - Next durable app slice:
   - Once `surface:7` responds again, continue with a non-duplicate low-risk patient workflow such as native desktop attachment recovery friction or another saved-document action path not already covered in the recent tail.
+
+## 2026-06-06 22:10 KST - Saved Reattach Failure Row Feedback Fix
+
+- Improvement target:
+  - Continue the documented native desktop attachment recovery friction slice while the single cmux CareVault surface is blocked.
+  - Make saved-document `재첨부` failure feedback appear in the affected document row as well as the global save chip, matching the successful reattachment path.
+- Runtime/browser notes:
+  - BLOCKED single-surface QA: repeated `cmux browser --surface surface:7 get-url`, `get title`, and `errors list` checks timed out. `cmux ping`, `cmux version`, and `cmux browser-status` still returned `PONG`, `cmux 0.64.13 (93)`, and `enabled`; `curl -I --max-time 5 http://127.0.0.1:1420/#care-plan` returned HTTP `200`.
+  - Computer Use still showed the cmux window on the adjacent `블로그` workspace with the `암관리` workspace row visible. `⌘4`, AX click, coordinate click, and a System Events `AXPress` attempt did not switch to the CareVault workspace; the hung `osascript` helper was stopped without signaling the cmux app.
+  - Runtime guard: no new browser pane/tab/surface was opened, no cmux app restart/kill/quit was attempted, and no user health record was modified.
+- Changes:
+  - `src/App.tsx`: changed saved-document attachment replacement failure handling to set `documentActionFeedback` for the failed document and use `setActionSaveLabel()`, instead of only setting the global save label.
+  - `DESIGN.md`: documented the row-level reattachment failure feedback contract.
+- Verification:
+  - PASS `npm test -- src/documentActionLabels.test.ts src/attachmentRecovery.test.ts src/documentMetric.test.ts` (`3 passed`, `30 passed`).
+  - PASS `npm run typecheck`.
+  - PASS `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS `git diff --check -- src/App.tsx DESIGN.md`.
+- Current state:
+  - The repo is dirty with `src/App.tsx`, `DESIGN.md`, and this `working.md` entry.
+  - This slice is source-level verified only; the same single `surface:7` must recover before claiming a fresh direct-click browser pass.
+- Next durable app slice:
+  - After commit/push, recover or wait for `surface:7` and click-test the failed/successful saved-document reattachment feedback in the same existing CareVault browser.

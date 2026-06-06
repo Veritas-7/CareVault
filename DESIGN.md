@@ -740,6 +740,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-06: Made export-preview print-window failure feedback preserve the same preview format, line, character, byte, and source-marker summary as successful print feedback.
 - 2026-06-06: Made document attachment picker failure feedback name the browser file-name fallback and preserve the current attachment name/status context.
 - 2026-06-06: Made export-preview close feedback report the closed preview format, line, character, byte, and source-marker summary instead of leaving the previous generated-preview status visible.
+- 2026-06-06: Made saved-document reattachment failures show the same document-specific feedback inside the affected row and in the global save chip, matching successful reattachment feedback.
 
 ## Do's and Don'ts
 

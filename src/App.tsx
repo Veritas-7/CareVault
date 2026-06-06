@@ -2480,7 +2480,9 @@ function App() {
       setActionSaveLabel(feedback);
     } catch (error) {
       console.error("Saved document attachment replacement failed", error);
-      setSaveLabel(formatDocumentAttachmentReconnectFailedStatusLabel(document));
+      const feedback = formatDocumentAttachmentReconnectFailedStatusLabel(document);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
     }
   };
 
