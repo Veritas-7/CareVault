@@ -20282,6 +20282,27 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
 
+## 2026-06-06 18:27 KST - Draft Document Attachment Remove cmux QA
+
+- Improvement target:
+  - Verify the manual document form can accept a browser-side draft attachment reference, expose only the filename, and remove the draft attachment without saving a document.
+  - Confirm the draft-only attachment path does not leak a local path or change persisted document counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: save chip was `브라우저 자동 저장됨`, the document draft showed `첨부 없음`, no draft attachment remove button existed, no document save/form feedback existed, and stored counts were documents `1`, deleted documents `0`.
+  - PASS synthetic picker event: dispatching a plain `DataTransfer` file assignment did not populate the hidden WebKit file input, so the QA used a configurable `files` property override with a synthetic `draft-attachment-qa.png` `File` and dispatched the real change event on `서류 메모 첨부 파일 선택 입력`.
+  - PASS draft attachment state: the form showed attachment summary `draft-attachment-qa.png` with `파일명 참조`; the remove button aria/title became `서류 메모 첨부 선택 제거 · 현재 선택 draft-attachment-qa.png`; the save chip showed `서류 첨부 파일명 참조 준비됨 · 현재 첨부 draft-attachment-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS persistence guard: stored document count stayed `1`, deleted-document count stayed `0`, and `localStorage["carevault.v1"]` did not contain `draft-attachment-qa.png` or any draft attachment path.
+  - PASS remove action: clicked the rendered draft remove button; it disappeared, the draft returned to `첨부 없음`, no document save/form feedback was present, and the save chip showed `첨부 선택 제거됨 · 현재 선택 draft-attachment-qa.png · 상태 브라우저 파일명 참조`.
+  - PASS cleanup: reloaded the same surface and confirmed ready state `complete`, URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, draft attachment still `첨부 없음`, no filename in `localStorage`, counts still documents `1` and deleted documents `0`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; draft attachment labels/status remain covered by `src/documentAttachmentActions.test.ts` and `src/documentActionLabels.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for saved-document next-action edit feedback, saved-document attachment preview behavior, or another low-risk patient workflow.
+
 ## 2026-06-06 18:07 KST - Care Queue Copy Packet cmux QA
 
 - Improvement target:
