@@ -25198,6 +25198,30 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 07:29 KST - Preview Print Window Failure Direct QA
+
+- Current Goal:
+  - Directly verify the `진료 요약 미리보기` print-window failure path on the current single cmux browser surface.
+  - Confirm that failed `window.open()` feedback preserves the same visible preview line/character/byte/source summary.
+- Context:
+  - Source tests pin `formatExportPreviewPrintWindowFailedStatus()`.
+  - Older direct QA covered successful visit-summary print and CSV print-window failure, but I did not find same-`surface:7` direct evidence for the visit-summary print-window failure branch.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS target found: reloaded the same `surface:7` at `http://127.0.0.1:1420/#care-plan`; the page exposed the real `진료 요약 미리보기 · 범위 최근 30일` button.
+  - PASS preview open: clicked the real preview button; the panel exposed `진료 요약 인쇄 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS failure setup: in the same WebView, captured `localStorage["carevault.v1"]` baseline length `1871` and temporarily replaced `window.open` with a stub returning `null`.
+  - PASS print failure click: clicked the real preview print button; the stub recorded exactly one `window.open("", "_blank")` call and no print window was created.
+  - PASS status: `.save-status-chip` showed `진료 요약 미리보기 인쇄 창 열기 실패 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS safety: the preview remained open, copy/print/download/close actions stayed enabled, no dialog opened, URL stayed `http://127.0.0.1:1420/#care-plan`, and `localStorage["carevault.v1"]` stayed byte-for-byte equal to the baseline at length `1871`.
+  - PASS cleanup: reloaded only `surface:7`; confirmed temporary QA global was gone, `window.open` was native code again, preview was closed, save chip returned to `브라우저 자동 저장됨`, storage length stayed `1871`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/exportPreviewSummary.test.ts` => `1 passed`, `9 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 06:45 KST - Food Question Empty Input Failure Affordance
 
 - Current Goal:
