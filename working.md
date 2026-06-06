@@ -20651,3 +20651,23 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for export preview stale-state refresh, deleted-document recovery/attachment cleanup, or another low-risk patient workflow.
+
+## 2026-06-06 18:53 KST - Visit Summary Export Preview Stale Range cmux QA
+
+- Improvement target:
+  - Verify a live visit-summary export preview becomes stale when the selected range changes, blocks copy/print/download with scoped disabled reasons, focuses the stale alert, regenerates from the alert action, and restores cleanly.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; range select was `30d`; save chip was `브라우저 자동 저장됨`; counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`; no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS 30-day preview: clicked the real `요약 미리보기` action with aria `진료 요약 미리보기 · 범위 최근 30일`; `.export-preview-panel` appeared with aria `내보내기 미리보기`, focus moved to the panel, title was `진료 요약 미리보기 (최근 30일)`, filename was `carevault-visit-summary-2026-06-06.md`, content began `# CareVault 진료 요약`, and summary chips showed `234줄`, `32,554자`, `55,352B`, `근거/출처 109개`.
+  - PASS stale range trigger: changed `진료 요약 범위` select from `30d` to `90d`; preview title/content still showed the older recent-30-day snapshot, while `.export-preview-stale-alert[role=status]` appeared with aria `진료 요약 미리보기 범위 변경 감지`, text `진료 요약 범위가 바뀌었습니다`, and focus moved to the stale alert.
+  - PASS disabled action labels: stale copy, print, and download buttons were disabled; each aria/title preserved the compact summary plus `비활성: 진료 요약 범위가 바뀌어 다시 생성이 필요합니다.`. Clicking the disabled copy button was a no-op, kept the stale alert visible, and left the save chip at `진료 요약 범위: 최근 90일`.
+  - PASS fresh action: stale alert action was visible as `요약 범위 반영` with aria/title `새 미리보기 생성 · 진료 요약 · 변경된 범위 적용`; clicking it regenerated the panel as `진료 요약 미리보기 (최근 90일)`, content changed to `범위: 최근 90일`, stale alert disappeared, focus returned to the preview panel, and copy/print/download actions became enabled again with summary labels.
+  - PASS close/non-mutating cleanup: closed the regenerated preview; save chip showed `진료 요약 미리보기 닫힘 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`; serialized `localStorage["carevault.v1"]` was unchanged by the preview/range/fresh/close flow; range was set back to `30d`, the same surface was reloaded, and final state was URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, range `30d`, counts still vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, no export preview panel, no attachment dialog, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; stale preview action/disabled copy remains covered by `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for deleted-document recovery/attachment cleanup, caregiver-share stale preview state, or another low-risk patient workflow.
