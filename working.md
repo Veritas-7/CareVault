@@ -21595,3 +21595,33 @@
 - Next durable app slice:
   - Commit/push this direct-QA recovery log after staged checks.
   - Continue with another export-preview stale guard, preferably CSV content stale or caregiver-share settings stale, in the same `surface:7`.
+
+## 2026-06-06 23:14 KST - Caregiver Share Settings Stale Guard Partial QA
+
+- Improvement target:
+  - Continue export-preview stale-guard QA in the same existing CareVault `surface:7`.
+  - Verify that a generated caregiver-share preview becomes stale when share settings change, disables copy/print/download, and offers a fresh-preview action for the changed settings.
+- Runtime/browser notes:
+  - PASS setup: rechecked the goal identity after context compaction; the persisted/current goal still targets `/Users/wj/Ai/System/10_Projects/CareVault`. Repo started clean/synced at `989c4ea`, `cmux browser-status` was `enabled`, and the app server returned HTTP `200`.
+  - PASS baseline: saved `carevault.v1` to `carevault.__testCaregiverSettingsStaleBaseline`; caregiver share settings started at default with `redactProfile=false`, all 7 sections included, and no export preview open.
+  - PASS caregiver preview generation: clicked the real `보호자 공유본 미리보기 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개` button. The preview opened with active copy/print/download actions for `98줄`, `49,711자`, `72,883B`, and `근거/출처 111개`.
+  - QA tooling caveat: `cmux browser check` returned `OK` for the profile-redaction checkbox but only changed the DOM `checked` state; React/localStorage stayed at `redactProfile=false`, the aria label stayed `꺼짐`, and no stale guard appeared. Restored the saved baseline and reloaded the same surface before continuing. For this controlled checkbox, use a real `click`, not `check`.
+  - PASS real checkbox click: after regenerating the caregiver preview, clicked the real `input[aria-label="보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다"]`. The checkbox label changed to `켜짐`, the reset/export labels changed to `프로필 가림`, and the existing preview became stale.
+  - PASS stale settings guard: DOM eval confirmed the stale settings alert text `현재 미리보기는 이전 설정으로 생성되었습니다.`, the fresh action `새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용`, and the active test baseline key. The caregiver preview copy/print/download buttons were all `disabled=true` with the reason `공유 설정이 바뀌어 다시 생성이 필요합니다.`
+  - BLOCKED fresh-preview completion: clicking the fresh caregiver-share action with `--snapshot-after` timed out. After that, same-surface `snapshot` and `eval` also timed out, and `cmux select-workspace --workspace workspace:4 && cmux refresh-surfaces` timed out without output. `cmux ping` still returned `PONG`, `cmux browser-status` returned `enabled`, and `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`, so the app server and cmux process remained alive while the browser surface RPC/workspace control was blocked.
+  - Runtime guard: no new browser pane/tab/surface was opened, and cmux was not restarted, quit, force-quit, or signaled.
+- Changes:
+  - No source code changed in this slice. This is a partial direct browser QA result plus a runtime blocker note.
+- Verification:
+  - PASS stale guard snapshot: profile-redaction checkbox label changed from `꺼짐` to `켜짐`; caregiver export labels changed from `프로필 표시` to `프로필 가림`.
+  - PASS stale guard eval: `hasFreshButton=true`, stale settings alert present, and localStorage keys included `carevault.v1` plus `carevault.__testCaregiverSettingsStaleBaseline`.
+  - PASS disabled action eval: caregiver preview copy/print/download all reported `disabled=true` with stale settings disabled reasons.
+  - PASS server/cmux health during blocker: `cmux ping` => `PONG`; `cmux browser-status` => `enabled`; `curl -I --max-time 5 http://127.0.0.1:1420/` => HTTP `200`.
+  - BLOCKED same-surface completion/cleanup: fresh-preview click confirmation, baseline restore, test-key removal, browser errors, and console checks are pending until `surface:7` RPC recovers.
+- Current state:
+  - The repo is clean except for this `working.md` blocker entry.
+  - The browser-local state may still include `carevault.__testCaregiverSettingsStaleBaseline`; `redactProfile`/preview freshness could not be verified after the fresh-action timeout.
+- Next durable app slice:
+  - Recover only the existing `surface:7` without opening a new browser or restarting cmux, then verify whether the caregiver fresh action applied.
+  - Restore `carevault.v1` from `carevault.__testCaregiverSettingsStaleBaseline`, remove all `carevault.__test*` keys, reload the same surface, and verify baseline state plus browser errors/console before committing any completion log.
+  - If `surface:7` remains blocked, report the cmux surface blocker and ask the user before any cmux app restart.
