@@ -21149,3 +21149,22 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver-share edge cases, remaining backup import variants, native desktop attachment recovery friction, or another low-risk patient workflow.
+
+## 2026-06-06 21:06 KST - Malformed Backup Import cmux QA
+
+- Improvement target:
+  - Verify a valid JSON file with the wrong CareVault backup shape fails closed through the real backup import control, distinct from the already-tested invalid-JSON path.
+- Runtime/browser notes:
+  - PASS setup/recovery: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. An initial status probe timed out, and `tree`/URL/title still reported CareVault while snapshot attached to an empty `about:blank` document. Focused only the existing `pane:8` and `surface:7` webview; snapshot and JS then realigned to `CareVault` at `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testMalformedBackupImportBaseline"]`. Baseline counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, and profile `나의 건강 기록`.
+  - PASS malformed-shape import: clicked the real visible `백업 가져오기` button with aria/title `CareVault 백업 가져오기 · JSON 구조 검증 후 기존 기록 교체 · 첨부 파일명은 재첨부 필요`, then dispatched `carevault-malformed-shape.json` through the real hidden input `CareVault 백업 JSON 파일 선택`. The payload was valid JSON but omitted the required `vitals` array.
+  - PASS fail-closed UI: `.backup-import-feedback` appeared with `role="alert"`, aria `백업 가져오기 실패`, and detail `프로필과 기록 배열이 있는 CareVault 백업 구조가 아닙니다. 기존 건강 기록은 그대로 유지되었습니다.`. The save chip showed `백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음`, and the file input value was cleared after handling.
+  - PASS state protection: `localStorage["carevault.v1"]` stayed byte-for-byte identical to the captured baseline; counts/profile/food query were unchanged and the rejected profile text `Malformed backup should not import` never entered persisted app storage.
+  - PASS cleanup: restored the captured baseline defensively, removed `carevault.__testMalformedBackupImportBaseline`, reloaded the same `surface:7`, and confirmed final baseline `#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, no backup feedback, no sessionStorage temp keys, localStorage keys restored to `carevault.v1` plus the pre-existing `carevault.__testFoodEmptyBaseline`, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/backupState.test.ts src/appStateNormalization.test.ts src/textFileDownload.test.ts` (`3 passed`, `18 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver-share minimum-section guard behavior, native desktop attachment recovery friction, or another low-risk patient workflow not already covered in the recent worklog tail.
