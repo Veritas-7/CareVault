@@ -25754,3 +25754,28 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 08:24 KST - Manual Save Storage Fallback Direct QA
+
+- Current Goal:
+  - Directly verify the topbar `수동 저장` button when browser `localStorage` writes fail in the existing single `암관리` cmux browser.
+  - Confirm the manual save path reports temporary memory fallback, does not mutate persisted browser data, and returns to normal browser storage after cleanup.
+- Context:
+  - The 2026-06-07 08:20 storage fallback pass covered autosave after a real profile edit.
+  - Older manual-save work covered the normal browser save label and document next-action flush behavior, but the current same-surface browser had no direct QA record for manual save fallback after `carevault.v1` write failure.
+  - This was a QA-only slice; no source patch was needed.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only existing `workspace:4` / `pane:8` / `surface:7` and navigated it to `http://127.0.0.1:1420/#care-plan`.
+  - NOTE: `surface:7` again briefly showed the known split where `get-url` reported CareVault while snapshot/eval ran in `about:blank`; the same surface recovered via `location.href = "http://127.0.0.1:1420/#care-plan"` without opening any new browser, tab, pane, workspace, or surface.
+  - PASS failure injection: installed a temporary `Storage.prototype.setItem` wrapper that throws only for key `carevault.v1`, while recording attempts. Baseline `localStorage["carevault.v1"]` length was `1871`, and the real topbar manual-save button was present with aria `현재 CareVault 기록 수동 저장`.
+  - PASS real manual action: clicked the real topbar `수동 저장` button. The visible save chip changed to `임시 메모리 저장됨`, and the page text included `현재 데이터는 임시 메모리에만 있습니다.`.
+  - PASS persisted-data guard: exactly one blocked `carevault.v1` write was captured with attempted length `1871`; browser `localStorage["carevault.v1"]` stayed length `1871` and stayed byte-for-byte equal to the baseline.
+  - PASS recovery: restored native `Storage.prototype.setItem`, clicked the real `수동 저장` button again, and the save chip returned to `브라우저 저장됨` with storage length still `1871`.
+  - PASS cleanup: reloaded/recovered the same `surface:7`, waited for hydration/autosave, and confirmed save chip `브라우저 자동 저장됨`, heading `나의 건강 기록`, storage keys only `carevault.v1`, no `carevault.__test*` keys, no QA global, no preview/dialog/stale alert, and storage length `1871`.
+  - PASS browser health: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only normal Vite connection debug lines before cleanup reload.
+- Verification:
+  - PASS focused tests: `npm test -- src/storage.test.ts src/storageStatus.test.ts src/persistedSaveQueue.test.ts` => `3 passed`, `20 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this manual-save storage fallback direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret scan, commit/push this focused QA log, then record post-push status.
