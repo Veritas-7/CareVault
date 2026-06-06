@@ -23041,6 +23041,47 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 03:05 KST - Right-Pane Topbar Responsive Direct QA
+
+- Current Goal:
+  - Verify the current topbar/export/caregiver-share controls in the real existing `암관리` `surface:7` browser at the actual right-pane responsive width.
+  - Cover horizontal overflow, visible button labels, touch heights, range/select interaction, preview open/close behavior, cleanup, and browser diagnostics.
+  - Record the 320px mobile simulation as blocked because cmux WKWebView does not support `browser.viewport.set`.
+- Context:
+  - Repo started clean and synced at `4caf332` (`Log CareVault caregiver memo QA status`).
+  - `DESIGN.md` and `README.md` require 320px mobile layouts to avoid horizontal overflow, keep visible labels such as `백업 내보내기`, `요약 내보내기`, `CSV 내보내기`, and `공유본 내보내기`, and preserve 44px mobile touch targets for buttons, selects, caregiver-share controls, disclosure summaries, and links.
+  - `src/App.css`, `src/App.tsx`, `DESIGN.md`, and `README.md` were reread before selecting this non-duplicate UI/UX QA slice.
+  - The existing right-pane browser reported `innerWidth=1061` and `innerHeight=859`, which exercises the current `max-width: 1120px` stacked topbar breakpoint in the actual cmux layout.
+- Progress:
+  - Selected topbar responsive QA because recent same-surface slices covered core export/caregiver/control logic, but the accumulated UI still needed a fresh no-overflow and touch-target pass after the latest topbar/caregiver memo work.
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; `workspace:4` and existing `surface:7` stayed on `http://127.0.0.1:1420/#care-plan`.
+  - PASS same-surface readiness: `#care-plan` loaded with `innerWidth=1061`, `innerHeight=859`, and `scrollWidth=1061`.
+  - BLOCKED 320px simulation: `cmux browser --surface surface:7 viewport 320 859` returned `Error: not_supported: browser.viewport.set is not supported on WKWebView`.
+  - PASS actual right-pane responsive layout after returning to top scroll: `.topbar` rendered as a one-column grid, `.top-actions` wrapped, `scrollWidth` stayed equal to `innerWidth`, and no overflow elements were found.
+  - PASS visible topbar labels remained available: `백업 내보내기`, `요약 내보내기`, `요약 미리보기`, `CSV 내보내기`, `CSV 미리보기`, `식사 적용`, `증상 적용`, `서류 적용`, `공유 설정 초기화`, `공유본 내보내기`, `공유본 미리보기`, `백업 가져오기`, and `수동 저장`.
+  - PASS direct range interaction: selected `7d`, save chip changed to `진료 요약 범위: 최근 7일`, and export/preview accessible labels updated to `범위 최근 7일`.
+  - PASS direct preview interaction: clicked `진료 요약 미리보기 · 범위 최근 7일`, preview panel focused with title `진료 요약 미리보기 (최근 7일)`, filename `carevault-visit-summary-2026-06-06.md`, 231 lines, 31,907 characters, 54,374 bytes, and 106 source markers.
+  - PASS preview controls kept usable labels and 44px heights for copy, print, download, and close.
+  - PASS cleanup restored range `30d`, closed the preview, removed test session storage, and confirmed baseline local/session storage was byte-identical.
+- Changes:
+  - `working.md` only; no source patch was needed because no source bug was found in the actual right-pane responsive pass.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite.
+  - PASS same-surface cmux readiness on existing `surface:7` at `http://127.0.0.1:1420/#care-plan`.
+  - BLOCKED `cmux browser --surface surface:7 viewport 320 859`: WKWebView viewport setting unsupported.
+  - PASS actual right-pane eval: `innerWidth=1061`, `scrollWidth=1061`, `.topbar` one-column grid, `.top-actions` wrapped, all inspected topbar buttons/selects at least 40px high, and no horizontal overflow.
+  - PASS direct `select.summary-range-select` `7d`, preview click, preview close, restore `30d`, and storage cleanup.
+  - PASS `cmux browser --surface surface:7 errors list`: no browser errors.
+  - PASS `cmux browser --surface surface:7 console`: only Vite debug connect messages.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+  - 320px simulated viewport proof remains unavailable in this cmux WKWebView surface; the actual right-pane breakpoint proof is complete at 1061px.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite server, run runtime/diff checks, stage only `working.md`, run staged secret checks, commit, push, and record post-push status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
