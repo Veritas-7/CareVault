@@ -2578,6 +2578,7 @@ function App() {
       recovery.historyLabel,
     );
     setAttachmentPreview(null);
+    setDocumentActionFeedback({ documentId: preview.documentId, message: recovery.status });
     setActionSaveLabel(recovery.status);
   };
 
@@ -2604,7 +2605,9 @@ function App() {
       return true;
     } catch (error) {
       console.error("Document attachment removal failed", error);
-      setSaveLabel(formatDocumentAttachmentRemovalFailedStatusLabel(document));
+      const feedback = formatDocumentAttachmentRemovalFailedStatusLabel(document);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
       return false;
     }
   };

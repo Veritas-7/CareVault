@@ -21381,3 +21381,26 @@
   - This slice is source-level verified only; the same single `surface:7` must recover before claiming a fresh direct-click browser pass.
 - Next durable app slice:
   - After commit/push, recover or wait for `surface:7` and click-test the failed/successful saved-document reattachment feedback in the same existing CareVault browser.
+
+## 2026-06-06 22:13 KST - Saved Attachment Failure Row Feedback Alignment
+
+- Improvement target:
+  - Continue attachment-recovery UX hardening while the single cmux CareVault surface remains inaccessible.
+  - Align image-load failure and sandbox removal failure feedback with the row-level feedback used by successful reattachment, check, preview, and prior reattachment-failure paths.
+- Runtime/browser notes:
+  - BLOCKED single-surface QA: `timeout 8 cmux browser --surface surface:7 get-url` still timed out. `cmux ping` and `cmux browser-status` returned `PONG` and `enabled`; `curl -I --max-time 5 http://127.0.0.1:1420/#care-plan` returned HTTP `200`.
+  - Runtime guard: no new browser pane/tab/surface was opened, no cmux app restart/kill/quit was attempted, and no user health record was modified.
+- Changes:
+  - `src/App.tsx`: `handleAttachmentPreviewImageError()` now writes `documentActionFeedback` for the affected document before updating the global save chip.
+  - `src/App.tsx`: `removeSandboxAttachment()` failure now writes the same document-specific removal-failure feedback into the affected row and global save chip.
+  - `DESIGN.md`: documented that saved attachment image-load and removal failures must keep row feedback, recovery prompts, card status, and global save feedback aligned.
+- Verification:
+  - PASS `npm test -- src/documentActionLabels.test.ts src/attachmentRecovery.test.ts src/documentMetric.test.ts` (`3 passed`, `30 passed`).
+  - PASS `npm run typecheck`.
+  - PASS `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS `git diff --check -- src/App.tsx DESIGN.md`.
+- Current state:
+  - The repo is dirty with `src/App.tsx`, `DESIGN.md`, and this `working.md` entry.
+  - This slice is source-level verified only; the same single `surface:7` must recover before claiming a fresh direct-click browser pass.
+- Next durable app slice:
+  - After commit/push, recover or wait for `surface:7` and click-test saved attachment image-load, removal-failure, and reattachment-failure row feedback in the same existing CareVault browser.
