@@ -19242,3 +19242,32 @@
   - Only this `working.md` QA entry is unstaged.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for preview stale-action edge cases, food/cervical care copy flows, or source-link navigation safety.
+
+## 2026-06-06 10:24 KST - Caregiver Export Source Link Safety
+
+- Improvement target:
+  - Continue source-link navigation safety checks in the existing right cmux browser only.
+  - Source review found most app links used `target="_blank" rel="noreferrer"`, but some caregiver-share HTML export links for health-standard coverage, standard range sources, and cervical official sources were generated without target/rel.
+- Change:
+  - Added a shared external-link HTML helper in `src/caregiverExport.ts`.
+  - Updated caregiver-share HTML export source links so every generated external `<a>` opens with `target="_blank"` and `rel="noreferrer"`.
+  - Added `src/caregiverExport.test.ts` coverage that scans every generated caregiver export anchor and fails if any anchor lacks the new-tab/noreferrer policy.
+  - Added a `DESIGN.md` decision-log entry for caregiver-share HTML source-link navigation safety.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: representative in-app official source link exposed `target="_blank"` and `rel="noreferrer"`.
+  - PASS: clicked `보호자 공유본 미리보기`, generated the caregiver HTML preview, and the save chip showed `보호자 공유본 미리보기 생성 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개`.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - PASS: `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts DESIGN.md`.
+  - PASS: `npm run test -- src/caregiverExport.test.ts`, 32 tests.
+  - PASS: `npm run test`, 62 files and 499 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - Changes are not staged yet.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for preview stale-action edge cases or food/cervical care copy flows.

@@ -204,6 +204,19 @@ describe("caregiverExport", () => {
     expect(html).toContain("진단, 처방, 치료 지시가 아니며");
   });
 
+  it("opens every caregiver export source link outside the share document", () => {
+    const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z");
+    const anchors = html.match(/<a\b[^>]*>/g) ?? [];
+
+    expect(anchors.length).toBeGreaterThan(0);
+    expect(
+      anchors.filter(
+        (anchor) =>
+          !anchor.includes('target="_blank"') || !anchor.includes('rel="noreferrer"'),
+      ),
+    ).toEqual([]);
+  });
+
   it("keeps vital units and glucose measurement context in caregiver rows", () => {
     const html = buildCaregiverExportHtml(
       {

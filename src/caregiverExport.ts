@@ -202,18 +202,23 @@ function escapeHtml(value: string | number | undefined) {
     .replace(/"/g, "&quot;");
 }
 
+function formatExternalLinkHtml(url: string, label: string) {
+  return `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(
+    label,
+  )}</a>`;
+}
+
 function formatFoodMatchEvidenceHtml(match: FoodMatch) {
-  return `${escapeHtml(match.term)} - ${escapeHtml(match.reason)} (<a href="${escapeHtml(
+  return `${escapeHtml(match.term)} - ${escapeHtml(match.reason)} (${formatExternalLinkHtml(
     match.sourceUrl,
-  )}" target="_blank" rel="noreferrer">${escapeHtml(match.sourceLabel)}</a>)`;
+    match.sourceLabel,
+  )})`;
 }
 
 function formatCervicalCareSourceLink(sourceId: string) {
   const source = getCervicalCancerCareSource(sourceId);
   return source
-    ? `출처: <a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(
-        source.label,
-      )}</a>`
+    ? `출처: ${formatExternalLinkHtml(source.url, source.label)}`
     : "출처: 공식 자궁경부암 케어 자료";
 }
 
@@ -248,9 +253,7 @@ function formatTextWithSourceEvidenceHtml(text: string) {
   const evidence = parseSourceEvidence(text);
   const source = evidence.sourceLabel
     ? evidence.sourceUrl
-      ? `근거: <a href="${escapeHtml(evidence.sourceUrl)}" target="_blank" rel="noreferrer">${escapeHtml(
-          evidence.sourceLabel,
-        )}</a>`
+      ? `근거: ${formatExternalLinkHtml(evidence.sourceUrl, evidence.sourceLabel)}`
       : `근거: ${escapeHtml(evidence.sourceLabel)}`
     : "";
   return [multilineHtml(evidence.body), source].filter(Boolean).join(" / ");
@@ -267,9 +270,7 @@ function linkSourceCitationListHtml(value: string) {
     const label = match[1].trim();
     const url = match[2].trim();
     html += escapeHtml(value.slice(lastIndex, index));
-    html += `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(
-      label,
-    )}</a>`;
+    html += formatExternalLinkHtml(url, label);
     lastIndex = index + match[0].length;
   }
 
@@ -318,9 +319,7 @@ function formatVitalSourceHtml(evidence: VitalAssessmentEvidence) {
   if (!evidence.standard) return "";
 
   return evidence.standard.sourceUrl.startsWith("https://")
-    ? `<a href="${escapeHtml(evidence.standard.sourceUrl)}" target="_blank" rel="noreferrer">${escapeHtml(
-        evidence.standard.sourceLabel,
-      )}</a>`
+    ? formatExternalLinkHtml(evidence.standard.sourceUrl, evidence.standard.sourceLabel)
     : escapeHtml(evidence.standard.sourceLabel);
 }
 
@@ -483,7 +482,7 @@ export function buildCaregiverExportHtml(
   const standardCoverageItems = koreanHealthStandardCoverage.map(
     (item) => {
       const source = isExternalHealthStandardSource(item)
-        ? `<a href="${escapeHtml(item.sourceUrl)}">${escapeHtml(item.sourceLabel)}</a>`
+        ? formatExternalLinkHtml(item.sourceUrl, item.sourceLabel)
         : escapeHtml(formatHealthStandardSource(item));
       return `<strong>${escapeHtml(item.label)}</strong><br><span class="source-label">${escapeHtml(
         healthStandardStatusLabel[item.status],
@@ -494,7 +493,7 @@ export function buildCaregiverExportHtml(
   );
   const standardRangeItems = buildVitalStandardRangeSections().map((section) => {
     const source = section.sourceUrl.startsWith("https://")
-      ? `<a href="${escapeHtml(section.sourceUrl)}">${escapeHtml(section.sourceLabel)}</a>`
+      ? formatExternalLinkHtml(section.sourceUrl, section.sourceLabel)
       : escapeHtml(section.sourceLabel);
     const lines = section.lines
       .map(
@@ -545,10 +544,7 @@ export function buildCaregiverExportHtml(
           .map(formatCervicalItemEvidenceHtml)
           .join(" / ")}`,
         `<strong>공식 출처</strong><br>${Object.values(cervicalCancerCareSources)
-          .map(
-            (source) =>
-              `<a href="${escapeHtml(source.url)}">${escapeHtml(source.label)}</a>`,
-          )
+          .map((source) => formatExternalLinkHtml(source.url, source.label))
           .join("<br>")}`,
       ]
     : [];
