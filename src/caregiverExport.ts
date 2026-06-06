@@ -142,6 +142,10 @@ export type CaregiverExportOptions = {
   sections?: Partial<CaregiverExportSections>;
 };
 
+export type CaregiverExportContentFingerprintOptions = {
+  redactProfile?: boolean;
+};
+
 export const caregiverExportSectionDefaults: CaregiverExportSections = {
   visits: true,
   questions: true,
@@ -155,11 +159,20 @@ export const caregiverExportSectionDefaults: CaregiverExportSections = {
 export function buildCaregiverExportContentFingerprint(
   state: CaregiverExportState,
   sections: Partial<CaregiverExportSections> = {},
+  options: CaregiverExportContentFingerprintOptions = {},
 ) {
   const enabledSections = {
     ...caregiverExportSectionDefaults,
     ...sections,
   };
+  const profile = options.redactProfile
+    ? {
+        age: state.profile.cancerCareMode ? state.profile.age : "",
+        cancerCareMode: state.profile.cancerCareMode === true,
+        diabetes: state.profile.diabetes === true,
+        sex: state.profile.sex,
+      }
+    : state.profile;
 
   return JSON.stringify({
     documents: enabledSections.documents
@@ -175,7 +188,7 @@ export function buildCaregiverExportContentFingerprint(
       : [],
     foodQuery: enabledSections.food ? state.foodQuery ?? "" : "",
     labResults: enabledSections.labs ? state.labResults : [],
-    profile: state.profile,
+    profile,
     questions: enabledSections.questions ? state.questions : [],
     symptoms: enabledSections.symptoms ? state.symptoms : [],
     visits: enabledSections.visits ? state.visits : [],
@@ -187,10 +200,11 @@ export function isCaregiverExportContentFingerprintStale(
   state: CaregiverExportState,
   previewFingerprint: string | undefined,
   previewSections: Partial<CaregiverExportSections> = {},
+  options: CaregiverExportContentFingerprintOptions = {},
 ) {
   return Boolean(
     previewFingerprint &&
-      previewFingerprint !== buildCaregiverExportContentFingerprint(state, previewSections),
+      previewFingerprint !== buildCaregiverExportContentFingerprint(state, previewSections, options),
   );
 }
 

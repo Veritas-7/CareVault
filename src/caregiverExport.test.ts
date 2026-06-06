@@ -187,6 +187,58 @@ describe("caregiverExport", () => {
     ).toBe(true);
   });
 
+  it("fingerprints only exported profile fields when caregiver profile is redacted", () => {
+    const redactedFingerprint = buildCaregiverExportContentFingerprint(
+      state,
+      caregiverExportSectionDefaults,
+      { redactProfile: true },
+    );
+    const redactedProfileOnlyChangedFingerprint = buildCaregiverExportContentFingerprint(
+      {
+        ...state,
+        profile: {
+          ...state.profile,
+          heightCm: "170",
+          name: "다른 보호자 공유 대상",
+          waistCm: "90",
+          weightKg: "70",
+        },
+      },
+      caregiverExportSectionDefaults,
+      { redactProfile: true },
+    );
+    const visibleProfileChangedFingerprint = buildCaregiverExportContentFingerprint(
+      {
+        ...state,
+        profile: {
+          ...state.profile,
+          name: "다른 보호자 공유 대상",
+        },
+      },
+      caregiverExportSectionDefaults,
+      { redactProfile: false },
+    );
+    const redactedScreeningChangedFingerprint = buildCaregiverExportContentFingerprint(
+      {
+        ...state,
+        profile: {
+          ...state.profile,
+          age: "19",
+        },
+      },
+      caregiverExportSectionDefaults,
+      { redactProfile: true },
+    );
+
+    expect(redactedProfileOnlyChangedFingerprint).toBe(redactedFingerprint);
+    expect(visibleProfileChangedFingerprint).not.toBe(
+      buildCaregiverExportContentFingerprint(state, caregiverExportSectionDefaults, {
+        redactProfile: false,
+      }),
+    );
+    expect(redactedScreeningChangedFingerprint).not.toBe(redactedFingerprint);
+  });
+
   it("builds a read-only caregiver HTML summary", () => {
     const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z");
 

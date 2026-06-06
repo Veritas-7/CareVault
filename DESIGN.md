@@ -744,6 +744,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-06: Made saved-document attachment image-load and removal failures also update the affected row feedback, so recovery prompts, card status, and global save feedback stay aligned.
 - 2026-06-06: Made manual save flush pending saved-document next-action edits into the document history before persisting, covering focused textareas that have not yet blurred.
 - 2026-06-06: Made manual-save success feedback preserve the pending action message before the storage label, matching autosave feedback for document-history and other row actions.
+- 2026-06-06: Made redacted caregiver-share preview stale detection ignore hidden profile-only fields such as name, height, weight, and waist while still tracking sex, diabetes, and cervical-screening profile facts that affect exported content.
 
 ## Do's and Don'ts
 

@@ -21692,3 +21692,29 @@
 - Next durable app slice:
   - Commit/push this verification note after staged checks.
   - Resume direct cmux QA only after `surface:7`/`workspace:4` control recovers or the user explicitly approves cmux app recovery.
+
+## 2026-06-06 23:31 KST - Redacted Caregiver Preview Fingerprint
+
+- Improvement target:
+  - Reduce false-positive stale caregiver-preview states while the required single cmux browser remains blocked.
+  - Align caregiver-share content fingerprints with the actual rendered HTML when profile redaction is enabled.
+- Runtime/browser notes:
+  - `surface:7` still timed out on `cmux browser --surface surface:7 snapshot --compact --max-depth 1`; no new browser, headless browser, or cmux restart was used.
+  - Shallow checks still showed `cmux ping` => `PONG`, `cmux browser-status` => `enabled`, and the CareVault Vite server on `127.0.0.1:1420` returned HTTP `200`.
+- Changes:
+  - `src/caregiverExport.ts`: added a redaction-aware content fingerprint option. Redacted previews now ignore hidden name/height/weight/waist-only profile changes, while still tracking profile fields that affect rendered content such as sex, diabetes mode, cancer-care mode, and cervical-screening age.
+  - `src/App.tsx`: passes the preview-generation redaction setting into caregiver content fingerprint creation and stale comparison.
+  - `src/caregiverExport.test.ts`: added regression coverage for redacted profile-only changes not staling the preview, visible profile changes staling it, and redacted cervical-screening age changes still staling it.
+  - `DESIGN.md`: documented the redacted caregiver-preview stale-detection contract.
+- Verification:
+  - PASS `npm test -- src/caregiverExport.test.ts src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts` => `3 passed`, `68 passed`.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => `62 passed`, `509 passed`.
+  - PASS `npm run build` => `2475` modules transformed; build completed without dirtying `dist/`.
+  - PASS `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts src/App.tsx`.
+- Current state:
+  - The repo is dirty with this focused source change plus `DESIGN.md` and this `working.md` entry.
+  - Direct caregiver-share fresh-preview confirmation and localStorage cleanup remain blocked by cmux workspace/surface control.
+- Next durable app slice:
+  - Run the full test suite and build, then stage only the focused paths, run staged secret checks, and commit/push if green.
+  - Continue to defer cmux app restart/quit/force-quit/replacement recovery until the user explicitly approves it.

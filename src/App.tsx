@@ -3458,6 +3458,7 @@ function App() {
     caregiverShareContentFingerprint: buildCaregiverExportContentFingerprint(
       state,
       state.caregiverShareSettings.sections,
+      { redactProfile: state.caregiverShareSettings.redactProfile },
     ),
     caregiverShareSettingsFingerprint: buildCaregiverShareSettingsFingerprint(
       state.caregiverShareSettings,
@@ -3510,6 +3511,11 @@ function App() {
       state,
       preview?.caregiverShareContentFingerprint,
       preview?.caregiverShareSettingsSnapshot?.sections ?? state.caregiverShareSettings.sections,
+      {
+        redactProfile:
+          preview?.caregiverShareSettingsSnapshot?.redactProfile ??
+          state.caregiverShareSettings.redactProfile,
+      },
     );
 
   const isVisitPacketExportPreviewRangeStale = (preview: ExportPreviewState | null) =>
