@@ -173,6 +173,7 @@ import {
   formatDocumentAttachmentCheckedStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
   formatDocumentAttachmentPreviewActionLabel,
+  formatDocumentAttachmentPreviewClosedStatusLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
   formatDocumentAttachmentPreviewOpenedStatusLabel,
   formatDocumentAttachmentPreviewUnavailableStatusLabel,
@@ -2626,8 +2627,22 @@ function App() {
   };
 
   const closeAttachmentPreview = () => {
+    const preview = attachmentPreview;
     setAttachmentPreview(null);
-    setSaveLabel(attachmentPreviewClosedStatusLabel);
+    if (!preview) {
+      setSaveLabel(attachmentPreviewClosedStatusLabel);
+      return;
+    }
+
+    const document = state.documents.find((item) => item.id === preview.documentId);
+    if (!document) {
+      setSaveLabel(attachmentPreviewClosedStatusLabel);
+      return;
+    }
+
+    const feedback = formatDocumentAttachmentPreviewClosedStatusLabel(document);
+    setDocumentActionFeedback({ documentId: document.id, message: feedback });
+    setSaveLabel(feedback);
   };
 
   const removeSandboxAttachment = async (document: CareDocument) => {

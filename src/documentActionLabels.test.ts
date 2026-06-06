@@ -7,6 +7,7 @@ import {
   formatDocumentAttachmentFileNameOnlyStatusLabel,
   formatDocumentAttachmentCheckedStatusLabel,
   formatDocumentAttachmentPreviewActionLabel,
+  formatDocumentAttachmentPreviewClosedStatusLabel,
   formatDocumentAttachmentPathUpdatedStatusLabel,
   formatDocumentAttachmentPreviewOpenedStatusLabel,
   formatDocumentAttachmentPreviewUnavailableStatusLabel,
@@ -216,6 +217,9 @@ describe("documentActionLabels", () => {
     );
     expect(formatDocumentAttachmentPreviewOpenedStatusLabel(documentWithAttachment)).toBe(
       "혈액검사 메모 검사 서류 이미지 미리보기 열림 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
+    );
+    expect(formatDocumentAttachmentPreviewClosedStatusLabel(documentWithAttachment)).toBe(
+      "혈액검사 메모 검사 서류 이미지 미리보기 닫힘 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",
     );
     expect(formatDocumentAttachmentPreviewActionLabel(documentWithAttachment, true)).toBe(
       "혈액검사 메모 검사 서류 이미지 첨부 미리보기 · 현재 첨부 blood-result.pdf · 첨부 상태 재첨부 필요",

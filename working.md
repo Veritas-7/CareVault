@@ -25524,3 +25524,34 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 07:50 KST - Document Attachment Preview Close Row Feedback
+
+- Current Goal:
+  - Close the stale saved-document row feedback gap for image attachment previews.
+  - Verify that the real saved-document `첨부 미리보기 닫기` button updates both the top save chip and the saved document row feedback instead of leaving the row at the previous `이미지 미리보기 열림` message.
+- Context:
+  - Existing image preview QA confirmed the dialog opened, image rendered, and the top chip changed to `이미지 미리보기 닫힘`.
+  - Source review found `previewDocumentAttachment()` already updates `setDocumentActionFeedback(...)` for open/unavailable/recovery/failure paths, but `closeAttachmentPreview()` only called `setSaveLabel(attachmentPreviewClosedStatusLabel)`.
+  - This meant the row-local `.document-action-feedback` could remain stale after the user closed the dialog.
+- Implementation:
+  - Added `formatDocumentAttachmentPreviewClosedStatusLabel(document)` in `src/documentActionLabels.ts` so close feedback keeps the document title/category plus current attachment filename/status context.
+  - Updated `closeAttachmentPreview()` in `src/App.tsx` to capture the active preview, clear the dialog, find the matching saved document, and update both `setDocumentActionFeedback(...)` and the top save chip with the same document-specific close status.
+  - Kept the existing generic `attachmentPreviewClosedStatusLabel` fallback for defensive no-preview or missing-document cases.
+  - Added the closed-status expectation to `src/documentActionLabels.test.ts`.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420` with port 1420 previously free. Reused only the existing `workspace:4` / `pane:8` / `surface:7`.
+  - NOTE: After one `goto`, cmux again showed the known split where `get-url` reported the app URL but `eval`/snapshot saw `about:blank`; the same `surface:7` recovered via `location.href = "http://127.0.0.1:1420/#care-plan"` without opening a new browser, tab, pane, workspace, or surface.
+  - PASS QA data setup: captured `localStorage["carevault.v1"]` baseline length `1871`, filled the real document title/body inputs, dispatched a synthetic image file `preview-close-local-feedback-qa.png` through the real `서류 메모 첨부 파일 선택 입력`, and clicked the rendered `서류 메모 저장 · 미리보기 닫기 QA 입력 준비됨` button.
+  - PASS saved row ready: the saved QA document rendered real attachment actions including `미리보기 닫기 QA 검사 서류 이미지 첨부 미리보기 · 현재 첨부 preview-close-local-feedback-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS open state: clicked the real saved-document image preview button. The dialog aria was `미리보기 닫기 QA 첨부 미리보기`, close title was `첨부 미리보기 닫기`, and both `.save-status-chip` and `.document-action-feedback` showed `미리보기 닫기 QA 검사 서류 이미지 미리보기 열림 · 현재 첨부 preview-close-local-feedback-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS close state: clicked the real `button[aria-label="첨부 미리보기 닫기"]`. The dialog disappeared, the close button count became `0`, and both `.save-status-chip` and `.document-action-feedback` showed `미리보기 닫기 QA 검사 서류 이미지 미리보기 닫힘 · 현재 첨부 preview-close-local-feedback-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS browser errors: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS cleanup: removed the QA document from `localStorage["carevault.v1"]`, recovered the same `surface:7` app context after a reload, and confirmed title `CareVault`, save chip `브라우저 자동 저장됨`, storage length `1871`, documents `1`, deletedDocuments `0`, no QA filename/title in body or storage, and no `carevault.__test*` session keys.
+- Verification:
+  - PASS focused tests: `npm test -- src/documentActionLabels.test.ts src/attachmentPreview.test.ts` => `2 passed`, `20 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+- Current state:
+  - `src/App.tsx`, `src/documentActionLabels.ts`, `src/documentActionLabels.test.ts`, and `working.md` are dirty with this focused saved-document preview-close feedback improvement and direct QA evidence.
+  - Stop the temporary Vite server, run runtime cleanup, diff checks, staged secret scan, commit/push explicit paths, then record post-push status.

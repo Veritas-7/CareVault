@@ -181,6 +181,12 @@ export function formatDocumentAttachmentPreviewOpenedStatusLabel(document: CareD
   )}`;
 }
 
+export function formatDocumentAttachmentPreviewClosedStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 이미지 미리보기 닫힘 · ${formatCurrentAttachmentContext(
+    document,
+  )}`;
+}
+
 export function formatDocumentAttachmentPreviewActionLabel(
   document: CareDocument,
   canPreview: boolean,
