@@ -21664,9 +21664,10 @@
 - Verification:
   - PASS `npm test -- src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts` => `2 passed`, `35 passed`.
   - PASS `npm run typecheck`.
+  - PASS `npm test` => `62 passed`, `508 passed`.
   - PASS `git diff --check -- src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts`.
 - Current state:
-  - The repo is dirty with only the two targeted test files and this `working.md` entry.
+  - The source-level regression coverage has been committed and pushed; this entry records the verification trail.
   - This slice is source-level verified only; it does not complete the pending direct cmux fresh-preview confirmation or localStorage cleanup.
 - Next durable app slice:
   - Stage only the two test files plus `working.md`, run staged secret checks, then commit/push this source-level regression coverage.
