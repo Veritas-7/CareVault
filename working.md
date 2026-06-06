@@ -23097,6 +23097,42 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 03:15 KST - Profile Number Validation Direct QA
+
+- Current Goal:
+  - Verify profile numeric input failure states through the real existing `암관리` `surface:7` browser without opening any new browser surface.
+  - Cover invalid age/waist input feedback, `aria-invalid`/`aria-describedby`, save-chip failure wording, no persistence mutation, recovery after valid input, cleanup, and browser diagnostics.
+- Context:
+  - Repo started clean and synced at `cb14823` (`Log CareVault topbar responsive QA status`).
+  - `README.md` and `DESIGN.md` require profile number validation to reject non-positive or malformed values, avoid false metric calculations, and expose scoped local feedback rather than only a topbar status.
+  - `src/App.tsx`, `src/profileValidation.ts`, `src/profileValidation.test.ts`, and recent `working.md` duplicate-slice notes were reread before selecting this non-duplicate direct QA slice.
+  - Recent same-surface work covered profile mode toggles and chart glucose reassessment, but not the profile numeric invalid-input UI failure path in the recovered `surface:7` browser.
+- Progress:
+  - Selected profile number validation QA as a low-risk core user flow because invalid health-profile metrics must fail closed and leave persisted patient data unchanged.
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; `workspace:4` and existing `surface:7` stayed on the CareVault page.
+  - PASS baseline capture: profile was `나의 건강 기록`, age `59`, sex `female`, height `164`, weight `62`, waist `82`, cancer-care/diabetes/hypertension all enabled, saved `carevault.v1` length `1871`, and save chip `브라우저 자동 저장됨`.
+  - PASS real invalid age input: filled `기본 정보 나이 · 한국 성인 기준 해석에 사용` with `0`; the field value showed `0`, `aria-invalid="true"`, `aria-describedby="profile-field-feedback"`, local feedback and save chip both showed `나이는 0보다 크게 입력해주세요.`, persisted age stayed `59`, the dashboard metric stayed `59세 · 여성`, and localStorage stayed byte-identical to baseline.
+  - PASS real age recovery: filled age back to `59`; feedback cleared, invalid attributes disappeared, stored age stayed `59`, dashboard metric stayed `59세 · 여성`, and localStorage stayed byte-identical to baseline.
+  - PASS real invalid waist input: filled `기본 정보 허리둘레(cm) · 한국 성인 복부비만 기준 확인` with `0`; the field value showed `0`, `aria-invalid="true"`, `aria-describedby="profile-field-feedback"`, local feedback and save chip both showed `허리둘레는 0보다 크게 입력해주세요.`, persisted waist stayed `82`, the dashboard profile metric stayed `164cm / 62kg · 허리 82cm`, and localStorage stayed byte-identical to baseline.
+  - PASS cleanup: filled waist back to `82`, restored the captured baseline defensively, removed `carevault.__testProfileValidationBaseline`, moved the same surface to `#profile`, and confirmed no temp keys, no profile feedback, no invalid age/waist attributes, no export preview, and no dialog.
+- Changes:
+  - `working.md` only; no source patch was needed because the invalid profile number UI already failed closed as documented.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, `get title`, `wait --selector '#profile'`, and same-surface profile DOM eval.
+  - PASS direct `fill` for invalid age `0`, valid age `59`, invalid waist `0`, and valid waist `82`.
+  - PASS cleanup eval: `storageUnchangedBeforeRestore: true`, restored profile age `59`, waist `82`, feedback `null`, no invalid age/waist attributes, no `carevault.__test*` keys, no preview, and no dialog.
+  - PASS `timeout 15 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 15 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+  - The first bounded `errors list` probe timed out before the flow; final errors/console diagnostics completed cleanly.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite server, run runtime/diff checks, stage only `working.md`, run staged secret checks, commit, push, and record post-push status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
