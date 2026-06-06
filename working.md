@@ -20949,3 +20949,20 @@
   - The existing CareVault browser surface is still `surface:7`; the last non-JS browser checks returned `#care-plan` and title `CareVault`, but detailed cmux JS/error-list checks are intermittently timing out after the successful mutation/restore evidence.
 - Next durable app slice:
   - Continue only after `surface:7` JS/error-list responsiveness is stable enough, then test backup import variants, CSV food-query staleness, document archive/restore with baseline restore, or another low-risk patient workflow.
+
+## 2026-06-06 19:53 KST - CSV Food Stale cmux QA Blocked
+
+- Improvement target:
+  - Start the distinct CSV preview staleness path for nutrition `foodQuery` changes, without repeating the already-completed visit-summary food stale QA.
+- Runtime/browser notes:
+  - PASS precheck: after commit `50da8f4`, the existing CareVault browser `surface:7` recovered enough for `cmux browser surface:7 errors list` to return `No browser errors` and `cmux browser surface:7 get-url` to return `http://127.0.0.1:1420/#care-plan`.
+  - BLOCKED CSV preview open: attempted a small `surface:7` eval that captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCsvFoodStaleBaseline"]` and clicked the real `CSV 미리보기` button, but the command timed out before returning preview evidence. No food-query mutation command was issued after that attempt.
+  - BLOCKED inspection/cleanup: follow-up non-JS checks `cmux browser surface:7 get-url`, `cmux browser surface:7 get text --selector '.export-preview-panel'`, `cmux browser surface:7 errors list`, and `cmux browser surface:7 reload` all timed out. `cmux ping` still returned `PONG`, but `cmux tree --workspace workspace:4` also timed out.
+  - Safety note: did not open another browser, did not use another surface, and did not stop, restart, force-quit, or signal `cmux`. Because the browser surface stopped returning state, the exact post-attempt UI state and the temporary `sessionStorage` baseline key could not be verified or cleared from the CLI.
+- Automated verification:
+  - No code changed in this blocked CSV attempt. The last successful automated verification in this continuation remains `npm test -- src/documentActionLabels.test.ts src/documentHistory.test.ts src/documentFilterActions.test.ts` (`3 passed`, `27 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` blocker entry.
+  - `cmux` socket responds to `ping`, but CareVault workspace/browser surface commands are currently timing out. Browser automation should not continue until the user approves a cmux recovery action or the surface naturally recovers.
+- Next durable app slice:
+  - Preserve the single-browser rule. After explicit recovery approval or natural `surface:7` recovery, first confirm URL/title, clear any temporary CSV preview/session state if present, then retry CSV food-query staleness in shorter substeps.
