@@ -20059,3 +20059,27 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for lab save validation, document attachment controls, or another low-risk patient workflow.
+
+## 2026-06-06 17:20 KST - Lab Save Required Fields cmux QA
+
+- Improvement target:
+  - Continue the lab-entry workflow sweep by verifying required-field validation before a lab result can be saved.
+  - Confirm partial lab drafts show field-specific messages and the warning clears automatically once required fields are present.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: lab draft fields were empty, add button aria was `검사 수치 추가 · 검사명과 수치 필요`, save chip was `브라우저 자동 저장됨`, no lab record-form feedback was present, and stored counts were vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`.
+  - PASS empty submit: clicked `검사 수치 추가` with empty item/value; record feedback text was `검사 항목과 값을 입력해주세요.`, aria was `검사 수치 입력 필수 항목 안내 · 검사 항목과 값을 입력해주세요.`, and save chip matched the message.
+  - PASS value-only submit: entered value `3.4` with no item and clicked add; record feedback text was `검사 항목을 입력해주세요.`, aria was `검사 수치 입력 필수 항목 안내 · 검사 항목을 입력해주세요.`, and save chip matched the message.
+  - PASS item-only submit: entered item `CRP` with empty value and clicked add; record feedback text was `검사 값을 입력해주세요.`, aria was `검사 수치 입력 필수 항목 안내 · 검사 값을 입력해주세요.`, and save chip matched the message.
+  - PASS validation clear: entered value `1.2` for item `CRP` without clicking save; record feedback disappeared, save chip changed to `검사 수치 입력 필수 입력 확인됨`, and add button aria became `검사 수치 추가 · CRP 1.2 입력 준비됨`.
+  - PASS reset: clicked `검사 입력 프리셋과 값 초기화`; lab draft fields returned to empty and reset feedback showed `검사 입력 초기화됨 · 직접 입력 모드 · 이전 CRP 1.2 · 판정 기준 범위 없음 · 근거 없음 · 날짜 2026-06-06`.
+  - PASS non-mutating guard: the lab save action was never clicked with a valid draft, and stored counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1` throughout.
+  - PASS cleanup: reloaded the same surface and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, empty lab draft fields, no lab record-form feedback, no lab preset feedback, and unchanged stored counts.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; lab required-field copy remains covered by `src/entryValidation.test.ts` and add-button readiness by `src/labMetric.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for document attachment controls, document manual save validation, or another low-risk patient workflow.
