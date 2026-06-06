@@ -24251,6 +24251,50 @@
   - Source tree is clean and synced after the focused QA-log push.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 06:14 KST - Caregiver Redacted Diabetes Excluded-Vitals Direct QA
+
+- Current Goal:
+  - Directly verify the caregiver-share stale-detection contract for a redacted profile preview when the `혈압·혈당·체온` share section is excluded.
+  - Confirm changing only `profile.diabetes` through the real `당뇨 추적` toggle does not stale the already-open caregiver preview because no diabetes-specific profile/vital content can render in that redacted/excluded-vitals preview.
+  - Confirm a rendered caregiver setting change still raises the stale guard as a positive control.
+- Context:
+  - Source-level slice `461e002` (`Scope redacted caregiver diabetes fingerprint`) already scoped redacted caregiver-preview diabetes fingerprints to enabled vitals.
+  - Recent direct QA covered profile-redaction stale behavior, caregiver section exclusion, and chart glucose reassessment, but I did not find same-`surface:7` direct evidence for the combined `redactProfile=true` and `sections.vitals=false` no-stale diabetes-toggle branch.
+  - Repo is clean and synced before this QA.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture browser-local `carevault.v1` in `sessionStorage`.
+  - Use real caregiver settings controls to set `프로필 가리기=true` and exclude only `혈압·혈당·체온`, then generate a caregiver preview with the real `보호자 공유본 미리보기` action.
+  - Click the real `당뇨 추적` profile toggle off/on while the preview stays open and verify no `.export-preview-stale-alert` appears, preview actions remain enabled, the generated HTML remains the redacted/excluded-vitals version, and `carevault.v1` changes only for the profile toggle during the check.
+  - Use a rendered caregiver setting change, such as toggling the `질문` share section, as a positive stale guard and confirm old preview actions become disabled until regeneration.
+  - Restore the captured browser-local baseline, remove temporary keys, reload/recover only `surface:7`, and confirm no preview/dialog/stale or settings residue.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS baseline: `surface:7` was at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, storage keys only `carevault.v1`, and no preview/stale state. Browser-local `carevault.v1` was saved to `sessionStorage["carevault.__testRedactedDiabetesExcludedVitalsBaseline"]`.
+  - PASS baseline state: caregiver settings were default (`redactProfile=false`, all 7 sections included, no memo), profile had `diabetes=true`, counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`.
+  - PASS real settings setup: clicked the real `보호자 공유본 프로필 가리기` checkbox and the real `혈압·혈당·체온` caregiver section checkbox. Persisted settings became `redactProfile=true`, `sections.vitals=false`, with the share summary scoped to `프로필 가림 · 포함 6개 · 제외 1개`.
+  - PASS initial preview: clicked the real `보호자 공유본 미리보기` action. The preview opened with save chip `보호자 공유본 미리보기 생성 · 의도 직접 설정 · 프로필 가림 · 메모 없음 · 포함 6개 · 제외 1개`, no stale alert, and enabled copy/print/download actions with `94줄 · 47,203자 · 69,624B · 근거/출처 104개`.
+  - PASS generated preview scope: rendered caregiver HTML contained the redacted `CareVault 보호자 공유본` title, did not contain the profile name `나의 건강 기록`, and did not contain the vitals section or baseline vital/glucose strings such as `혈압 128/78` or `혈당 146`.
+  - PASS no-stale diabetes-off branch: while that preview stayed open, clicked the real `당뇨 추적` checkbox off. After autosave settled, stored `profile.diabetes` was `false`, the checkbox aria was `당뇨 추적 꺼짐 · 선택하면 켭니다`, save chip was `당뇨 추적 꺼짐 · 브라우저 자동 저장됨`, `.export-preview-stale-alert` count stayed `0`, no `공유 설정 반영` action appeared, and preview copy/print/download actions remained enabled.
+  - PASS no-stale diabetes-on branch: clicked the real `당뇨 추적` checkbox back on. Stored `profile.diabetes` returned to `true`, the checkbox aria was `당뇨 추적 켜짐 · 선택 해제하면 끕니다`, save chip was `당뇨 추적 켜짐 · 브라우저 자동 저장됨`, `.export-preview-stale-alert` count stayed `0`, no fresh-preview action appeared, and preview copy/print/download actions remained enabled.
+  - PASS positive stale guard: clicked the real `질문` caregiver section checkbox off while the same preview stayed open. The preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 변경 감지`, exposed `공유 설정 반영` with aria/title `새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용`, and disabled copy/print/download with `비활성: 공유 설정이 바뀌어 다시 생성이 필요합니다.`.
+  - PASS positive guard persistence: after autosave settled, stored caregiver sections were `questions=false`, `vitals=false`, save chip was `공유 섹션 제외: 질문 · 의도 직접 설정 · 프로필 가림 · 메모 없음 · 포함 5개 · 제외 2개 · 브라우저 자동 저장됨`, and stale count stayed `1`.
+  - PASS cleanup: restored the captured `carevault.v1`, removed the temporary session key, reloaded/recovered only `surface:7`, and confirmed URL `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, caregiver settings back to default (`redactProfile=false`, all 7 sections included), `profile.diabetes=true`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, preview count `0`, stale count `0`, and `No browser errors`.
+  - cmux note: after baseline restoration, one same-surface reload briefly re-entered the known blank snapshot/RPC split (`snapshot` returned `about:blank` while `get-url` still reported CareVault). No cmux restart/quit/kill or new surface was used; `cmux workspace select workspace:4`, `cmux focus-pane --workspace workspace:4 --pane pane:8`, and `cmux browser --surface surface:7 focus-webview` restored DOM access, after which cleanup verification passed.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - PASS focused tests: `npm test -- src/caregiverExport.test.ts src/caregiverShareSettings.test.ts src/appStateNormalization.test.ts` => `3 passed`, `82 passed`.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics after cleanup: existing `surface:7` remained at `http://127.0.0.1:1420/#care-plan` and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS diff check: `git diff --check -- working.md`.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Stage explicit `working.md`, run staged diff and staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 05:31 KST - Caregiver Old Normal Lab Direct QA
 
 - Current Goal:
