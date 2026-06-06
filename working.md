@@ -20889,3 +20889,23 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface, currently returned to `#care-plan`.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for nutrition export staleness, document filters/actions, backup import variants, or another low-risk patient workflow.
+
+## 2026-06-06 19:39 KST - Visit Summary Food Stale cmux QA
+
+- Improvement target:
+  - Verify an open Markdown visit-summary preview becomes stale when the nutrition food query changes, disables copy/print/download until regenerated, and refreshes with food-check plus low-WBC immune-food context.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7`; no new browser pane/tab was opened. Started from `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, empty `foodQuery`, one baseline WBC lab, and one baseline question.
+  - PASS initial preview: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testVisitFoodStaleBaseline"]`, clicked the real `요약 미리보기` action, and opened `진료 요약 미리보기 (최근 30일)`. The initial preview had summary `234줄`, `32,554자`, `55,352B`, `근거/출처 109개`; copy, print, and download actions were enabled with matching aria/title summaries; and the Markdown did not contain `브로콜리, 생굴`.
+  - PASS food-query stale trigger: typed `브로콜리, 생굴` into the real `암환자 음식 판단 음식 또는 식단 입력` textarea while the preview stayed open. Persisted `foodQuery` updated, save chip showed `음식 판단 업데이트됨 · 브로콜리, 생굴 · 의료진 확인 필요 · 매칭 2개 · 공식 출처 3개 · 브라우저 자동 저장됨`, and the open preview raised `.export-preview-stale-alert[role=status]` with aria `진료 요약 미리보기 기록 변경 감지` and visible action `요약 기록 반영`.
+  - PASS stale actions: while stale, the preview Markdown stayed old with no `브로콜리, 생굴`; copy, print, and download were disabled; each aria/title kept the old summary plus `비활성: 진료 요약 기록이 바뀌어 다시 생성이 필요합니다.`; and the fresh action exposed aria/title `새 미리보기 생성 · 진료 요약 · 변경된 기록 적용`.
+  - PASS regenerated preview: clicked the real `요약 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled, summary updated to `234줄`, `33,139자`, `56,338B`, `근거/출처 111개`, and the refreshed Markdown contained `브로콜리, 생굴`, the food-check section, `생굴: 면역저하 시 익히지 않은 음식 주의`, `면역저하 검사 연결`, `WBC 3.4 10^3/uL`, and `국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+  - Tool note: a first long combined cmux eval timed out and left the same surface on `about:blank`; recovered by navigating the existing `surface:7` back to `http://127.0.0.1:1420/#care-plan`, confirmed local state was still clean, then reran the stale/fresh verification in smaller steps. No new browser surface was opened and `cmux` was not restarted.
+  - PASS cleanup: closed the preview, restored the captured `localStorage` snapshot, removed `carevault.__testVisitFoodStaleBaseline`, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, `foodQuery` empty, questions `1`, labs `1`, no temporary food text in storage, no export preview panel, no stale alert, no attachment dialog, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; visit-summary fingerprinting includes `foodQuery` in `src/visitPacket.ts`, and stale action labels remain covered by `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface, currently returned to `#care-plan`.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for document filters/actions, backup import variants, CSV food-query staleness, or another low-risk patient workflow.
