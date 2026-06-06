@@ -21921,6 +21921,42 @@
   - Continue source-level false-positive stale-preview hardening only if direct cmux control remains unavailable.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
 
+## 2026-06-07 05:00 KST - Symptom Support Urinary-Bowel Question Draft Direct QA
+
+- Current Goal:
+  - Verify the source-backed symptom support band for `혈뇨와 혈변` through the real existing `암관리` `workspace:4` / `surface:7` browser.
+  - Confirm the `배뇨·배변/혈뇨·혈변 변화` template shows the official National Cancer Center source, exposes the care-queue hint, fills the editable pre-visit question draft, adds a source-retaining symptom action note only when blank, and does not save any new records.
+- Context:
+  - Goal identity, repo sync, runtime doctor, and the existing single browser surface were reconfirmed before this slice.
+  - Recent recovered `surface:7` slices already covered caregiver presets, lab preset reset/sync, profile toggles, infection standard draft actions, food question drafts, vital invalid question drafts, symptom severity, and body-only symptom saves.
+  - `src/symptomSupportTemplates.test.ts` covers the urinary/bowel bleeding template at source level, but this high-risk symptom support path still needs current real-click proof in the recovered single cmux surface.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only `surface:7`.
+  - Capture browser-local `carevault.v1` plus existing record counts into a temporary `sessionStorage` baseline.
+  - Fill the real `증상·부작용 기록 증상명` input with `혈뇨와 혈변`, click the real support-band `질문 초안` button, and verify source link labels, queue hint, local feedback, question draft topic/body/priority, symptom action note, unchanged persisted counts, and no preview/dialog side effects.
+  - Restore the captured baseline, remove temporary test keys, reload the same surface, check browser diagnostics, stop the temporary Vite server, then run focused automated tests.
+- Direct QA results:
+  - PASS started temporary Vite on `127.0.0.1:1420` and reused only the existing `workspace:4` / `surface:7` browser.
+  - PASS baseline captured browser-local `carevault.v1` into `sessionStorage.carevault.__testSymptomUrinaryBowelBaseline`: storage keys only `carevault.v1`, raw length `1871`, save chip `브라우저 자동 저장됨`, blank symptom/question drafts, no support band, no preview/dialog, and counts `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labResults 1`.
+  - PASS real symptom input: filling `증상·부작용 기록 증상명` with `혈뇨와 혈변` opened the `배뇨·배변/혈뇨·혈변 변화` support band.
+  - PASS support-band source: visible text included the urinary/bowel tracking note, the non-treatment boundary, and `저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.`; the source link href was `https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894` with aria/title `배뇨·배변/혈뇨·혈변 변화 공식 출처 국가암정보센터 자궁경부암 치료의 부작용 열기`.
+  - PASS draft action label: the real button exposed `배뇨·배변/혈뇨·혈변 변화 질문 초안 채우기` as both aria-label and title.
+  - PASS real question-draft click: clicking that button filled the editable question draft with topic `부작용: 배뇨·배변/혈뇨·혈변 변화`, date `2026-06-15`, priority `next-visit`, and body beginning `혈뇨와 혈변 기록과 관련해` while preserving the same National Cancer Center source line and URL.
+  - PASS symptom action note: because the action field was blank, the click filled `증상·부작용 기록 다음 행동` with the urinary/bowel observation note, treatment-boundary wording, and parseable `출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://...menu_seq=4894` evidence.
+  - PASS feedback and non-mutation: local `.symptom-template-draft-feedback` and the save chip both showed `배뇨·배변/혈뇨·혈변 변화 질문 초안 준비됨 · 근거 국가암정보센터 자궁경부암 치료의 부작용 · 저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.`; `carevault.v1` stayed byte-identical to baseline and record counts stayed unchanged.
+  - PASS cleanup: restored the baseline, removed the temporary test key, reloaded only `surface:7`, and confirmed blank symptom/question drafts, no support band or support feedback, storage keys only `carevault.v1`, no `carevault.__test*` keys, counts still `4/1/1/1/1/0/1`, save chip `브라우저 자동 저장됨`, and no preview/dialog.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite `connecting` / `connected` debug logs.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C and `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault.app process, and no CareVault dev process.
+- Tests:
+  - PASS `npm test -- src/symptomSupportTemplates.test.ts src/symptomRecordLabels.test.ts` => 2 files, 28 tests.
+  - PASS `git diff --check -- working.md`.
+- Changes:
+  - `working.md` only; no source patch was needed because the urinary/bowel symptom support path matched the documented and tested contract.
+- Issues:
+  - None found in this slice.
+- Next Steps:
+  - Run staged secret scan, commit/push this focused QA log, and record post-push clean/sync status.
+
 ## 2026-06-07 04:54 KST - Vital Question Draft Invalid Input Direct QA
 
 - Current Goal:
