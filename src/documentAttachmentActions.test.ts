@@ -3,6 +3,7 @@ import {
   documentDraftAttachmentClearedStatusLabel,
   formatDocumentDraftAttachmentClearedStatusLabel,
   formatDocumentDraftAttachmentRemoveActionLabel,
+  formatDocumentDraftAttachmentSelectionFailedStatusLabel,
 } from "./documentAttachmentActions";
 
 describe("documentAttachmentActions", () => {
@@ -25,6 +26,17 @@ describe("documentAttachmentActions", () => {
     ).toBe("첨부 선택 제거됨 · 현재 선택 scan.png · 상태 브라우저 파일명 참조");
     expect(formatDocumentDraftAttachmentClearedStatusLabel()).toBe(
       "첨부 선택 제거됨 · 현재 선택 첨부 없음",
+    );
+  });
+
+  it("formats Tauri attachment selection failure with fallback and current context", () => {
+    expect(
+      formatDocumentDraftAttachmentSelectionFailedStatusLabel("scan.png", "앱 샌드박스 복사됨"),
+    ).toBe(
+      "서류 첨부 선택 실패 · 브라우저 파일명 참조 선택으로 전환 · 현재 선택 scan.png · 상태 앱 샌드박스 복사됨",
+    );
+    expect(formatDocumentDraftAttachmentSelectionFailedStatusLabel()).toBe(
+      "서류 첨부 선택 실패 · 브라우저 파일명 참조 선택으로 전환 · 현재 선택 첨부 없음",
     );
   });
 });

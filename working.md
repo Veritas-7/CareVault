@@ -19387,3 +19387,32 @@
   - Live print popup failure QA still needs the existing cmux browser automation layer to recover.
 - Next durable app slice:
   - Recheck cmux browser automation recovery, then live-test export-preview print failure with a stubbed `window.open` or continue with another automated-only UX slice if cmux remains blocked.
+
+## 2026-06-06 11:11 KST - Document Attachment Picker Failure Status
+
+- Improvement target:
+  - Make Tauri document-attachment picker failure feedback explicit instead of the generic `첨부 선택 실패. 파일명 참조 가능`.
+  - Preserve the current attachment name/status context while still falling back to the browser file-name reference picker.
+  - Keep working while cmux browser automation is blocked, without opening any new browser pane/tab.
+- Change:
+  - Added `formatDocumentDraftAttachmentSelectionFailedStatusLabel()` in `src/documentAttachmentActions.ts`.
+  - Updated `attachDocumentFile()` in `src/App.tsx` so picker failure reports `서류 첨부 선택 실패 · 브라우저 파일명 참조 선택으로 전환` plus the current attachment context before clicking the browser file input fallback.
+  - Extended `src/documentAttachmentActions.test.ts` to pin both selected-attachment and no-attachment failure labels.
+  - Added a `DESIGN.md` decision-log entry for attachment picker failure context.
+- Runtime/browser notes:
+  - BLOCKED: cmux browser automation remains unavailable. `cmux ping`, `cmux browser-status`, and `cmux capabilities` respond, but the existing CareVault `surface:7`, visible `surface:11`, workspace list/select, window list, `system.tree`, and browser url/snapshot/errors commands timed out in the previous recovery sweep. No new browser pane/tab was opened.
+  - PASS server check: Vite dev server still responds at `http://127.0.0.1:1420/`.
+- Automated verification:
+  - PASS: `npm run test -- src/documentAttachmentActions.test.ts`, 4 tests.
+  - PASS: `git diff --check -- src/App.tsx src/documentAttachmentActions.ts src/documentAttachmentActions.test.ts`.
+  - PASS: `npm run test`, 62 files and 501 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- DESIGN.md working.md src/App.tsx src/documentAttachmentActions.ts src/documentAttachmentActions.test.ts`.
+- Current state:
+  - Code changes are narrow and verified by focused and full automated tests.
+  - Live Tauri picker-failure QA still needs the existing cmux browser automation layer to recover.
+- Next durable app slice:
+  - Stage explicit paths, run staged safety checks, commit/push, then recheck cmux browser automation recovery without opening a new browser.

@@ -155,6 +155,7 @@ import {
 import {
   formatDocumentDraftAttachmentClearedStatusLabel,
   formatDocumentDraftAttachmentRemoveActionLabel,
+  formatDocumentDraftAttachmentSelectionFailedStatusLabel,
 } from "./documentAttachmentActions";
 import {
   filterDocumentsBySearchAndReview,
@@ -2177,7 +2178,12 @@ function App() {
       );
     } catch (error) {
       console.error("Document attachment selection failed", error);
-      setSaveLabel("첨부 선택 실패. 파일명 참조 가능");
+      setSaveLabel(
+        formatDocumentDraftAttachmentSelectionFailedStatusLabel(
+          documentDraft.attachmentName,
+          documentDraft.attachmentStatus,
+        ),
+      );
       documentAttachmentInputRef.current?.click();
     }
   };

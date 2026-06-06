@@ -19,3 +19,13 @@ export function formatDocumentDraftAttachmentClearedStatusLabel(
 ) {
   return `첨부 선택 제거됨 · ${formatDraftAttachmentContext(attachmentName, attachmentStatus)}`;
 }
+
+export function formatDocumentDraftAttachmentSelectionFailedStatusLabel(
+  attachmentName?: string,
+  attachmentStatus?: string,
+) {
+  return `서류 첨부 선택 실패 · 브라우저 파일명 참조 선택으로 전환 · ${formatDraftAttachmentContext(
+    attachmentName,
+    attachmentStatus,
+  )}`;
+}
