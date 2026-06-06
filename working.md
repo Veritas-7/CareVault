@@ -19608,3 +19608,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for remaining document empty/failure states.
+
+## 2026-06-06 16:19 KST - Document Required Fields cmux QA
+
+- Improvement target:
+  - Continue the document empty/failure sweep by verifying required-field feedback for the manual document form.
+  - Confirm failed save attempts do not change persisted record counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: document title/body draft fields were empty, the save button label was `서류 메모 저장 · 제목과 내용 필요`, and there was no document form feedback.
+  - PASS empty save: clicked `서류 메모 저장`; after React state settled, the status feedback showed `서류 제목과 내용을 입력해주세요.` with aria label `서류 수기 보관 필수 항목 안내 · 서류 제목과 내용을 입력해주세요.`
+  - PASS title-only save: set title to `6월 혈액검사`, kept body empty, clicked save, and the status feedback changed to `서류 내용을 입력해주세요.`
+  - PASS body-only save: cleared title, set body to `검사 수치 메모`, clicked save, and the status feedback changed to `서류 제목을 입력해주세요.`
+  - PASS persistence guard: the backup button stayed `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개` throughout the failed-save checks.
+  - PASS cleanup: reloaded the same surface and confirmed document title/body were empty again, document feedback was cleared, and the URL remained `http://127.0.0.1:1420/#care-plan`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; document required-field messages remain covered by `src/entryValidation.test.ts`, and document save action labels by `src/documentActionLabels.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for remaining document attachment recovery/preview failure states or saved-document filter empty states.
