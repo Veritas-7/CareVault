@@ -20869,3 +20869,23 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface, currently returned to `#care-plan`.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for nutrition/food safety flows, backup import variants, non-vital CSV/Markdown mutations, or another low-risk patient workflow.
+
+## 2026-06-06 19:34 KST - Nutrition Food Question Draft cmux QA
+
+- Improvement target:
+  - Verify the nutrition panel's source-backed food judgment, low-WBC immune-food strip, matched official-source links, and `질문 초안` action that fills the editable pre-visit question form without auto-saving a question.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7`; no new browser pane/tab was opened. Started from `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, empty `foodQuery`, one baseline WBC lab, and one baseline question.
+  - PASS baseline/strip: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testFoodQuestionDraftBaseline"]`, clicked the real sidebar `#nutrition` link, and confirmed `http://127.0.0.1:1420/#nutrition`. Before food input, the summary aria was `음식 판단 요약 매칭 없음 · 분류 대기 · 공식 출처 2개`, the `면역저하 검사 연결` strip was visible with aria `면역저하 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 공식 출처 2개`, linked `서울아산병원 전혈구검사 참고치` and `국가암정보센터 증상별 식생활 - 면역기능의 저하`, and no `질문 초안` action was visible while the food query was empty.
+  - PASS matched food judgment: typed `브로콜리, 생굴, 자몽 주스` into the real `암환자 음식 판단 음식 또는 식단 입력` textarea. The persisted query updated, save chip showed `음식 판단 업데이트됨 · 브로콜리, 생굴, 자몽 주스 · 의료진 확인 필요 · 매칭 3개 · 공식 출처 4개 · 브라우저 자동 저장됨`, summary aria became `음식 판단 요약 매칭 3개 · 식단 후보 1개 · 진료팀 확인 2개 · 공식 출처 4개`, and verdict class/text was `verdict-risk` / `의료진 확인 필요`.
+  - PASS official-source chips: food chips rendered `브로콜리: 채소 중심 식단에 적합` with link aria/title `브로콜리 음식 판단 근거 국가암정보센터 암예방 식이 열기 - 채소 중심 식단에 적합`; `자몽: 약물 상호작용 확인 필요` with `질병관리청 국가건강정보포털 식이영양`; and `생굴: 면역저하 시 익히지 않은 음식 주의` with `국가암정보센터 증상별 식생활 - 면역기능의 저하`, proving raw-food safety uses the immune-function diet source instead of the generic diet overview.
+  - PASS question draft action: the nutrition panel showed a real `질문 초안` button with aria/title `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함`; clicking it did not add a saved question (`questions` stayed `1`) and instead focused the editable `진료 전 질문 내용` textarea.
+  - PASS draft content: the editable question draft had topic `식단·음식 안전`, priority `high`, and body containing `2026-06-01 WBC 3.4 10^3/uL`, `현재 음식/식단(브로콜리, 생굴, 자몽 주스)`, `날음식·비살균 식품`, `생굴: 면역저하 시 익히지 않은 음식 주의`, `자몽: 약물 상호작용 확인 필요`, `검사 근거: 서울아산병원 전혈구검사 참고치`, and parseable source line `출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do`. The local feedback/save chip both showed `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 브로콜리, 생굴, 자몽 주스 · 일치 3개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 4개`.
+  - PASS cleanup: restored the captured `localStorage` snapshot, removed `carevault.__testFoodQuestionDraftBaseline`, reloaded the same surface, and confirmed `foodQuery` was empty again, questions `1`, labs `1`, no temporary food/draft text in storage, no food question feedback, no export preview panel, no stale alert, no attachment dialog, and `No browser errors`; then clicked back to `http://127.0.0.1:1420/#care-plan`.
+- Automated verification:
+  - No code changed in this QA-only slice; food judgment metrics, immune-food context, source-backed food question drafts, and source retention remain covered by `src/foodMetric.test.ts`, `src/immuneFoodContext.test.ts`, and `src/foodQuestionPrompts.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface, currently returned to `#care-plan`.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for nutrition export staleness, document filters/actions, backup import variants, or another low-risk patient workflow.
