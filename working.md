@@ -25180,6 +25180,24 @@
   - No source patch was needed; `working.md` is dirty with this direct QA evidence.
   - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
 
+## 2026-06-07 07:25 KST - Post-Push Preview Download Clipboard Fallback QA
+
+- Improvement target:
+  - Record the post-push state after the direct preview-download clipboard-fallback success QA log.
+- Verification:
+  - PASS focused tests: `npm test -- src/exportPreviewSummary.test.ts src/textFileDownload.test.ts` => `2 passed`, `14 passed`.
+  - PASS diff checks: `git diff --check -- working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `a7f194a Log preview download clipboard fallback QA`.
+  - PASS push: `git push` updated `origin/main` from `108765a` to `a7f194a`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux same-surface status: existing `surface:7` remained at `http://127.0.0.1:1420/#care-plan` and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS same-surface recovery note: an intermediate `errors list` call timed out and a compact snapshot briefly read an empty `about:blank` document; without opening a new browser/surface or restarting cmux, a temporary same-port Vite listener plus same-`surface:7` reload restored the `CareVault` app document, then the listener was stopped and runtime doctor passed again.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
 ## 2026-06-07 06:45 KST - Food Question Empty Input Failure Affordance
 
 - Current Goal:
