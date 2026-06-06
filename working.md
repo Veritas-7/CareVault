@@ -21957,6 +21957,21 @@
 - Next Steps:
   - Run staged secret scan, commit/push this focused QA log, and record post-push status.
 
+## 2026-06-07 04:57 KST - Post-Push Vital Question Invalid QA Status
+
+- Git state:
+  - PASS focused QA log pushed: `159a2c5 Log vital question invalid QA` reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+- Runtime/browser state:
+  - PASS `npm run runtime:doctor`: port `1420` free, no installed/release CareVault.app process, no CareVault dev processes.
+  - PASS existing single browser identity remained `surface:7` at `http://127.0.0.1:1420/#care-plan` with title `CareVault`.
+  - Runtime guard: no new browser, tab, pane, workspace, surface, or headless browser was opened. cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Current state:
+  - The vital helper invalid-input `질문 초안` click now has direct same-surface evidence: it shows local form validation, does not mutate records, and does not overwrite the pre-visit question draft.
+  - The repo is expected to be clean and synced after this status log is committed and pushed.
+- Next Steps:
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
 ## 2026-06-07 00:44 KST - Caregiver Old Symptom Fingerprint Scope
 
 - Current Goal:
