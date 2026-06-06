@@ -23253,6 +23253,46 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 03:34 KST - Vital Input Validation Direct QA
+
+- Current Goal:
+  - Verify the `혈압·혈당·체온 입력` invalid numeric-entry paths in the real existing `암관리` `surface:7` browser.
+  - Cover blood-pressure, glucose, and temperature validation feedback, no accidental record persistence, feedback clearing after valid correction, same-surface cleanup, and browser diagnostics.
+- Context:
+  - Repo started clean and synced at `2af97a7` (`Log CareVault attachment preview QA status`).
+  - `DESIGN.md` requires record forms to expose local required/validation status near the action, keep labels type-specific, and clear stale failure feedback when the draft becomes valid.
+  - Recent direct QA covered vital branch switching, source evidence, save success feedback, and several stale-preview paths; this slice focuses on invalid numeric saves without committing any valid vital record.
+- Progress:
+  - Selected this as the next non-duplicate form-safety flow because `src/vitalValidation.test.ts` covers the pure validation helpers, while the recovered same-surface browser needs direct evidence that invalid clicks do not mutate persisted records.
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; reused only `workspace:4` and the existing `surface:7`.
+  - PASS baseline: `surface:7` was at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, storage keys only `carevault.v1`, no existing vital validation feedback, default vital draft `blood-pressure` with `128/78`, save chip `브라우저 자동 저장됨`, and live counts vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `0`.
+  - PASS real `입력 기록` navigation click: `a[href="#records"]` focused the records workflow without opening another browser.
+  - PASS blood-pressure invalid click: filled real `혈압 입력 수축기 혈압(mmHg)` with `0`, clicked the real `혈압 기록 추가` button, saw local and topbar feedback `혈압 수축기와 이완기를 0보다 크게 입력해주세요.`, button aria `혈압 기록 추가 · 기준 확인 후 저장`, no `.vital-save-feedback`, and all persisted counts unchanged.
+  - PASS blood-pressure recovery: filled systolic back to `128`; local feedback cleared, topbar showed `혈압·혈당·체온 입력 필수 입력 확인됨`, and the button aria returned to `혈압 기록 추가 · 혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`.
+  - PASS glucose invalid click: selected `glucose` through the real `혈압·혈당·체온 입력 종류 선택`, filled real `혈당 입력 값(mg/dL)` with `0`, clicked `혈당 기록 추가`, saw local and topbar feedback `혈당 값을 0보다 크게 입력해주세요.`, button aria `혈당 기록 추가 · 기준 확인 후 저장`, no `.vital-save-feedback`, and all persisted counts unchanged.
+  - PASS glucose recovery: filled glucose back to `118`; feedback cleared, topbar showed `혈압·혈당·체온 입력 필수 입력 확인됨`, and the button aria returned to `혈당 기록 추가 · 혈당 118 mg/dL (식전) · 식전 목표 범위 · 성인 남녀 공통 · 당뇨 추적 혈당`.
+  - PASS temperature invalid click: selected `temperature`, filled real `체온 입력 값(℃)` with `0`, clicked `체온 기록 추가`, saw local and topbar feedback `체온 값을 0보다 크게 입력해주세요.`, button aria `체온 기록 추가 · 기준 확인 후 저장`, no `.vital-save-feedback`, and all persisted counts unchanged.
+  - PASS temperature recovery: filled temperature back to `36.8`; feedback cleared, topbar showed `혈압·혈당·체온 입력 필수 입력 확인됨`, and the button aria returned to `체온 기록 추가 · 체온 36.8℃ · 체온 기록 범위 · 암환자 공통 · 체온·감염 연락 기준`.
+  - PASS cleanup: restored the baseline `carevault.v1`, removed `carevault.__testVitalValidationBaseline`, reloaded only the same `surface:7`, and confirmed final state with storage keys only `carevault.v1`, no `carevault.__test*` session keys, no stored invalid feedback text, counts restored, save chip `브라우저 자동 저장됨`, no local vital feedback, and the default `blood-pressure` draft `128/78`.
+- Changes:
+  - `working.md` only; no source patch was needed because all three invalid numeric vital-entry flows matched the validation and non-persistence contract.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite: port `1420` free, no installed/release CareVault app, no dev process.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, `get title`, and `wait --selector '.vital-panel-summary'`.
+  - PASS same-surface baseline capture, real records navigation click, blood-pressure invalid/recovery, glucose invalid/recovery, temperature invalid/recovery, and full baseline cleanup.
+  - PASS `timeout 20 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 20 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+  - PASS post-QA `npm run runtime:doctor`: port `1420` free, no installed/release CareVault app, no dev process.
+  - PASS `npm test -- src/vitalValidation.test.ts src/entryValidation.test.ts src/vitalMetric.test.ts src/vitalRecordLabels.test.ts` => 4 files passed, 35 tests passed.
+  - PASS `git diff --check -- working.md`.
+- Issues:
+  - Must use only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stage only `working.md`, run staged secret checks, commit, push, and record post-push status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
