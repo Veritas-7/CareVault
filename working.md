@@ -19416,3 +19416,47 @@
   - Live Tauri picker-failure QA still needs the existing cmux browser automation layer to recover.
 - Next durable app slice:
   - Stage explicit paths, run staged safety checks, commit/push, then recheck cmux browser automation recovery without opening a new browser.
+
+## 2026-06-06 15:43 KST - Export Preview Print Failure cmux Recovery QA
+
+- Improvement target:
+  - Recheck the previously blocked cmux browser automation layer without opening another browser pane/tab.
+  - Live-test the export-preview print popup failure state that was added in `Scope export preview print failures`.
+- Runtime/browser notes:
+  - PASS setup: `cmux tree --all --json` showed the existing `암관리` workspace as `workspace:4`, terminal `surface:8`, and the single right browser `surface:7` titled `CareVault` at `http://127.0.0.1:1420/#care-plan`.
+  - PASS: `cmux workspace select workspace:4`, `cmux browser surface:7 url get`, `cmux browser surface:7 snapshot --interactive`, and `cmux browser surface:7 errors` all responded; no new browser pane/tab was opened.
+  - PASS: Computer Use confirmed the visible cmux window title was `암관리` and the right browser tab was `CareVault` with omnibar `http://127.0.0.1:1420/#care-plan`.
+  - PASS: clicked `CSV 미리보기` in the existing `surface:7`; `.export-preview-panel` appeared and the save chip showed `CSV 미리보기 생성 · 기록 8개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`.
+  - PASS: temporarily stubbed `window.open` to return `null` in the same WebView, clicked `미리보기 인쇄`, then restored `window.open`.
+  - PASS: the save chip showed `CSV 미리보기 인쇄 창 열기 실패 · 149줄 · 44,530자 · 69,936B · 근거/출처 80개`, preserving the same preview summary context as intended.
+  - PASS: after the failed-print test, the same surface stayed on `http://127.0.0.1:1420/#care-plan` and browser errors returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; the implementation was already covered by `src/exportPreviewSummary.test.ts` and commit `52f5990`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for the typed-unclassified food question live check, remaining stale preview paths, or document attachment fallback behavior.
+
+## 2026-06-06 15:43 KST - Typed Unclassified Food Question cmux QA
+
+- Improvement target:
+  - Complete the previously blocked live check for typed but locally unclassified food input after `Require food query for question draft`.
+  - Confirm the low-WBC immune-food context still creates a clinician-question draft for a concrete food query even when local food matching returns 0 matched chips.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: saved the current `carevault.v1` payload into temporary localStorage key `carevault.__testFoodUnclassifiedBaseline` before mutating the food input.
+  - PASS: filling `암환자 음식 판단 음식 또는 식단 입력` with `흰쌀밥` showed `음식 판단 업데이트됨 · 흰쌀밥 · 판단 근거 부족 · 매칭 없음 · 공식 출처 2개`.
+  - PASS: the visible food action exposed `음식 판단 진료 질문 초안 만들기 · 근거 2개 포함`, proving the typed unclassified query still gets a source-backed draft through the low-WBC immune-food context.
+  - PASS: clicking that draft filled the question form with topic `식단·음식 안전`, priority `high`, and body text containing `흰쌀밥`, the saved low-WBC context, `검사 근거: 서울아산병원 전혈구검사 참고치`, and `출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+  - PASS: `.food-question-draft-feedback` and the save chip both showed `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 흰쌀밥 · 일치 0개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 2개`.
+  - PASS: focus moved to `진료 전 질문 내용`.
+  - PASS cleanup: restored `carevault.v1` from the temporary baseline, removed `carevault.__testFoodUnclassifiedBaseline`, reloaded the same surface, and verified profile heading `나의 건강 기록`, empty question topic, restored food input `브로콜리, 현미밥, 베이컨, 자몽 주스`, and no temporary test keys.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; the implementation remains covered by `src/foodQuestionPrompts.test.ts` and commit `7b09e09`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for remaining stale preview paths or document attachment fallback behavior.
