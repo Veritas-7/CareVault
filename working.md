@@ -19940,3 +19940,27 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for export preview range refresh, health standards filter copy, or another low-risk patient workflow.
+
+## 2026-06-06 17:00 KST - Visit Summary Preview Range Refresh cmux QA
+
+- Improvement target:
+  - Continue the export preview sweep by verifying stale detection when a visit-summary preview range changes after preview generation.
+  - Confirm stale previews disable copy/print/download actions until the user refreshes the preview with the current range.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline preview: with range `30d`, clicked `요약 미리보기`; save chip showed `진료 요약 미리보기 생성 · 범위 최근 30일`, preview title was `진료 요약 미리보기 (최근 30일)`, and raw preview text included `범위: 최근 30일`.
+  - PASS baseline actions: preview copy/print/download were enabled with aria summaries `234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS stale range trigger: changed range to `7d`; save chip showed `진료 요약 범위: 최근 7일` while the open preview still showed `진료 요약 미리보기 (최근 30일)`.
+  - PASS stale alert: alert role was `status`, aria `진료 요약 미리보기 범위 변경 감지`, text included `진료 요약 범위가 바뀌었습니다` and `현재 미리보기는 이전 범위로 생성되었습니다.`
+  - PASS stale disabled actions: preview copy/print/download became disabled and each aria/title appended `비활성: 진료 요약 범위가 바뀌어 다시 생성이 필요합니다.`
+  - PASS refresh action: clicked `요약 범위 반영` with aria/title `새 미리보기 생성 · 진료 요약 · 변경된 범위 적용`; preview regenerated as `진료 요약 미리보기 (최근 7일)`, save chip showed `진료 요약 미리보기 생성 · 범위 최근 7일`, stale alert disappeared, actions re-enabled, and raw preview text included `범위: 최근 7일`.
+  - PASS cleanup: reloaded the same surface and confirmed preview closed, range returned to `30d`, `요약 미리보기` aria returned to `진료 요약 미리보기 · 범위 최근 30일`, and save chip returned to `브라우저 자동 저장됨`.
+  - PASS cleanup: backup button remained `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; stale preview refresh labels/status remain covered by `src/exportPreviewSummary.test.ts`, and range-aware visit summary labels by `src/visitPacket.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for health standards filter copy, standards question-draft buttons, or another low-risk patient workflow.
