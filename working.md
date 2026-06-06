@@ -25799,3 +25799,23 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 08:28 KST - Cervical Late Bowel-Bladder Draft QA Blocked
+
+- Current Goal:
+  - Start a non-duplicate direct QA slice for the `장·방광 후기 변화` cervical-care question draft in the existing single `암관리` `surface:7` browser.
+  - Intended checks: real disclosure/button interaction, question form topic/body/source retention, no saved-question mutation, unchanged `carevault.v1`, and clean browser diagnostics.
+- Context:
+  - Duplicate-slice review found lab preset reset already covered repeatedly, including current `surface:7` cleanup through the real reset action.
+  - `장·방광 후기 변화` has older source/output coverage, but no current 2026-06-07 `surface:7` direct QA record for the real question-draft button filling the editable pre-visit question form without saving a record.
+- Blocker:
+  - BLOCKED before app interaction: temporary Vite started on `127.0.0.1:1420`, but `cmux browser --surface surface:7 goto http://127.0.0.1:1420/#care-plan --snapshot-after` timed out.
+  - Follow-up same-surface `get-url`, `snapshot`, `errors list`, and `eval 'location.href=...'` recovery attempts also timed out.
+  - No new browser, tab, pane, workspace, or surface was opened, and cmux was not restarted, quit, killed, or otherwise modified.
+  - Because surface control timed out before a stable DOM was available, this slice did not claim any direct-click app QA result and made no source changes.
+- Verification:
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo baseline: `git status --short --branch` showed `## main...origin/main` before this blocker note.
+- Current state:
+  - No source patch was made; `working.md` is dirty with this blocker note only.
+  - Next session should retry the same intended `장·방광 후기 변화` direct QA only after `surface:7` browser commands respond again, without opening another in-app browser.
