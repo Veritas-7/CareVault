@@ -24300,3 +24300,39 @@
 - Current state:
   - Source tree is clean and synced after the focused QA-log push.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 05:22 KST - Caregiver Old Normal Vital Direct QA
+
+- Current Goal:
+  - Resolve another previously blocked direct browser confirmation for caregiver-share old-normal-vital fingerprints.
+  - Verify that an open caregiver preview stays fresh when an old normal blood-pressure row is outside the rendered recent-vital set and not a care-queue candidate, while a new rendered blood-pressure row still raises the stale-preview guard.
+- Context:
+  - `2026-06-07 00:24 KST - Caregiver Old Normal-Vital Fingerprint Scope` added the source/test contract but left direct caregiver-share fresh-preview confirmation blocked by cmux `surface:7` control.
+  - Baseline browser state currently has 4 vitals (`2026-05-29`, `2026-05-30`, `2026-06-01`, `2026-06-06`). To make an old normal row fall outside the recent 5 rendered vital rows, this QA will inject 2 disposable newer normal filler vitals before generating the caregiver preview, then use the real vital form for the actual old-vital and positive-control saves.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture the browser-local `carevault.v1` baseline in `sessionStorage`.
+  - Inject 2 disposable newer normal blood-pressure filler vitals into browser-local state and reload only `surface:7` so the caregiver preview has 5 newer rendered vital rows.
+  - Use the real `보호자 공유본 미리보기` action to generate a fresh caregiver preview.
+  - Use real vital form controls to save an old normal blood-pressure row dated `2020-01-01`; confirm the open caregiver preview has no stale alert, copy/print/download remain enabled, and the old-normal QA vital does not appear in preview HTML.
+  - Use real vital form controls to save a newer blood-pressure row dated `2026-06-20`; confirm the same open preview raises the caregiver content stale alert and disables old preview actions until regeneration.
+  - Restore the captured browser-local baseline, remove temporary keys, reload/recover only `surface:7`, and confirm no preview/dialog/stale or QA vital residue.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS recovered the known stale JS context after reload by setting `location.href` on the same `surface:7`; cmux was not restarted, quit, force-quit, replaced, or signaled.
+  - PASS baseline/filler setup: baseline had 4 vitals dated `2026-05-29`, `2026-05-30`, `2026-06-01`, and `2026-06-06`; stored a reconstructed baseline in `sessionStorage["carevault.__testCaregiverOldNormalVitalBaseline"]`, injected disposable normal blood-pressure filler vitals dated `2026-06-10` and `2026-06-11`, and reloaded only `surface:7`.
+  - PASS initial caregiver preview: clicked the real `보호자 공유본 미리보기` action; preview opened with no stale alert, copy/print/download enabled, summary aria `98줄 · 50,081자 · 73,327B · 근거/출처 112개`, included both filler vital notes, and did not include the old-normal QA vital text.
+  - PASS old-normal vital save: used real `혈압·혈당·체온` controls to save `2020-01-01` blood pressure `118/74` with note `cmux 오래된 정상 활력 QA`; the saved vital persisted, vital count became `7`, and local/topbar feedback showed `혈압 기록 추가됨 · 정상 혈압 범위`.
+  - PASS old-normal freshness: the open caregiver preview showed no `.export-preview-stale-alert`; copy/print/download stayed enabled with the same `98줄 · 50,081자 · 73,327B · 근거/출처 112개` summary; preview HTML did not contain `cmux 오래된 정상 활력 QA` or `2020-01-01`.
+  - PASS rendered-vital positive stale guard: used real controls to save `2026-06-20` blood pressure `120/76` with note `cmux 최신 정상 활력 QA`; the open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 기록 변경 감지`, exposed `공유 기록 반영`, and disabled copy/print/download with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.` in each aria/title.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled, the refreshed preview contained `cmux 최신 정상 활력 QA` and `2026-06-20`, retained both filler vital notes, and still did not contain `cmux 오래된 정상 활력 QA` or `2020-01-01`.
+  - PASS cleanup: restored the captured baseline, removed the temporary session key, reloaded/recovered only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, vital count restored to `4`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no QA vital text in storage, no preview/dialog/stale alert, and `No browser errors`.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
