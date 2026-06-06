@@ -221,6 +221,34 @@ describe("caregiverExport", () => {
     expect(nextActionDocumentCategoryChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores document attachment status changes when no filename is exported", () => {
+    const stateWithoutDocumentAttachmentName: CaregiverExportState = {
+      ...state,
+      documents: [
+        {
+          date: state.documents[0].date,
+          title: state.documents[0].title,
+          category: state.documents[0].category,
+          reviewStatus: state.documents[0].reviewStatus,
+          nextAction: state.documents[0].nextAction,
+          attachmentStatus: "파일 선택 전",
+        },
+      ],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithoutDocumentAttachmentName);
+    const attachmentStatusChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithoutDocumentAttachmentName,
+      documents: [
+        {
+          ...stateWithoutDocumentAttachmentName.documents[0],
+          attachmentStatus: "렌더링되지 않는 첨부 상태 변경",
+        },
+      ],
+    });
+
+    expect(attachmentStatusChangedFingerprint).toBe(fingerprint);
+  });
+
   it("ignores closed question changes in caregiver content fingerprints", () => {
     const stateWithClosedQuestion: CaregiverExportState = {
       ...state,

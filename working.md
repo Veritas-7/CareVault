@@ -21920,3 +21920,30 @@
 - Next durable app slice:
   - Continue source-level false-positive stale-preview hardening only if direct cmux control remains unavailable.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
+## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
+
+- Improvement target:
+  - Remove another false-positive caregiver-share stale state while the required single cmux browser remains blocked.
+  - Match caregiver-share document fingerprints to the caregiver HTML export rule that renders attachment status only inside the attachment filename line.
+- Runtime/browser notes:
+  - The last `surface:7` same-surface snapshot check still exited `124`.
+  - Shallow checks still showed the CareVault Vite server reachable on `127.0.0.1:1420`; direct same-surface click QA and browser-local cleanup remain blocked.
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened. cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Changes:
+  - `src/caregiverExport.test.ts`: added a RED regression showing that changing only `attachmentStatus` must not change the caregiver content fingerprint when the active document has no exported `attachmentName`.
+  - `src/caregiverExport.ts`: includes document `attachmentStatus` in the caregiver content fingerprint only when an attachment filename is present.
+  - `DESIGN.md`: documented the attachment filename/status fingerprint boundary.
+- Verification:
+  - RED `npm test -- src/caregiverExport.test.ts` failed as expected before implementation with an attachment-status-only fingerprint difference.
+  - PASS `npm test -- src/caregiverExport.test.ts` => `1 passed`, `40 passed`.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => `62 passed`, `516 passed`.
+  - PASS `npm run build` => `2475` modules transformed; build completed without dirtying `dist/`.
+  - PASS `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts DESIGN.md working.md`.
+- Current state:
+  - The repo is dirty with this focused source/test/design/log slice.
+  - Direct caregiver-share fresh-preview confirmation and localStorage cleanup remain blocked by cmux workspace/surface control.
+- Next durable app slice:
+  - Run typecheck, full tests, build, diff checks, staged secret checks, then commit and push this focused slice if green.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.

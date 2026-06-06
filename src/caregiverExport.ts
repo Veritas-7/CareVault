@@ -180,7 +180,7 @@ export function buildCaregiverExportContentFingerprint(
           .filter((document) => document.reviewStatus !== "done")
           .map((document) => ({
             attachmentName: document.attachmentName,
-            attachmentStatus: document.attachmentStatus,
+            attachmentStatus: document.attachmentName ? document.attachmentStatus : "",
             category: document.nextAction ? "" : document.category,
             date: document.date,
             nextAction: document.nextAction,
