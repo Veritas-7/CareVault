@@ -25966,3 +25966,27 @@
 - Current state:
   - `src/App.tsx`, `src/documentActionLabels.ts`, `src/documentActionLabels.test.ts`, and `working.md` are dirty with this verified UX improvement and direct QA evidence.
   - Next: run final diff checks, stage only these paths, run staged secret scan, commit/push, then record post-push status.
+
+## 2026-06-07 08:55 KST - Post-Push Saved Attachment Remove Cancel Feedback
+
+- Improvement target:
+  - Record post-push state for the saved-document attachment removal cancel-feedback improvement.
+- Verification:
+  - PASS direct same-surface QA: existing `surface:7` clicked the real saved-row `첨부 추가`, dispatched `cancel-remove-qa.png` through the real saved attachment input, then clicked the real `첨부 제거` button with `window.confirm` returning `false`.
+  - PASS cancel feedback: the prompt was `"혈액검사 메모" 첨부 파일 연결을 제거할까요?`; `.document-action-feedback` and `.save-status-chip` both showed `혈액검사 메모 검사 서류 첨부 연결 제거 취소됨 · 현재 첨부 cancel-remove-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS non-removal and cleanup: after cancel, attachment metadata remained and no `첨부 제거` history was appended; cleanup restored baseline storage length `1871`, removed QA globals/session keys, removed the QA filename from storage and DOM, cleared feedback, removed attachment metadata, restored history count `1`, and left no preview dialog/export preview/stale alert.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+  - PASS RED check: `npm test -- src/documentActionLabels.test.ts` failed before implementation because `formatDocumentAttachmentRemovalCanceledStatusLabel` did not exist.
+  - PASS focused tests: `npm test -- src/documentActionLabels.test.ts src/documentAttachmentActions.test.ts src/attachmentArchive.test.ts` => `3 passed`, `23 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `532 passed`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- src/App.tsx src/documentActionLabels.ts src/documentActionLabels.test.ts working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `ef5fee5 Show saved attachment remove cancel feedback`.
+  - PASS push: `git push` updated `origin/main` from `3196e52` to `ef5fee5`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS post-push runtime: `npm run runtime:doctor` stayed clean with port `1420` free and no CareVault app/dev processes.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
