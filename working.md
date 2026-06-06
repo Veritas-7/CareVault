@@ -25708,3 +25708,28 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 08:20 KST - Browser Storage Fallback Direct QA
+
+- Current Goal:
+  - Directly verify the browser `localStorage.setItem` failure branch in the existing single `암관리` cmux browser.
+  - Confirm CareVault falls back to temporary memory autosave without corrupting or partially overwriting persisted browser data.
+- Context:
+  - Source-level storage fallback tests already covered blocked browser storage, but there was no current direct same-surface QA record for a real UI edit after `carevault.v1` write failure.
+  - This was a QA-only slice; no source patch was needed.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only existing `workspace:4` / `pane:8` / `surface:7` and navigated it to `http://127.0.0.1:1420/#care-plan`.
+  - NOTE: `surface:7` again briefly showed the known split where snapshot/get-url showed CareVault while JS eval ran in `about:blank`; the same surface recovered via `location.href = "http://127.0.0.1:1420/#care-plan"` without opening any new browser, tab, pane, workspace, or surface.
+  - PASS failure injection: installed a temporary `Storage.prototype.setItem` wrapper that throws only for key `carevault.v1`, while recording attempts. Baseline `localStorage["carevault.v1"]` length was `1871`.
+  - PASS real user action: filled the real 기본 정보 이름/대상 input with `나의 건강 기록 저장소 fallback QA`.
+  - PASS fallback status: after autosave, the visible save chip showed `프로필 이름 수정됨 · 임시 메모리 자동 저장됨`, and the page text included `현재 데이터는 임시 메모리에만 있습니다.`.
+  - PASS persisted-data guard: exactly one blocked `carevault.v1` write was captured with attempted length `1887`; browser `localStorage["carevault.v1"]` stayed length `1871`, stayed byte-for-byte at the baseline, and did not contain the QA profile name.
+  - PASS cleanup: restored native `Storage.prototype.setItem`, reloaded/recovered the same `surface:7`, and confirmed storage keys only `carevault.v1`, no `carevault.__test*` keys, no QA globals, no preview/dialog/stale alert, save chip `브라우저 자동 저장됨`, profile input and heading restored to `나의 건강 기록`, and persisted storage length remained `1871`.
+  - PASS browser health: `cmux browser --surface surface:7 errors list` returned `No browser errors`, and `cmux browser --surface surface:7 console list` returned `No console entries` after cleanup.
+- Verification:
+  - PASS focused tests: `npm test -- src/storage.test.ts src/storageStatus.test.ts` => `2 passed`, `17 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this browser storage fallback direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret scan, commit/push this focused QA log, then record post-push status.
