@@ -181,7 +181,7 @@ export function buildCaregiverExportContentFingerprint(
           .map((document) => ({
             attachmentName: document.attachmentName,
             attachmentStatus: document.attachmentStatus,
-            category: document.category,
+            category: document.nextAction ? "" : document.category,
             date: document.date,
             nextAction: document.nextAction,
             reviewStatus: document.reviewStatus,

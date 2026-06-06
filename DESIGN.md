@@ -749,6 +749,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-06: Made caregiver-share content fingerprints ignore answered or deferred questions, matching the caregiver HTML export and care queue that only render open questions.
 - 2026-06-06: Made caregiver-share content fingerprints trim food-query whitespace, matching the caregiver HTML export that renders the trimmed nutrition query.
 - 2026-06-06: Made caregiver-share visit fingerprints ignore visit summaries when a visit plan is present, matching the export output that shows the plan instead of the summary in caregiver visit rows and care queue details.
+- 2026-06-07: Made caregiver-share document fingerprints ignore document category changes when a next action is present, matching the exported document row that shows next action before category and the care queue document detail.
 
 ## Do's and Don'ts
 

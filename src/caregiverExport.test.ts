@@ -206,6 +206,21 @@ describe("caregiverExport", () => {
     expect(completedDocumentChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores document category changes when an exported next action is present", () => {
+    const fingerprint = buildCaregiverExportContentFingerprint(state);
+    const nextActionDocumentCategoryChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...state,
+      documents: [
+        {
+          ...state.documents[0],
+          category: "memo",
+        },
+      ],
+    });
+
+    expect(nextActionDocumentCategoryChangedFingerprint).toBe(fingerprint);
+  });
+
   it("ignores closed question changes in caregiver content fingerprints", () => {
     const stateWithClosedQuestion: CaregiverExportState = {
       ...state,
