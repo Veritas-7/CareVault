@@ -25576,3 +25576,25 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 07:56 KST - Full Suite and Preview Smoke Checkpoint
+
+- Current Goal:
+  - Recheck current-source stability after the recent local-feedback and export/clipboard slices.
+  - Confirm the existing single `암관리` `surface:7` browser can still open and close the core visit-summary preview without mutating stored CareVault data.
+- Verification:
+  - PASS clean baseline: `git status --short --branch` showed `## main...origin/main`.
+  - PASS runtime clean before browser smoke: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+  - PASS full test suite: `npm test` => `62 passed`, `530 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `workspace:4` / `pane:8` / `surface:7` browser.
+  - PASS initial DOM smoke: same-surface eval showed `CareVault` at `http://127.0.0.1:1420/#care-plan`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, `80` buttons, `67` inputs/textareas/selects, storage keys only `carevault.v1`, no `carevault.__test*` keys, no preview/dialog/stale alert, and counts `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`.
+  - PASS real preview open: clicked the real `진료 요약 미리보기 · 범위 최근 30일` button. The preview opened as `진료 요약 미리보기 (최근 30일)` and exposed enabled actions `진료 요약 복사`, `진료 요약 인쇄`, `진료 요약 다운로드`, and `내보내기 미리보기 닫기` with summary `234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS real preview close: clicked the real `내보내기 미리보기 닫기` button. The preview panel disappeared and the save chip showed `진료 요약 미리보기 닫힘 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS final browser state: same-surface eval showed no preview/dialog/stale alert, storage length `1871`, no `carevault.__test*` keys, counts still `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this stability checkpoint.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret scan, commit/push this focused checkpoint log, then record post-push status.
