@@ -20329,6 +20329,28 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit summary edge cases, profile mode toggles, or another low-risk patient workflow.
 
+## 2026-06-06 18:13 KST - Profile Diabetes Cancer Toggles cmux QA
+
+- Improvement target:
+  - Verify the remaining profile tracking toggles, `당뇨 추적` and `암환자 관리`, expose correct current-state/next-action labels across off/on transitions.
+  - Confirm profile-mode toggles update related UI surfaces without changing saved health-record counts, then restore the baseline.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: all profile mode flags were true, mode chip was `암환자 관리 모드`, the cervical-care panel was visible, and the care-queue copy aria reported `진료 준비 큐 8개 항목 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개 · 자궁경부 1 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1 복사`.
+  - PASS diabetes off: clicked `당뇨 추적`; stored `profile.diabetes` became `false`, aria/title changed to `당뇨 추적 꺼짐 · 선택하면 켭니다`, save chip showed `당뇨 추적 꺼짐 · 브라우저 자동 저장됨`, mode chip stayed `암환자 관리 모드`, and saved counts stayed unchanged.
+  - PASS diabetes on: clicked `당뇨 추적` again; stored `profile.diabetes` returned to `true`, aria/title returned to `당뇨 추적 켜짐 · 선택 해제하면 끕니다`, save chip showed `당뇨 추적 켜짐 · 브라우저 자동 저장됨`, and care queue returned to the original 8-item summary.
+  - PASS cancer-care off: clicked `암환자 관리`; stored `profile.cancerCareMode` became `false`, aria/title changed to `암환자 관리 꺼짐 · 선택하면 켭니다`, save chip showed `암환자 관리 꺼짐 · 브라우저 자동 저장됨`, mode chip changed to `일반 관리 모드`, cervical-care panel disappeared, and care queue changed to `7개 항목 · 확인 필요 6개 · 일정/일반 1개 · 근거 포함 4개`.
+  - PASS cancer-care on: clicked `암환자 관리` again; stored `profile.cancerCareMode` returned to `true`, aria/title returned to `암환자 관리 켜짐 · 선택 해제하면 끕니다`, save chip showed `암환자 관리 켜짐 · 브라우저 자동 저장됨`, mode chip returned to `암환자 관리 모드`, cervical-care panel returned, and care queue returned to the original 8-item summary.
+  - PASS non-mutating guard: saved counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, food `0` across every transition; after toggling back, `localStorage["carevault.v1"]` matched the captured baseline byte-for-byte.
+  - PASS restore: restored the captured baseline, removed `carevault.__testProfileModesBaseline`, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, all three profile mode toggles checked with `켜짐` aria labels, mode chip `암환자 관리 모드`, cervical panel visible, original 8-item care queue, unchanged record counts, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; profile tracking toggle labels remain covered by `src/profileModeToggle.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary edge cases, chart raw-data disclosure, or another low-risk patient workflow.
+
 ## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
 
 - Improvement target:
