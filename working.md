@@ -21022,3 +21022,23 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/snapshot/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import variants, caregiver-share edge cases, attachment recovery/preview paths with restore, or another low-risk patient workflow.
+
+## 2026-06-06 20:14 KST - Caregiver Redaction Stale Preview cmux QA
+
+- Improvement target:
+  - Verify the caregiver-share profile redaction setting invalidates an already-open caregiver preview, disables stale preview actions, exposes the settings-diff UI, regenerates a redacted preview, and restores the baseline.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. `cmux select-workspace --workspace workspace:4` and `cmux focus-pane --pane pane:8` restored active DOM access after `get-url` and JS initially disagreed. Baseline then confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, no preview/stale/dialog, `redactProfile: false`, cover memo `desktop stale check`, and `No browser errors`.
+  - PASS baseline capture: saved the full localStorage key set into `sessionStorage["carevault.__testCaregiverRedactionBaseline"]`, preserving the existing keys `carevault.v1` and `carevault.__testFoodEmptyBaseline` rather than assuming only the app state key mattered.
+  - PASS initial preview: clicked the real `보호자 공유본 미리보기` button. The fresh preview opened with save chip `보호자 공유본 미리보기 생성 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개`, summary `보호자 공유본 · 101줄 · 49,789자 · 72,969B · 근거/출처 111개`, snapshot `프로필 표시`, and enabled copy/print/download actions. The generated HTML contained the profile name, age/sex strings, and the existing cover memo.
+  - PASS stale trigger: clicked the real `보호자 공유본 프로필 가리기` checkbox. Storage changed to `redactProfile: true`; the toggle aria changed to `보호자 공유본 프로필 가리기 켜짐 · 선택 해제하면 이름과 기본 프로필 정보를 표시합니다`; `.export-preview-stale-alert[aria-label="보호자 공유본 미리보기 변경 감지"]` appeared with `공유 설정이 바뀌었습니다`; and the settings-diff panel showed `프로필` from `프로필 표시` to `프로필 가림`.
+  - PASS stale protections: while stale, the old preview still contained the original profile name and age/sex details, did not contain the redacted header, and copy/print/download were all disabled with aria/title suffix `비활성: 공유 설정이 바뀌어 다시 생성이 필요합니다.`. The fresh action exposed `공유 설정 반영` with aria/title `새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용`.
+  - PASS regeneration: clicked the real `공유 설정 반영` action. The stale alert and settings-diff panel disappeared; copy/print/download were re-enabled with updated summary `101줄 · 49,768자 · 72,941B · 근거/출처 111개`; the snapshot changed to `프로필 가림`; and the regenerated HTML header text became `CareVault 보호자 공유본 프로필 식별정보 가림` with no profile name, age, or sex in the header.
+  - PASS cleanup: restored the captured full localStorage baseline, removed `carevault.__testCaregiverRedactionBaseline`, reloaded the same `surface:7`, and confirmed final baseline `#care-plan`, save chip `브라우저 자동 저장됨`, no preview, no stale alert, no dialog, `redactProfile: false`, original cover memo restored, localStorage keys restored to `carevault.v1` plus the pre-existing `carevault.__testFoodEmptyBaseline`, no sessionStorage temp keys, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/caregiverExport.test.ts src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts` (`3 passed`, `65 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import variants, attachment recovery/preview paths with restore, or another low-risk patient workflow.
