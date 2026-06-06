@@ -22822,12 +22822,60 @@
   - cmux was not restarted, quit, force-quit, replaced, or signaled.
 - Git state:
   - PASS QA log commit pushed: `aef7013` (`Log CareVault empty queue QA`) reached `origin/main`.
-  - PASS repo sync after the QA log commit: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `aef7013`.
+  - PASS post-push status commit pushed: `5144107` (`Log CareVault empty queue QA status`) reached `origin/main`.
+  - PASS repo sync after the status commit: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `5144107`.
 - Current state:
   - Direct true-empty care queue summary, recovery links, zero-count copy packet, and baseline cleanup were verified through the real UI path and logged durably.
   - Browser-local baseline/test keys were removed during cleanup; runtime is clean.
 - Next Steps:
-  - Stage only `working.md`, run staged diff and secret checks, then commit and push this status log.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 02:36 KST - Sidebar Navigation Direct QA
+
+- Current Goal:
+  - Verify the sidebar navigation contract through the real existing `암관리` `surface:7` browser.
+  - Cover visible labels, destination-specific `aria-label`/title text, hash navigation, and single `aria-current="page"` active state for each core app section.
+- Context:
+  - Repo started clean and synced at `5144107` (`Log CareVault empty queue QA status`).
+  - `DESIGN.md` requires sidebar links to expose destination-specific accessible labels/titles, follow the real scroll order, and show a single click/hash/scroll-backed active state.
+  - `src/sidebarNavigation.test.ts`, `src/sidebarNavigation.ts`, and `src/App.tsx` were reread before selecting this non-duplicate navigation QA slice.
+- Progress:
+  - Selected sidebar navigation direct QA because recent recovered `surface:7` slices covered care queue, chart, visit, export, food, document, lab, question, profile, symptom, and backup flows, but not the real sidebar hash/active-state loop.
+  - Reconfirmed the existing `암관리` `surface:7` browser as `CareVault` at `http://127.0.0.1:1420/#care-plan` via same-surface `eval`/snapshot; no new browser, pane, tab, workspace, surface, or headless browser was opened.
+  - Verified the initial sidebar DOM had 6 links in order: `대시보드`, `입력 기록`, `증상·질문`, `검사 수치`, `음식 판단`, `서류 보관`.
+  - Verified each link kept its documented `href`, destination-specific `aria-label`, matching hover `title`, and 42px desktop hit height.
+  - Clicked the real sidebar links for `#dashboard`, `#records`, `#care-plan`, `#labs`, `#nutrition`, and `#documents`.
+  - Verified each click updated `location.hash`, kept exactly one `.nav-stack a[aria-current="page"]`, and matched the active link text/label/title to the clicked destination.
+  - Confirmed `#documents` stopped at `targetTop:44` because the section is at the page bottom, while hash and active state still resolved to `서류 보관` as expected.
+  - Restored the browser hash to the starting `#care-plan` route, confirmed one active `증상·질문` link, no `carevault.__test*` keys, no export preview, and no dialog.
+- Changes:
+  - `working.md` only; no source patch needed because the real navigation flow matched the documented contract.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `cmux workspace select workspace:4`: existing `암관리` workspace selected.
+  - PASS same-surface readiness eval: `title` `CareVault`, `ready` `complete`, URL `http://127.0.0.1:1420/#care-plan`, `navCount:6`.
+  - PASS initial nav metadata eval: 6 sidebar links, correct visible labels/hrefs/aria-labels/titles, `증상·질문` initially active, and each link height 42px.
+  - PASS real `대시보드` click: hash `#dashboard`, target section top `0`, exactly one active link with label/title `대시보드 섹션으로 이동`.
+  - PASS real `입력 기록` click: hash `#records`, target section top `0`, exactly one active link with label/title `입력 기록 섹션으로 이동`.
+  - PASS real `증상·질문` click: hash `#care-plan`, target section top `0`, exactly one active link with label/title `증상·질문 섹션으로 이동`.
+  - PASS real `검사 수치` click: hash `#labs`, target section top `0`, exactly one active link with label/title `검사 수치 섹션으로 이동`.
+  - PASS real `음식 판단` click: hash `#nutrition`, target section top `0`, exactly one active link with label/title `음식 판단 섹션으로 이동`.
+  - PASS real `서류 보관` click: hash `#documents`, target section top `44`, exactly one active link with label/title `서류 보관 섹션으로 이동`.
+  - PASS final nav metadata eval: URL `#documents`, ready `complete`, 6 nav links, each height 42px, no temp keys, no preview, no dialog.
+  - PASS final restore eval: URL `#care-plan`, exactly one active `증상·질문` link, no temp keys, no preview, no dialog.
+  - PASS `timeout 8 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 8 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+  - PASS `npm test -- src/sidebarNavigation.test.ts`: 1 file and 5 tests.
+  - PASS `npm run runtime:doctor` after stopping Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `git diff --check -- working.md`.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+  - The first bounded `get title` and `errors list` probes timed out once before the flow; same-surface `eval`/snapshot worked immediately, and final bounded errors/console diagnostics completed cleanly.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stage only `working.md`, run staged diff and secret checks, then commit and push this QA log.
 
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
