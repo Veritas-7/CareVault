@@ -21319,3 +21319,22 @@
   - The existing cmux browser surface is visible at `#care-plan` with the vital draft restored to the original blood-pressure branch.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for native desktop attachment recovery friction, backup export/download behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 21:56 KST - Vital Temperature Branch cmux QA
+
+- Improvement target:
+  - Verify the visible vital-entry draft switches from blood pressure to the temperature-specific control and source-backed save preview, without saving a new health record.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab/surface was opened and cmux was not restarted. The desktop workspace UI was temporarily stale on `working.md`, so this slice targeted the already-open CareVault browser surface directly with `cmux browser --surface surface:7`.
+  - PASS baseline: `surface:7` reported `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, vital type `blood-pressure`, visible fields `수축기 128` and `이완기 78`, summary `저장 활력 요약 전체 4개 · 혈압 3개 · 혈당 1개 · 관찰 3개 · 기준 내 1개`, and storage length `1871`.
+  - PASS temperature branch: selected `temperature` through the real `혈압·혈당·체온 입력 종류 선택` control. The draft replaced the blood pressure and glucose fields with `체온 입력 값(℃)` value `36.8`, rendered the official source link `활력 입력 체온 입력 기준 공식 기준 출처 국가암정보센터 감염 의료진 상담 기준 열기`, and showed save-preview `체온 36.8℃ · 체온 기록 범위 · 암환자 공통 · 체온·감염 연락 기준`.
+  - PASS action label: the valid save action changed to `체온 기록 추가 · 체온 36.8℃ · 체온 기록 범위 · 암환자 공통 · 체온·감염 연락 기준`.
+  - PASS guard: did not click `체온 기록 추가`. Counts stayed vitals `4`, questions `1`, documents `1`, deleted documents `0`, labs `1`; localStorage length stayed `1871`; save chip stayed `브라우저 자동 저장됨`.
+  - PASS cleanup/restore: selected `blood-pressure` again through the same control. The form restored `수축기 128`, `이완기 78`, preview `혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`, action `혈압 기록 추가 · 혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`, no `carevault.__test*` session keys, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/healthRules.test.ts src/vitalRecordLabels.test.ts src/vitalValidation.test.ts src/vitalMetric.test.ts src/vitalChartData.test.ts src/vitalAssessmentEvidence.test.ts` (`6 passed`, `37 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing CareVault browser surface remains `surface:7` / `#care-plan` with the vital draft restored to the blood-pressure branch.
+- Next durable app slice:
+  - Continue the cmux direct-surface sweep for native desktop attachment recovery friction, backup export/download behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
