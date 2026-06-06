@@ -25011,6 +25011,36 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 07:10 KST - Caregiver Share Download Clipboard Failure Direct QA
+
+- Current Goal:
+  - Fill the direct browser evidence gap for the Safari-like caregiver-share download fallback branch where `navigator.clipboard.writeText` exists but rejects.
+  - Verify that the real `보호자 공유본 내보내기` action reports the scoped `클립보드 복사 실패` status without starting a blob download or mutating stored records.
+- Context:
+  - `src/textFileDownload.test.ts` covered the generic `clipboard-failed` helper path, and older same-surface QA covered caregiver-share fallback success plus hard unsupported fallback.
+  - Working log search found direct same-`surface:7` download clipboard-failure evidence for backup, CSV, and visit summary, but not for `보호자 공유본 다운로드 실패 · 클립보드 복사 실패`.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `pane:8` / `surface:7` browser.
+  - In the same WebView, force Safari-like UA/vendor, replace `navigator.clipboard.writeText` with a rejecting writer, and instrument `URL.createObjectURL` plus anchor `click`.
+  - Click the real `보호자 공유본 내보내기` button and confirm scoped failure status, one attempted clipboard write, zero blob/anchor download attempts, unchanged storage, no preview/import panel, and clean browser diagnostics.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only `workspace:4` / `pane:8` / `surface:7`; captured `localStorage["carevault.v1"]` baseline length `1871`.
+  - PASS target found: `cmux browser --surface surface:7 goto http://127.0.0.1:1420/#care-plan --snapshot-after` showed the real `보호자 공유본 내보내기 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개` button.
+  - PASS failure setup: in the same WebView, forced Safari-like UA/vendor, installed a rejecting `navigator.clipboard.writeText`, and instrumented `URL.createObjectURL` and `HTMLAnchorElement.prototype.click`.
+  - PASS failure click: clicked the real caregiver-share export button; `.save-status-chip` showed `보호자 공유본 다운로드 실패 · 클립보드 복사 실패 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개`.
+  - PASS fallback behavior: instrumentation showed `writes: 1`, exported HTML payload length `49,711`, payload prefix starting `<!doctype html>`, CareVault marker present, `blobCalls: 0`, and `anchorClicks: 0`.
+  - PASS safety: `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline, storage length stayed `1871`, no export preview, backup-import feedback, stale alert, or dialog opened, and URL stayed `http://127.0.0.1:1420/#care-plan`.
+  - PASS cleanup: reloaded only `surface:7`; confirmed temporary QA global was gone, clipboard writer was native code rather than the QA stub, save chip returned to `브라우저 자동 저장됨`, storage length stayed `1871`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/textFileDownload.test.ts src/caregiverExport.test.ts src/caregiverShareSettings.test.ts` => `3 passed`, `81 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 06:45 KST - Food Question Empty Input Failure Affordance
 
 - Current Goal:
