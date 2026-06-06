@@ -23491,6 +23491,35 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 04:05 KST - Cervical Care Note Clipboard Unsupported Direct QA
+
+- Current Goal:
+  - Directly verify that the `자궁경부암 케어 노트` copy action keeps scoped local/topbar unsupported-browser feedback when the WebView has no usable clipboard writer.
+  - Keep the check non-mutating, in the existing `workspace:4` / `surface:7` browser only, and restore the clipboard object by reloading the same surface.
+- Context:
+  - Repo started clean and synced at `da6f194`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault dev/release process was running.
+  - `DESIGN.md` requires the cervical-care note copy action and post-copy status to preserve total item, priority, screening, record-field, warning, question, recovery/prevention, and official-source counts.
+- Duplicate-slice review:
+  - Recent same-surface QA covered successful cervical-care note copy and rejected clipboard writes for question/queue and metric-standard copy actions.
+  - Earlier cervical-care failure work added unsupported/failure formatters and local feedback, but the direct browser pass was blocked on `surface:9`; I did not find recovered `surface:7` evidence for the clipboard-unavailable branch.
+- Planned verification:
+  - Start a temporary Vite runtime on `127.0.0.1:1420`.
+  - Reuse only the existing `암관리` `workspace:4` / `surface:7` browser and navigate it to `#care-plan`.
+  - Capture a browser-local storage baseline, make `navigator.clipboard.writeText` unavailable in the same WebView, then click the real `노트 복사` button.
+  - Verify `.cervical-care-copy-feedback`, the top save chip, unchanged storage, no attempted clipboard payload, cleanup after reload, and browser diagnostics.
+- Progress:
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; reused only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - PASS same-surface setup: reloaded only `surface:7` at `http://127.0.0.1:1420/#care-plan`; stored a baseline in `sessionStorage.carevault.__testCervicalUnsupportedBaseline`; counts were `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`; storage keys were only `carevault.v1`; the `노트 복사` aria/title was `자궁경부암 케어 노트 공식 출처 포함 복사 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개`.
+  - PASS clipboard-unavailable click: made `navigator.clipboard.writeText` unavailable in the same WebView and clicked the real `노트 복사` button; local `.cervical-care-copy-feedback` and the top save chip both showed `자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개`.
+  - PASS unsupported guard: the app accessed the `writeText` property, but no clipboard write call was attempted; localStorage stayed byte-identical to the captured baseline.
+  - PASS non-mutating cleanup: restored the baseline defensively, removed the test session key, reloaded only the same `surface:7`, and confirmed counts returned to `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`, storage keys only `carevault.v1`, session test keys empty, no cervical copy feedback, save chip `브라우저 자동 저장됨`, no export preview/dialog, and the clipboard writer restored.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite `connecting` / `connected` debug logs.
+- Issues:
+  - No source defect found in this slice. The clipboard-unavailable branch keeps scoped local/topbar feedback with the same 45-item and 17-source cervical-care summary.
+- Next Steps:
+  - Stop the temporary Vite runtime.
+  - Run focused cervical-care clipboard tests, diff checks, staged secret checks, then commit and push this QA-only `working.md` update.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
