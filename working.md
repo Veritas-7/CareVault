@@ -22348,6 +22348,42 @@
   - Continue direct-click QA from the same existing `암관리` CareVault browser if more CareVault polish is requested.
   - Start with `working.md`, `DESIGN.md`, current git/runtime state, and the existing `surface:7` browser identity before editing.
 
+## 2026-06-07 01:47 KST - Food Question Draft Direct QA
+
+- Current Goal:
+  - Continue direct-click QA on a non-duplicate nutrition-to-question workflow from the same existing `암관리` CareVault browser.
+  - Verify that food judgment `질문 초안` fills the editable pre-visit question draft with immune-low lab context and source evidence without saving a question automatically.
+- Context:
+  - Repo started clean and synced at `0140c7b` (`Log CareVault document filter QA status`).
+  - `working.md`, `DESIGN.md`, and `src/foodQuestionPrompts.ts` plus its tests were reread before selecting this QA slice.
+  - The default browser state includes a low WBC lab row, which should create the documented `면역저하 검사 연결` context for food safety questions.
+- Progress:
+  - Selected the food judgment `질문 초안` flow because recent slices covered saved-document filters, backup attachment restore, and export-preview stale guards.
+  - Confirmed the visible workspace had again drifted to `블로그`; that browser was not used.
+  - Switched back to `암관리` through the cmux sidebar and used only the existing `surface:7` CareVault tab.
+  - Exercised the food judgment flow with `브로콜리, 생굴, 자몽 주스`, then clicked the real `질문 초안` button.
+  - Confirmed the generated draft filled the editable pre-visit question form rather than saving a new question record.
+- Changes:
+  - No source code changed in this slice. This is direct browser verification of the existing food judgment question-draft flow.
+- Tests:
+  - PASS same-browser direct QA on existing `암관리` CareVault `surface:7`:
+    - Food input `브로콜리, 생굴, 자몽 주스` made the button expose `aria-label/title` `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함`.
+    - Clicking `질문 초안` filled the editable question form with topic `식단·음식 안전`, priority value `high`, `2026-06-01 WBC 3.4 10^3/uL`, the entered food list, `생굴: 면역저하 시 익히지 않은 음식 주의`, `자몽: 약물 상호작용 확인 필요`, `검사 근거: 서울아산병원 전혈구검사 참고치`, and `출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+    - Visible feedback included `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선` and `근거 4개`.
+    - Saved question count stayed unchanged at `1` in `carevault.v1`; the flow prepared a draft only and did not save a question automatically.
+    - Food query persisted during the QA interaction as expected because the food input is app state, then the saved `carevault.v1` baseline was restored.
+  - PASS cleanup: removed the temporary `carevault.__testFoodQuestionDraftBaseline` key, reloaded the same `surface:7`, and confirmed no `carevault.__test*` keys remained, `foodQuery` returned to empty, the entered QA food string disappeared, and saved question count remained `1`.
+  - PASS `cmux browser --surface surface:7 errors list` => `No browser errors`.
+  - PASS console check: only Vite connect/debug messages were present.
+- Issues:
+  - No new browser, headless browser, pane, tab, workspace, or surface opened for this slice.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun final runtime/diff checks, then stage only `working.md`.
+  - Run staged secret scan, commit, push, and record the pushed state if green.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
