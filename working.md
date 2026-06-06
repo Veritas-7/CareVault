@@ -19855,3 +19855,24 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver share export fallback, visit summary export, or another low-risk patient workflow.
+
+## 2026-06-06 16:49 KST - Caregiver Share Export Fallback cmux QA
+
+- Improvement target:
+  - Continue the export/download sweep by verifying caregiver-share HTML export in the existing WebKit cmux browser.
+  - Confirm Safari-style download fallback copies the generated share HTML to the clipboard without changing stored records.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: browser UA was Safari-like (`AppleWebKit/605.1.15`, vendor `Apple Computer, Inc.`), so `downloadTextFile` should use clipboard fallback; `navigator.clipboard.writeText` was available.
+  - PASS baseline button: `공유본 내보내기` was enabled with aria/title `보호자 공유본 내보내기 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개`.
+  - PASS export fallback: clicked `공유본 내보내기`; save chip showed `보호자 공유본 다운로드 대신 클립보드 복사됨 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개`.
+  - PASS non-mutating guard: no export preview opened; backup button stayed `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`; stored counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deletedDocuments `0`.
+  - PASS cleanup: reloaded the same surface and confirmed save chip returned to `브라우저 자동 저장됨` with the same backup count.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; Safari-style download fallback behavior remains covered by `src/textFileDownload.test.ts`, and caregiver share export labels/settings by `src/caregiverShareSettings.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary export fallback, CSV export fallback, or another low-risk patient workflow.
