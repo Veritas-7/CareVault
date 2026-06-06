@@ -19918,3 +19918,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit summary range changes, export preview range refresh, or another low-risk patient workflow.
+
+## 2026-06-06 16:55 KST - Visit Summary Range Labels cmux QA
+
+- Improvement target:
+  - Continue the visit-summary workflow sweep by verifying the range selector updates export and preview action labels immediately.
+  - Confirm the range state can return to the default 30-day scope without mutating stored health records.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: range select value was `30d`; `요약 내보내기` aria was `진료 요약 내보내기 · 범위 최근 30일`, and `요약 미리보기` aria was `진료 요약 미리보기 · 범위 최근 30일`.
+  - PASS range `7d`: select value changed to `7d`; export/preview aria changed to `범위 최근 7일`; save chip showed `진료 요약 범위: 최근 7일`.
+  - PASS range `90d`: select value changed to `90d`; export/preview aria changed to `범위 최근 90일`; save chip showed `진료 요약 범위: 최근 90일`.
+  - PASS range `all`: select value changed to `all`; export/preview aria changed to `범위 전체`; save chip showed `진료 요약 범위: 전체`.
+  - PASS range restore: select value changed back to `30d`; export/preview aria returned to `범위 최근 30일`; save chip showed `진료 요약 범위: 최근 30일`.
+  - PASS cleanup: reloaded the same surface and confirmed range value stayed `30d`, export/preview aria stayed `범위 최근 30일`, and save chip returned to `브라우저 자동 저장됨`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; visit summary range labels remain covered by `src/visitPacket.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for export preview range refresh, health standards filter copy, or another low-risk patient workflow.
