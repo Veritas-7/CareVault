@@ -21921,6 +21921,100 @@
   - Continue source-level false-positive stale-preview hardening only if direct cmux control remains unavailable.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
 
+## 2026-06-07 00:44 KST - Caregiver Old Symptom Fingerprint Scope
+
+- Current Goal:
+  - Continue CareVault autonomous QA/improvement from the existing dirty source slice without opening extra browsers.
+  - Remove another false-positive caregiver-share stale state while the required single cmux browser remains blocked.
+- Context:
+  - Thread identity and target path were rechecked: active goal matches `/Users/wj/Ai/System/10_Projects/CareVault`; no `goal-warning`.
+  - Memory search found no prior CareVault notes, so live repo state is the source of truth.
+  - `working.md` and `DESIGN.md` were read first; current durable lane remains caregiver-share stale false-positive hardening while cmux `surface:7` is blocked.
+  - The repo started dirty with `src/caregiverExport.ts` and `src/caregiverExport.test.ts`, already pointing at an old low-risk symptom fingerprint slice.
+- Progress:
+  - Confirmed caregiver HTML directly renders only the latest five symptom rows.
+  - Confirmed caregiver HTML also builds the care queue from enabled symptoms, where high-severity, cervical-warning, or contact-threshold symptoms can render outside the latest-five direct symptom list.
+  - Tightened caregiver-share symptom content fingerprints to use the same rendered fields:
+    - direct recent symptom rows use date, symptom, severity, rendered label, body evidence, and action evidence;
+    - older queue symptoms use the existing `buildCareActionQueue()` symptom action output instead of raw symptom objects.
+- Changes:
+  - `src/caregiverExport.ts`
+    - Removed duplicate symptom-support queue-candidate matching from the fingerprint path.
+    - Added `formatRecentSymptomFingerprint()` for directly rendered latest symptom rows.
+    - Added `buildCaregiverQueueSymptomFingerprint()` that derives old queue symptom scope from `buildCareActionQueue()` and stores only rendered action fields.
+  - `src/caregiverExport.test.ts`
+    - Kept the regression for old low-risk symptoms outside the rendered caregiver scope.
+    - Added coverage that old high-risk symptom body text is ignored when the queue renders the action detail instead.
+    - Added coverage that old high-risk symptom action changes still stale the caregiver preview because the queue detail changes.
+  - `DESIGN.md`
+    - Documented the recent-symptom plus care-queue-rendered action fingerprint boundary.
+- Tests:
+  - PASS `npm test -- src/caregiverExport.test.ts` => 1 file, 46 tests.
+- Issues:
+  - Direct single cmux in-app browser confirmation and browser-local cleanup remain blocked by the existing `surface:7` control timeout.
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened for this slice.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used. This was source/contract verification against existing `buildCaregiverExportHtml()` and `buildCareActionQueue()` behavior.
+- Next Steps:
+  - Run `npm run typecheck`, full `npm test`, `npm run build`, and focused `git diff --check`.
+  - Recheck shallow cmux/runtime state without opening another browser.
+  - If green, stage only the focused files, run staged secret checks, commit, and push.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
+## 2026-06-07 00:53 KST - Old Symptom Scope Verification And cmux QA
+
+- Current Goal:
+  - Finish and publish the caregiver old-symptom fingerprint slice after direct same-browser QA.
+- Context:
+  - The Vite dev listener on `127.0.0.1:1420` was initially down, so existing `surface:7` showed a connection-refused page.
+  - Started the current-source Vite server with `npm run dev -- --host 127.0.0.1 --port 1420`.
+  - Computer Use showed the frontmost cmux workspace was `프롬프트`; no interaction was done with that PromptVault browser beyond observation.
+  - Switched to the existing `암관리` workspace in the cmux sidebar and used only its existing right-pane CareVault browser at `http://127.0.0.1:1420/`.
+- Progress:
+  - Removed the previous leftover `carevault.__testCaregiverSettingsStaleBaseline` browser key after restoring its baseline.
+  - Seeded a temporary QA state in the same CareVault browser with:
+    - five recent low-risk symptoms,
+    - one old high-risk symptom,
+    - one old low-risk symptom that should not render in caregiver HTML.
+  - Clicked the visible `공유본 미리보기` button in the single `암관리` browser.
+  - Confirmed the generated caregiver preview included recent symptoms and the old high-risk care-queue symptom/action.
+  - Confirmed the generated caregiver preview did not include the old low-risk symptom or its hidden body text.
+  - Restored the original browser `carevault.v1` baseline and removed all `carevault.__test*` keys.
+- Changes:
+  - No additional source code changes in this verification pass.
+  - `working.md` updated with verification and cleanup evidence.
+- Tests:
+  - PASS `npm test -- src/caregiverExport.test.ts` => 1 file, 46 tests.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => 62 files, 522 tests.
+  - PASS `npm run build` => 2475 modules transformed, production build completed without chunk-size warnings.
+  - PASS `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts DESIGN.md working.md`.
+  - PASS `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS cmux shallow state: `cmux ping` => `PONG`, `cmux browser-status` => `enabled`, URL on the existing CareVault surface was `http://127.0.0.1:1420/`.
+  - PASS browser errors after cleanup: `cmux browser --surface surface:7 errors list` => `No browser errors`.
+  - PASS direct preview DOM check:
+    - `QA 최근 일반 증상 1` and `QA 최근 일반 증상 5` present.
+    - `QA 오래된 고위험 숨가쁨` and `의료진에게 숨가쁨 악화 여부 상담` present.
+    - `QA 오래된 저위험 불편감` and its hidden low-risk body text absent.
+    - copy/download controls present and no stale alert shown.
+  - PASS cleanup DOM/localStorage check:
+    - `localStorage` keys: only `carevault.v1`.
+    - QA old symptom strings absent from current page text after reload.
+    - Screenshot saved: `/tmp/carevault-surface7-old-symptom-scope-pass.png`.
+  - FAIL `npm run runtime:doctor:dev` because this session intentionally started only the Vite dev listener for cmux browser QA; the doctor passed current-project Vite on port 1420 but failed the expected Tauri dev CLI and debug CareVault binary checks.
+- Issues:
+  - cmux `navigate --snapshot-after` timed out once before switching back to the visible `암관리` workspace with Computer Use.
+  - The existing single CareVault browser recovered after the current-source dev server was started and the `암관리` workspace was selected.
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Run final focused diff/status and staged secret checks.
+  - Stage only `src/caregiverExport.ts`, `src/caregiverExport.test.ts`, `DESIGN.md`, and `working.md`.
+  - Commit and push if green.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:

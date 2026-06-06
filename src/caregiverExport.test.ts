@@ -424,6 +424,112 @@ describe("caregiverExport", () => {
     expect(hiddenNormalVitalChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores old low-risk symptom changes outside caregiver-rendered symptom scope", () => {
+    const recentLowRiskSymptoms = Array.from({ length: 5 }, (_, index) => ({
+      date: `2026-06-${String(10 - index).padStart(2, "0")}`,
+      symptom: `최근 일반 증상 ${index + 1}`,
+      severity: 2,
+      body: "최근 경과",
+      action: "관찰",
+    }));
+    const oldLowRiskSymptom = {
+      date: "2026-05-01",
+      symptom: "가벼운 불편감",
+      severity: 2,
+      body: "렌더링되지 않는 오래된 일반 증상 메모",
+      action: "휴식 후 관찰",
+    };
+    const stateWithHiddenLowRiskSymptom: CaregiverExportState = {
+      ...state,
+      symptoms: [...recentLowRiskSymptoms, ...state.symptoms, oldLowRiskSymptom],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithHiddenLowRiskSymptom);
+    const hiddenLowRiskSymptomChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithHiddenLowRiskSymptom,
+      symptoms: [
+        ...recentLowRiskSymptoms,
+        ...state.symptoms,
+        {
+          ...oldLowRiskSymptom,
+          body: "렌더링되지 않는 오래된 일반 증상 메모 변경",
+          action: "렌더링되지 않는 오래된 일반 증상 조치 변경",
+        },
+      ],
+    });
+
+    expect(hiddenLowRiskSymptomChangedFingerprint).toBe(fingerprint);
+  });
+
+  it("ignores old high-risk symptom body changes when caregiver queue renders the action detail", () => {
+    const recentLowRiskSymptoms = Array.from({ length: 5 }, (_, index) => ({
+      date: `2026-06-${String(10 - index).padStart(2, "0")}`,
+      symptom: `최근 일반 증상 ${index + 1}`,
+      severity: 2,
+      body: "최근 경과",
+      action: "관찰",
+    }));
+    const oldHighRiskSymptom = {
+      date: "2026-05-01",
+      symptom: "호흡곤란",
+      severity: 8,
+      body: "큐 상세에 직접 렌더링되지 않는 오래된 증상 메모",
+      action: "의료진에게 호흡곤란 악화 여부 상담",
+    };
+    const stateWithHiddenHighRiskBody: CaregiverExportState = {
+      ...state,
+      symptoms: [...recentLowRiskSymptoms, ...state.symptoms, oldHighRiskSymptom],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithHiddenHighRiskBody);
+    const hiddenHighRiskBodyChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithHiddenHighRiskBody,
+      symptoms: [
+        ...recentLowRiskSymptoms,
+        ...state.symptoms,
+        {
+          ...oldHighRiskSymptom,
+          body: "큐 상세에 직접 렌더링되지 않는 오래된 증상 메모 변경",
+        },
+      ],
+    });
+
+    expect(hiddenHighRiskBodyChangedFingerprint).toBe(fingerprint);
+  });
+
+  it("tracks old high-risk symptom action changes in the caregiver queue scope", () => {
+    const recentLowRiskSymptoms = Array.from({ length: 5 }, (_, index) => ({
+      date: `2026-06-${String(10 - index).padStart(2, "0")}`,
+      symptom: `최근 일반 증상 ${index + 1}`,
+      severity: 2,
+      body: "최근 경과",
+      action: "관찰",
+    }));
+    const oldHighRiskSymptom = {
+      date: "2026-05-01",
+      symptom: "호흡곤란",
+      severity: 8,
+      body: "호흡곤란 악화",
+      action: "의료진에게 호흡곤란 악화 여부 상담",
+    };
+    const stateWithQueueHighRiskSymptom: CaregiverExportState = {
+      ...state,
+      symptoms: [...recentLowRiskSymptoms, ...state.symptoms, oldHighRiskSymptom],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithQueueHighRiskSymptom);
+    const queueHighRiskActionChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithQueueHighRiskSymptom,
+      symptoms: [
+        ...recentLowRiskSymptoms,
+        ...state.symptoms,
+        {
+          ...oldHighRiskSymptom,
+          action: "당일 진료팀에 호흡곤란 악화 여부를 문의",
+        },
+      ],
+    });
+
+    expect(queueHighRiskActionChangedFingerprint).not.toBe(fingerprint);
+  });
+
   it("fingerprints only exported profile fields when caregiver profile is redacted", () => {
     const redactedFingerprint = buildCaregiverExportContentFingerprint(
       state,

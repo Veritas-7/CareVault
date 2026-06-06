@@ -177,6 +177,7 @@ export function buildCaregiverExportContentFingerprint(
       }
     : state.profile;
   const latestLabResults = latestByDate(state.labResults, 5);
+  const latestSymptoms = latestByDate(state.symptoms, 5);
   const latestVitals = latestByDate(state.vitals, 5);
 
   return JSON.stringify({
@@ -205,7 +206,12 @@ export function buildCaregiverExportContentFingerprint(
     questions: enabledSections.questions
       ? state.questions.filter((question) => question.status === "open")
       : [],
-    symptoms: enabledSections.symptoms ? state.symptoms : [],
+    symptoms: enabledSections.symptoms
+      ? {
+          careQueue: buildCaregiverQueueSymptomFingerprint(state.symptoms),
+          recent: latestSymptoms.map(formatRecentSymptomFingerprint),
+        }
+      : [],
     visits: enabledSections.visits
       ? state.visits
           .filter((visit) => visit.nextDate || visit.date)
@@ -342,6 +348,43 @@ function formatCervicalScreeningSummaryHtml(summary: CervicalCancerScreeningSumm
 
 function latestByDate<T extends { date: string }>(items: T[], limit: number) {
   return [...items].sort((a, b) => b.date.localeCompare(a.date)).slice(0, limit);
+}
+
+function formatRecentSymptomFingerprint(symptom: CaregiverExportState["symptoms"][number]) {
+  return {
+    action: formatTextWithSourceEvidenceHtml(symptom.action),
+    body: formatTextWithSourceEvidenceHtml(symptom.body),
+    date: symptom.date,
+    label: formatSymptomRecordLabel(symptom),
+    severity: symptom.severity,
+    symptom: symptom.symptom,
+  };
+}
+
+function buildCaregiverQueueSymptomFingerprint(
+  symptoms: CaregiverExportState["symptoms"],
+) {
+  return buildCareActionQueue(
+    {
+      documents: [],
+      labResults: [],
+      questions: [],
+      symptoms,
+      visits: [],
+      vitals: [],
+    },
+    "9999-12-31",
+    Number.MAX_SAFE_INTEGER,
+  )
+    .filter((action) => action.source === "symptom")
+    .map((action) => ({
+      date: action.date,
+      detail: action.detail,
+      label: action.label,
+      sortRank: action.sortRank,
+      title: action.title,
+      tone: action.tone,
+    }));
 }
 
 function isCaregiverQueueVital(
