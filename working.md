@@ -20984,3 +20984,22 @@
   - `surface:7` must be treated as not reliable for further direct-click QA until JS/error-list/snapshot evidence aligns with tree/get-url.
 - Next durable app slice:
   - First recover or naturally revalidate `surface:7`: URL/title, JS state, errors list, snapshot content, and any temporary `carevault.__testCsvFoodStaleBaseline` key. Only then retry CSV food-query staleness or continue another low-risk workflow.
+
+## 2026-06-06 20:03 KST - CSV Food Stale cmux QA
+
+- Improvement target:
+  - Complete the previously blocked CSV preview staleness path for nutrition `foodQuery` changes, proving CSV has its own stale alert, disabled actions, fresh regeneration, and clean restore behavior.
+- Runtime/browser notes:
+  - PASS surface recovery: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. `cmux tree --workspace workspace:4`, `get-url`, and `get title` all reported `CareVault` at `http://127.0.0.1:1420/#care-plan`. The previous `focus-webview` failure was resolved by focusing the existing `pane:8`; after that, `focus-webview` returned `OK`, snapshot showed real CareVault content, JS eval worked, and `errors list` returned `No browser errors`.
+  - PASS setup: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCsvFoodStaleBaseline"]` (`1893` bytes) and clicked the real `CSV 미리보기` button. The initial preview opened with summary `CSV · 151줄 · 45,048자 · 70,704B · 근거/출처 82개`, save chip `CSV 미리보기 생성 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`, no stale alert, and copy/print/download enabled.
+  - PASS stale trigger: filled the real `암환자 음식 판단 음식 또는 식단 입력` textarea with `브로콜리, 생굴`. The save chip changed to `음식 판단 업데이트됨 · 브로콜리, 생굴 · 의료진 확인 필요 · 매칭 2개 · 공식 출처 3개 · 브라우저 자동 저장됨`, and `.export-preview-stale-alert[aria-label="CSV 미리보기 기록 변경 감지"]` appeared.
+  - PASS stale protections: while stale, the preview summary stayed at the old `151줄 · 45,048자 · 70,704B · 근거/출처 82개`; the old preview text did not contain `브로콜리, 생굴`; copy, print, and download were all disabled; each aria/title included `비활성: CSV 기록이 바뀌어 다시 생성이 필요합니다.`; and the fresh action exposed `CSV 기록 반영` with aria/title `새 미리보기 생성 · CSV · 변경된 기록 적용`.
+  - PASS regeneration: clicked the real `CSV 기록 반영` action. The stale alert disappeared, preview summary updated to `152줄 · 45,669자 · 71,746B · 근거/출처 84개`, regenerated CSV content contained `브로콜리, 생굴`, food-check text, the `생굴`/면역저하 raw-food reason, and `국가암정보센터 증상별 식생활 - 면역기능의 저하`; copy, print, and download were re-enabled with updated summaries.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testCsvFoodStaleBaseline`, reloaded the same `surface:7`, and confirmed final baseline `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, counts vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, lab results `1`, empty `foodQuery`, no temporary `브로콜리, 생굴` text in storage, no temp CSV key, no export preview, no stale alert, no dialog, no alert, real CareVault snapshot content, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/csvExport.test.ts src/exportPreviewSummary.test.ts src/foodMetric.test.ts` (`3 passed`, `35 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy again at `surface:7` / `#care-plan` with URL/title/snapshot/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import variants, document archive/restore with baseline restore, caregiver-share edge cases, or another low-risk patient workflow.
