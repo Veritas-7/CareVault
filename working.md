@@ -20083,3 +20083,27 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for document attachment controls, document manual save validation, or another low-risk patient workflow.
+
+## 2026-06-06 17:23 KST - Caregiver Share Preset Reset cmux QA
+
+- Improvement target:
+  - Continue the caregiver-share workflow sweep by verifying share-setting presets and reset behavior in the existing browser state.
+  - Confirm a preset changes profile redaction, memo, and section inclusion, then reset returns to the default settings while preserving record counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS snapshot guard: captured `localStorage` before changing caregiver settings; baseline custom setting had memo `desktop stale check`, preset empty/direct, profile shown, and all 7 sections included.
+  - PASS baseline summary: settings aria was `보호자 공유 설정 요약 공유 의도 직접 설정 · 프로필 표시 · 전달 메모 포함 · 포함 7개 · 제외 0개`; section aria was `보호자 공유본 포함 요약 · 포함 7개: 진료, 질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온 · 제외 0개: 없음`.
+  - PASS privacy preset: selected `privacy-minimal`; stored settings became preset `privacy-minimal`, profile redaction `true`, memo `필요한 진료 준비 항목만 보이도록 식별정보와 생활기록은 최소화했습니다.`, and sections included visits/questions/documents/symptoms/labs while excluding food/vitals.
+  - PASS privacy labels: preset aria became `보호자 공유 설정 프리셋 · 현재 정보 최소 · 선택하면 해당 공유 설정을 적용합니다`, profile toggle aria became `보호자 공유본 프로필 가리기 켜짐 · 선택 해제하면 이름과 기본 프로필 정보를 표시합니다`, settings summary showed `프로필 가림 · 전달 메모 포함 · 포함 5개 · 제외 2개`, and section summary excluded `음식, 혈압·혈당·체온`.
+  - PASS privacy status: save chip showed `보호자 공유 프리셋 적용: 정보 최소 · 의도 정보 최소 · 프로필 가림 · 메모 포함 · 포함 5개 · 제외 2개 · 브라우저 자동 저장됨`.
+  - PASS reset: clicked `공유 설정 초기화`; settings returned to preset empty/direct, profile shown, memo empty, all 7 sections included, reset button disabled with aria `보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다`, and save chip showed `보호자 공유 설정 초기화됨 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개`.
+  - PASS non-mutating guard: record counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1` while settings changed.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, original memo `desktop stale check`, preset empty/direct, profile shown, and all 7 sections included.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; caregiver share preset/reset formatting remains covered by `src/caregiverShareSettings.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver section minimum-guard behavior, document manual save validation, or another low-risk patient workflow.
