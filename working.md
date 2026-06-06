@@ -21567,3 +21567,31 @@
 - Next durable app slice:
   - Recover only the existing `surface:7` and re-run the visit summary fresh-preview action to verify the stale alert clears and copy/print/download become active for the 7-day preview.
   - If `surface:7` stays blocked, report the cmux surface blocker and ask the user before any cmux app restart.
+
+## 2026-06-06 23:06 KST - Visit Summary Preview Fresh Guard cmux QA Recovery
+
+- Improvement target:
+  - Resume the blocked visit-summary stale/fresh preview QA in the same existing `surface:7`.
+  - Verify the fresh-preview action clears stale state and re-enables export actions for the changed 7-day range.
+- Runtime/browser notes:
+  - PASS recovery: `surface:7` browser RPC was still timing out after the prior blocker, while `cmux ping` returned `PONG`, `cmux browser-status` returned `enabled`, and the app server returned HTTP `200`. Used `cmux select-workspace --workspace workspace:4` followed by `cmux refresh-surfaces`; this refreshed 1 focused surface in place without opening a new browser or restarting cmux.
+  - PASS recovered snapshot: `surface:7` returned the CareVault DOM again, with the 30-day visit summary preview state still present from the previous click.
+  - PASS stale guard repeat: changed `진료 요약 범위` from `30d` to `7d` and confirmed the stale state again: stale preview copy/print/download were disabled with `진료 요약 범위가 바뀌어 다시 생성이 필요합니다.`, and the fresh action `새 미리보기 생성 · 진료 요약 · 변경된 범위 적용` was visible.
+  - PASS fresh action: clicked the real fresh action. This time the command returned `OK`; the preview updated to `진료 요약 미리보기 (최근 7일)`, stale alert and fresh button disappeared, and copy/print/download were active with refreshed 7-day summary counts (`231줄`, `31,907자`, `54,374B`, `근거/출처 106개`).
+  - PASS cleanup/restore: closed the export preview, reset `진료 요약 범위` to `30d`, and confirmed final state `url=http://127.0.0.1:1420/`, `range=30d`, no export preview open, `keys=["carevault.v1"]`, `activeDocuments=1`, `deletedDocuments=0`.
+  - PASS final browser health: cleared browser console/errors, then confirmed `No browser errors` and `No console entries`.
+  - Runtime guard: no new browser pane/tab/surface was opened, and cmux was not restarted, quit, force-quit, or signaled.
+- Changes:
+  - No source code changed in this slice. This is completion of the direct browser QA that was blocked in the previous entry.
+- Verification:
+  - PASS `cmux select-workspace --workspace workspace:4 && cmux refresh-surfaces` => `OK workspace:4`, `OK Refreshed 1 surfaces`.
+  - PASS `cmux browser --surface surface:7 select ... --value 7d --snapshot-after` showed stale disabled export actions and the fresh action.
+  - PASS `cmux browser --surface surface:7 click 'button[aria-label="새 미리보기 생성 · 진료 요약 · 변경된 범위 적용"]'` returned `OK`.
+  - PASS post-click eval: `range="7d"`, title `진료 요약 미리보기 (최근 7일)`, `hasStaleAlert=false`, `hasFreshButton=false`, and refreshed copy/print/download buttons all `disabled=false`.
+  - PASS cleanup eval: `range="30d"`, `hasExportPreview=false`, `keys=["carevault.v1"]`, `activeDocuments=1`, `deletedDocuments=0`.
+- Current state:
+  - The repo is clean except for this `working.md` QA recovery entry.
+  - The existing CareVault browser surface is responsive again and restored to the 30-day, no-preview baseline.
+- Next durable app slice:
+  - Commit/push this direct-QA recovery log after staged checks.
+  - Continue with another export-preview stale guard, preferably CSV content stale or caregiver-share settings stale, in the same `surface:7`.
