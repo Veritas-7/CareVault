@@ -173,6 +173,7 @@ export function buildCaregiverExportContentFingerprint(
         sex: state.profile.sex,
       }
     : state.profile;
+  const latestLabResults = latestByDate(state.labResults, 5);
 
   return JSON.stringify({
     documents: enabledSections.documents
@@ -189,7 +190,13 @@ export function buildCaregiverExportContentFingerprint(
           }))
       : [],
     foodQuery: enabledSections.food ? state.foodQuery?.trim() ?? "" : "",
-    labResults: enabledSections.labs ? state.labResults : [],
+    labResults: enabledSections.labs
+      ? state.labResults.filter(
+          (lab) =>
+            latestLabResults.includes(lab) ||
+            assessLabTextValue(lab.value, lab.lower, lab.upper).flag !== "normal",
+        )
+      : [],
     profile,
     questions: enabledSections.questions
       ? state.questions.filter((question) => question.status === "open")

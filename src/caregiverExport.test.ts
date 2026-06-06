@@ -350,6 +350,45 @@ describe("caregiverExport", () => {
     expect(undatedVisitChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores old normal lab note changes outside caregiver-rendered lab scope", () => {
+    const recentNormalLabs = Array.from({ length: 5 }, (_, index) => ({
+      date: `2026-06-${String(10 - index).padStart(2, "0")}`,
+      name: `정상 검사 ${index + 1}`,
+      value: "5.0",
+      unit: "mg/dL",
+      lower: "4.0",
+      upper: "6.0",
+      note: "정상 범위",
+    }));
+    const oldNormalLab = {
+      date: "2026-05-01",
+      name: "오래된 정상 검사",
+      value: "5.0",
+      unit: "mg/dL",
+      lower: "4.0",
+      upper: "6.0",
+      note: "렌더링되지 않는 오래된 정상 메모",
+    };
+    const stateWithHiddenNormalLab: CaregiverExportState = {
+      ...state,
+      labResults: [...recentNormalLabs, ...state.labResults, oldNormalLab],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithHiddenNormalLab);
+    const hiddenNormalLabChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithHiddenNormalLab,
+      labResults: [
+        ...recentNormalLabs,
+        state.labResults[0],
+        {
+          ...oldNormalLab,
+          note: "렌더링되지 않는 오래된 정상 메모 변경",
+        },
+      ],
+    });
+
+    expect(hiddenNormalLabChangedFingerprint).toBe(fingerprint);
+  });
+
   it("fingerprints only exported profile fields when caregiver profile is redacted", () => {
     const redactedFingerprint = buildCaregiverExportContentFingerprint(
       state,
