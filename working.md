@@ -23732,6 +23732,41 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 04:31 KST - Official Source Link Click-Safety Direct QA
+
+- Current Goal:
+  - Verify representative official-source links can be clicked from the real CareVault UI without mutating app state, while preserving `https://` hrefs, destination-specific aria/title labels, `target="_blank"`, and `rel="noreferrer"`.
+  - Use only the existing `암관리` `workspace:4` / `surface:7` browser. Do not allow the test to open a new tab/window; install a temporary same-WebView capture listener that records and `preventDefault()`s clicked external anchors.
+- Context:
+  - Repo started clean and synced at `b6e2ebd`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault runtime was running.
+  - Recent slices covered source-backed export/copy payloads and standards coverage disclosure, but I did not find a fresh same-`surface:7` direct click-safety pass spanning representative in-page official-source anchors.
+  - Source inspection shows external medical-evidence anchors use `target="_blank"` and `rel="noreferrer"` across dashboard, care queue, cervical-care, timeline, lab, food, and standards areas. The QA must not actually navigate away or open a new browser surface.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and recover/navigate only `surface:7` to CareVault.
+  - Capture the current `carevault.v1` baseline and install a capture-phase external-link click recorder that prevents navigation/new tab creation.
+  - Click representative real official-source anchors from several app regions, including dashboard/standards/care-queue/cervical/lab/food or timeline where available.
+  - Verify each recorded click has an `https://` href, non-empty destination-specific `aria-label` and `title`, `target="_blank"`, and `rel` containing `noreferrer`; verify app storage and URL remain unchanged and no preview/dialog opens.
+  - Remove the temporary listener by reloading the same surface, then run focused source-link tests and staged secret scanning before commit/push.
+- Direct QA results:
+  - PASS started temporary Vite on `127.0.0.1:1420` and reused only the existing `workspace:4` / `surface:7` browser.
+  - PASS setup found the live CareVault DOM at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, with `146` `https://` source links and storage keys only `carevault.v1`; the captured baseline length was `1871`.
+  - PASS installed a temporary capture-phase link recorder in the same WebView; it recorded external source anchor clicks and called `preventDefault()`/`stopImmediatePropagation()` so no tab/window/navigation was created.
+  - PASS clicked five real representative official-source anchors: dashboard recent-BP KDCA source, care-queue `혈압 132/84` KDCA source, cervical-care `언제 기록 항목` National Cancer Center source, standards coverage `한국 성인 혈압` KDCA source after opening `적용 범위`, and nutrition immune-food safety source.
+  - PASS recorded click metadata: all five clicked hrefs started with `https://`, every target was `_blank`, every rel included `noreferrer`, and every clicked link had matching destination-specific `aria-label` and `title` text ending with `열기`.
+  - PASS non-mutation/safety: after all clicks, the app URL stayed `http://127.0.0.1:1420/#care-plan`, `localStorage["carevault.v1"]` stayed byte-identical to the captured baseline (`1871` bytes), storage keys stayed only `carevault.v1`, and no export preview or dialog opened.
+  - PASS cleanup: restored the baseline defensively, removed `carevault.__testSourceLinkBaseline`, reloaded only the same surface, recovered the recurring post-reload `about:blank` JS context by setting `location.href` on `surface:7`, and confirmed no test recorder globals remained.
+  - PASS final cleanup state: storage keys only `carevault.v1`, no `carevault.__test*` session keys, standards coverage disclosure closed, save chip `브라우저 자동 저장됨`, source link count still `146`, counts restored to `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labResults 1`, empty `foodQuery`, and `attachmentNames 0`.
+  - PASS browser diagnostics after cleanup: `cmux browser --surface surface:7 errors` => `No browser errors`; console contained only Vite debug connect messages.
+- Issues:
+  - `surface:7` again showed the known stale `about:blank` JavaScript execution context after reload even though the accessibility snapshot showed CareVault. Same-surface URL reassignment recovered it; no new browser, tab, pane, workspace, surface, or headless browser was opened, and cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Verification:
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS `npm run runtime:doctor`: port `1420` free, no installed/release CareVault.app process, no CareVault dev processes.
+  - PASS `npm test -- src/sourceEvidence.test.ts src/timelineSourceEvidenceLabels.test.ts src/exportSourceLabels.test.ts src/labSourceEvidence.test.ts src/healthRules.test.ts src/disclosureLabels.test.ts` => `6 passed`, `30 passed`.
+  - PASS `git diff --check -- working.md`.
+- Next Steps:
+  - Run staged secret scanning, commit/push this focused QA log, then record post-push clean/sync status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
