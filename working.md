@@ -19786,3 +19786,28 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for food judgment interactions, backup import/export failure states, or another low-risk patient workflow.
+
+## 2026-06-06 16:43 KST - Food Judgment Question Draft cmux QA
+
+- Improvement target:
+  - Continue the nutrition workflow sweep by verifying typed food judgment, official-source evidence, and the clinician-question draft handoff.
+  - Use a browser-state snapshot so the food query and question draft test do not leave mutated state behind.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS setup: saved `carevault.v1` in temporary `sessionStorage`; baseline `foodQuery` and the textarea were empty, with the panel showing `판단 근거 부족` and immune-food context from the low WBC record.
+  - PASS typed judgment: entered `브로콜리, 생굴, 자몽 주스`; save chip showed `음식 판단 업데이트됨 · 브로콜리, 생굴, 자몽 주스 · 의료진 확인 필요 · 매칭 3개 · 공식 출처 4개 · 브라우저 자동 저장됨`.
+  - PASS summary: food panel aria became `음식 판단 요약 매칭 3개 · 식단 후보 1개 · 진료팀 확인 2개 · 공식 출처 4개`.
+  - PASS verdict/chips: verdict showed `의료진 확인 필요`; chips showed `브로콜리: 채소 중심 식단에 적합`, `자몽: 약물 상호작용 확인 필요`, and `생굴: 면역저하 시 익히지 않은 음식 주의`, each with its source link aria.
+  - PASS question draft action: `질문 초안` button was enabled with aria/title `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함`.
+  - PASS question draft feedback: clicking `질문 초안` showed `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 브로콜리, 생굴, 자몽 주스 · 일치 3개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 4개`.
+  - PASS question draft fields: question form draft changed to topic `식단·음식 안전`, priority `high`, and a question body including the low WBC context, matched food judgment reasons, lab evidence, and food-safety source URL; saved question count stayed `1`.
+  - PASS cleanup: restored the saved `carevault.v1` snapshot, removed the temporary `sessionStorage` key, reloaded the same surface, and confirmed `foodQuery`/textarea returned to empty, food chips were gone, question draft feedback was cleared, and saved question count stayed `1`.
+  - PASS cleanup: backup button remained `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; food judgment summary labels remain covered by `src/foodMetric.test.ts`, and food question draft labels by `src/foodQuestionPrompts.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import/export failure states, caregiver share copy, or another low-risk patient workflow.
