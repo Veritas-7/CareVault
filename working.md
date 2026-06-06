@@ -20391,6 +20391,26 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit summary edge cases, standards coverage disclosure, or another low-risk patient workflow.
 
+## 2026-06-06 18:17 KST - Standards Coverage Disclosure cmux QA
+
+- Improvement target:
+  - Verify the Korean health-standard `적용 범위` disclosure opens and closes cleanly with the current expanded standards matrix.
+  - Confirm source links remain scoped, safe external links without opening another browser tab.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: disclosure was closed, summary text was `적용 범위`, and summary aria/title were both `한국 성인 건강 기준 적용 범위 보기 · 성별 적용과 공식 기준 경계 확인`.
+  - PASS open: clicked the disclosure summary; it opened with 27 current standards coverage rows and 26 source links.
+  - PASS first rows: visible rows included `한국 성인 BMI`, `한국 성인 허리둘레`, `한국 성인 혈압`, `저혈압 확인 기준`, and `당뇨 추적 혈당`, with status chips, `남녀 공통`/`성별 분리` badges, summaries, sex-applicability text, and source labels.
+  - PASS source-link safety: source links kept row-scoped aria/title labels such as `적용 범위 한국 성인 혈압 공식 기준 출처 질병관리청 국가건강정보포털 고혈압 열기`, with `target="_blank"` and `rel="noreferrer"`.
+  - PASS close/non-mutating guard: clicked the summary again; disclosure closed, `localStorage["carevault.v1"]` stayed unchanged, URL stayed `http://127.0.0.1:1420/#care-plan`, save chip stayed `브라우저 자동 저장됨`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; the standards coverage disclosure label remains covered by `src/disclosureLabels.test.ts`, and standards source/link content by `src/healthStandards.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary edge cases, cervical-care disclosures, or another low-risk patient workflow.
+
 ## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
 
 - Improvement target:
