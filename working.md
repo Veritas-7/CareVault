@@ -19559,3 +19559,27 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver-share preview state or remaining document empty/failure states.
+
+## 2026-06-06 16:15 KST - Caregiver Share Settings Stale Preview cmux QA
+
+- Improvement target:
+  - Continue the export-preview direct-click sweep by verifying caregiver-share settings stale detection and recovery.
+  - Confirm rendered HTML preview iframe focus does not hide the top-level app proof, and keep the run inside the existing browser surface.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS iframe handling: after creating the HTML caregiver preview, one cmux context reported `about:blank` because the rendered preview iframe became active; subsequent proof used `window.top.document` to read the app shell and confirmed the top URL stayed `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: generated `보호자 공유본 미리보기` with filename `carevault-caregiver-share-2026-06-06.html`, summary `101줄 · 49,789자 · 72,969B · 근거/출처 111개`, and copy/print/download enabled.
+  - PASS stale setting: toggled `보호자 공유본 프로필 가리기` from off to on; the save chip changed to `보호자 공유 프로필 가림 · 브라우저 자동 저장됨`.
+  - PASS stale guard: the existing preview showed `보호자 공유본 미리보기 변경 감지` with `공유 설정이 바뀌었습니다`, and the fresh-preview action stayed enabled as `공유 설정 반영` / `새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용`.
+  - PASS setting difference: the diff panel showed `프로필` changed from `프로필 표시` at generation time to current `프로필 가림`.
+  - PASS disabled actions: caregiver preview copy, print, and download were disabled and their aria/title labels each ended with `비활성: 공유 설정이 바뀌어 다시 생성이 필요합니다.`
+  - PASS recovery: clicked `공유 설정 반영`; stale alert disappeared, actions re-enabled, and the refreshed redacted preview summary was `101줄 · 49,768자 · 72,941B · 근거/출처 111개`.
+  - PASS restore: toggled `보호자 공유본 프로필 가리기` back off, confirmed the diff reversed from `프로필 가림` to `프로필 표시`, clicked `공유 설정 반영`, and ended with profile display restored, no stale alert, no diff panel, and enabled copy/print/download with the original `101줄 · 49,789자 · 72,969B · 근거/출처 111개` summary.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; caregiver settings fingerprints and setting-difference behavior remain covered by `src/caregiverShareSettings.test.ts` and stale action labels by `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver-share content stale state or remaining document empty/failure states.
