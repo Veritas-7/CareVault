@@ -19697,3 +19697,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for question status transitions, symptom/lab empty states, or another low-risk patient workflow.
+
+## 2026-06-06 16:30 KST - Question Status Transitions cmux QA
+
+- Improvement target:
+  - Continue the patient workflow sweep by verifying saved-question status transitions.
+  - Use a browser-state snapshot so the status-change test does not leave mutated state behind.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS setup: saved `carevault.v1` in temporary `sessionStorage`; baseline question was `혈액검사`, date `2026-06-15`, priority `next-visit`, status `open`.
+  - PASS baseline buttons: `확인 필요` was the disabled current-state button with aria `혈액검사 질문 현재 상태: 확인 필요`, while `답변 완료` and `보류 처리` were enabled transitions.
+  - PASS answered transition: clicked `혈액검사 질문 상태를 답변 완료로 변경`; save chip showed `혈액검사 질문 상태: 답변 완료`, `답변 완료` became the disabled current-state button, and `확인 필요` / `보류 처리` were enabled.
+  - PASS deferred transition: clicked `혈액검사 질문 상태를 보류로 변경`; save chip showed `혈액검사 질문 상태: 보류`, `보류 처리` became the disabled current-state button, and the other statuses were enabled.
+  - PASS open transition: clicked `혈액검사 질문 상태를 확인 필요로 변경`; save chip showed `혈액검사 질문 상태: 확인 필요`, `확인 필요` became the disabled current-state button, and `답변 완료` / `보류 처리` were enabled.
+  - PASS cleanup: restored the saved `carevault.v1` snapshot, removed the temporary `sessionStorage` key, reloaded the same surface, and confirmed the stored question returned to status `open`.
+  - PASS cleanup: backup button remained `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; question status labels and feedback remain covered by `src/questionStatus.test.ts`, and question metrics by `src/questionMetric.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for question priority changes, symptom/lab empty states, or another low-risk patient workflow.
