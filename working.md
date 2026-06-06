@@ -20035,3 +20035,27 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for saved question copy/status actions, lab preset save/reset, or another low-risk patient workflow.
+
+## 2026-06-06 17:18 KST - Lab Preset Apply Reset cmux QA
+
+- Improvement target:
+  - Continue the lab-entry workflow sweep by verifying a sex-specific lab preset populates the draft fields and can be reset without saving a record.
+  - Confirm reset returns the lab form to direct-entry mode and preserves stored CareVault counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: lab preset value was empty/direct input, lab draft fields were empty, save chip was `브라우저 자동 저장됨`, no lab preset feedback was present, and stored counts were vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`.
+  - PASS Hgb preset apply: selected `hemoglobin`; save chip and local `.lab-preset-feedback` both showed `검사 프리셋 적용: Hgb 헤모글로빈 · 기준 12-16 g/dL · 여성 기준 적용 · 근거 서울아산병원 혈색소 검사 참고치`.
+  - PASS applied draft fields: preset value became `hemoglobin`, date stayed `2026-06-06`, name `Hgb`, unit `g/dL`, lower `12`, upper `16`, value empty, and note included `적용 기준: 여성 기준 적용` plus the 서울아산병원 혈색소 source URL with `managementId=119`.
+  - PASS preview: the preset preview showed `Hgb 헤모글로빈`, `여성 기준 적용`, range `12-16 g/dL`, unit `g/dL`, and source `서울아산병원 혈색소 검사 참고치`.
+  - PASS reset: clicked `검사 입력 프리셋과 값 초기화`; save chip and local feedback showed `검사 입력 초기화됨 · 프리셋 Hgb 헤모글로빈 해제 · 이전 Hgb 값 없음 · 판정 값 없음 · 근거 포함 · 날짜 2026-06-06`.
+  - PASS reset result: preset value returned to empty/direct input, name/value/unit/lower/upper/note were empty, and the preview returned to `직접 입력 모드입니다. 결과지에 적힌 검사실 기준 범위와 단위를 그대로 입력하세요.`
+  - PASS non-mutating guard: stored counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`; the `검사 수치 추가` save action was never clicked.
+  - PASS cleanup: reloaded the same surface and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, empty lab preset/draft fields, no lab preset feedback, and unchanged stored counts.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; lab preset preview/status formatting remains covered by `src/labPresets.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for lab save validation, document attachment controls, or another low-risk patient workflow.
