@@ -25686,3 +25686,25 @@
 - Current state:
   - `src/App.tsx`, `src/backupState.ts`, `src/backupState.test.ts`, and `working.md` are dirty with this focused backup-import read-error status fix and same-surface QA evidence.
   - Stage only those paths, run staged secret checks, commit/push, then record post-push status.
+
+## 2026-06-07 08:12 KST - Post-Push Backup Read Error Status
+
+- Improvement target:
+  - Record the post-push state after fixing the backup-import file-read failure status.
+- Verification:
+  - PASS source fix: `FileReader.onerror` now keeps the visible alert detail `파일을 읽지 못했습니다. 기존 건강 기록은 그대로 유지되었습니다.` and changes the top save chip to `백업 가져오기 실패 · 파일 읽기 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음`, instead of the previous misleading `JSON 검증 실패` status.
+  - PASS direct same-surface QA: existing `surface:7` dispatched `carevault-read-error-qa.json` through the real hidden `CareVault 백업 JSON 파일 선택` input with a failing `FileReader`; one read attempt was captured, the alert used role `alert` and aria `백업 가져오기 실패`, storage stayed byte-for-byte equal to baseline length `1871`, record counts stayed unchanged, and no preview/dialog opened.
+  - PASS cleanup: same `surface:7` reloaded with native `FileReader`, no `carevault.__test*` keys, no FileReader test globals, no backup feedback panel, save chip `브라우저 자동 저장됨`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS focused tests: `npm test -- src/backupState.test.ts src/textFileDownload.test.ts` => `2 passed`, `14 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build` => `2475` modules transformed.
+  - PASS diff checks: `git diff --check -- src/App.tsx src/backupState.ts src/backupState.test.ts working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `ac159ea Clarify backup read failure status`.
+  - PASS push: `git push` updated `origin/main` from `03998d8` to `ac159ea`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux same-surface status: existing `surface:7` remained at `http://127.0.0.1:1420/#care-plan` and browser errors were clear.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
