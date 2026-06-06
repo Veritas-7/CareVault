@@ -19766,3 +19766,23 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for question copy fallback, food judgment interactions, or another low-risk patient workflow.
+
+## 2026-06-06 16:38 KST - Question Copy cmux QA
+
+- Improvement target:
+  - Continue the patient workflow sweep by verifying saved-question clipboard copy feedback.
+  - Keep the test non-mutating while confirming the WebKit cmux browser copy path succeeds.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: `navigator.clipboard.writeText` was available in the WebKit cmux browser.
+  - PASS baseline: `질문 복사` button was enabled with aria/title `혈액검사 질문 복사 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+  - PASS click feedback: clicked `질문 복사`; save chip showed `혈액검사 질문 복사됨 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+  - PASS non-mutating guard: copy button remained enabled with the same aria/title, and backup button stayed `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; question clipboard text and feedback remain covered by `src/questionClipboard.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for food judgment interactions, backup import/export failure states, or another low-risk patient workflow.
