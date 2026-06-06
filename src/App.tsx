@@ -1243,9 +1243,11 @@ function App() {
     () => buildFoodQuestionDraft(foodQuestionDraftInput),
     [foodQuestionDraftInput],
   );
+  const foodQuestionButtonSourceCount =
+    foodQuestionDraft?.sourceCount ?? immuneFoodSafetyContext?.sourceCount ?? 0;
   const foodQuestionButtonLabels = useMemo(
-    () => buildFoodQuestionButtonLabels(foodQuestionDraft?.sourceCount ?? 0),
-    [foodQuestionDraft],
+    () => buildFoodQuestionButtonLabels(foodQuestionButtonSourceCount),
+    [foodQuestionButtonSourceCount],
   );
 
   const normalizedMirror = useMemo(
@@ -6773,20 +6775,18 @@ function App() {
               );
             })}
           </div>
-          {foodQuestionDraft ? (
-            <div className="food-question-actions">
-              <button
-                className="secondary-inline-button"
-                type="button"
-                onClick={applyFoodQuestionDraft}
-                aria-label={foodQuestionButtonLabels.ariaLabel}
-                title={foodQuestionButtonLabels.title}
-              >
-                <MessageSquare aria-hidden="true" />
-                {foodQuestionButtonLabels.visibleLabel}
-              </button>
-            </div>
-          ) : null}
+          <div className="food-question-actions">
+            <button
+              className="secondary-inline-button"
+              type="button"
+              onClick={applyFoodQuestionDraft}
+              aria-label={foodQuestionButtonLabels.ariaLabel}
+              title={foodQuestionButtonLabels.title}
+            >
+              <MessageSquare aria-hidden="true" />
+              {foodQuestionButtonLabels.visibleLabel}
+            </button>
+          </div>
           {foodQuestionDraftFeedback ? (
             <div className="food-question-draft-feedback" role="status">
               {foodQuestionDraftFeedback}

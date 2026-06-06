@@ -24775,6 +24775,35 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 06:45 KST - Food Question Empty Input Failure Affordance
+
+- Current Goal:
+  - Make the existing `음식 판단 질문 초안 준비 실패` feedback reachable through the real UI instead of leaving it only in source tests.
+  - Preserve the immune-food evidence count in the button label when a low WBC/ANC context exists but the food input is empty.
+- Context:
+  - Source tests covered empty/unclassified food question failure labels, but `App.tsx` rendered the `질문 초안` button only when `foodQuestionDraft` existed.
+  - With an empty food query and low WBC context, the existing handler could format `음식 판단 질문 초안 준비 실패 · 입력 음식 입력 없음 · 일치 0개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 2개`, but users had no visible button to trigger it.
+- Implementation:
+  - Updated `src/App.tsx` so the food-question action button always renders.
+  - Added `foodQuestionButtonSourceCount` so the button uses `foodQuestionDraft?.sourceCount`, then falls back to `immuneFoodSafetyContext?.sourceCount`, then `0`.
+  - Kept the existing `applyFoodQuestionDraft()` success/failure handler unchanged.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS empty-input affordance: after `cmux browser --surface surface:7 goto http://127.0.0.1:1420/#care-plan --snapshot-after`, the empty food textarea still showed a real `질문 초안` button with aria label `음식 판단 진료 질문 초안 만들기 · 근거 2개 포함`.
+  - PASS failure click: with `foodQuery` still blank, clicked `#nutrition .food-question-actions button`. `.food-question-draft-feedback` showed `음식 판단 질문 초안 준비 실패 · 입력 음식 입력 없음 · 일치 0개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 2개`.
+  - PASS top status parity: `.save-status-chip` showed the same failure string.
+  - PASS no draft mutation: the visible food input stayed blank, the question topic and question text fields stayed blank, and `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline at length `1871`.
+  - PASS cleanup: reloaded only `surface:7`; the empty food-query button remained visible with the 2-source aria label, transient failure feedback cleared, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/foodQuestionPrompts.test.ts src/immuneFoodContext.test.ts src/foodMetric.test.ts` => `3 passed`, `15 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - `src/App.tsx` contains the one-slice UI affordance change.
+  - `working.md` is dirty with this implementation/direct QA evidence.
+  - Run diff/staged checks, stage explicit `src/App.tsx working.md`, run staged secret checks, commit/push this focused improvement, then record post-push status.
+
 ## 2026-06-07 06:41 KST - Profile Sex Standard Clipboard Unsupported Direct QA
 
 - Current Goal:
