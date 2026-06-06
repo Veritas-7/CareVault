@@ -21338,3 +21338,23 @@
   - The existing CareVault browser surface remains `surface:7` / `#care-plan` with the vital draft restored to the blood-pressure branch.
 - Next durable app slice:
   - Continue the cmux direct-surface sweep for native desktop attachment recovery friction, backup export/download behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 22:04 KST - cmux Surface Access Blocker Check
+
+- Improvement target:
+  - Continue the next low-risk CareVault QA slice without opening a new browser pane/tab/surface and without restarting cmux.
+  - Avoid duplicating recently covered flows before choosing the next live check.
+- Runtime/browser notes:
+  - PASS repo/server baseline: `git status --short --branch` reported `## main...origin/main`, `origin/main...HEAD` was `0 0`, and `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
+  - PASS duplicate-slice review: recent worklog and tests already cover manual save click, visit-summary range/stale behavior, backup export/import/download paths, saved and deleted attachment cleanup, caregiver minimum-section/all-off recovery, and vital blood-pressure/glucose/temperature branch switching.
+  - BLOCKED cmux direct surface: `timeout 10 cmux tree --workspace workspace:4 --window E0A44BE5-F629-403E-8EE0-14FEC46EF22E`, `timeout 12 cmux browser --surface surface:7 get-url`, `get title`, `errors list`, and DOM `eval` all timed out with no output. `cmux ping` still returned `PONG`, so the cmux process was not restarted or terminated.
+  - BLOCKED focus path: `cmux focus-pane --workspace workspace:4 --pane pane:8`, `cmux workspace-action --action focus --workspace workspace:4`, and `cmux browser --surface surface:7 focus-webview` also timed out. Computer Use could read the cmux window and saw the `암관리` workspace row, but AX/coordinate clicks did not activate it and returned `noWindowsAvailable` for coordinate clicks.
+  - Runtime guard: no new browser pane/tab/surface was opened, no cmux restart/kill/quit was attempted, and no user health record was modified.
+- Automated verification:
+  - PASS `npm test -- src/storageStatus.test.ts src/caregiverShareSettings.test.ts src/healthRules.test.ts` (`3 passed`, `40 passed`).
+- Current state:
+  - No source code changed in this slice.
+  - The repo is clean except for this `working.md` blocker/verification entry.
+  - The dev server remains healthy on `http://127.0.0.1:1420/`, but the existing cmux surface automation path needs to recover before the next real browser QA claim.
+- Next durable app slice:
+  - Once `surface:7` responds again, continue with a non-duplicate low-risk patient workflow such as native desktop attachment recovery friction or another saved-document action path not already covered in the recent tail.
