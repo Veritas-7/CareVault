@@ -21208,3 +21208,25 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for native desktop attachment recovery friction, CSV preview successful print if needed, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 21:23 KST - Caregiver Raw HTML Disclosure cmux QA
+
+- Improvement target:
+  - Verify the rendered caregiver-share preview exposes the raw HTML disclosure through the current single CareVault cmux browser surface, distinct from the caregiver direct-HTML print path.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab/surface was opened. Baseline was `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, counts vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, no export preview, no dialog, no stale alert, and `No browser errors`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverRawHtmlBaseline"]` before opening the preview.
+  - PASS preview open: clicked the real `보호자 공유본 미리보기 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개` action. The preview panel opened with raw HTML disclosure summary text `원본 HTML 보기`, aria/title `내보내기 미리보기 원본 HTML 보기 · 보호자 공유본 미리보기`, and the disclosure was initially closed.
+  - PASS disclosure open: clicked the real raw HTML disclosure summary. The disclosure opened and exposed `49,789` characters across `101` lines. The raw text began with `<!doctype html>`, contained `CareVault 보호자 공유본`, `생성 시각`, the cover memo text `desktop stale check`, `@media print`, source links, and `근거`.
+  - PASS privacy/non-mutation: the raw HTML did not contain `/Users/wj`, `attachmentPath`, or `blob:`. `localStorage["carevault.v1"]` stayed byte-for-byte identical to the captured baseline while the disclosure was open.
+  - PASS disclosure close: clicked the same real summary again and confirmed the disclosure closed while the preview remained open. The save chip reported `보호자 공유본 미리보기 생성 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개`.
+  - PASS cleanup: clicked the real `내보내기 미리보기 닫기` action, restored the captured baseline defensively, removed `carevault.__testCaregiverRawHtmlBaseline`, and confirmed the preview was closed with byte-for-byte storage equality.
+  - Runtime note: a same-surface `cmux browser surface:7 reload` recovery command timed out after cleanup. Used only the existing `workspace:4`, `pane:8`, and `surface:7` focus path; no cmux restart and no new browser were used.
+  - PASS final parity: after refocusing the existing surface, `get-url`, `get title`, JS state read, and `errors list` confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, baseline counts unchanged, empty `foodQuery`, no export preview, no dialog, no stale alert, no test sessionStorage keys, localStorage keys restored to `carevault.v1` plus the pre-existing `carevault.__testFoodEmptyBaseline`, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/disclosureLabels.test.ts src/caregiverExport.test.ts src/exportPreviewSummary.test.ts` (`3 passed`, `43 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for CSV preview successful print, native desktop attachment recovery friction, caregiver-share minimum-section guard behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
