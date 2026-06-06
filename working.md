@@ -19989,3 +19989,27 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for standards question-draft buttons, additional health-standards filter actions, or another low-risk patient workflow.
+
+## 2026-06-06 17:13 KST - Health Standards Question Draft cmux QA
+
+- Improvement target:
+  - Continue the health-standards workflow sweep by verifying the question-draft buttons populate clinician-question drafts without saving records.
+  - Cover both the range-table infection contact standard and the vital-input standard question button.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: question draft fields were empty, priority was `next-visit`, add button aria was `진료 전 질문 추가 · 질문 주제와 내용 필요 · 우선순위 다음 진료`, save chip was `브라우저 자동 저장됨`, and stored counts were vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`.
+  - PASS infection standard question draft: clicked `체온·감염 연락 기준 진료 질문 초안 만들기`; topic became `부작용: 발열·오한/감염 의심`, priority stayed `next-visit`, question text included `체온 38℃ 이상 또는 오한`, `응급실 기준`, and the 국가암정보센터 infection source URL.
+  - PASS infection feedback: save chip and local `.standard-range-draft-feedback` both showed `발열·오한/감염 의심 질문 초안 준비됨 · 근거 국가암정보센터 감염 의료진 상담 기준 · 저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.`
+  - PASS duplicate guard: clicking the same infection question button a second time kept the question body unchanged, so the generated source-backed question was not duplicated.
+  - PASS vital standard question draft: changed the unsaved vital draft to blood pressure `182/121` with note `두통 동반`, clicked `혈압 기준 진료 질문 초안 만들기`, and the draft became topic `혈압 기준 확인`, priority `next-visit`, with question text including `혈압 182/121 mmHg`, `고혈압 위기 가능 범위`, `사용자 메모: 두통 동반`, and the KDCA hypertension source URL.
+  - PASS vital feedback: save chip and local `.vital-standard-question-feedback` both showed `활력 기준 질문 초안 준비됨 · 혈압 182/121 mmHg · 판정 고혈압 위기 가능 범위 · 기준 성인 남녀 공통 한국 성인 혈압 기준 · 근거 질병관리청 국가건강정보포털 고혈압`.
+  - PASS non-mutating guard: stored counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`; the `질문 추가` save action was never clicked.
+  - PASS cleanup: reloaded the same surface and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, empty question topic/body, no infection or vital draft feedback, and unchanged stored counts.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; infection/vital question draft helpers remain covered by `src/symptomSupportTemplates.test.ts`, `src/healthStandards.test.ts`, and question copy/priority tests.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for lab preset question candidates, saved question copy actions, or another low-risk patient workflow.
