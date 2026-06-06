@@ -25058,6 +25058,37 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 07:15 KST - Preview Download Failure Label Scope
+
+- Current Goal:
+  - Keep export-preview download failure/fallback statuses scoped to the preview action, not the direct export action.
+  - Preserve the same visible preview summary in the failure status while adding the missing `미리보기` word.
+- Context:
+  - `downloadExportPreview()` already used `formatExportPreviewDownloadStatus()` for successful preview downloads, so success showed `진료 요약 미리보기 다운로드됨`.
+  - The failure/fallback path reused the generic text-file fallback label `exportPreview.format`, so failed preview download could report `진료 요약 다운로드 실패` and look like a direct export failure.
+- RED same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS RED target: opened the real `진료 요약 미리보기 · 범위 최근 30일` panel, forced Safari-like UA/vendor, installed a rejecting `navigator.clipboard.writeText`, and instrumented `URL.createObjectURL` plus anchor `click`.
+  - RED observed: clicked the real `진료 요약 다운로드 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개` preview button; `.save-status-chip` showed `진료 요약 다운로드 실패 · 클립보드 복사 실패 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`, missing `미리보기` even though the preview panel stayed open.
+- Implementation:
+  - Added `formatExportPreviewDownloadFallbackLabel(format)` in `src/exportPreviewSummary.ts`.
+  - Updated `downloadExportPreview()` in `src/App.tsx` to pass that preview-scoped fallback label to the shared text-file download status handler.
+  - Extended `src/exportPreviewSummary.test.ts` to pin the fallback label as `진료 요약 미리보기`.
+- PASS same-surface QA:
+  - PASS after patch: reloaded only `surface:7`, reopened `진료 요약 미리보기`, repeated the same Safari-like rejecting clipboard setup, and clicked the real preview download button.
+  - PASS status: `.save-status-chip` showed `진료 요약 미리보기 다운로드 실패 · 클립보드 복사 실패 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS fallback behavior: instrumentation showed `writes: 1`, preview payload length `32,554`, payload prefix starting `# CareVault 진료 요약`, `blobCalls: 0`, and `anchorClicks: 0`.
+  - PASS safety: `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline, storage length stayed `1871`, the preview remained open during failure, URL stayed `http://127.0.0.1:1420/#care-plan`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS cleanup: reloaded only `surface:7`; confirmed QA globals were gone, clipboard writer was native code rather than the QA stub, preview was closed, save chip returned to `브라우저 자동 저장됨`, and storage length stayed `1871`.
+- Verification:
+  - PASS focused tests: `npm test -- src/exportPreviewSummary.test.ts src/textFileDownload.test.ts` => `2 passed`, `14 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS diff check: `git diff --check -- src/App.tsx src/exportPreviewSummary.ts src/exportPreviewSummary.test.ts`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - `src/App.tsx`, `src/exportPreviewSummary.ts`, `src/exportPreviewSummary.test.ts`, and `working.md` are dirty with this focused UI feedback fix and evidence.
+  - Run staged checks, stage explicit paths only, run staged secret checks, commit/push this focused improvement, then record post-push status.
+
 ## 2026-06-07 06:45 KST - Food Question Empty Input Failure Affordance
 
 - Current Goal:

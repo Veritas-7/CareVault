@@ -339,6 +339,7 @@ import {
   formatExportPreviewCopyUnsupportedStatus,
   formatExportPreviewDisabledActionDescription,
   formatExportPreviewDownloadDescription,
+  formatExportPreviewDownloadFallbackLabel,
   formatExportPreviewDownloadStatus,
   formatExportPreviewFreshActionDescription,
   formatExportPreviewFreshActionVisibleLabel,
@@ -3591,7 +3592,7 @@ function App() {
     setTextFileDownloadStatus(
       result,
       exportPreviewDownloadStatus || `${exportPreview.format} 내보냄`,
-      exportPreview.format,
+      formatExportPreviewDownloadFallbackLabel(exportPreview.format),
       formatExportPreviewCompactSummary(summary),
     );
   };

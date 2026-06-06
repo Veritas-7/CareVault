@@ -162,3 +162,7 @@ export function formatExportPreviewDownloadDescription(
 export function formatExportPreviewDownloadStatus(format: string, summary: ExportPreviewSummary) {
   return `${format} 미리보기 다운로드됨 · ${formatExportPreviewCompactSummary(summary)}`;
 }
+
+export function formatExportPreviewDownloadFallbackLabel(format: string) {
+  return `${format} 미리보기`;
+}

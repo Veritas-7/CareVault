@@ -9,6 +9,7 @@ import {
   formatExportPreviewCopyUnsupportedStatus,
   formatExportPreviewDisabledActionDescription,
   formatExportPreviewDownloadDescription,
+  formatExportPreviewDownloadFallbackLabel,
   formatExportPreviewDownloadStatus,
   formatExportPreviewFreshActionDescription,
   formatExportPreviewFreshActionVisibleLabel,
@@ -111,6 +112,7 @@ describe("exportPreviewSummary", () => {
     expect(formatExportPreviewDownloadStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 다운로드됨 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
+    expect(formatExportPreviewDownloadFallbackLabel("진료 요약")).toBe("진료 요약 미리보기");
   });
 
   it("keeps stale preview action labels and titles scoped to action plus disabled reason", () => {
