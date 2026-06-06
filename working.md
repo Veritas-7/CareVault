@@ -21795,3 +21795,29 @@
 - Next durable app slice:
   - Stage only this focused slice, run staged secret checks, commit, and push if green.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
+## 2026-06-06 23:47 KST - Caregiver Closed-Question Fingerprint Scope
+
+- Improvement target:
+  - Remove another false-positive caregiver-share stale state while the required single cmux browser remains blocked.
+  - Match caregiver-share content fingerprints to the caregiver HTML export and care queue behavior for closed questions.
+- Runtime/browser notes:
+  - `surface:7` still timed out on the last `cmux browser --surface surface:7 snapshot --compact --max-depth 1` check.
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened. cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Changes:
+  - `src/caregiverExport.test.ts`: added a RED regression showing that changing only an `answered` question should not change the caregiver content fingerprint, because answered/deferred questions are not rendered in the caregiver HTML open-question section or care queue.
+  - `src/caregiverExport.ts`: filters caregiver content fingerprints to open questions only.
+  - `DESIGN.md`: documented the closed-question fingerprint contract.
+- Verification:
+  - RED `npm test -- src/caregiverExport.test.ts` failed as expected before implementation with a closed-question-only fingerprint difference.
+  - PASS `npm test -- src/caregiverExport.test.ts` => `1 passed`, `36 passed`.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => `62 passed`, `512 passed`.
+  - PASS `npm run build` => `2475` modules transformed; build completed without dirtying `dist/`.
+  - PASS `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts DESIGN.md working.md`.
+- Current state:
+  - The repo is dirty with this focused source/test/design/log slice plus the previous completed-document slice.
+  - Direct caregiver-share fresh-preview confirmation and localStorage cleanup remain blocked by cmux workspace/surface control.
+- Next durable app slice:
+  - Stage only this focused slice set, run staged secret checks, commit, and push if green.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.

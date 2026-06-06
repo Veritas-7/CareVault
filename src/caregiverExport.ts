@@ -191,7 +191,9 @@ export function buildCaregiverExportContentFingerprint(
     foodQuery: enabledSections.food ? state.foodQuery ?? "" : "",
     labResults: enabledSections.labs ? state.labResults : [],
     profile,
-    questions: enabledSections.questions ? state.questions : [],
+    questions: enabledSections.questions
+      ? state.questions.filter((question) => question.status === "open")
+      : [],
     symptoms: enabledSections.symptoms ? state.symptoms : [],
     visits: enabledSections.visits ? state.visits : [],
     vitals: enabledSections.vitals ? state.vitals : [],

@@ -746,6 +746,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-06: Made manual-save success feedback preserve the pending action message before the storage label, matching autosave feedback for document-history and other row actions.
 - 2026-06-06: Made redacted caregiver-share preview stale detection ignore hidden profile-only fields such as name, height, weight, and waist while still tracking sex, cervical-screening facts, and diabetes only when the vitals section can render diabetes-specific content.
 - 2026-06-06: Made caregiver-share content fingerprints ignore already completed documents, matching the caregiver HTML export that only renders active document actions.
+- 2026-06-06: Made caregiver-share content fingerprints ignore answered or deferred questions, matching the caregiver HTML export and care queue that only render open questions.
 
 ## Do's and Don'ts
 

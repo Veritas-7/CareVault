@@ -193,6 +193,37 @@ describe("caregiverExport", () => {
     expect(completedDocumentChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores closed question changes in caregiver content fingerprints", () => {
+    const stateWithClosedQuestion: CaregiverExportState = {
+      ...state,
+      questions: [
+        ...state.questions,
+        {
+          date: "2026-06-11",
+          topic: "완료된 질문",
+          question: "이미 답변된 질문",
+          priority: "routine",
+          status: "answered",
+          answer: "진료 때 확인 완료",
+        },
+      ],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithClosedQuestion);
+    const closedQuestionChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithClosedQuestion,
+      questions: [
+        stateWithClosedQuestion.questions[0],
+        {
+          ...stateWithClosedQuestion.questions[1],
+          question: "렌더링되지 않는 완료 질문 변경",
+          answer: "렌더링되지 않는 완료 답변 변경",
+        },
+      ],
+    });
+
+    expect(closedQuestionChangedFingerprint).toBe(fingerprint);
+  });
+
   it("checks caregiver content freshness against the preview section snapshot", () => {
     const previewSections = {
       food: true,
