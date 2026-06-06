@@ -25912,3 +25912,25 @@
 - Current state:
   - `src/App.css` and `working.md` are dirty with this verified UI polish and QA evidence.
   - Next: run final diff checks, stage only these paths, run staged secret scan, commit/push, then record post-push status.
+
+## 2026-06-07 08:47 KST - Post-Push Care Queue Empty Link Hit Target QA
+
+- Improvement target:
+  - Record post-push state for the care queue empty-state recovery link hit-target polish.
+- Verification:
+  - PASS direct same-surface QA: existing `surface:7` rendered the empty care queue recovery links with computed `min-height: 44px` and actual height `44` for all five links, then clicked the real `서류 조치 추가` recovery link to `#documents`.
+  - PASS cleanup: restored baseline `localStorage["carevault.v1"]` length `1871`, removed the session backup key, and confirmed `#care-plan` returned to saved record counts, cancer-care mode, no empty-state box, no preview dialog, no stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+  - PASS focused tests: `npm test -- src/careActionQueueEmptyState.test.ts src/careActionQueueMetric.test.ts src/careActionQueue.test.ts` => `3 passed`, `33 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `531 passed`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- src/App.css working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `c02d2b3 Improve empty queue link hit targets`.
+  - PASS push: `git push` updated `origin/main` from `0dd00a8` to `c02d2b3`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS post-push runtime: `npm run runtime:doctor` stayed clean with port `1420` free and no CareVault app/dev processes.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
