@@ -23884,6 +23884,42 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 04:46 KST - Visit Summary Download Unsupported Direct QA
+
+- Current Goal:
+  - Directly verify that the real `진료 요약 내보내기` button reports the hard unsupported download state when the WebView is Safari-like but has no usable clipboard writer.
+  - Keep the check non-mutating, use only the existing `암관리` `workspace:4` / `surface:7` browser, and restore the browser environment by reloading/recovering the same surface.
+- Context:
+  - Repo started clean and synced at `66556c3`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault runtime was running.
+  - Older direct QA covered `진료 요약 다운로드 대신 클립보드 복사됨 · 범위 최근 30일`; I did not find same-surface evidence for the hard `브라우저 다운로드/클립보드 없음` branch on the real visit-summary export action.
+  - Source checks show visit-summary export uses the shared `downloadTextFile()` fallback formatter. This slice verifies the live action label/status, no preview side effect, and localStorage non-mutation for the current range.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only `surface:7`.
+  - Capture browser-local `carevault.v1` as a baseline and verify the visit-summary export aria/title summary.
+  - In the same WebView, force a Safari-like navigator, make `navigator.clipboard.writeText` unavailable, and instrument blob/download helpers to prove no blob download is attempted.
+  - Click the real `진료 요약 내보내기` button and verify the save chip reports `진료 요약 다운로드 미지원 · 브라우저 다운로드/클립보드 없음 · 범위 최근 30일`, storage is unchanged, no export preview/dialog opens, and cleanup removes the temporary environment.
+- Direct QA results:
+  - PASS started temporary Vite on `127.0.0.1:1420` and reused only the existing `workspace:4` / `surface:7` browser.
+  - PASS setup found the live CareVault DOM at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, with the real `진료 요약 내보내기` button present.
+  - PASS setup verified visit-summary export scope before click: range select value `30d`, visible text `요약 내보내기`, aria/title `진료 요약 내보내기 · 범위 최근 30일`; browser-local baseline length was `1871`, storage keys were only `carevault.v1`, counts were `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labResults 1`.
+  - PASS forced a Safari-like user agent/vendor in the same WebView, exposed no usable `navigator.clipboard.writeText`, and instrumented `URL.createObjectURL` plus anchor `click`.
+  - PASS clicked the real `진료 요약 내보내기` button and observed save chip `진료 요약 다운로드 미지원 · 브라우저 다운로드/클립보드 없음 · 범위 최근 30일`.
+  - PASS post-click storage stayed byte-identical to the captured `carevault.v1` baseline (`1871` bytes), storage keys stayed only `carevault.v1`, range stayed `30d`, and record counts stayed unchanged.
+  - PASS unsupported branch made no blob download attempt: instrumentation showed `blobCalls: 0`, `anchorClicks: 0`, `writeAccessed: true`, and no define errors.
+  - PASS no export preview/dialog container opened; app URL stayed `http://127.0.0.1:1420/#care-plan`.
+  - PASS cleanup restored the baseline, removed same-WebView test globals, reloaded only the same surface, recovered the recurring post-reload JavaScript context lag by setting `location.href` on `surface:7`, and confirmed no test globals remained.
+  - PASS final cleanup state: storage keys only `carevault.v1`, session storage empty, no visit unsupported globals, save chip `브라우저 자동 저장됨`, range `30d`, visit-summary aria/title remained unchanged, no preview/dialog, and counts restored to `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labResults 1`.
+  - PASS browser diagnostics after cleanup: `cmux browser --surface surface:7 errors` => `No browser errors`; console contained only Vite debug connect messages.
+- Issues:
+  - `surface:7` again showed the known stale/lagging JavaScript execution context after reload even though URL/title and the accessibility snapshot showed CareVault. The first cleanup eval timed out with exit `124`; same-surface URL reassignment recovered it. No new browser, tab, pane, workspace, surface, or headless browser was opened, and cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Verification:
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS `npm run runtime:doctor`: port `1420` free, no installed/release CareVault.app process, no CareVault dev processes.
+  - PASS `npm test -- src/textFileDownload.test.ts src/visitPacket.test.ts` => `2 passed`, `27 passed`.
+  - PASS `git diff --check -- working.md`.
+- Next Steps:
+  - Run staged secret scanning, commit/push this focused QA log, then record post-push clean/sync status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
