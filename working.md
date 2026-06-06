@@ -20631,3 +20631,23 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for document update blur feedback, export preview stale-state refresh, or another low-risk patient workflow.
+
+## 2026-06-06 18:49 KST - Saved Document Update Blur Feedback cmux QA
+
+- Improvement target:
+  - Verify saved-document review status changes and next-action blur edits both persist history, show document-local feedback, update the save chip, and restore cleanly from a captured baseline.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; save chip was `브라우저 자동 저장됨`; documents `1`, deleted documents `0`; target `혈액검사 메모` had review status `care-question`, next action `백혈구 수치가 낮을 때 식사 제한 기준 질문`, original-only history tail `서류 저장`, no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS snapshot: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testDocumentUpdateBaseline"]` before mutating the row.
+  - PASS review status update: changed the saved-row `혈액검사 메모 검토 상태` select to `done`; persisted review status became `done`, control value became `done`, row showed `정리 완료`, history tail added `상태 변경` with detail `의료진 질문 → 정리 완료`, `.document-action-feedback` showed `혈액검사 메모 검사 서류 상태 정리 완료로 업데이트됨`, and save chip showed that status plus `브라우저 자동 저장됨`.
+  - PASS next-action blur: focused `혈액검사 메모 다음 조치`, entered `cmux 다음 조치 blur QA`, and blurred the textarea; persisted next action and textarea value matched the entered text, history tail added `다음 조치 변경` with detail `cmux 다음 조치 blur QA`, `.document-action-feedback` showed `혈액검사 메모 검사 서류 다음 조치 이력 기록됨 · cmux 다음 조치 blur QA`, and save chip showed the same status plus `브라우저 자동 저장됨`.
+  - Tool note: the combined cmux eval command timed out while waiting for its final predicate, but a follow-up live-state probe proved the app mutation, local feedback, history entries, autosave label, and `No browser errors`; this was a tool wait timeout, not an app failure.
+  - PASS cleanup: restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, review status/control back to `care-question`, next action/textarea back to `백혈구 수치가 낮을 때 식사 제한 기준 질문`, history tail back to original-only `서류 저장`, no document action feedback, no `cmux 다음 조치 blur QA` in storage, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, no export preview panel, no attachment dialog, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; review status and next-action labels/history remain covered by `src/documentActionLabels.test.ts` and `src/documentHistory.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for export preview stale-state refresh, deleted-document recovery/attachment cleanup, or another low-risk patient workflow.
