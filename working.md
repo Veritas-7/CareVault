@@ -21745,3 +21745,26 @@
 - Next durable app slice:
   - Stage only this focused slice, run staged secret checks, commit, and push if green.
   - Continue to defer cmux app restart/quit/force-quit/replacement recovery until the user explicitly approves it.
+
+## 2026-06-06 23:40 KST - Post-Push cmux Workspace Blocker Check
+
+- Improvement target:
+  - Recheck whether the required single CareVault browser workspace/surface recovered after the latest source slice was committed and pushed.
+- Runtime/browser notes:
+  - PASS repo sync: after commit `461e002`, `git status --short --branch` returned clean `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS shallow runtime: `cmux ping` => `PONG`, `cmux browser-status` => `enabled`, and `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
+  - BLOCKED same-surface browser read: `timeout 6 cmux browser --surface surface:7 snapshot --compact --max-depth 1` still exited `124`.
+  - BLOCKED Computer Use workspace focus: cmux UI still showed active `working.md` workspace with `암관리` in the sidebar; single-click and double-click on the existing `암관리` row did not switch the active workspace and did not open a new browser/surface.
+  - BLOCKED CLI workspace fallback: `timeout 6 cmux find-window --select 암관리` and `timeout 6 cmux list-workspaces --window window:1` both exited `124`.
+  - Runtime guard: no new browser, pane, tab, workspace, or surface was opened. cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Changes:
+  - No source code changed in this slice. This is a blocker evidence update.
+- Verification:
+  - PASS source slice already pushed: latest log shows `461e002 Scope redacted caregiver diabetes fingerprint` on `origin/main`.
+  - BLOCKED direct caregiver-share fresh-preview confirmation and localStorage cleanup remain pending until `surface:7`/`workspace:4` control recovers or the user explicitly approves cmux app recovery.
+- Current state:
+  - The repo is dirty only with this `working.md` blocker note.
+- Next durable app slice:
+  - Commit/push this blocker note after staged checks.
+  - Continue source-level improvements only while direct cmux control remains blocked.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
