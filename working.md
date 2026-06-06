@@ -21082,3 +21082,22 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for attachment recovery/preview paths with restore, caregiver-share edge cases, backup export/download behavior, or another low-risk patient workflow.
+
+## 2026-06-06 20:36 KST - Saved Attachment Preview cmux QA
+
+- Improvement target:
+  - Verify browser-preview saved-document attachment add/check/preview/close/remove behavior, including filename-only persistence, object-URL preview boundaries, confirm text, and clean baseline restore.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. `get-url` briefly reported CareVault while JS eval attached to `about:blank`; recovered by navigating the same `surface:7` back to `http://127.0.0.1:1420/#care-plan`, then confirmed title/JS/snapshot alignment before starting. Captured the full localStorage key set into `sessionStorage["carevault.__testSavedAttachmentPreviewBaseline"]`.
+  - PASS attach: clicked the real sidebar `#documents` link, clicked the real saved-row action `혈액검사 메모 검사 서류 첨부 추가 · 상태 의료진 질문`, and dispatched a real PNG `File` named `cmux-preview-qa.png` through `input[aria-label="저장된 서류 첨부 파일 재연결 입력"]`.
+  - PASS filename-only persistence: storage updated the document to `attachmentName: "cmux-preview-qa.png"`, `attachmentStorage: "browser-reference"`, `attachmentStatus: "브라우저 파일명 참조"`, with no `attachmentPath`, no `blob:` URL, and no `/Users/wj` local path in `localStorage["carevault.v1"]`; backup scope moved to `첨부 파일명 1개`; history tail added `첨부 재연결`.
+  - PASS image preview: clicked the real `미리보기` action with aria/title `혈액검사 메모 검사 서류 이미지 첨부 미리보기 · 현재 첨부 cmux-preview-qa.png · 첨부 상태 브라우저 파일명 참조`. The preview opened a modal dialog aria `혈액검사 메모 첨부 미리보기`, loaded the image from a `blob:` URL with natural width `1`, showed caption `브라우저 세션 미리보기`, and set both save chip and row feedback to `혈액검사 메모 검사 서류 이미지 미리보기 열림 · 현재 첨부 cmux-preview-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS close/check/remove: clicked `첨부 미리보기 닫기`; dialog disappeared and save chip became `이미지 미리보기 닫힘`. Clicked `첨부 확인`; browser-reference status became `파일명 참조만 저장됨`, summary stayed `첨부 복구 없음`, recovery prompt stayed hidden, and history tail added `첨부 확인`. Wrapped `window.confirm` only to record text and return true, clicked the real `첨부 제거` action, recorded confirm text `"혈액검사 메모" 첨부 파일 연결을 제거할까요?`, cleared attachment metadata, restored visible action to `첨부 추가`, and history tail added `첨부 제거`.
+  - PASS cleanup: restored the captured localStorage baseline, restored the original confirm function, removed `carevault.__testSavedAttachmentPreviewBaseline`, and reloaded the same `surface:7` because hash-only navigation left stale in-memory feedback visible after storage restore. Final baseline confirmed `#care-plan`, save chip `브라우저 자동 저장됨`, document attachment fields empty, document history count back to `1`, no `cmux-preview-qa.png`, no `blob:`, no `/Users/wj` in app storage, no sessionStorage temp keys, no attachment dialog, no export preview, no stale alert, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/attachmentPreview.test.ts src/attachmentRecovery.test.ts src/documentAttachmentActions.test.ts src/documentActionLabels.test.ts src/documentMetric.test.ts` (`5 passed`, `37 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup export/download behavior, caregiver-share edge cases, repeated attachment recovery attempts, or another low-risk patient workflow.
