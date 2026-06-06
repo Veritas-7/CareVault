@@ -21003,3 +21003,22 @@
   - The existing cmux browser surface is healthy again at `surface:7` / `#care-plan` with URL/title/snapshot/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import variants, document archive/restore with baseline restore, caregiver-share edge cases, or another low-risk patient workflow.
+
+## 2026-06-06 20:07 KST - Saved Document Archive Restore cmux QA
+
+- Improvement target:
+  - Verify the saved-document `삭제 보관` confirmation, deleted-document panel, restore action, history entries, summary counts, and baseline restore behavior.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. Started clean at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, no preview/stale/dialog, and `No browser errors`.
+  - PASS baseline/confirm recorder: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testDocumentArchiveBaseline"]` (`1893` bytes), then temporarily wrapped `window.confirm` only inside the page to record the confirmation text and return `true`.
+  - PASS archive action: clicked the real `#documents` navigation link and the real archive button with aria `혈액검사 메모 검사 서류 삭제 보관함으로 이동 · 상태 의료진 질문`. The confirm text was `"혈액검사 메모" 서류 기록을 삭제 보관함으로 이동할까요?`.
+  - PASS archived state: storage moved from `documents 1 / deletedDocuments 0` to `documents 0 / deletedDocuments 1`; latest deleted-document history became `{ kind: "archived", label: "삭제 보관", detail: "혈액검사 메모 기록을 삭제 보관함으로 이동" }`; save chip and deleted-panel feedback both showed `혈액검사 메모 검사 서류 삭제 보관함으로 이동됨 · 상태 의료진 질문`; the saved list empty-state showed `아직 저장된 서류가 없습니다...`; the summary aria became `전체 0개 · 상태 서류 없음 · 열린 조치 없음 · 첨부 복구 없음 · 삭제 보관 1개`; and the deleted panel showed `삭제 보관함 1개 복구 가능` with restore aria `혈액검사 메모 검사 서류 삭제 보관함에서 복구 · 상태 의료진 질문`.
+  - PASS restore action: clicked the real restore button. Storage returned to `documents 1 / deletedDocuments 0`; the visible document returned; deleted panel disappeared; document history tail contained `서류 저장`, `삭제 보관`, and `{ kind: "restored", label: "서류 복구", detail: "혈액검사 메모 기록을 저장된 서류로 복구" }`; save chip and feedback showed `혈액검사 메모 검사 서류 저장된 서류로 복구됨 · 상태 의료진 질문`; summary aria returned to `전체 1개 · 의료진 질문 1개 · 열린 조치 1개 · 첨부 복구 없음 · 삭제 보관 없음`.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testDocumentArchiveBaseline`, restored the original `window.confirm`, reloaded the same `surface:7`, and confirmed final baseline `#care-plan`, counts vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, lab results `1`, document history count back to `1`, no archive/restore history text in storage, no temp key, no preview, no stale alert, no dialog, no alert, real CareVault snapshot content, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/documentActionLabels.test.ts src/documentHistory.test.ts src/documentMetric.test.ts` (`3 passed`, `23 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/snapshot/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import variants, caregiver-share edge cases, attachment recovery/preview paths with restore, or another low-risk patient workflow.
