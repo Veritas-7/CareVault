@@ -24775,6 +24775,36 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 06:41 KST - Profile Sex Standard Clipboard Unsupported Direct QA
+
+- Current Goal:
+  - Fill the direct browser evidence gap for the profile sex-standard copy unsupported branch.
+  - Verify that the real `성별 기준 복사` button preserves the sex label, standard count, and evidence count in both local panel feedback and the top save chip when the browser exposes no clipboard API.
+- Context:
+  - Source tests already covered `formatProfileMetricSexStandardCopyUnsupportedStatus`.
+  - Working log search found direct browser evidence for dashboard/range standard copy unsupported, but not for `프로필 성별 기준 복사 미지원`.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `pane:8` / `surface:7` browser.
+  - In the same WebView, set `navigator.clipboard` to `undefined`, click the real `프로필 성별 기준 복사 · 여성 · 5개 기준 · 근거 5개` button, and read both UI feedback targets.
+  - Reload the same surface to clear the temporary browser JS override, then verify the page and browser diagnostics are clean.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS target found: `cmux browser --surface surface:7 goto http://127.0.0.1:1420/#care-plan --snapshot-after` showed the real button `프로필 성별 기준 복사 · 여성 · 5개 기준 · 근거 5개` and the paired dashboard standard copy button.
+  - PASS unsupported setup: in the same WebView, `Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true })` returned `navigator.clipboard === undefined`.
+  - PASS unsupported click: clicked `button.metric-profile-copy-button`; `.metric-profile-copy-feedback` showed `프로필 성별 기준 복사 미지원 · 브라우저 클립보드 없음 · 여성 · 5개 기준 · 근거 5개`.
+  - PASS top status parity: `.save-status-chip` showed the same `프로필 성별 기준 복사 미지원 · 브라우저 클립보드 없음 · 여성 · 5개 기준 · 근거 5개`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS cleanup: reloaded only `surface:7`; confirmed URL `http://127.0.0.1:1420/#care-plan`, title `CareVault`, empty `.metric-profile-copy-feedback`, top save chip `브라우저 자동 저장됨`, and `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/healthStandards.test.ts` => `1 passed`, `30 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 06:36 KST - Common Lab Preset Sex-Change Direct QA
 
 - Current Goal:
