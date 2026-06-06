@@ -6193,18 +6193,21 @@ function App() {
                         </button>
                         <div className="inline-actions">
                           {(["open", "answered", "deferred"] as QuestionStatus[]).map((status) => {
+                            const isCurrentStatus = question.status === status;
                             const statusButtonLabels = buildQuestionStatusButtonLabels(
                               question.topic,
                               status,
+                              isCurrentStatus,
                             );
 
                             return (
                               <button
                                 type="button"
-                                className={question.status === status ? "active" : ""}
+                                className={isCurrentStatus ? "active" : ""}
                                 onClick={() => updateQuestionStatus(question.id, status)}
                                 aria-label={statusButtonLabels.ariaLabel}
                                 title={statusButtonLabels.title}
+                                disabled={isCurrentStatus}
                                 key={status}
                               >
                                 {statusButtonLabels.visibleLabel}

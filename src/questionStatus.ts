@@ -27,11 +27,14 @@ function formatQuestionStatusContext(topic: string) {
 export function buildQuestionStatusButtonLabels(
   topic: string,
   status: QuestionStatus,
+  isCurrent = false,
 ): QuestionStatusButtonLabels {
   const context = formatQuestionStatusContext(topic);
   const statusLabel = questionStatusLabel[status];
   const visibleLabel = questionStatusButtonVisibleLabel[status];
-  const actionLabel = `${context} 상태를 ${statusLabel}로 변경`;
+  const actionLabel = isCurrent
+    ? `${context} 현재 상태: ${statusLabel}`
+    : `${context} 상태를 ${statusLabel}로 변경`;
 
   return {
     ariaLabel: actionLabel,

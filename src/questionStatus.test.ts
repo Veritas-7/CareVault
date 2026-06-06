@@ -22,6 +22,11 @@ describe("questionStatus", () => {
       title: "혈액검사 질문 상태를 확인 필요로 변경",
       visibleLabel: "확인 필요",
     });
+    expect(buildQuestionStatusButtonLabels("혈액검사", "open", true)).toEqual({
+      ariaLabel: "혈액검사 질문 현재 상태: 확인 필요",
+      title: "혈액검사 질문 현재 상태: 확인 필요",
+      visibleLabel: "확인 필요",
+    });
   });
 
   it("keeps Korean question status labels stable", () => {

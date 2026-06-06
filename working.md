@@ -19066,3 +19066,39 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for saved-question status/priority/copy flows or another visible action-label/state mismatch.
   - If desktop-runtime verification is in scope, start a clean Tauri dev session and rerun `npm run runtime:doctor:dev`.
+
+## 2026-06-06 09:22 KST - Saved Question Current Status Button cmux QA
+
+- Improvement target:
+  - Continue the saved-question flow sweep in the existing right cmux browser.
+  - Source and cmux DOM review found the already-active `확인 필요` question status button was still enabled and labelled `혈액검사 질문 상태를 확인 필요로 변경`, which exposed a misleading no-op action.
+  - `DESIGN.md` expects saved-question status buttons and status feedback to expose the current answer status clearly.
+- Change:
+  - Updated `buildQuestionStatusButtonLabels()` in `src/questionStatus.ts` to accept an `isCurrent` flag and emit `현재 상태: ...` labels for the active status.
+  - Updated saved question status buttons in `src/App.tsx` so the active status button is disabled and uses the current-state label while the other status buttons remain actionable.
+  - Extended `src/questionStatus.test.ts` to lock the current-state accessible label/title.
+  - Added a `DESIGN.md` decision-log entry for current saved-question status buttons.
+- Runtime/browser notes:
+  - PASS: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: baseline was the saved `혈액검사` question with status `open`.
+  - PASS: current `확인 필요` button rendered disabled with aria label `혈액검사 질문 현재 상태: 확인 필요`; `답변 완료` and `보류 처리` remained enabled.
+  - PASS: clicking `답변 완료` changed browser storage status to `answered`, showed local `.question-action-feedback[role=status]` text `혈액검사 질문 상태: 답변 완료`, and made only the `답변 완료` button disabled with aria label `혈액검사 질문 현재 상태: 답변 완료`.
+  - PASS: clicking `보류 처리` changed status to `deferred`, showed local feedback `혈액검사 질문 상태: 보류`, and made only the `보류 처리` button disabled with aria label `혈액검사 질문 현재 상태: 보류`.
+  - PASS: clicking `확인 필요` changed status back to `open`, showed local feedback `혈액검사 질문 상태: 확인 필요`, and made only the `확인 필요` button disabled with aria label `혈액검사 질문 현재 상태: 확인 필요`.
+  - PASS cleanup: restored the temporary browser localStorage baseline, removed the test-only backup key, reloaded the same surface, and verified 1 saved question, 0 generated `검사 수치` questions, no question action feedback, and current `확인 필요` button disabled.
+  - PASS: screenshot saved at `/tmp/carevault-surface7-question-status-current-button-pass.png`.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - PASS: `git diff --check -- src/App.tsx src/questionStatus.ts src/questionStatus.test.ts DESIGN.md working.md`.
+  - PASS: `npm run test -- src/questionStatus.test.ts`, 3 tests.
+  - PASS: `npm run test`, 61 files and 493 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - No git staging, commit, or push was performed.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for saved-question priority/copy flows or another visible action-label/state mismatch.
+  - If desktop-runtime verification is in scope, start a clean Tauri dev session and rerun `npm run runtime:doctor:dev`.
