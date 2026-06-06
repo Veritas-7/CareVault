@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { appendDocumentHistory, type DocumentHistoryEntry } from "./documentHistory";
+import {
+  appendDocumentHistory,
+  flushPendingDocumentNextActionHistories,
+  hasDocumentNextActionChanged,
+  type DocumentHistoryEntry,
+} from "./documentHistory";
 
 const entry = (id: string): DocumentHistoryEntry => ({
   id,
@@ -39,5 +44,41 @@ describe("documentHistory", () => {
       "2",
       "3",
     ]);
+  });
+
+  it("detects meaningful next-action changes after trimming whitespace", () => {
+    expect(hasDocumentNextActionChanged(" 다음 진료 질문 ", "다음 진료 질문")).toBe(false);
+    expect(hasDocumentNextActionChanged("다음 진료 질문", "검사 결과 확인")).toBe(true);
+    expect(hasDocumentNextActionChanged("다음 진료 질문", "  ")).toBe(true);
+  });
+
+  it("flushes pending next-action histories for changed documents only", () => {
+    const documents = [
+      { id: "doc-1", nextAction: "검사 결과 확인", history: [entry("1")] },
+      { id: "doc-2", nextAction: " 기존 질문 ", history: [entry("2")] },
+      { id: "doc-3", nextAction: "새 질문", history: [entry("3")] },
+    ];
+
+    const result = flushPendingDocumentNextActionHistories(
+      documents,
+      {
+        "doc-1": "다음 진료 질문",
+        "doc-2": "기존 질문",
+        "missing-doc": "삭제된 서류",
+      },
+      (document) => ({
+        ...entry(`${document.id}-next-action`),
+        detail: document.nextAction.trim() || "다음 조치 비움",
+      }),
+    );
+
+    expect(result.baselines).toEqual({ "missing-doc": "삭제된 서류" });
+    expect(result.changedDocuments.map((document) => document.id)).toEqual(["doc-1"]);
+    expect(result.documents[0].history.map((item) => item.detail)).toEqual([
+      "조치 1",
+      "검사 결과 확인",
+    ]);
+    expect(result.documents[1].history).toEqual(documents[1].history);
+    expect(result.documents[2]).toBe(documents[2]);
   });
 });

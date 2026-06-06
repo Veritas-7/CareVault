@@ -260,6 +260,8 @@ import {
 } from "./entryValidation";
 import {
   appendDocumentHistory,
+  flushPendingDocumentNextActionHistories,
+  hasDocumentNextActionChanged,
   type DocumentHistoryEntry,
   type DocumentHistoryKind,
 } from "./documentHistory";
@@ -2118,7 +2120,7 @@ function App() {
       documentActionBaselinesRef.current[document.id] ??
       documentActionBaselines[document.id] ??
       document.nextAction;
-    if (previous.trim() === nextAction.trim()) {
+    if (!hasDocumentNextActionChanged(previous, nextAction)) {
       clearDocumentActionBaseline(document.id);
       return;
     }
@@ -2140,6 +2142,30 @@ function App() {
     const feedback = formatDocumentNextActionHistoryStatusLabel(document, nextAction);
     setDocumentActionFeedback({ documentId: document.id, message: feedback });
     setActionSaveLabel(feedback);
+  };
+
+  const flushPendingDocumentNextActionHistory = () => {
+    const baselines = documentActionBaselinesRef.current;
+    const result = flushPendingDocumentNextActionHistories(state.documents, baselines, (document) =>
+      createDocumentHistory(
+        "next-action",
+        "다음 조치 변경",
+        document.nextAction.trim() || "다음 조치 비움",
+      ),
+    );
+
+    documentActionBaselinesRef.current = result.baselines;
+    setDocumentActionBaselines(result.baselines);
+    if (!result.changedDocuments.length) return state;
+
+    const nextState = { ...state, documents: result.documents };
+    setState(nextState);
+    const changedDocument = result.changedDocuments[result.changedDocuments.length - 1];
+    setDocumentActionFeedback({
+      documentId: changedDocument.id,
+      message: formatDocumentNextActionHistoryStatusLabel(changedDocument, changedDocument.nextAction),
+    });
+    return nextState;
   };
 
   const attachDocumentFile = async () => {
@@ -3335,8 +3361,11 @@ function App() {
       : null;
 
   const saveNow = () => {
+    const stateToSave = flushPendingDocumentNextActionHistory();
+    const normalizedMirrorToSave =
+      stateToSave === state ? normalizedMirror : buildNormalizedCareVaultMirror(stateToSave, foodAssessment);
     persistedSaveQueue.enqueue({
-      run: () => savePersistedState(state, { normalizedMirror }),
+      run: () => savePersistedState(stateToSave, { normalizedMirror: normalizedMirrorToSave }),
       onSuccess: async (backend) => {
         setStorageBackend(backend);
         setSaveLabel(formatStorageSavedLabel(backend));

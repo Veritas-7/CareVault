@@ -742,6 +742,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-06: Made export-preview close feedback report the closed preview format, line, character, byte, and source-marker summary instead of leaving the previous generated-preview status visible.
 - 2026-06-06: Made saved-document reattachment failures show the same document-specific feedback inside the affected row and in the global save chip, matching successful reattachment feedback.
 - 2026-06-06: Made saved-document attachment image-load and removal failures also update the affected row feedback, so recovery prompts, card status, and global save feedback stay aligned.
+- 2026-06-06: Made manual save flush pending saved-document next-action edits into the document history before persisting, covering focused textareas that have not yet blurred.
 
 ## Do's and Don'ts
 

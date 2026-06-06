@@ -21430,3 +21430,34 @@
   - The existing CareVault browser surface remains `surface:7` / `#care-plan` at the restored baseline.
 - Next durable app slice:
   - Continue the cmux direct-click sweep with another non-duplicate low-risk workflow, such as saved-document delete/restore with attachment metadata, document review/next-action history editing, or export-preview stale guards.
+
+## 2026-06-06 22:30 KST - Document Next-Action Manual Save Flush
+
+- Improvement target:
+  - Continue the saved-document editing QA path in the same CareVault `surface:7`.
+  - Make manual save durable for a focused saved-document `다음 조치` textarea whose value has changed but has not yet blurred.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `surface:7`; no new browser pane/tab/surface was opened and cmux was not restarted or terminated.
+  - PASS reproduction before patch: changed `혈액검사 메모 검토 상태` from `의료진 질문` to `정리 완료`; the row/global feedback showed `혈액검사 메모 검사 서류 상태 정리 완료로 업데이트됨`, the care queue dropped from 8 to 7 items, and document history gained `상태 변경 · 의료진 질문 → 정리 완료`.
+  - REPRO gap: filled `혈액검사 메모 다음 조치` with `cmux QA 후 원상복구 확인`; selector `Tab` and selector click on `현재 CareVault 기록 수동 저장` saved the new text, but the textarea remained focused in WKWebView automation and no `다음 조치 변경` history entry or next-action row feedback was flushed.
+  - PASS restore before editing: restored the original `carevault.v1` from `carevault.__testDocumentActionBaseline`, removed all `carevault.__test*` keys, and kept only the existing single browser surface.
+  - PASS storage cleanup: during the post-patch setup check, `carevault.v1` still reflected the earlier reproduction values (`정리 완료`, `cmux QA 후 원상복구 확인`). Restored `doc-1` to `의료진 질문`, `백혈구 수치가 낮을 때 식사 제한 기준 질문`, and the original single `서류 저장` history entry, then removed all `carevault.__test*` keys.
+  - BLOCKED post-patch direct browser re-test: after source/HMR reload, `surface:7` again entered the blank-document/RPC-focus problem. `snapshot` reported an empty CareVault document while `get-url`/`get title` still reported `http://127.0.0.1:1420/` and `CareVault`; `is-webview-focused`, `focus-webview`, and later reload/wait attempts timed out. Server truth stayed healthy with `curl -I --max-time 5 http://127.0.0.1:1420/` returning HTTP `200`. No cmux restart/kill/quit and no new browser were attempted.
+- Changes:
+  - `src/documentHistory.ts`: added `hasDocumentNextActionChanged()` and `flushPendingDocumentNextActionHistories()` so trimmed no-op next-action edits and manual-save flush behavior share tested rules.
+  - `src/App.tsx`: reused that comparison in the blur handler and added `flushPendingDocumentNextActionHistory()` so manual save records pending saved-document next-action history before persisting.
+  - `src/App.tsx`: `saveNow()` now saves the flushed state and normalized mirror when pending next-action history is added.
+  - `src/documentHistory.test.ts`: added whitespace-trim coverage for meaningful next-action change detection and pending next-action history flush coverage.
+  - `DESIGN.md`: documented the manual-save flush contract for focused saved-document textareas.
+- Verification:
+  - PASS `npm test -- src/documentHistory.test.ts src/documentActionLabels.test.ts` (`2 passed`, `22 passed`).
+  - PASS `npm run typecheck`.
+  - PASS `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS `git diff --check -- src/App.tsx src/documentHistory.ts src/documentHistory.test.ts DESIGN.md`.
+  - PASS server check: `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
+- Current state:
+  - The repo is dirty with `src/App.tsx`, `src/documentHistory.ts`, `src/documentHistory.test.ts`, `DESIGN.md`, and this `working.md` entry.
+  - The code path is source-level and unit/type verified; direct post-patch cmux click verification is pending until the same `surface:7` recovers again.
+- Next durable app slice:
+  - Commit/push this focused fix after staged secret checks.
+  - When `surface:7` responds again, re-run the saved-document next-action focused-textarea manual-save flow and verify the `다음 조치 변경` history entry appears before moving to delete/restore or export-preview stale-guard QA.

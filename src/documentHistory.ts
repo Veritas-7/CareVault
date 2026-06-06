@@ -16,6 +16,12 @@ export type DocumentHistoryEntry = {
   detail: string;
 };
 
+export type PendingDocumentNextActionTarget = {
+  id: string;
+  nextAction: string;
+  history?: DocumentHistoryEntry[];
+};
+
 export function appendDocumentHistory(
   history: DocumentHistoryEntry[] | undefined,
   entry: DocumentHistoryEntry,
@@ -32,4 +38,45 @@ export function appendDocumentHistory(
   }
 
   return [...currentHistory, entry].slice(-maxItems);
+}
+
+export function hasDocumentNextActionChanged(previous: string, next: string) {
+  return previous.trim() !== next.trim();
+}
+
+export function flushPendingDocumentNextActionHistories<T extends PendingDocumentNextActionTarget>(
+  documents: T[],
+  baselines: Record<string, string>,
+  createEntry: (document: T) => DocumentHistoryEntry,
+) {
+  if (!Object.keys(baselines).length) {
+    return { documents, baselines, changedDocuments: [] as T[] };
+  }
+
+  const nextBaselines = { ...baselines };
+  const changedDocuments: T[] = [];
+  const nextDocuments = documents.map((document) => {
+    if (!Object.prototype.hasOwnProperty.call(baselines, document.id)) {
+      return document;
+    }
+
+    const previous = baselines[document.id] ?? document.nextAction;
+    delete nextBaselines[document.id];
+    if (!hasDocumentNextActionChanged(previous, document.nextAction)) {
+      return document;
+    }
+
+    const nextDocument = {
+      ...document,
+      history: appendDocumentHistory(document.history, createEntry(document)),
+    };
+    changedDocuments.push(nextDocument);
+    return nextDocument;
+  });
+
+  return {
+    documents: nextDocuments,
+    baselines: nextBaselines,
+    changedDocuments,
+  };
 }
