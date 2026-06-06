@@ -22986,6 +22986,48 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 02:59 KST - Caregiver Memo Preset Controls Direct QA
+
+- Current Goal:
+  - Verify the caregiver-share cover-memo preset buttons, reset button, preset selector labels, summary chips, status feedback, dimensions, cleanup, and browser diagnostics through the real existing `암관리` `surface:7` browser.
+  - Keep this slice limited to direct UI verification unless a real bug is found.
+- Context:
+  - Repo started clean and synced at `795e320` (`Log CareVault fever draft QA status`).
+  - `DESIGN.md` and `README.md` require caregiver-share memo preset buttons to visibly show `식사 적용`, `증상 적용`, and `서류 적용`, expose intent labels/titles, preserve share-scope summary chips, and keep memo preset/reset/select controls at least 40px high in the constrained right-pane layout.
+  - `src/App.tsx`, `src/App.css`, `src/caregiverShareSettings.ts`, and `src/caregiverShareSettings.test.ts` were reread before selecting this non-duplicate direct QA slice.
+- Progress:
+  - Selected caregiver memo preset/reset/select QA because recent direct slices covered standards filters/drafts, sidebar navigation, care queue, chart, visit, export stale paths, food/lab/question/document filters, and caregiver preview stale behavior, but the visible caregiver memo preset controls and reset affordance still need a current real-click pass.
+  - Reconfirmed the existing `암관리` `surface:7` browser as `CareVault` at `http://127.0.0.1:1420/#care-plan`; no new browser, pane, tab, workspace, surface, or headless browser was opened.
+  - Captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverMemoPresetBaseline"]` before direct clicks.
+  - PASS initial controls: memo preset buttons were visibly `식사 적용`, `증상 적용`, and `서류 적용`; aria/title labels were `보호자 공유본 식사/증상/서류 메모 프리셋 적용`; each preset button was 40px high; memo textarea was 61px high; reset button was 40px high and disabled with `보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다`; preset select was 40px high with `공유 프리셋` selected and aria/title `보호자 공유 설정 프리셋 · 현재 프리셋 미선택 · 선택하면 해당 공유 설정을 적용합니다`.
+  - PASS initial summary: `caregiver-settings-summary` announced `보호자 공유 설정 요약 공유 의도 직접 설정 · 프로필 표시 · 전달 메모 없음 · 포함 7개 · 제외 0개`, with visible chips `의도 직접 설정`, `프로필 표시`, `메모 없음`, `포함 7개`, and `제외 없음`.
+  - PASS real `식사 적용` click: cover memo became `오늘은 식사량, 수분 섭취, 불편했던 음식을 중심으로 봐주세요.`, status became `전달 메모 프리셋 적용: 식사 · 브라우저 자동 저장됨`, summary changed to `메모 포함`, and reset became enabled with the full current share-scope label.
+  - PASS real `증상 적용` click: cover memo became `최근 증상 변화와 약 복용 후 반응을 같이 확인해주세요.`, status became `전달 메모 프리셋 적용: 증상 · 브라우저 자동 저장됨`, and summary stayed `메모 포함`.
+  - PASS real `서류 적용` click: cover memo became `다음 진료 전에 확인할 서류와 질문만 먼저 정리해주세요.`, status became `전달 메모 프리셋 적용: 서류 · 브라우저 자동 저장됨`, and reset stayed enabled.
+  - PASS real preset select change to `진료 준비`: select value became `clinic-prep`, aria/title became `보호자 공유 설정 프리셋 · 현재 진료 준비 · 선택하면 해당 공유 설정을 적용합니다`, memo became `다음 진료 전에 확인할 질문, 검사 수치, 서류, 예약만 먼저 정리해주세요.`, summary became `의도 진료 준비`, `프로필 표시`, `메모 포함`, `포함 4개`, `제외 3개`, and section summary announced included `진료, 질문, 서류, 검사` with excluded `증상, 음식, 혈압·혈당·체온`.
+  - PASS real reset click: memo cleared, preset select returned to empty, reset became disabled again, summary returned to `의도 직접 설정`, `프로필 표시`, `메모 없음`, `포함 7개`, `제외 없음`, and status became `보호자 공유 설정 초기화됨 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개 · 브라우저 자동 저장됨`.
+  - PASS non-mutating guard: counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, and labResults `1`; memo/select/reset interactions did not create health records.
+  - Restored the captured baseline, removed the temporary session key, reloaded the same surface, and confirmed empty memo, default summary, no `carevault.__test*` keys, no preview, no dialog, and save chip `브라우저 자동 저장됨`.
+- Changes:
+  - `working.md` only; no source patch needed because the caregiver memo preset, reset, and preset select controls matched the documented contract.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, same-surface baseline eval, and DOM readiness: existing `암관리` CareVault surface confirmed at `#care-plan`.
+  - PASS real direct clicks: `식사 적용`, `증상 적용`, `서류 적용`, native preset select value `clinic-prep`, and `공유 설정 초기화` all updated the expected UI state and status feedback.
+  - PASS final cleanup eval: URL `http://127.0.0.1:1420/#care-plan`, empty memo, preset select empty, reset disabled, default share summary, default section summary, no `carevault.__test*` keys, no preview, no dialog, and record counts restored.
+  - PASS `timeout 12 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 12 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+  - PASS `npm test -- src/caregiverShareSettings.test.ts`: 1 file and 26 tests.
+  - PASS `npm run runtime:doctor` after stopping Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `git diff --check -- working.md`.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stage only `working.md`, run staged diff and secret checks, then commit and push this QA log.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
