@@ -20217,3 +20217,23 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for symptom required-field specificity, profile tracking toggles, or another low-risk patient workflow.
+
+## 2026-06-06 17:44 KST - Blood Pressure Tracking Toggle cmux QA
+
+- Improvement target:
+  - Verify the profile `혈압 추적` toggle exposes the correct current-state and next-action labels across off/on transitions.
+  - Confirm toggling the mode updates only the profile flag and leaves health-record counts unchanged after snapshot restore.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: `혈압 추적` was checked with aria/title `혈압 추적 켜짐 · 선택 해제하면 끕니다`; stored profile `hypertension` was `true`, mode chip stayed `암환자 관리 모드`, and save chip was `브라우저 자동 저장됨`.
+  - PASS off transition: clicked the same checkbox; it became unchecked, aria/title changed to `혈압 추적 꺼짐 · 선택하면 켭니다`, stored profile `hypertension` became `false`, and save chip showed `혈압 추적 꺼짐 · 브라우저 자동 저장됨`.
+  - PASS on transition: clicked again; it returned to checked, aria/title changed back to `혈압 추적 켜짐 · 선택 해제하면 끕니다`, stored profile `hypertension` became `true`, and save chip showed `혈압 추적 켜짐 · 브라우저 자동 저장됨`.
+  - PASS non-mutating guard: stored count deltas stayed `0` for vitals/questions/symptoms/visits/documents/deleted documents/labs/food; the mode chip stayed `암환자 관리 모드` throughout.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed load-state `OK`, URL `http://127.0.0.1:1420/#care-plan`, app-shell snapshot with `브라우저 자동 저장됨`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; toggle current-state/next-action label formatting remains covered by `src/profileModeToggle.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for symptom required-field specificity, caregiver export preview, or another low-risk patient workflow.
