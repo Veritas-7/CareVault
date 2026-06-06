@@ -24342,6 +24342,43 @@
   - Source tree is clean and synced after the focused QA-log push.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 05:52 KST - Caregiver Document Category Direct QA
+
+- Current Goal:
+  - Resolve the previously blocked direct browser confirmation for caregiver-share document-category fingerprints.
+  - Verify the next-action-scoped category contract: if an active document already has `nextAction`, changing only its category should not change rendered caregiver preview output, while changing the rendered `nextAction` still stales an open preview.
+- Context:
+  - `2026-06-07 00:05 KST - Caregiver Document Category Fingerprint Scope` added the source/test/design contract while direct same-surface cmux control was blocked.
+  - The saved document card exposes real review-status and `nextAction` controls, but does not expose a saved-document category edit control. Category-only setup therefore requires same-surface browser storage mutation plus reload; positive stale guard uses the real saved-document `nextAction` textarea.
+  - Repo is clean and synced before this QA; `npm run runtime:doctor` reports port `1420` free and no CareVault app/dev processes.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture browser-local `carevault.v1` baseline in `sessionStorage`.
+  - Generate a baseline caregiver preview with the real `보호자 공유본 미리보기` action and capture the preview summary plus a diagnostic HTML hash.
+  - Mutate only `doc-1.category` from `lab` to another category in browser storage, reload/recover only `surface:7`, generate a fresh caregiver preview with the real action, and confirm the summary/rendered category exposure stays stable. Treat the whole-HTML hash as diagnostic only if generated markup is volatile.
+  - Use the real saved-document `nextAction` textarea to change the rendered next action while the preview is open; confirm the stale alert appears and copy/print/download are disabled until `공유 기록 반영`.
+  - Restore the captured browser-local baseline, remove temporary keys, reload/recover only `surface:7`, and confirm no preview/dialog/stale or QA document-category residue.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS baseline capture: stored browser-local `carevault.v1` in `sessionStorage["carevault.__testCaregiverDocumentCategoryBaseline"]`; baseline active document was `doc-1` (`혈액검사 메모`) with `category: "lab"`, `reviewStatus: "care-question"`, and rendered `nextAction: "백혈구 수치가 낮을 때 식사 제한 기준 질문"`.
+  - PASS baseline caregiver preview: clicked the real `보호자 공유본 미리보기` action; preview opened with no stale alert, copy/print/download enabled with `98줄 · 49,711자 · 72,883B · 근거/출처 111개`, and the rendered HTML included the next action while not exposing the `lab` category label as a rendered fallback.
+  - PASS category-only render boundary: mutated only `doc-1.category` from `lab` to `imaging` in the same browser storage, reloaded only `surface:7`, and clicked the real preview action again. The fresh preview had no stale alert, the same action summary `98줄 · 49,711자 · 72,883B · 근거/출처 111개`, still rendered the next action, and did not expose `영상 검사` or `imaging` in the preview HTML. Whole-HTML hashes were not used as pass/fail evidence because repeated same-state preview generation changed the hash while length and summary stayed stable, indicating volatile generated markup.
+  - PASS rendered next-action positive stale guard: used the real saved-document `혈액검사 메모 다음 조치` textarea to change next action to `cmux 문서 조치 QA 변경`. The open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 기록 변경 감지`, exposed `공유 기록 반영`, and disabled copy/print/download with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.` in each aria/title.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled with `98줄 · 49,695자 · 72,823B · 근거/출처 111개`, the refreshed preview contained `cmux 문서 조치 QA 변경`, removed the previous next action, and still did not expose `영상 검사` or `imaging`.
+  - PASS cleanup: restored the captured baseline, removed temporary session keys, reloaded/recovered only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, `doc-1` restored to `category: "lab"` and original next action, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no QA next-action text in storage or DOM, no preview/dialog/stale alert, and `No browser errors`.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS focused tests: `npm test -- src/caregiverExport.test.ts src/documentMetric.test.ts src/documentActionLabels.test.ts src/documentHistory.test.ts src/documentFilterActions.test.ts` => `5 passed`, `82 passed`.
+  - PASS diff check: `git diff --check -- working.md`.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 05:36 KST - Post-Push Caregiver Old Normal Lab QA
 
 - Improvement target:
