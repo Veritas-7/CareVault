@@ -20258,3 +20258,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver export preview, backup import restore details, or another low-risk patient workflow.
+
+## 2026-06-06 17:49 KST - Question Answer Memo Copy cmux QA
+
+- Improvement target:
+  - Verify a saved question with an answer memo keeps the memo in the visible row, copy button scope, local copy feedback, and copied visit-question packet.
+  - Confirm the temporary question is removed by snapshot restore without changing other health records.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: stored counts were vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`, food `0`.
+  - PASS ready state: filled topic `답변 메모 복사 QA`, question `진료실 안내를 다음 방문 전에 다시 확인할까요?`, and answer memo `검사 전날부터 기록하기 cmux QA`; the add action aria became `진료 전 질문 추가 · 답변 메모 복사 QA 질문 입력 준비됨 · 우선순위 다음 진료`.
+  - PASS save: clicked `질문 추가`; local feedback showed `답변 메모 복사 QA 질문 추가됨 · 우선순위 다음 진료`, save chip showed the same action plus `브라우저 자동 저장됨`, and only `questions` increased by `1`.
+  - PASS saved row display: the temporary saved question had date `2026-06-06`, priority `next-visit`, status `open`, answer memo `검사 전날부터 기록하기 cmux QA`, visible answer memo row text `답변 메모검사 전날부터 기록하기 cmux QA`, and aria `답변 메모 복사 QA 질문 답변 메모`.
+  - PASS copy scope: the saved row copy action aria was `답변 메모 복사 QA 질문 복사 · 2026-06-06 · 다음 진료 · 확인 필요 · 근거 없음 · 답변 메모 포함`.
+  - PASS clipboard packet: temporarily intercepted `navigator.clipboard.writeText`, clicked `질문 복사`, and captured text starting with `[진료 질문]`; it included summary `답변 메모 포함` and line `답변 메모: 검사 전날부터 기록하기 cmux QA`.
+  - PASS copy feedback: local row feedback and save chip both showed `답변 메모 복사 QA 질문 복사됨 · 2026-06-06 · 다음 진료 · 확인 필요 · 근거 없음 · 답변 메모 포함`.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed load-state `OK`, URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, stored question count back to `1`, temporary topic absent, no question feedback rows, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; answer-memo clipboard formatting remains covered by `src/questionClipboard.test.ts`, and answer-memo display labels by `src/questionDisplay.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
