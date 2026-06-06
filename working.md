@@ -23632,6 +23632,41 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 04:18 KST - Standards Coverage Disclosure Direct QA
+
+- Current Goal:
+  - Directly verify the Korean adult health-standards `적용 범위` disclosure opens, exposes the full coverage/source/applicability list, and collapses cleanly without mutating stored CareVault data.
+  - Use only the existing `암관리` `workspace:4` / `surface:7` browser and restore the disclosure to the closed state after the check.
+- Context:
+  - Repo started clean and synced at `5a23571`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault dev/release process was running.
+  - The implementation uses native `<details class="standards-coverage">` with summary `적용 범위`, status marks, sex-applicability badges, and official source links.
+- Duplicate-slice review:
+  - Recent same-surface standards QA covered quick-filter copy success, rejected-write failure, and clipboard-unavailable failure.
+  - I did not find a recovered same-surface direct-click note for opening/collapsing the health-standards coverage disclosure itself.
+- Planned verification:
+  - Start a temporary Vite runtime on `127.0.0.1:1420` and reuse only `surface:7`.
+  - Capture browser-local `carevault.v1` as a baseline.
+  - Click the real `적용 범위` summary, verify the disclosure `open` state, full coverage item count, presence of official source links, sex-applicability badges, representative labels such as `BMI 기준`, `HDL 성별 기준`, and `체온·감염 연락 기준`, and unchanged storage.
+  - Click the same summary again to collapse, verify `open === false`, unchanged storage, no feedback/dialog pollution, and clean browser diagnostics.
+- Progress:
+  - PASS started Vite on `127.0.0.1:1420` and reused only existing `workspace:4` / `surface:7`; no new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS baseline before click: `details.standards-coverage` was closed, summary text `적용 범위`, summary aria/title `한국 성인 건강 기준 적용 범위 보기 · 성별 적용과 공식 기준 경계 확인`, storage keys only `carevault.v1`, and no standards copy feedback was present.
+  - PASS clicked the real `details.standards-coverage > summary` control and verified `open === true`.
+  - PASS opened disclosure evidence: `27` coverage rows, `26` official HTTPS source links, `27` sex-applicability badges, and status labels `사용자 기준 우선`, `입력 보조`, and `판정 적용`.
+  - PASS representative labels present in the disclosure included `한국 성인 BMI`, `HDL 콜레스테롤 프리셋`, `헤모글로빈 성별 프리셋`, and `체온·감염 연락 기준`.
+  - PASS first source links exposed official-source labels and URLs such as `대한비만학회 비만 진료지침 2022`, `질병관리청 국가건강정보포털 고혈압`, `질병관리청 국가건강정보포털 저혈압`, and `대한당뇨병학회 당뇨병 관리 목표`.
+  - PASS clicked the same summary again and verified `open === false`, storage remained byte-identical to the captured `carevault.v1` baseline, no preview/dialog opened, and the save chip stayed `브라우저 자동 저장됨`.
+  - PASS removed `carevault.__testStandardsCoverageBaseline`; final session test keys were empty, storage keys remained only `carevault.v1`, and the disclosure remained closed.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite debug connection logs.
+  - PASS stopped the temporary Vite runtime after the original exec session stdin had closed by sending the Ctrl-C equivalent `SIGINT` to the specific Vite PID `73627`; `npm run runtime:doctor` then confirmed port `1420` was free and no CareVault dev/release processes were running.
+  - PASS focused automated checks: `npm test -- src/healthStandards.test.ts` passed `1` file / `30` tests; `git diff --check -- working.md` passed.
+- Changes:
+  - `working.md`: recorded direct same-surface QA evidence for the health-standards coverage disclosure open/collapse flow.
+- Next Steps:
+  - Stop the temporary Vite runtime.
+  - Run `npm run runtime:doctor`, `npm test -- src/healthStandards.test.ts`, and `git diff --check -- working.md`.
+  - Stage only `working.md`, run staged secret scanning, commit/push this QA log, then record and push a post-push status note.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
