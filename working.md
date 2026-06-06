@@ -21404,3 +21404,29 @@
   - This slice is source-level verified only; the same single `surface:7` must recover before claiming a fresh direct-click browser pass.
 - Next durable app slice:
   - After commit/push, recover or wait for `surface:7` and click-test saved attachment image-load, removal-failure, and reattachment-failure row feedback in the same existing CareVault browser.
+
+## 2026-06-06 22:19 KST - Saved Attachment Failure cmux QA Recovery
+
+- Improvement target:
+  - Resume the deferred single-surface browser QA for saved-document attachment failure feedback after `surface:7` recovered.
+  - Verify the row-level feedback changes from the two prior source-level slices with real button clicks, without opening a new browser pane/tab/surface.
+- Runtime/browser notes:
+  - PASS recovery: `cmux ping`, `cmux browser --surface surface:7 get-url`, `get title`, and `errors list` all responded again. The existing browser stayed at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, with `No browser errors`.
+  - PASS setup: saved the current `carevault.v1` state into a temporary `carevault.__testAttachmentFailureBaseline`, removed the stale `carevault.__testFoodEmptyBaseline`, injected one temporary saved document titled `cmux 첨부 실패 QA` with a `tauri-sandbox` image attachment, and reloaded only the same `surface:7`.
+  - PASS reattachment failure click: with the desktop runtime branch enabled for the same page, clicked the real `재첨부` button. The affected document row and global feedback both showed `cmux 첨부 실패 QA 검사 서류 첨부 재연결 실패 · 현재 첨부 cmux-preview-failure.png · 첨부 상태 앱 샌드박스 경로 저장됨`; `cmux browser --surface surface:7 errors list` stayed `No browser errors`.
+  - PASS preview failure click: clicked the real `미리보기` button for the same saved image attachment. The document moved to the expected recovery state with row feedback `파일 없음 - 재첨부 필요`, the visible recovery prompt `첨부 원본을 찾거나 열 수 없습니다. 재첨부로 새 복사본을 연결하세요.`, and updated action labels including `첨부 상태 파일 없음 - 재첨부 필요`.
+  - PASS removal failure click: configured the simulated desktop fs call so `exists` returned true and `remove` failed, then clicked the real `첨부 제거` button with the confirmation accepted. The row and global feedback showed `cmux 첨부 실패 QA 검사 서류 첨부 파일 삭제 실패 · 현재 첨부 cmux-preview-failure.png · 첨부 상태 파일 없음 - 재첨부 필요`, and the attachment metadata remained present.
+  - PASS cleanup/restore: restored the original `carevault.v1`, removed every `carevault.__test*` key, reloaded the same `surface:7`, and confirmed final state `documents=1`, `deletedDocuments=0`, `attachmentNames=0`, `vitals=4`, `questions=1`, `labs=1`, backup scope `첨부 파일명 0개`, no `cmux 첨부 실패 QA` text, no session test keys, `No browser errors`, and `No console entries`.
+  - Runtime guard: no new browser pane/tab/surface was opened, no cmux app restart/kill/quit was attempted, and the final user health record state was restored to the pre-QA baseline.
+- Changes:
+  - No source code changed in this slice. This is direct browser verification of the already-committed attachment failure row-feedback changes.
+- Verification:
+  - PASS `cmux browser --surface surface:7 get-url` => `http://127.0.0.1:1420/#care-plan`.
+  - PASS `cmux browser --surface surface:7 get title` => `CareVault`.
+  - PASS `cmux browser --surface surface:7 errors list` => `No browser errors`.
+  - PASS `cmux browser --surface surface:7 console clear && cmux browser --surface surface:7 console list` => `No console entries` after cleanup reload.
+- Current state:
+  - The repo is clean except for this `working.md` QA entry.
+  - The existing CareVault browser surface remains `surface:7` / `#care-plan` at the restored baseline.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep with another non-duplicate low-risk workflow, such as saved-document delete/restore with attachment metadata, document review/next-action history editing, or export-preview stale guards.
