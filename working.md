@@ -20351,6 +20351,26 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit summary edge cases, chart raw-data disclosure, or another low-risk patient workflow.
 
+## 2026-06-06 18:15 KST - Vital Chart Raw Data Disclosure cmux QA
+
+- Improvement target:
+  - Verify the `차트 원자료` disclosure under the health trend chart opens and closes cleanly with the current four-row vital dataset.
+  - Confirm the disclosure gives source-backed assessment text for each chart row without changing stored records.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: disclosure was closed, summary text showed `차트 원자료 4개`, and summary aria/title were both `혈압 혈당 차트 원자료 4개 보기`.
+  - PASS open: clicked the summary; disclosure opened with list aria `혈압 혈당 차트 원자료 목록` and 4 rows.
+  - PASS row contents: rows covered `2026-05-29` BP `132/84 mmHg` with `고혈압 전단계 범위`, `2026-05-30` glucose `146 mg/dL (식후 2시간)` with `식후 목표 범위`, `2026-06-01` BP `126/78 mmHg` with `주의혈압 범위`, and `2026-06-06` BP `128/78 mmHg` with `주의혈압 범위`.
+  - PASS source evidence: row aria labels preserved `성인 남녀 공통 한국 성인 혈압 · 질병관리청 국가건강정보포털 고혈압` for BP rows and `성인 남녀 공통 당뇨 추적 혈당 · 대한당뇨병학회 당뇨병 관리 목표` for the glucose row.
+  - PASS close/non-mutating guard: clicked the summary again; disclosure closed, save chip stayed `브라우저 자동 저장됨`, `localStorage["carevault.v1"]` stayed unchanged, URL stayed `http://127.0.0.1:1420/#care-plan`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; chart row data and labels remain covered by the existing chart helpers used by `src/App.tsx`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary edge cases, timeline source-link rows, or another low-risk patient workflow.
+
 ## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
 
 - Improvement target:
