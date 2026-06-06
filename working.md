@@ -20013,3 +20013,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for lab preset question candidates, saved question copy actions, or another low-risk patient workflow.
+
+## 2026-06-06 17:16 KST - Lab Follow-Up Question Candidate cmux QA
+
+- Improvement target:
+  - Continue the saved-lab workflow sweep by verifying an abnormal lab record can create a source-backed clinician question.
+  - Confirm duplicate prevention changes the lab action to an already-added disabled state after the generated question exists.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS snapshot guard: captured `localStorage` before clicking because this flow intentionally adds a saved question record; baseline counts were vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`.
+  - PASS baseline action: saved lab `WBC 3.4 10^3/uL` showed button text `질문으로 추가`, aria `WBC 검사 질문 추가 · 메모와 근거 포함`, disabled `false`, no lab follow-up feedback, and save chip `브라우저 자동 저장됨`.
+  - PASS question creation: clicked the WBC lab follow-up button; stored question count became `2`, save chip became `WBC 검사 질문 추가됨 · 메모와 근거 포함 · 브라우저 자동 저장됨`, and local `.lab-followup-feedback` showed `WBC 검사 질문 추가됨 · 메모와 근거 포함`.
+  - PASS generated question content: the added question had topic `검사 수치`, priority `high`, status `open`, empty answer, and included `2026-06-01 WBC 3.4 10^3/uL`, the low-range text `기준 4.0-10.0 10^3/uL보다 낮게 기록됐습니다`, existing note `면역저하 식품 안전 질문과 연결`, `서울아산병원 전혈구검사 참고치`, and source URL parameter `managementId=126`.
+  - PASS duplicate guard: after the question existed, the same WBC action changed to text `질문 추가됨`, aria `WBC 검사 질문 이미 추가됨 · 메모와 근거 포함`, disabled `true`.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, counts back to vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`, WBC button back to `질문으로 추가`, disabled `false`, and no lab follow-up feedback.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; lab question generation and duplicate labels remain covered by `src/labQuestionPrompts.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for saved question copy/status actions, lab preset save/reset, or another low-risk patient workflow.
