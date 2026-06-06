@@ -20966,3 +20966,21 @@
   - `cmux` socket responds to `ping`, but CareVault workspace/browser surface commands are currently timing out. Browser automation should not continue until the user approves a cmux recovery action or the surface naturally recovers.
 - Next durable app slice:
   - Preserve the single-browser rule. After explicit recovery approval or natural `surface:7` recovery, first confirm URL/title, clear any temporary CSV preview/session state if present, then retry CSV food-query staleness in shorter substeps.
+
+## 2026-06-06 19:57 KST - CSV Preview Surface State Recheck
+
+- Improvement target:
+  - Recheck whether the existing CareVault `surface:7` naturally recovered after the blocked CSV preview attempt, without opening a new browser or touching another surface.
+- Runtime/browser notes:
+  - PASS identity/repo precheck: goal identity still points at `/Users/wj/Ai/System/10_Projects/CareVault`; repo is clean at `main...origin/main`.
+  - PASS cmux socket/workspace: `cmux ping` returned `PONG`; `cmux tree --workspace workspace:4` still lists workspace `암관리` with the existing browser `surface:7` titled `CareVault` at `http://127.0.0.1:1420/#care-plan`.
+  - PARTIAL browser URL: `cmux browser surface:7 get-url` returned `http://127.0.0.1:1420/#care-plan`.
+  - BLOCKED browser evidence: `cmux browser surface:7 errors list` timed out with `js_error: Timed out waiting for JavaScript result`; `cmux browser surface:7 storage session get carevault.__testCsvFoodStaleBaseline` failed with a JavaScript exception; `cmux browser surface:7 snapshot --compact --max-depth 2` returned an empty `document "page"` with `url: about:blank`, conflicting with tree/get-url.
+  - Safety note: no new browser, no different surface, no browser restart, and no `cmux` stop/restart/kill/signal was performed. Because browser evidence is inconsistent, direct-click QA remains blocked and the possible CSV preview/session cleanup state is still unverified from CLI.
+- Automated verification:
+  - PASS `npm test -- src/csvExport.test.ts src/exportPreviewSummary.test.ts` (`2 passed`, `29 passed`), covering CSV export scope/fingerprint and stale preview labels as code-side evidence only; this does not replace the blocked cmux direct-click QA.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` recheck entry.
+  - `surface:7` must be treated as not reliable for further direct-click QA until JS/error-list/snapshot evidence aligns with tree/get-url.
+- Next durable app slice:
+  - First recover or naturally revalidate `surface:7`: URL/title, JS state, errors list, snapshot content, and any temporary `carevault.__testCsvFoodStaleBaseline` key. Only then retry CSV food-query staleness or continue another low-risk workflow.
