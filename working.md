@@ -19832,3 +19832,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import failure states, caregiver share export, or another low-risk patient workflow.
+
+## 2026-06-06 16:47 KST - Backup Import Failure cmux QA
+
+- Improvement target:
+  - Continue the backup failure-state sweep by verifying invalid JSON and invalid CareVault backup structure handling.
+  - Confirm failed imports keep existing health records and attachment reconnect state unchanged.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS setup: saved `carevault.v1` in temporary `sessionStorage`; found the hidden backup file input with `accept="application/json"` and injected `File` objects through the same `onChange` path.
+  - PASS invalid JSON failure: injected `invalid-carevault.json` with non-JSON text; save chip showed `백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음`.
+  - PASS invalid JSON alert: backup import feedback used role `alert`, aria `백업 가져오기 실패`, class `backup-import-feedback tone-error`, and detail `JSON 파일 형식을 확인하세요. 기존 건강 기록은 그대로 유지되었습니다.`
+  - PASS missing structure failure: injected `missing-carevault-state.json` with `{ state: { profile: ... } }`; save chip stayed `백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음`.
+  - PASS missing structure alert: detail showed `프로필과 기록 배열이 있는 CareVault 백업 구조가 아닙니다. 기존 건강 기록은 그대로 유지되었습니다.`
+  - PASS non-mutating guard: backup button stayed `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`; stored counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deletedDocuments `0`.
+  - PASS cleanup: restored the saved `carevault.v1` snapshot, removed the temporary `sessionStorage` key, reloaded the same surface, and confirmed the backup import feedback was cleared and save chip returned to `브라우저 자동 저장됨`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; backup import failure descriptions and status strings remain covered by `src/backupState.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver share export fallback, visit summary export, or another low-risk patient workflow.
