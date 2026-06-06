@@ -20583,3 +20583,27 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for document filter edge cases, export preview close/copy/download state, or another low-risk patient workflow.
+
+## 2026-06-06 18:43 KST - Saved Document Filter Edge cmux QA
+
+- Improvement target:
+  - Verify saved-document filtering works in the live UI for trimmed attachment-status search, category/status mismatch empty state, contextual reset copy, status-only matching, and missing-search recovery.
+  - Confirm the temporary attachment needed for attachment-text search can be restored without changing saved document counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; browser save chip was `브라우저 자동 저장됨`, saved-document filters were search empty / category `all` / status `all`, list count `1/1개 기록`, documents `1`, deleted documents `0`, no attachment metadata, no attachment preview dialog, no backup preview, and `No browser errors`.
+  - PASS attachment search setup: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testDocumentFilterBaseline"]`, stubbed the hidden saved-attachment input click, clicked the scoped saved-row `첨부 추가` action, observed exactly one intercepted picker click, and dispatched `filter-attachment-qa.pdf` through the real input `change` handler.
+  - PASS attached state: persisted document `혈액검사 메모` had `attachmentName` `filter-attachment-qa.pdf`, `attachmentStorage` `browser-reference`, `attachmentStatus` `브라우저 파일명 참조`, no `attachmentPath`, row text included `filter-attachment-qa.pdf`, `파일명 참조`, and `브라우저 파일명 참조`, and backup export aria moved to `첨부 파일명 1개`.
+  - PASS trimmed attachment-status search: entered search value `  브라우저 파일명 참조  `; the live filter trimmed/matched the attachment status, kept list count `1/1개 기록`, kept the saved row visible, and did not show an empty/reset state.
+  - PASS category/status mismatch empty state: with search `백혈구`, category `imaging`, and status `done`, the list count became `0/1개 기록`; `.document-empty[role=status]` used aria `저장된 서류 필터 결과 없음`; reset button aria/title was `저장된 서류 필터 초기화 · 검색어 백혈구 · 분류 영상 · 상태 정리 완료`.
+  - PASS mismatch reset: clicked the reset button; controls returned to search empty / category `all` / status `all`, row count returned to `1/1개 기록`, and save chip showed `서류 필터 초기화됨 · 검색어 백혈구 · 분류 영상 · 상태 정리 완료`.
+  - PASS status-only match: setting status `care-question` with no search/category filter kept the saved row visible at `1/1개 기록`.
+  - PASS missing-search empty/reset: search `notfound-cmux-qa` produced `0/1개 기록`, empty state aria `저장된 서류 필터 결과 없음`, reset aria/title `저장된 서류 필터 초기화 · 검색어 notfound-cmux-qa · 분류 전체 분류 · 상태 전체 상태`, and reset returned filters to empty/all/all with `1/1개 기록`.
+  - PASS cleanup: restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, search empty, category/status `all`, count `1/1개 기록`, no attachment metadata, no attachment block, no preview/export dialog, no `filter-attachment-qa.pdf` in storage, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; document filter matching/reset behavior remains covered by `src/documentFilterActions.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for export preview close/copy/download state, document update blur feedback, or another low-risk patient workflow.
