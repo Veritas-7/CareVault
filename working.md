@@ -25432,3 +25432,26 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 07:35 KST - Dashboard Standard Clipboard Unsupported Direct QA
+
+- Current Goal:
+  - Fill the direct current-surface evidence gap for the dashboard metric standards copy unsupported branch.
+  - Verify that the real `대시보드 기준 복사` button preserves the standard count and evidence count in both local profile-card feedback and the top save chip when the browser exposes no clipboard API.
+- Context:
+  - Source tests pin `formatDashboardMetricStandardCopyUnsupportedStatus()`.
+  - Working-log search found same-surface direct evidence for profile standard copy unsupported, profile/dashboard rejected-write failures, and health-standards range unsupported/failure, but I did not find a direct `surface:7` record for `대시보드 건강 기준 복사 미지원`.
+  - A first `cmux browser --surface surface:7 errors list` before starting Vite timed out because the stale surface JS context briefly read as `about:blank`; without opening a new browser/surface or restarting cmux, the same `surface:7` recovered after the temporary `127.0.0.1:1420` Vite listener and same-surface DOM reads.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS target found: same-surface DOM text/HTML reads showed the real CareVault page at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, 80 buttons, and the real button `대시보드 기준 복사` with aria `대시보드 건강 기준 복사 · 5개 기준 · 근거 4개`.
+  - PASS unsupported setup: in the same WebView, captured `localStorage["carevault.v1"]` baseline length `1871` and set `navigator.clipboard` to `undefined`.
+  - PASS unsupported click: clicked `button.metric-dashboard-standard-copy-button`; `.metric-dashboard-standard-feedback` and `.save-status-chip` both showed `대시보드 건강 기준 복사 미지원 · 브라우저 클립보드 없음 · 5개 기준 · 근거 4개`.
+  - PASS safety: `.metric-profile-copy-feedback` stayed empty, no export preview or dialog opened, URL stayed `http://127.0.0.1:1420/#care-plan`, and `localStorage["carevault.v1"]` stayed byte-for-byte equal to the baseline at length `1871`.
+  - PASS cleanup: reloaded only `surface:7`; confirmed the temporary QA global was gone, clipboard writer was native again, local dashboard feedback cleared, save chip returned to `브라우저 자동 저장됨`, storage length stayed `1871`, no preview/dialog was open, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/healthStandards.test.ts` => `1 passed`, `30 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
