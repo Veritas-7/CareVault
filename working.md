@@ -25733,3 +25733,24 @@
 - Current state:
   - No source patch was needed; `working.md` is dirty with this browser storage fallback direct QA evidence.
   - Run diff/staged checks, stage explicit `working.md`, run staged secret scan, commit/push this focused QA log, then record post-push status.
+
+## 2026-06-07 08:20 KST - Post-Push Browser Storage Fallback QA
+
+- Improvement target:
+  - Record the post-push state after directly verifying browser storage-write failure fallback behavior.
+- Verification:
+  - PASS direct same-surface QA: existing `surface:7` injected a temporary `Storage.prototype.setItem` failure for only `carevault.v1`, edited the real profile name input, captured exactly one blocked write attempt of length `1887`, and showed `프로필 이름 수정됨 · 임시 메모리 자동 저장됨` plus `현재 데이터는 임시 메모리에만 있습니다.`.
+  - PASS persisted-data guard: browser `localStorage["carevault.v1"]` stayed byte-for-byte equal to the baseline length `1871` and did not contain the QA profile name.
+  - PASS cleanup: native storage write behavior was restored, the same `surface:7` was reloaded/recovered, storage keys were only `carevault.v1`, no `carevault.__test*` keys or QA globals remained, profile input and heading restored to `나의 건강 기록`, save chip returned to `브라우저 자동 저장됨`, and no preview/dialog/stale alert appeared.
+  - PASS browser health: `cmux browser --surface surface:7 errors list` returned `No browser errors`, and the same surface remained at `http://127.0.0.1:1420/#care-plan`.
+  - PASS focused tests: `npm test -- src/storage.test.ts src/storageStatus.test.ts` => `2 passed`, `17 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `ecadaad Log browser storage fallback QA`.
+  - PASS push: `git push` updated `origin/main` from `25f85d7` to `ecadaad`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
