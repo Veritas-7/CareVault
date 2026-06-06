@@ -21062,3 +21062,23 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import variants, attachment recovery/preview paths with restore, or another low-risk patient workflow.
+
+## 2026-06-06 20:27 KST - Backup Import Variant cmux QA
+
+- Improvement target:
+  - Verify backup import fail-closed behavior for invalid JSON and valid wrapped-backup restore behavior for attachment metadata, including private path sanitization and baseline cleanup.
+- Runtime/browser notes:
+  - PASS setup/recovery: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. An earlier invalid-import dispatch reached the failure wait, but a following combined eval hit the recurring cmux browser context split where URL/tree still reported CareVault while eval/snapshot attached to `about:blank`. Recovered by navigating the same `surface:7` back to `http://127.0.0.1:1420/#care-plan`, discarded that partial attempt as evidence, and saved a fresh full localStorage baseline into `sessionStorage["carevault.__testBackupImportBaseline"]`.
+  - PASS invalid JSON fail-closed path: dispatched `carevault-invalid.json` through the real hidden input `input[aria-label="CareVault 백업 JSON 파일 선택"]`. The import surfaced `.backup-import-feedback` with `role="alert"`, aria `백업 가져오기 실패`, text `JSON 파일 형식을 확인하세요. 기존 건강 기록은 그대로 유지되었습니다.`, and save chip `백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음`.
+  - PASS invalid JSON state protection: after the failed import, `localStorage["carevault.v1"]` still exactly matched the captured baseline, and `cmux browser surface:7 errors list` returned `No browser errors`.
+  - PASS valid wrapped backup import: dispatched `carevault-valid-attachment.json` through the same real hidden file input with wrapped payload `{ app: "CareVault", schemaVersion: 1, state }`, profile name changed to `QA 백업 복원`, and the first document containing attachment name `qa-backup-scan.pdf` plus a deliberate private path `/Users/wj/private/qa-backup-scan.pdf`.
+  - PASS valid import UI/status: the visible heading changed to `QA 백업 복원`; feedback used `role="status"`, aria `백업 가져오기 완료`, and text `프로필, 기록, 보호자 공유 설정을 백업 파일 기준으로 교체했습니다. 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 1개 · 첨부 파일명 1개는 재첨부 필요`; save chip showed `백업 가져옴 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 1개 · 브라우저 자동 저장됨`.
+  - PASS attachment sanitization: imported document storage kept `attachmentName: "qa-backup-scan.pdf"` but removed the private path, set `attachmentStorage: "browser-reference"`, set `attachmentStatus: "백업에서 복원됨 - 재첨부 필요"`, and `localStorage["carevault.v1"]` did not contain `/Users/wj/private`.
+  - PASS cleanup: restored the captured full localStorage baseline, removed `carevault.__testBackupImportBaseline`, reloaded the same `surface:7`, and confirmed final baseline `#care-plan`, heading/profile `나의 건강 기록`, empty `foodQuery`, `documents 1`, no attachment names, no backup feedback, no dialog, no stale alert, no sessionStorage temp keys, no `QA 백업 복원`, no `qa-backup-scan.pdf`, no `/Users/wj/private` in app storage, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/backupState.test.ts src/appStateNormalization.test.ts src/documentMetric.test.ts` (`3 passed`, `16 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for attachment recovery/preview paths with restore, caregiver-share edge cases, backup export/download behavior, or another low-risk patient workflow.
