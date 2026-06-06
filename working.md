@@ -20909,3 +20909,24 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface, currently returned to `#care-plan`.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for document filters/actions, backup import variants, CSV food-query staleness, or another low-risk patient workflow.
+
+## 2026-06-06 19:44 KST - Saved Document Filters cmux QA
+
+- Improvement target:
+  - Verify the saved-document search/category/status filter controls, no-result empty state, reset action, and storage immutability for a low-risk document-list workflow.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7`; no new browser pane/tab was opened. Started from `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, and baseline counts vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, lab results `1`.
+  - PASS navigation/baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testDocumentFilterBaseline"]`, clicked the real sidebar `#documents` navigation link, and confirmed `http://127.0.0.1:1420/#documents`. The saved-document panel showed `1/1개 기록`, summary aria `저장 서류 요약 전체 1개 · 의료진 질문 1개 · 열린 조치 1개 · 첨부 복구 없음 · 삭제 보관 없음`, title `혈액검사 메모`, category `검사`, status `의료진 질문`, search empty, and both filters set to all.
+  - PASS category filters: changed the real `저장된 서류 분류 필터` select to `imaging`, which showed `0/1개 기록`, hid the document title, exposed empty-state aria `저장된 서류 필터 결과 없음`, and showed the real `서류 필터 초기화` action. Changing the same select to `lab` restored `1/1개 기록` and the `혈액검사 메모` item.
+  - PASS status filters: changed the real `저장된 서류 상태 필터` select to `done`, which showed `0/1개 기록` and the same filter-empty state. Changing it to `care-question` restored `1/1개 기록`, the `검사` category mark, and the `의료진 질문` status chip.
+  - PASS search filters: typed `혈액검사` into the real `저장된 서류 검색어` input and kept `1/1개 기록` with `혈액검사 메모` visible. Replaced it with `cmux-no-match-doc-filter`, which showed `0/1개 기록`, no document title, and the filter-empty reset action.
+  - PASS reset/storage: clicked the real `서류 필터 초기화` action; controls returned to search empty, category `all`, status `all`, and `1/1개 기록`. The patient storage stayed byte-for-byte unchanged (`localStorage["carevault.v1"]` 1893 bytes before and after), proving the filter workflow did not mutate records.
+  - PASS cleanup: removed `carevault.__testDocumentFilterBaseline`, clicked back to `#care-plan`, then reloaded the same `surface:7` once to clear transient filter feedback. Final browser state was `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, expected baseline counts, empty `foodQuery`, no temp QA key, no export preview, no stale alert, no dialog, no alert, and `No browser errors`.
+  - BLOCKED follow-up note: after the successful final baseline above, an extra cmux sanity eval, `errors list`, minimal `"ping"` eval, and a delayed `location.href` retry all timed out through the cmux CLI/RPC path. `cmux` was not stopped, restarted, force-quit, or signaled; the last successful app evidence remains the clean `#care-plan` baseline captured before these CLI timeouts.
+- Automated verification:
+  - No code changed in this QA-only slice; the exercised behavior is the live `filteredDocuments` search/category/status path in `src/App.tsx`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface; the last successful browser baseline was returned to `#care-plan`, but subsequent cmux CLI/RPC checks are currently timing out.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import variants, CSV food-query staleness, saved-document action mutations with restore, or another low-risk patient workflow.
