@@ -24287,6 +24287,39 @@
   - Only `working.md` is dirty with this direct QA evidence.
   - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
 
+## 2026-06-07 06:06 KST - Same-Date Timeline Ordering Direct QA
+
+- Current Goal:
+  - Verify the recent timeline same-date ordering contract through the real existing `암관리` `surface:7` browser.
+  - Cover two records saved with the same date through real forms, newest insertion first in the visible timeline, summary count updates, baseline restoration, and browser diagnostics.
+- Context:
+  - Repo started clean and synced before this slice; runtime doctor reported port `1420` free and no CareVault dev/release processes.
+  - `src/recordOrdering.ts` sorts dated timeline rows by date and then newest insertion order, but recent direct QA mostly covered timeline counts/source labels rather than same-date insertion order through real form saves.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture the browser-local `carevault.v1` baseline in `sessionStorage`.
+  - Use real symptom form controls to save `2026-06-06` symptom `cmux 같은날 첫번째 QA`.
+  - Use real question form controls to save `2026-06-06` question `cmux 같은날 두번째 QA`.
+  - Confirm the visible recent timeline places the later saved question above the earlier saved symptom for the same date, while summary counts and persisted storage reflect both temporary records.
+  - Restore the captured browser-local baseline, remove temporary keys, reload only `surface:7`, and confirm no QA residue, no preview/dialog/stale state, and no browser errors.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser at `http://127.0.0.1:1420/#care-plan`. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS baseline: stored `localStorage["carevault.v1"]` in `sessionStorage["carevault.__testTimelineSameDateBaseline"]`; initial counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`; timeline summary was `전체 9개 · 활력 4개 · 방문 1개 · 서류 1개 · 증상 1개 · 질문 1개 · 검사 1개 · 근거 포함 5개`.
+  - PASS real symptom save: filled the real symptom form with date `2026-06-06`, symptom `cmux 같은날 첫번째 QA`, medication `직접 QA 휴식`, body `cmux 같은 날짜 타임라인 첫번째 기록`, and action `타임라인 정렬 확인`, then clicked the real `증상 기록 추가` button. Symptom count became `2`, timeline summary became `전체 10개`, and the QA symptom rendered as the second visible timeline row above the same-date baseline BP row.
+  - PASS real question save: filled the real question form with date `2026-06-06`, topic `cmux 같은날 두번째 QA`, and body `cmux 같은 날짜 타임라인 두번째 기록 질문`, then clicked the real `질문 추가` button. Question count became `2`, timeline summary became `전체 11개 · 활력 4개 · 방문 1개 · 서류 1개 · 증상 2개 · 질문 2개 · 검사 1개 · 근거 포함 5개`, and the top save chip showed `cmux 같은날 두번째 QA 질문 추가됨 · 우선순위 다음 진료 · 브라우저 자동 저장됨`.
+  - PASS same-date order: in the visible timeline, the later saved question appeared at row `2`, the earlier saved symptom appeared at row `3`, and the pre-existing same-date BP row moved to row `4`; this proves the date tie-breaker uses newest insertion order in the real UI.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testTimelineSameDateBaseline`, reloaded only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, counts restored to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no QA strings in DOM or storage, no export preview, no stale alert, no dialog, and `No browser errors`.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` => `No browser errors`; console list contained only Vite `connecting` / `connected` debug logs.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS focused tests: `npm test -- src/recordOrdering.test.ts src/timelineMetric.test.ts src/timelineSourceEvidenceLabels.test.ts` => `3 passed`, `7 passed`.
+  - PASS diff check: `git diff --check -- working.md`.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+
 ## 2026-06-07 05:46 KST - Caregiver Closed Question Direct QA
 
 - Current Goal:
