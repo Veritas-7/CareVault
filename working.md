@@ -19271,3 +19271,26 @@
   - Changes are not staged yet.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for preview stale-action edge cases or food/cervical care copy flows.
+
+## 2026-06-06 10:35 KST - Food Question Draft and Save cmux QA
+
+- Improvement target:
+  - Continue the food/cervical copy-flow sweep in the existing right cmux browser only.
+  - Validate that the food judgment clinician-question helper fills the question form, preserves clipboard state, and can be saved as a normal question without leaving test data behind.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`; no new browser pane/tab was opened.
+  - PASS: `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함` was visible as `질문 초안`.
+  - PASS: before clicking, the question topic/body fields were empty and priority was `next-visit`; clipboard was set to `CareVault pre-food-question marker`.
+  - PASS: clicking `질문 초안` filled the question form with topic `식단·음식 안전`, priority `high`, a WBC-linked food safety question, food-match evidence, lab evidence, and the NCC immune-food source URL.
+  - PASS: `.food-question-draft-feedback` and the save chip both showed `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 브로콜리, 현미밥, 베이컨, 자몽 주스 · 일치 4개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 4개`.
+  - PASS: focus moved to `진료 전 질문 내용`; `pbpaste` still returned the marker, proving the draft action did not overwrite the clipboard.
+  - PASS: saved a temporary baseline, clicked `진료 전 질문 추가 · 식단·음식 안전 질문 입력 준비됨 · 우선순위 이번 진료 우선`, and verified questions increased from 1 to 2 with the saved last question topic `식단·음식 안전`, priority `high`, status `open`, date `2026-06-15`, food question text, and source text.
+  - PASS cleanup: restored the temporary baseline, removed `carevault.__testFoodQuestionBaseline`, reloaded the same surface, and verified question count returned to 1 with heading `나의 건강 기록`.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; food question draft coverage remains in `src/foodQuestionPrompts.test.ts`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - Only this `working.md` QA entry is unstaged.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for the cervical care clipboard flow or preview stale-action edge cases.
