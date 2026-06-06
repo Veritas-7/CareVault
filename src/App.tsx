@@ -1823,6 +1823,11 @@ function App() {
         upper: syncedLabPreset.upper,
         note: syncedLabPreset.note,
       }));
+      if (nextProfileSex) {
+        setLabPresetFeedback(formatLabPresetAppliedStatusLabel(labPresetChoice, nextProfileSex));
+      }
+    } else if (shouldSyncLabPresetSexRange) {
+      setLabPresetFeedback(null);
     }
 
     setState((current) => ({

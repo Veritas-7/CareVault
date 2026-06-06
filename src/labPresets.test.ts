@@ -621,6 +621,9 @@ describe("labPresets", () => {
     expect(formatLabPresetAppliedStatusLabel("hemoglobin", "female")).toBe(
       "검사 프리셋 적용: Hgb 헤모글로빈 · 기준 12-16 g/dL · 여성 기준 적용 · 근거 서울아산병원 혈색소 검사 참고치",
     );
+    expect(formatLabPresetAppliedStatusLabel("hdl-cholesterol", "male")).toBe(
+      "검사 프리셋 적용: HDL 콜레스테롤 · 기준 40 mg/dL 이상 · 남성 기준 적용 · 근거 대한당뇨병학회 당뇨병 관리 목표",
+    );
     expect(formatLabPresetAppliedStatusLabel("custom-test", "other")).toBe(
       "검사 프리셋 적용: 선택한 프리셋",
     );

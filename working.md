@@ -23308,6 +23308,41 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 03:41 KST - Profile Sex Lab Preset Sync Direct QA
+
+- Current Goal:
+  - Verify the profile-sex change path refreshes a sex-specific lab preset draft in the real existing `암관리` `surface:7` browser.
+  - Cover HDL female preset preview, profile sex change to male, lower range and auto-filled memo applicability refresh, local/topbar feedback, no accidental lab save, baseline restoration, and browser diagnostics.
+- Context:
+  - Repo started clean and synced at `ce12b48` (`Log CareVault vital validation QA status`).
+  - `DESIGN.md` and `src/labPresets.test.ts` require sex-specific Hgb/RBC/Hct/HDL/GGT presets to refresh range and auto memo applicability when the user changes profile sex before editing the draft.
+  - Recent recovered `surface:7` slices covered profile numeric validation, profile mode toggles, lab preset apply/reset, lab save validation, and lab question creation; this slice focuses on the cross-form profile sex -> HDL preset synchronization without saving a lab result.
+- Progress:
+  - Selected HDL female-to-male sync as a non-duplicate low-risk flow because it mutates only draft/profile state and can be fully restored from a captured browser-local baseline.
+  - Captured the browser-local baseline in `sessionStorage.carevault.__testProfileSexLabPresetBaseline`: localStorage keys only `carevault.v1`, counts `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`, profile sex `female`, and no lab draft/feedback.
+  - Direct QA found a real stale-feedback bug: after selecting HDL as a female profile then changing profile sex to male, the HDL draft lower bound changed from `50` to `40`, the memo changed to `적용 기준: 남성 기준 적용`, and the top save chip said `성별 기준 수정됨 · HDL 콜레스테롤 남성 기준으로 갱신 · 브라우저 자동 저장됨`, but local `.lab-preset-feedback` still showed `기준 50 mg/dL 이상 · 여성 기준 적용`.
+  - Patched and reran the same real `surface:7` flow: HDL select plus profile sex male now leaves lab count unchanged at `1`, sets profile/localStorage sex to `male`, keeps `labPresetValue` as `hdl-cholesterol`, sets `labLower` to `40`, keeps `labUpper` blank, updates memo to `적용 기준: 남성 기준 적용`, and updates local `.lab-preset-feedback` to `검사 프리셋 적용: HDL 콜레스테롤 · 기준 40 mg/dL 이상 · 남성 기준 적용 · 근거 대한당뇨병학회 당뇨병 관리 목표`.
+  - Restored the browser baseline, removed the test session key, reloaded the same `surface:7`, and confirmed DOM/localStorage sex `female`, blank lab preset choice, blank lab preset feedback, save chip `브라우저 자동 저장됨`, session test keys empty, and localStorage keys only `carevault.v1`.
+- Changes:
+  - `src/App.tsx`: when profile sex changes and a sex-specific lab preset draft is auto-synced, refresh local lab preset feedback to the newly applied sex/range; if a selected preset cannot be synced because the draft no longer matches the preset range, clear stale local preset feedback.
+  - `src/labPresets.test.ts`: pinned the HDL male applied-status string used by the refreshed local feedback.
+  - `working.md`: recorded the direct cmux QA evidence and cleanup.
+- Tests:
+  - PASS direct cmux QA on only existing `workspace:4` / `surface:7` at `http://127.0.0.1:1420/#labs`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` => `No browser errors`; console list contained only Vite `connecting` / `connected` debug logs.
+  - PASS `npm run runtime:doctor` after stopping the temporary Vite server: port `1420` free, no installed/release CareVault.app process, no CareVault dev process.
+  - PASS `npm test -- src/labPresets.test.ts src/healthStandards.test.ts src/labMetric.test.ts` => 3 files, 49 tests.
+  - PASS `npm run typecheck`.
+  - PASS `npm run build` => `2475` modules transformed.
+  - PASS `git diff --check -- src/App.tsx src/labPresets.test.ts working.md`.
+- Issues:
+  - Resolved: local HDL preset feedback no longer remains on the old female range after profile sex changes to male.
+  - Runtime guard maintained: only the existing `암관리` `workspace:4` / `surface:7` browser was used; cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stage only `src/App.tsx`, `src/labPresets.test.ts`, and `working.md`, run staged secret checks, commit, push, and record post-push status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
