@@ -22110,6 +22110,43 @@
   - Continue direct-click QA from the same `암관리` workspace browser if more CareVault polish is requested.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
 
+## 2026-06-07 01:08 KST - Caregiver Internal-ID Fingerprint Scope
+
+- Improvement target:
+  - Remove another caregiver-share stale false-positive where app-internal question and lab `id` fields can enter the content fingerprint even though caregiver HTML does not render them.
+- Context:
+  - Repo started clean and synced at `87aa2e5` (`Log CareVault vital fingerprint status`).
+  - Final runtime from the prior slice was clean: port 1420 free and no CareVault dev or installed app processes.
+- Progress:
+  - Compared caregiver HTML rendering with `buildCaregiverExportContentFingerprint()`.
+  - Found raw open-question and lab-result objects still entered the fingerprint path, so real `AppState` ids could stale a preview without visible caregiver output changing.
+- Changes:
+  - `src/caregiverExport.test.ts`: added RED/GREEN coverage for internal open-question ids and internal lab ids.
+  - `src/caregiverExport.ts`: maps open-question and lab-result fingerprints to rendered/derived fields only, normalizing question priority before fingerprinting.
+  - `DESIGN.md`: documented that caregiver question/lab stale-record fingerprints ignore internal ids.
+- Tests:
+  - RED `npm test -- src/caregiverExport.test.ts` failed before implementation on the two new internal-id tests.
+  - PASS `npm test -- src/caregiverExport.test.ts` => 1 file, 50 tests.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => 62 files, 526 tests.
+  - PASS `npm run build` => 2475 modules transformed.
+  - PASS `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts DESIGN.md working.md`.
+- Browser QA:
+  - Used only the existing `암관리` workspace right-pane CareVault browser on `surface:7`; did not open a new browser, pane, tab, workspace, surface, or headless browser.
+  - Started current-source Vite on `127.0.0.1:1420` for the existing browser only.
+  - Backed up `localStorage["carevault.v1"]` to `carevault.__testInternalIdBaseline`, injected an open question with id `qa-question-internal-hidden` and a lab row with id `qa-lab-internal-hidden`.
+  - PASS dashboard DOM/storage check: visible question/lab text (`QA 내부 ID 질문`, `QA-WBC`) rendered while both internal id strings stayed out of the page body.
+  - PASS caregiver preview: clicked `공유본 미리보기`; preview source HTML contained the visible QA question, answer, lab name, and lab note, did not contain either internal id, showed no stale alert, and exposed enabled copy/print/download buttons.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console only showed Vite connection logs.
+  - PASS cleanup: restored `carevault.v1` from the backup, removed `carevault.__test*`, reloaded the same browser, and verified QA strings plus temp keys were absent.
+- Issues:
+  - No new browser, headless browser, pane, tab, workspace, or surface opened in this slice.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun final runtime/diff checks, then stage only focused paths.
+  - Run staged secret scan, commit, push, and record the pushed state if green.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:

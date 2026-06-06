@@ -197,11 +197,13 @@ export function buildCaregiverExportContentFingerprint(
           (lab) =>
             latestLabResults.includes(lab) ||
             assessLabTextValue(lab.value, lab.lower, lab.upper).flag !== "normal",
-        )
+        ).map(formatLabFingerprint)
       : [],
     profile,
     questions: enabledSections.questions
-      ? state.questions.filter((question) => question.status === "open")
+      ? state.questions
+          .filter((question) => question.status === "open")
+          .map(formatQuestionFingerprint)
       : [],
     symptoms: enabledSections.symptoms
       ? {
@@ -358,6 +360,29 @@ function formatRecentSymptomFingerprint(symptom: CaregiverExportState["symptoms"
     label: formatSymptomRecordLabel(symptom),
     severity: symptom.severity,
     symptom: symptom.symptom,
+  };
+}
+
+function formatQuestionFingerprint(question: CaregiverExportState["questions"][number]) {
+  return {
+    answer: question.answer,
+    date: question.date,
+    priority: normalizeQuestionPriority(question.priority),
+    question: question.question,
+    status: question.status,
+    topic: question.topic,
+  };
+}
+
+function formatLabFingerprint(lab: CaregiverExportState["labResults"][number]) {
+  return {
+    date: lab.date,
+    lower: lab.lower,
+    name: lab.name,
+    note: lab.note,
+    unit: lab.unit,
+    upper: lab.upper,
+    value: lab.value,
   };
 }
 

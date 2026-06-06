@@ -280,6 +280,30 @@ describe("caregiverExport", () => {
     expect(closedQuestionChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores internal open-question ids in caregiver content fingerprints", () => {
+    const stateWithQuestionId = {
+      ...state,
+      questions: [
+        {
+          id: "question-internal-1",
+          ...state.questions[0],
+        },
+      ],
+    } as unknown as CaregiverExportState;
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithQuestionId);
+    const questionIdChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithQuestionId,
+      questions: [
+        {
+          ...stateWithQuestionId.questions[0],
+          id: "question-internal-2",
+        },
+      ],
+    } as unknown as CaregiverExportState);
+
+    expect(questionIdChangedFingerprint).toBe(fingerprint);
+  });
+
   it("checks caregiver content freshness against the preview section snapshot", () => {
     const previewSections = {
       food: true,
@@ -348,6 +372,30 @@ describe("caregiverExport", () => {
     });
 
     expect(undatedVisitChangedFingerprint).toBe(fingerprint);
+  });
+
+  it("ignores internal lab ids in caregiver content fingerprints", () => {
+    const stateWithLabId = {
+      ...state,
+      labResults: [
+        {
+          id: "lab-internal-1",
+          ...state.labResults[0],
+        },
+      ],
+    } as unknown as CaregiverExportState;
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithLabId);
+    const labIdChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithLabId,
+      labResults: [
+        {
+          ...stateWithLabId.labResults[0],
+          id: "lab-internal-2",
+        },
+      ],
+    } as unknown as CaregiverExportState);
+
+    expect(labIdChangedFingerprint).toBe(fingerprint);
   });
 
   it("ignores old normal lab note changes outside caregiver-rendered lab scope", () => {
