@@ -20716,3 +20716,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for CSV preview stale-state refresh, caregiver-share section stale/content-state refresh, or another low-risk patient workflow.
+
+## 2026-06-06 19:08 KST - CSV Export Preview Stale Record cmux QA
+
+- Improvement target:
+  - Verify CSV export previews become stale when CSV-relevant records change, disable preview actions with scoped reasons, regenerate from the stale alert, and restore the original record baseline cleanly.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; save chip was `브라우저 자동 저장됨`; counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`; no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS CSV preview open: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCsvStaleBaseline"]`, clicked the real `CSV 미리보기` action with aria `CSV 미리보기 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`, and opened `.export-preview-panel` with focus on the panel.
+  - PASS preview content: preview format was `CSV`, title `CSV 미리보기`, filename `carevault-records-2026-06-06.csv`, first line `"section","date","title","value","status","detail"`, summary chips showed `151줄`, `45,048자`, `70,704B`, `근거/출처 82개`, and copy/print/download were enabled with matching aria/title summaries.
+  - PASS stale trigger: entered `cmux CSV stale QA` in the real `혈압·혈당·체온 입력 메모` field and clicked the real `혈압 기록 추가` action; persisted vitals increased from `4` to `5`, the added BP record carried the temporary note, and the save chip showed `혈압 기록 추가됨 · 주의혈압 범위 · 브라우저 자동 저장됨`.
+  - PASS stale alert: the open CSV preview kept the old `151줄` snapshot while `.export-preview-stale-alert[role=status]` appeared with aria `CSV 미리보기 기록 변경 감지`, focus moved to the alert, text included `CSV 기록이 바뀌었습니다`, and the fresh action was visible as `CSV 기록 반영` with aria/title `새 미리보기 생성 · CSV · 변경된 기록 적용`.
+  - PASS disabled action labels: stale copy, print, and download buttons were disabled; each aria/title preserved the compact summary plus `비활성: CSV 기록이 바뀌어 다시 생성이 필요합니다.`. Clicking the disabled copy button was a no-op and left the save chip at the vital-save status.
+  - PASS fresh action: clicked `CSV 기록 반영`; stale alert disappeared, focus returned to the preview panel, copy/print/download actions were enabled, summary chips updated to `152줄`, `45,231자`, `70,816B`, `근거/출처 83개`, save chip showed `CSV 미리보기 생성 · 기록 10개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`, and the refreshed CSV included the temporary row with `cmux CSV stale QA` plus the Korean BP source evidence.
+  - PASS cleanup: closed the refreshed preview, restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, no `cmux CSV stale QA` in storage or DOM, no export preview panel, no stale alert, no attachment dialog, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; CSV preview fingerprinting, stale action descriptions, and disabled action summaries remain covered by `src/csvExport.test.ts` and `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver-share section record-stale state, visit-summary record-stale state, or another low-risk patient workflow.
