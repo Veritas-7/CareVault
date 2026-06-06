@@ -25472,3 +25472,36 @@
 - Current state:
   - No source patch was needed; `working.md` is dirty with this direct QA evidence.
   - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
+## 2026-06-07 07:40 KST - Document Draft Attachment Local Feedback
+
+- Current Goal:
+  - Improve the 서류 수기 보관 draft-attachment feedback path so attachment selection, selection failure, and removal are visible near the document form as well as in the top save chip.
+  - Directly verify the browser-reference attachment selection and real remove-button click in the existing single `암관리` `surface:7` browser.
+- Context:
+  - Existing formatter tests already pinned draft attachment ready/failed/cleared status strings.
+  - Source review found `attachDocumentFile()`, `attachBrowserReference()`, and `clearDocumentAttachment()` only updated the global save label after changing draft attachment state.
+  - Earlier direct QA accepted top-chip-only status, but nearby local status is clearer because the attachment controls are deep in the document form.
+- Implementation:
+  - Updated `src/App.tsx` so draft attachment ready, failed selection, browser-reference ready, and cleared statuses also call `setDocumentSaveFeedback(feedback)`.
+  - Reused the existing formatter outputs; no new status strings or storage schema changes were added.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - NOTE: `npm run runtime:doctor:dev` was not applicable to this Vite-only WebView check and failed because no Tauri dev CLI/debug binary was running. The later clean runtime doctor passed after Vite shutdown.
+  - NOTE: `cmux browser --surface surface:7 goto http://127.0.0.1:1420/#care-plan --snapshot-after` timed out, but `get-url` still returned `http://127.0.0.1:1420/#care-plan` and browser errors were clear. A same-surface `location.href = "http://127.0.0.1:1420/#care-plan"` recovered the known stale `about:blank` JS execution context without opening a new browser or restarting cmux.
+  - PASS recovered DOM: same-surface eval returned `href http://127.0.0.1:1420/#care-plan`, title `CareVault`, `hasApp: true`, `80` buttons, the real document attachment input present, and save chip `브라우저 자동 저장됨`.
+  - PASS browser-reference selection: dispatched a synthetic `File` named `draft-local-feedback-qa.png` through the real hidden `서류 메모 첨부 파일 선택 입력`. The form showed `draft-local-feedback-qa.png` with `파일명 참조`, and the rendered remove action aria became `서류 메모 첨부 선택 제거 · 현재 선택 draft-local-feedback-qa.png`.
+  - PASS local/topbar selection feedback: `.document-save-feedback` and `.save-status-chip` both showed `서류 첨부 파일명 참조 준비됨 · 현재 첨부 draft-local-feedback-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS persistence guard: `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline at length `1871` and did not contain `draft-local-feedback-qa.png`.
+  - PASS real remove click: clicked the rendered `button[aria-label^="서류 메모 첨부 선택 제거"]` through cmux. The draft returned to `첨부 없음`, the remove button disappeared, and no preview/dialog opened.
+  - PASS local/topbar removal feedback: `.document-save-feedback` and `.save-status-chip` both showed `첨부 선택 제거됨 · 현재 선택 draft-local-feedback-qa.png · 상태 브라우저 파일명 참조`.
+  - PASS cleanup: removed `sessionStorage.carevault.__testDocumentDraftAttachmentLocalFeedbackBaseline`, reloaded only `surface:7`, and confirmed URL/title `CareVault`, no `carevault.__test*` keys, `첨부 없음`, no local document feedback, save chip `브라우저 자동 저장됨`, storage did not contain the QA filename, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/documentAttachmentActions.test.ts src/documentActionLabels.test.ts` => `2 passed`, `20 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS diff check so far: `git diff --check -- src/App.tsx`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - `src/App.tsx` and `working.md` are dirty with this focused local-feedback improvement and direct QA evidence.
+  - Run final diff checks, stage explicit `src/App.tsx working.md`, run staged secret scan, commit/push, then record post-push status.

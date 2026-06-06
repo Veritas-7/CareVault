@@ -2212,17 +2212,20 @@ function App() {
         attachmentStatus,
       });
       documentDraftAttachmentFileRef.current = null;
-      setSaveLabel(
-        formatDocumentDraftAttachmentReadyStatusLabel(attachmentName, attachmentStatus),
+      const feedback = formatDocumentDraftAttachmentReadyStatusLabel(
+        attachmentName,
+        attachmentStatus,
       );
+      setDocumentSaveFeedback(feedback);
+      setSaveLabel(feedback);
     } catch (error) {
       console.error("Document attachment selection failed", error);
-      setSaveLabel(
-        formatDocumentDraftAttachmentSelectionFailedStatusLabel(
-          documentDraft.attachmentName,
-          documentDraft.attachmentStatus,
-        ),
+      const feedback = formatDocumentDraftAttachmentSelectionFailedStatusLabel(
+        documentDraft.attachmentName,
+        documentDraft.attachmentStatus,
       );
+      setDocumentSaveFeedback(feedback);
+      setSaveLabel(feedback);
       documentAttachmentInputRef.current?.click();
     }
   };
@@ -2240,7 +2243,9 @@ function App() {
       attachmentStorage: "browser-reference",
       attachmentStatus: "브라우저 파일명 참조",
     });
-    setSaveLabel(formatDocumentDraftAttachmentReferenceReadyStatusLabel(file.name));
+    const feedback = formatDocumentDraftAttachmentReferenceReadyStatusLabel(file.name);
+    setDocumentSaveFeedback(feedback);
+    setSaveLabel(feedback);
   };
 
   const clearDocumentAttachment = () => {
@@ -2254,9 +2259,12 @@ function App() {
       attachmentStorage: undefined,
       attachmentStatus: undefined,
     });
-    setSaveLabel(
-      formatDocumentDraftAttachmentClearedStatusLabel(attachmentName, attachmentStatus),
+    const feedback = formatDocumentDraftAttachmentClearedStatusLabel(
+      attachmentName,
+      attachmentStatus,
     );
+    setDocumentSaveFeedback(feedback);
+    setSaveLabel(feedback);
   };
 
   const openDocumentAttachment = async (document: CareDocument) => {
