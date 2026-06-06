@@ -22759,12 +22759,58 @@
   - cmux was not restarted, quit, force-quit, replaced, or signaled.
 - Git state:
   - PASS QA log commit pushed: `aad5bc5` (`Log CareVault chart source data QA`) reached `origin/main`.
-  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `aad5bc5`.
+  - PASS post-push status commit pushed: `c71fef2` (`Log CareVault chart source data QA status`) reached `origin/main`.
+  - PASS repo sync after the status commit: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `c71fef2`.
 - Current state:
   - Direct chart source-data disclosure and profile-mode-sensitive glucose assessment behavior were verified through the real UI path and logged durably.
   - Browser-local baseline/test keys were removed during cleanup; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 02:29 KST - Care Queue Empty Recovery Direct QA
+
+- Current Goal:
+  - Continue direct-click QA on a non-duplicate empty-state workflow from the same existing `암관리` CareVault browser.
+  - Verify the true empty `진료 준비 큐` status, zero-count summary, recovery links, empty-copy packet, and clean baseline restoration.
+- Context:
+  - Repo started clean and synced at `c71fef2` (`Log CareVault chart source data QA status`).
+  - `DESIGN.md` requires the care queue empty state to link back to profile cancer-care mode, BP/glucose entry, symptom/question, lab, and document inputs that can create queue items.
+  - Earlier implementation logs noted the empty queue recovery links, but same-browser localStorage mutation was blocked by a `SecurityError`; current `surface:7` has recovered enough for direct browser-state injection and cleanup.
+  - `working.md`, `DESIGN.md`, `src/App.tsx`, `src/careActionQueueEmptyState.test.ts`, `src/careActionQueueMetric.test.ts`, and `src/careActionQueue.test.ts` were reread before selecting this slice.
+- Progress:
+  - Selected care-queue empty recovery QA because recent direct slices covered manual save, symptom severity, profile toggles, symptom body-only save, question answer-memo copy, document/backup/food/export flows, and chart source-data, while this true-empty queue state had source/test evidence but no recovered `surface:7` browser proof.
+  - Reconfirmed the existing `암관리` `surface:7` browser as `CareVault` at `http://127.0.0.1:1420/#profile` with `No browser errors`; no new browser, pane, tab, workspace, surface, or headless browser was opened.
+  - Saved the browser-local baseline in `sessionStorage["carevault.__testEmptyQueueBaseline"]` and injected a disposable empty state with `cancerCareMode:false`, empty food query, and empty vitals/visits/documents/deletedDocuments/symptoms/questions/labResults arrays.
+  - Verified the true empty queue rendered with `actionRows:0`, no appointment reminders, no cervical-care panel, and summary aria `진료 준비 큐 요약 전체 0개 · 확인 필요 0개 · 일정/일반 0개 · 근거 포함 0개`.
+  - Verified the source breakdown stayed explicit at `증상0자궁경부0질문0활력0검사0서류0방문0`.
+  - Verified the empty box used `role="status"` and aria `진료 준비 큐 비어 있음`, with the cervical-aware empty message.
+  - Verified the five recovery links and matching aria/title labels:
+    `혈압·혈당 입력` -> `#records`, `암 관리 모드 켜기` -> `#profile`, `증상·질문 기록` -> `#care-plan`, `검사 수치 입력` -> `#labs`, and `서류 조치 추가` -> `#documents`.
+  - Clicked each recovery link through the real `cmux browser --surface surface:7 click` path and confirmed the URL hash moved to `#records`, `#profile`, `#care-plan`, `#labs`, and `#documents`.
+  - Stubbed `navigator.clipboard.writeText` in the same WebView, clicked the real empty `진료 큐 복사` button, and confirmed the copied packet contained `[진료 준비 큐]`, `확인 항목: 0개`, `분류 요약: 분류 없음`, and the empty queue message.
+  - Restored the saved localStorage baseline, removed the temporary session key and clipboard stub, reloaded the same surface, and confirmed the baseline returned to `#care-plan`, `cancerCareMode:true`, counts `vitals 4 / visits 1 / documents 1 / deleted 0 / symptoms 1 / questions 1 / labs 1`, queue summary `전체 8개`, no temp keys, no preview, and no dialog.
+- Changes:
+  - `working.md` only; no source patch needed because the empty queue recovery state, links, copy packet, and cleanup behavior matched the documented contract.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, `get title`, and `errors list`: existing `암관리` CareVault surface confirmed.
+  - PASS empty-state injection eval: baseline saved (`1871` bytes) and disposable state set with `profile.cancerCareMode:false`.
+  - PASS empty queue eval: zero record arrays, `actionRows:0`, `appointmentReminders:0`, summary `전체 0개`, breakdown all zero, role/status empty box, five recovery links, empty-copy aria, and no cervical panel.
+  - PASS real recovery-link clicks: `혈압·혈당 입력` -> `#records`, `암 관리 모드 켜기` -> `#profile`, `증상·질문 기록` -> `#care-plan`, `검사 수치 입력` -> `#labs`, `서류 조치 추가` -> `#documents`.
+  - PASS empty-copy click: copied 152 characters containing the empty queue header, zero count, `분류 없음`, and cervical-aware empty message; local queue feedback showed `진료 준비 큐 복사됨 · 0개 항목 · 확인 필요 0개 · 일정/일반 0개 · 근거 포함 0개 · 분류 없음`.
+  - PASS cleanup eval after baseline restore and reload: no `carevault.__test*` keys, clipboard stub removed, baseline counts restored, queue summary back to `전체 8개`, no empty box, no preview, and no dialog.
+  - PASS `timeout 8 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 8 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+  - PASS `npm test -- src/careActionQueueEmptyState.test.ts src/careActionQueueMetric.test.ts src/careActionQueue.test.ts`: 3 files and 33 tests.
+  - PASS `npm run runtime:doctor` after stopping Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `git diff --check -- working.md`.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stage only `working.md`, run staged diff and secret checks, then commit and push this QA log.
 
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
