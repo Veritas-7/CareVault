@@ -19102,3 +19102,29 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for saved-question priority/copy flows or another visible action-label/state mismatch.
   - If desktop-runtime verification is in scope, start a clean Tauri dev session and rerun `npm run runtime:doctor:dev`.
+
+## 2026-06-06 09:36 KST - Saved Question Priority and Copy cmux QA
+
+- Improvement target:
+  - Continue the saved-question flow sweep in the existing right cmux browser only.
+  - Validate the `혈액검사` question priority select and copy button after the current-status button hardening.
+- Runtime/browser notes:
+  - PASS: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: baseline was the saved `혈액검사` question with priority `next-visit` and status `open`.
+  - PASS: changing priority from `다음 진료` to `이번 진료 우선` updated browser storage to `priority: high`, showed local feedback `혈액검사 우선순위: 이번 진료 우선`, and updated the select aria/title to `혈액검사 우선순위 변경 · 현재 이번 진료 우선`.
+  - PASS: changing priority from `이번 진료 우선` to `일반 확인` updated browser storage to `priority: routine`, showed local feedback `혈액검사 우선순위: 일반 확인`, and updated the select aria/title to `혈액검사 우선순위 변경 · 현재 일반 확인`.
+  - PASS: changing priority back to `다음 진료` updated browser storage to `priority: next-visit`, showed local feedback `혈액검사 우선순위: 다음 진료`, and restored the select aria/title to `혈액검사 우선순위 변경 · 현재 다음 진료`.
+  - RED observation: an earlier click showed UI feedback `혈액검사 질문 복사됨 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`, but `pbpaste` still returned `SM-X730`; this treated copy success as suspect until rechecked.
+  - PASS recheck: direct `navigator.clipboard.writeText("CareVault navigator clipboard probe 2026-06-06")` on the same surface returned `writeText-ok`, and `pbpaste` returned the probe text.
+  - PASS recheck: clicking `혈액검사 질문 복사 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음` updated `pbpaste` to the expected question packet with `[진료 질문]`, summary/date/topic/priority/status, and the WBC food-safety question body.
+  - PASS: DOM `document.execCommand("copy")` was not adopted as a fallback because the same surface timed out on that path and left `pbpaste` unchanged.
+  - PASS cleanup: removed `carevault.__testQuestionPriorityCopyBaseline`, reloaded the same surface, and verified the saved question stayed `priority: next-visit`, `status: open`, no question action feedback remained, and the save chip returned to `브라우저 자동 저장됨`.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - No code files changed in this slice; existing copy formatting/status coverage remains in `src/questionClipboard.test.ts`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - No git staging, commit, or push was performed.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for the next visible saved-record action or stale feedback mismatch.
+  - If another clipboard mismatch appears, reproduce it from a cold reload before changing code, because the current `navigator.clipboard.writeText` and button-click paths both reach the system clipboard.
