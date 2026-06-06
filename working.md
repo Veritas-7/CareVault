@@ -22404,6 +22404,40 @@
   - Continue direct-click QA from the same existing `암관리` CareVault browser if more CareVault polish is requested.
   - Start with `working.md`, `DESIGN.md`, current git/runtime state, and the existing `surface:7` browser identity before editing.
 
+## 2026-06-07 01:53 KST - Saved Question Copy and Status QA
+
+- Current Goal:
+  - Continue direct-click QA on a non-duplicate saved-question workflow from the same existing `암관리` CareVault browser.
+  - Verify saved-question copy labels/status feedback and question status transitions against the documented auditability contract.
+- Context:
+  - Repo started clean and synced at `17f9e2f` (`Log CareVault food question QA status`).
+  - Runtime doctor was clean before this slice: port `1420` free, no CareVault dev process, no installed/release CareVault.app process.
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - `working.md`, `DESIGN.md`, `src/questionClipboard.ts`, `src/questionStatus.ts`, `src/questionDisplay.ts`, their tests, and the App question-card wiring were reread before selecting this QA slice.
+- Progress:
+  - Selected saved-question copy/status QA because recent slices covered saved-document filter reset, food question draft prep, backup import attachment restore, and export-preview stale guards.
+  - Reconfirmed the visible cmux workspace as `암관리` before using the browser; rejected the visible `working.md` Worklog browser and switched only to the existing CareVault surface.
+  - Confirmed existing `surface:7` identity: `document.title` `CareVault`, URL `http://127.0.0.1:1420/`, page text includes `진료 전 질문`, and exactly one saved-question copy button was present.
+  - Direct-clicked the saved `혈액검사` question `질문 복사` button. The visible label stayed `질문 복사`, and aria/title exposed `혈액검사 질문 복사 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+  - Direct-clicked the saved question status buttons through `답변 완료` and back to `확인 필요`. The card button disabled/current state, card feedback, top save status, queue summary, and persisted localStorage status moved together.
+  - Restored the browser localStorage baseline, removed the temporary `carevault.__testQuestionCopyStatusBaseline` key and clipboard stub, reloaded the same surface, and confirmed the question returned to `open`.
+- Changes:
+  - `working.md` only; no source patch needed because the implemented copy/status behavior matched the documented contract.
+- Tests:
+  - PASS `cmux browser --surface surface:7 eval`: confirmed `CareVault` / `http://127.0.0.1:1420/` and saved-question copy button label/aria/title.
+  - PASS direct cmux in-app browser click: `질문 복사` wrote clipboard text containing `[진료 질문]`, `주제: 혈액검사`, `우선순위: 다음 진료`, `상태: 확인 필요`, and the saved question body.
+  - PASS direct cmux in-app browser click: `답변 완료` changed localStorage `questions[0].status` to `answered`, updated copy aria/title to `답변 완료`, disabled the current status button, and showed `혈액검사 질문 상태: 답변 완료`.
+  - PASS direct cmux in-app browser click: `확인 필요` changed localStorage `questions[0].status` back to `open`, restored copy aria/title to `확인 필요`, disabled the current status button, and showed `혈액검사 질문 상태: 확인 필요`.
+  - PASS cleanup eval after reload: no `carevault.__test*` keys, no `window.__careVaultQuestionCopyText`, one saved question, status `open`, and copy aria/title back to `혈액검사 질문 복사 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+  - PASS `cmux browser --surface surface:7 errors`: `No browser errors`.
+- Issues:
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun runtime/diff checks, stage only `working.md`, run staged secret checks, then commit and push this QA log.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
