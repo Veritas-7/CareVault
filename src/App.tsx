@@ -475,7 +475,7 @@ import {
 import {
   buildCervicalCancerAlertSymptomDraft,
   buildCervicalCancerCareItemSymptomDraft,
-  buildCervicalCancerCarePromptQuestion,
+  buildCervicalCancerCarePromptQuestionDraft,
   buildCervicalCancerCareSourceLinkLabels,
   buildCervicalCancerScreeningQuestion,
   buildCervicalCancerScreeningSummary,
@@ -491,6 +491,7 @@ import {
   formatCervicalCancerCareItemDraftActionLabel,
   formatCervicalCancerCareListItemAriaLabel,
   formatCervicalCancerCarePromptDraftActionLabel,
+  formatCervicalCancerCarePromptQuestionDraftReadyStatus,
   formatCervicalCancerCareSourceLinkLabel,
   formatCervicalCancerScreeningQuestionDraftReadyStatus,
   getCervicalCancerCareSource,
@@ -2943,16 +2944,15 @@ function App() {
   };
 
   const applyCervicalCancerCarePrompt = (prompt: CervicalCancerCarePrompt) => {
-    const feedback = `자궁경부암 질문 초안 준비됨: ${prompt.topic}`;
+    const feedback = formatCervicalCancerCarePromptQuestionDraftReadyStatus(prompt);
 
     setQuestionSaveFeedback(null);
     setQuestionDraft((current) => ({
       ...current,
-      date: getNextQuestionDate(state.visits, today),
-      topic: prompt.topic,
-      question: buildCervicalCancerCarePromptQuestion(prompt),
-      priority: "next-visit",
-      status: "open",
+      ...buildCervicalCancerCarePromptQuestionDraft(
+        prompt,
+        getNextQuestionDate(state.visits, today),
+      ),
     }));
     setCervicalCancerCareQuestionFeedback(feedback);
     setSaveLabel(feedback);

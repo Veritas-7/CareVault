@@ -3,6 +3,7 @@ import {
   buildCervicalCancerAlertSymptomDraft,
   buildCervicalCancerCareItemSymptomDraft,
   buildCervicalCancerCarePromptQuestion,
+  buildCervicalCancerCarePromptQuestionDraft,
   buildCervicalCancerCareSourceLinkLabels,
   cervicalCancerCareAlertRecordFields,
   buildCervicalCancerScreeningQuestion,
@@ -18,6 +19,7 @@ import {
   formatCervicalCancerCareItemDraftActionLabel,
   formatCervicalCancerCareListItemAriaLabel,
   formatCervicalCancerCarePromptDraftActionLabel,
+  formatCervicalCancerCarePromptQuestionDraftReadyStatus,
   formatCervicalCancerCareSourceLinkLabel,
   formatCervicalCancerCareSourceEvidence,
   formatCervicalCancerCarePriorityEvidence,
@@ -208,6 +210,33 @@ describe("cervicalCancerCare", () => {
     );
     expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[9])).toContain(
       "출처: 국가암정보센터 자궁경부암 임신과 출산 - https://www.cancer.go.kr/",
+    );
+  });
+
+  it("builds the late bowel-bladder prompt into editable question draft fields", () => {
+    const prompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "장·방광 후기 변화",
+    )!;
+    const draft = buildCervicalCancerCarePromptQuestionDraft(prompt, "2026-06-15");
+
+    expect(draft).toMatchObject({
+      date: "2026-06-15",
+      priority: "next-visit",
+      status: "open",
+      topic: "장·방광 후기 변화",
+    });
+    expect(draft.question).toContain("수술 후 배뇨·배변 장애");
+    expect(draft.question).toContain("방사선치료 후 6개월 이상");
+    expect(draft.question).toContain("장폐색");
+    expect(draft.question).toContain("혈변");
+    expect(draft.question).toContain("혈뇨");
+    expect(draft.question).toContain("복부팽만·구토·배변/가스 변화");
+    expect(draft.question).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    expect(draft.question.match(/^출처:/gm)).toHaveLength(1);
+    expect(formatCervicalCancerCarePromptQuestionDraftReadyStatus(prompt)).toBe(
+      "자궁경부암 질문 초안 준비됨: 장·방광 후기 변화",
     );
   });
 

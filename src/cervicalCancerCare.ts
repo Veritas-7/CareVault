@@ -65,6 +65,14 @@ export type CervicalCancerCareSourceLinkLabels = {
   visibleLabel: string;
 };
 
+export type CervicalCancerCarePromptQuestionDraft = {
+  date: string;
+  priority: "next-visit";
+  question: string;
+  status: "open";
+  topic: string;
+};
+
 export type CervicalCancerScreeningProfile = {
   age: string;
   sex: string;
@@ -566,6 +574,12 @@ export function formatCervicalCancerCarePromptDraftActionLabel(prompt: CervicalC
   return `${prompt.topic} 자궁경부암 질문 초안 만들기`;
 }
 
+export function formatCervicalCancerCarePromptQuestionDraftReadyStatus(
+  prompt: CervicalCancerCarePrompt,
+) {
+  return `자궁경부암 질문 초안 준비됨: ${prompt.topic}`;
+}
+
 export function formatCervicalCancerCareSourceEvidence(sourceId: string) {
   const source = getCervicalCancerCareSource(sourceId);
   return source
@@ -580,6 +594,19 @@ function formatCervicalCancerCareSourceCitation(sourceId: string) {
 
 export function buildCervicalCancerCarePromptQuestion(prompt: CervicalCancerCarePrompt) {
   return `${prompt.question}\n${formatCervicalCancerCareSourceEvidence(prompt.sourceId)}`;
+}
+
+export function buildCervicalCancerCarePromptQuestionDraft(
+  prompt: CervicalCancerCarePrompt,
+  date: string,
+): CervicalCancerCarePromptQuestionDraft {
+  return {
+    date,
+    priority: "next-visit",
+    question: buildCervicalCancerCarePromptQuestion(prompt),
+    status: "open",
+    topic: prompt.topic,
+  };
 }
 
 export function formatCervicalCancerCareAlertEvidence(alert: CervicalCancerCareAlert) {

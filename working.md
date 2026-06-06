@@ -25836,3 +25836,31 @@
 - Current state:
   - Direct CareVault browser QA remains blocked on cmux control responsiveness, not on CareVault source or tests.
   - Retrying should wait for `surface:7` browser commands or workspace selection to respond again; a cmux app restart still requires explicit user approval.
+
+## 2026-06-07 08:39 KST - Cervical Late Bowel-Bladder Draft Direct QA
+
+- Current Goal:
+  - Resume the previously blocked `장·방광 후기 변화` cervical-care question draft QA in the same existing `surface:7` cmux browser.
+  - Add source-level coverage for the exact draft fields filled by that browser button.
+- Changes:
+  - `src/cervicalCancerCare.ts`: added `buildCervicalCancerCarePromptQuestionDraft` and `formatCervicalCancerCarePromptQuestionDraftReadyStatus` so the button-filled question draft state is testable outside `App.tsx`.
+  - `src/App.tsx`: kept the same UI behavior but routes cervical-care prompt draft filling through the shared helper.
+  - `src/cervicalCancerCare.test.ts`: added a `장·방광 후기 변화` draft-field test covering date, topic, priority, open status, source-retaining body text, one `출처:` line, and ready feedback.
+- Direct same-surface QA:
+  - PASS recovery: `cmux browser --surface surface:7 get-url` recovered and reported `http://127.0.0.1:1420/#care-plan`; no cmux restart, quit, kill, new browser, new tab, new pane, new workspace, or new surface was used.
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only existing `surface:7` and navigated it to `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: storage keys were only `carevault.v1`, baseline length `1871`, saved questions count `1`, saved question topic `혈액검사`, no `장·방광 후기 변화` in storage, no preview dialog/stale alert, and the question draft fields were empty.
+  - PASS real user action: opened the real `자궁경부암 다음 진료 질문 초안 10개 보기 · 출처 포함` disclosure and clicked the real `장·방광 후기 변화 자궁경부암 질문 초안 만들기` button.
+  - PASS draft result: feedback and save chip both showed `자궁경부암 질문 초안 준비됨: 장·방광 후기 변화`; question date was `2026-06-15`, topic was `장·방광 후기 변화`, priority was `next-visit`, and the add button label became `진료 전 질문 추가 · 장·방광 후기 변화 질문 입력 준비됨 · 우선순위 다음 진료`.
+  - PASS source retention: the question body contained `수술 후 배뇨·배변 장애`, `방사선치료 후 6개월 이상`, `장폐색`, `혈변`, `혈뇨`, `배변/가스 변화`, and exactly one source line: `출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894`.
+  - PASS focus and non-mutation: focus moved to `진료 전 질문 내용`; saved questions stayed count `1` with topic `혈액검사`; `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline length `1871` and did not contain `장·방광 후기 변화`.
+  - PASS cleanup: reloaded the same `surface:7`; question draft fields returned empty, storage stayed length `1871`, storage keys stayed only `carevault.v1`, saved questions stayed count `1`, no preview dialog/stale alert appeared, and save chip returned to `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only normal Vite `[debug] [vite] connecting...` and `[debug] [vite] connected.` lines.
+- Verification:
+  - PASS focused tests: `npm test -- src/cervicalCancerCare.test.ts src/questionDisplay.test.ts src/questionClipboard.test.ts` => `3 passed`, `38 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `531 passed`.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.tsx`, `src/cervicalCancerCare.ts`, `src/cervicalCancerCare.test.ts`, and `working.md` are dirty with this verified improvement and QA evidence.
+  - Run diff checks, stage only these explicit paths, run staged secret scan, commit/push, then record post-push status.
