@@ -20738,3 +20738,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver-share section record-stale state, visit-summary record-stale state, or another low-risk patient workflow.
+
+## 2026-06-06 19:10 KST - Visit Summary Record Stale cmux QA
+
+- Improvement target:
+  - Verify an open 30-day Markdown visit-summary preview becomes stale when Markdown-relevant records change, blocks preview actions with scoped record-change reasons, regenerates from the stale alert, and restores the original baseline cleanly.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; save chip was `브라우저 자동 저장됨`; visit-summary range was `30d`; counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`; no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS 30-day preview open: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testVisitContentStaleBaseline"]`, clicked the real `요약 미리보기` action with aria `진료 요약 미리보기 · 범위 최근 30일`, and opened `.export-preview-panel` with focus on the panel.
+  - PASS preview content: preview format was `진료 요약`, title `진료 요약 미리보기 (최근 30일)`, filename `carevault-visit-summary-2026-06-06.md`, first line `# CareVault 진료 요약`, range line `범위: 최근 30일`, summary chips showed `234줄`, `32,554자`, `55,352B`, `근거/출처 109개`, and copy/print/download were enabled with matching aria/title summaries.
+  - PASS stale trigger: entered `cmux visit stale QA` in the real `혈압·혈당·체온 입력 메모` field and clicked the real `혈압 기록 추가` action; persisted vitals increased from `4` to `5`, the added BP record carried the temporary note, and the save chip showed `혈압 기록 추가됨 · 주의혈압 범위 · 브라우저 자동 저장됨`.
+  - PASS stale alert: the open Markdown preview kept the old `234줄` snapshot while `.export-preview-stale-alert[role=status]` appeared with aria `진료 요약 미리보기 기록 변경 감지`, focus moved to the alert, text included `진료 요약 기록이 바뀌었습니다`, and the fresh action was visible as `요약 기록 반영` with aria/title `새 미리보기 생성 · 진료 요약 · 변경된 기록 적용`.
+  - PASS disabled action labels: stale copy, print, and download buttons were disabled; each aria/title preserved the compact summary plus `비활성: 진료 요약 기록이 바뀌어 다시 생성이 필요합니다.`. Clicking the disabled copy button was a no-op and left the save chip at the vital-save status.
+  - PASS fresh action: clicked `요약 기록 반영`; stale alert disappeared, focus returned to the preview panel, copy/print/download actions were enabled, range remained `최근 30일`, summary chips updated to `235줄`, `32,690자`, `55,359B`, `근거/출처 110개`, and the refreshed Markdown included the temporary BP row with `cmux visit stale QA` plus the Korean BP source evidence.
+  - PASS cleanup: closed the refreshed preview, restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, range `30d`, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, no `cmux visit stale QA` in storage or DOM, no export preview panel, no stale alert, no attachment dialog, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; visit-summary record fingerprinting, stale action descriptions, and disabled action summaries remain covered by `src/visitPacket.test.ts` and `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver-share section record-stale state or another low-risk patient workflow.
