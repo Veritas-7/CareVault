@@ -20411,6 +20411,27 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit summary edge cases, cervical-care disclosures, or another low-risk patient workflow.
 
+## 2026-06-06 18:19 KST - Cervical Care Disclosures cmux QA
+
+- Improvement target:
+  - Verify the three source-heavy cervical-care disclosures open and close with current counts, draft actions, and safe source links.
+  - Keep the test non-mutating by not clicking draft buttons or external source links.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS closed labels: disclosure summaries were `자궁경부암 다음 진료 질문 초안 10개 보기 · 출처 포함`, `자궁경부암 회복 일정 메모 9개 보기`, and `자궁경부암 검진·예방 메모 5개 보기`.
+  - PASS open question prompts: opening `다음 진료 질문 초안` rendered 10 prompt rows, 10 question-draft buttons, and 10 source links; first rows included `자궁경부암 추적`, `검진·진단검사 구분`, and `치료 후 회복`.
+  - PASS open recovery notes: opening `회복 일정 메모` rendered 9 rows, 9 record-draft buttons, and 9 source links; first rows included `원추절제술 후 생활 제한`, `광범위 자궁절제술 후 회복`, and `골반 림프절 영향 운동`.
+  - PASS open prevention notes: opening `검진·예방 메모` rendered 5 rows, 5 record-draft buttons, and 5 source links; first rows included `검진 대상 확인`, `검진 주기·방법`, and `자궁경부세포검사 전 확인`.
+  - PASS source-link safety: sampled source links kept item-specific aria/title labels, `target="_blank"`, and `rel="noreferrer"`; external source links were not clicked to preserve the single-browser constraint.
+  - PASS close/non-mutating guard: clicked each summary again; all three disclosures returned closed, save chip stayed `브라우저 자동 저장됨`, `localStorage["carevault.v1"]` stayed unchanged, URL stayed `http://127.0.0.1:1420/#care-plan`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; disclosure labels remain covered by `src/disclosureLabels.test.ts`, and cervical-care source/draft behavior by `src/cervicalCancerCare.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary edge cases, cervical-care draft actions with restore, or another low-risk patient workflow.
+
 ## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
 
 - Improvement target:
