@@ -196,14 +196,16 @@ export function buildCaregiverExportContentFingerprint(
       : [],
     symptoms: enabledSections.symptoms ? state.symptoms : [],
     visits: enabledSections.visits
-      ? state.visits.map((visit) => ({
-          date: visit.date,
-          hospital: visit.hospital,
-          nextDate: visit.nextDate,
-          plan: visit.plan,
-          reason: visit.reason,
-          summary: visit.plan ? "" : visit.summary,
-        }))
+      ? state.visits
+          .filter((visit) => visit.nextDate || visit.date)
+          .map((visit) => ({
+            date: visit.date,
+            hospital: visit.hospital,
+            nextDate: visit.nextDate,
+            plan: visit.plan,
+            reason: visit.reason,
+            summary: visit.plan ? "" : visit.summary,
+          }))
       : [],
     vitals: enabledSections.vitals ? state.vitals : [],
   });

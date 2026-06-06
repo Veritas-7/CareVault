@@ -319,6 +319,37 @@ describe("caregiverExport", () => {
     expect(summaryOnlyChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores undated visit changes in caregiver content fingerprints", () => {
+    const stateWithUndatedVisit: CaregiverExportState = {
+      ...state,
+      visits: [
+        ...state.visits,
+        {
+          date: "",
+          hospital: "날짜 없는 병원",
+          reason: "렌더링되지 않는 방문 사유",
+          summary: "렌더링되지 않는 방문 요약",
+          plan: "렌더링되지 않는 방문 계획",
+          nextDate: "",
+        },
+      ],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithUndatedVisit);
+    const undatedVisitChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithUndatedVisit,
+      visits: [
+        stateWithUndatedVisit.visits[0],
+        {
+          ...stateWithUndatedVisit.visits[1],
+          hospital: "렌더링되지 않는 날짜 없는 병원 변경",
+          plan: "렌더링되지 않는 날짜 없는 방문 계획 변경",
+        },
+      ],
+    });
+
+    expect(undatedVisitChangedFingerprint).toBe(fingerprint);
+  });
+
   it("fingerprints only exported profile fields when caregiver profile is redacted", () => {
     const redactedFingerprint = buildCaregiverExportContentFingerprint(
       state,

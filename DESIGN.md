@@ -751,6 +751,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-06: Made caregiver-share visit fingerprints ignore visit summaries when a visit plan is present, matching the export output that shows the plan instead of the summary in caregiver visit rows and care queue details.
 - 2026-06-07: Made caregiver-share document fingerprints ignore document category changes when a next action is present, matching the exported document row that shows next action before category and the care queue document detail.
 - 2026-06-07: Made caregiver-share document fingerprints ignore attachment status changes when no attachment filename is exported, matching the caregiver HTML attachment line boundary.
+- 2026-06-07: Made caregiver-share visit fingerprints ignore visits with no date or next date, matching the caregiver visit section and care queue visibility boundary.
 
 ## Do's and Don'ts
 
