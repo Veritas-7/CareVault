@@ -25598,3 +25598,23 @@
 - Current state:
   - No source patch was needed; `working.md` is dirty with this stability checkpoint.
   - Run diff/staged checks, stage explicit `working.md`, run staged secret scan, commit/push this focused checkpoint log, then record post-push status.
+
+## 2026-06-07 07:59 KST - Post-Push Full Suite Preview Smoke Checkpoint
+
+- Improvement target:
+  - Record the post-push state after the full-suite and same-surface preview smoke checkpoint.
+- Verification:
+  - PASS full test suite: `npm test` => `62 passed`, `530 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS direct same-surface QA: existing `surface:7` opened and closed the real `진료 요약 미리보기 · 범위 최근 30일` panel; summary stayed `234줄 · 32,554자 · 55,352B · 근거/출처 109개`, final state had no preview/dialog/stale alert, no `carevault.__test*` keys, and storage length `1871`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `6bed5b3 Log full suite preview smoke checkpoint`.
+  - PASS push: `git push` updated `origin/main` from `d6bdb9e` to `6bed5b3`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS cmux same-surface status: existing `surface:7` remained at `http://127.0.0.1:1420/#care-plan` and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
