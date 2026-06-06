@@ -20537,3 +20537,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
+
+## 2026-06-06 18:34 KST - Saved Document Attachment Preview cmux QA
+
+- Improvement target:
+  - Verify a saved document can attach a browser-reference image, expose an enabled image preview action, open the attachment preview dialog, and close it with explicit feedback.
+  - Confirm the temporary attachment and preview state can be restored without changing saved document counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testSavedPreviewBaseline"]`; the saved document count was `1`, deleted documents `0`, target document had no attachment, no preview dialog was open, save chip was `브라우저 자동 저장됨`, and `No browser errors`.
+  - PASS picker guard: stubbed the hidden saved-attachment input click, clicked the scoped `혈액검사 메모 검사 서류 첨부 추가 · 상태 의료진 질문` action, and observed exactly one intercepted picker click without opening an OS picker.
+  - PASS invalid-image recovery sanity: first dispatched a filename-correct but byte-invalid `preview-attachment-qa.png`; clicking its preview produced no browser errors and routed to the app recovery status `이미지 미리보기 실패 - 재첨부 필요`, then the captured baseline was restored before the successful preview check.
+  - PASS valid browser-reference attach: dispatched a valid 1x1 PNG `preview-valid-qa.png`; the saved row showed `preview-valid-qa.png` with `파일명 참조` and `브라우저 파일명 참조`, storage was `browser-reference`, and the save chip showed `혈액검사 메모 검사 서류 첨부 파일명 참조 갱신됨 · 현재 첨부 preview-valid-qa.png · 브라우저 자동 저장됨`.
+  - PASS preview action: the row exposed enabled button text `미리보기` with aria/title `혈액검사 메모 검사 서류 이미지 첨부 미리보기 · 현재 첨부 preview-valid-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS dialog: clicking the exact preview button opened `.attachment-preview-dialog` with aria `혈액검사 메모 첨부 미리보기`, kicker `이미지 미리보기`, title `혈액검사 메모`, filename `preview-valid-qa.png`, image alt `혈액검사 메모 첨부 이미지 미리보기`, figcaption `브라우저 세션 미리보기`, image `complete: true`, close action `첨부 미리보기 닫기`, local row feedback `혈액검사 메모 검사 서류 이미지 미리보기 열림 · 현재 첨부 preview-valid-qa.png · 첨부 상태 브라우저 파일명 참조`, and no browser errors.
+  - PASS close: clicked `첨부 미리보기 닫기`; the dialog disappeared and the save chip changed to `이미지 미리보기 닫힘`.
+  - PASS cleanup: restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed ready state `complete`, URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, no attachment, no preview dialog, no `preview-valid-qa.png` in localStorage, counts still documents `1` and deleted documents `0`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; attachment preview labels/recovery behavior remain covered by `src/documentActionLabels.test.ts`, `src/attachmentRecovery.test.ts`, and `src/attachmentPreview.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for saved-document attachment removal feedback, document filter edge cases, or another low-risk patient workflow.
