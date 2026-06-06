@@ -21101,3 +21101,22 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export/download behavior, caregiver-share edge cases, repeated attachment recovery attempts, or another low-risk patient workflow.
+
+## 2026-06-06 20:43 KST - Repeated Attachment Check cmux QA
+
+- Improvement target:
+  - Verify repeated saved-document attachment checks stay idempotent in the live UI: filename-only PDF attachment metadata should persist without leaking local paths, the first check should record status, and the immediate second check should not append a duplicate consecutive history entry.
+- Runtime/browser notes:
+  - PASS setup/recovery: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. Before this slice, `get-url` and title still reported CareVault while JS eval/snapshot attached to a blank context, and `focus-webview` reported `invalid_state: WebView is not in a window`; recovered with a same-surface `reload --snapshot-after`, then captured the full localStorage key set into `sessionStorage["carevault.__testRepeatedAttachmentCheckBaseline"]`.
+  - PASS attach: clicked the real sidebar `#documents` link, clicked the real saved-row action `혈액검사 메모 검사 서류 첨부 추가 · 상태 의료진 질문`, and dispatched a real PDF `File` named `repeat-check-qa.pdf` through `input[aria-label="저장된 서류 첨부 파일 재연결 입력"]`.
+  - PASS filename-only persistence: storage updated the document to `attachmentName: "repeat-check-qa.pdf"`, `attachmentStorage: "browser-reference"`, `attachmentStatus: "브라우저 파일명 참조"`, with no `attachmentPath`, no `blob:` URL, and no `/Users/wj` local path in `localStorage["carevault.v1"]`; backup scope moved to `첨부 파일명 1개`; there was no image-preview button for the PDF; and history tail added `첨부 재연결`.
+  - PASS first check: clicked the real `첨부 확인` action with current status `브라우저 파일명 참조`. The document status became `파일명 참조만 저장됨`, the row feedback/save chip reported the filename-only status, recovery stayed hidden, the summary stayed `첨부 복구 없음`, and history count became `3` with one `첨부 확인` detail `repeat-check-qa.pdf: 파일명 참조만 저장됨`.
+  - PASS repeated check coalescing: clicked the same real `첨부 확인` action again after the status changed to `파일명 참조만 저장됨`. The UI repeated the status feedback, but `historyCount` stayed `3` and the matching `첨부 확인` entry count stayed `1`, proving the consecutive duplicate history guard held in the browser flow.
+  - PASS remove/cleanup: wrapped `window.confirm` only to record text and return true, clicked the real `첨부 제거` action, recorded confirm text `"혈액검사 메모" 첨부 파일 연결을 제거할까요?`, cleared attachment metadata, restored the baseline localStorage snapshot, removed `carevault.__testRepeatedAttachmentCheckBaseline`, restored the original confirm function, and reloaded the same `surface:7`. Final baseline confirmed `#care-plan`, save chip `브라우저 자동 저장됨`, attachment fields empty, document history count back to `1`, no `repeat-check-qa.pdf`, no `blob:`, no `/Users/wj` in app storage, no sessionStorage temp keys, no attachment dialog, no export preview, no stale alert, and no visible alert/error text.
+- Automated verification:
+  - PASS `npm test -- src/documentHistory.test.ts src/documentActionLabels.test.ts src/attachmentRecovery.test.ts src/documentMetric.test.ts src/documentAttachmentActions.test.ts` (`5 passed`, `37 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` after baseline reload.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup export/download behavior, caregiver-share edge cases, non-consecutive attachment recovery attempts, or another low-risk patient workflow.
