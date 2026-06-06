@@ -4,11 +4,8 @@ import {
   getLabRangeSourceLabel,
 } from "./exportSourceLabels";
 import {
-  assessBloodGlucose,
-  assessBloodPressure,
   assessCancerFood,
   assessLabTextValue,
-  assessTemperature,
   type FoodMatch,
   type GlucoseContext,
 } from "./healthRules";
@@ -225,11 +222,14 @@ export function buildCaregiverExportContentFingerprint(
           }))
       : [],
     vitals: enabledSections.vitals
-      ? state.vitals.filter(
-          (vital) =>
-            latestVitals.includes(vital) ||
-            isCaregiverQueueVital(vital, { diabetes: state.profile.diabetes }),
-        )
+      ? {
+          careQueue: buildCaregiverQueueVitalFingerprint(state.vitals, {
+            diabetes: state.profile.diabetes,
+          }),
+          recent: latestVitals.map((vital) =>
+            vitalText(vital, { diabetes: state.profile.diabetes }),
+          ),
+        }
       : [],
   });
 }
@@ -387,29 +387,34 @@ function buildCaregiverQueueSymptomFingerprint(
     }));
 }
 
-function isCaregiverQueueVital(
-  vital: CaregiverExportState["vitals"][number],
+function buildCaregiverQueueVitalFingerprint(
+  vitals: CaregiverExportState["vitals"],
   options: { diabetes?: boolean } = {},
 ) {
-  if (vital.type === "blood-pressure" && vital.systolic && vital.diastolic) {
-    const level = assessBloodPressure(vital.systolic, vital.diastolic).level;
-    return level !== "ok" && level !== "neutral";
-  }
-
-  if (vital.type === "glucose" && vital.glucoseMgDl) {
-    const context = vital.glucoseContext ?? "random";
-    const level = assessBloodGlucose(vital.glucoseMgDl, context, {
-      diabetes: options.diabetes,
-    }).level;
-    return level !== "ok" && level !== "neutral";
-  }
-
-  if (vital.type === "temperature" && vital.temperatureC) {
-    const level = assessTemperature(vital.temperatureC).level;
-    return level !== "ok" && level !== "neutral";
-  }
-
-  return false;
+  return buildCareActionQueue(
+    {
+      documents: [],
+      labResults: [],
+      profile: {
+        diabetes: options.diabetes,
+      },
+      questions: [],
+      symptoms: [],
+      visits: [],
+      vitals,
+    },
+    "9999-12-31",
+    Number.MAX_SAFE_INTEGER,
+  )
+    .filter((action) => action.source === "vital")
+    .map((action) => ({
+      date: action.date,
+      detail: action.detail,
+      label: action.label,
+      sortRank: action.sortRank,
+      title: action.title,
+      tone: action.tone,
+    }));
 }
 
 function listItems(items: string[], emptyText: string) {

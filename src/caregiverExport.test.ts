@@ -424,6 +424,69 @@ describe("caregiverExport", () => {
     expect(hiddenNormalVitalChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores non-rendered latest vital fields outside the vital type", () => {
+    const stateWithMixedLatestVital: CaregiverExportState = {
+      ...state,
+      vitals: [
+        {
+          date: "2026-06-12",
+          type: "blood-pressure",
+          systolic: 118,
+          diastolic: 74,
+          glucoseMgDl: 111,
+          glucoseContext: "after-meal",
+          temperatureC: 37.1,
+          note: "혈압 기록",
+        },
+        ...state.vitals,
+      ],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithMixedLatestVital);
+    const hiddenVitalFieldsChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithMixedLatestVital,
+      vitals: [
+        {
+          ...stateWithMixedLatestVital.vitals[0],
+          glucoseMgDl: 188,
+          glucoseContext: "fasting",
+          temperatureC: 38.1,
+        },
+        ...state.vitals,
+      ],
+    });
+
+    expect(hiddenVitalFieldsChangedFingerprint).toBe(fingerprint);
+  });
+
+  it("tracks rendered latest vital field changes", () => {
+    const stateWithLatestVital: CaregiverExportState = {
+      ...state,
+      vitals: [
+        {
+          date: "2026-06-12",
+          type: "blood-pressure",
+          systolic: 118,
+          diastolic: 74,
+          note: "혈압 기록",
+        },
+        ...state.vitals,
+      ],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithLatestVital);
+    const latestVitalChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithLatestVital,
+      vitals: [
+        {
+          ...stateWithLatestVital.vitals[0],
+          systolic: 142,
+        },
+        ...state.vitals,
+      ],
+    });
+
+    expect(latestVitalChangedFingerprint).not.toBe(fingerprint);
+  });
+
   it("ignores old low-risk symptom changes outside caregiver-rendered symptom scope", () => {
     const recentLowRiskSymptoms = Array.from({ length: 5 }, (_, index) => ({
       date: `2026-06-${String(10 - index).padStart(2, "0")}`,

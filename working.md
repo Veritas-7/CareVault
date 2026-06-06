@@ -22039,6 +22039,57 @@
   - Continue the next source-level false-positive stale-preview hardening slice only if direct cmux control remains stable.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
 
+## 2026-06-07 00:58 KST - Caregiver Vital Rendered-Field Fingerprint Scope
+
+- Current Goal:
+  - Continue caregiver-share stale false-positive hardening from the clean pushed state.
+  - Match caregiver-share vital fingerprints to the actual rendered recent-vital and care-queue vital output.
+- Context:
+  - Thread identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - Repo started clean at `32a478b` (`Log CareVault old symptom blocker status`), synced with `origin/main`.
+  - `npm run runtime:doctor` was clean before this slice: port 1420 free, no installed/release app process, no CareVault dev processes.
+- Progress:
+  - Found a remaining false-positive path: latest vital records were fingerprinted as raw objects even though caregiver HTML renders only `vitalText()` output for the saved vital type.
+  - RED regression showed that changing only hidden glucose/temperature fields on a blood-pressure row changed the caregiver content fingerprint, even though those fields do not render for blood-pressure output.
+  - Updated caregiver vital fingerprints to store:
+    - direct recent vital row output via `vitalText()`;
+    - existing care-queue-rendered vital action fields via `buildCareActionQueue()`.
+  - Removed the now-duplicated local `isCaregiverQueueVital()` classifier and its direct health-rule imports.
+- Changes:
+  - `src/caregiverExport.ts`
+    - Replaced raw vital-object fingerprinting with recent-rendered plus care-queue-rendered vital fingerprints.
+    - Added `buildCaregiverQueueVitalFingerprint()`.
+    - Removed duplicated vital queue matching logic.
+  - `src/caregiverExport.test.ts`
+    - Added RED/GREEN coverage for hidden optional vital fields outside the saved vital type.
+    - Added positive coverage that rendered blood-pressure field changes still stale the preview.
+  - `DESIGN.md`
+    - Documented the rendered-field vital fingerprint contract.
+- Tests:
+  - RED `npm test -- src/caregiverExport.test.ts` failed before implementation on `ignores non-rendered latest vital fields outside the vital type`.
+  - PASS `npm test -- src/caregiverExport.test.ts` => 1 file, 48 tests.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => 62 files, 524 tests.
+  - PASS `npm run build` => 2475 modules transformed.
+  - PASS `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts DESIGN.md working.md`.
+- Browser QA:
+  - Used only the existing `암관리` workspace right-pane CareVault browser on `surface:7`; did not open a new browser, pane, tab, workspace, surface, or headless browser.
+  - Started current-source Vite on `127.0.0.1:1420` for the existing browser only.
+  - Backed up `localStorage["carevault.v1"]` to `carevault.__testVitalFieldBaseline`, injected a QA blood-pressure row with visible `118/74` and note `QA 혈압 기록`, plus hidden non-rendered `glucoseMgDl: 188` and `temperatureC: 38.1`.
+  - PASS dashboard DOM: `118/74` and `QA 혈압 기록` rendered, while hidden mixed-type `188` and `38.1` did not render.
+  - PASS caregiver preview: clicked `공유본 미리보기`; preview source HTML contained `118/74` and the QA note, did not contain hidden `188` or `38.1`, showed no stale alert, and exposed enabled copy/print/download buttons.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console only showed Vite connection logs.
+  - PASS cleanup: restored `carevault.v1` from the backup, removed `carevault.__test*`, reloaded the same browser, and verified QA strings plus temp keys were absent.
+- Issues:
+  - No new browser, headless browser, pane, tab, workspace, or surface opened in this slice.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun final diff/runtime checks, then stage only the focused source/test/design/log files.
+  - Run staged secret scan, commit, push, and record the pushed state.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
