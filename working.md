@@ -20282,6 +20282,28 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
 
+## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
+
+- Improvement target:
+  - Verify a valid CareVault backup import replaces state through the hidden JSON file input path and explains the imported scope.
+  - Confirm a backup document with an attachment filename and stale local `attachmentPath` is restored as a browser-reference filename that requires reattachment, without leaking the local path.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: stored counts were vitals `4`, visits `1`, documents `1`, deleted documents `0`, symptoms `1`, questions `1`, labs `1`; the backup export action reported `첨부 파일명 0개`.
+  - PASS import trigger: dispatched a synthetic `carevault-import-attachment-qa.json` file through the real hidden input labelled `CareVault 백업 JSON 파일 선택`.
+  - PASS success feedback: the visible success panel used role `status`, aria `백업 가져오기 완료`, and detail `프로필, 기록, 보호자 공유 설정을 백업 파일 기준으로 교체했습니다. 프로필 포함 · 기록 1개 · 공유 설정 포함 · 첨부 파일명 1개 · 첨부 파일명 1개는 재첨부 필요`.
+  - PASS save feedback: save chip showed `백업 가져옴 · 프로필 포함 · 기록 1개 · 공유 설정 포함 · 첨부 파일명 1개 · 브라우저 자동 저장됨`.
+  - PASS attachment sanitization: imported document `백업 첨부 QA` kept `attachmentName` `qa-import-scan.png`, changed `attachmentStorage` to `browser-reference`, changed `attachmentStatus` to `백업에서 복원됨 - 재첨부 필요`, and no `attachmentPath` property remained.
+  - PASS path safety: serialized `localStorage["carevault.v1"]` contained neither `/Users/wj/private` nor `attachmentPath`; the rendered document card showed `qa-import-scan.png`, `파일명 참조`, and `백업에서 복원됨 - 재첨부 필요`.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed load-state `OK`, URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, imported profile/doc absent, counts back to vitals `4`, visits `1`, documents `1`, deleted documents `0`, symptoms `1`, questions `1`, labs `1`, backup export action back to `첨부 파일명 0개`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; backup import success/failure scope, attachment sanitization, and path stripping remain covered by `src/backupState.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary export edge cases, export preview close/copy/download state, or another low-risk patient workflow.
+
 ## 2026-06-06 17:57 KST - Visit Save Reminder cmux QA
 
 - Improvement target:
