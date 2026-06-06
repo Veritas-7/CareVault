@@ -20107,3 +20107,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver section minimum-guard behavior, document manual save validation, or another low-risk patient workflow.
+
+## 2026-06-06 17:25 KST - Caregiver Share Section Minimum Guard cmux QA
+
+- Improvement target:
+  - Continue the caregiver-share settings sweep by verifying the UI prevents excluding every share section.
+  - Confirm the final included section becomes disabled with an explicit minimum-one-section label.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS snapshot guard: captured `localStorage` before changing caregiver section settings; baseline had all 7 sections included and save chip `브라우저 자동 저장됨`.
+  - PASS baseline summary: section aria was `보호자 공유본 포함 요약 · 포함 7개: 진료, 질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온 · 제외 0개: 없음`; every section checkbox was checked and enabled.
+  - PASS section exclusions: unchecked all sections except `진료`; stored sections became visits `true`, questions/documents/symptoms/labs/food/vitals `false`, and section aria changed to `보호자 공유본 포함 요약 · 포함 1개: 진료 · 제외 6개: 질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온`.
+  - PASS minimum guard: the remaining `진료` checkbox stayed checked and became disabled with aria `보호자 공유본 포함 섹션 진료 포함됨 · 최소 1개 섹션은 포함해야 해서 해제할 수 없습니다`.
+  - PASS disabled click guard: clicking the disabled `진료` checkbox did not change stored sections, section summary, checkbox states, or save chip.
+  - PASS status: final exclusion save chip was `공유 섹션 제외: 혈압·혈당·체온 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 1개 · 제외 6개 · 브라우저 자동 저장됨`.
+  - PASS non-mutating guard: record counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1` while section settings changed.
+  - PASS restore: restored the captured `localStorage` snapshot. The first cleanup reload/error RPC timed out, then repeated narrow checks on the same surface confirmed URL `http://127.0.0.1:1420/#care-plan`, `No browser errors`, save chip `브라우저 자동 저장됨`, original memo `desktop stale check`, and all 7 sections included again.
+- Automated verification:
+  - No code changed in this QA-only slice; section toggle/minimum labels remain covered by `src/caregiverShareSettings.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for document manual save validation, caregiver memo presets, or another low-risk patient workflow.
