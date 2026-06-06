@@ -21513,3 +21513,31 @@
 - Next durable app slice:
   - Commit/push this final manual-save feedback polish after staged secret checks.
   - Continue with another non-duplicate direct-click workflow when `surface:7` remains responsive, such as saved-document delete/restore or export-preview stale guards.
+
+## 2026-06-06 22:51 KST - Saved Document Delete/Restore cmux QA
+
+- Improvement target:
+  - Continue the non-duplicate direct-click sweep in the same existing CareVault `surface:7`.
+  - Verify that saved-document delete/archive and restore update document counts, row/global feedback, history, autosave persistence, and cleanup state.
+- Runtime/browser notes:
+  - PASS setup: rechecked goal identity and repo sync, then reused only `surface:7` in workspace `암관리`; no new browser pane/tab/surface was opened and cmux was not restarted or terminated.
+  - PASS recovery: the first `get-url`/title/error probe timed out, but `cmux ping`, `cmux browser-status`, and `curl -I --max-time 5 http://127.0.0.1:1420/` stayed healthy. A same-surface `reload --snapshot-after` recovered the CareVault DOM.
+  - PASS baseline: saved `carevault.v1` to `carevault.__testDocumentArchiveRestoreBaseline`; baseline was `activeDocuments=1`, `deletedDocuments=0`, `doc-1` status `의료진 질문`, next action `백혈구 수치가 낮을 때 식사 제한 기준 질문`, and one original `서류 저장` history entry.
+  - PASS archive flow: ran the real delete button path for `혈액검사 메모 검사 서류 삭제 보관함으로 이동 · 상태 의료진 질문` with the confirmation accepted for the test. The result was `activeDocuments=0`, `deletedDocuments=1`, an `archived` history entry `삭제 보관`, and visible/global feedback `혈액검사 메모 검사 서류 삭제 보관함으로 이동됨 · 상태 의료진 질문 · 브라우저 자동 저장됨`.
+  - PASS restore flow: clicked the real restore button `혈액검사 메모 검사 서류 삭제 보관함에서 복구 · 상태 의료진 질문`, then waited for autosave before checking localStorage. The result was `activeDocuments=1`, `deletedDocuments=0`, and history sequence `created → archived → restored` with visible/global feedback `혈액검사 메모 검사 서류 저장된 서류로 복구됨 · 상태 의료진 질문 · 브라우저 자동 저장됨`.
+  - PASS cleanup/restore: restored the original baseline from `carevault.__testDocumentArchiveRestoreBaseline`, removed every `carevault.__test*` key, reloaded only `surface:7`, and confirmed final state `keys=["carevault.v1"]`, `activeDocuments=1`, `deletedDocuments=0`, no `archived`/`restored` history in `doc-1`, no deleted panel, and the archive button was visible again.
+  - PASS final browser health: `cmux browser --surface surface:7 errors list` returned `No browser errors`, and console was cleared to `No console entries`.
+  - Runtime caveat: after restore, an immediate reload before autosave could show stale deleted state; waiting for autosave made the persisted restore state correct. Keep this timing in mind for future restore/manual-save QA.
+- Changes:
+  - No source code changed in this slice. This is direct browser verification of the existing saved-document archive/restore flow.
+- Verification:
+  - PASS `cmux browser --surface surface:7 eval` baseline/archive/restore/cleanup checks as described above.
+  - PASS `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
+  - PASS `cmux browser --surface surface:7 errors list` => `No browser errors`.
+  - PASS `cmux browser --surface surface:7 console clear && cmux browser --surface surface:7 console list` => `No console entries`.
+- Current state:
+  - The repo is clean except for this `working.md` QA entry.
+  - The existing CareVault browser surface is restored to the baseline saved-document state.
+- Next durable app slice:
+  - Commit/push this direct-QA log after staged checks.
+  - Continue with export-preview stale-guard QA or another low-risk saved-document workflow in the same `surface:7` when it remains responsive.
