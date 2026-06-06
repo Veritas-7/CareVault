@@ -22522,6 +22522,49 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 02:01 KST - Caregiver Preview Stale Direct QA
+
+- Current Goal:
+  - Continue direct-click QA on the caregiver-share preview workflow from the same existing `암관리` CareVault browser.
+  - Verify caregiver preview generation, settings/content stale alerts, preview action blocking, fresh preview regeneration, and cleanup.
+- Context:
+  - Repo started clean and synced at `3a53a5e` (`Log CareVault lab QA post-push status`).
+  - Runtime doctor was clean before this slice: port `1420` free, no CareVault dev process, no installed/release CareVault.app process.
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - `working.md`, `DESIGN.md`, `src/App.tsx`, `src/caregiverExport.ts`, and caregiver export tests were reread before selecting this QA slice.
+- Progress:
+  - Selected caregiver-share preview stale QA because earlier caregiver fingerprint slices had source-level coverage while direct same-surface browser checks were blocked, and recent direct QA proved `surface:7` can be used again.
+  - Rejected the visible `working.md` Worklog browser and selected only the existing `암관리` workspace. Confirmed `surface:7` was `CareVault` at `http://127.0.0.1:1420/`.
+  - Saved a browser-local baseline in `carevault.__testCaregiverPreviewBaseline`.
+  - Generated a caregiver share preview from the real `공유본 미리보기` button. The preview rendered 98 lines, 49,711 characters, 72,883B, and 111 source markers; copy/print/download were initially enabled.
+  - Used actual cmux browser clicks for state-changing controls. A non-representative `cmux browser check` probe was discarded because it only changed the checkbox DOM property without firing the app state update.
+  - Clicked `프로필 가리기`; the app showed the settings stale alert `공유 설정이 바뀌었습니다`, disabled copy/print/download with the shared-settings stale reason, and listed the setting diff from `프로필 표시` to `프로필 가림`.
+  - Clicked `공유 설정 반영`; the preview regenerated with snapshot `프로필 가림`, copy/print/download re-enabled, the redacted `<h1>CareVault 보호자 공유본</h1>` title was present, and the named `QA 사용자 보호자 공유본` title was absent.
+  - Clicked the saved `혈액검사` question status to `답변 완료`; the app showed the content stale alert `보호자 공유본 기록이 바뀌었습니다`, disabled copy/print/download with the record-change stale reason, and offered `공유 기록 반영`.
+  - Clicked `공유 기록 반영`; the preview regenerated, stale alerts cleared, actions re-enabled, and the generated HTML no longer contained the answered question text or the care-queue `질문 · 다음 진료` marker.
+  - Stubbed `navigator.clipboard.writeText`, clicked the active caregiver preview copy button, and confirmed 49,447 characters of redacted caregiver HTML were copied with the title and source markers preserved.
+  - Restored the browser localStorage baseline, removed the temporary test key and clipboard stub, reloaded the same surface, and confirmed the app returned to no preview, profile redaction off, saved question `open`, and copy aria back to `확인 필요`.
+- Changes:
+  - `working.md` only; no source patch needed because caregiver preview settings/content stale behavior matched the documented contract.
+- Tests:
+  - PASS `cmux browser --surface surface:7 eval`: baseline state saved; title `CareVault`; URL `http://127.0.0.1:1420/`; caregiver settings summary `의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개`.
+  - PASS direct cmux browser click: `공유본 미리보기` generated an HTML preview with enabled copy/print/download labels carrying line, character, byte, and source-marker counts.
+  - PASS settings stale check: profile redaction click produced `보호자 공유본 미리보기 변경 감지`, disabled preview actions with `공유 설정이 바뀌어 다시 생성이 필요합니다`, and showed the profile diff.
+  - PASS settings refresh check: `공유 설정 반영` cleared stale state, re-enabled preview actions, updated snapshot to `프로필 가림`, and removed the named profile title from rendered HTML.
+  - PASS content stale check: saved-question `답변 완료` click produced `보호자 공유본 미리보기 기록 변경 감지`, disabled preview actions with `보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다`, and offered `공유 기록 반영`.
+  - PASS content refresh check: `공유 기록 반영` cleared stale state, re-enabled preview actions, and removed the answered question text from caregiver HTML.
+  - PASS copy action check: active caregiver preview copy wrote 49,447 characters of redacted caregiver HTML to a stubbed clipboard with `CareVault 보호자 공유본` and source markers preserved.
+  - PASS cleanup eval after baseline restore and reload: no `carevault.__testCaregiver*` keys, no preview panel, profile redaction off, saved question status `open`, copy aria/title back to `확인 필요`, and no clipboard stub.
+  - PASS `cmux browser --surface surface:7 errors list`: `No browser errors`.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+  - `cmux browser check` is not reliable evidence for this React checkbox because it changed DOM checked state without updating app state; this QA used `click` for the accepted evidence.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun runtime/diff checks, stage only `working.md`, run staged secret checks, then commit and push this QA log.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
