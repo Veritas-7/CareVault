@@ -19630,3 +19630,24 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for remaining document attachment recovery/preview failure states or saved-document filter empty states.
+
+## 2026-06-06 16:21 KST - Saved Document Filter Empty Reset cmux QA
+
+- Improvement target:
+  - Continue the document empty-state sweep by verifying saved-document filter empty and reset behavior.
+  - Keep the test state-only so no saved records are added or removed.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: saved-document list showed `1/1개 기록`, filter input was empty, and the visible document item was `혈액검사 메모`.
+  - PASS empty filter: set saved-document search to `no-match-filter-qa-20260606`; the panel changed to `0/1개 기록`, document item count became 0, and the empty state showed `검색어나 필터 조건에 맞는 저장된 서류가 없습니다.`
+  - PASS empty state accessibility: the empty block exposed aria label `저장된 서류 필터 결과 없음`.
+  - PASS reset action: the reset button was enabled with label `저장된 서류 필터 초기화 · 검색어 no-match-filter-qa-20260606 · 분류 전체 분류 · 상태 전체 상태`.
+  - PASS recovery: clicked `서류 필터 초기화`; the filter input returned to empty, the panel returned to `1/1개 기록`, `혈액검사 메모` was visible again, the empty block disappeared, and the reset button was removed.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; document filter behavior remains covered by `src/documentFilterActions.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for document attachment recovery/preview failure states or another low-risk patient workflow.
