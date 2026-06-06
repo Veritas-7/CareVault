@@ -19964,3 +19964,28 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for health standards filter copy, standards question-draft buttons, or another low-risk patient workflow.
+
+## 2026-06-06 17:09 KST - Health Standards Copy Pending Feedback cmux QA
+
+- Improvement target:
+  - Continue the health-standards clipboard sweep by verifying filter-specific copy behavior in the existing WebKit cmux browser.
+  - Real cmux QA found the long `검사` standards copy payload can take long enough that the UI appears stalled before the final clipboard result.
+- Code changes:
+  - Added `formatHealthStandardRangeFilterCopyPendingStatus` in `src/healthStandards.ts` so filter copy has a deterministic pending message with the same compact summary as success/failure.
+  - Updated `src/App.tsx` to flush the pending feedback before awaiting `navigator.clipboard.writeText`, keeping the save chip and local feedback responsive for long standards text.
+  - Added focused coverage in `src/healthStandards.test.ts` for the `검사 기준 복사 중 · 표시 17/26 · 주의 21 · 성별 분리 4개 · 출처 9개` status.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline finding: `암환자` filter copy completed quickly with `암환자 기준 복사됨 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개`; the longer `검사` filter copy payload was `11,411` characters and could outlast a direct cmux eval wait.
+  - PASS delayed clipboard simulation: temporarily delayed `navigator.clipboard.writeText` for `검사`, clicked the filter copy button, and observed pending feedback within 100 ms: `검사 기준 복사 중 · 표시 17/26 · 주의 21 · 성별 분리 4개 · 출처 9개`.
+  - PASS delayed clipboard completion: after the simulated delay, save chip and local feedback changed to `검사 기준 복사됨 · 표시 17/26 · 주의 21 · 성별 분리 4개 · 출처 9개`; the temporary clipboard stub was restored.
+  - PASS cleanup: reloaded the same surface and confirmed URL `http://127.0.0.1:1420/#care-plan`, active standards filter `전체`, copy aria `한국 성인 건강 기준 전체 범위 복사 · 표시 26/26 · 주의 35 · 성별 분리 5개 · 출처 15개`, no stale health-standards copy feedback, and save status `브라우저 자동 저장됨`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - PASS: `npm run test -- src/healthStandards.test.ts`
+  - PASS: `npm run typecheck`
+- Current state:
+  - The CareVault repo has the pending-feedback code/test changes plus this `working.md` entry ready for explicit-path staging.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for standards question-draft buttons, additional health-standards filter actions, or another low-risk patient workflow.

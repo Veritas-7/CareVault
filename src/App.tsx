@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   Activity,
   AlertTriangle,
@@ -78,6 +79,7 @@ import {
   feverInfectionStandardSymptomDraftActionLabel,
   formatHealthStandardRangeFilterCopyDescription,
   formatHealthStandardRangeFilterCopyFailedStatus,
+  formatHealthStandardRangeFilterCopyPendingStatus,
   formatHealthStandardRangeFilterCopyStatus,
   formatHealthStandardRangeFilterCopyUnsupportedStatus,
   formatHealthStandardsClipboardText,
@@ -3213,6 +3215,15 @@ function App() {
       setSaveLabel(feedback);
       return;
     }
+
+    const pendingFeedback = formatHealthStandardRangeFilterCopyPendingStatus(
+      selectedHealthStandardRangeFilter.label,
+      healthStandardRangeSummary,
+    );
+    flushSync(() => {
+      setHealthStandardsCopyFeedback(pendingFeedback);
+      setSaveLabel(pendingFeedback);
+    });
 
     navigator.clipboard
       .writeText(formatHealthStandardsClipboardText(state.profile.sex, standardRangeFilter))

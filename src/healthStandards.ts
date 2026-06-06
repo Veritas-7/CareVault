@@ -1514,6 +1514,16 @@ export function formatHealthStandardRangeFilterCopyDescription(
   ].join(" · ");
 }
 
+export function formatHealthStandardRangeFilterCopyPendingStatus(
+  filterLabel: string,
+  summary: readonly HealthStandardRangeFilterSummaryItem[],
+) {
+  return [
+    `${filterLabel} 기준 복사 중`,
+    ...buildCompactHealthStandardRangeFilterSummaryParts(summary),
+  ].join(" · ");
+}
+
 export function formatHealthStandardRangeFilterCopyStatus(
   filterLabel: string,
   summary: readonly HealthStandardRangeFilterSummaryItem[],
