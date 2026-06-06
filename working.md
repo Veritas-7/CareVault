@@ -24869,6 +24869,37 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 06:59 KST - Question And Queue Clipboard Unsupported Direct QA
+
+- Current Goal:
+  - Fill the direct browser evidence gap for the question-row and care-queue copy unsupported branches.
+  - Verify that the real `질문 복사` and `진료 준비 큐` copy buttons preserve scoped summaries when the browser exposes no clipboard API.
+- Context:
+  - `src/questionClipboard.test.ts` and `src/careActionQueue.test.ts` already covered unsupported formatters.
+  - Working log search found direct rejected-write evidence for question/queue copy and direct unsupported evidence for cervical/standard/export copy, but not recovered `surface:7` evidence for `질문 복사 미지원` plus `진료 준비 큐 복사 미지원`.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `pane:8` / `surface:7` browser.
+  - In the same WebView, set `navigator.clipboard` to `undefined`, capture baseline storage, click the real `button.question-copy-button`, then click the real `button.queue-copy-button`.
+  - Confirm scoped local feedback, top save chip parity, unchanged storage, no preview/dialog/stale state, cleanup reload, and clean browser diagnostics.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS targets found: `cmux browser --surface surface:7 goto http://127.0.0.1:1420/#care-plan --snapshot-after` showed the real `혈액검사 질문 복사 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음` button and the real `진료 준비 큐 8개 항목 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개 · 자궁경부 1 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1 복사` button.
+  - PASS unsupported setup: in the same WebView, set `navigator.clipboard` to `undefined` and captured `localStorage["carevault.v1"]` baseline length `1871`.
+  - PASS question unsupported click: clicked the real `button.question-copy-button`; `.question-action-feedback` and `.save-status-chip` both showed `혈액검사 질문 복사 미지원 · 브라우저 클립보드 없음 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+  - PASS queue unsupported click: clicked the real `button.queue-copy-button`; `.action-queue-feedback` and `.save-status-chip` both showed `진료 준비 큐 복사 미지원 · 브라우저 클립보드 없음 · 8개 항목 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개 · 자궁경부 1 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1`.
+  - PASS feedback scoping: the earlier `.question-action-feedback` still showed the question-specific unsupported label after the queue copy status replaced the top save chip.
+  - PASS safety: `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline, storage length stayed `1871`, no export preview, stale alert, or dialog opened, and URL stayed `http://127.0.0.1:1420/#care-plan`.
+  - PASS cleanup: reloaded only `surface:7`; confirmed temporary QA global was gone, native clipboard writer was restored, `.question-action-feedback` and `.action-queue-feedback` cleared, save chip returned to `브라우저 자동 저장됨`, storage length stayed `1871`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/questionClipboard.test.ts src/careActionQueue.test.ts` => `2 passed`, `36 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 06:45 KST - Food Question Empty Input Failure Affordance
 
 - Current Goal:
