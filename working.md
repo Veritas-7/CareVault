@@ -19651,3 +19651,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for document attachment recovery/preview failure states or another low-risk patient workflow.
+
+## 2026-06-06 16:23 KST - Document Attachment Preview Failure cmux QA
+
+- Improvement target:
+  - Continue the document attachment failure sweep by verifying the saved-document image preview unavailable path.
+  - Use a browser-state snapshot so the temporary attachment metadata does not remain in the app state.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS setup: saved `carevault.v1` in temporary `sessionStorage`, then injected `icon.png` as a browser-reference attachment on the existing `혈액검사 메모` document without a saved path or browser preview URL.
+  - PASS render: after reload, the saved document showed `icon.png`, storage `파일명 참조`, status `브라우저 파일명 참조`, and no attachment-recovery warning.
+  - PASS action label: the preview action rendered as enabled `미리보기 불가` with aria/title `혈액검사 메모 검사 서류 이미지 첨부 미리보기 불가 · 현재 첨부 icon.png · 첨부 상태 브라우저 파일명 참조 · 이유 저장된 경로 또는 데스크톱 런타임 필요`.
+  - PASS click feedback: clicked `미리보기 불가`; the save chip and document action feedback both showed `혈액검사 메모 검사 서류 이미지 미리보기 불가 · 현재 첨부 icon.png · 첨부 상태 브라우저 파일명 참조 · 이유 저장된 경로 또는 데스크톱 런타임 필요`.
+  - PASS no false preview: no attachment preview panel opened after the unavailable preview action.
+  - PASS cleanup: restored the saved `carevault.v1` snapshot, removed the temporary `sessionStorage` key, reloaded the same surface, and confirmed the document attachment display and `미리보기 불가` action were gone.
+  - PASS cleanup: the backup button returned to `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; saved attachment preview failure labels remain covered by `src/documentActionLabels.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for another low-risk patient workflow or move from QA logs into a concrete improvement if a gap appears.
