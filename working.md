@@ -20693,3 +20693,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver-share stale preview state, CSV preview stale-state refresh, or another low-risk patient workflow.
+
+## 2026-06-06 19:03 KST - Caregiver Share Stale Settings cmux QA
+
+- Improvement target:
+  - Verify caregiver-share HTML previews become stale when share settings change, disable copy/print/download with scoped reasons, show settings differences, regenerate from the stale alert, and restore the original settings cleanly.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; save chip was `브라우저 자동 저장됨`; caregiver settings were profile shown (`redactProfile: false`), memo included, all 7 sections included; counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`; no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS preview open: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverStaleBaseline"]`, clicked the real `공유본 미리보기` action with aria `보호자 공유본 미리보기 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개`, and opened `.export-preview-panel` with aria `내보내기 미리보기`.
+  - PASS preview content: panel focus moved to the preview, format was `보호자 공유본`, title `보호자 공유본 미리보기`, filename `carevault-caregiver-share-2026-06-06.html`, summary chips showed `101줄`, `49,789자`, `72,969B`, `근거/출처 111개`, rendered iframe was present, raw HTML disclosure aria was `내보내기 미리보기 원본 HTML 보기 · 보호자 공유본 미리보기`, and settings snapshot showed `프로필 표시`, memo included, all sections included, excluded none.
+  - PASS stale trigger: clicked the real profile-redaction checkbox labelled `보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다`; persisted `redactProfile` became `true`, checkbox changed to `보호자 공유본 프로필 가리기 켜짐 · 선택 해제하면 이름과 기본 프로필 정보를 표시합니다`, and save chip showed `보호자 공유 프로필 가림 · 브라우저 자동 저장됨`.
+  - PASS stale alert/diff: stale alert appeared as `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 변경 감지`, focus moved to the alert, text included `공유 설정이 바뀌었습니다`, and settings difference row showed `프로필 생성 시점 프로필 표시 현재 프로필 가림`.
+  - PASS disabled actions: copy, print, and download buttons were disabled; each aria/title preserved the compact summary plus `비활성: 공유 설정이 바뀌어 다시 생성이 필요합니다.`. Clicking disabled copy was a no-op, kept the stale alert visible, and left the save chip at `보호자 공유 프로필 가림 · 브라우저 자동 저장됨`.
+  - PASS fresh action: stale alert action was visible as `공유 설정 반영` with aria/title `새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용`; clicking it regenerated the preview, stale alert disappeared, focus returned to the preview panel, settings snapshot changed to `프로필 가림`, rendered iframe stayed present, and copy/print/download actions became enabled with updated summary `101줄`, `49,768자`, `72,941B`, `근거/출처 111개`.
+  - PASS close/cleanup: closed the regenerated preview; save chip showed `보호자 공유본 미리보기 닫힘 · 101줄 · 49,768자 · 72,941B · 근거/출처 111개`; restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, `redactProfile: false`, checkbox back to `꺼짐`, no export preview panel, no attachment dialog, counts unchanged, and `No browser errors`.
+  - Tool note: an initial long all-in-one cmux eval timed out after cleanup; it was a harness/result-return issue. The accepted evidence came from shorter staged evals using the real checkbox `click()` event, which correctly updated React state.
+- Automated verification:
+  - No code changed in this QA-only slice; caregiver settings fingerprints, labels, stale action descriptions, and profile toggle labels remain covered by `src/caregiverShareSettings.test.ts` and `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for CSV preview stale-state refresh, caregiver-share section stale/content-state refresh, or another low-risk patient workflow.
