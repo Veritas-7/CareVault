@@ -21848,3 +21848,30 @@
 - Next durable app slice:
   - Stage only this focused slice, run staged secret checks, commit, and push if green.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
+## 2026-06-06 23:58 KST - Caregiver Visit Plan-Scoped Summary Fingerprint
+
+- Improvement target:
+  - Remove another false-positive caregiver-share stale state while the required single cmux browser remains blocked.
+  - Match caregiver-share visit fingerprints to the caregiver HTML export behavior when a visit already has a plan.
+- Runtime/browser notes:
+  - `surface:7` still timed out on `cmux browser --surface surface:7 snapshot --compact --max-depth 1`.
+  - Shallow checks still showed `cmux ping` => `PONG`, `cmux browser-status` => `enabled`, and the CareVault Vite server on `127.0.0.1:1420` returned HTTP `200`.
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened. cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Changes:
+  - `src/caregiverExport.test.ts`: added a RED regression showing that changing only `visit.summary` should not change the caregiver content fingerprint when `visit.plan` is already present.
+  - `src/caregiverExport.ts`: maps visit fingerprints to the visit fields that can render and includes `summary` only when `plan` is blank.
+  - `DESIGN.md`: documented the visit plan-scoped summary fingerprint contract.
+- Verification:
+  - RED `npm test -- src/caregiverExport.test.ts` failed as expected before implementation with a plan-present visit-summary-only fingerprint difference.
+  - PASS `npm test -- src/caregiverExport.test.ts` => `1 passed`, `38 passed`.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => `62 passed`, `514 passed`.
+  - PASS `npm run build` => `2475` modules transformed; build completed without dirtying `dist/`.
+  - PASS `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts DESIGN.md working.md`.
+- Current state:
+  - The repo is dirty with this focused source/test/design/log slice.
+  - Direct caregiver-share fresh-preview confirmation and localStorage cleanup remain blocked by cmux workspace/surface control.
+- Next durable app slice:
+  - Stage only this focused slice, run staged secret checks, commit, and push if green.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.

@@ -261,6 +261,21 @@ describe("caregiverExport", () => {
     ).toBe(true);
   });
 
+  it("ignores visit summary changes when an exported visit plan is present", () => {
+    const fingerprint = buildCaregiverExportContentFingerprint(state);
+    const summaryOnlyChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...state,
+      visits: [
+        {
+          ...state.visits[0],
+          summary: "계획이 있으면 보호자 공유본에 직접 렌더링되지 않는 방문 요약 변경",
+        },
+      ],
+    });
+
+    expect(summaryOnlyChangedFingerprint).toBe(fingerprint);
+  });
+
   it("fingerprints only exported profile fields when caregiver profile is redacted", () => {
     const redactedFingerprint = buildCaregiverExportContentFingerprint(
       state,
