@@ -20560,3 +20560,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for saved-document attachment removal feedback, document filter edge cases, or another low-risk patient workflow.
+
+## 2026-06-06 18:40 KST - Saved Document Attachment Removal cmux QA
+
+- Improvement target:
+  - Verify a saved document attachment can be removed through the document row action with a confirmation prompt, local accessible feedback, history audit entry, and backup summary update.
+  - Confirm the temporary attachment and removal history can be restored without changing saved document counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: `git status --short --branch` was `## main...origin/main`; browser state was ready `complete`, save chip `브라우저 자동 저장됨`, documents `1`, deleted documents `0`, no attachment metadata, no attachment preview dialog, no backup preview, and `No browser errors`.
+  - PASS attach precondition: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testSavedRemoveBaseline"]`, stubbed the hidden saved-attachment input click, clicked the scoped saved-row `첨부 추가` action, observed exactly one intercepted picker click, and dispatched `remove-attachment-qa.png` through the real input `change` handler.
+  - PASS attached state: persisted document `혈액검사 메모` had `attachmentName` `remove-attachment-qa.png`, `attachmentStorage` `browser-reference`, `attachmentStatus` `브라우저 파일명 참조`, no `attachmentPath`, and history tail `첨부 재연결` with detail `remove-attachment-qa.png: 브라우저 파일명 참조`.
+  - PASS row affordances: the saved row rendered `remove-attachment-qa.png`, `파일명 참조`, and `브라우저 파일명 참조`; the preview action was enabled with aria `혈액검사 메모 검사 서류 이미지 첨부 미리보기 · 현재 첨부 remove-attachment-qa.png · 첨부 상태 브라우저 파일명 참조`; the remove action aria/title was `혈액검사 메모 검사 서류 첨부 연결 제거 · 현재 첨부 remove-attachment-qa.png`; backup export aria moved to `첨부 파일명 1개`.
+  - PASS remove confirmation: clicked the exact saved-row `첨부 제거` action with `window.confirm` returning true only for prompt `"혈액검사 메모" 첨부 파일 연결을 제거할까요?`.
+  - PASS removed state: persisted document no longer had `attachmentName`, `attachmentStorage`, `attachmentStatus`, or `attachmentPath`; the document row no longer had `.document-attachment`, remove button, or preview button; backup export aria returned to `첨부 파일명 0개`; documents stayed `1` and deleted documents `0`.
+  - PASS local feedback/history: `.document-action-feedback[role=status]` showed `혈액검사 메모 검사 서류 첨부 제거됨 · 제거한 첨부 remove-attachment-qa.png`; save chip showed the same status plus `브라우저 자동 저장됨`; history tail added `첨부 제거` with detail `remove-attachment-qa.png 연결 제거`. The filename remained visible only in history text until cleanup, which is expected for the audit trail.
+  - PASS cleanup: restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, no attachment metadata, no attachment block, no feedback rows, no preview/export dialog, no `remove-attachment-qa.png` in storage, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; saved-document attachment labels and removal status remain covered by `src/documentActionLabels.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for document filter edge cases, export preview close/copy/download state, or another low-risk patient workflow.
