@@ -19720,3 +19720,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for question priority changes, symptom/lab empty states, or another low-risk patient workflow.
+
+## 2026-06-06 16:33 KST - Question Priority Transitions cmux QA
+
+- Improvement target:
+  - Continue the patient workflow sweep by verifying saved-question priority changes and persistence.
+  - Use a browser-state snapshot so priority-change testing does not leave mutated state behind.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS setup: saved `carevault.v1` in temporary `sessionStorage`; baseline question was `혈액검사`, status `open`, priority `next-visit`.
+  - PASS baseline select: priority select value was `next-visit`, aria/title `혈액검사 우선순위 변경 · 현재 다음 진료`, with options `이번 진료 우선`, `다음 진료`, `일반 확인`.
+  - PASS high transition: changed the select to `high`; save chip first showed `혈액검사 우선순위: 이번 진료 우선`, then after the app's persistence delay showed `혈액검사 우선순위: 이번 진료 우선 · 브라우저 자동 저장됨`, and localStorage stored priority `high`.
+  - PASS routine transition: changed the select to `routine`; save chip showed `혈액검사 우선순위: 일반 확인 · 브라우저 자동 저장됨`, select aria updated to `현재 일반 확인`, and localStorage stored priority `routine`.
+  - PASS restore-priority transition: changed the select back to `next-visit`; save chip showed `혈액검사 우선순위: 다음 진료 · 브라우저 자동 저장됨`, select aria updated to `현재 다음 진료`, and localStorage stored priority `next-visit`.
+  - PASS cleanup: restored the saved `carevault.v1` snapshot, removed the temporary `sessionStorage` key, reloaded the same surface, and confirmed the stored question returned to status `open`, priority `next-visit`, date `2026-06-15`.
+  - PASS cleanup: backup button remained `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; question priority labels and feedback remain covered by `src/questionPriority.test.ts`, and question metrics by `src/questionMetric.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for symptom/lab empty states, question copy fallback, or another low-risk patient workflow.
