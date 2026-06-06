@@ -21252,3 +21252,24 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for native desktop attachment recovery friction, caregiver-share minimum-section guard behavior, backup export/download behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 21:30 KST - Caregiver Minimum Section Guard cmux QA
+
+- Improvement target:
+  - Verify the caregiver-share section toggles cannot leave the share document with zero included sections through the real UI.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab/surface was opened. Baseline was `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, counts vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, all seven caregiver sections included, no export preview, no dialog, no stale alert, and `No browser errors`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverSectionGuardBaseline"]` before changing section toggles.
+  - PASS section sweep: clicked the real caregiver-share checkboxes for `질문`, `서류`, `증상`, `검사`, `음식`, and `혈압·혈당·체온` off in order. The section summary stepped from `포함 6개 · 제외 1개` down to `포함 1개 · 제외 6개`, and the save chip matched each result, ending with `공유 섹션 제외: 혈압·혈당·체온 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 1개 · 제외 6개`.
+  - PASS guard lock: with only `진료` still included, the `진료` checkbox stayed checked and became disabled. Its aria/title changed to `보호자 공유본 포함 섹션 진료 포함됨 · 최소 1개 섹션은 포함해야 해서 해제할 수 없습니다`.
+  - PASS disabled click protection: clicking the disabled `진료` checkbox did not remove it. The active section list stayed `진료`, the summary stayed `보호자 공유본 포함 요약 · 포함 1개: 진료 · 제외 6개: 질문, 서류, 증상, 검사, 음식, 혈압·혈당·체온`, and export/preview aria labels stayed scoped to `포함 1개 · 제외 6개`.
+  - PASS reset/cleanup: clicked the real `공유 설정 초기화` action, verified all seven sections were included again and the reset button became disabled, then restored the captured baseline defensively and removed `carevault.__testCaregiverSectionGuardBaseline`.
+  - Runtime note: after cleanup reload, one JS state read timed out while URL/title still returned CareVault. Used only the existing `workspace:4`, `pane:8`, and `surface:7` focus path; no cmux restart and no new browser were used.
+  - PASS final parity: after refocusing the existing surface, JS state read and `errors list` confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, baseline counts unchanged, all seven caregiver sections included, empty `foodQuery`, no export preview, no dialog, no stale alert, no test sessionStorage keys, localStorage keys restored to `carevault.v1` plus the pre-existing `carevault.__testFoodEmptyBaseline`, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/caregiverShareSettings.test.ts src/caregiverExport.test.ts` (`2 passed`, `57 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for native desktop attachment recovery friction, backup export/download behavior, caregiver-share imported all-off recovery behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
