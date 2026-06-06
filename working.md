@@ -25638,3 +25638,22 @@
 - Current state:
   - No source patch was needed; `working.md` is dirty with this saved-document archive cancel QA evidence.
   - Run diff/staged checks, stage explicit `working.md`, run staged secret scan, commit/push this focused QA log, then record post-push status.
+
+## 2026-06-07 08:03 KST - Post-Push Document Archive Cancel QA
+
+- Improvement target:
+  - Record the post-push state after the saved-document archive confirm-cancel direct QA checkpoint.
+- Verification:
+  - PASS direct same-surface QA: existing `surface:7` canceled the real saved-row `삭제 보관` prompt for `혈액검사 메모`; the prompt text was `"혈액검사 메모" 서류 기록을 삭제 보관함으로 이동할까요?`, `localStorage["carevault.v1"]` stayed byte-for-byte equal to the baseline length `1871`, active `documents` stayed `1`, `deletedDocuments` stayed `0`, no deleted-document panel/dialog/export preview/stale alert appeared, and no `carevault.__test*` keys or confirm globals remained after cleanup.
+  - PASS browser errors: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS focused tests: `npm test -- src/documentActionLabels.test.ts src/documentHistory.test.ts src/documentFilterActions.test.ts` => `3 passed`, `29 passed`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `3e8643f Log document archive cancel QA`.
+  - PASS push: `git push` updated `origin/main` from `a6dcc88` to `3e8643f`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS cmux same-surface status: existing `surface:7` remained at `http://127.0.0.1:1420/#documents` and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
