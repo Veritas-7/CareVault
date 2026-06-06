@@ -19221,3 +19221,24 @@
   - Only this `working.md` QA entry is unstaged.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import validation or preview stale-action edge cases.
+
+## 2026-06-06 10:20 KST - Backup Import cmux QA
+
+- Improvement target:
+  - Validate the backup import failure and success paths in the existing right cmux browser without opening another browser pane/tab.
+  - Keep user data safe by saving a temporary `carevault.v1` baseline before import tests and restoring it after the valid import check.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: `백업 가져오기` button exposed `CareVault 백업 가져오기 · JSON 구조 검증 후 기존 기록 교체 · 첨부 파일명은 재첨부 필요`.
+  - PASS: invalid JSON file selection showed `백업 가져오기 실패` with `JSON 파일 형식을 확인하세요. 기존 건강 기록은 그대로 유지되었습니다.`, the save chip showed `백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음`, and `localStorage["carevault.v1"]` matched the saved baseline.
+  - PASS: wrong-shape JSON file selection showed `프로필과 기록 배열이 있는 CareVault 백업 구조가 아닙니다. 기존 건강 기록은 그대로 유지되었습니다.`, the save chip stayed on the failure status, and `localStorage["carevault.v1"]` still matched the saved baseline.
+  - PASS: valid CareVault backup import changed the visible profile heading to `CareVault Import QA`, showed `백업 가져오기 완료`, and updated localStorage to the imported profile name.
+  - PASS cleanup: restored the temporary baseline, removed `carevault.__testBackupImportBaseline`, reloaded the same surface, and verified the profile heading and localStorage profile name returned to `나의 건강 기록` with 0 backup import feedback panels.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; backup import parser/status coverage remains in `src/backupState.test.ts`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - Only this `working.md` QA entry is unstaged.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for preview stale-action edge cases, food/cervical care copy flows, or source-link navigation safety.
