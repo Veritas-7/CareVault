@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildExportPreviewSummary,
   formatExportPreviewCompactSummary,
+  formatExportPreviewCloseStatus,
   formatExportPreviewCopyDescription,
   formatExportPreviewCopyFailedStatus,
   formatExportPreviewCopyStatus,
@@ -100,6 +101,9 @@ describe("exportPreviewSummary", () => {
     );
     expect(formatExportPreviewPrintWindowFailedStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 인쇄 창 열기 실패 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewCloseStatus("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 닫힘 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
     expect(formatExportPreviewDownloadDescription("진료 요약", summary)).toBe(
       "진료 요약 다운로드 · 2줄 · 7자 · 11B · 근거/출처 1개",

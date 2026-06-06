@@ -19460,3 +19460,58 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for remaining stale preview paths or document attachment fallback behavior.
+
+## 2026-06-06 15:45 KST - Document Attachment Picker Failure cmux QA
+
+- Improvement target:
+  - Live-test the draft document-attachment picker failure feedback added in `Clarify attachment selection failure` while staying inside the existing right cmux browser.
+  - Avoid opening a native file picker during the failure simulation.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: temporarily set a Tauri runtime marker in the same WebView so `attachDocumentFile()` took the Tauri picker branch, and temporarily replaced `HTMLInputElement.prototype.click` with a no-op so the fallback browser file input could be counted without opening an OS file picker.
+  - PASS: clicked `서류 메모 첨부 파일 선택 · 파일명만 내보내기에 포함`.
+  - PASS: the save chip showed `서류 첨부 선택 실패 · 브라우저 파일명 참조 선택으로 전환 · 현재 선택 첨부 없음`.
+  - PASS: the fallback file input click was invoked once and suppressed by the test shim, confirming the picker-failure branch attempted the browser file-name reference fallback.
+  - PASS cleanup: restored `HTMLInputElement.prototype.click`, removed the temporary Tauri runtime marker, confirmed no draft attachment name was selected, and kept the same URL `http://127.0.0.1:1420/#care-plan`.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; the implementation remains covered by `src/documentAttachmentActions.test.ts` and commit `f84d07f`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for remaining stale preview paths, export preview close/copy/download state, or any document empty/failure state not yet covered.
+
+## 2026-06-06 15:48 KST - Export Preview Close Feedback
+
+- Improvement target:
+  - Fix the export-preview close action so closing a generated preview leaves explicit feedback instead of keeping the stale `미리보기 생성` status visible.
+- RED runtime note:
+  - In the existing `암관리` right browser `surface:7`, clicked `CSV 미리보기`, then clicked `미리보기 닫기`.
+  - The preview panel closed, but the save chip still showed `CSV 미리보기 생성 · 기록 8개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`.
+  - Browser errors returned `No browser errors`.
+- Change:
+  - Added `formatExportPreviewCloseStatus()` in `src/exportPreviewSummary.ts`.
+  - Updated `src/exportPreviewSummary.test.ts` to pin close feedback with the same line/character/byte/source-marker compact summary as other preview actions.
+  - Added `closeExportPreview()` in `src/App.tsx` and wired the visible `미리보기 닫기` button to set `CSV 미리보기 닫힘 · ...` feedback before removing the panel.
+  - Added a `DESIGN.md` decision-log entry for close feedback preserving preview summary context.
+- Automated verification:
+  - PASS: `npm run test -- src/exportPreviewSummary.test.ts` (1 file, 8 tests).
+  - PASS: `npm run test` (62 files, 501 tests).
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/exportPreviewSummary.ts src/exportPreviewSummary.test.ts DESIGN.md working.md`.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: clicked `CSV 미리보기`; the visible preview panel showed `CSV`, `149줄`, `44,530자`, `69,936B`, and `근거/출처 80개`.
+  - PASS: clicked `내보내기 미리보기 닫기`; the preview panel was removed and the save chip changed to `CSV 미리보기 닫힘 · 149줄 · 44,530자 · 69,936B · 근거/출처 80개`.
+  - PASS: `cmux browser surface:7 get text --selector body` contained the same `CSV 미리보기 닫힘 · 149줄 · 44,530자 · 69,936B · 근거/출처 80개` status.
+  - PASS: `cmux browser surface:7 get url` returned `http://127.0.0.1:1420/#care-plan`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+  - Note: after the Vite reload, cmux active-workspace metadata and browser snapshots were intermittently stale, so final live proof used explicit `surface:7` commands plus Computer Use AX on the visible right browser.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for export preview copy/download state or remaining document empty/failure states.

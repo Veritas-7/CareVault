@@ -327,6 +327,7 @@ import {
 import {
   buildExportPreviewSummary,
   formatExportPreviewCompactSummary,
+  formatExportPreviewCloseStatus,
   formatExportPreviewCopyDescription,
   formatExportPreviewCopyFailedStatus,
   formatExportPreviewCopyStatus,
@@ -3573,6 +3574,13 @@ function App() {
     printWindow.focus();
     printWindow.print();
     setSaveLabel(exportPreviewPrintStatus || `${exportPreview.format} 인쇄 준비`);
+  };
+
+  const closeExportPreview = () => {
+    if (!exportPreview) return;
+    const summary = buildExportPreviewSummary(exportPreview.content);
+    setExportPreview(null);
+    setSaveLabel(formatExportPreviewCloseStatus(exportPreview.format, summary));
   };
 
   const exportBackup = async () => {
@@ -7291,7 +7299,7 @@ function App() {
                 <button
                   type="button"
                   className="text-icon-button"
-                  onClick={() => setExportPreview(null)}
+                  onClick={closeExportPreview}
                   aria-label="내보내기 미리보기 닫기"
                   title="내보내기 미리보기 닫기"
                 >
