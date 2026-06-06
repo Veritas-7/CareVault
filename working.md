@@ -20152,3 +20152,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for document manual save validation, document attachment controls, or another low-risk patient workflow.
+
+## 2026-06-06 17:33 KST - Saved Document Attachment Add cmux QA
+
+- Improvement target:
+  - Continue the document workflow sweep by verifying a saved document without an attachment can open the saved-attachment add path and accept a browser file reference.
+  - Confirm the add path updates the saved row, history, backup summary, and status feedback, while cleanup restores the original browser state.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: saved document `doc-1` (`혈액검사 메모`) had no attachment, the row button text was `첨부 추가`, aria was `혈액검사 메모 검사 서류 첨부 추가 · 상태 의료진 질문`, and backup export aria reported `첨부 파일명 0개`.
+  - PASS picker trigger: captured `localStorage`, stubbed only the hidden saved-attachment file input click to avoid opening the OS file picker, clicked the saved row `첨부 추가` button, and observed exactly one hidden input click with no stored document mutation.
+  - PASS browser reference add: dispatched a synthetic `browser-scan.png` image file change on the hidden input; the saved document gained `attachmentName` `browser-scan.png`, `attachmentStorage` `browser-reference`, and `attachmentStatus` `브라우저 파일명 참조`.
+  - PASS saved row feedback: the document history appended `첨부 재연결` with detail `browser-scan.png: 브라우저 파일명 참조`, the save chip showed `혈액검사 메모 검사 서류 첨부 파일명 참조 갱신됨 · 현재 첨부 browser-scan.png · 브라우저 자동 저장됨`, and the row action changed to `재첨부`.
+  - PASS attachment labels: the row action aria became `혈액검사 메모 검사 서류 첨부 재연결 · 현재 첨부 browser-scan.png · 상태 의료진 질문`, the attachment block showed `browser-scan.png` with `파일명 참조` / `브라우저 파일명 참조`, and backup export aria changed to `첨부 파일명 1개`.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, no target document attachment, row button `첨부 추가`, original row aria, no attachment block, and backup export aria back to `첨부 파일명 0개`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; saved document attachment labels and reference status remain covered by `src/documentActionLabels.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for saved document reattach/preview behavior, document next-action edit feedback, or another low-risk patient workflow.
