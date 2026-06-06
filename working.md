@@ -22290,6 +22290,44 @@
   - Continue direct-click QA from the same existing `암관리` CareVault browser if more CareVault polish is requested.
   - Start with `working.md`, `DESIGN.md`, current git/runtime state, and the existing `surface:7` browser identity before editing.
 
+## 2026-06-07 01:42 KST - Saved Document Filter Reset QA
+
+- Current Goal:
+  - Continue direct-click QA on a non-duplicate saved-document workflow from the same existing `암관리` CareVault browser.
+  - Verify the no-match saved-document search/filter reset flow against the documented design contract.
+- Context:
+  - Repo started clean and synced at `0406ef9` (`Log CareVault backup reattachment status`).
+  - Runtime doctor was clean before this slice: port `1420` free, no CareVault dev process, no installed/release CareVault.app process.
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - `working.md`, `DESIGN.md`, and the saved-document filter implementation/tests were reread before selecting this QA slice.
+- Progress:
+  - Selected saved-document no-match search/filter reset as the next low-risk direct browser workflow because recent slices already covered CSV/visit preview ids and backup attachment reattachment.
+  - Confirmed the existing `암관리` workspace had the existing CareVault browser tab at `http://127.0.0.1:1420/`; the visible workspace was first `블로그`, so that browser was not used.
+  - Switched to `암관리` through the cmux sidebar and used only the existing `surface:7` CareVault tab.
+  - Exercised the no-match flow by setting saved-document search to `cmux-no-match-qa`, category to `영상`, and status to `정리 완료`.
+  - The no-match empty state rendered the documented reset action, and clicking it restored search/category/status to defaults plus the saved document row/count.
+- Changes:
+  - No source code changed in this slice. This is direct browser verification of the existing saved-document filter reset flow.
+- Tests:
+  - PASS same-browser direct QA on existing `암관리` CareVault `surface:7`:
+    - `surface:7` identity check returned `title: CareVault`, `href: http://127.0.0.1:1420/`, and visible `저장된 서류`.
+    - No-match state appeared with text `검색어나 필터 조건에 맞는 저장된 서류가 없습니다.`
+    - Reset button existed with scoped `aria-label` and `title`: `저장된 서류 필터 초기화 · 검색어 cmux-no-match-qa · 분류 영상 · 상태 정리 완료`.
+    - Clicking `서류 필터 초기화` restored `search=""`, `category=all`, `status=all`, removed the reset button, restored the `혈액검사 메모` row, restored the `1/1개 기록` count, and showed feedback `서류 필터 초기화됨 · 검색어 cmux-no-match-qa · 분류 영상 · 상태 정리 완료`.
+    - `carevault.v1` stayed byte-identical across the filter/reset flow, proving the UI-only filter did not mutate health records.
+  - PASS cleanup: removed the temporary `carevault.__testDocumentFilterResetBaseline` key, reloaded the same `surface:7`, and confirmed no `cmux-no-match-qa` text or `carevault.__test*` keys remained while `혈액검사 메모` stayed visible.
+  - PASS `cmux browser --surface surface:7 errors list` => `No browser errors`.
+  - PASS console check: only Vite connect/debug messages were present.
+- Issues:
+  - No new browser, headless browser, pane, tab, workspace, or surface opened for this slice.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+  - `npm run runtime:doctor:dev` was intentionally not a passing verification for this web-only Vite session because that script expects a full Tauri dev CLI/debug binary; it did confirm port `1420` was served by this project's Vite process and that no installed/release CareVault.app was running.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun final runtime/diff checks, then stage only `working.md`.
+  - Run staged secret scan, commit, push, and record the pushed state if green.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
