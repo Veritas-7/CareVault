@@ -22642,7 +22642,52 @@
   - Direct visit-summary preview stale behavior was verified through the real UI path and logged durably.
   - Browser-local baseline/test keys and clipboard stub were removed during cleanup; runtime is clean.
 - Next Steps:
-  - Stage only `working.md`, run staged diff and secret checks, commit and push this post-push status log.
+  - Completed in `325f867` (`Log CareVault visit summary preview QA status`); continue with a non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser.
+
+## 2026-06-07 02:15 KST - Visit Record Add Direct QA
+
+- Current Goal:
+  - Continue direct-click QA on a non-duplicate hospital visit workflow from the same existing `암관리` CareVault browser.
+  - Verify that adding a temporary visit through the real form updates visit summaries, appointment reminders, care queue, timeline, save feedback, and persisted storage, then restore the browser baseline cleanly.
+- Context:
+  - Repo started clean and synced at `325f867` (`Log CareVault visit summary preview QA status`).
+  - Runtime doctor was clean before this slice: port `1420` free, no CareVault dev process, and no installed/release CareVault.app process.
+  - Recent duplicate-slice review found manual save, backup import/export, CSV/visit preview stale guards, caregiver-share preview, saved-document filters, food/lab/question flows, cervical-care drafts, health-standard copy, and vital type switching already covered.
+  - `working.md`, `src/App.tsx`, `src/appointmentReminders.ts`, `src/visitMetric.ts`, and visit-related tests were reread before selecting this slice.
+- Progress:
+  - Selected visit record add QA because the current same-surface tail had not recently covered the real hospital visit form plus reminder/queue/timeline updates.
+  - Reconfirmed the existing `암관리` `surface:7` browser as `CareVault` at `http://127.0.0.1:1420/` with no browser errors.
+  - Saved a browser-local baseline in `sessionStorage["carevault.__testVisitRecordAddBaseline"]`.
+  - Filled the real visit form with date `2026-06-06`, hospital `cmux 방문 QA 병원`, reason `방문 기록 직접 QA`, next date `2026-06-08`, a QA summary, and a QA plan.
+  - Confirmed the add button aria/title changed from the missing-required-fields state to `방문 기록 추가 · cmux 방문 QA 병원 · 방문 기록 직접 QA 입력 준비됨`.
+  - Clicked the real `방문 기록 추가` button and waited for browser autosave.
+  - Verified localStorage visits increased from `1` to `2`, with the added visit preserving hospital, reason, summary, plan, date, and next date.
+  - Verified the visit panel summary changed to `전체 2개 · 다가오는 일정 2개 · 14일 이내 2개 · 요약/계획 2개`.
+  - Verified the appointment reminders showed the new `2일 후` reminder for `cmux 방문 QA 병원` on `2026-06-08` before the original `9일 후` appointment.
+  - Verified the care-queue breakdown reflected `방문2` while the queue total stayed at the existing max visible queue size of `8개`.
+  - Verified the timeline summary changed to `전체 10개 · 방문 2개`, and the timeline contained `cmux 방문 QA 병원 · 방문 기록 직접 QA`.
+  - Verified the local visit feedback and global save chip preserved the visit-specific context; the save chip ended with `브라우저 자동 저장됨`.
+  - Restored the baseline, removed the temporary session key, reloaded the same surface, and confirmed the app returned to one visit, one appointment reminder, no temp visit in storage or DOM, no preview/stale/dialog state, and no browser errors.
+- Changes:
+  - `working.md` only; no source patch needed because visit add, reminder, queue, timeline, and cleanup behavior matched the documented contract.
+- Tests:
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, `get title`, and `errors list`: existing `암관리` CareVault surface confirmed.
+  - PASS baseline eval: visits `1`, visit summary `전체 1개 · 다가오는 일정 1개 · 14일 이내 1개 · 요약/계획 1개`, queue summary `전체 8개`, timeline summary `전체 9개`, and add button missing-required-fields aria confirmed.
+  - PASS direct form fill: all visit fields carried the QA values and add button aria became `방문 기록 추가 · cmux 방문 QA 병원 · 방문 기록 직접 QA 입력 준비됨`.
+  - PASS direct click save: added visit persisted with date `2026-06-06`, next date `2026-06-08`, QA hospital/reason/summary/plan, and visits count `2`.
+  - PASS visit panel/reminder check: visit summary became `전체 2개 · 다가오는 일정 2개 · 14일 이내 2개 · 요약/계획 2개`; appointment reminder list showed the new `2일 후` QA visit and the original `9일 후` appointment.
+  - PASS care queue/timeline check: queue breakdown reflected `방문2`, timeline summary became `전체 10개 · 방문 2개`, and the QA visit appeared in the timeline.
+  - PASS save feedback check: row feedback and global save chip showed `cmux 방문 QA 병원 방문 기록 추가됨 · 방문 기록 직접 QA · 방문일 2026-06-06 · 다음 일정 2026-06-08`, with the global chip adding `브라우저 자동 저장됨`.
+  - PASS cleanup eval after baseline restore and reload: visits back to `1`, no `cmux 방문 QA 병원` in storage or DOM, session test key removed, no export preview/stale alert/dialog, and save chip back to `브라우저 자동 저장됨`.
+  - PASS `cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS console check: only Vite connect/debug messages were present.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun runtime/diff checks, stage only `working.md`, run staged secret checks, then commit and push this QA log.
 
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
