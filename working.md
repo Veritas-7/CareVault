@@ -22270,6 +22270,26 @@
   - Stop the temporary Vite dev server, rerun final runtime/diff checks, then stage only focused paths.
   - Run staged secret scan, commit, push, and record the pushed state if green.
 
+## 2026-06-07 01:35 KST - Post-Push Backup Reattachment Status
+
+- Current Goal:
+  - Record the pushed state after the backup filename-only reattachment slice.
+- Verification:
+  - PASS final runtime clean: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes.
+  - PASS final focused diff check: `git diff --check -- src/backupState.ts src/backupState.test.ts DESIGN.md working.md`.
+  - PASS staged secret scan before commit: `gitleaks protect --staged --no-banner --redact` scanned the staged diff and found no leaks.
+  - PASS staged whitespace check: `git diff --cached --check`.
+- Git state:
+  - PASS source slice pushed: `9c57071 Mark backup attachments for reattachment` reached `origin/main`.
+  - PASS repo sync after push: `git status --short --branch` showed `main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and both local/remote short SHAs were `9c57071`.
+- Runtime/browser notes:
+  - The temporary Vite dev server was stopped after direct QA.
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened for the post-push check.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Next durable app slice:
+  - Continue direct-click QA from the same existing `암관리` CareVault browser if more CareVault polish is requested.
+  - Start with `working.md`, `DESIGN.md`, current git/runtime state, and the existing `surface:7` browser identity before editing.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
