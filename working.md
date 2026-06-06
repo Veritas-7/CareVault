@@ -20782,3 +20782,24 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver-share section-scoped record staleness, record mutation paths outside vitals, or another low-risk patient workflow.
+
+## 2026-06-06 19:16 KST - Caregiver Excluded-Section Freshness cmux QA
+
+- Improvement target:
+  - Verify an open caregiver-share HTML preview does not become stale when a record changes only inside a share section that was excluded at preview generation time.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; save chip was `브라우저 자동 저장됨`; caregiver sections were all included; counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`; no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS section exclusion: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverSectionScopeBaseline"]`, clicked the real `혈압·혈당·체온` caregiver section checkbox off, persisted `vitals: false`, and saw topbar share scope update to `포함 6개 · 제외 1개`.
+  - PASS scoped preview open: clicked the real `공유본 미리보기` action with aria `보호자 공유본 미리보기 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 6개 · 제외 1개`; preview opened with focus on `.export-preview-panel`, summary chips `97줄`, `47,302자`, `69,738B`, `근거/출처 104개`, and copy/print/download enabled.
+  - PASS excluded content: caregiver section summary aria was `보호자 공유본 포함 요약 · 포함 6개: 진료, 질문, 서류, 증상, 검사, 음식 · 제외 1개: 혈압·혈당·체온`; preview HTML did not contain the vital section, `혈압 128/78`, or vital-derived `활력 ·` queue rows.
+  - PASS excluded-record mutation: entered `cmux caregiver excluded vital QA` in the real `혈압·혈당·체온 입력 메모` field and clicked the real `혈압 기록 추가` action; persisted vitals increased from `4` to `5`, the added BP record carried the temporary note, and save chip showed `혈압 기록 추가됨 · 주의혈압 범위 · 브라우저 자동 저장됨`.
+  - PASS no stale alert: the open caregiver preview stayed fresh because the changed record belonged to the excluded `혈압·혈당·체온` section; there was no stale alert, no settings-difference panel, no temporary vital text in the preview HTML, no vital section or vital queue rows, summary stayed `97줄`, `47,302자`, `69,738B`, `근거/출처 104개`, and copy/print/download remained enabled with unchanged aria/title summaries.
+  - PASS cleanup: closed the preview, restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, caregiver sections all included again, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, no `cmux caregiver excluded vital QA` in storage or DOM, no export preview panel, no stale alert, no attachment dialog, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; the section-scoped freshness rule remains covered by `src/caregiverExport.test.ts` through disabled-section fingerprint and preview-section snapshot cases.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for record mutation paths outside vitals, backup import/export edge cases, or another low-risk patient workflow.
