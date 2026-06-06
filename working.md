@@ -21672,3 +21672,23 @@
 - Next durable app slice:
   - Stage only the two test files plus `working.md`, run staged secret checks, then commit/push this source-level regression coverage.
   - Continue to defer cmux app restart/quit/force-quit/replacement recovery until the user explicitly approves it.
+
+## 2026-06-06 23:27 KST - Build Gate While cmux Is Blocked
+
+- Improvement target:
+  - Continue non-browser verification while the required single cmux browser surface remains blocked.
+- Runtime/browser notes:
+  - `surface:7` still timed out on `cmux browser --surface surface:7 snapshot --compact --max-depth 1`.
+  - Shallow cmux/app checks still work: `cmux ping` returned `PONG`, `cmux browser-status` returned `enabled`, and the CareVault Vite server returned HTTP `200` on `127.0.0.1:1420`.
+- Changes:
+  - No source code changed. This entry records verification state after the caregiver stale-guard source tests.
+- Verification:
+  - PASS `npm run build`: `tsc && vite build` completed, transformed `2475` modules, and produced the current `dist/` assets without dirtying the repo.
+  - FAIL `npm run runtime:doctor:dev`: port `1420` is served by this project's Vite process, but the current-source Tauri dev CLI and debug CareVault binary are not running. This is expected for the current Vite-only server state and does not prove direct cmux browser recovery.
+  - PASS `git status --short --branch && git diff --stat`: clean/synced before this `working.md` note.
+- Current state:
+  - The repo is dirty with only this `working.md` verification note.
+  - Direct caregiver-share fresh-preview confirmation and localStorage cleanup are still blocked by cmux workspace/surface control.
+- Next durable app slice:
+  - Commit/push this verification note after staged checks.
+  - Resume direct cmux QA only after `surface:7`/`workspace:4` control recovers or the user explicitly approves cmux app recovery.
