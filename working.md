@@ -20371,6 +20371,26 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit summary edge cases, timeline source-link rows, or another low-risk patient workflow.
 
+## 2026-06-06 18:16 KST - Timeline Source Evidence Rows cmux QA
+
+- Improvement target:
+  - Verify the current recent-timeline source-backed rows expose row-position-specific evidence labels and safe external-link attributes without opening another browser tab.
+  - Confirm the live timeline summary and source rows match the current restored patient dataset.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS summary: timeline summary aria was `최근 타임라인 요약 전체 9개 · 활력 4개 · 방문 1개 · 서류 1개 · 증상 1개 · 질문 1개 · 검사 1개 · 근거 포함 5개`, and 8 visible timeline rows rendered.
+  - PASS evidence rows: the visible source-backed rows were current row 2 `혈압 128/78 mmHg`, row 4 `검사 WBC · 3.4 10^3/uL`, row 7 `혈압 126/78 mmHg`, and row 8 `혈당 146 mg/dL (식후 2시간)`.
+  - PASS row-specific labels: evidence link aria/title values included the date plus `최근 타임라인 2번째`, `4번째`, `7번째`, and `8번째` row positions, avoiding duplicate accessible names.
+  - PASS source targets: BP rows linked to `질병관리청 국가건강정보포털 고혈압`, WBC linked to `서울아산병원 전혈구검사 참고치`, and glucose linked to `대한당뇨병학회 당뇨병 관리 목표`.
+  - PASS single-browser guard: source evidence links were inspected by DOM attributes only and were not clicked because they intentionally use external targets; URL stayed `http://127.0.0.1:1420/#care-plan`, save chip stayed `브라우저 자동 저장됨`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; repeated timeline source-label uniqueness remains covered by `src/timelineSourceEvidenceLabels.test.ts`, and vital/lab timeline evidence by `src/vitalTimelineDisplay.test.ts` and `src/timelineMetric.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary edge cases, standards coverage disclosure, or another low-risk patient workflow.
+
 ## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
 
 - Improvement target:
