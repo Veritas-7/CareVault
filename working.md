@@ -23358,6 +23358,34 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 03:51 KST - Future Visit Appointment Reminder Direct QA
+
+- Improvement target:
+  - Directly verify that a future hospital visit with no `nextDate` still appears in the visible `다음 예약 알림` list using the visit date itself.
+  - Keep the check to the existing `workspace:4` / `surface:7` browser and restore the localStorage baseline after the QA visit is added.
+- Duplicate-slice review:
+  - Recent same-surface work covered visit add/save feedback, timeline count changes, care-queue empty recovery, and appointment reminder pure-function tests.
+  - I did not find recent same-surface DOM evidence for the fallback path where `nextDate` is empty and the future visit `date` becomes the appointment reminder date.
+- Planned verification:
+  - Start a temporary Vite runtime on `127.0.0.1:1420`.
+  - Capture the current `carevault.v1` baseline in sessionStorage.
+  - Fill the real visit form with a future visit date and blank next date, add it through the real button, and confirm the reminder list sorts the new appointment ahead of the baseline reminder.
+  - Restore the baseline, remove the QA session key, reload only the same surface, and check browser errors/console.
+- Progress:
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; reused only the existing `암관리` `workspace:4` / `surface:7` browser at `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: title `CareVault`, ready state `complete`, storage keys only `carevault.v1`, counts `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`, save chip `브라우저 자동 저장됨`, one appointment reminder `9일 후 · 종양내과 · 정기 추적 · 2026-06-15`, and the test baseline stored in `sessionStorage.carevault.__testFutureVisitReminderBaseline`.
+  - PASS real form fill: entered visit date `2026-06-08`, hospital `cmux 미래방문 QA`, reason `예약 알림 fallback`, blank `nextDate`, summary `미래 방문일 알림 직접 QA`, and plan `다음 일정 없이 방문일 알림 확인`.
+  - PASS add-button readiness: the real add button aria/title became `방문 기록 추가 · cmux 미래방문 QA · 예약 알림 fallback 입력 준비됨`.
+  - PASS real add click: saved a second visit with `nextDate: ""`; local feedback showed `cmux 미래방문 QA 방문 기록 추가됨 · 예약 알림 fallback · 방문일 2026-06-08`, and the save chip added `브라우저 자동 저장됨`.
+  - PASS visible reminder fallback: the reminder list showed `2일 후 · cmux 미래방문 QA · 예약 알림 fallback · 2026-06-08` with `reminder-watch`, sorted before the baseline `9일 후 · 종양내과 · 정기 추적 · 2026-06-15` reminder; section summary changed to `8개 확인 항목 · 예약 2개`, and visit summary to `전체 2개 · 다가오는 일정 2개 · 14일 이내 2개 · 요약/계획 2개`.
+  - PASS cleanup: restored the captured `carevault.v1`, removed the test session key, reloaded only the same `surface:7`, and confirmed counts returned to `visits 1`, no `cmux 미래방문 QA` or `예약 알림 fallback` remained in DOM/storage, storage keys were only `carevault.v1`, session test keys were empty, one baseline reminder remained, no export preview/stale alert was open, and the save chip returned to `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite `connecting` / `connected` debug logs.
+- Issues:
+  - No source defect found in this slice. The fallback from blank `nextDate` to future visit `date` works in the live DOM and persisted state.
+- Next Steps:
+  - Stop the temporary Vite runtime.
+  - Run focused appointment/visit tests, diff checks, staged secret checks, then commit and push this QA-only `working.md` update.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
