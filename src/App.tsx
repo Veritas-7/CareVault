@@ -336,6 +336,7 @@ import {
   formatExportPreviewFreshActionDescription,
   formatExportPreviewFreshActionVisibleLabel,
   formatExportPreviewPrintDescription,
+  formatExportPreviewPrintWindowFailedStatus,
   formatExportPreviewPrintStatus,
   formatExportPreviewStaleStatus,
   type ExportPreviewFreshActionReason,
@@ -3530,10 +3531,11 @@ function App() {
   const printExportPreview = () => {
     if (!exportPreview) return;
     if (!guardFreshExportPreview()) return;
+    const summary = buildExportPreviewSummary(exportPreview.content);
 
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
-      setSaveLabel("미리보기 인쇄 창 열기 실패");
+      setSaveLabel(formatExportPreviewPrintWindowFailedStatus(exportPreview.format, summary));
       return;
     }
 

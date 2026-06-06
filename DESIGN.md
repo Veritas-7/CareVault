@@ -737,6 +737,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-06: Made direct text-file exports fail closed in Safari/WebKit download-hostile surfaces by copying the export content to the clipboard with explicit fallback status instead of navigating the app to a `blob:` document.
 - 2026-06-06: Made every external link in caregiver-share HTML exports open with `target="_blank"` and `rel="noreferrer"` so official-source navigation does not replace the share document.
 - 2026-06-06: Required a typed food query before the nutrition-panel `질문 초안` action can appear, while still allowing low-lab immune-food context to generate a clinician question for unclassified typed foods.
+- 2026-06-06: Made export-preview print-window failure feedback preserve the same preview format, line, character, byte, and source-marker summary as successful print feedback.
 
 ## Do's and Don'ts
 

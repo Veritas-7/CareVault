@@ -19365,3 +19365,25 @@
   - The remaining typed-unclassified live cmux click check is blocked on current cmux workspace/surface automation recovery.
 - Next durable app slice:
   - Recover the existing `암관리` cmux workspace/surface without opening a new browser, then complete the typed-unclassified food question live check and restore any mutated CareVault browser state.
+
+## 2026-06-06 11:07 KST - Export Preview Print Failure Summary
+
+- Improvement target:
+  - Improve export-preview failed print feedback so blocked popup/error states preserve the same format, size, and source-marker context as successful print feedback.
+  - Keep working while cmux browser automation is blocked, without opening any new browser pane/tab.
+- Change:
+  - Added `formatExportPreviewPrintWindowFailedStatus()` in `src/exportPreviewSummary.ts`.
+  - Updated `printExportPreview()` in `src/App.tsx` so `window.open()` failure reports `{format} 미리보기 인쇄 창 열기 실패` plus the compact line/character/byte/source-marker summary.
+  - Extended `src/exportPreviewSummary.test.ts` to pin the failed print-window status text.
+  - Added a `DESIGN.md` decision-log entry for print-window failure feedback preserving the visible preview summary.
+- Runtime/browser notes:
+  - BLOCKED: cmux browser automation remains unavailable. `cmux ping`, `cmux browser-status`, and `cmux capabilities` respond, but `surface:7`, visible `surface:11`, workspace list/select, window list, `system.tree`, and browser url/snapshot/errors commands time out. `cmux config reload` also timed out. No new browser pane/tab was opened.
+  - PASS server check: Vite dev server still responds at `http://127.0.0.1:1420/`.
+- Automated verification:
+  - PASS: `git diff --check -- src/App.tsx src/exportPreviewSummary.ts src/exportPreviewSummary.test.ts`.
+  - PASS: `npm run test -- src/exportPreviewSummary.test.ts`, 8 tests.
+- Current state:
+  - Code changes are narrow and verified by focused tests.
+  - Live print popup failure QA still needs the existing cmux browser automation layer to recover.
+- Next durable app slice:
+  - Recheck cmux browser automation recovery, then live-test export-preview print failure with a stubbed `window.open` or continue with another automated-only UX slice if cmux remains blocked.
