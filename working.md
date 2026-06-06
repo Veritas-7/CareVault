@@ -25886,3 +25886,29 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 08:46 KST - Care Queue Empty Link Hit Target QA
+
+- Improvement target:
+  - Align the care queue empty-state recovery links with the `DESIGN.md` narrow/mobile control target of at least 44px.
+  - Keep this slice scoped to the existing empty queue recovery UI; do not change queue generation, saved records, or storage schema.
+- Change:
+  - `src/App.css`: increased `.action-empty-links a` `min-height` from `34px` to `44px`.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#care-plan`.
+  - PASS disposable empty state: captured baseline `localStorage["carevault.v1"]` length `1871`, stored it only in session storage, then injected an empty care queue state with no vitals, visits, documents, symptoms, questions, labs, or cancer-care mode.
+  - PASS empty-state semantics: `.action-empty` rendered with `role="status"` and `aria-label="진료 준비 큐 비어 있음"`.
+  - PASS recovery links: the five links rendered as `혈압·혈당 입력` `#records`, `암 관리 모드 켜기` `#profile`, `증상·질문 기록` `#care-plan`, `검사 수치 입력` `#labs`, and `서류 조치 추가` `#documents`.
+  - PASS hit target: all five `.action-empty-links a` elements reported computed `min-height: 44px` and actual `getBoundingClientRect().height` `44`.
+  - PASS representative navigation: clicked the real `서류 조치 추가` recovery link and the existing `surface:7` moved to `http://127.0.0.1:1420/#documents`.
+  - PASS cleanup: restored the captured baseline, removed the session backup key, reloaded `#care-plan`, and confirmed storage length `1871`, storage keys only `carevault.v1`, session storage empty, saved record counts restored, cancer-care mode restored, no empty-state box, no preview dialog, no stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only normal Vite `[debug] [vite] connecting...` and `[debug] [vite] connected.` lines.
+- Verification:
+  - PASS focused tests: `npm test -- src/careActionQueueEmptyState.test.ts src/careActionQueueMetric.test.ts src/careActionQueue.test.ts` => `3 passed`, `33 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `531 passed`.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff check: `git diff --check -- src/App.css`.
+- Current state:
+  - `src/App.css` and `working.md` are dirty with this verified UI polish and QA evidence.
+  - Next: run final diff checks, stage only these paths, run staged secret scan, commit/push, then record post-push status.

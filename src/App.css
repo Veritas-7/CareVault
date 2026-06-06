@@ -1832,7 +1832,7 @@ label,
 .action-empty-links a {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 10px;
   border: 1px solid #c7d8da;
   border-radius: 8px;
