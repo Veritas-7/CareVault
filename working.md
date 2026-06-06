@@ -21541,3 +21541,29 @@
 - Next durable app slice:
   - Commit/push this direct-QA log after staged checks.
   - Continue with export-preview stale-guard QA or another low-risk saved-document workflow in the same `surface:7` when it remains responsive.
+
+## 2026-06-06 22:59 KST - Visit Summary Preview Stale Guard Partial QA
+
+- Improvement target:
+  - Continue export-preview stale-guard QA in the same existing CareVault `surface:7`.
+  - Start with the lowest-risk path: generate a 30-day visit summary preview, change the range, and verify stale-preview protections before export actions.
+- Runtime/browser notes:
+  - PASS setup: repo was clean/synced at `b47b4ab`, `surface:7` responded at `http://127.0.0.1:1420/`, and the CareVault state was still restored to the baseline saved-document state.
+  - PASS 30-day preview: clicked the real `진료 요약 미리보기 · 범위 최근 30일` button. The export preview panel opened with active actions for copy, print, download, and close.
+  - PASS stale range guard: changed `진료 요약 범위` from `30d` to `7d`. The preview remained visible but stale; the page showed `현재 미리보기는 이전 범위로 생성되었습니다.`, the fresh action `새 미리보기 생성 · 진료 요약 · 변경된 범위 적용`, and the stale preview copy/print/download buttons were disabled with the reason `진료 요약 범위가 바뀌어 다시 생성이 필요합니다.`
+  - BLOCKED fresh-preview completion: clicking the fresh action through `cmux browser --surface surface:7 click` timed out. The next DOM probe showed the automation context had fallen to `about:blank` (`htmlLength=39`), then `surface:7` `get-url`, `snapshot`, workspace selection, navigate, and reload probes timed out. `cmux ping` returned `PONG`, `cmux browser-status` returned `enabled`, and `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`, so the app server remained healthy.
+  - Runtime guard: no new browser pane/tab/surface was opened and cmux was not restarted, quit, force-quit, or signaled.
+- Changes:
+  - No source code changed in this slice. This is a partial direct browser QA result plus a runtime blocker note.
+- Verification:
+  - PASS stale guard probe: `range="7d"`, stale alert present, fresh button present, and stale preview copy/print/download disabled.
+  - PASS server health: `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
+  - PASS cmux health: `cmux ping` returned `PONG` and `cmux browser-status` returned `enabled`.
+  - BLOCKED same-surface completion: `surface:7` remained blocked after same-surface navigate/reload attempts.
+- Current state:
+  - The repo is clean except for this `working.md` blocker entry.
+  - CareVault source and localStorage were not intentionally changed in this slice; the preview range change was transient React UI state.
+  - The required same browser surface needs to recover before continuing direct browser QA.
+- Next durable app slice:
+  - Recover only the existing `surface:7` and re-run the visit summary fresh-preview action to verify the stale alert clears and copy/print/download become active for the 7-day preview.
+  - If `surface:7` stays blocked, report the cmux surface blocker and ask the user before any cmux app restart.
