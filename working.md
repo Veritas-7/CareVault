@@ -20849,3 +20849,23 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import edge variants, non-vital record mutations in CSV/Markdown previews, lab-result flows, or another low-risk patient workflow.
+
+## 2026-06-06 19:30 KST - Lab Preset Question cmux QA
+
+- Improvement target:
+  - Verify the 검사 수치 프리셋 flow through real controls: preset preview, abnormal lab save status, source-backed follow-up question generation, duplicate-question disabled state, and clean baseline restore.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7`; no new browser pane/tab was opened. Started from `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, one baseline lab (`WBC 3.4 10^3/uL`) and one baseline question.
+  - PASS navigation/baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testLabPresetQuestionBaseline"]`, clicked the real sidebar `#labs` navigation link, and confirmed the route moved to `http://127.0.0.1:1420/#labs`.
+  - PASS preset preview: selected the real `검사 수치 입력 프리셋 선택` dropdown option `HbA1c 당화혈색소`; the preview displayed item `HbA1c`, range `5.6 % 이하`, unit `%`, adult-common applicability text, KDCA/대한당뇨병학회 note, and source `질병관리청 국가건강정보포털 당뇨병`; preset feedback showed `검사 프리셋 적용: HbA1c 당화혈색소 · 기준 5.6 % 이하 · 성인 공통 입력 보조값 · 근거 질병관리청 국가건강정보포털 당뇨병`.
+  - PASS abnormal lab save: entered value `7.2` in the real `검사 수치 입력 값` control and clicked `검사 수치 추가`; persisted labs increased `1 -> 2`, the save chip showed `HbA1c 검사 수치 추가됨 · 7.2 % · 판정 기준보다 높음 · 근거 포함 · 브라우저 자동 저장됨`, and the saved lab card displayed `HbA1c 7.2 %`, range `기준 5.6 % 이하`, source-backed note text, `근거: 질병관리청 국가건강정보포털 당뇨병`, `질문으로 추가`, and status mark `높음`.
+  - PASS follow-up question action: clicked the new lab card's real `질문으로 추가` button with aria `HbA1c 검사 질문 추가 · 메모와 근거 포함`; persisted questions increased `1 -> 2`, the generated question had topic `검사 수치`, priority `high`, status `open`, included `2026-06-06 HbA1c 7.2 %가 기준 5.6 % 이하보다 높게 기록됐습니다`, included the existing memo/evidence, and included the KDCA source URL.
+  - PASS duplicate prevention: after question creation, the lab card feedback showed `HbA1c 검사 질문 추가됨 · 메모와 근거 포함`, save chip matched the same message plus `브라우저 자동 저장됨`, and the lab action changed to disabled `질문 추가됨` with aria `HbA1c 검사 질문 이미 추가됨 · 메모와 근거 포함`.
+  - PASS cleanup: restored the captured `localStorage` snapshot, removed `carevault.__testLabPresetQuestionBaseline`, reloaded the same surface, and confirmed baseline was back to one WBC lab and one 혈액검사 question, no `HbA1c`, `7.2`, or generated follow-up text in storage, no lab/preset/follow-up feedback, and `No browser errors`; then clicked back to `http://127.0.0.1:1420/#care-plan`.
+- Automated verification:
+  - No code changed in this QA-only slice; lab preset metadata, source evidence, generated lab follow-up question copy, and visit-packet inclusion remain covered by `src/labPresets.test.ts`, `src/labSourceEvidence.test.ts`, and `src/visitPacket.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface, currently returned to `#care-plan`.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for nutrition/food safety flows, backup import variants, non-vital CSV/Markdown mutations, or another low-risk patient workflow.
