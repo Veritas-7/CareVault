@@ -24211,3 +24211,29 @@
 - Next durable app slice:
   - Continue source-level false-positive stale-preview hardening only if direct cmux control remains unavailable.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
+## 2026-06-07 05:07 KST - Caregiver Food Query Whitespace Direct QA
+
+- Current Goal:
+  - Resolve the previously blocked direct browser confirmation for caregiver-share food-query trim fingerprints.
+  - Verify that an open caregiver preview stays fresh when the nutrition query changes only by leading/trailing whitespace, while a meaningful food-query change still raises the stale-preview guard.
+- Context:
+  - `2026-06-06 23:53 KST - Caregiver Food Query Fingerprint Trim` added the source/test contract but left direct caregiver-share fresh-preview confirmation blocked by cmux surface control.
+  - Runtime doctor reported port `1420` free before starting temporary Vite, and the existing `surface:7` URL read was available at `http://127.0.0.1:1420/#care-plan`.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS recovered the known stale JS context once at setup and once after cleanup reload by setting `location.href` on the same `surface:7`; cmux was not restarted, quit, force-quit, replaced, or signaled.
+  - PASS baseline: stored `localStorage["carevault.v1"]` in `sessionStorage["carevault.__testCaregiverFoodWhitespaceBaseline"]`; counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, with empty stored/rendered `foodQuery`, no preview, and no stale alert.
+  - PASS initial preview: typed `브로콜리` into the real `암환자 음식 판단 음식 또는 식단 입력` textarea and clicked the real `보호자 공유본 미리보기` action. The preview opened with no stale alert, copy/print/download enabled, summary aria `98줄 · 49,972자 · 73,293B · 근거/출처 112개`, stored/rendered `foodQuery` `브로콜리`, and preview content included `브로콜리` but not `생굴`.
+  - PASS whitespace-only freshness: changed the same real textarea to `  브로콜리  `. Stored/rendered `foodQuery` preserved the leading/trailing spaces, the save chip normalized the display to `음식 판단 업데이트됨 · 브로콜리 · 식단에 넣기 좋은 후보 · 매칭 1개 · 공식 출처 3개 · 브라우저 자동 저장됨`, the open caregiver preview showed no `.export-preview-stale-alert`, and copy/print/download remained enabled with the same `98줄 · 49,972자 · 73,293B · 근거/출처 112개` summary.
+  - PASS meaningful-change stale guard: changed the same textarea to `브로콜리, 생굴`; the open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 기록 변경 감지`, exposed `공유 기록 반영`, and disabled copy/print/download with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.` in each aria/title.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled, summary updated to `98줄 · 50,119자 · 73,503B · 근거/출처 112개`, and the refreshed preview contained `브로콜리`, `생굴`, and `국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+  - PASS cleanup: restored the captured `carevault.v1`, removed the temporary session key, reloaded/recovered only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, counts restored, empty stored/rendered `foodQuery`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no preview/dialog/stale alert, no QA food residue, and `No browser errors`.
+- Verification:
+  - PASS `npm run runtime:doctor` before and after the slice; port `1420` was free afterward and no CareVault dev/release processes remained.
+  - PASS `npm test -- src/caregiverExport.test.ts src/caregiverShareSettings.test.ts` => `2 passed`, `76 passed`.
+  - PASS `git diff --check -- working.md`.
+  - PASS direct cmux same-surface QA as above.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
