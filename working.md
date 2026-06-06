@@ -25155,6 +25155,31 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 07:24 KST - Preview Download Clipboard Fallback Direct QA
+
+- Current Goal:
+  - Directly verify the `downloadExportPreview()` Safari/WebKit clipboard-fallback success path after the preview-scoped fallback-label fix.
+  - Confirm that the real preview download action reports `진료 요약 미리보기 다운로드 대신 클립보드 복사됨` with the same line/character/byte/source summary, without starting a blob/anchor download.
+- Context:
+  - The prior source fix scoped preview download failure/unsupported labels to `미리보기`.
+  - Same-surface direct QA already covered rejected clipboard and missing clipboard branches; this slice fills the successful clipboard-fallback branch on the current `surface:7`.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS target found: `cmux browser --surface surface:7 goto http://127.0.0.1:1420/#care-plan --snapshot-after` showed the real `진료 요약 미리보기 · 범위 최근 30일` button.
+  - PASS preview open: clicked the real preview button; the panel exposed `진료 요약 다운로드 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS fallback setup: in the same WebView, forced Safari-like UA/vendor, installed a successful `navigator.clipboard.writeText` capture, instrumented `URL.createObjectURL` and `HTMLAnchorElement.prototype.click`, and captured `localStorage["carevault.v1"]` baseline length `1871`.
+  - PASS fallback click: clicked the real preview download button; `.save-status-chip` showed `진료 요약 미리보기 다운로드 대신 클립보드 복사됨 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS clipboard payload: instrumentation showed `writeCount: 1`, payload length `32,554`, first line `# CareVault 진료 요약`, and source/evidence markers present.
+  - PASS no-download fallback: instrumentation showed `blobCalls: 0` and `anchorClicks: 0`; no blob or anchor download path started.
+  - PASS safety: `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline, storage length stayed `1871`, the preview remained open during fallback feedback, no dialog opened, and URL stayed `http://127.0.0.1:1420/#care-plan`.
+  - PASS cleanup: reloaded only `surface:7`; confirmed temporary QA global was gone, clipboard writer was native code, preview was closed, save chip returned to `브라우저 자동 저장됨`, storage length stayed `1871`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/exportPreviewSummary.test.ts src/textFileDownload.test.ts` => `2 passed`, `14 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 06:45 KST - Food Question Empty Input Failure Affordance
 
 - Current Goal:
