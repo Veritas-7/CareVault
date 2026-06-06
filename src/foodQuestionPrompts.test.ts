@@ -104,6 +104,42 @@ describe("foodQuestionPrompts", () => {
     );
   });
 
+  it("requires a typed food query before low lab context can create a clinician question", () => {
+    const immuneContext = buildImmuneFoodSafetyContext([
+      {
+        date: "2026-06-01",
+        name: "WBC",
+        value: "3.4",
+        unit: "10^3/uL",
+        lower: "4.0",
+        upper: "10.0",
+        note: "면역저하 식품 안전 질문과 연결",
+      },
+    ]);
+    const emptyInput = {
+      assessment: assessCancerFood(""),
+      foodQuery: "   ",
+      immuneContext,
+    };
+    const unclassifiedInput = {
+      assessment: assessCancerFood("흰쌀밥"),
+      foodQuery: "흰쌀밥",
+      immuneContext,
+    };
+    const unclassifiedDraft = buildFoodQuestionDraft(unclassifiedInput);
+
+    expect(buildFoodQuestionDraft(emptyInput)).toBeNull();
+    expect(formatFoodQuestionDraftUnavailableStatus(emptyInput)).toBe(
+      "음식 판단 질문 초안 준비 실패 · 입력 음식 입력 없음 · 일치 0개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 2개",
+    );
+    expect(unclassifiedDraft).toMatchObject({
+      priority: "high",
+      topic: "식단·음식 안전",
+    });
+    expect(unclassifiedDraft?.question).toContain("현재 음식/식단(흰쌀밥)");
+    expect(unclassifiedDraft?.question).toContain("검사 근거: 서울아산병원 전혈구검사 참고치");
+  });
+
   it("builds accessible food question button labels with evidence scope", () => {
     expect(buildFoodQuestionButtonLabels(3)).toEqual({
       ariaLabel: "음식 판단 진료 질문 초안 만들기 · 근거 3개 포함",

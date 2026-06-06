@@ -59,7 +59,7 @@ export function buildFoodQuestionDraft({
 }: FoodQuestionDraftInput): FoodQuestionDraft | null {
   const query = foodQuery.trim();
   const matches = assessment.matches;
-  if (!query && !immuneContext) return null;
+  if (!query) return null;
   if (!matches.length && !immuneContext) return null;
 
   const matchedSummary = summarizeMatches(matches);

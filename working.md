@@ -19336,3 +19336,32 @@
   - Only this `working.md` QA entry is unstaged.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for food input empty/unclassified failure states, remaining source-link navigation safety, or any stale preview path not yet covered.
+
+## 2026-06-06 10:58 KST - Food Question Empty Input Guard
+
+- Improvement target:
+  - Tighten the nutrition-panel `질문 초안` action so a typed food query is required before generating a clinician-question draft.
+  - Preserve the intended low-WBC/ANC immune-food context behavior for typed but unclassified foods, so a user can still ask the care team about a specific food even when it has no local match rule.
+- Change:
+  - Updated `src/foodQuestionPrompts.ts` so empty or whitespace-only `foodQuery` returns no draft even when immune-food lab context exists.
+  - Added regression coverage in `src/foodQuestionPrompts.test.ts` for empty low-lab input returning null and typed unclassified `흰쌀밥` still producing a high-priority source-backed draft.
+  - Added a `DESIGN.md` decision-log entry for the typed-query requirement.
+- Runtime/browser notes:
+  - PASS setup: reused only existing cmux surfaces; no new browser pane/tab was opened.
+  - BEFORE FIX: in the existing CareVault cmux surface, clearing the food input still left `질문 초안` visible because the low-WBC immune-food context alone produced a draft.
+  - PASS after fix: clearing the food input showed `음식 판단 업데이트됨 · 입력 없음 · 판단 근거 부족 · 매칭 없음 · 공식 출처 2개 · 브라우저 자동 저장됨`, `음식 판단 요약 매칭 없음 · 분류 대기 · 공식 출처 2개`, 0 food chips, 0 draft buttons, and no draft feedback.
+  - BLOCKED live follow-up: while attempting the typed unclassified `흰쌀밥` cmux check, `surface:7` automation timed out and the cmux window remained focused on the separate `프롬프트` workspace. `cmux ping` still returned `PONG`, the Vite server still returned HTTP 200, and no new browser was opened; `cmux workspace select workspace:4`, `surface:7` snapshot/url/reload, and workspace list commands timed out. Computer Use confirmed the visible cmux window was on the `프롬프트` workspace with the right browser at PromptVault `http://127.0.0.1:5173/`.
+  - READ-ONLY cleanup check: broad disk search under `/Users/wj/Library/Application Support` did not find `carevault.__testFoodEmptyBaseline` or `carevault.v1` strings.
+- Automated verification:
+  - PASS: `git diff --check -- src/foodQuestionPrompts.ts src/foodQuestionPrompts.test.ts DESIGN.md`.
+  - PASS: `npm run test -- src/foodQuestionPrompts.test.ts`, 5 tests.
+  - PASS: `npm run test`, 62 files and 500 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+- Current state:
+  - Code changes are verified by automated tests and one live empty-input cmux check.
+  - The remaining typed-unclassified live cmux click check is blocked on current cmux workspace/surface automation recovery.
+- Next durable app slice:
+  - Recover the existing `암관리` cmux workspace/surface without opening a new browser, then complete the typed-unclassified food question live check and restore any mutated CareVault browser state.
