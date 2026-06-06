@@ -19811,3 +19811,24 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import/export failure states, caregiver share copy, or another low-risk patient workflow.
+
+## 2026-06-06 16:45 KST - Metric Standards Clipboard cmux QA
+
+- Improvement target:
+  - Continue the non-mutating clipboard sweep by verifying profile sex-standard and dashboard-standard copy actions in the existing WebKit cmux browser.
+  - Confirm copy feedback is visible while stored record counts and backup metrics stay unchanged.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: `navigator.clipboard.writeText` was available.
+  - PASS baseline buttons: `성별 기준 복사` was enabled with aria/title `프로필 성별 기준 복사 · 여성 · 5개 기준 · 근거 5개`; `대시보드 기준 복사` was enabled with aria/title `대시보드 건강 기준 복사 · 5개 기준 · 근거 4개`.
+  - PASS profile standard copy: clicked `성별 기준 복사`; feedback showed `프로필 성별 기준 복사됨 · 여성 · 5개 기준 · 근거 5개`.
+  - PASS dashboard standard copy: clicked `대시보드 기준 복사`; feedback showed `대시보드 건강 기준 복사됨 · 5개 기준 · 근거 4개`, while the profile feedback remained visible.
+  - PASS non-mutating guard: backup button stayed `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`; stored counts remained vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; profile/dashboard standards clipboard labels and text remain covered by `src/healthStandards.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import failure states, caregiver share export, or another low-risk patient workflow.
