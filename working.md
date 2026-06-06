@@ -20237,3 +20237,24 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for symptom required-field specificity, caregiver export preview, or another low-risk patient workflow.
+
+## 2026-06-06 17:46 KST - Symptom Body-Only Save cmux QA
+
+- Improvement target:
+  - Verify the symptom form honors the current requirement that either a symptom name or a body note is enough to save.
+  - Confirm a body-only symptom save creates exactly one temporary symptom record and can be restored without residue.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: stored counts were vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`, food `0`.
+  - PASS ready state: kept the symptom name empty, entered body note `식후 피로가 심해짐 body-only cmux QA`, and the add action aria changed from required-field copy to `증상 기록 추가 · 증상 기록`; the preview showed `저장될 기록 종류` / `증상 기록`.
+  - PASS save: clicked `증상 기록 추가`; local feedback showed `증상 기록 추가됨`, save chip showed `증상 기록 추가됨 · 브라우저 자동 저장됨`, and the form reset to empty.
+  - PASS saved row data: the temporary saved symptom tail had `symptom` empty, `body` `식후 피로가 심해짐 body-only cmux QA`, severity `3`, and empty medication/action.
+  - PASS mutation scope: only `symptoms` increased by `1`; vitals/questions/visits/documents/deleted documents/labs/food deltas stayed `0`.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed load-state `OK`, URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, stored symptom count back to `1`, no symptom feedback rows, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; body-only acceptance remains covered by `src/entryValidation.test.ts`, and symptom save labels by `src/symptomRecordLabels.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver export preview, backup import restore details, or another low-risk patient workflow.
