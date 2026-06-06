@@ -188,7 +188,7 @@ export function buildCaregiverExportContentFingerprint(
             title: document.title,
           }))
       : [],
-    foodQuery: enabledSections.food ? state.foodQuery ?? "" : "",
+    foodQuery: enabledSections.food ? state.foodQuery?.trim() ?? "" : "",
     labResults: enabledSections.labs ? state.labResults : [],
     profile,
     questions: enabledSections.questions

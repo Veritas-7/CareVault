@@ -163,6 +163,19 @@ describe("caregiverExport", () => {
     expect(fingerprint).not.toContain("attachmentPath");
   });
 
+  it("trims caregiver food queries in content fingerprints", () => {
+    const fingerprint = buildCaregiverExportContentFingerprint({
+      ...state,
+      foodQuery: "  브로콜리, 자몽 주스  ",
+    });
+    const trimmedFingerprint = buildCaregiverExportContentFingerprint({
+      ...state,
+      foodQuery: "브로콜리, 자몽 주스",
+    });
+
+    expect(trimmedFingerprint).toBe(fingerprint);
+  });
+
   it("ignores completed document changes in caregiver content fingerprints", () => {
     const stateWithCompletedDocument: CaregiverExportState = {
       ...state,
