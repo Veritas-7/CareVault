@@ -22585,6 +22585,48 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 02:09 KST - Visit Summary Preview Stale Direct QA
+
+- Current Goal:
+  - Continue direct-click QA on the visit-summary preview workflow from the same existing `암관리` CareVault browser.
+  - Verify visit-summary preview generation, range/content stale alerts, preview action blocking, fresh preview regeneration, copy action, and cleanup.
+- Context:
+  - Repo started clean and synced at `7f1811a` (`Log CareVault caregiver preview QA status`).
+  - Runtime doctor was clean before this slice: port `1420` free, no CareVault dev process, no installed/release CareVault.app process.
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - `working.md`, `DESIGN.md`, `src/App.tsx`, `src/visitPacket.ts`, and visit packet tests were reread before selecting this QA slice.
+- Progress:
+  - Selected visit-summary preview stale QA because recent direct QA covered caregiver-share preview stale behavior, while visit-summary preview has separate range snapshot and content fingerprint contracts.
+  - Reconfirmed the existing `암관리` `surface:7` browser as `CareVault` at `http://127.0.0.1:1420/` with no browser errors.
+  - Saved a browser-local baseline in `carevault.__testVisitPreviewBaseline`.
+  - Generated a visit summary preview from the real `요약 미리보기` button at the default 30-day range. The preview title was `진료 요약 미리보기 (최근 30일)` and copy/print/download were enabled with 234 lines, 32,554 characters, 55,352B, and 109 source markers.
+  - Changed the visit-summary range to `요약 90일`; the existing preview stayed titled `최근 30일`, the app showed `진료 요약 범위가 바뀌었습니다`, and copy/print/download were disabled with the range-stale reason.
+  - Clicked `요약 범위 반영`; the preview regenerated as `진료 요약 미리보기 (최근 90일)`, stale alerts cleared, and copy/print/download re-enabled.
+  - Changed the saved `혈액검사` question to `답변 완료`; the app showed `진료 요약 기록이 바뀌었습니다`, copy/print/download were disabled with the record-stale reason, and `요약 기록 반영` was offered.
+  - Clicked `요약 기록 반영`; the preview regenerated, stale alerts cleared, actions re-enabled, and the summary changed to 233 lines, 32,482 characters, 55,205B, and 109 source markers.
+  - Stubbed `navigator.clipboard.writeText`, clicked the active visit-summary preview copy button, and confirmed 32,482 characters of Markdown were copied with `# CareVault 진료 요약`, `범위: 최근 90일`, `답변 완료`, the saved question text, and source markers preserved.
+  - Restored the browser localStorage baseline, removed the temporary test key and clipboard stub, reloaded the same surface, and confirmed the app returned to no preview, range `요약 30일`, saved question `확인 필요`, and no browser errors.
+- Changes:
+  - `working.md` only; no source patch needed because visit-summary preview range/content stale behavior matched the documented contract.
+- Tests:
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, `get title`, and `errors list`: existing `암관리` CareVault surface confirmed.
+  - PASS `cmux browser --surface surface:7 eval`: baseline state saved; default visit-summary range `30d` / `요약 30일`; no preview initially.
+  - PASS direct cmux browser click: `요약 미리보기` generated a `최근 30일` Markdown preview with enabled copy/print/download labels carrying line, character, byte, and source-marker counts.
+  - PASS range stale check: selecting `90d` produced `진료 요약 미리보기 범위 변경 감지`, disabled preview actions with `진료 요약 범위가 바뀌어 다시 생성이 필요합니다`, and offered `요약 범위 반영`.
+  - PASS range refresh check: `요약 범위 반영` updated the preview title to `진료 요약 미리보기 (최근 90일)`, cleared stale alerts, and re-enabled preview actions.
+  - PASS content stale check: saved-question `답변 완료` click produced `진료 요약 미리보기 기록 변경 감지`, disabled preview actions with `진료 요약 기록이 바뀌어 다시 생성이 필요합니다`, and offered `요약 기록 반영`.
+  - PASS content refresh check: `요약 기록 반영` cleared stale state, re-enabled preview actions, and regenerated the summary from 234 lines to 233 lines with the answered status reflected.
+  - PASS copy action check: active visit-summary preview copy wrote 32,482 characters of Markdown to a stubbed clipboard, starting with `# CareVault 진료 요약` and preserving `범위: 최근 90일`, `답변 완료`, question text, and source markers.
+  - PASS cleanup eval after baseline restore and reload: no `carevault.__testVisit*` keys, no preview panel, range back to `30d` / `요약 30일`, saved question copy aria/title back to `확인 필요`, and no clipboard stub.
+  - PASS `cmux browser --surface surface:7 errors list`: `No browser errors`.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun runtime/diff checks, stage only `working.md`, run staged secret checks, then commit and push this QA log.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
