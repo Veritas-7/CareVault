@@ -22926,6 +22926,52 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 02:47 KST - Fever Infection Standards Draft Direct QA
+
+- Current Goal:
+  - Verify the `체온·감염 연락 기준` standards-card draft actions through the real existing `암관리` `surface:7` browser.
+  - Cover both the symptom-record draft and clinician-question draft buttons, source-retaining draft content, focus/feedback, non-mutating counts, cleanup, and browser diagnostics.
+- Context:
+  - Repo started clean and synced at `15c8e9d` (`Log CareVault standards filter QA status`).
+  - `DESIGN.md` and the standards implementation require the fever/infection standards card to prepare source-backed symptom and question drafts without saving records automatically.
+  - `src/App.tsx`, `src/healthStandards.ts`, `src/symptomSupportTemplates.ts`, and `src/healthStandards.test.ts` were reread before selecting this non-duplicate direct QA slice.
+- Progress:
+  - Selected fever/infection standards draft QA because recent direct slices covered health-standard filter/copy, sidebar navigation, care queue, chart, visit, export, food, document, lab, saved question, profile, symptom save, and backup flows, but not the real standards-card draft actions.
+  - Reconfirmed the existing `암관리` `surface:7` browser as `CareVault` at `http://127.0.0.1:1420/#care-plan`; no new browser, pane, tab, workspace, surface, or headless browser was opened.
+  - Captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testFeverDraftBaseline"]` before direct clicks.
+  - RED direct click: the real `체온·감염 연락 기준 증상 기록 초안 만들기` button filled the symptom draft, but the adjacent symptom-support band matched `림프부종/다리 붓기` because the generated infection draft body includes `부종`.
+  - Patched the symptom-support matcher so fever/temperature/chills signals take priority for the infection template while `림프부종 감염·악화 신호` still stays mapped to lymphedema.
+  - PASS final direct symptom draft click: the same real standards-card button filled symptom `발열·오한/감염 의심`, severity `5`, body with temperature/chills/urinary/respiratory/catheter observations, action with parseable `출처: 국가암정보센터 감염 의료진 상담 기준 - https://www.cancer.go.kr/lay1/S1T435C439/contents.do`, and focus moved to `증상·부작용 기록 증상명`.
+  - PASS final symptom-support band: rendered `발열·오한/감염 의심`, source href `https://www.cancer.go.kr/lay1/S1T435C439/contents.do`, and action aria `발열·오한/감염 의심 질문 초안 채우기` instead of the previous lymphedema mismatch.
+  - PASS final question draft click: the real `체온·감염 연락 기준 진료 질문 초안 만들기` button filled topic `부작용: 발열·오한/감염 의심`, priority `next-visit`, source-retaining question text with the National Cancer Center URL, and focus moved to `진료 전 질문 내용`.
+  - PASS non-mutating guard: counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`; neither draft action saved a record automatically.
+  - Restored the captured baseline, removed the temporary session key, reloaded the same surface, and confirmed empty symptom/question drafts, no preview, no dialog, and save chip `브라우저 자동 저장됨`.
+- Changes:
+  - `src/symptomSupportTemplates.ts`: added priority fever/temperature/chills keywords for the infection template, excluding generic `감염` to avoid overriding lymphedema infection-warning text.
+  - `src/symptomSupportTemplates.test.ts`: added regression coverage for generated fever/infection draft text and for lymphedema infection-warning text staying mapped to lymphedema.
+  - `working.md`: recorded the direct QA, RED mismatch, fix, and verification evidence.
+- Tests:
+  - PASS `npm run runtime:doctor` before both Vite sessions: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, and same-surface readiness eval: existing `암관리` CareVault surface confirmed at `#care-plan`.
+  - RED direct QA before the patch: standards-card symptom draft filled infection symptom fields but displayed the lymphedema support band.
+  - PASS `npm test -- src/symptomSupportTemplates.test.ts`: 1 file and 20 tests after the first focused fix.
+  - FAIL first broader targeted test run: `npm test -- src/symptomSupportTemplates.test.ts src/healthStandards.test.ts src/careActionQueue.test.ts` failed because generic `감염` priority overrode `림프부종 감염·악화 신호`.
+  - PASS after narrowing priority keywords: `npm test -- src/symptomSupportTemplates.test.ts src/healthStandards.test.ts src/careActionQueue.test.ts`: 3 files and 79 tests.
+  - PASS `npm run typecheck`.
+  - PASS final direct cmux browser QA on current source: symptom and question standards-card draft buttons populate source-backed editable drafts, focus the expected fields, and do not mutate saved record counts.
+  - PASS final cleanup eval: URL `http://127.0.0.1:1420/#care-plan`, empty symptom/question drafts, no `carevault.__test*` keys, no preview, no dialog, and counts restored to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`.
+  - PASS `timeout 8 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 8 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+  - PASS `git diff --check -- src/symptomSupportTemplates.ts src/symptomSupportTemplates.test.ts working.md`.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+  - Fixed in this slice: infection standards-card symptom drafts no longer show the lymphedema support band solely because the infection checklist mentions catheter-site swelling.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Run final runtime/gitleaks/staged checks, then commit and push this source fix plus QA log.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:

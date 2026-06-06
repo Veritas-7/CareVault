@@ -98,6 +98,7 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     id: "infection-fever",
     label: "발열·오한/감염 의심",
     keywords: ["발열", "고열", "체온", "오한", "감염", "식은땀", "38", "fever", "chills"],
+    priorityKeywords: ["발열", "고열", "체온", "오한", "38", "fever", "chills"],
     mealNote:
       "체온, 측정 시간, 오한 지속 시간, 소변 통증·빈뇨, 기침·흉통·숨참, 카테터 부위 발적·부종·분비물 여부를 함께 기록하세요.",
     clinicianQuestion:

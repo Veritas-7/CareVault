@@ -44,6 +44,17 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("통증점수와 진통제 효과")?.id).toBe("pain-management");
   });
 
+  it("keeps generated fever and infection draft text matched to the fever template", () => {
+    expect(
+      findSymptomSupportTemplate(
+        "발열·오한/감염 의심 체온, 측정 시간, 오한 지속 시간, 소변 통증·빈뇨, 기침·흉통·숨참, 카테터 부위 발적·부종·분비물 여부",
+      )?.id,
+    ).toBe("infection-fever");
+    expect(
+      findSymptomSupportTemplate("림프부종 감염·악화 신호와 피부 붉어짐")?.id,
+    ).toBe("lymphedema");
+  });
+
   it("returns no template when the symptom is not mapped", () => {
     expect(findSymptomSupportTemplate("특이 증상 없음")).toBeUndefined();
   });
