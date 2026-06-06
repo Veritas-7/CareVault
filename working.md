@@ -20432,6 +20432,27 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit summary edge cases, cervical-care draft actions with restore, or another low-risk patient workflow.
 
+## 2026-06-06 18:21 KST - Cervical Care Draft Actions cmux QA
+
+- Improvement target:
+  - Verify cervical-care prompt and record-memo draft buttons populate the correct unsaved form fields and local feedback.
+  - Confirm draft actions do not save records and can be cleared by reloading the same browser surface.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS question prompt: opened `다음 진료 질문 초안`, clicked `자궁경부암 추적 자궁경부암 질문 초안 만들기`, and observed save chip plus local `.cervical-care-question-feedback` text `자궁경부암 질문 초안 준비됨: 자궁경부암 추적`.
+  - PASS question draft fields: question topic became `자궁경부암 추적`, question body included the source-backed prompt asking which follow-up tests and intervals to confirm, and focus moved to `진료 전 질문 내용`.
+  - PASS record memo: opened `회복 일정 메모`, clicked `원추절제술 후 생활 제한 자궁경부암 기록 메모 초안 만들기`, and observed save chip plus local `.cervical-care-symptom-feedback` text `자궁경부암 기록 메모 초안 준비됨: 원추절제술 후 생활 제한`.
+  - PASS symptom draft fields: symptom name became `원추절제술 후 생활 제한`, body included the structured `자궁경부암 기록 메모 초안` checklist with the National Cancer Center source URL, severity stayed `3`, and focus moved to `증상·부작용 기록 증상명`.
+  - PASS non-mutating guard: stored counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, food `0`; `localStorage["carevault.v1"]` stayed unchanged while the drafts were prepared.
+  - PASS cleanup: reloaded the same surface, confirmed question/symptom draft fields and cervical draft feedback rows were empty again, URL stayed `http://127.0.0.1:1420/#care-plan`, save chip settled to `브라우저 자동 저장됨`, counts stayed unchanged, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; cervical-care draft action labels and source-backed prompt/memo builders remain covered by `src/cervicalCancerCare.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary edge cases, metric source-link rows, or another low-risk patient workflow.
+
 ## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
 
 - Improvement target:
