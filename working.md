@@ -20282,6 +20282,27 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
 
+## 2026-06-06 17:57 KST - Visit Save Reminder cmux QA
+
+- Improvement target:
+  - Verify a valid hospital visit save updates local save feedback, persisted visit count, visit panel summary, and the dashboard appointment reminder strip.
+  - Confirm the temporary saved visit is removed by snapshot restore without changing other health records.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: stored counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, food `0`; visit panel summary was `전체1개다가오는 일정1개14일 이내1개요약/계획1개`, and appointment reminder text was `9일 후종양내과정기 추적2026-06-15`.
+  - PASS ready state: filled date `2026-06-06`, hospital `QA 방문 알림`, reason `복원 확인`, next date `2026-06-10`, summary `예약 알림 cmux QA`, and plan `다음 일정 확인`; the add action aria became `방문 기록 추가 · QA 방문 알림 · 복원 확인 입력 준비됨`.
+  - PASS save: clicked `방문 기록 추가`; only `visits` increased from `1` to `2`, and the saved last visit preserved date, hospital, reason, next date, summary, and plan exactly as entered.
+  - PASS save feedback: local `.visit-save-feedback[role=status]` showed `QA 방문 알림 방문 기록 추가됨 · 복원 확인 · 방문일 2026-06-06 · 다음 일정 2026-06-10`; the save chip showed the same message plus `브라우저 자동 저장됨`.
+  - PASS reminder refresh: visit panel summary became `전체2개다가오는 일정2개14일 이내2개요약/계획2개`, and the dashboard reminder strip showed both `4일 후QA 방문 알림복원 확인2026-06-10` and the original `9일 후종양내과정기 추적2026-06-15`.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed load-state `OK`, URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, counts back to visits `1`, no `QA 방문 알림` visit, original one-reminder summary/text, empty hospital/reason drafts, no visit feedback rows, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; visit save labels remain covered by `src/visitMetric.test.ts`, and appointment reminder behavior by `src/appointmentReminders.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
+
 ## 2026-06-06 17:54 KST - Visit Required Fields cmux QA
 
 - Improvement target:
