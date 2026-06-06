@@ -24774,3 +24774,36 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 06:32 KST - Export Preview Copy Failure Direct QA
+
+- Current Goal:
+  - Fill the remaining direct browser evidence gap for export-preview copy failure states.
+  - Verify that a fresh `진료 요약 미리보기` preserves its compact line/character/byte/source summary when `navigator.clipboard.writeText` rejects or when the browser exposes no clipboard API.
+- Context:
+  - Source tests already covered `formatExportPreviewCopyUnsupportedStatus` and `formatExportPreviewCopyFailedStatus`.
+  - Working log search found direct success evidence for `진료 요약 미리보기` copy, but not a same-`surface:7` rejected-write or unsupported-clipboard click.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Open `진료 요약 미리보기` through the real preview button.
+  - In the same WebView, first stub `navigator.clipboard.writeText` to reject and click the real `미리보기 복사` button.
+  - Then expose no `navigator.clipboard` and click the same real copy button again.
+  - Confirm scoped top feedback, preview action state, attempted payload, unchanged `carevault.v1`, cleanup after reload, focused tests, and browser diagnostics.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS preview open: clicked the real `진료 요약 미리보기 · 범위 최근 30일` button. The preview opened as `진료 요약 미리보기 (최근 30일)` with active copy/print/download actions and summary `234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS rejected clipboard branch: installed a same-WebView `navigator.clipboard.writeText` reject stub and clicked the real `미리보기 복사` button. The app attempted exactly one clipboard write with a 32,554-character payload starting `# CareVault 진료 요약`, containing source/evidence markers, and then showed `진료 요약 미리보기 복사 실패 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS rejected branch safety: the preview stayed open, no stale alert appeared, copy/print/download remained enabled, and `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline.
+  - PASS unsupported clipboard branch: replaced `navigator.clipboard` with `undefined` in the same WebView and clicked the real `미리보기 복사` button again. The app showed `진료 요약 미리보기 복사 미지원 · 브라우저 클립보드 없음 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS unsupported branch safety: the preview stayed open, no stale alert appeared, copy/print/download remained enabled, and `localStorage["carevault.v1"]` stayed unchanged.
+  - PASS cleanup: reloaded only `surface:7`; confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, no export preview panel, no temporary QA globals, restored browser JS context, `carevault.v1` length `1871`, and `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/exportPreviewSummary.test.ts` => `1 passed`, `9 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+  - PASS cmux same-surface diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
