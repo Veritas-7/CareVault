@@ -22147,6 +22147,26 @@
   - Stop the temporary Vite dev server, rerun final runtime/diff checks, then stage only focused paths.
   - Run staged secret scan, commit, push, and record the pushed state if green.
 
+## 2026-06-07 01:12 KST - Post-Push Internal-ID Status
+
+- Improvement target:
+  - Record the pushed state after the caregiver internal-id fingerprint slice.
+- Runtime/browser notes:
+  - PASS direct QA used only the existing `암관리` right-pane CareVault browser on `surface:7`; no new browser, pane, tab, workspace, surface, or headless browser was opened.
+  - PASS cleanup removed `carevault.__test*` keys, restored `localStorage["carevault.v1"]`, reloaded the same browser, and verified QA strings were absent.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite connection logs.
+  - PASS final runtime: `npm run runtime:doctor` reported port 1420 free and no CareVault dev or installed app processes.
+  - Runtime guard: cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Git state:
+  - PASS source slice pushed: `94c64e7 Scope caregiver internal id fingerprints` reached `origin/main`.
+  - PASS repo sync after push: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+- Current state:
+  - The caregiver internal-id source/test/design change is committed and pushed.
+  - This entry is a post-push worklog update for the already-verified slice.
+- Next durable app slice:
+  - Continue direct-click QA from the same `암관리` workspace browser if more CareVault polish is requested.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
