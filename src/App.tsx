@@ -150,6 +150,7 @@ import { formatLabReferenceRangeLabel } from "./exportSourceLabels";
 import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
 import {
   buildAttachmentRecoveryUpdate,
+  buildFileNameOnlyAttachmentCheckRecovery,
   needsAttachmentRecovery,
   resolveRuntimeAttachmentOpen,
   resolveRuntimeAttachmentPreview,
@@ -2295,6 +2296,22 @@ function App() {
     if (!document.attachmentName) return;
 
     if (!document.attachmentPath || !canUseTauriRuntime()) {
+      const recovery = buildFileNameOnlyAttachmentCheckRecovery(
+        document.attachmentName,
+        document.attachmentStatus,
+      );
+      if (recovery) {
+        updateDocumentAttachmentStatus(
+          document.id,
+          recovery.status,
+          recovery.historyDetail,
+          recovery.historyLabel,
+        );
+        setDocumentActionFeedback({ documentId: document.id, message: recovery.status });
+        setActionSaveLabel(recovery.status);
+        return;
+      }
+
       const status = "파일명 참조만 저장됨";
       const feedback = formatDocumentAttachmentFileNameOnlyStatusLabel(document);
       updateDocumentAttachmentStatus(document.id, status, `${document.attachmentName}: ${status}`);
@@ -2413,11 +2430,11 @@ function App() {
       attachmentStatus: "브라우저 파일명 참조",
     });
     setSavedAttachmentTargetId(null);
-    setActionSaveLabel(
-      targetDocument
-        ? formatDocumentAttachmentReferenceStatusLabel(targetDocument, file.name)
-        : "저장된 서류 첨부 파일명 참조 갱신",
-    );
+    const feedback = targetDocument
+      ? formatDocumentAttachmentReferenceStatusLabel(targetDocument, file.name)
+      : "저장된 서류 첨부 파일명 참조 갱신";
+    setDocumentActionFeedback({ documentId: savedAttachmentTargetId, message: feedback });
+    setActionSaveLabel(feedback);
   };
 
   const replaceSavedDocumentAttachment = async (document: CareDocument) => {
@@ -2456,11 +2473,11 @@ function App() {
         attachmentStorage: "tauri-sandbox",
         attachmentStatus,
       });
-      setActionSaveLabel(
-        attachmentExists
-          ? formatDocumentAttachmentReconnectStatusLabel(document, attachmentName, attachmentStatus)
-          : formatDocumentAttachmentPathUpdatedStatusLabel(document, attachmentName, attachmentStatus),
-      );
+      const feedback = attachmentExists
+        ? formatDocumentAttachmentReconnectStatusLabel(document, attachmentName, attachmentStatus)
+        : formatDocumentAttachmentPathUpdatedStatusLabel(document, attachmentName, attachmentStatus);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
     } catch (error) {
       console.error("Saved document attachment replacement failed", error);
       setSaveLabel(formatDocumentAttachmentReconnectFailedStatusLabel(document));

@@ -144,6 +144,15 @@ export function buildAttachmentRecoveryUpdate(
   };
 }
 
+export function buildFileNameOnlyAttachmentCheckRecovery(
+  attachmentName: string | undefined,
+  attachmentStatus: string | undefined,
+) {
+  if (!needsAttachmentRecovery(attachmentStatus)) return null;
+
+  return buildAttachmentRecoveryUpdate("check-failure", attachmentName);
+}
+
 export async function resolveRuntimeAttachmentOpen(
   document: RuntimeAttachmentDocument,
   runtime: {

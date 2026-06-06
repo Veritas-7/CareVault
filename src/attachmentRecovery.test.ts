@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildAttachmentRecoveryUpdate,
+  buildFileNameOnlyAttachmentCheckRecovery,
   hasSupportedImageSignature,
   needsAttachmentRecovery,
   resolveRuntimeAttachmentOpen,
@@ -36,6 +37,22 @@ describe("attachmentRecovery", () => {
       historyLabel: "첨부 미리보기 실패",
       status: "이미지 미리보기 실패 - 재첨부 필요",
     });
+  });
+
+  it("keeps filename-only checks recoverable when the saved status requires reattachment", () => {
+    expect(
+      buildFileNameOnlyAttachmentCheckRecovery(
+        "restored.pdf",
+        "백업에서 복원됨 - 재첨부 필요",
+      ),
+    ).toEqual({
+      historyDetail: "restored.pdf: 첨부 확인 실패",
+      historyLabel: "첨부 확인 실패",
+      status: "첨부 확인 실패",
+    });
+    expect(
+      buildFileNameOnlyAttachmentCheckRecovery("browser.pdf", "브라우저 파일명 참조"),
+    ).toBeNull();
   });
 
   it("uses a disposable runtime fixture for missing-file attachment open recovery", async () => {

@@ -21120,3 +21120,32 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` after baseline reload.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export/download behavior, caregiver-share edge cases, non-consecutive attachment recovery attempts, or another low-risk patient workflow.
+
+## 2026-06-06 20:59 KST - Backup-Restored Attachment Check Fix
+
+- Improvement target:
+  - Prevent a backup-restored filename-only attachment from being incorrectly marked healthy by `첨부 확인` before the user actually reattaches a file, and keep the row-level document feedback aligned after successful reattachment.
+- RED browser evidence:
+  - Reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. Seeded a disposable saved-document state with `attachmentName: "restored-check-qa.pdf"`, `attachmentStorage: "browser-reference"`, no `attachmentPath`, and `attachmentStatus: "백업에서 복원됨 - 재첨부 필요"`.
+  - PASS setup: the saved-document summary showed `첨부 복구 1개`, the in-card recovery prompt was visible, and the real `첨부 확인` button had aria `혈액검사 메모 검사 서류 첨부 확인 · 현재 첨부 restored-check-qa.pdf · 첨부 상태 백업에서 복원됨 - 재첨부 필요`.
+  - RED: clicking that real `첨부 확인` button changed durable storage to `attachmentStatus: "파일명 참조만 저장됨"`, added an `첨부 확인` history entry, hid the recovery prompt, and changed the summary to `첨부 복구 없음` even though no file had been reattached.
+- Changes:
+  - `src/attachmentRecovery.ts`: added `buildFileNameOnlyAttachmentCheckRecovery()` so filename-only checks can preserve recovery-required semantics when the saved status already says `재첨부 필요`, `파일 없음`, `열기 실패`, or `확인 실패`.
+  - `src/App.tsx`: changed `checkDocumentAttachment()` to route recovery-required filename-only attachments to `첨부 확인 실패` instead of `파일명 참조만 저장됨`; this keeps the reattachment prompt visible until the user reconnects a file.
+  - `src/App.tsx`: updated saved-document reattachment success paths to set local row feedback as well as the top save chip, avoiding stale `첨부 확인 실패` row feedback after a successful `재첨부`.
+  - `src/attachmentRecovery.test.ts`: added regression coverage proving backup-restored filename-only checks produce `첨부 확인 실패`, while ordinary browser-reference attachments still use the normal filename-only path.
+- PASS browser evidence:
+  - Seeded the same recovery state again in the existing `surface:7`. Clicking the real `첨부 확인` button now produced save chip and row feedback `첨부 확인 실패`, kept the summary at `첨부 복구 1개`, kept the in-card recovery prompt visible, and stored history tail `{ label: "첨부 확인 실패", detail: "restored-check-qa.pdf: 첨부 확인 실패" }`.
+  - Repeating `첨부 확인` immediately kept `historyCount: 2` and the matching failure entry count at `1`, so the duplicate-history guard still held for repeated recovery attempts.
+  - Clicked the real `재첨부` action and dispatched a real PDF `File` named `recovered-after-check-qa.pdf` through `input[aria-label="저장된 서류 첨부 파일 재연결 입력"]`. The document updated to `attachmentStorage: "browser-reference"`, `attachmentStatus: "브라우저 파일명 참조"`, no `attachmentPath`, no `blob:` or `/Users/wj` path in app storage, summary `첨부 복구 없음`, and matching top/row feedback `혈액검사 메모 검사 서류 첨부 파일명 참조 갱신됨 · 현재 첨부 recovered-after-check-qa.pdf`.
+  - PASS cleanup: restored the captured full localStorage baseline, removed `carevault.__testBackupRestoredCheckBaseline`, and verified `surface:7` back at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, original document attachment fields empty, document history count back to `1`, no temp filenames, no `attachmentPath`, no `blob:`, no `/Users/wj`, no sessionStorage temp keys, no preview/stale/dialog/alert, and `No browser errors`.
+- Runtime note:
+  - During cleanup verification, `surface:7` cmux browser CLI reads briefly timed out while the cmux window was visibly focused on the existing PromptVault workspace. Used only desktop inspection and a double-click on the existing `암관리` sidebar row to bring the already-open CareVault surface back into view; no cmux restart and no new browser were used.
+- Automated verification:
+  - PASS `npm test -- src/attachmentRecovery.test.ts src/documentActionLabels.test.ts src/documentMetric.test.ts src/documentAttachmentActions.test.ts` (`4 passed`, `34 passed`).
+  - PASS `npm run typecheck`.
+- Current state:
+  - The CareVault repo is clean except for this code/test change and this `working.md` entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver-share edge cases, remaining backup import variants, native desktop attachment recovery friction, or another low-risk patient workflow.
