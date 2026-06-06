@@ -24396,6 +24396,45 @@
   - Source tree is clean and synced after the focused QA-log push.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 05:58 KST - Caregiver Attachment Status Direct QA
+
+- Current Goal:
+  - Resolve the previously blocked direct browser confirmation for caregiver-share attachment-status fingerprints.
+  - Verify the attachment filename/status contract: when an active document has no exported `attachmentName`, changing only `attachmentStatus` should not change rendered caregiver preview output, while adding an attachment filename/status should stale an open preview.
+- Context:
+  - `2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope` added the source/test/design contract while direct same-surface cmux control was blocked.
+  - Saved document cards do not expose an attachment-status-only edit when there is no attachment filename. Status-only setup therefore requires same-surface browser storage mutation plus reload; positive stale guard uses the real saved-document `첨부 추가` action and the real hidden saved-attachment file input.
+  - Repo is clean and synced before this QA; `surface:7` is at `http://127.0.0.1:1420/#care-plan` with `No browser errors`.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture browser-local `carevault.v1` baseline in `sessionStorage`.
+  - Generate a baseline caregiver preview with the real `보호자 공유본 미리보기` action.
+  - Mutate only `doc-1.attachmentStatus` while leaving `attachmentName` absent, reload/recover only `surface:7`, generate a fresh caregiver preview with the real action, and confirm attachment status text is not exposed and preview summary/action state stays stable.
+  - Use the real saved-document `첨부 추가` action and hidden saved-attachment file input to attach a browser-reference file while the preview is open; confirm the stale alert appears and copy/print/download are disabled until `공유 기록 반영`.
+  - Click the real `공유 기록 반영` action; confirm the refreshed preview contains the attachment filename/status.
+  - Restore the captured browser-local baseline, remove temporary keys, reload/recover only `surface:7`, and confirm no preview/dialog/stale or QA attachment residue.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS baseline capture: stored browser-local `carevault.v1` in `sessionStorage["carevault.__testCaregiverAttachmentStatusBaseline"]`; baseline `doc-1` had no `attachmentName`, no `attachmentStorage`, and no `attachmentStatus`.
+  - PASS baseline caregiver preview: clicked the real `보호자 공유본 미리보기` action; preview opened with no stale alert, copy/print/download enabled with `98줄 · 49,711자 · 72,883B · 근거/출처 111개`, and no attachment status or QA filename text.
+  - PASS status-only render boundary: mutated only `doc-1.attachmentStatus` to `cmux 첨부 상태만 QA` while leaving `attachmentName` absent, reloaded only `surface:7`, and clicked the real preview action again. The fresh preview had no stale alert, kept the same `98줄 · 49,711자 · 72,883B · 근거/출처 111개` action summary, and did not expose the status-only text or `cmux-attachment-status.pdf`.
+  - PASS discarded one too-early attachment attempt: clicking `첨부 추가` and firing the file input `change` in the same JavaScript tick happened before React saved the target document id, so it did not attach a file and was not used as pass evidence.
+  - PASS attachment filename/status positive stale guard: clicked the real saved-document `첨부 추가` action first, then dispatched the hidden saved-attachment file input change with `cmux-attachment-status.pdf`. The document updated to `attachmentName: "cmux-attachment-status.pdf"`, `attachmentStorage: "browser-reference"`, and `attachmentStatus: "브라우저 파일명 참조"`; the open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 기록 변경 감지`, exposed `공유 기록 반영`, and disabled copy/print/download with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.` in each aria/title.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled with `98줄 · 49,813자 · 73,019B · 근거/출처 111개`, the refreshed preview contained `cmux-attachment-status.pdf` and `브라우저 파일명 참조`, and still did not contain the earlier status-only QA text.
+  - PASS cleanup: restored the captured baseline, removed the temporary session key, reloaded/recovered only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, `doc-1` restored with no attachment fields and original history count `1`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no QA attachment text in storage or DOM, no preview/dialog/stale alert, and `No browser errors`.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS focused tests: `npm test -- src/caregiverExport.test.ts src/documentAttachmentActions.test.ts src/documentActionLabels.test.ts src/documentMetric.test.ts src/attachmentRecovery.test.ts` => `5 passed`, `84 passed`.
+  - PASS diff check: `git diff --check -- working.md`.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 05:36 KST - Post-Push Caregiver Old Normal Lab QA
 
 - Improvement target:
