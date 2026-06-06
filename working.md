@@ -19674,3 +19674,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for another low-risk patient workflow or move from QA logs into a concrete improvement if a gap appears.
+
+## 2026-06-06 16:27 KST - Document Archive Restore cmux QA
+
+- Improvement target:
+  - Continue the saved-document workflow sweep by verifying archive-to-deleted-bin and restore behavior.
+  - Use a browser-state snapshot so archive/restore history entries do not remain in the app state.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS setup: saved `carevault.v1` in temporary `sessionStorage` before moving the saved document.
+  - PASS archive action: temporarily routed `window.confirm` to `true` in the same WebView, clicked `혈액검사 메모 검사 서류 삭제 보관함으로 이동 · 상태 의료진 질문`, then restored the original confirm function.
+  - PASS archived state: save chip showed `혈액검사 메모 검사 서류 삭제 보관함으로 이동됨 · 상태 의료진 질문 · 브라우저 자동 저장됨`, saved-document list changed to `0/0개 기록`, and deleted-bin showed `혈액검사 메모` with enabled `복구`.
+  - PASS restore action: clicked `혈액검사 메모 검사 서류 삭제 보관함에서 복구 · 상태 의료진 질문`.
+  - PASS restored state: save chip showed `혈액검사 메모 검사 서류 저장된 서류로 복구됨 · 상태 의료진 질문 · 브라우저 자동 저장됨`, saved-document list returned to `1/1개 기록`, and deleted-bin became empty.
+  - PASS cleanup: restored the saved `carevault.v1` snapshot, removed the temporary `sessionStorage` key, reloaded the same surface, and confirmed `혈액검사 메모` was back in the saved list with no deleted-bin items.
+  - PASS cleanup: backup button remained `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; archive/restore labels remain covered by `src/documentActionLabels.test.ts`, and deleted-count metrics by `src/documentMetric.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for question status transitions, symptom/lab empty states, or another low-risk patient workflow.
