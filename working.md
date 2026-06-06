@@ -22880,6 +22880,49 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 02:42 KST - Health Standards Filter Copy Direct QA
+
+- Current Goal:
+  - Verify the Korean adult health-standards quick-filter and filtered copy flow through the real existing `암관리` `surface:7` browser.
+  - Cover the `암환자` quick filter, selected summary chips, copy button aria/title text, copied packet scope, status feedback, and clean browser restoration.
+- Context:
+  - Repo started clean and synced at `beeac4a` (`Log CareVault sidebar QA status`).
+  - `DESIGN.md` requires standards quick filters for `전체`, `생활지표`, `당뇨·지질`, `검사`, and `암환자`, visible count feedback, summary chips, risk/source counts, and filter-aware copy/status text.
+  - `src/App.tsx`, `src/healthStandards.ts`, and `src/healthStandards.test.ts` were reread before selecting this non-duplicate standards QA slice.
+- Progress:
+  - Selected health-standards `암환자` filter copy QA because recent recovered `surface:7` slices covered sidebar navigation, care queue, chart, visit, export, food, document, lab, question, profile toggles, symptom, and backup flows, but not the real standards filter/copy loop.
+  - Reconfirmed the existing `암관리` `surface:7` browser as `CareVault` at `http://127.0.0.1:1420/#care-plan`; no new browser, pane, tab, workspace, surface, or headless browser was opened.
+  - Verified the initial standards quick-filter DOM had 5 buttons in order: `전체`, `생활지표`, `당뇨·지질`, `검사`, `암환자`, with `전체` initially pressed.
+  - Clicked the real `암환자 기준 보기: 감염·출혈 연락 기준` filter button.
+  - Verified the selected filter became `암환자`, visible count feedback changed to `암환자 · 3/26개 표시`, and summary chips showed `표시 3/26개 기준`, `주의 7개 위험 강조 행`, `성별 남녀 공통`, and `근거 공식 출처 2개`.
+  - Verified the copy button changed to visible text `암환자 기준 복사`, aria/title `한국 성인 건강 기준 암환자 범위 복사 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개`, and 32px height.
+  - Verified the filtered source links were the three cancer-care standards: `ANC 감염 위험 기준`, `혈소판 출혈 위험 기준`, and `체온·감염 연락 기준`, backed by two official sources.
+  - Installed a same-WebView clipboard stub, clicked the real filtered copy button, and confirmed the copied packet included `[한국 성인 건강 기준]`, `선택 범위: 암환자 · 3/26개 표시`, the selected summary, the three cancer standards, and excluded `BMI 기준`.
+  - Restored the standards filter to `전체`, removed the clipboard stub, and confirmed the browser returned to `#care-plan` with `전체 · 26/26개 표시`, no temp keys, no preview, and no dialog.
+- Changes:
+  - `working.md` only; no source patch needed because the standards filter and copy behavior matched the documented contract.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, same-surface readiness eval, and `errors list`: existing `암관리` CareVault surface confirmed at `#care-plan` with standards DOM present.
+  - PASS initial quick-filter eval: 5 filter buttons, `전체` pressed, `암환자` available with aria/title scope `감염·출혈 연락 기준`.
+  - PASS real `암환자` filter click: copy button aria/title became `한국 성인 건강 기준 암환자 범위 복사 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개`.
+  - PASS filtered summary eval: `암환자 · 3/26개 표시`, summary chips `표시 3/26개 기준`, `주의 7개 위험 강조 행`, `성별 남녀 공통`, `근거 공식 출처 2개`, 32px copy button, and only the cancer-care source links remained in the range strip.
+  - PASS filtered copy click with same-WebView clipboard stub: copied 2373 characters containing the health-standards header, `선택 범위: 암환자 · 3/26개 표시`, `- 표시: 3/26개 기준`, `- 주의: 7개 위험 강조 행`, `- 근거: 공식 출처 2개`, `ANC 감염 위험 기준`, `혈소판 출혈 위험 기준`, and `체온·감염 연락 기준`, while excluding `BMI 기준 · 근거`.
+  - PASS local copy feedback: `암환자 기준 복사됨 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개`.
+  - PASS cleanup eval after clicking `전체`: `전체 · 26/26개 표시`, copy aria `한국 성인 건강 기준 전체 범위 복사 · 표시 26/26 · 주의 35 · 성별 분리 5개 · 출처 15개`, clipboard stub removed, no temp keys, no preview, and no dialog.
+  - PASS `timeout 8 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 8 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+  - PASS `npm test -- src/healthStandards.test.ts`: 1 file and 30 tests.
+  - PASS `npm run runtime:doctor` after stopping Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `git diff --check -- working.md`.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stage only `working.md`, run staged diff and secret checks, then commit and push this QA log.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
