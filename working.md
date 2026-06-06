@@ -20607,3 +20607,27 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for export preview close/copy/download state, document update blur feedback, or another low-risk patient workflow.
+
+## 2026-06-06 18:46 KST - Visit Summary Export Preview Actions cmux QA
+
+- Improvement target:
+  - Verify the live visit-summary export preview panel exposes focused preview state, summary chips, copy/download/close action labels, clipboard-backed copy/download feedback, and non-mutating close behavior.
+  - Confirm Safari-like download fallback is handled without creating a browser download in the cmux session.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; visit summary range was `30d`; browser user agent was Safari-like (`Apple Computer, Inc.` vendor) with clipboard support; save chip was `브라우저 자동 저장됨`, counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS preview open: clicked the real `요약 미리보기` action with aria `진료 요약 미리보기 · 범위 최근 30일`; `.export-preview-panel` appeared with aria `내보내기 미리보기` and focus moved to the panel.
+  - PASS preview header/content: header showed format `진료 요약`, title `진료 요약 미리보기 (최근 30일)`, filename `carevault-visit-summary-2026-06-06.md`, and preview content started with `# CareVault 진료 요약`, generated timestamp, and `범위: 최근 30일`.
+  - PASS summary chips: visible preview summary reported `형식 진료 요약`, `분량 234줄`, `문자 32,554자`, `크기 55,352B`, and `출처 표식 근거/출처 109개`; no stale-preview alert was present.
+  - PASS action affordances: copy/download/print buttons were enabled and labelled with the same compact summary: `진료 요약 복사 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`, `진료 요약 다운로드 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`, and `진료 요약 인쇄 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`; close action aria/title was `내보내기 미리보기 닫기`.
+  - PASS copy: temporarily stubbed `navigator.clipboard.writeText` inside the page, clicked `미리보기 복사`, observed one clipboard call with 32,554 characters and source markers, panel stayed open, and save chip showed `진료 요약 미리보기 복사됨 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS download fallback: clicked `미리보기 다운로드`; because the cmux browser is Safari-like, the app used the clipboard fallback, made a second 32,554-character clipboard call, kept the panel open, and showed `진료 요약 다운로드 대신 클립보드 복사됨 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS close: restored the original clipboard object, clicked `미리보기 닫기`, the preview panel disappeared, and save chip showed `진료 요약 미리보기 닫힘 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS non-mutating cleanup: serialized `localStorage["carevault.v1"]` was unchanged by preview/copy/download/close; after reloading the same surface, URL remained `http://127.0.0.1:1420/#care-plan`, save chip returned to `브라우저 자동 저장됨`, counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, no export preview panel, no attachment dialog, backup export aria stayed `첨부 파일명 0개`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; export preview summaries and action copy remain covered by `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for document update blur feedback, export preview stale-state refresh, or another low-risk patient workflow.
