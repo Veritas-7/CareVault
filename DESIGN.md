@@ -753,6 +753,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-07: Made caregiver-share document fingerprints ignore attachment status changes when no attachment filename is exported, matching the caregiver HTML attachment line boundary.
 - 2026-06-07: Made caregiver-share visit fingerprints ignore visits with no date or next date, matching the caregiver visit section and care queue visibility boundary.
 - 2026-06-07: Made caregiver-share lab fingerprints ignore old normal lab note changes outside the recent-lab and care-queue-rendered lab scope.
+- 2026-06-07: Made caregiver-share vital fingerprints ignore old normal vital note changes outside the recent-vital and care-queue-rendered vital scope.
 
 ## Do's and Don'ts
 

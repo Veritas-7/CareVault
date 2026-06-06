@@ -4,8 +4,11 @@ import {
   getLabRangeSourceLabel,
 } from "./exportSourceLabels";
 import {
+  assessBloodGlucose,
+  assessBloodPressure,
   assessCancerFood,
   assessLabTextValue,
+  assessTemperature,
   type FoodMatch,
   type GlucoseContext,
 } from "./healthRules";
@@ -174,6 +177,7 @@ export function buildCaregiverExportContentFingerprint(
       }
     : state.profile;
   const latestLabResults = latestByDate(state.labResults, 5);
+  const latestVitals = latestByDate(state.vitals, 5);
 
   return JSON.stringify({
     documents: enabledSections.documents
@@ -214,7 +218,13 @@ export function buildCaregiverExportContentFingerprint(
             summary: visit.plan ? "" : visit.summary,
           }))
       : [],
-    vitals: enabledSections.vitals ? state.vitals : [],
+    vitals: enabledSections.vitals
+      ? state.vitals.filter(
+          (vital) =>
+            latestVitals.includes(vital) ||
+            isCaregiverQueueVital(vital, { diabetes: state.profile.diabetes }),
+        )
+      : [],
   });
 }
 
@@ -332,6 +342,31 @@ function formatCervicalScreeningSummaryHtml(summary: CervicalCancerScreeningSumm
 
 function latestByDate<T extends { date: string }>(items: T[], limit: number) {
   return [...items].sort((a, b) => b.date.localeCompare(a.date)).slice(0, limit);
+}
+
+function isCaregiverQueueVital(
+  vital: CaregiverExportState["vitals"][number],
+  options: { diabetes?: boolean } = {},
+) {
+  if (vital.type === "blood-pressure" && vital.systolic && vital.diastolic) {
+    const level = assessBloodPressure(vital.systolic, vital.diastolic).level;
+    return level !== "ok" && level !== "neutral";
+  }
+
+  if (vital.type === "glucose" && vital.glucoseMgDl) {
+    const context = vital.glucoseContext ?? "random";
+    const level = assessBloodGlucose(vital.glucoseMgDl, context, {
+      diabetes: options.diabetes,
+    }).level;
+    return level !== "ok" && level !== "neutral";
+  }
+
+  if (vital.type === "temperature" && vital.temperatureC) {
+    const level = assessTemperature(vital.temperatureC).level;
+    return level !== "ok" && level !== "neutral";
+  }
+
+  return false;
 }
 
 function listItems(items: string[], emptyText: string) {

@@ -22055,3 +22055,30 @@
 - Next durable app slice:
   - Continue source-level false-positive stale-preview hardening only if direct cmux control remains unavailable.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
+## 2026-06-07 00:24 KST - Caregiver Old Normal-Vital Fingerprint Scope
+
+- Improvement target:
+  - Remove another false-positive caregiver-share stale state while the required single cmux browser remains blocked.
+  - Match caregiver-share vital fingerprints to the caregiver HTML recent-vital section plus care queue behavior: keep recent vitals and non-ok/non-neutral queue-candidate vitals, ignore old normal vitals that do not render.
+- Runtime/browser notes:
+  - `surface:7` still timed out on the last `cmux browser --surface surface:7 snapshot --compact --max-depth 1` check with exit `124`.
+  - Shallow checks still showed `cmux ping` => `PONG`, `cmux browser-status` => `enabled`, and the CareVault Vite server on `127.0.0.1:1420` returned HTTP `200`.
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened. cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Changes:
+  - `src/caregiverExport.test.ts`: added a RED regression showing that changing only an old normal blood-pressure note outside the recent five vitals must not change the caregiver content fingerprint.
+  - `src/caregiverExport.ts`: filters vital fingerprints to the recent five vital rows plus blood-pressure, glucose, or temperature rows whose assessment is not ok/neutral, preserving care-queue candidates.
+  - `DESIGN.md`: documented the old-normal-vital fingerprint visibility boundary.
+- Verification:
+  - RED `npm test -- src/caregiverExport.test.ts` failed as expected before implementation with an old-normal-vital-note-only fingerprint difference.
+  - PASS `npm test -- src/caregiverExport.test.ts` => `1 passed`, `43 passed`.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => `62 passed`, `519 passed`.
+  - PASS `npm run build` => `2475` modules transformed; build completed without dirtying `dist/`.
+  - PASS `git diff --check -- src/caregiverExport.ts src/caregiverExport.test.ts DESIGN.md working.md`.
+- Current state:
+  - The repo is dirty with this focused source/test/design/log slice.
+  - Direct caregiver-share fresh-preview confirmation and browser-local test cleanup remain blocked by cmux workspace/surface control.
+- Next durable app slice:
+  - Run typecheck, full tests, build, diff checks, staged secret checks, then commit and push this focused slice if green.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.

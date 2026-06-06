@@ -389,6 +389,41 @@ describe("caregiverExport", () => {
     expect(hiddenNormalLabChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores old normal vital note changes outside caregiver-rendered vital scope", () => {
+    const recentNormalVitals = Array.from({ length: 5 }, (_, index) => ({
+      date: `2026-06-${String(10 - index).padStart(2, "0")}`,
+      type: "blood-pressure",
+      systolic: 110,
+      diastolic: 70,
+      note: "정상 혈압",
+    }));
+    const oldNormalVital = {
+      date: "2026-05-01",
+      type: "blood-pressure",
+      systolic: 110,
+      diastolic: 70,
+      note: "렌더링되지 않는 오래된 정상 혈압 메모",
+    };
+    const stateWithHiddenNormalVital: CaregiverExportState = {
+      ...state,
+      vitals: [...recentNormalVitals, ...state.vitals, oldNormalVital],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithHiddenNormalVital);
+    const hiddenNormalVitalChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithHiddenNormalVital,
+      vitals: [
+        ...recentNormalVitals,
+        state.vitals[0],
+        {
+          ...oldNormalVital,
+          note: "렌더링되지 않는 오래된 정상 혈압 메모 변경",
+        },
+      ],
+    });
+
+    expect(hiddenNormalVitalChangedFingerprint).toBe(fingerprint);
+  });
+
   it("fingerprints only exported profile fields when caregiver profile is redacted", () => {
     const redactedFingerprint = buildCaregiverExportContentFingerprint(
       state,
