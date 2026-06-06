@@ -176,15 +176,17 @@ export function buildCaregiverExportContentFingerprint(
 
   return JSON.stringify({
     documents: enabledSections.documents
-      ? state.documents.map((document) => ({
-          attachmentName: document.attachmentName,
-          attachmentStatus: document.attachmentStatus,
-          category: document.category,
-          date: document.date,
-          nextAction: document.nextAction,
-          reviewStatus: document.reviewStatus,
-          title: document.title,
-        }))
+      ? state.documents
+          .filter((document) => document.reviewStatus !== "done")
+          .map((document) => ({
+            attachmentName: document.attachmentName,
+            attachmentStatus: document.attachmentStatus,
+            category: document.category,
+            date: document.date,
+            nextAction: document.nextAction,
+            reviewStatus: document.reviewStatus,
+            title: document.title,
+          }))
       : [],
     foodQuery: enabledSections.food ? state.foodQuery ?? "" : "",
     labResults: enabledSections.labs ? state.labResults : [],

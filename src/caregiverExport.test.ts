@@ -163,6 +163,36 @@ describe("caregiverExport", () => {
     expect(fingerprint).not.toContain("attachmentPath");
   });
 
+  it("ignores completed document changes in caregiver content fingerprints", () => {
+    const stateWithCompletedDocument: CaregiverExportState = {
+      ...state,
+      documents: [
+        ...state.documents,
+        {
+          date: "2026-06-04",
+          title: "정리 완료된 예전 서류",
+          category: "memo",
+          reviewStatus: "done",
+          nextAction: "이미 정리됨",
+        },
+      ],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithCompletedDocument);
+    const completedDocumentChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithCompletedDocument,
+      documents: [
+        stateWithCompletedDocument.documents[0],
+        {
+          ...stateWithCompletedDocument.documents[1],
+          title: "렌더링되지 않는 완료 서류 제목 변경",
+          nextAction: "렌더링되지 않는 완료 서류 조치 변경",
+        },
+      ],
+    });
+
+    expect(completedDocumentChangedFingerprint).toBe(fingerprint);
+  });
+
   it("checks caregiver content freshness against the preview section snapshot", () => {
     const previewSections = {
       food: true,
