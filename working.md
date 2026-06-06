@@ -20281,3 +20281,24 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
+
+## 2026-06-06 17:54 KST - Visit Required Fields cmux QA
+
+- Improvement target:
+  - Verify the hospital visit form blocks empty or partial required drafts with local, accessible feedback.
+  - Confirm completing both required fields clears the stale required-field warning without saving a new visit.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: save chip was `브라우저 자동 저장됨`, visit add action aria was `방문 기록 추가 · 병원/과와 방문 이유 필요`, no visit feedback rows were visible, and stored counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, food `0`.
+  - PASS empty guard: clicked `방문 기록 추가` with empty hospital/reason; local `[data-record-form-feedback="visit"][role=status]` and the save chip both showed `병원/과와 방문 이유를 입력해주세요.`, with aria label `병원 방문 기록 필수 항목 안내 · 병원/과와 방문 이유를 입력해주세요.`
+  - PASS partial guard: entering only hospital `QA 종양내과` kept the same required-field feedback and the add action still said `방문 기록 추가 · 병원/과와 방문 이유 필요`.
+  - PASS valid draft clear: entering reason `추적 진료 준비 확인` cleared the local required-field row, changed the save chip to `병원 방문 기록 필수 입력 확인됨`, and updated the add action aria to `방문 기록 추가 · QA 종양내과 · 추적 진료 준비 확인 입력 준비됨`.
+  - PASS non-mutating guard: the valid add action was not clicked; stored counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, food `0` throughout.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed load-state `OK`, URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, empty hospital/reason drafts, no visit feedback rows, visit add action back to `방문 기록 추가 · 병원/과와 방문 이유 필요`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; visit required-field messages and ready-action labels remain covered by `src/entryValidation.test.ts` and `src/visitMetric.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
