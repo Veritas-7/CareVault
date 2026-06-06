@@ -24304,6 +24304,42 @@
   - Source tree is clean and synced after the focused QA-log push.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 05:38 KST - Caregiver Completed Document Direct QA
+
+- Current Goal:
+  - Resolve the previously blocked direct browser confirmation for caregiver-share completed-document fingerprints.
+  - Verify that an open caregiver preview stays fresh when a newly saved document is already `정리 완료` and therefore not rendered in the caregiver document section or care queue, while changing an active rendered document action still raises the stale-preview guard.
+- Context:
+  - `2026-06-06 23:44 KST - Caregiver Completed-Document Fingerprint Scope` added the source/test/design contract while cmux `surface:7` was blocked.
+  - Current repo is clean/synced; runtime doctor reports port `1420` free and no CareVault dev/release processes.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture the browser-local `carevault.v1` baseline in `sessionStorage`.
+  - Use the real `보호자 공유본 미리보기` action to generate a fresh caregiver preview.
+  - Use real 서류 form controls to save a completed document with review status `정리 완료`; confirm the open caregiver preview has no stale alert, copy/print/download remain enabled, and the completed QA document does not appear in preview HTML.
+  - Use the real saved active-document `다음 조치` textarea to change a rendered document action; confirm the same open preview raises the caregiver content stale alert and disables old preview actions until regeneration.
+  - Restore the captured browser-local baseline, remove temporary keys, reload/recover only `surface:7`, and confirm no preview/dialog/stale or QA document residue.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420` and reused only the existing `암관리` `workspace:4` / `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS recovered the known stale JS context by setting `location.href` on the same `surface:7`; cmux was not restarted, quit, force-quit, replaced, or signaled.
+  - PASS baseline: baseline had 1 active document, `혈액검사 메모`, category `lab`, status `care-question`, next action `백혈구 수치가 낮을 때 식사 제한 기준 질문`; stored a reconstructed baseline in `sessionStorage["carevault.__testCaregiverCompletedDocumentBaseline"]` after same-surface context recovery.
+  - PASS initial caregiver preview: clicked the real `보호자 공유본 미리보기` action; preview opened with no stale alert, copy/print/download enabled, summary `98줄 · 49,711자 · 72,883B · 근거/출처 111개`, included the active document and its next action, and did not include completed QA document text.
+  - PASS invalid category attempt was detected and discarded: an initial `select --value memo` was invalid for the document category select and produced an invalid category in browser-local storage; this was not used as pass evidence. Restored the baseline, confirmed valid category options, and re-ran with `visit-note`.
+  - PASS completed-document save: used real 서류 form controls to save `2026-06-15` document `cmux 정리완료 서류 QA`, category `진료 메모` (`visit-note`), review status `정리 완료`, body `cmux 정리완료 서류 QA 본문`, next action `cmux 완료 서류 다음 조치 QA`; the saved document persisted with `reviewStatus: "done"` and `category: "visit-note"`.
+  - PASS completed-document freshness: the open caregiver preview showed no `.export-preview-stale-alert`; copy/print/download stayed enabled with the same `98줄 · 49,711자 · 72,883B · 근거/출처 111개` summary; preview HTML did not contain `cmux 정리완료 서류 QA` or `cmux 완료 서류 다음 조치 QA`.
+  - PASS active-document positive stale guard: changed the real saved `혈액검사 메모` `다음 조치` textarea to `cmux 활성 서류 다음 조치 QA`; the open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 기록 변경 감지`, exposed `공유 기록 반영`, and disabled copy/print/download with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.` in each aria/title.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled, summary updated to `98줄 · 49,701자 · 72,837B · 근거/출처 111개`, the refreshed preview contained `cmux 활성 서류 다음 조치 QA`, and still did not contain `cmux 정리완료 서류 QA` or `cmux 완료 서류 다음 조치 QA`.
+  - PASS cleanup: restored the reconstructed baseline, removed the temporary session key, reloaded/recovered only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, document count restored to `1`, deleted document count `0`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no QA document text in storage or DOM, no preview/dialog/stale alert, and `No browser errors`.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 05:15 KST - Caregiver Undated Visit Direct QA
 
 - Current Goal:
