@@ -19515,3 +19515,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for export preview copy/download state or remaining document empty/failure states.
+
+## 2026-06-06 16:07 KST - Export Preview Copy/Download cmux QA
+
+- Improvement target:
+  - Continue the export-preview direct-click sweep after `Clarify export preview close feedback`.
+  - Verify preview-scoped copy and download/fallback feedback for CSV without opening another browser pane/tab.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: `navigator.vendor` was `Apple Computer, Inc.` and the WebKit user agent was Safari-like, so text-file download is expected to use the app's clipboard fallback path instead of a raw file download.
+  - PASS: clicked `CSV 미리보기`; the preview panel appeared with action labels `CSV 복사`, `CSV 인쇄`, `CSV 다운로드`, and summary `149줄 · 44,530자 · 69,936B · 근거/출처 80개`.
+  - PASS: clicked `CSV 복사`; body text showed `CSV 미리보기 복사됨 · 149줄 · 44,530자 · 69,936B · 근거/출처 80개`.
+  - PASS: clicked `CSV 다운로드`; in this WebKit cmux browser the save chip showed `CSV 다운로드 대신 클립보드 복사됨 · 149줄 · 44,530자 · 69,936B · 근거/출처 80개`, which is the expected Safari-like fallback status.
+  - PASS: the preview panel remained visible after copy/download fallback, still showing the same `CSV` format, filename `carevault-records-2026-06-06.csv`, summary chips, and raw CSV body.
+  - PASS: the surface stayed on `http://127.0.0.1:1420/#care-plan`.
+  - Note: `cmux browser surface:7 errors list` and one later `get text --selector body` call timed out during this sweep, but explicit `surface:7` clicks, Computer Use AX, and visible status text were usable. No cmux app restart or new browser was attempted.
+- Automated verification:
+  - No code changed in this QA-only slice; the implementation remains covered by `src/exportPreviewSummary.test.ts` and `src/textFileDownload.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for stale preview disabled actions, caregiver-share preview state, or remaining document empty/failure states.
