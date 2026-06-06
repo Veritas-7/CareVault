@@ -19294,3 +19294,22 @@
   - Only this `working.md` QA entry is unstaged.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for the cervical care clipboard flow or preview stale-action edge cases.
+
+## 2026-06-06 10:40 KST - Cervical Care Clipboard cmux QA
+
+- Improvement target:
+  - Continue the food/cervical copy-flow sweep in the existing right cmux browser only.
+  - Validate the large `자궁경부암 케어 노트` clipboard flow with official sources and user-facing success feedback.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`; no new browser pane/tab was opened.
+  - PASS: `자궁경부암 케어 노트 공식 출처 포함 복사 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개` was visible as `노트 복사`.
+  - PASS: clicking the button showed `.cervical-care-copy-feedback` and the save chip as `자궁경부암 케어 노트 복사됨 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개`.
+  - PASS: `pbpaste` began with `[자궁경부암 케어 노트]`, included the medical-use disclaimer, priority checklist, cervical screening quick check, clinician signal notes, and official source URLs.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; cervical care clipboard coverage remains in `src/cervicalCancerCareClipboard.test.ts`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - Only this `working.md` QA entry is unstaged.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for preview stale-action edge cases, food input empty/unclassified failure states, or source-link navigation safety.
