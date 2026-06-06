@@ -21042,3 +21042,23 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import variants, attachment recovery/preview paths with restore, or another low-risk patient workflow.
+
+## 2026-06-06 20:19 KST - Caregiver Food Content Stale Preview cmux QA
+
+- Improvement target:
+  - Verify the caregiver-share content stale path when an enabled food record changes after a caregiver preview is already open.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab was opened. When `get-url` and snapshot briefly disagreed again, focusing the existing `workspace:4`/`pane:8` restored DOM access. Baseline confirmed `#care-plan`, title `CareVault`, no preview/stale/dialog, empty `foodQuery`, `redactProfile: false`, cover memo `desktop stale check`, and `No browser errors`.
+  - PASS baseline capture: saved the full localStorage key set into `sessionStorage["carevault.__testCaregiverContentBaseline"]`, preserving `carevault.v1` and the pre-existing `carevault.__testFoodEmptyBaseline`.
+  - PASS initial preview: clicked the real `보호자 공유본 미리보기` button. The preview opened with enabled copy/print/download actions and summary `보호자 공유본 · 101줄 · 49,789자 · 72,969B · 근거/출처 111개`.
+  - PASS stale trigger: filled the real `암환자 음식 판단 음식 또는 식단 입력` textarea with `브로콜리, 생굴`. A first fill accidentally included the literal text `--snapshot-after`; corrected it immediately to `브로콜리, 생굴` before regeneration. The save chip became `음식 판단 업데이트됨 · 브로콜리, 생굴 · 의료진 확인 필요 · 매칭 2개 · 공식 출처 3개 · 브라우저 자동 저장됨`.
+  - PASS stale protections: `.export-preview-stale-alert[aria-label="보호자 공유본 미리보기 기록 변경 감지"]` appeared with `보호자 공유본 기록이 바뀌었습니다`; the old preview did not contain `브로콜리, 생굴` or `생굴`; copy/print/download were disabled with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.`; and the fresh action exposed `공유 기록 반영` with aria/title `새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용`.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared; copy/print/download were re-enabled; summary updated to `보호자 공유본 · 101줄 · 50,197자 · 73,589B · 근거/출처 112개`; and the regenerated HTML contained `브로콜리, 생굴`, `브로콜리`, `생굴`, the immune-risk note, and `국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+  - PASS cleanup: restored the captured full localStorage baseline, removed `carevault.__testCaregiverContentBaseline`, reloaded the same `surface:7`, and confirmed final baseline `#care-plan`, save chip `브라우저 자동 저장됨`, no preview/stale/dialog, empty `foodQuery`, `redactProfile: false`, original cover memo restored, localStorage keys restored to `carevault.v1` plus the pre-existing `carevault.__testFoodEmptyBaseline`, no sessionStorage temp keys, no `브로콜리`/`생굴`/`--snapshot-after` text in app storage, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/caregiverExport.test.ts src/exportPreviewSummary.test.ts src/foodMetric.test.ts` (`3 passed`, `46 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import variants, attachment recovery/preview paths with restore, or another low-risk patient workflow.
