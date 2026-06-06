@@ -22970,7 +22970,21 @@
 - Research:
   - No external research used.
 - Next Steps:
-  - Run final runtime/gitleaks/staged checks, then commit and push this source fix plus QA log.
+  - See the post-push status section below, then continue with another non-duplicate direct-click CareVault workflow if more autonomous polish is requested.
+
+## 2026-06-07 02:55 KST - Post-Push Fever Infection Draft QA Status
+
+- Current state:
+  - Fever/infection standards-card draft behavior is fixed, directly verified on the existing `암관리` `surface:7`, committed, pushed, and synced.
+- Git state:
+  - PASS source fix commit pushed: `2ef3b8d` (`Fix CareVault fever draft template match`) reached `origin/main`.
+  - PASS repo sync after the source fix commit: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `2ef3b8d`.
+  - PASS post-push `npm run runtime:doctor`: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+- Notes:
+  - Full working-directory `gitleaks dir . --no-banner --redact` reported four existing `generic-api-key` matches in untracked Rust build metadata under `src-tauri/target/.../*.rmeta`; the staged/committed files were clean (`gitleaks protect --staged --no-banner --redact` passed) and the push contained only `src/symptomSupportTemplates.ts`, `src/symptomSupportTemplates.test.ts`, and `working.md`.
+  - The untracked build metadata was not deleted, hidden, or altered.
+- Next Steps:
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
