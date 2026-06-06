@@ -169,7 +169,7 @@ export function buildCaregiverExportContentFingerprint(
     ? {
         age: state.profile.cancerCareMode ? state.profile.age : "",
         cancerCareMode: state.profile.cancerCareMode === true,
-        diabetes: state.profile.diabetes === true,
+        diabetes: enabledSections.vitals ? state.profile.diabetes === true : false,
         sex: state.profile.sex,
       }
     : state.profile;

@@ -239,6 +239,31 @@ describe("caregiverExport", () => {
     expect(redactedScreeningChangedFingerprint).not.toBe(redactedFingerprint);
   });
 
+  it("ignores diabetes changes for redacted caregiver previews when vitals are excluded", () => {
+    const sectionsWithoutVitals = {
+      ...caregiverExportSectionDefaults,
+      vitals: false,
+    };
+    const redactedFingerprint = buildCaregiverExportContentFingerprint(
+      state,
+      sectionsWithoutVitals,
+      { redactProfile: true },
+    );
+    const diabetesOnlyChangedFingerprint = buildCaregiverExportContentFingerprint(
+      {
+        ...state,
+        profile: {
+          ...state.profile,
+          diabetes: true,
+        },
+      },
+      sectionsWithoutVitals,
+      { redactProfile: true },
+    );
+
+    expect(diabetesOnlyChangedFingerprint).toBe(redactedFingerprint);
+  });
+
   it("builds a read-only caregiver HTML summary", () => {
     const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z");
 
