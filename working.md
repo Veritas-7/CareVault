@@ -19876,3 +19876,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit summary export fallback, CSV export fallback, or another low-risk patient workflow.
+
+## 2026-06-06 16:51 KST - Visit Summary and CSV Export Fallback cmux QA
+
+- Improvement target:
+  - Continue the export/download sweep by verifying visit-summary Markdown and CSV export buttons in the existing WebKit cmux browser.
+  - Confirm both exports use Safari-style clipboard fallback and do not mutate health records or open stale previews.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: browser UA was Safari-like with vendor `Apple Computer, Inc.`, and `navigator.clipboard.writeText` was available.
+  - PASS baseline buttons: `요약 내보내기` was enabled with aria/title `진료 요약 내보내기 · 범위 최근 30일`; `CSV 내보내기` was enabled with aria/title `CSV 내보내기 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`.
+  - PASS visit summary export fallback: clicked `요약 내보내기`; save chip showed `진료 요약 다운로드 대신 클립보드 복사됨 · 범위 최근 30일`.
+  - PASS CSV export fallback: clicked `CSV 내보내기`; save chip showed `CSV 다운로드 대신 클립보드 복사됨 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`.
+  - PASS non-mutating guard: no export preview opened; backup button stayed `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`; stored counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deletedDocuments `0`.
+  - PASS cleanup: reloaded the same surface and confirmed save chip returned to `브라우저 자동 저장됨`; visit summary range remained `30d`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; download fallback behavior remains covered by `src/textFileDownload.test.ts`, visit summary export labels by `src/visitPacket.test.ts`, and CSV scope labels by `src/csvExport.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup export fallback, visit summary range changes, or another low-risk patient workflow.
