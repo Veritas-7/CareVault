@@ -25819,3 +25819,20 @@
 - Current state:
   - No source patch was made; `working.md` is dirty with this blocker note only.
   - Next session should retry the same intended `장·방광 후기 변화` direct QA only after `surface:7` browser commands respond again, without opening another in-app browser.
+
+## 2026-06-07 08:32 KST - Cervical Late Bowel-Bladder Draft QA Recovery Still Blocked
+
+- Current Goal:
+  - Retry the blocked direct QA slice for the `장·방광 후기 변화` cervical-care question draft using the same existing single `암관리` / `surface:7` cmux browser.
+  - Preserve the one-browser constraint and avoid any cmux app restart, quit, kill, new browser, new tab, new pane, new workspace, or new surface.
+- Recovery attempt:
+  - PASS repo/runtime baseline: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and `npm run runtime:doctor` reported clean runtime with port `1420` free.
+  - BLOCKED same-surface browser RPC: `cmux browser --surface surface:7 get-url` timed out.
+  - BLOCKED broader cmux metadata/RPC: `cmux list-workspaces`, `cmux tree --all`, `cmux surface-health --workspace workspace:4`, and `cmux select-workspace --workspace workspace:4` also timed out.
+  - BLOCKED UI-only recovery: Computer Use confirmed the cmux app was still running and the existing visible browser was a cmux browser, but selecting the existing `암관리` sidebar workspace did not switch away from the current `working.md` workspace.
+  - No app interaction was performed against CareVault, and no source files were changed.
+- Verification:
+  - PASS focused source tests: `npm test -- src/cervicalCancerCare.test.ts src/questionDisplay.test.ts src/questionClipboard.test.ts` => `3 passed`, `37 passed`.
+- Current state:
+  - Direct CareVault browser QA remains blocked on cmux control responsiveness, not on CareVault source or tests.
+  - Retrying should wait for `surface:7` browser commands or workspace selection to respond again; a cmux app restart still requires explicit user approval.
