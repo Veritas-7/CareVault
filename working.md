@@ -24822,6 +24822,36 @@
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 06:55 KST - Cervical Care Note Clipboard Failure Direct QA
+
+- Current Goal:
+  - Fill the direct browser evidence gap for the rejected-write `자궁경부암 케어 노트 복사 실패` branch.
+  - Verify that the real `노트 복사` button preserves total item, priority, screening-summary, record-field, warning, question, record/recovery/prevention, and source counts in both local feedback and the top save chip.
+- Context:
+  - `src/cervicalCancerCareClipboard.test.ts` covered the failure formatter, and older same-surface QA covered the clipboard-unavailable branch.
+  - Working log search did not find recovered `surface:7` direct evidence for the rejected-write `자궁경부암 케어 노트 복사 실패` click.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `pane:8` / `surface:7` browser.
+  - In the same WebView, replace `navigator.clipboard.writeText` with a rejecting writer, capture the baseline storage, and click the real `.cervical-copy-button`.
+  - Confirm one attempted clipboard write, scoped failure feedback, unchanged storage, no preview/dialog/stale state, cleanup reload, and clean browser diagnostics.
+- Issues:
+  - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
+  - Do not restart, quit, force-quit, replace, or signal cmux.
+- Direct same-surface QA:
+  - PASS setup: `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes; temporary Vite then started on `127.0.0.1:1420`. Reused only `workspace:4` / `pane:8` / `surface:7`.
+  - PASS target found: `cmux browser --surface surface:7 goto http://127.0.0.1:1420/#care-plan --snapshot-after` showed the real `자궁경부암 케어 노트 공식 출처 포함 복사 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개` button.
+  - PASS failure setup: in the same WebView, installed a rejecting `navigator.clipboard.writeText`, captured `localStorage["carevault.v1"]` baseline length `1871`, and confirmed the top save chip started as `브라우저 자동 저장됨`.
+  - PASS failure click: clicked the real `.cervical-copy-button`; `.cervical-care-copy-feedback` and `.save-status-chip` both showed `자궁경부암 케어 노트 복사 실패 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개`.
+  - PASS payload behavior: instrumentation showed `writes: 1`, payload length `13,073`, payload prefix starting `[자궁경부암 케어 노트]\n용도: 진료 전 기록과 질문 준비를 위한 공식 출처 기반 메모`, and source markers present.
+  - PASS safety: `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline, storage length stayed `1871`, no export preview, stale alert, or dialog opened, and URL stayed `http://127.0.0.1:1420/#care-plan`.
+  - PASS cleanup: reloaded only `surface:7`; confirmed temporary QA global was gone, native clipboard writer was restored, `.cervical-care-copy-feedback` cleared, save chip returned to `브라우저 자동 저장됨`, storage length stayed `1871`, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/cervicalCancerCareClipboard.test.ts` => `1 passed`, `4 passed`.
+  - PASS runtime cleanup: temporary Vite stopped via Ctrl-C, then `npm run runtime:doctor` reported port `1420` free and no CareVault dev/release processes.
+- Current state:
+  - No source patch was needed; `working.md` is dirty with this direct QA evidence.
+  - Run diff/staged checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 06:45 KST - Food Question Empty Input Failure Affordance
 
 - Current Goal:
