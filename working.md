@@ -24348,6 +24348,29 @@
   - Only `working.md` is dirty with this direct QA evidence.
   - Run runtime/focused test/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
 
+## 2026-06-07 06:26 KST - Caregiver Redacted Profile Fields Direct QA
+
+- Current Goal:
+  - Directly verify the caregiver-share content-staleness boundary for a redacted profile preview.
+  - Confirm hidden profile fields (`name`, `heightCm`, `weightKg`, `waistCm`) do not stale an already-open redacted caregiver preview, while changing the rendered screening-driving age does stale it.
+- Context:
+  - `src/caregiverExport.test.ts` already covers redacted caregiver fingerprints: hidden profile-only changes are ignored, visible profile changes stale, and redacted cervical-screening age changes stale.
+  - Recent direct QA covered profile-redaction setting stale behavior and redacted/excluded-vitals diabetes toggling, but not this exact real profile-input field boundary.
+- Direct same-surface QA:
+  - PASS setup: started temporary Vite on `127.0.0.1:1420`, selected existing `workspace:4`, focused existing `pane:8`, and reused only the existing `암관리` `surface:7` browser. No new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS baseline capture: stored browser-local `carevault.v1` in `sessionStorage["carevault.__testCaregiverRedactedProfileFieldsBaseline"]`; baseline profile was `나의 건강 기록`, age `59`, sex `female`, height `164`, weight `62`, waist `82`, with default caregiver share settings and no preview/stale state.
+  - PASS redacted preview setup: clicked the real `보호자 공유본 프로필 가리기` checkbox and the real `보호자 공유본 미리보기` button. The preview opened with snapshot `프로필 가림`, no stale alert, and enabled copy/print/download actions with `98줄 · 49,690자 · 72,855B · 근거/출처 111개`.
+  - PASS hidden profile field freshness: used the real profile inputs to change name to `cmux 가림 프로필 QA`, height to `171`, weight to `72`, and waist to `91`. The open preview still had no `.export-preview-stale-alert`, copy/print/download stayed enabled with the original compact summary, and the raw caregiver HTML did not contain the QA name or hidden numeric profile values.
+  - PASS rendered-age positive stale guard: changed the real age input to `19`. The open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 기록 변경 감지`, exposed `공유 기록 반영`, and disabled copy/print/download with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.` in each aria/title.
+  - PASS regeneration: clicked the real `공유 기록 반영` action. The stale alert disappeared, copy/print/download re-enabled with `98줄 · 49,251자 · 72,188B · 근거/출처 110개`, raw caregiver HTML contained `프로필 식별정보 가림`, did not expose the QA name or hidden profile metrics, and reflected the age-change screening signal.
+  - PASS cleanup: restored the captured `carevault.v1`, removed the temporary session key, reloaded only `surface:7`, and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, default caregiver share settings restored, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no QA profile text in storage or DOM, no preview/stale alert, and `No browser errors`.
+- Verification:
+  - PASS direct cmux same-surface QA as above.
+  - No code changed in this QA-only slice; redacted caregiver fingerprint behavior remains covered by `src/caregiverExport.test.ts`.
+- Current state:
+  - Only `working.md` is dirty with this direct QA evidence.
+  - Run focused tests, stop temporary Vite via Ctrl-C, run runtime/diff checks, stage explicit `working.md`, run staged secret checks, commit/push this focused QA log, then record post-push status.
+
 ## 2026-06-07 06:06 KST - Same-Date Timeline Ordering Direct QA
 
 - Current Goal:
