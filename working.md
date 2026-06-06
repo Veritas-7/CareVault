@@ -25864,3 +25864,25 @@
 - Current state:
   - `src/App.tsx`, `src/cervicalCancerCare.ts`, `src/cervicalCancerCare.test.ts`, and `working.md` are dirty with this verified improvement and QA evidence.
   - Run diff checks, stage only these explicit paths, run staged secret scan, commit/push, then record post-push status.
+
+## 2026-06-07 08:41 KST - Post-Push Cervical Late Bowel-Bladder Draft QA
+
+- Improvement target:
+  - Record the post-push state after restoring `surface:7`, directly verifying the `장·방광 후기 변화` draft button, and adding source-level draft-field coverage.
+- Verification:
+  - PASS direct same-surface QA: existing `surface:7` opened the real cervical prompt disclosure and clicked `장·방광 후기 변화 자궁경부암 질문 초안 만들기`; the editable question form filled date `2026-06-15`, topic `장·방광 후기 변화`, priority `next-visit`, source-retaining body text, and focus on `진료 전 질문 내용`.
+  - PASS non-mutation: captured `localStorage["carevault.v1"]` baseline length `1871`; after the click the storage string stayed byte-for-byte equal, did not contain `장·방광 후기 변화`, and saved questions stayed count `1` with topic `혈액검사`.
+  - PASS cleanup: same `surface:7` reload returned draft fields empty, storage keys only `carevault.v1`, no preview dialog/stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+  - PASS focused tests: `npm test -- src/cervicalCancerCare.test.ts src/questionDisplay.test.ts src/questionClipboard.test.ts` => `3 passed`, `38 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `531 passed`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- src/App.tsx src/cervicalCancerCare.ts src/cervicalCancerCare.test.ts working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `bf32c47 Cover cervical late bowel-bladder draft`.
+  - PASS push: `git push` updated `origin/main` from `b547630` to `bf32c47`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
