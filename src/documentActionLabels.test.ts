@@ -15,6 +15,7 @@ import {
   formatDocumentAttachmentReconnectFailedStatusLabel,
   formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
+  formatDocumentAttachmentRemovalCanceledStatusLabel,
   formatDocumentAttachmentRemovalFailedStatusLabel,
   formatDocumentDraftAddActionLabel,
   formatDocumentDraftAttachmentReadyStatusLabel,
@@ -128,6 +129,18 @@ describe("documentActionLabels", () => {
     );
     expect(formatDocumentAttachmentRemovedStatusLabel({ ...baseDocument, attachmentName: "  " })).toBe(
       "혈액검사 메모 검사 서류 첨부 제거됨 · 제거한 첨부 파일명 미확인",
+    );
+  });
+
+  it("builds document-specific attachment removal cancel feedback", () => {
+    const documentWithAttachment: CareDocument = {
+      ...baseDocument,
+      attachmentName: "blood-result.pdf",
+      attachmentStatus: "브라우저 파일명 참조",
+    };
+
+    expect(formatDocumentAttachmentRemovalCanceledStatusLabel(documentWithAttachment)).toBe(
+      "혈액검사 메모 검사 서류 첨부 연결 제거 취소됨 · 현재 첨부 blood-result.pdf · 첨부 상태 브라우저 파일명 참조",
     );
   });
 

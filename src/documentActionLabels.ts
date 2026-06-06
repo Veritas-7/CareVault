@@ -86,6 +86,12 @@ export function formatDocumentAttachmentRemovedStatusLabel(document: CareDocumen
   return `${formatDocumentContext(document)} 첨부 제거됨 · ${formatRemovedAttachmentContext(document)}`;
 }
 
+export function formatDocumentAttachmentRemovalCanceledStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 첨부 연결 제거 취소됨 · ${formatCurrentAttachmentContext(
+    document,
+  )}`;
+}
+
 export function formatDeletedDocumentAttachmentCleanedStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 삭제 보관함 첨부 정리됨 · ${formatRemovedAttachmentContext(document)}`;
 }

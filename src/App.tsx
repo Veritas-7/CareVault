@@ -181,6 +181,7 @@ import {
   formatDocumentAttachmentReconnectFailedStatusLabel,
   formatDocumentAttachmentReferenceStatusLabel,
   formatDocumentAttachmentRemovedStatusLabel,
+  formatDocumentAttachmentRemovalCanceledStatusLabel,
   formatDocumentAttachmentRemovalFailedStatusLabel,
   formatDocumentDraftAddActionLabel,
   formatDocumentDraftAttachmentReadyStatusLabel,
@@ -2675,7 +2676,12 @@ function App() {
   const removeSavedDocumentAttachment = async (document: CareDocument) => {
     if (!hasAttachmentMetadata(document)) return;
     const confirmed = window.confirm(`"${document.title}" 첨부 파일 연결을 제거할까요?`);
-    if (!confirmed) return;
+    if (!confirmed) {
+      const feedback = formatDocumentAttachmentRemovalCanceledStatusLabel(document);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
+      return;
+    }
 
     const removed = await removeSandboxAttachment(document);
     if (!removed) return;

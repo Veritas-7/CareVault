@@ -25934,3 +25934,35 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 08:53 KST - Saved Attachment Remove Cancel Feedback
+
+- Current Goal:
+  - Improve the saved-document attachment removal cancel path so a user who dismisses the confirm prompt gets visible local feedback beside the document row plus the same topbar status.
+  - Keep the change non-destructive: canceling must not remove attachment metadata, append removal history, open previews, or alter other records.
+- Context:
+  - Existing same-surface QA already covered saved attachment add, preview, confirm-accepted removal, removal failure, and archive cancel.
+  - Source review found `removeSavedDocumentAttachment()` returned immediately when `window.confirm()` was false, leaving no row/topbar feedback for the cancel action.
+- Changes:
+  - `src/documentActionLabels.ts`: added `formatDocumentAttachmentRemovalCanceledStatusLabel()`.
+  - `src/App.tsx`: when saved attachment removal is canceled, sets document-row `role=status` feedback and the top save chip to the scoped cancel label.
+  - `src/documentActionLabels.test.ts`: added coverage for the document-specific cancel feedback sentence with attachment filename and status context.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#documents`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` length `1871`, storage keys only `carevault.v1`, no saved attachment remove button present, and saved row add action `혈액검사 메모 검사 서류 첨부 추가 · 상태 의료진 질문`.
+  - PASS saved attachment preparation: clicked the real saved-row `첨부 추가` button while only the hidden file-picker click was intercepted; dispatched a synthetic `cancel-remove-qa.png` file through the real saved attachment input. The row rendered `cancel-remove-qa.png`, `파일명 참조`, `브라우저 파일명 참조`, and remove action `혈액검사 메모 검사 서류 첨부 연결 제거 · 현재 첨부 cancel-remove-qa.png`.
+  - PASS cancel click: installed a same-WebView `window.confirm` recorder returning `false`, clicked the real `첨부 제거` button, and captured exactly one prompt: `"혈액검사 메모" 첨부 파일 연결을 제거할까요?`.
+  - PASS new feedback: `.document-action-feedback` and `.save-status-chip` both showed `혈액검사 메모 검사 서류 첨부 연결 제거 취소됨 · 현재 첨부 cancel-remove-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS non-removal guard: after cancel, the document still had `attachmentName: cancel-remove-qa.png`, `attachmentStorage: browser-reference`, `attachmentStatus: 브라우저 파일명 참조`, the remove button remained visible, and history tail contained only the original `서류 저장` plus the temporary `첨부 재연결`, with no `첨부 제거` entry.
+  - PASS cleanup: restored native `window.confirm` and hidden-input click behavior, restored the captured baseline, removed the session test key and QA global, reloaded `#documents`, and confirmed storage length `1871`, storage keys only `carevault.v1`, no session test keys, no QA filename in storage or DOM, no document-action feedback, no attachment metadata, history count back to `1`, no preview dialog, no export preview, no stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only normal Vite `[debug] [vite] connecting...` and `[debug] [vite] connected.` lines.
+- Verification:
+  - RED before implementation: `npm test -- src/documentActionLabels.test.ts` failed because `formatDocumentAttachmentRemovalCanceledStatusLabel` did not exist.
+  - PASS focused tests: `npm test -- src/documentActionLabels.test.ts src/documentAttachmentActions.test.ts src/attachmentArchive.test.ts` => `3 passed`, `23 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `532 passed`.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff check: `git diff --check -- src/App.tsx src/documentActionLabels.ts src/documentActionLabels.test.ts`.
+- Current state:
+  - `src/App.tsx`, `src/documentActionLabels.ts`, `src/documentActionLabels.test.ts`, and `working.md` are dirty with this verified UX improvement and direct QA evidence.
+  - Next: run final diff checks, stage only these paths, run staged secret scan, commit/push, then record post-push status.
