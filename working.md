@@ -21300,3 +21300,22 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for native desktop attachment recovery friction, backup export/download behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 21:45 KST - Vital Type Switch cmux Accessibility QA
+
+- Improvement target:
+  - Verify the visible vital-entry draft switches from blood-pressure-specific controls to glucose-specific controls in the current single CareVault cmux browser surface, without saving a new health record.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser surface in the right-side cmux pane; no new browser pane/tab/surface was opened. The cmux browser CLI/RPC path still timed out on `cmux browser surface:7 get-url`, so this slice used desktop accessibility inspection only.
+  - PASS baseline: the live CareVault page was at `http://127.0.0.1:1420/#care-plan` with title/tab `CareVault`, save chip `브라우저 자동 저장됨`, backup export scope `프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`, and the vital draft set to `혈압` with `128/78`.
+  - PASS glucose branch: clicked the real `혈압·혈당·체온 입력 종류 선택` popup and selected `혈당`. The visible draft changed to `혈당 mg/dL` value `118`, measurement-context popup `식전`, glucose standards source `대한당뇨병학회 당뇨병 관리 목표`, target text `식전/공복 목표 남녀 공통 · 80-130 mg/dL`, save-preview `혈당 118 mg/dL (식전) · 식전 목표 범위 · 성인 남녀 공통 · 당뇨 추적 혈당`, and action label `혈당 기록 추가 · 혈당 118 mg/dL (식전) · 식전 목표 범위 · 성인 남녀 공통 · 당뇨 추적 혈당`.
+  - PASS guard: did not click the valid `혈당 기록 추가` action. Recent timeline and saved-vital summary stayed at `전체 4개 · 혈압 3개 · 혈당 1개`.
+  - PASS cleanup/restore: restored the same visible draft back to `혈압`; the form again showed `수축기 128`, `이완기 78`, source `질병관리청 국가건강정보포털 고혈압`, preview `혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`, and action `혈압 기록 추가 · 혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`.
+  - Runtime note: a fragile popup-key attempt temporarily focused the adjacent `블로그` workspace. Recovered by clicking the existing `암관리` sidebar row; no cmux restart and no new browser were used.
+- Automated verification:
+  - PASS `npm test -- src/healthRules.test.ts src/vitalAssessmentEvidence.test.ts src/vitalMetric.test.ts src/vitalChartData.test.ts` (`4 passed`, `26 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is visible at `#care-plan` with the vital draft restored to the original blood-pressure branch.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for native desktop attachment recovery friction, backup export/download behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
