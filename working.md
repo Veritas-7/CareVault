@@ -23535,6 +23535,37 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 04:08 KST - Standards Filter Clipboard Failure Direct QA
+
+- Current Goal:
+  - Directly verify that the `암환자` Korean adult health-standards quick-filter copy action keeps scoped local/topbar failure feedback when `navigator.clipboard.writeText` rejects.
+  - Keep the check non-mutating, in the existing `workspace:4` / `surface:7` browser only, and restore the clipboard stub by reloading the same surface.
+- Context:
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - Repo started clean and synced at `562b2ef`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault dev/release process was running.
+  - `DESIGN.md` requires standards quick filters, selected count feedback, summary chips, filter-aware copy text, and post-copy status feedback to preserve the same selected-range summary.
+- Duplicate-slice review:
+  - Recent same-surface QA covered successful `암환자 기준 복사`, rejected clipboard writes for profile/dashboard metric standards, and clipboard failure/unsupported paths for question, queue, and cervical-care copy.
+  - Source-level work added standards range-filter failure/unsupported formatters, but I did not find recovered `surface:7` evidence for rejected `writeText` preserving the selected `암환자` filter summary in `.health-standards-copy-feedback`.
+- Planned verification:
+  - Start a temporary Vite runtime on `127.0.0.1:1420`.
+  - Reuse only the existing `암관리` `workspace:4` / `surface:7` browser and navigate it to `#care-plan`.
+  - Capture a browser-local storage baseline, click the real `암환자` quick filter, install a same-WebView clipboard reject stub, then click the real `암환자 기준 복사` button.
+  - Verify `.health-standards-copy-feedback`, the top save chip, rejected payload scope, unchanged storage, cleanup after reload, and browser diagnostics.
+- Progress:
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; reused only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - PASS same-surface setup: reloaded only `surface:7` at `http://127.0.0.1:1420/#care-plan`, clicked the real `암환자 기준 보기: 감염·출혈 연락 기준` quick-filter button, and stored a baseline in `sessionStorage.carevault.__testStandardsFilterCopyFailureBaseline`.
+  - PASS selected filter scope: `암환자` was the only pressed standards filter; visible summary chips showed `표시 3/26개 기준`, `주의 7개 위험 강조 행`, `성별 남녀 공통`, and `근거 공식 출처 2개`; the copy button visible text was `암환자 기준 복사` with aria/title `한국 성인 건강 기준 암환자 범위 복사 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개`.
+  - PASS failure click: installed a same-WebView `navigator.clipboard.writeText` reject stub and clicked the real `암환자 기준 복사` button; local `.health-standards-copy-feedback` and the top save chip both showed `암환자 기준 복사 실패 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개`.
+  - PASS attempted copy payload: the rejected clipboard payload started with `[한국 성인 건강 기준]`, included `선택 범위: 암환자 · 3/26개 표시`, `- 표시: 3/26개 기준`, `- 주의: 7개 위험 강조 행`, `- 근거: 공식 출처 2개`, `ANC 감염 위험 기준`, `혈소판 출혈 위험 기준`, and `체온·감염 연락 기준`, and excluded `BMI 기준`.
+  - PASS non-mutating cleanup: localStorage matched the captured baseline after the rejected write; restored the baseline defensively, removed the test session key, reloaded only the same `surface:7`, and confirmed counts returned to `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`, storage keys only `carevault.v1`, session test keys empty, `전체` standards filter selected, copy aria/title back to `한국 성인 건강 기준 전체 범위 복사 · 표시 26/26 · 주의 35 · 성별 분리 5개 · 출처 15개`, no standards copy feedback, save chip `브라우저 자동 저장됨`, no export preview/dialog, and the clipboard writer restored.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite `connecting` / `connected` debug logs.
+- Issues:
+  - No source defect found in this slice. The rejected standards quick-filter copy path keeps selected-range failure feedback scoped locally and globally without mutating app storage.
+- Next Steps:
+  - Stop the temporary Vite runtime.
+  - Run focused health-standard tests, diff checks, staged secret checks, then commit and push this QA-only `working.md` update.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
