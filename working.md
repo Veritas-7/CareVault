@@ -20282,6 +20282,29 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export/import restore details, visit summary export edge cases, or another low-risk patient workflow.
 
+## 2026-06-06 18:07 KST - Care Queue Copy Packet cmux QA
+
+- Improvement target:
+  - Verify the dashboard `진료 준비 큐` copy action produces a clinic-ready packet with status/category summary, source-backed rows, and upcoming visit context.
+  - Keep the slice non-mutating by intercepting clipboard writes inside the same browser context and proving stored records remain unchanged.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: save chip was `브라우저 자동 저장됨`; stored counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, food `0`.
+  - PASS action scope: the copy button rendered enabled as `진료 큐 복사` with matching aria/title `진료 준비 큐 8개 항목 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개 · 자궁경부 1 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1 복사`.
+  - PASS packet capture: temporarily replaced `navigator.clipboard.writeText`, clicked the copy button, captured exactly one packet, and restored the original clipboard method.
+  - PASS packet contents: the captured packet started with `[진료 준비 큐]`, `작성일: 2026-06-06`, `확인 항목: 8개`, `상태 요약: 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개`, and `분류 요약: 자궁경부 1 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1`.
+  - PASS source-backed rows: the packet included blood-pressure rows such as `혈압 132/84 mmHg`, `판정: 한국 성인 남녀 공통 기준 고혈압 전단계입니다...`, and `근거: 질병관리청 국가건강정보포털 고혈압 (...)`, plus the upcoming `종양내과` visit context.
+  - PASS feedback: local `.action-queue-feedback` and the save chip both showed `진료 준비 큐 복사됨 · 8개 항목 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개 · 자궁경부 1 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1`.
+  - PASS non-mutating guard: `localStorage["carevault.v1"]` stayed byte-for-byte unchanged, and stored counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, food `0`.
+  - PASS cleanup: reloaded the same surface; the reload briefly returned the root URL, so the same surface was immediately reassigned to `http://127.0.0.1:1420/#care-plan`; final checks showed load-state `OK`, save chip `브라우저 자동 저장됨`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; care-queue clipboard formatting and summary labels remain covered by `src/careActionQueue.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for food judgment required/valid restore paths, visit summary edge cases, or another low-risk patient workflow.
+
 ## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
 
 - Improvement target:
