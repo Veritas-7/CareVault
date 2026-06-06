@@ -23581,6 +23581,42 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 04:12 KST - Standards Filter Clipboard Unsupported Direct QA
+
+- Current Goal:
+  - Directly verify that the `암환자` Korean adult health-standards quick-filter copy action keeps scoped local/topbar unsupported-browser feedback when the WebView has no usable clipboard writer.
+  - Keep the check non-mutating, in the existing `workspace:4` / `surface:7` browser only, and restore the clipboard object by reloading the same surface.
+- Context:
+  - Repo started clean and synced at `60c18e3`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault dev/release process was running.
+  - The previous slice proved the rejected-write branch for the same `암환자 기준 복사` control; this slice covers the separate clipboard-unavailable branch.
+- Duplicate-slice review:
+  - Recent same-surface QA covered successful `암환자 기준 복사`, standards rejected-write failure, metric-standard failure, question/queue failure, and cervical-care unsupported.
+  - Source-level tests cover standards range-filter unsupported status, but I did not find recovered `surface:7` evidence for the clipboard-unavailable standards filter branch.
+- Planned verification:
+  - Start a temporary Vite runtime on `127.0.0.1:1420`.
+  - Reuse only the existing `암관리` `workspace:4` / `surface:7` browser and navigate it to `#care-plan`.
+  - Capture a browser-local storage baseline, click the real `암환자` quick filter, make `navigator.clipboard.writeText` unavailable in the same WebView, then click the real `암환자 기준 복사` button.
+  - Verify `.health-standards-copy-feedback`, the top save chip, no attempted clipboard payload, unchanged storage, cleanup after reload, and browser diagnostics.
+- Progress:
+  - PASS started Vite on `127.0.0.1:1420` and reused only the existing `workspace:4` / `surface:7` browser; no new browser, tab, pane, workspace, surface, or headless browser was opened.
+  - PASS clicked the real `암환자 기준 보기` quick filter. The scoped copy button reported `한국 성인 건강 기준 암환자 범위 복사 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개`.
+  - PASS captured a browser-local `carevault.v1` baseline, made `navigator.clipboard.writeText` unavailable in the same WebView, and clicked the real `암환자 기준 복사` button.
+  - PASS local feedback and top save chip both showed `한국 성인 건강 기준 암환자 범위 복사 미지원 · 브라우저 클립보드 없음 · 표시 3/26 · 주의 7 · 남녀 공통 · 출처 2개`.
+  - PASS confirmed the unsupported branch did not attempt a clipboard write (`attemptedCalls: 0`), did access the missing writer path, did not show the rejected-write `암환자 기준 복사 실패` label, did not open a preview/dialog, and left `carevault.v1` byte-identical to the captured baseline.
+  - PASS restored the baseline, removed `carevault.__testStandardsFilterCopyUnsupportedBaseline`, reloaded the same `surface:7`, and clicked the real `전체 기준 보기` quick filter to leave standards in the neutral full-range view.
+- Cleanup diagnostics:
+  - PASS final same-surface state: `http://127.0.0.1:1420/#care-plan`, title `CareVault`, ready state `complete`.
+  - PASS final standards view: `전체 기준 보기: 모든 기준`, copy button `한국 성인 건강 기준 전체 범위 복사 · 표시 26/26 · 주의 35 · 성별 분리 5개 · 출처 15개`.
+  - PASS final app state: no standards copy feedback, save chip `브라우저 자동 저장됨`, storage keys only `carevault.v1`, no session test keys, no unsupported stub globals, no own `navigator.clipboard` override, native writer type restored to `function`, and no preview/dialog.
+  - PASS record counts after cleanup: vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, lab results `1`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite debug connection logs.
+- Changes:
+  - `working.md`: recorded direct same-surface QA evidence for the standards quick-filter clipboard-unavailable branch.
+- Next Steps:
+  - Stop the temporary Vite runtime.
+  - Run `npm run runtime:doctor`, `npm test -- src/healthStandards.test.ts`, and `git diff --check -- working.md`.
+  - Stage only `working.md`, run staged secret scanning, commit/push this QA log, then record and push a post-push status note.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
