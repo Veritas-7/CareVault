@@ -20130,3 +20130,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for document manual save validation, caregiver memo presets, or another low-risk patient workflow.
+
+## 2026-06-06 17:29 KST - Caregiver Share Memo Presets cmux QA
+
+- Improvement target:
+  - Continue the caregiver-share settings sweep by verifying visible memo preset buttons update the caregiver cover memo and status feedback.
+  - Confirm each preset keeps share scope unchanged and can be restored to the previous browser state.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: memo was `desktop stale check`, preset was empty/direct, profile was shown, all 7 sections were included, save chip was `브라우저 자동 저장됨`, and buttons `식사 적용`, `증상 적용`, `서류 적용` were enabled with matching aria/title text.
+  - PASS 식사 preset: clicked `보호자 공유본 식사 메모 프리셋 적용`; memo became `오늘은 식사량, 수분 섭취, 불편했던 음식을 중심으로 봐주세요.`, save chip showed `전달 메모 프리셋 적용: 식사 · 브라우저 자동 저장됨`, and share summary stayed `의도 직접 설정 · 프로필 표시 · 전달 메모 포함 · 포함 7개 · 제외 0개`.
+  - PASS 증상 preset: clicked `보호자 공유본 증상 메모 프리셋 적용`; memo became `최근 증상 변화와 약 복용 후 반응을 같이 확인해주세요.`, save chip showed `전달 메모 프리셋 적용: 증상 · 브라우저 자동 저장됨`, and share summary stayed unchanged.
+  - PASS 서류 preset: clicked `보호자 공유본 서류 메모 프리셋 적용`; memo became `다음 진료 전에 확인할 서류와 질문만 먼저 정리해주세요.`, save chip showed `전달 메모 프리셋 적용: 서류 · 브라우저 자동 저장됨`, and share summary stayed unchanged.
+  - PASS non-mutating guard: stored counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`; only caregiver `coverMemo` changed during preset clicks.
+  - PASS restore: restored the captured `localStorage` snapshot, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, original memo `desktop stale check`, preset empty/direct, profile shown, and all 7 sections included.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; memo preset action labels remain covered by `src/caregiverShareSettings.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for document manual save validation, document attachment controls, or another low-risk patient workflow.
