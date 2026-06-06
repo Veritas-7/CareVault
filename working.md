@@ -19313,3 +19313,26 @@
   - Only this `working.md` QA entry is unstaged.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for preview stale-action edge cases, food input empty/unclassified failure states, or source-link navigation safety.
+
+## 2026-06-06 10:42 KST - CSV Food Change Stale Preview cmux QA
+
+- Improvement target:
+  - Continue the preview stale-action sweep in the existing right cmux browser only.
+  - Validate that an already-generated CSV preview becomes stale when the food judgment input changes, blocks copy/download actions, and can be refreshed back to an actionable preview.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: saved a temporary `carevault.__testCsvFoodStaleBaseline` before mutating the food input.
+  - PASS: clicking `CSV 미리보기` generated a CSV preview and the save chip showed `CSV 미리보기 생성 · 기록 8개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외` with 0 stale alerts.
+  - PASS: changing the food judgment input to `브로콜리, 현미밥, 베이컨, 자몽 주스, 생굴` showed the food update status and stale alert `CSV 기록이 바뀌었습니다 / 현재 미리보기는 이전 기록으로 생성되었습니다. / CSV 기록 반영`.
+  - PASS: while stale, the preview copy and download controls were disabled with aria labels explaining `비활성: CSV 기록이 바뀌어 다시 생성이 필요합니다.`
+  - PASS: the stale alert exposed `새 미리보기 생성 · CSV · 변경된 기록 적용`; clicking it removed the stale alert, regenerated the preview, and re-enabled both copy and download controls.
+  - PASS: refreshed preview summary showed `CSV`, `150줄`, `45,484자`, `71,459B`, and `근거/출처 82개`, confirming the changed food input was incorporated.
+  - PASS cleanup: after one transient blank/snapshot delay on `surface:7`, the same surface recovered at `http://127.0.0.1:1420/#care-plan`; restored the temporary baseline, removed `carevault.__testCsvFoodStaleBaseline`, reloaded the same surface, and verified the food input returned to `브로콜리, 현미밥, 베이컨, 자몽 주스` with no temporary test keys.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; CSV stale preview coverage remains in the existing export preview tests and runtime cmux evidence above.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - Only this `working.md` QA entry is unstaged.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for food input empty/unclassified failure states, remaining source-link navigation safety, or any stale preview path not yet covered.
