@@ -19201,3 +19201,23 @@
   - Changes are not staged yet.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for remaining preview/download paths or backup import validation.
+
+## 2026-06-06 10:13 KST - Remaining Direct Export Fallback cmux QA
+
+- Improvement target:
+  - Continue runtime coverage for the shared direct text-file fallback after `Fix direct export fallback`.
+  - Confirm the same Safari/WebKit clipboard fallback behavior on export handlers not covered by the first backup/CSV direct-click check.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: clicking `진료 요약 내보내기` kept the URL on `http://127.0.0.1:1420/#care-plan`, showed `진료 요약 다운로드 대신 클립보드 복사됨 · 범위 최근 30일`, and `pbpaste` contained the markdown packet starting with `# CareVault 진료 요약`.
+  - PASS: clicking `보호자 공유본 내보내기` kept the URL on `http://127.0.0.1:1420/#care-plan`, showed `보호자 공유본 다운로드 대신 클립보드 복사됨 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개`, and `pbpaste` contained the HTML packet starting with `<!doctype html>`.
+  - RECHECK: the first CSV preview download clipboard read returned stale `HELLO world` even though the save chip showed fallback success; a direct `navigator.clipboard.writeText` probe on the same surface returned `writeText-ok` and updated `pbpaste`.
+  - PASS: retrying `.export-preview-panel` `CSV 다운로드` kept the URL on `http://127.0.0.1:1420/#care-plan`, showed `CSV 다운로드 대신 클립보드 복사됨 · 150줄 · 45,375자 · 71,274B · 근거/출처 82개`, and `pbpaste` contained the expected CSV header and rows.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; the fallback implementation was already covered by the prior full verification and commit `61ae219`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - Only this `working.md` QA entry is unstaged.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import validation or preview stale-action edge cases.
