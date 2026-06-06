@@ -318,12 +318,14 @@ import {
   buildCareVaultCsv,
   buildCsvExportFingerprint,
   formatCsvExportDescription,
+  formatCsvExportScopeSummary,
   formatCsvExportStatus,
   formatCsvPreviewDescription,
   formatCsvPreviewStatus,
 } from "./csvExport";
 import {
   buildExportPreviewSummary,
+  formatExportPreviewCompactSummary,
   formatExportPreviewCopyDescription,
   formatExportPreviewCopyFailedStatus,
   formatExportPreviewCopyStatus,
@@ -348,6 +350,7 @@ import {
   describeCareVaultBackupImportFailure,
   formatCareVaultBackupExportDescription,
   formatCareVaultBackupExportStatus,
+  formatCareVaultBackupScopeCompactSummary,
   formatCareVaultBackupImportDescription,
   formatCareVaultBackupImportFailureStatus,
   formatCareVaultBackupImportStatus,
@@ -377,12 +380,20 @@ import {
   formatCaregiverShareSectionStatus,
   formatCaregiverShareSectionSummaryAriaLabel,
   formatCaregiverShareSectionToggleLabel,
+  formatCaregiverShareSettingsCompactSummary,
   getCaregiverShareSettingsPreset,
   hasCustomCaregiverShareSettings,
   normalizeCaregiverShareSettings,
   type CaregiverShareSettings,
   type CaregiverShareSettingsPreviewSummary,
 } from "./caregiverShareSettings";
+import {
+  downloadTextFile,
+  formatTextFileDownloadClipboardFallbackStatus,
+  formatTextFileDownloadFailedStatus,
+  formatTextFileDownloadUnsupportedStatus,
+  type TextFileDownloadResult,
+} from "./textFileDownload";
 import {
   formatQuestionDraftAddActionLabel,
   formatQuestionDraftAddedStatus,
@@ -3305,18 +3316,27 @@ function App() {
     });
   };
 
-  const downloadTextFile = (content: string, filename: string, mimeType: string) => {
-    const blob = new Blob([content], {
-      type: mimeType,
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const setTextFileDownloadStatus = (
+    result: TextFileDownloadResult,
+    downloadedStatus: string,
+    fallbackLabel: string,
+    fallbackSummary: string,
+  ) => {
+    if (result === "download-started") {
+      setSaveLabel(downloadedStatus);
+      return;
+    }
+    if (result === "clipboard-fallback") {
+      setTransientSaveLabel(
+        formatTextFileDownloadClipboardFallbackStatus(fallbackLabel, fallbackSummary),
+      );
+      return;
+    }
+    if (result === "unsupported") {
+      setSaveLabel(formatTextFileDownloadUnsupportedStatus(fallbackLabel, fallbackSummary));
+      return;
+    }
+    setSaveLabel(formatTextFileDownloadFailedStatus(fallbackLabel, fallbackSummary));
   };
 
   const buildVisitPacketExport = () =>
@@ -3470,11 +3490,21 @@ function App() {
     return true;
   };
 
-  const downloadExportPreview = () => {
+  const downloadExportPreview = async () => {
     if (!exportPreview) return;
     if (!guardFreshExportPreview()) return;
-    downloadTextFile(exportPreview.content, exportPreview.filename, exportPreview.mimeType);
-    setSaveLabel(exportPreviewDownloadStatus || `${exportPreview.format} 내보냄`);
+    const summary = buildExportPreviewSummary(exportPreview.content);
+    const result = await downloadTextFile(
+      exportPreview.content,
+      exportPreview.filename,
+      exportPreview.mimeType,
+    );
+    setTextFileDownloadStatus(
+      result,
+      exportPreviewDownloadStatus || `${exportPreview.format} 내보냄`,
+      exportPreview.format,
+      formatExportPreviewCompactSummary(summary),
+    );
   };
 
   const copyExportPreview = () => {
@@ -3537,43 +3567,69 @@ function App() {
     setSaveLabel(exportPreviewPrintStatus || `${exportPreview.format} 인쇄 준비`);
   };
 
-  const exportBackup = () => {
+  const exportBackup = async () => {
     const payload = {
       app: "CareVault",
       schemaVersion: 1,
       exportedAt: new Date().toISOString(),
       state: sanitizeCareVaultBackupState(state),
     };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `carevault-backup-${today}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    setSaveLabel(formatCareVaultBackupExportStatus(state));
+    const result = await downloadTextFile(
+      JSON.stringify(payload, null, 2),
+      `carevault-backup-${today}.json`,
+      "application/json;charset=utf-8",
+    );
+    setTextFileDownloadStatus(
+      result,
+      formatCareVaultBackupExportStatus(state),
+      "백업",
+      formatCareVaultBackupScopeCompactSummary(state),
+    );
   };
 
-  const exportVisitPacket = () => {
+  const exportVisitPacket = async () => {
     const markdown = buildVisitPacketExport();
-    downloadTextFile(markdown, `carevault-visit-summary-${today}.md`, "text/markdown;charset=utf-8");
-    setSaveLabel(formatVisitPacketExportStatus(visitPacketRange));
+    const result = await downloadTextFile(
+      markdown,
+      `carevault-visit-summary-${today}.md`,
+      "text/markdown;charset=utf-8",
+    );
+    setTextFileDownloadStatus(
+      result,
+      formatVisitPacketExportStatus(visitPacketRange),
+      "진료 요약",
+      `범위 ${visitPacketRangeLabels[visitPacketRange]}`,
+    );
   };
 
-  const exportCsvCompanion = () => {
+  const exportCsvCompanion = async () => {
     const csv = buildCsvExport();
-    downloadTextFile(csv, `carevault-records-${today}.csv`, "text/csv;charset=utf-8");
-    setSaveLabel(formatCsvExportStatus(state));
+    const result = await downloadTextFile(
+      csv,
+      `carevault-records-${today}.csv`,
+      "text/csv;charset=utf-8",
+    );
+    setTextFileDownloadStatus(
+      result,
+      formatCsvExportStatus(state),
+      "CSV",
+      formatCsvExportScopeSummary(state),
+    );
   };
 
-  const exportCaregiverHtml = () => {
+  const exportCaregiverHtml = async () => {
     const html = buildCaregiverExport();
-    downloadTextFile(html, `carevault-caregiver-share-${today}.html`, "text/html;charset=utf-8");
-    setSaveLabel(formatCaregiverShareExportStatus(state.caregiverShareSettings));
+    const result = await downloadTextFile(
+      html,
+      `carevault-caregiver-share-${today}.html`,
+      "text/html;charset=utf-8",
+    );
+    setTextFileDownloadStatus(
+      result,
+      formatCaregiverShareExportStatus(state.caregiverShareSettings),
+      "보호자 공유본",
+      formatCaregiverShareSettingsCompactSummary(state.caregiverShareSettings),
+    );
   };
 
   const importBackup = (file: File | undefined) => {

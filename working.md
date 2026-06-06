@@ -19165,3 +19165,39 @@
   - Changes are not staged yet.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver export/copy/download actions, backup import/export, or another stale feedback mismatch.
+
+## 2026-06-06 10:07 KST - Direct Export Download Fallback cmux QA
+
+- Improvement target:
+  - Continue the direct export sweep in the existing right cmux browser only.
+  - Validate direct-click text-file exports on the active Safari/WebKit cmux surface, where browser download handling can differ from Chromium.
+- RED runtime/browser note:
+  - PASS setup: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - RED: `cmux browser surface:7 download wait --path /tmp/carevault-backup-export-qa.json --timeout-ms 30000` timed out after clicking `전체 백업 내보내기`.
+  - RED: the same surface navigated away from the app to a `blob:http://127.0.0.1:1420/...` JSON document with the CareVault backup payload, leaving 0 app buttons visible.
+  - RED confirmation: a delayed `URL.revokeObjectURL` probe also timed out and navigated the same surface to a `blob:` text document, so delaying revoke did not make direct downloads reliable on this WebKit host.
+- Change:
+  - Added `src/textFileDownload.ts` to centralize text-file export behavior.
+  - Added `src/textFileDownload.test.ts` for Safari/WebKit clipboard fallback, unsupported clipboard, clipboard failure, non-WebKit blob downloads, and Chrome-on-iOS style non-fallback detection.
+  - Updated direct export handlers in `src/App.tsx` so backup JSON, export preview text, visit packet text, CSV, and caregiver HTML use the shared download helper.
+  - Added explicit save-chip fallback statuses for clipboard fallback, unsupported browser/clipboard, and clipboard failure.
+  - Added a `DESIGN.md` decision-log entry for fail-closed direct text-file export behavior in download-hostile Safari/WebKit surfaces.
+- Runtime/browser notes:
+  - PASS: after implementation, clicking `전체 백업 내보내기` kept the surface on `http://127.0.0.1:1420/#care-plan`, kept the app UI visible, and showed `백업 다운로드 대신 클립보드 복사됨 · 프로필 포함 · 기록 8개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS: `pbpaste` contained the exported backup JSON beginning with `{"app":"CareVault","schemaVersion":1,...}` after the backup click.
+  - PASS: clicking `CSV 내보내기` kept the same app URL and showed `CSV 다운로드 대신 클립보드 복사됨 · 기록 8개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외`.
+  - PASS: `pbpaste` contained the expected CSV header and profile rows after the CSV click.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - PASS: `git diff --check -- src/App.tsx src/textFileDownload.ts src/textFileDownload.test.ts DESIGN.md working.md`.
+  - PASS: `npm run test -- src/textFileDownload.test.ts src/backupState.test.ts src/csvExport.test.ts src/exportPreviewSummary.test.ts src/caregiverShareSettings.test.ts`, 67 tests.
+  - PASS: `npm run test`, 62 files and 498 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - Changes are not staged yet.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for remaining preview/download paths or backup import validation.

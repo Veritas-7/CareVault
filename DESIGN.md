@@ -734,6 +734,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-06: Made generated lab follow-up question actions become `질문 추가됨` after the matching question exists, preventing duplicate clinician-question drafts across autosave and reload.
 - 2026-06-06: Made the current saved-question status button disabled with a `현재 상태` accessible label so question cards do not offer misleading no-op status changes.
 - 2026-06-06: Aligned caregiver-share preview stale detection, reset enablement, and settings differences with the trimmed memo text that caregiver HTML exports actually render, so whitespace-only memo edits do not block preview actions.
+- 2026-06-06: Made direct text-file exports fail closed in Safari/WebKit download-hostile surfaces by copying the export content to the clipboard with explicit fallback status instead of navigating the app to a `blob:` document.
 
 ## Do's and Don'ts
 
