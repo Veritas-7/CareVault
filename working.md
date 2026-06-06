@@ -21168,3 +21168,23 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver-share minimum-section guard behavior, native desktop attachment recovery friction, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 21:13 KST - Export Preview Print Success cmux QA
+
+- Improvement target:
+  - Verify the successful export-preview print path through the current single CareVault cmux browser surface without opening a real new tab or native print dialog.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab/surface was opened. `cmux select-workspace --workspace workspace:4`, `cmux focus-pane --pane pane:8`, `get-url`, `get title`, and `errors list` confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, and `No browser errors`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testPreviewPrintSuccessBaseline"]` (`1893` bytes). Baseline counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, no export preview, no dialog, no stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS preview open: clicked the real `진료 요약 미리보기 · 범위 최근 30일` action. The preview panel opened with enabled actions and summary `진료 요약 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`.
+  - PASS print capture: temporarily replaced `window.open` inside the same WebView with a fake print window, clicked the real preview action `진료 요약 인쇄 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`, then restored the original `window.open`.
+  - PASS print document: the fake print window received args `["", "_blank"]`, one print document write (`33,438` characters), and calls to `document.close()`, `focus()`, and `print()`. The captured document contained `CareVault 진료 요약`, `범위: 최근 30일`, and source evidence text with `근거:`.
+  - PASS status/non-mutation: the save chip became `진료 요약 미리보기 인쇄 준비 · 234줄 · 32,554자 · 55,352B · 근거/출처 109개`, and `localStorage["carevault.v1"]` stayed byte-for-byte identical to the captured baseline.
+  - PASS cleanup: clicked the real `내보내기 미리보기 닫기` action, restored the captured baseline defensively, removed `carevault.__testPreviewPrintSuccessBaseline`, reloaded the same `surface:7`, and confirmed final state `#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, no export preview, no dialog, no stale alert, no sessionStorage temp keys, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/exportPreviewSummary.test.ts src/visitPacket.test.ts src/textFileDownload.test.ts` (`3 passed`, `34 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for native desktop attachment recovery friction, successful print/download branches for other preview formats if needed, or another low-risk patient workflow not already covered in the recent worklog tail.
