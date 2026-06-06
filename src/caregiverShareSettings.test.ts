@@ -97,6 +97,7 @@ describe("caregiverShareSettings", () => {
 
   it("detects custom settings that can be reset", () => {
     expect(hasCustomCaregiverShareSettings(undefined)).toBe(false);
+    expect(hasCustomCaregiverShareSettings({ coverMemo: "   " })).toBe(false);
     expect(hasCustomCaregiverShareSettings({ coverMemo: "확인 부탁" })).toBe(true);
     expect(hasCustomCaregiverShareSettings({ presetId: "clinic-prep" })).toBe(true);
     expect(hasCustomCaregiverShareSettings({ redactProfile: true })).toBe(true);
@@ -195,6 +196,9 @@ describe("caregiverShareSettings", () => {
     expect(buildCaregiverShareSettingsFingerprint({ coverMemo: "식사만 봐주세요." })).not.toBe(
       baseline,
     );
+    expect(
+      buildCaregiverShareSettingsFingerprint({ coverMemo: "   식사만 봐주세요.  " }),
+    ).toBe(buildCaregiverShareSettingsFingerprint({ coverMemo: "식사만 봐주세요." }));
     expect(buildCaregiverShareSettingsFingerprint({ redactProfile: true })).not.toBe(baseline);
     expect(buildCaregiverShareSettingsFingerprint({ presetId: "clinic-prep" })).not.toBe(
       baseline,
@@ -296,6 +300,9 @@ describe("caregiverShareSettings", () => {
     expect(formatCaregiverShareResetDescription(settings)).toBe(
       "보호자 공유 설정 초기화 · 의도 정보 최소 · 프로필 가림 · 메모 포함 · 포함 5개 · 제외 2개 · 기본값으로 되돌립니다",
     );
+    expect(formatCaregiverShareResetDescription({ coverMemo: "   " })).toBe(
+      "보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다",
+    );
     expect(formatCaregiverShareResetDescription(undefined)).toBe(
       "보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다",
     );
@@ -363,6 +370,12 @@ describe("caregiverShareSettings", () => {
     const settings = getCaregiverShareSettingsPreset("clinic-prep")?.settings;
 
     expect(buildCaregiverShareSettingsDifferences(settings, settings)).toEqual([]);
+    expect(
+      buildCaregiverShareSettingsDifferences(
+        { coverMemo: "   desktop stale check" },
+        { coverMemo: "desktop stale check  " },
+      ),
+    ).toEqual([]);
   });
 
   it("reports exact caregiver preview setting differences between snapshot and current settings", () => {

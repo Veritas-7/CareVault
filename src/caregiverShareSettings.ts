@@ -172,6 +172,10 @@ function normalizeCaregiverSharePresetId(value: unknown) {
   return caregiverSharePresetIds.some((id) => id === value) ? value : "";
 }
 
+function normalizeCaregiverShareMemoForExport(value: string) {
+  return value.trim();
+}
+
 export function normalizeCaregiverShareSettings(
   input: CaregiverShareSettingsInput | undefined | unknown,
 ): CaregiverShareSettings {
@@ -199,7 +203,7 @@ export function hasCustomCaregiverShareSettings(
   const settings = normalizeCaregiverShareSettings(input);
 
   return (
-    settings.coverMemo !== "" ||
+    normalizeCaregiverShareMemoForExport(settings.coverMemo) !== "" ||
     settings.presetId !== "" ||
     settings.redactProfile ||
     caregiverExportSectionIds.some(
@@ -239,7 +243,7 @@ export function buildCaregiverShareSettingsFingerprint(
   const settings = normalizeCaregiverShareSettings(input);
 
   return JSON.stringify({
-    coverMemo: settings.coverMemo,
+    coverMemo: normalizeCaregiverShareMemoForExport(settings.coverMemo),
     presetId: settings.presetId,
     redactProfile: settings.redactProfile,
     sections: caregiverShareSectionOptions.map((option) => [
@@ -454,7 +458,10 @@ export function buildCaregiverShareSettingsDifferences(
     });
   }
 
-  if (previous.coverMemo !== current.coverMemo) {
+  if (
+    normalizeCaregiverShareMemoForExport(previous.coverMemo) !==
+    normalizeCaregiverShareMemoForExport(current.coverMemo)
+  ) {
     differences.push({
       id: "memo",
       label: "전달 메모",

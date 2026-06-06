@@ -19128,3 +19128,40 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for the next visible saved-record action or stale feedback mismatch.
   - If another clipboard mismatch appears, reproduce it from a cold reload before changing code, because the current `navigator.clipboard.writeText` and button-click paths both reach the system clipboard.
+
+## 2026-06-06 09:50 KST - Caregiver Preview Memo Whitespace Stale Fix
+
+- Improvement target:
+  - Continue the topbar caregiver-share direct-click sweep in the existing right cmux browser only.
+  - `DESIGN.md` expects caregiver previews to block copy/print/download only when share settings or shared records meaningfully change.
+  - Source review found caregiver HTML exports trim `coverMemo`, while preview stale fingerprints, reset enablement, and settings differences compared raw memo whitespace.
+- RED runtime/browser note:
+  - PASS setup: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS setup: saved `localStorage["carevault.v1"]` into `carevault.__testCaregiverWhitespaceBaseline`; current caregiver memo was `   desktop stale check`.
+  - RED: clicked `보호자 공유본 미리보기`, then changed the memo textarea from `   desktop stale check` to `desktop stale check`.
+  - RED: the visible preview still contained the same `desktop stale check` memo content, but `.export-preview-stale-alert` appeared with `공유 설정이 바뀌었습니다...공유 설정 반영`, and the preview copy action became disabled.
+- Change:
+  - Added trim-stability coverage in `src/caregiverShareSettings.test.ts` for whitespace-only memo reset detection, caregiver preview fingerprints, reset labels, and settings differences.
+  - Updated `src/caregiverShareSettings.ts` so custom/reset checks, stale preview fingerprints, and settings differences compare the same trimmed memo text used by caregiver HTML export rendering.
+  - Added a `DESIGN.md` decision-log entry for caregiver-share preview stale detection matching export-rendered memo semantics.
+- TDD note:
+  - RED: `npm run test -- src/caregiverShareSettings.test.ts` failed 4 tests before the trim-aware helper update.
+  - GREEN: `npm run test -- src/caregiverShareSettings.test.ts` passed after implementation with 25 tests.
+- Runtime/browser notes:
+  - PASS: after implementation, repeated the same browser flow: generated `보호자 공유본 미리보기`, changed the memo from `   desktop stale check` to `desktop stale check`, and verified no stale alert appeared.
+  - PASS: preview copy remained enabled (`disabledCopy: false`) because the exported memo content was unchanged after trimming.
+  - PASS cleanup: restored the temporary browser localStorage baseline, removed `carevault.__testCaregiverWhitespaceBaseline`, reloaded the same surface, and verified the saved memo returned to `   desktop stale check`, no stale alert remained, and URL stayed `http://127.0.0.1:1420/#care-plan`.
+- Automated verification:
+  - PASS: `git diff --check -- src/caregiverShareSettings.ts src/caregiverShareSettings.test.ts DESIGN.md working.md`.
+  - PASS: `npm run test -- src/caregiverShareSettings.test.ts`, 25 tests.
+  - PASS: `npm run test`, 61 files and 493 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: browser errors returned `No browser errors`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - Changes are not staged yet.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver export/copy/download actions, backup import/export, or another stale feedback mismatch.
