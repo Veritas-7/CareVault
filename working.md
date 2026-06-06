@@ -21650,3 +21650,24 @@
 - Next durable app slice:
   - User approval is required before any cmux app restart/quit/force-quit/replacement recovery.
   - After cmux workspace/surface control recovers, immediately return to `workspace:4`/`surface:7`, restore the caregiver-share baseline from `carevault.__testCaregiverSettingsStaleBaseline`, remove all `carevault.__test*` keys, reload the same surface, and verify browser errors/console.
+
+## 2026-06-06 23:22 KST - Caregiver Stale Guard Regression Tests
+
+- Improvement target:
+  - Keep making progress while cmux `surface:7` is blocked by strengthening the source-level coverage for the exact caregiver-share stale guard path that was partially verified by direct click QA.
+- Runtime/browser notes:
+  - The single cmux browser remains the only allowed direct-click surface, so no headless/browser substitute was created for this source-only test slice.
+  - Direct cleanup of `carevault.__testCaregiverSettingsStaleBaseline` remains pending until `surface:7`/`workspace:4` control recovers or the user explicitly approves cmux app recovery.
+- Changes:
+  - `src/caregiverShareSettings.test.ts`: added a profile-only stale-preview difference test for the default snapshot `프로필 표시` changing to current `프로필 가림`, matching the partial cmux checkbox flow.
+  - `src/exportPreviewSummary.test.ts`: added a caregiver-share disabled-action label test that preserves the exact stale settings reason `공유 설정이 바뀌어 다시 생성이 필요합니다.`
+- Verification:
+  - PASS `npm test -- src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts` => `2 passed`, `35 passed`.
+  - PASS `npm run typecheck`.
+  - PASS `git diff --check -- src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The repo is dirty with only the two targeted test files and this `working.md` entry.
+  - This slice is source-level verified only; it does not complete the pending direct cmux fresh-preview confirmation or localStorage cleanup.
+- Next durable app slice:
+  - Stage only the two test files plus `working.md`, run staged secret checks, then commit/push this source-level regression coverage.
+  - Continue to defer cmux app restart/quit/force-quit/replacement recovery until the user explicitly approves it.

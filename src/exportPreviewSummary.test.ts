@@ -130,6 +130,20 @@ describe("exportPreviewSummary", () => {
     );
   });
 
+  it("keeps caregiver settings stale disabled action labels explicit", () => {
+    const summary = buildExportPreviewSummary("a\n근거: x");
+    const actionDescription = formatExportPreviewCopyDescription("보호자 공유본", summary);
+
+    expect(
+      formatExportPreviewDisabledActionDescription(
+        actionDescription,
+        "공유 설정이 바뀌어 다시 생성이 필요합니다.",
+      ),
+    ).toBe(
+      "보호자 공유본 복사 · 2줄 · 7자 · 11B · 근거/출처 1개 · 비활성: 공유 설정이 바뀌어 다시 생성이 필요합니다.",
+    );
+  });
+
   it("keeps stale preview refresh labels scoped to preview type and changed state", () => {
     expect(formatExportPreviewFreshActionVisibleLabel("caregiver-settings")).toBe(
       "공유 설정 반영",

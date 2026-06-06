@@ -381,6 +381,20 @@ describe("caregiverShareSettings", () => {
     ).toEqual([]);
   });
 
+  it("reports profile-only redaction changes for stale caregiver previews", () => {
+    const snapshot = createDefaultCaregiverShareSettings();
+    const current = normalizeCaregiverShareSettings({ redactProfile: true });
+
+    expect(buildCaregiverShareSettingsDifferences(snapshot, current)).toEqual([
+      {
+        id: "profile",
+        label: "프로필",
+        previousText: "프로필 표시",
+        currentText: "프로필 가림",
+      },
+    ]);
+  });
+
   it("reports exact caregiver preview setting differences between snapshot and current settings", () => {
     const snapshot = getCaregiverShareSettingsPreset("privacy-minimal")?.settings;
     const current = normalizeCaregiverShareSettings({
