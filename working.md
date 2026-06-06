@@ -20930,3 +20930,22 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface; the last successful browser baseline was returned to `#care-plan`, but subsequent cmux CLI/RPC checks are currently timing out.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup import variants, CSV food-query staleness, saved-document action mutations with restore, or another low-risk patient workflow.
+
+## 2026-06-06 19:50 KST - Saved Document Next Action cmux QA
+
+- Improvement target:
+  - Verify a saved document's `다음 조치` textarea persists while editing, records a blur-time history entry, updates user-visible feedback, and can be restored to baseline without leaving temporary QA state.
+- Runtime/browser notes:
+  - PASS setup/recovery: confirmed the existing CareVault browser remained `surface:7` in workspace `암관리` at `http://127.0.0.1:1420/#care-plan`; `cmux ping` returned `PONG`, `cmux browser surface:7 get-url` returned `http://127.0.0.1:1420/#care-plan`, and `cmux browser surface:7 errors list` initially returned `No browser errors`. No new browser pane/tab was opened.
+  - PASS mutation: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testDocumentNextActionBaseline"]`, clicked the real `#documents` navigation link, focused the real `혈액검사 메모 다음 조치` textarea, changed it from `백혈구 수치가 낮을 때 식사 제한 기준 질문` to `다음 종양내과 방문 때 WBC 추적 질문 - cmux QA`, and blurred the textarea.
+  - PASS persisted edit/history: storage showed the saved document `nextAction` updated to the QA value while editing. After blur, document history grew from `1` to `2`, with latest history `{ kind: "next-action", label: "다음 조치 변경", detail: "다음 종양내과 방문 때 WBC 추적 질문 - cmux QA" }`.
+  - PASS visible feedback: the document action feedback displayed `혈액검사 메모 검사 서류 다음 조치 이력 기록됨 · 다음 종양내과 방문 때 WBC 추적 질문 - cmux QA`; the save chip showed the same message plus `브라우저 자동 저장됨`; and the visible history list showed the new `다음 조치 변경` entry above the original `서류 저장` entry.
+  - PASS restore: restored the captured baseline snapshot, removed `carevault.__testDocumentNextActionBaseline`, navigated/reloaded the same `surface:7` to `#care-plan`, and confirmed storage had the original next action `백혈구 수치가 낮을 때 식사 제한 기준 질문`, history count `1`, expected baseline counts, no `cmux QA` text in storage, no temp QA key, no preview, no dialog, no stale alert, and no alert.
+  - BLOCKED follow-up note: a second cleanup reload with `--snapshot-after` succeeded and showed the CareVault page, and later non-JS checks returned URL `http://127.0.0.1:1420/#care-plan` and title `CareVault`; however, a final detailed JS state eval and final `errors list` both timed out through cmux CLI/RPC. `cmux` was not stopped, restarted, force-quit, or signaled.
+- Automated verification:
+  - PASS `npm test -- src/documentActionLabels.test.ts src/documentHistory.test.ts src/documentFilterActions.test.ts` (`3 passed`, `27 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing CareVault browser surface is still `surface:7`; the last non-JS browser checks returned `#care-plan` and title `CareVault`, but detailed cmux JS/error-list checks are intermittently timing out after the successful mutation/restore evidence.
+- Next durable app slice:
+  - Continue only after `surface:7` JS/error-list responsiveness is stable enough, then test backup import variants, CSV food-query staleness, document archive/restore with baseline restore, or another low-risk patient workflow.
