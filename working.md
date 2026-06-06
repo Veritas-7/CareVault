@@ -21230,3 +21230,25 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for CSV preview successful print, native desktop attachment recovery friction, caregiver-share minimum-section guard behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 21:27 KST - CSV Preview Print Success cmux QA
+
+- Improvement target:
+  - Verify the CSV export preview successful print path through the current single CareVault cmux browser surface, covering the CSV-specific non-HTML preview wrapper separately from the Markdown and caregiver HTML print paths.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab/surface was opened. Baseline was `http://127.0.0.1:1420/#care-plan`, title `CareVault`, save chip `브라우저 자동 저장됨`, counts vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, no export preview, no dialog, no stale alert, and `No browser errors`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCsvPrintSuccessBaseline"]` before opening the preview.
+  - PASS preview open: clicked the real `CSV 미리보기 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외` action. The preview panel opened with action buttons enabled and summary `CSV · 151줄 · 45,048자 · 70,704B · 근거/출처 82개`.
+  - PASS CSV content: the preview content began with header `"section","date","title","value","status","detail"`, included `care_queue`, `자궁경부암`, `근거:`, and source URLs, and did not contain `/Users/wj`, `attachmentPath`, or `blob:`.
+  - PASS print capture: temporarily replaced `window.open` inside the same WebView with a fake print window, clicked the real preview action `CSV 인쇄 · 151줄 · 45,048자 · 70,704B · 근거/출처 82개`, then restored the original `window.open`.
+  - PASS print document: the fake print window received args `["", "_blank"]`, one document write of `54,905` characters, and calls to `document.close()`, `focus()`, and `print()`. The captured print document contained `<!doctype html>`, `CSV 미리보기`, `carevault-records-2026-06-06.csv`, the non-HTML `<pre>` wrapper, `@media print`, and no `/Users/wj`, `attachmentPath`, or `blob:`.
+  - PASS status/non-mutation: the save chip became `CSV 미리보기 인쇄 준비 · 151줄 · 45,048자 · 70,704B · 근거/출처 82개`, and `localStorage["carevault.v1"]` stayed byte-for-byte identical to the captured baseline.
+  - PASS cleanup: clicked the real `내보내기 미리보기 닫기` action, restored the captured baseline defensively, removed `carevault.__testCsvPrintSuccessBaseline`, and confirmed the preview was closed with byte-for-byte storage equality.
+  - PASS final parity: reloaded only the same `surface:7` and confirmed `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, baseline counts unchanged, empty `foodQuery`, no export preview, no dialog, no stale alert, no test sessionStorage keys, localStorage keys restored to `carevault.v1` plus the pre-existing `carevault.__testFoodEmptyBaseline`, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/csvExport.test.ts src/exportPreviewSummary.test.ts src/textFileDownload.test.ts` (`3 passed`, `34 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for native desktop attachment recovery friction, caregiver-share minimum-section guard behavior, backup export/download behavior, or another low-risk patient workflow not already covered in the recent worklog tail.
