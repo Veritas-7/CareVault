@@ -22167,6 +22167,49 @@
   - Continue direct-click QA from the same `암관리` workspace browser if more CareVault polish is requested.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
 
+## 2026-06-07 01:17 KST - CSV and Visit Internal-ID Fingerprint Scope
+
+- Current Goal:
+  - Continue export-preview stale false-positive hardening beyond caregiver share.
+  - Match CSV and visit-summary preview fingerprints to exported record fields instead of app-internal record ids.
+- Context:
+  - Repo started clean and synced at `6549c9f` (`Log CareVault internal id status`).
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - `working.md` and `DESIGN.md` were reread before choosing this slice.
+- Progress:
+  - Found that `buildCsvExportFingerprint()` and `buildVisitPacketExportFingerprint()` still fingerprinted raw vital/visit/lab/symptom/question arrays.
+  - Real `AppState` records carry internal `id` values, but CSV and visit-summary exports do not render those ids.
+  - Added RED coverage showing id-only changes across exported record arrays should not stale CSV or visit-summary previews.
+- Changes:
+  - `src/csvExport.ts`: maps CSV fingerprints through explicit exported-field record fingerprints for vitals, visits, labs, symptoms, and questions.
+  - `src/visitPacket.ts`: maps visit-summary fingerprints through explicit exported-field record fingerprints for vitals, visits, labs, symptoms, and questions.
+  - `src/csvExport.test.ts`: added RED/GREEN coverage for internal ids across CSV record arrays.
+  - `src/visitPacket.test.ts`: added RED/GREEN coverage for internal ids across visit-summary record arrays.
+  - `DESIGN.md`: documented the CSV and visit-summary internal-id fingerprint contract.
+- Tests:
+  - RED `npm test -- src/csvExport.test.ts src/visitPacket.test.ts` failed before implementation on the two new internal-id tests.
+  - PASS `npm test -- src/csvExport.test.ts src/visitPacket.test.ts` => 2 files, 44 tests.
+  - PASS `npm run typecheck`.
+  - PASS `npm test` => 62 files, 528 tests.
+  - PASS `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS `git diff --check -- src/csvExport.ts src/csvExport.test.ts src/visitPacket.ts src/visitPacket.test.ts DESIGN.md working.md`.
+  - PASS `npm run build` => 2475 modules transformed; build completed without dirtying `dist/`.
+  - PASS same-browser direct QA on existing `암관리` CareVault `surface:7`:
+    - Injected QA records with internal ids across vitals, visits, documents, symptoms, questions, and labs.
+    - Clicked `CSV 미리보기`; preview contained visible QA values (`QA-WBC`, `QA CSV 질문`, `QA CSV 서류`, `QA 종양내과`, `QA 오심`, `131/82`), leaked no `qa-*-internal-hidden` ids, showed no stale alerts, and copy/print/download buttons were enabled.
+    - Clicked `진료 요약 미리보기`; preview contained the same visible QA values, leaked no internal ids, showed no stale alerts, and copy/print/download buttons were enabled.
+    - `cmux browser --surface surface:7 errors list` => `No browser errors`; console list only showed Vite connect messages.
+  - PASS browser-local cleanup: restored/cleaned `carevault.v1`, removed `carevault.__test*` keys, reloaded the same surface, and verified storage/body no longer contained QA markers.
+- Issues:
+  - No new browser, headless browser, pane, tab, workspace, or surface opened in this slice.
+  - During QA, visible cmux workspace briefly showed another workspace (`블로그`) and a WriteFlow browser; that browser was not used for CareVault. The session was switched back to `암관리`, and all CareVault QA continued only on the existing `surface:7` CareVault tab.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun final runtime/diff checks, then stage only focused paths.
+  - Run staged secret scan, commit, push, and record the pushed state if green.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:

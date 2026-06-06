@@ -212,13 +212,71 @@ export function buildCsvExportFingerprint(state: CsvExportState) {
       title: document.title,
     })),
     foodQuery: state.foodQuery,
-    labResults: state.labResults,
+    labResults: state.labResults.map(formatLabResultFingerprint),
     profile: state.profile,
-    questions: state.questions,
-    symptoms: state.symptoms,
-    visits: state.visits,
-    vitals: state.vitals,
+    questions: state.questions.map(formatQuestionFingerprint),
+    symptoms: state.symptoms.map(formatSymptomFingerprint),
+    visits: state.visits.map(formatVisitFingerprint),
+    vitals: state.vitals.map(formatVitalFingerprint),
   });
+}
+
+function formatVitalFingerprint(vital: CsvExportState["vitals"][number]) {
+  return {
+    date: vital.date,
+    diastolic: vital.diastolic,
+    glucoseContext: vital.glucoseContext,
+    glucoseMgDl: vital.glucoseMgDl,
+    note: vital.note,
+    systolic: vital.systolic,
+    temperatureC: vital.temperatureC,
+    type: vital.type,
+  };
+}
+
+function formatVisitFingerprint(visit: CsvExportState["visits"][number]) {
+  return {
+    date: visit.date,
+    hospital: visit.hospital,
+    nextDate: visit.nextDate,
+    plan: visit.plan,
+    reason: visit.reason,
+    summary: visit.summary,
+  };
+}
+
+function formatLabResultFingerprint(lab: CsvExportState["labResults"][number]) {
+  return {
+    date: lab.date,
+    lower: lab.lower,
+    name: lab.name,
+    note: lab.note,
+    unit: lab.unit,
+    upper: lab.upper,
+    value: lab.value,
+  };
+}
+
+function formatSymptomFingerprint(symptom: CsvExportState["symptoms"][number]) {
+  return {
+    action: symptom.action,
+    body: symptom.body,
+    date: symptom.date,
+    medication: symptom.medication,
+    severity: symptom.severity,
+    symptom: symptom.symptom,
+  };
+}
+
+function formatQuestionFingerprint(question: CsvExportState["questions"][number]) {
+  return {
+    answer: question.answer,
+    date: question.date,
+    priority: normalizeQuestionPriority(question.priority),
+    question: question.question,
+    status: question.status,
+    topic: question.topic,
+  };
 }
 
 export function formatCsvExportScopeSummary(state: CsvExportState) {

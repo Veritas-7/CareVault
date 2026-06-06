@@ -174,6 +174,104 @@ describe("csvExport", () => {
     expect(baseline).not.toContain("attachmentPath");
   });
 
+  it("ignores internal record ids in CSV content fingerprints", () => {
+    const stateWithInternalIds = {
+      ...state,
+      deletedDocuments: [
+        {
+          id: "deleted-document-internal-1",
+          ...state.documents[0],
+          reviewStatus: "done",
+        },
+      ],
+      documents: [
+        {
+          id: "document-internal-1",
+          ...state.documents[0],
+        },
+      ],
+      labResults: [
+        {
+          id: "lab-internal-1",
+          ...state.labResults[0],
+        },
+      ],
+      questions: [
+        {
+          id: "question-internal-1",
+          ...state.questions[0],
+        },
+      ],
+      symptoms: [
+        {
+          id: "symptom-internal-1",
+          ...state.symptoms[0],
+        },
+      ],
+      visits: [
+        {
+          id: "visit-internal-1",
+          ...state.visits[0],
+        },
+      ],
+      vitals: [
+        {
+          id: "vital-internal-1",
+          ...state.vitals[0],
+        },
+      ],
+    } as unknown as CsvExportState;
+    const baseline = buildCsvExportFingerprint(stateWithInternalIds);
+    const idOnlyChanged = buildCsvExportFingerprint({
+      ...stateWithInternalIds,
+      deletedDocuments: [
+        {
+          ...stateWithInternalIds.deletedDocuments[0],
+          id: "deleted-document-internal-2",
+        },
+      ],
+      documents: [
+        {
+          ...stateWithInternalIds.documents[0],
+          id: "document-internal-2",
+        },
+      ],
+      labResults: [
+        {
+          ...stateWithInternalIds.labResults[0],
+          id: "lab-internal-2",
+        },
+      ],
+      questions: [
+        {
+          ...stateWithInternalIds.questions[0],
+          id: "question-internal-2",
+        },
+      ],
+      symptoms: [
+        {
+          ...stateWithInternalIds.symptoms[0],
+          id: "symptom-internal-2",
+        },
+      ],
+      visits: [
+        {
+          ...stateWithInternalIds.visits[0],
+          id: "visit-internal-2",
+        },
+      ],
+      vitals: [
+        {
+          ...stateWithInternalIds.vitals[0],
+          id: "vital-internal-2",
+        },
+      ],
+    } as unknown as CsvExportState);
+
+    expect(idOnlyChanged).toBe(baseline);
+    expect(baseline).not.toContain("internal-1");
+  });
+
   it("builds a single spreadsheet-friendly CSV from local records", () => {
     const csv = buildCareVaultCsv(state, "2026-06-03T10:00:00.000Z");
 

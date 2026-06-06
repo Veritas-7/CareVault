@@ -188,6 +188,97 @@ describe("visit packet", () => {
     expect(fingerprint).not.toContain("attachmentPath");
   });
 
+  it("ignores internal record ids in visit packet content fingerprints", () => {
+    const stateWithInternalIds = {
+      ...sampleState,
+      documents: [
+        {
+          id: "document-internal-1",
+          ...sampleState.documents[0],
+        },
+      ],
+      labResults: [
+        {
+          id: "lab-internal-1",
+          ...sampleState.labResults[0],
+        },
+      ],
+      questions: [
+        {
+          id: "question-internal-1",
+          ...sampleState.questions[0],
+        },
+      ],
+      symptoms: [
+        {
+          id: "symptom-internal-1",
+          ...sampleState.symptoms[0],
+        },
+      ],
+      visits: [
+        {
+          id: "visit-internal-1",
+          ...sampleState.visits[0],
+        },
+      ],
+      vitals: [
+        {
+          id: "vital-internal-1",
+          ...sampleState.vitals[0],
+        },
+      ],
+    } as unknown as VisitPacketState;
+    const fingerprint = buildVisitPacketExportFingerprint(
+      stateWithInternalIds,
+      "브로콜리, 베이컨",
+    );
+    const idOnlyChangedFingerprint = buildVisitPacketExportFingerprint(
+      {
+        ...stateWithInternalIds,
+        documents: [
+          {
+            ...stateWithInternalIds.documents[0],
+            id: "document-internal-2",
+          },
+        ],
+        labResults: [
+          {
+            ...stateWithInternalIds.labResults[0],
+            id: "lab-internal-2",
+          },
+        ],
+        questions: [
+          {
+            ...stateWithInternalIds.questions[0],
+            id: "question-internal-2",
+          },
+        ],
+        symptoms: [
+          {
+            ...stateWithInternalIds.symptoms[0],
+            id: "symptom-internal-2",
+          },
+        ],
+        visits: [
+          {
+            ...stateWithInternalIds.visits[0],
+            id: "visit-internal-2",
+          },
+        ],
+        vitals: [
+          {
+            ...stateWithInternalIds.vitals[0],
+            id: "vital-internal-2",
+          },
+        ],
+      } as unknown as VisitPacketState,
+      "브로콜리, 베이컨",
+    );
+
+    expect(idOnlyChangedFingerprint).toBe(fingerprint);
+    expect(fingerprint).not.toContain("internal-1");
+  });
+
   it("builds a clinician-facing markdown summary from tracked records", () => {
     const markdown = buildVisitPacketMarkdown(sampleState, {
       exportedAt: "2026-06-03T08:00:00.000Z",
