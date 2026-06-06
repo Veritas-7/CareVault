@@ -19583,3 +19583,28 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for caregiver-share content stale state or remaining document empty/failure states.
+
+## 2026-06-06 16:17 KST - Caregiver Share Content Stale Preview cmux QA
+
+- Improvement target:
+  - Continue the export-preview direct-click sweep by verifying caregiver-share content stale detection after a record change.
+  - Use a browser-state snapshot so the content-change test does not leave an extra test record behind.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS setup: saved `carevault.v1` and `carevault.__testFoodEmptyBaseline` in temporary `sessionStorage` keys before changing content.
+  - PASS baseline: generated `보호자 공유본 미리보기` with summary `101줄 · 49,789자 · 72,969B · 근거/출처 111개`, no stale alert, and copy/print/download enabled.
+  - PASS content change: clicked `혈압 기록 추가 · 혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`, creating a caregiver-share content change.
+  - PASS stale guard: the existing preview showed `보호자 공유본 미리보기 기록 변경 감지` with `보호자 공유본 기록이 바뀌었습니다`, and the fresh-preview action stayed enabled as `공유 기록 반영` / `새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용`.
+  - PASS settings isolation: no setting-difference panel appeared during the content stale check.
+  - PASS disabled actions: caregiver preview copy, print, and download were disabled and their aria/title labels each ended with `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.`
+  - PASS recovery: clicked `공유 기록 반영`; stale alert disappeared and the refreshed preview updated to `101줄 · 49,953자 · 73,003B · 근거/출처 112개` with copy/print/download enabled again.
+  - PASS cleanup: restored the saved `carevault.v1` and `carevault.__testFoodEmptyBaseline` snapshots, removed the temporary `sessionStorage` keys, reloaded the same surface, and confirmed the app returned to `http://127.0.0.1:1420/#care-plan`.
+  - PASS cleanup: after restore, the backup/CSV controls were back to the snapshot state `기록 9개`, and `보호자 공유본 프로필 가리기` was off.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; caregiver content fingerprints remain covered by `src/caregiverExport.test.ts`, and stale action labels by `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for remaining document empty/failure states.
