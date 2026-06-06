@@ -23148,6 +23148,44 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 03:20 KST - Cervical Care Note Copy Direct QA
+
+- Current Goal:
+  - Verify the source-backed `자궁경부암 케어 노트` copy flow through the real existing `암관리` `surface:7` browser.
+  - Cover copy button scope text, summary chips, clipboard packet content, local/status feedback, non-mutating record counts, cleanup, and browser diagnostics.
+- Context:
+  - Repo started clean and synced at `2b17fd7` (`Log CareVault profile validation QA status`).
+  - `README.md` and `DESIGN.md` require the cervical-care panel to provide a one-click official-source note copy with profile screening quick-check context, source counts, accessible labels/titles, and non-diagnosis wording.
+  - `src/App.tsx`, `src/cervicalCancerCareClipboard.ts`, `src/cervicalCancerCareClipboard.test.ts`, and recent `working.md` cervical-care duplicate notes were reread before selecting this non-duplicate copy-flow QA slice.
+  - Recent same-surface work covered cervical-care disclosures and draft buttons, but not the current direct clipboard/status behavior for the main `노트 복사` action.
+- Progress:
+  - Selected cervical-care note copy QA because it is an app-specific cancer-care workflow and can be verified without mutating health records.
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; `workspace:4` and existing `surface:7` stayed on the CareVault page.
+  - PASS baseline/button scope: `노트 복사` was enabled with aria/title `자궁경부암 케어 노트 공식 출처 포함 복사 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개`.
+  - PASS panel summary: visible chips reported `전체 45개`, `우선 3개`, `검진요약 1개`, `기록항목 4개`, `경고 4개`, `질문 10개`, `기록/회복/예방 23개`, and `공식 출처 17개`; panel source links were present with item-specific aria labels.
+  - PASS real copy click with same-WebView clipboard stub: one write was captured with 93 lines and 13,073 characters, starting with `[자궁경부암 케어 노트]`.
+  - PASS copied packet content: included the non-diagnosis boundary, `검진 기준 빠른 확인`, `국가암검진 대상 기준 해당`, `2년 간격 자궁경부세포검사`, `진료 질문 초안`, `출처 목록 (17개)`, `국가암정보센터 자궁경부암 일반적 증상`, and `질병관리청 국가건강정보포털 자궁경부암 백신`.
+  - PASS safety guard: copied packet did not contain `/Users/wj`, `attachmentPath`, `blob:`, or direct treatment-order phrases such as `복용하세요`, `중단하세요`, `치료하세요`, `투약하세요`, or `처방하세요`.
+  - PASS feedback/non-mutation: local `.cervical-care-copy-feedback` and `.save-status-chip` both showed `자궁경부암 케어 노트 복사됨 · 총 45개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 23개 · 출처 17개`; localStorage stayed byte-identical to baseline and counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`.
+  - PASS cleanup: restored baseline defensively, removed `carevault.__testCervicalCopyBaseline`, reloaded the same surface to `#care-plan`, and confirmed save chip `브라우저 자동 저장됨`, no temp keys, no copy feedback, no export preview, and no dialog.
+- Changes:
+  - `working.md` only; no source patch was needed because the cervical-care note copy flow matched the documented contract.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, `get title`, and `wait --selector '.cervical-care-panel'`.
+  - PASS same-surface setup eval with baseline capture and same-WebView clipboard stub injection.
+  - PASS real `button.cervical-copy-button` click and post-click clipboard/status eval.
+  - PASS cleanup eval after baseline restore and reload: URL `http://127.0.0.1:1420/#care-plan`, title `CareVault`, `ready: complete`, save chip `브라우저 자동 저장됨`, cervical panel visible, no `carevault.__test*` keys, no feedback, no preview, no dialog, and original record counts restored.
+  - PASS `timeout 15 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 15 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite server, run runtime/diff/focused test checks, stage only `working.md`, run staged secret checks, commit, push, and record post-push status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
