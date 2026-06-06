@@ -3371,6 +3371,9 @@ function App() {
         setStorageBackend(backend);
         const actionLabel = pendingActionLabelRef.current;
         pendingActionLabelRef.current = null;
+        if (actionLabel?.trim()) {
+          transientSaveLabelUntilRef.current = Date.now() + 2000;
+        }
         setSaveLabel(formatStorageSavedWithActionLabel(backend, actionLabel));
         if (backend === "sqlite") {
           try {

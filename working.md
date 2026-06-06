@@ -21486,3 +21486,30 @@
 - Next durable app slice:
   - Run DESIGN validation, staged secret checks, then commit/push this feedback-consistency patch.
   - When `surface:7` responds again, re-run the saved-document next-action focused-textarea manual-save flow and verify both document history and global save-chip feedback.
+
+## 2026-06-06 22:42 KST - Manual Save Feedback cmux QA Recovery
+
+- Improvement target:
+  - Re-run the saved-document next-action focused-textarea manual-save flow in the same recovered `surface:7`.
+  - Prevent the follow-up autosave triggered by the manual-save flush state update from immediately replacing the manual action feedback chip.
+- Runtime/browser notes:
+  - PASS recovery: `surface:7` was initially split between CareVault URL/title metadata and an empty `about:blank` snapshot context. A same-surface `reload --snapshot-after` recovered the CareVault DOM; no new browser pane/tab/surface was opened and cmux was not restarted or terminated.
+  - PASS baseline: saved `carevault.v1` to `carevault.__testManualSaveFeedbackBaseline2`; the active saved document `doc-1` started as `의료진 질문`, next action `백혈구 수치가 낮을 때 식사 제한 기준 질문`, with the original single `서류 저장` history entry.
+  - PASS focused manual-save flow: changed `혈액검사 메모 검토 상태` to `정리 완료`, filled focused `혈액검사 메모 다음 조치` with `cmux QA 후 수동 저장 피드백 유지 확인`, confirmed the active element was still the textarea, then clicked the real `현재 CareVault 기록 수동 저장` button.
+  - PASS before follow-up fix: the pending next-action history flushed and row feedback appeared, but the global save chip could still be replaced by a later `브라우저 자동 저장됨` label.
+  - PASS after follow-up fix: manual-save success feedback showed `혈액검사 메모 검사 서류 다음 조치 이력 기록됨 · cmux QA 후 수동 저장 피드백 유지 확인 · 브라우저 저장됨` in the global save chip, while the row feedback showed the same document-specific next-action history message.
+  - PASS persisted state: localStorage history contained `상태 변경 · 의료진 질문 → 정리 완료` and `다음 조치 변경 · cmux QA 후 수동 저장 피드백 유지 확인` for the focused-save run.
+  - PASS cleanup/restore: restored `carevault.v1` from the baseline, removed all `carevault.__test*` keys, reloaded only the same `surface:7`, and confirmed `doc-1` was back to `의료진 질문`, the original next action, and one `서류 저장` history entry. Final backup label remained `첨부 파일명 0개`, the test text was absent, `cmux browser --surface surface:7 errors list` returned `No browser errors`, and console was cleared to `No console entries`.
+- Changes:
+  - `src/App.tsx`: when manual save succeeds with a pending action label, set the transient save-label window so the follow-up autosave cannot immediately replace the action+manual-save feedback.
+- Verification:
+  - PASS `npm test -- src/storageStatus.test.ts src/documentHistory.test.ts src/documentActionLabels.test.ts` (`3 passed`, `25 passed`).
+  - PASS `npm run typecheck`.
+  - PASS `git diff --check -- src/App.tsx src/storageStatus.ts src/storageStatus.test.ts DESIGN.md working.md`.
+  - PASS direct cmux QA on `surface:7` as described above.
+- Current state:
+  - The repo is dirty with `src/App.tsx` and this `working.md` entry.
+  - The existing CareVault browser surface is restored to the baseline saved-document state.
+- Next durable app slice:
+  - Commit/push this final manual-save feedback polish after staged secret checks.
+  - Continue with another non-duplicate direct-click workflow when `surface:7` remains responsive, such as saved-document delete/restore or export-preview stale guards.
