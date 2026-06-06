@@ -19898,3 +19898,23 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for backup export fallback, visit summary range changes, or another low-risk patient workflow.
+
+## 2026-06-06 16:53 KST - Backup Export Fallback cmux QA
+
+- Improvement target:
+  - Continue the export/download sweep by verifying full CareVault backup export in the existing WebKit cmux browser.
+  - Confirm Safari-style download fallback copies sanitized backup JSON to the clipboard without changing stored records.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: `백업 내보내기` was enabled with aria/title `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`; `navigator.clipboard.writeText` was available.
+  - PASS backup export fallback: clicked `백업 내보내기`; save chip showed `백업 다운로드 대신 클립보드 복사됨 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`.
+  - PASS non-mutating guard: no export preview opened; backup button stayed `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개`; stored counts stayed vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deletedDocuments `0`.
+  - PASS cleanup: reloaded the same surface and confirmed save chip returned to `브라우저 자동 저장됨` with the same backup count.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; backup export scope/status labels remain covered by `src/backupState.test.ts`, and download fallback behavior by `src/textFileDownload.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary range changes, export preview range refresh, or another low-risk patient workflow.
