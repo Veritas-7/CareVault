@@ -23444,6 +23444,38 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 04:00 KST - Question and Queue Clipboard Failure Direct QA
+
+- Current Goal:
+  - Directly verify that saved-question and care-queue copy actions keep scoped local/topbar failure feedback when `navigator.clipboard.writeText` rejects.
+  - Keep the check non-mutating, in the existing `workspace:4` / `surface:7` browser only, and restore the clipboard stub by reloading the same surface.
+- Context:
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - Repo started clean and synced at `6031820`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault dev/release process was running.
+  - `DESIGN.md` requires saved-question copy and dashboard care-queue copy affordances to preserve the same visible scope summary in aria/title, copied text, and post-copy status.
+- Duplicate-slice review:
+  - Source-level work already added question and care-queue clipboard failure/unsupported formatters, and older direct QA covered successful copy plus local feedback.
+  - I did not find recent same-`surface:7` DOM evidence for rejected `writeText` preserving the saved-question topic/date/priority/status summary or the care-queue item/tone/source breakdown in local feedback.
+- Planned verification:
+  - Start a temporary Vite runtime on `127.0.0.1:1420`.
+  - Reuse only the existing `암관리` `workspace:4` / `surface:7` browser and navigate it to `#care-plan`.
+  - Capture a browser-local storage baseline, install a same-WebView clipboard stub whose `writeText` rejects, then click the real `질문 복사` and `진료 큐 복사` buttons.
+  - Verify question row feedback, care queue panel feedback, top save chip, rejected payload text, unchanged storage, cleanup after reload, and browser diagnostics.
+- Progress:
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; reused only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - PASS same-surface setup: navigated only `surface:7` to `http://127.0.0.1:1420/#care-plan`; stored a baseline in `sessionStorage.carevault.__testQuestionQueueCopyFailureBaseline`; counts were `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`; storage keys were only `carevault.v1`; the question copy aria/title was `혈액검사 질문 복사 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`; the queue copy aria/title was `진료 준비 큐 8개 항목 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개 · 자궁경부 1 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1 복사`.
+  - PASS question failure click: installed a same-WebView `navigator.clipboard.writeText` reject stub and clicked the real `질문 복사` button; local `.question-action-feedback` and the top save chip both showed `혈액검사 질문 복사 실패 · 2026-06-15 · 다음 진료 · 확인 필요 · 근거 없음`.
+  - PASS question attempted copy payload: the rejected clipboard payload started with `[진료 질문]` and included `주제: 혈액검사`, `우선순위: 다음 진료`, and `상태: 확인 필요`.
+  - PASS queue failure click: clicked the real `진료 큐 복사` button with the same reject stub; local `.action-queue-feedback` and the top save chip both showed `진료 준비 큐 복사 실패 · 8개 항목 · 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개 · 자궁경부 1 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1`, while the previous question-row failure feedback remained scoped to the question row.
+  - PASS queue attempted copy payload: the second rejected clipboard payload started with `[진료 준비 큐]`, had `확인 항목: 8개`, preserved `상태 요약: 확인 필요 6개 · 일정/일반 2개 · 근거 포함 5개`, preserved the category breakdown, and contained both blood-pressure source evidence and the upcoming `종양내과` visit context.
+  - PASS non-mutating cleanup: localStorage matched the captured baseline after both rejected writes; restored that baseline, removed the test session key, reloaded only the same `surface:7`, and confirmed counts returned to `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`, storage keys only `carevault.v1`, session test keys empty, no question/queue failure feedback, save chip `브라우저 자동 저장됨`, no export preview/dialog, and the injected clipboard stub gone.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite `connecting` / `connected` debug logs.
+- Issues:
+  - No source defect found in this slice. The rejected clipboard write path keeps scoped local/topbar failure feedback for saved-question and care-queue copy actions.
+- Next Steps:
+  - Stop the temporary Vite runtime.
+  - Run focused question/care-queue tests, diff checks, staged secret checks, then commit and push this QA-only `working.md` update.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
