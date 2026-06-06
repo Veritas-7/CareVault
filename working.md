@@ -25779,3 +25779,23 @@
 - Current state:
   - No source patch was needed; `working.md` is dirty with this manual-save storage fallback direct QA evidence.
   - Run diff/staged checks, stage explicit `working.md`, run staged secret scan, commit/push this focused QA log, then record post-push status.
+
+## 2026-06-07 08:25 KST - Post-Push Manual Save Storage Fallback QA
+
+- Improvement target:
+  - Record the post-push state after directly verifying manual-save behavior when browser storage writes fail.
+- Verification:
+  - PASS direct same-surface QA: existing `surface:7` injected a temporary `Storage.prototype.setItem` failure for only `carevault.v1`, clicked the real topbar `수동 저장` button, captured exactly one blocked write attempt of length `1871`, and showed `임시 메모리 저장됨` plus `현재 데이터는 임시 메모리에만 있습니다.`.
+  - PASS persisted-data guard: browser `localStorage["carevault.v1"]` stayed byte-for-byte equal to the baseline length `1871`.
+  - PASS recovery and cleanup: native storage write behavior was restored, a second real `수동 저장` click returned the save chip to `브라우저 저장됨`, then reload/recovery returned the app to `브라우저 자동 저장됨`, heading `나의 건강 기록`, storage keys only `carevault.v1`, no `carevault.__test*` keys, no QA global, no preview/dialog/stale alert, and storage length `1871`.
+  - PASS browser health: `cmux browser --surface surface:7 errors list` returned `No browser errors`, and the same surface remained at `http://127.0.0.1:1420/#care-plan`.
+  - PASS focused tests: `npm test -- src/storage.test.ts src/storageStatus.test.ts src/persistedSaveQueue.test.ts` => `3 passed`, `20 passed`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `a66664e Log manual save storage fallback QA`.
+  - PASS push: `git push` updated `origin/main` from `c18bfa5` to `a66664e`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
