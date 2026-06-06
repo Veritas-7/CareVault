@@ -23401,6 +23401,34 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 03:55 KST - Metric Standards Clipboard Failure Direct QA
+
+- Improvement target:
+  - Directly verify that profile sex-standard and dashboard metric-standard copy actions keep local/topbar failure feedback scoped when `navigator.clipboard.writeText` rejects.
+  - Keep the check non-mutating, in the existing `workspace:4` / `surface:7` browser only, and restore the clipboard stub by reloading the same surface.
+- Duplicate-slice review:
+  - Recent same-surface work covered successful `성별 기준 복사` and `대시보드 기준 복사` clicks.
+  - Source-level work added failure/unsupported formatters, but I did not find recent same-surface DOM evidence for the rejected-write failure path preserving the same 기준/근거 counts in local feedback.
+- Planned verification:
+  - Start a temporary Vite runtime on `127.0.0.1:1420`.
+  - Install a same-WebView clipboard stub whose `writeText` rejects.
+  - Click the real profile and dashboard metric copy buttons and verify `.metric-profile-copy-feedback`, `.metric-dashboard-standard-feedback`, and the save chip use the scoped failure labels.
+  - Reload only the same surface to remove the stub, then check browser diagnostics.
+- Progress:
+  - PASS temporary Vite runtime started on `127.0.0.1:1420`; reused only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - PASS same-surface setup: navigated only `surface:7` to `http://127.0.0.1:1420/#dashboard`; profile copy button aria/title was `프로필 성별 기준 복사 · 여성 · 5개 기준 · 근거 5개`, dashboard copy button aria/title was `대시보드 건강 기준 복사 · 5개 기준 · 근거 4개`, initial local metric-copy feedback was empty, storage keys were only `carevault.v1`, and the baseline was stored in `sessionStorage.carevault.__testMetricCopyFailureBaseline`.
+  - PASS profile failure click: installed a same-WebView `navigator.clipboard.writeText` reject stub, clicked the real `성별 기준 복사` button, and confirmed local `.metric-profile-copy-feedback` plus the save chip both showed `프로필 성별 기준 복사 실패 · 여성 · 5개 기준 · 근거 5개`.
+  - PASS profile attempted copy payload: the rejected clipboard payload still contained `[프로필 성별 적용 기준]`, `성별: 여성`, and source evidence lines.
+  - PASS dashboard failure click: clicked the real `대시보드 기준 복사` button with the same reject stub; local `.metric-dashboard-standard-feedback` and the save chip both showed `대시보드 건강 기준 복사 실패 · 5개 기준 · 근거 4개`, while the profile failure feedback remained visible.
+  - PASS dashboard attempted copy payload: the second rejected clipboard payload contained `[대시보드 건강 기준]`, the `5개 기준` summary, and source evidence lines.
+  - PASS non-mutating cleanup: localStorage matched the captured baseline after both rejected writes; removed the test session key, reloaded only the same `surface:7`, and confirmed counts returned to `visits 1`, `vitals 4`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labs 1`, storage keys only `carevault.v1`, session test keys empty, no metric-copy feedback, save chip `브라우저 자동 저장됨`, no export preview/stale alert, and the injected clipboard stub gone.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console contained only Vite `connecting` / `connected` debug logs.
+- Issues:
+  - No source defect found in this slice. The rejected clipboard write path keeps scoped local/topbar failure feedback for both metric-standard copy actions.
+- Next Steps:
+  - Stop the temporary Vite runtime.
+  - Run focused health-standard tests, diff checks, staged secret checks, then commit and push this QA-only `working.md` update.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
