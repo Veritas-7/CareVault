@@ -21188,3 +21188,23 @@
   - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for native desktop attachment recovery friction, successful print/download branches for other preview formats if needed, or another low-risk patient workflow not already covered in the recent worklog tail.
+
+## 2026-06-06 21:16 KST - Caregiver HTML Print Success cmux QA
+
+- Improvement target:
+  - Verify the rendered caregiver-share HTML preview uses the direct HTML print branch, distinct from the Markdown wrapper print path covered in the previous slice.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` browser `surface:7`; no new browser pane/tab/surface was opened. Baseline was `http://127.0.0.1:1420/#care-plan`, title `CareVault`, heading `나의 건강 기록`, save chip `브라우저 자동 저장됨`, no preview/dialog/stale alert, and `No browser errors`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverPrintSuccessBaseline"]` (`1893` bytes). Baseline counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, caregiver profile shown, and cover memo `desktop stale check`.
+  - PASS preview open: clicked the real `보호자 공유본 미리보기 · 의도 직접 설정 · 프로필 표시 · 메모 포함 · 포함 7개 · 제외 0개` action. The preview panel opened with a rendered iframe, raw HTML disclosure `원본 HTML 보기`, and enabled print action `보호자 공유본 인쇄 · 101줄 · 49,789자 · 72,969B · 근거/출처 111개`.
+  - PASS print capture: temporarily replaced `window.open` inside the same WebView with a fake print window, clicked the real caregiver preview print action, then restored the original `window.open`.
+  - PASS direct HTML document: the fake print window received args `["", "_blank"]`, one document write of `49,789` characters, and calls to `document.close()`, `focus()`, and `print()`. The captured document started with the caregiver HTML `<!doctype html>`, contained `CareVault 보호자 공유본`, `생성 시각`, `desktop stale check`, `@media print`, and source links, and it did not use the Markdown `<pre>` wrapper branch.
+  - PASS status/non-mutation: the save chip became `보호자 공유본 미리보기 인쇄 준비 · 101줄 · 49,789자 · 72,969B · 근거/출처 111개`, and `localStorage["carevault.v1"]` stayed byte-for-byte identical to the captured baseline.
+  - PASS cleanup: clicked the real `내보내기 미리보기 닫기` action, restored the captured baseline defensively, removed `carevault.__testCaregiverPrintSuccessBaseline`, reloaded the same `surface:7`, waited for the save chip to settle from `브라우저 저장 준비` back to `브라우저 자동 저장됨`, and confirmed final state `#care-plan`, title `CareVault`, heading `나의 건강 기록`, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, empty `foodQuery`, caregiver profile shown, original cover memo restored, no export preview, no dialog, no stale alert, no sessionStorage temp keys, and `No browser errors`.
+- Automated verification:
+  - PASS `npm test -- src/caregiverExport.test.ts src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts` (`3 passed`, `65 passed`).
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The existing cmux browser surface is healthy at `surface:7` / `#care-plan` with URL/title/JS/errors aligned.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for native desktop attachment recovery friction, CSV preview successful print if needed, or another low-risk patient workflow not already covered in the recent worklog tail.
