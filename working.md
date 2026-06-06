@@ -25555,3 +25555,24 @@
 - Current state:
   - `src/App.tsx`, `src/documentActionLabels.ts`, `src/documentActionLabels.test.ts`, and `working.md` are dirty with this focused saved-document preview-close feedback improvement and direct QA evidence.
   - Stop the temporary Vite server, run runtime cleanup, diff checks, staged secret scan, commit/push explicit paths, then record post-push status.
+
+## 2026-06-07 07:51 KST - Post-Push Attachment Preview Close Row Feedback
+
+- Improvement target:
+  - Record the post-push state after adding document-specific saved-row feedback for image attachment preview close.
+- Verification:
+  - PASS focused tests: `npm test -- src/documentActionLabels.test.ts src/attachmentPreview.test.ts` => `2 passed`, `20 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS direct same-surface QA: existing `surface:7` opened and closed the saved image attachment preview; dialog closed, close button count became `0`, and both `.save-status-chip` and `.document-action-feedback` showed `미리보기 닫기 QA 검사 서류 이미지 미리보기 닫힘 · 현재 첨부 preview-close-local-feedback-qa.png · 첨부 상태 브라우저 파일명 참조`.
+  - PASS QA cleanup: same surface recovered to the app context after reload, save chip returned to `브라우저 자동 저장됨`, storage length returned to `1871`, documents `1`, deletedDocuments `0`, no QA title/filename remained in body or storage, and no `carevault.__test*` session keys remained.
+  - PASS diff checks: `git diff --check -- src/App.tsx src/documentActionLabels.ts src/documentActionLabels.test.ts working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `0c8971e Show attachment preview close row feedback`.
+  - PASS push: `git push` updated `origin/main` from `2795ac1` to `0c8971e`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux same-surface status: existing `surface:7` remained at `http://127.0.0.1:1420/#care-plan` and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
