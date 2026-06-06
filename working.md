@@ -22699,12 +22699,55 @@
   - cmux was not restarted, quit, force-quit, replaced, or signaled.
 - Git state:
   - PASS QA log commit pushed: `73a37cc` (`Log CareVault visit record QA`) reached `origin/main`.
-  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `73a37cc`.
+  - PASS post-push status commit pushed: `fcf6e6c` (`Log CareVault visit record QA status`) reached `origin/main`.
+  - PASS repo sync after the status commit: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `fcf6e6c`.
 - Current state:
   - Direct visit record add behavior was verified through the real UI path and logged durably.
   - Browser-local baseline/test keys were removed during cleanup; runtime is clean.
 - Next Steps:
-  - Stage only `working.md`, run staged diff and secret checks, commit and push this post-push status log.
+  - Completed in `fcf6e6c` (`Log CareVault visit record QA status`); continue with a non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser.
+
+## 2026-06-07 02:24 KST - Chart Source Data Profile Mode Direct QA
+
+- Current Goal:
+  - Continue direct-click QA on the BP/glucose chart source-data workflow from the same existing `암관리` CareVault browser.
+  - Verify that opening `차트 원자료` exposes date-by-date rows and that the glucose assessment updates when `당뇨 추적` is toggled, then restore the browser baseline cleanly.
+- Context:
+  - Repo started clean and synced at `fcf6e6c` (`Log CareVault visit record QA status`).
+  - Runtime doctor was clean after the previous slice: port `1420` free, no CareVault dev process, and no installed/release CareVault.app process.
+  - Duplicate-slice review found visit required-field feedback, profile edit feedback, profile-mode target/label fixes, and chart source-data rows already covered by source or earlier Playwright evidence, but not this recovered same-surface direct chart/profile assessment combination.
+  - `working.md`, `src/App.tsx`, `src/appState.ts`, and `src/vitalChartData.ts` were reread before selecting this slice.
+- Progress:
+  - Selected chart source-data/profile-mode QA because the `차트 원자료` disclosure was originally added while cmux DOM proof was blocked, and current `surface:7` has recovered enough for direct same-browser verification.
+  - Reconfirmed the existing `암관리` `surface:7` browser as `CareVault` at `http://127.0.0.1:1420/#records` / `#profile`; no new browser, pane, tab, workspace, surface, or headless browser was opened.
+  - Saved a browser-local baseline in `sessionStorage["carevault.__testChartProfileModeBaseline"]`.
+  - Opened the real `차트 원자료` disclosure with `cmux browser --surface surface:7 click 'summary[aria-label="혈압 혈당 차트 원자료 4개 보기"]' --snapshot-after`.
+  - Verified the opened disclosure had 4 source rows. The glucose row for `2026-05-30` showed `146 mg/dL (식후 2시간)` with `판정: 식후 목표 범위 · 성인 남녀 공통 당뇨 추적 혈당 · 대한당뇨병학회 당뇨병 관리 목표`.
+  - Clicked the real `당뇨 추적 켜짐 · 선택 해제하면 끕니다` checkbox off.
+  - Verified persisted profile state changed to `diabetes:false`, the checkbox aria/title became `당뇨 추적 꺼짐 · 선택하면 켭니다`, and the same glucose source row changed to `판정: 내당능장애 범위 · 성인 남녀 공통 혈당 선별 기준 · 질병관리청 국가건강정보포털 당뇨병`.
+  - Clicked the real `당뇨 추적 꺼짐 · 선택하면 켭니다` checkbox back on.
+  - Verified persisted profile state returned to `diabetes:true`, the checkbox aria/title returned to `당뇨 추적 켜짐 · 선택 해제하면 끕니다`, and the same glucose row returned to the KDA diabetes-target assessment.
+  - Restored the saved localStorage baseline, removed the temporary session key, reloaded the same surface, and confirmed `차트 원자료` was closed again, 4 rows remained, no temp keys remained, no preview/dialog was open, and the glucose row was back to the diabetes-target assessment.
+- Changes:
+  - `working.md` only; no source patch needed because chart disclosure rows and profile-mode-sensitive glucose assessments matched the documented contract.
+- Tests:
+  - PASS `npm run runtime:doctor` before starting Vite: port `1420` free, no installed/release CareVault.app process, and no CareVault dev processes running.
+  - PASS `cmux workspace select workspace:4`, `cmux browser --surface surface:7 url`, and `get title`: existing `암관리` CareVault surface confirmed.
+  - PASS baseline eval: `title` `CareVault`, `href` `http://127.0.0.1:1420/#profile`, baseline saved, `차트 원자료` initially closed, summary aria `혈압 혈당 차트 원자료 4개 보기`, diabetes tracking on.
+  - PASS real disclosure click: `차트 원자료` opened with 4 rows and the 2026-05-30 glucose row used `식후 목표 범위 · 성인 남녀 공통 당뇨 추적 혈당 · 대한당뇨병학회 당뇨병 관리 목표`.
+  - PASS real diabetes-off click: persisted `profile.diabetes` changed to `false`, the checkbox changed to `당뇨 추적 꺼짐 · 선택하면 켭니다`, and the glucose row changed to `내당능장애 범위 · 성인 남녀 공통 혈당 선별 기준 · 질병관리청 국가건강정보포털 당뇨병`.
+  - PASS real diabetes-on click: persisted `profile.diabetes` returned to `true`, the checkbox changed back to `당뇨 추적 켜짐 · 선택 해제하면 끕니다`, and the glucose row returned to the KDA diabetes-target assessment.
+  - PASS cleanup eval after baseline restore and reload: no `carevault.__test*` keys, `차트 원자료` closed, row count 4, diabetes on, no export preview, no dialog, and no QA marker text.
+  - PASS `timeout 8 cmux browser --surface surface:7 errors list`: `No browser errors`.
+  - PASS `timeout 8 cmux browser --surface surface:7 console list`: only Vite debug connect messages.
+- Issues:
+  - Must use only the existing `암관리` `surface:7` browser.
+  - cmux must not be restarted, quit, force-quit, replaced, or signaled.
+  - The first unbounded `errors list` probe timed out before the flow, so later diagnostics used bounded `timeout 8` wrappers and completed cleanly.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun runtime/diff checks, stage only `working.md`, run staged secret checks, then commit and push this QA log.
 
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
