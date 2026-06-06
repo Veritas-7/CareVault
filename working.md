@@ -24320,6 +24320,22 @@
   - Do not open any new browser, tab, pane, workspace, surface, or headless browser.
   - Do not restart, quit, force-quit, replace, or signal cmux.
 
+## 2026-06-07 06:10 KST - Post-Push Timeline Ordering QA Status
+
+- Current Goal:
+  - Record the post-push state after the same-date timeline ordering direct QA log.
+- Git state:
+  - PASS QA log commit pushed: `170cfe9` (`Log CareVault timeline ordering QA`) reached `origin/main`.
+  - PASS repo sync after the QA log commit: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/origin short SHAs both resolved to `170cfe9`.
+- Runtime/browser notes:
+  - PASS post-push `npm run runtime:doctor`: port `1420` free, no installed/release CareVault app process, and no CareVault dev processes running.
+  - PASS cmux same-surface status: existing `surface:7` remained at `http://127.0.0.1:1420/#care-plan` and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - Browser QA used only the existing `암관리` `workspace:4` / `surface:7` CareVault browser; no new browser, pane, tab, workspace, surface, or headless browser was opened.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Current state:
+  - Source tree is clean and synced after the focused QA-log push.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
 ## 2026-06-07 05:46 KST - Caregiver Closed Question Direct QA
 
 - Current Goal:
