@@ -19537,3 +19537,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for stale preview disabled actions, caregiver-share preview state, or remaining document empty/failure states.
+
+## 2026-06-06 16:12 KST - CSV Stale Preview Disabled Actions cmux QA
+
+- Improvement target:
+  - Continue the export-preview direct-click sweep by verifying stale CSV preview guarding after a CSV-relevant record change.
+  - Confirm stale previews disable copy/print/download actions and expose a type-scoped fresh-preview action without opening another browser pane/tab.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: existing CSV preview was fresh with action labels `CSV 복사`, `CSV 인쇄`, `CSV 다운로드`, summary `149줄 · 44,530자 · 69,936B · 근거/출처 80개`, and no stale alert.
+  - PASS: clicked `혈압 기록 추가 · 혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`, creating a CSV-relevant state change.
+  - PASS stale guard: the existing preview showed `CSV 미리보기 기록 변경 감지` with `CSV 기록이 바뀌었습니다`, and the fresh-preview action stayed enabled as `CSV 기록 반영` / `새 미리보기 생성 · CSV · 변경된 기록 적용`.
+  - PASS disabled actions: preview copy, print, and download were disabled and their aria/title labels each ended with `비활성: CSV 기록이 바뀌어 다시 생성이 필요합니다.`
+  - PASS close escape: `내보내기 미리보기 닫기` stayed enabled while the stale action buttons were disabled.
+  - PASS recovery: clicked `CSV 기록 반영`; stale alert disappeared and the refreshed preview updated to `151줄 · 45,048자 · 70,704B · 근거/출처 82개` with copy/print/download enabled again.
+  - PASS: the surface stayed on `http://127.0.0.1:1420/#care-plan`.
+- Automated verification:
+  - No code changed in this QA-only slice; stale action labels remain covered by `src/exportPreviewSummary.test.ts`, and CSV fingerprint relevance is covered by `src/csvExport.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver-share preview state or remaining document empty/failure states.
