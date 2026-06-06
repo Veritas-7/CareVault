@@ -20305,6 +20305,30 @@
 - Next durable app slice:
   - Continue the cmux direct-click sweep for food judgment required/valid restore paths, visit summary edge cases, or another low-risk patient workflow.
 
+## 2026-06-06 18:13 KST - Food Judgment Raw Safety cmux QA
+
+- Improvement target:
+  - Verify the food-judgment panel updates from an empty baseline to source-backed care-team confirmation for raw/unpasteurized and interaction-risk foods.
+  - Confirm the low-WBC immune-food context stays visible and the temporary food query can be restored without changing saved health-record counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: save chip was `브라우저 자동 저장됨`, stored `foodQuery` and rendered food input were empty, summary aria was `음식 판단 요약 매칭 없음 · 분류 대기 · 공식 출처 2개`, verdict was `판단 근거 부족`, no food chips rendered, and no food-question draft button rendered.
+  - PASS valid query: entered `생굴, 비살균 우유, 자몽 주스`; the rendered input and stored `foodQuery` matched exactly.
+  - PASS update feedback: save chip showed `음식 판단 업데이트됨 · 생굴, 비살균 우유, 자몽 주스 · 의료진 확인 필요 · 매칭 3개 · 공식 출처 3개 · 브라우저 자동 저장됨`.
+  - PASS summary/verdict: summary aria became `음식 판단 요약 매칭 3개 · 진료팀 확인 3개 · 공식 출처 3개`, and verdict text became `의료진 확인 필요` with treatment-interaction/food-safety caution copy.
+  - PASS source-backed chips: food chips rendered `자몽`, `생굴`, and `비살균` with item-specific source links to `질병관리청 국가건강정보포털 식이영양` and `국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+  - PASS immune context: the panel kept `면역저하 검사 연결` for `2026-06-01 WBC 3.4 10^3/uL`, included the low-range explanation, and showed both the lab evidence source and immune-function food-safety source.
+  - PASS draft affordance: the food-question action appeared as `음식 판단 진료 질문 초안 만들기 · 근거 3개 포함`, without clicking it in this slice.
+  - PASS non-record guard: saved record counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, food `0`; only the transient `foodQuery` changed before restore.
+  - PASS restore: restored the captured `localStorage` baseline, removed the temporary `carevault.__testFoodRawBaseline` session key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, empty stored/rendered food query, baseline summary/verdict restored, no draft button, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; food status labels are covered by `src/foodMetric.test.ts`, source-backed food rules by `src/healthRules.test.ts`, immune-food context by `src/immuneFoodContext.test.ts`, and food-question affordances by `src/foodQuestionPrompts.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit summary edge cases, profile mode toggles, or another low-risk patient workflow.
+
 ## 2026-06-06 18:02 KST - Backup Import Attachment Restore cmux QA
 
 - Improvement target:
