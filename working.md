@@ -19743,3 +19743,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for symptom/lab empty states, question copy fallback, or another low-risk patient workflow.
+
+## 2026-06-06 16:36 KST - Symptom and Lab Required Fields cmux QA
+
+- Improvement target:
+  - Continue the input failure-state sweep by verifying symptom and lab required-field feedback.
+  - Confirm failed save attempts do not change persisted record counts.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: `증상 기록 추가` was enabled with aria `증상 기록 추가 · 증상명 또는 몸 상태 메모 필요`; `검사 수치 추가` was enabled with aria `검사 수치 추가 · 검사명과 수치 필요`; no symptom/lab form feedback was visible.
+  - PASS symptom empty save: clicked `증상 기록 추가`; save chip and form feedback showed `증상명 또는 몸 상태 메모를 입력해주세요.` with aria `증상·부작용 기록 필수 항목 안내 · 증상명 또는 몸 상태 메모를 입력해주세요.`
+  - PASS lab empty save: clicked `검사 수치 추가`; save chip and form feedback showed `검사 항목과 값을 입력해주세요.` with aria `검사 수치 입력 필수 항목 안내 · 검사 항목과 값을 입력해주세요.`
+  - PASS lab name-only save: set lab item to `WBC`, left value empty, clicked save, and feedback changed to `검사 값을 입력해주세요.`
+  - PASS lab value-only save: cleared lab item, set value to `3.4`, clicked save, and feedback changed to `검사 항목을 입력해주세요.`
+  - PASS persistence guard: the backup button stayed `전체 백업 내보내기 · 프로필 포함 · 기록 9개 · 공유 설정 포함 · 첨부 파일명 0개` throughout the failed-save checks.
+  - PASS cleanup: reloaded the same surface and confirmed symptom/lab feedback was cleared and lab item/value draft fields were empty.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; symptom/lab required-field messages remain covered by `src/entryValidation.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for question copy fallback, food judgment interactions, or another low-risk patient workflow.
