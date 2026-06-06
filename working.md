@@ -20174,3 +20174,24 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for saved document reattach/preview behavior, document next-action edit feedback, or another low-risk patient workflow.
+
+## 2026-06-06 17:37 KST - Manual Save Button cmux QA
+
+- Improvement target:
+  - Verify the topbar `수동 저장` button reports the active browser persistence backend without creating or changing health records.
+  - Confirm the same surface remains usable after cleanup reload and browser errors stay clear.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: save chip was `브라우저 자동 저장됨`; the manual-save button text was `수동 저장` with aria/title `현재 CareVault 기록 수동 저장`.
+  - PASS non-mutating baseline: stored counts were vitals `4`, questions `1`, symptoms `1`, visits `1`, documents `1`, deleted documents `0`, labs `1`, food `0`.
+  - PASS click result: clicked `수동 저장`; save chip changed to `브라우저 저장됨`, proving the manual-save path used the browser storage backend rather than the automatic-save label.
+  - PASS persistence guard: `localStorage.carevault.v1` raw text was unchanged after the click, and every stored count delta stayed `0`.
+  - PASS cleanup: reloaded the same surface and confirmed `cmux browser surface:7 wait --load-state interactive --timeout-ms 2000` returned `OK`, URL stayed `http://127.0.0.1:1420/#care-plan`, save chip returned to `브라우저 자동 저장됨`, and the manual-save title was still `현재 CareVault 기록 수동 저장`.
+  - PASS: `cmux browser surface:7 errors list` returned `No browser errors`. Two broad DOM eval/get checks briefly hit internal timeouts after reload, then selector-based checks succeeded without restarting or replacing cmux.
+- Automated verification:
+  - No code changed in this QA-only slice; manual-save backend/failure label formatting remains covered by `src/storageStatus.test.ts`, and persistence queue behavior by `src/persistedSaveQueue.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for visit required-field validation, symptom severity controls, or another low-risk patient workflow.
