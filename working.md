@@ -21903,24 +21903,6 @@
   - Run typecheck, full tests, build, diff checks, staged secret checks, then commit and push this focused slice if green.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
 
-## 2026-06-07 00:10 KST - Post-Push Attachment-Scope cmux Recheck
-
-- Improvement target:
-  - Record the post-push state after the caregiver attachment-status fingerprint slice.
-- Runtime/browser notes:
-  - PASS shallow runtime: `cmux ping` => `PONG`, `cmux browser-status` => `enabled`, and `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
-  - BLOCKED same-surface browser read: `timeout 6 cmux browser --surface surface:7 snapshot --compact --max-depth 1` exited `124`.
-  - Runtime guard: no new browser, headless browser, pane, tab, workspace, or surface was opened. cmux was not restarted, quit, force-quit, replaced, or signaled.
-- Git state:
-  - PASS source slice pushed: `97f93cd Scope caregiver attachment status fingerprint` reached `origin/main`.
-  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
-- Current state:
-  - The latest source/test/design change is committed and pushed.
-  - Direct caregiver-share fresh-preview confirmation and browser-local test cleanup remain blocked by cmux `surface:7` control.
-- Next durable app slice:
-  - Continue source-level false-positive stale-preview hardening only if direct cmux control remains unavailable.
-  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
-
 ## 2026-06-07 00:07 KST - Post-Push cmux Blocker Recheck
 
 - Improvement target:
@@ -21964,4 +21946,22 @@
   - Direct caregiver-share fresh-preview confirmation and localStorage cleanup remain blocked by cmux workspace/surface control.
 - Next durable app slice:
   - Run typecheck, full tests, build, diff checks, staged secret checks, then commit and push this focused slice if green.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
+## 2026-06-07 00:10 KST - Post-Push Attachment-Scope cmux Recheck
+
+- Improvement target:
+  - Record the post-push state after the caregiver attachment-status fingerprint slice.
+- Runtime/browser notes:
+  - PASS shallow runtime: `cmux ping` => `PONG`, `cmux browser-status` => `enabled`, and `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
+  - BLOCKED same-surface browser read: `timeout 6 cmux browser --surface surface:7 snapshot --compact --max-depth 1` exited `124`.
+  - Runtime guard: no new browser, headless browser, pane, tab, workspace, or surface was opened. cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Git state:
+  - PASS source slice pushed: `97f93cd Scope caregiver attachment status fingerprint` reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+- Current state:
+  - The latest source/test/design change is committed and pushed.
+  - Direct caregiver-share fresh-preview confirmation and browser-local test cleanup remain blocked by cmux `surface:7` control.
+- Next durable app slice:
+  - Continue source-level false-positive stale-preview hardening only if direct cmux control remains unavailable.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
