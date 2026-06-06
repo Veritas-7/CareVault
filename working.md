@@ -20671,3 +20671,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for deleted-document recovery/attachment cleanup, caregiver-share stale preview state, or another low-risk patient workflow.
+
+## 2026-06-06 18:57 KST - Deleted Document Attachment Cleanup and Restore cmux QA
+
+- Improvement target:
+  - Verify a saved document with an attachment can move to the deleted archive, clean only its archived attachment link, restore without the attachment, and then return to the original baseline.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; save chip was `브라우저 자동 저장됨`; documents `1`, deleted documents `0`; target `혈액검사 메모` had no attachment and original-only `서류 저장` history; no deleted-document panel, no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS attachment precondition: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testDeletedDocumentBaseline"]`, stubbed the hidden saved-attachment input click, clicked the scoped saved-row `첨부 추가` action, observed exactly one intercepted picker click, and dispatched `deleted-cleanup-qa.pdf` through the real input `change` handler.
+  - PASS attached state: persisted document had `attachmentName` `deleted-cleanup-qa.pdf`, `attachmentStorage` `browser-reference`, `attachmentStatus` `브라우저 파일명 참조`, no `attachmentPath`, history tail `첨부 재연결`, save chip `혈액검사 메모 검사 서류 첨부 파일명 참조 갱신됨 · 현재 첨부 deleted-cleanup-qa.pdf · 브라우저 자동 저장됨`, and backup export aria moved to `첨부 파일명 1개`.
+  - PASS archive: clicked `삭제 보관` with confirm prompt `"혈액검사 메모" 서류 기록을 삭제 보관함으로 이동할까요?`; counts became documents `0`, deleted documents `1`; deleted panel aria was `삭제 보관함` with `1개 복구 가능`; item text showed `첨부 보관: deleted-cleanup-qa.pdf`; feedback/save chip showed `혈액검사 메모 검사 서류 삭제 보관함으로 이동됨 · 상태 의료진 질문`; history tail added `삭제 보관`.
+  - PASS archived actions: restore action was `혈액검사 메모 검사 서류 삭제 보관함에서 복구 · 상태 의료진 질문`; attachment cleanup action was visible as `첨부 정리` with aria/title `혈액검사 메모 검사 서류 삭제 보관함 첨부 연결 정리 · 현재 첨부 deleted-cleanup-qa.pdf`.
+  - PASS archived attachment cleanup: clicked `첨부 정리` with confirm prompt `"혈액검사 메모" 삭제 보관함의 첨부 연결만 정리할까요? 서류 기록은 그대로 복구할 수 있습니다.`; deleted document no longer had `attachmentName`, `attachmentStorage`, `attachmentStatus`, or `attachmentPath`; cleanup button disappeared; restore stayed available; feedback/save chip showed `혈액검사 메모 검사 서류 삭제 보관함 첨부 정리됨 · 제거한 첨부 deleted-cleanup-qa.pdf`; history tail added `보관 첨부 정리`.
+  - PASS restore: clicked `복구`; counts returned to documents `1`, deleted documents `0`; saved row had no attachment block; feedback/save chip showed `혈액검사 메모 검사 서류 저장된 서류로 복구됨 · 상태 의료진 질문`; restored history tail included `삭제 보관`, `보관 첨부 정리`, and `서류 복구`.
+  - PASS cleanup: restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, no deleted panel, no attachment metadata, no `deleted-cleanup-qa.pdf` in storage, original-only document history, backup export aria back to `첨부 파일명 0개`, counts back to vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, no export preview panel, no attachment dialog, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; deleted-document archive/restore/attachment-clean labels remain covered by `src/documentActionLabels.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for caregiver-share stale preview state, CSV preview stale-state refresh, or another low-risk patient workflow.
