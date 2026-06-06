@@ -20195,3 +20195,25 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for visit required-field validation, symptom severity controls, or another low-risk patient workflow.
+
+## 2026-06-06 17:40 KST - Symptom Severity Slider cmux QA
+
+- Improvement target:
+  - Verify the symptom severity slider updates its visible value, aria/title text, and risk styling without saving a symptom record.
+  - Confirm the draft-only slider changes can be restored and do not mutate persisted health data.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: symptom severity started at `3/10`, aria/title were `증상 심한 정도 3/10 · 좌우로 조정합니다`, visible class was `severity-value severity-ok`, save button aria was `증상 기록 추가 · 증상명 또는 몸 상태 메모 필요`, and save chip was `브라우저 자동 저장됨`.
+  - WEAK/DISCARDED first attempt: assigning the range input's `.value` directly changed only the raw DOM value; aria/title and visible `3/10` did not update, so that attempt was not used as behavioral evidence.
+  - PASS high severity: using the native input value setter and dispatched input/change events moved the slider to `8/10`; aria/title became `증상 심한 정도 8/10 · 좌우로 조정합니다`, visible text became `8/10`, and class changed to `severity-value severity-risk`.
+  - PASS low severity: moving the same control to `1/10` updated aria/title to `증상 심한 정도 1/10 · 좌우로 조정합니다`, visible text to `1/10`, and class back to `severity-value severity-ok`.
+  - PASS restore: moved the slider back to `3/10` in the same surface; aria/title, visible text, and class returned to the baseline values.
+  - PASS non-mutating guard: `localStorage.carevault.v1` raw text stayed unchanged, stored count deltas stayed `0` for vitals/questions/symptoms/visits/documents/deleted documents/labs/food, no symptom save feedback or required-field feedback appeared, and the save button kept the required-field aria text.
+  - PASS cleanup: reloaded the same surface with `cmux browser surface:7 reload --snapshot-after`; the snapshot showed the symptom severity control back at `3/10`. Follow-up checks returned load-state `OK`, URL `http://127.0.0.1:1420/#care-plan`, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; symptom label/save behavior remains covered by `src/symptomRecordLabels.test.ts`, and restored severity clamping by `src/appStateNormalization.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for symptom required-field specificity, profile tracking toggles, or another low-risk patient workflow.
