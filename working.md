@@ -22015,6 +22015,30 @@
   - Stage only `src/caregiverExport.ts`, `src/caregiverExport.test.ts`, `DESIGN.md`, and `working.md`.
   - Commit and push if green.
 
+## 2026-06-07 00:55 KST - Post-Push Old Symptom Scope Status
+
+- Current Goal:
+  - Record the post-push state after the caregiver old-symptom fingerprint slice.
+- Progress:
+  - PASS source/design/worklog slice pushed: `9ab5906` (`Scope caregiver old symptom fingerprint`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS browser error check on the existing `암관리` `surface:7`: `No browser errors`.
+- Changes:
+  - `working.md` post-push status entry only.
+- Tests:
+  - Post-push sync checks passed as above.
+- Issues:
+  - `npm run runtime:doctor:dev` remains a known failed gate for this slice because the cmux QA used Vite-only browser serving, not a full Tauri dev session.
+  - The Vite dev server started for cmux browser QA is still running on `127.0.0.1:1420` at this entry.
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Commit and push this post-push `working.md` log entry.
+  - Continue the next source-level false-positive stale-preview hardening slice only if direct cmux control remains stable.
+  - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
