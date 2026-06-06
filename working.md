@@ -22458,6 +22458,42 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 01:54 KST - Lab Follow-Up Question Add QA
+
+- Current Goal:
+  - Continue direct-click QA on a non-duplicate lab-result workflow from the same existing `암관리` CareVault browser.
+  - Verify the WBC lab card `질문으로 추가` action, saved-question creation, source-evidence preservation, and duplicate prevention.
+- Context:
+  - Repo started clean and synced at `6f8e768` (`Log CareVault question QA status`).
+  - Runtime doctor was clean before this slice: port `1420` free, no CareVault dev process, no installed/release CareVault.app process.
+  - Goal identity was rechecked with `codex_handoff.py inspect`; target remains `/Users/wj/Ai/System/10_Projects/CareVault` and no `goal-warning` appeared.
+  - `working.md`, `DESIGN.md`, `src/labQuestionPrompts.ts`, `src/labQuestionPrompts.test.ts`, and the App lab-question handler/card wiring were reread before selecting this QA slice.
+- Progress:
+  - Selected the WBC lab `질문으로 추가` flow because recent slices covered saved-document filters, food question draft prep, backup restore, export-preview stale guards, and saved-question copy/status controls.
+  - Reconfirmed visible cmux workspace as `암관리` before using the browser; the visible `블로그` WriteFlow browser was rejected and not used.
+  - Confirmed existing `surface:7` identity: `document.title` `CareVault`, URL `http://127.0.0.1:1420/`, and the WBC lab follow-up button was initially active with visible text `질문으로 추가` plus aria/title `WBC 검사 질문 추가 · 메모와 근거 포함`.
+  - Direct-clicked the real WBC lab `질문으로 추가` button in the existing browser. The app added one saved question, raised the visible/top feedback `WBC 검사 질문 추가됨 · 메모와 근거 포함`, and moved the WBC button to disabled `질문 추가됨` with aria/title `WBC 검사 질문 이미 추가됨 · 메모와 근거 포함`.
+  - Verified the generated saved question used next visit date `2026-06-15`, topic `검사 수치`, priority `high`/`이번 진료 우선`, status `open`, and preserved WBC value, entered range, compact memo, and the parseable 서울아산병원 source URL.
+  - Reloaded the same surface and confirmed duplicate prevention persisted: exactly one generated `검사 수치` question existed, and the WBC button stayed disabled as `질문 추가됨`.
+  - Restored the browser localStorage baseline, removed the temporary `carevault.__testLabQuestionBaseline` key, reloaded the same surface, and confirmed the app returned to one original saved question with the WBC button active again.
+- Changes:
+  - `working.md` only; no source patch needed because the lab follow-up add and duplicate-prevention behavior matched the documented contract.
+- Tests:
+  - PASS `cmux browser --surface surface:7 eval`: baseline state had one saved question and active WBC lab button `질문으로 추가` with aria/title `WBC 검사 질문 추가 · 메모와 근거 포함`.
+  - PASS direct cmux in-app browser click: WBC lab `질문으로 추가` added exactly one saved `검사 수치` question and showed `WBC 검사 질문 추가됨 · 메모와 근거 포함`.
+  - PASS localStorage/content check: generated question contained `WBC 3.4 10^3/uL`, `기준 4.0-10.0 10^3/uL`, `기존 메모/근거: 면역저하 식품 안전 질문과 연결`, and `출처: 서울아산병원 전혈구검사 참고치 - https://`.
+  - PASS saved-question rendering check: summary aria became `저장 질문 요약 전체 2개 · 확인 필요 2개 · 근거 포함 1개 · 답변 메모 없음`; generated question rendered a separate `근거:` source row while the raw `출처:` line stayed hidden in the card body.
+  - PASS reload duplicate-prevention check: generated question count stayed `1`; WBC button was disabled with visible `질문 추가됨` and aria `WBC 검사 질문 이미 추가됨 · 메모와 근거 포함`.
+  - PASS cleanup eval after baseline restore and reload: no `carevault.__test*` keys, one original saved question, zero generated `검사 수치` questions, WBC button active again, and summary aria back to `저장 질문 요약 전체 1개 · 확인 필요 1개 · 근거 없음 · 답변 메모 없음`.
+  - PASS `cmux browser --surface surface:7 errors`: `No browser errors`.
+- Issues:
+  - No new browser, headless browser, pane, tab, workspace, or surface was opened.
+  - cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Research:
+  - No external research used.
+- Next Steps:
+  - Stop the temporary Vite dev server, rerun runtime/diff checks, stage only `working.md`, run staged secret checks, then commit and push this QA log.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
