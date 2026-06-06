@@ -18908,3 +18908,161 @@
   - PASS: `npm run build`.
   - PASS: `cargo check` in `src-tauri`.
   - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+
+## 2026-06-06 08:45 KST - Document Required-Field Specific Feedback cmux QA
+
+- Improvement target:
+  - Continue the local form-feedback sweep under the user rule: use the existing right cmux in-app browser only and verify behavior by direct clicks.
+  - `DESIGN.md` requires required add/save validation to render as a local visible `role=status` row near the affected form action and to clear once the draft becomes valid.
+  - The document form already blocked missing title/body, but the guidance was combined even when only one required field was missing.
+- Change:
+  - Added `formatDocumentRequiredFieldMessage()` in `src/entryValidation.ts`.
+  - Updated `addDocument()` in `src/App.tsx` to use the specific document required-field message.
+  - Extended `src/entryValidation.test.ts` to cover:
+    - both document fields blank -> `서류 제목과 내용을 입력해주세요.`
+    - body present/title blank -> `서류 제목을 입력해주세요.`
+    - title present/body blank -> `서류 내용을 입력해주세요.`
+    - both present -> no guidance.
+- Runtime/browser notes:
+  - PASS: reused the existing cmux right browser only: workspace `workspace:4` (`암관리`), pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: Computer Use confirmed the visible cmux window was `암관리`, selected browser tab `CareVault`, and right-pane URL `http://127.0.0.1:1420/#care-plan`.
+  - PASS: empty document save click showed local `[data-record-form-feedback="document"][role=status]` text `서류 제목과 내용을 입력해주세요.` with aria label `서류 수기 보관 필수 항목 안내 · 서류 제목과 내용을 입력해주세요.`; saved document count stayed 1.
+  - PASS: after entering only content `검사 수치 메모`, clicking `서류 메모 저장` changed the local feedback to `서류 제목을 입력해주세요.`; saved document count stayed 1.
+  - PASS: after entering only title `6월 혈액검사`, clicking `서류 메모 저장` changed the local feedback to `서류 내용을 입력해주세요.`; saved document count stayed 1.
+  - PASS: after entering content `WBC 추적`, the local required-field feedback disappeared automatically and the visible action label changed to `서류 메모 저장 · 6월 혈액검사 입력 준비됨`.
+  - PASS: normal save then showed local `.document-save-feedback[role=status]` text `6월 혈액검사 검사 서류 저장됨 · 상태 검토 필요 · 첨부 없음`; screenshot saved at `/tmp/carevault-surface7-document-required-field-feedback-pass.png`.
+  - PASS cleanup: removed the synthetic `6월 혈액검사` test document from browser localStorage, reloaded the same surface, and verified 1 saved document, 8 total records, no local document validation feedback, no document save feedback, and no browser errors.
+  - PASS: browser errors returned `No browser errors`; console only showed normal Vite debug connection messages after reload.
+  - PASS: Stitch project context was refreshed from `projects/10602093894318676839`; private 390x884 CareVault UI UX AutoResearch screen instance remains `7814555668945736330`.
+- Automated verification:
+  - PASS: `npm run test -- src/entryValidation.test.ts`, 13 tests.
+  - PASS: `npm run test`, 61 files and 482 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+  - PASS: `git diff --check -- src/App.tsx src/entryValidation.ts src/entryValidation.test.ts working.md`.
+  - EXPECTED FAIL for this browser-only slice: `npm run runtime:doctor:dev` reported the project Vite server on port 1420 is correct, but Tauri dev CLI/debug binary are not running. This is not a cmux browser QA blocker; run Tauri dev separately before claiming desktop-runtime verification.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - No git staging, commit, or push was performed.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for the next form/action that still needs local specific feedback or stale-status cleanup.
+  - If desktop-runtime verification is in scope, start a clean Tauri dev session and rerun `npm run runtime:doctor:dev`.
+
+## 2026-06-06 08:52 KST - Visit and Question Required-Field Specific Feedback cmux QA
+
+- Improvement target:
+  - Continue the form-specific local feedback sweep under the same user rule: keep only the existing right cmux in-app browser open and verify by direct clicks.
+  - `DESIGN.md` requires missing required fields to render as local visible `role=status` feedback and to clear once the draft becomes valid.
+  - Visit and question forms already blocked incomplete saves, but each used a combined required-field message even when only one field was missing.
+- Change:
+  - Added `formatVisitRequiredFieldMessage()` and `formatQuestionRequiredFieldMessage()` in `src/entryValidation.ts`.
+  - Updated `addVisit()` and `addQuestion()` in `src/App.tsx` to use those specific required-field messages.
+  - Extended `src/entryValidation.test.ts` to cover combined, field-specific, and valid-cleared states for visit and question forms.
+- TDD note:
+  - RED: `npm run test -- src/entryValidation.test.ts` failed 6 new helper tests before the visit/question helpers existed.
+  - GREEN: `npm run test -- src/entryValidation.test.ts` passed after implementation with 19 tests.
+- Runtime/browser notes:
+  - PASS: reused the existing cmux right browser only: workspace `workspace:4` (`암관리`), pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: empty visit add click showed local `[data-record-form-feedback="visit"][role=status]` text `병원/과와 방문 이유를 입력해주세요.` with aria label `병원 방문 기록 필수 항목 안내 · 병원/과와 방문 이유를 입력해주세요.`; saved visit count stayed 1.
+  - PASS: after entering only visit reason `추적 상담`, clicking `방문 기록 추가` changed the local feedback to `병원/과를 입력해주세요.`; saved visit count stayed 1.
+  - PASS: after entering only visit hospital `세브란스 종양내과`, clicking `방문 기록 추가` changed the local feedback to `방문 이유를 입력해주세요.`; saved visit count stayed 1.
+  - PASS: after entering both visit fields, the local visit feedback disappeared automatically and the action label changed to `방문 기록 추가 · 세브란스 종양내과 · 추적 상담 입력 준비됨`.
+  - PASS: empty question add click showed local `[data-record-form-feedback="question"][role=status]` text `질문 주제와 내용을 입력해주세요.` with aria label `진료 전 질문 필수 항목 안내 · 질문 주제와 내용을 입력해주세요.`; saved question count stayed 1.
+  - PASS: after entering only question body, clicking `진료 전 질문 추가` changed the local feedback to `질문 주제를 입력해주세요.`; saved question count stayed 1.
+  - PASS: after entering only question topic `항암 부작용`, clicking `진료 전 질문 추가` changed the local feedback to `질문 내용을 입력해주세요.`; saved question count stayed 1.
+  - PASS: after entering both question fields, the local question feedback disappeared automatically and the action label changed to `진료 전 질문 추가 · 항암 부작용 질문 입력 준비됨 · 우선순위 다음 진료`.
+  - PASS cleanup: reloaded the same surface and verified empty visit/question drafts, no local form feedbacks, no browser errors, and unchanged tracked record counts: 8 total, including 1 visit, 1 question, 1 document, 1 lab result, 1 symptom, and 3 vitals.
+  - PASS: screenshot saved at `/tmp/carevault-surface7-visit-question-required-feedback-pass.png`.
+  - PASS: Computer Use confirmed the visible cmux window was `암관리`, selected right browser tab `CareVault`, and right-pane URL `http://127.0.0.1:1420/#care-plan`.
+  - PASS: browser errors returned `No browser errors`; console only showed normal Vite debug connection messages after reload.
+- Automated verification:
+  - PASS: `git diff --check -- src/App.tsx src/entryValidation.ts src/entryValidation.test.ts working.md`.
+  - PASS: `npm run test -- src/entryValidation.test.ts`, 19 tests.
+  - PASS: `npm run test`, 61 files and 488 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - No git staging, commit, or push was performed.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for the next form/action that still needs local specific feedback or stale-status cleanup.
+  - If desktop-runtime verification is in scope, start a clean Tauri dev session and rerun `npm run runtime:doctor:dev`.
+
+## 2026-06-06 08:57 KST - Symptom Body-Only Save Alignment cmux QA
+
+- Improvement target:
+  - Continue the direct-click feature sweep in the existing right cmux in-app browser only.
+  - Source and screen review found a mismatch: the symptom add button promised `증상명 또는 몸 상태 메모 필요`, but `addSymptom()` only accepted a non-empty symptom name.
+  - The existing `SymptomEntry` storage path accepts an empty `symptom` string, so body-only symptom notes can be supported without schema changes.
+- Change:
+  - Updated `recordRequiredFieldMessages.symptom` to `증상명 또는 몸 상태 메모를 입력해주세요.`
+  - Added `formatSymptomRequiredFieldMessage()` in `src/entryValidation.ts`.
+  - Updated `addSymptom()` and the symptom validation-clear effect in `src/App.tsx` so a symptom name or body note satisfies the required input.
+  - Extended `src/entryValidation.test.ts` to cover blank, symptom-name-only, and body-note-only symptom drafts.
+- TDD note:
+  - RED: `npm run test -- src/entryValidation.test.ts` failed 4 tests before the new symptom helper/message existed.
+  - GREEN: `npm run test -- src/entryValidation.test.ts` passed after implementation with 22 tests.
+- Runtime/browser notes:
+  - PASS: reused only the existing cmux right browser: surface `surface:7`, URL `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS: backed up `localStorage["carevault.v1"]` into `window.__carevaultSymptomBaseline` before saving a synthetic record.
+  - PASS: empty symptom add click showed local `[data-record-form-feedback="symptom"][role=status]` text `증상명 또는 몸 상태 메모를 입력해주세요.` with aria label `증상·부작용 기록 필수 항목 안내 · 증상명 또는 몸 상태 메모를 입력해주세요.`; saved symptom count stayed 1.
+  - PASS: after entering only body note `식후 피로가 심해져 오후 활동을 줄임`, the local symptom feedback cleared and a ready status was visible.
+  - PASS: clicking `증상 기록 추가` saved the body-only symptom record; browser storage showed `symptom: ""`, `body: "식후 피로가 심해져 오후 활동을 줄임"`, `severity: 3`, symptom count 2, and local save feedback `증상 기록 추가됨`.
+  - PASS cleanup: restored the browser localStorage baseline, reloaded the same surface, and verified 1 saved symptom, 8 total tracked records, no synthetic body-only symptom, no local form feedbacks, no symptom save feedback, and no browser errors.
+  - PASS: screenshot saved at `/tmp/carevault-surface7-symptom-body-only-save-pass.png`.
+- Automated verification:
+  - PASS: `git diff --check -- src/App.tsx src/entryValidation.ts src/entryValidation.test.ts working.md`.
+  - PASS: `npm run test -- src/entryValidation.test.ts`, 22 tests.
+  - PASS: `npm run test`, 61 files and 491 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - No git staging, commit, or push was performed.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for the next visible mismatch between action labels, validation requirements, and local feedback.
+  - If desktop-runtime verification is in scope, start a clean Tauri dev session and rerun `npm run runtime:doctor:dev`.
+
+## 2026-06-06 09:09 KST - Lab Follow-Up Question Dedup cmux QA
+
+- Improvement target:
+  - Continue the single-browser cmux direct-click sweep on the visible `검사 수치` section.
+  - The WBC saved-lab card could create a source-backed clinician-question draft, but source review showed repeated clicks could create duplicate generated questions.
+  - `DESIGN.md` expects question candidate actions to stay clear and status feedback immediate; duplicate draft accumulation would make the care queue noisier for real users.
+- Change:
+  - Added already-added labels and status helper coverage in `src/labQuestionPrompts.ts`.
+  - Added `hasExistingLabFollowupQuestion()` so duplicate detection is tested as a pure helper.
+  - Updated `src/App.tsx` so a saved lab follow-up button becomes disabled and visible as `질문 추가됨` when the matching generated `검사 수치` question already exists.
+  - Added a `DESIGN.md` decision-log entry for generated lab follow-up question deduplication.
+- TDD note:
+  - RED: `npm run test -- src/labQuestionPrompts.test.ts` failed 2 duplicate-label tests before the helper/status support existed.
+  - GREEN: `npm run test -- src/labQuestionPrompts.test.ts` passed after implementation with 10 tests.
+- Runtime/browser notes:
+  - PASS: reused only the existing cmux right browser in `암관리`: workspace `workspace:4`, pane `pane:8`, surface `surface:7`, URL `http://127.0.0.1:1420/#labs`; no new browser pane/tab was opened.
+  - PASS: Computer Use exposed the same right browser and confirmed the visible WBC saved-lab card and `질문으로 추가` action.
+  - PASS: baseline before click was 1 saved question and 0 generated `검사 수치` questions.
+  - PASS: clicking `WBC 검사 질문 추가 · 메모와 근거 포함` changed the local status to `WBC 검사 질문 추가됨 · 메모와 근거 포함`, autosaved 2 questions with 1 generated `검사 수치` question, and changed the button to disabled `질문 추가됨` with aria label `WBC 검사 질문 이미 추가됨 · 메모와 근거 포함`.
+  - PASS: after reloading the same surface, the generated question stayed present and the WBC button stayed disabled as `질문 추가됨`, proving dedup persists across autosave and reload.
+  - PASS cleanup: restored the temporary browser localStorage baseline, removed the test-only backup key, reloaded the same surface, and verified 1 saved question, 0 generated `검사 수치` questions, active add button restored, and 8 total records.
+  - PASS: screenshots saved at `/tmp/carevault-surface7-lab-question-dedup-pass.png` and `/tmp/carevault-surface7-lab-question-dedup-persistent-pass.png`.
+  - PASS: browser errors returned `No browser errors`.
+- Automated verification:
+  - PASS: `git diff --check -- src/App.tsx src/entryValidation.ts src/entryValidation.test.ts src/labQuestionPrompts.ts src/labQuestionPrompts.test.ts DESIGN.md working.md`.
+  - PASS: `npm run test -- src/labQuestionPrompts.test.ts src/entryValidation.test.ts`, 32 tests.
+  - PASS: `npm run test`, 61 files and 493 tests.
+  - PASS: `npm run typecheck`.
+  - PASS: `npm run build`.
+  - PASS: `cargo check` in `src-tauri`.
+  - PASS: `python3 /Users/wj/.claude/plugins/local/all-in-one/skills/design-md-master/scripts/validate_design_md.py --json DESIGN.md`.
+- Current state:
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+  - No git staging, commit, or push was performed.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for saved-question status/priority/copy flows or another visible action-label/state mismatch.
+  - If desktop-runtime verification is in scope, start a clean Tauri dev session and rerun `npm run runtime:doctor:dev`.

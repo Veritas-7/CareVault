@@ -16,13 +16,21 @@ export type VisitQuestionDateSource = {
   nextDate?: string;
 };
 
+export type LabFollowupQuestionCandidate = {
+  topic: string;
+  question: string;
+};
+
 export function buildLabFollowupQuestionButtonLabels(
   labName: string,
   includesSourceEvidence: boolean,
+  alreadyAdded = false,
 ) {
   const labelName = labName.trim() ? `${labName.trim()} 검사` : "검사 수치";
   const inclusionLabel = includesSourceEvidence ? "메모와 근거 포함" : "메모 포함";
-  const actionLabel = `${labelName} 질문 추가 · ${inclusionLabel}`;
+  const actionLabel = alreadyAdded
+    ? `${labelName} 질문 이미 추가됨 · ${inclusionLabel}`
+    : `${labelName} 질문 추가 · ${inclusionLabel}`;
 
   return {
     ariaLabel: actionLabel,
@@ -37,6 +45,24 @@ export function formatLabFollowupQuestionAddedStatus(
   const labelName = labName.trim() ? `${labName.trim()} 검사` : "검사 수치";
   const inclusionLabel = includesSourceEvidence ? "메모와 근거 포함" : "메모 포함";
   return `${labelName} 질문 추가됨 · ${inclusionLabel}`;
+}
+
+export function formatLabFollowupQuestionAlreadyAddedStatus(
+  labName: string,
+  includesSourceEvidence: boolean,
+) {
+  const labelName = labName.trim() ? `${labName.trim()} 검사` : "검사 수치";
+  const inclusionLabel = includesSourceEvidence ? "메모와 근거 포함" : "메모 포함";
+  return `${labelName} 질문 이미 추가됨 · ${inclusionLabel}`;
+}
+
+export function hasExistingLabFollowupQuestion(
+  questions: LabFollowupQuestionCandidate[],
+  questionPrompt: string,
+) {
+  return questions.some(
+    (question) => question.topic === "검사 수치" && question.question === questionPrompt,
+  );
 }
 
 function formatLabValue(lab: LabQuestionSource) {

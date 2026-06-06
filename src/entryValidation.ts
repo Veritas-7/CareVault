@@ -2,7 +2,7 @@ export const recordRequiredFieldMessages = {
   document: "서류 제목과 내용을 입력해주세요.",
   lab: "검사 항목과 값을 입력해주세요.",
   question: "질문 주제와 내용을 입력해주세요.",
-  symptom: "증상을 입력해주세요.",
+  symptom: "증상명 또는 몸 상태 메모를 입력해주세요.",
   visit: "병원/과와 방문 이유를 입력해주세요.",
 } as const;
 
@@ -61,4 +61,58 @@ export function formatLabRequiredFieldMessage(
   if (!hasLabName) return "검사 항목을 입력해주세요.";
 
   return "검사 값을 입력해주세요.";
+}
+
+export function formatVisitRequiredFieldMessage(
+  visitHospital: string | undefined,
+  visitReason: string | undefined,
+) {
+  const hasVisitHospital = hasRequiredTextValues(visitHospital);
+  const hasVisitReason = hasRequiredTextValues(visitReason);
+
+  if (hasVisitHospital && hasVisitReason) return null;
+  if (!hasVisitHospital && !hasVisitReason) return recordRequiredFieldMessages.visit;
+  if (!hasVisitHospital) return "병원/과를 입력해주세요.";
+
+  return "방문 이유를 입력해주세요.";
+}
+
+export function formatQuestionRequiredFieldMessage(
+  questionTopic: string | undefined,
+  questionBody: string | undefined,
+) {
+  const hasQuestionTopic = hasRequiredTextValues(questionTopic);
+  const hasQuestionBody = hasRequiredTextValues(questionBody);
+
+  if (hasQuestionTopic && hasQuestionBody) return null;
+  if (!hasQuestionTopic && !hasQuestionBody) return recordRequiredFieldMessages.question;
+  if (!hasQuestionTopic) return "질문 주제를 입력해주세요.";
+
+  return "질문 내용을 입력해주세요.";
+}
+
+export function formatSymptomRequiredFieldMessage(
+  symptomName: string | undefined,
+  symptomBody: string | undefined,
+) {
+  const hasSymptomName = hasRequiredTextValues(symptomName);
+  const hasSymptomBody = hasRequiredTextValues(symptomBody);
+
+  if (hasSymptomName || hasSymptomBody) return null;
+
+  return recordRequiredFieldMessages.symptom;
+}
+
+export function formatDocumentRequiredFieldMessage(
+  documentTitle: string | undefined,
+  documentBody: string | undefined,
+) {
+  const hasDocumentTitle = hasRequiredTextValues(documentTitle);
+  const hasDocumentBody = hasRequiredTextValues(documentBody);
+
+  if (hasDocumentTitle && hasDocumentBody) return null;
+  if (!hasDocumentTitle && !hasDocumentBody) return recordRequiredFieldMessages.document;
+  if (!hasDocumentTitle) return "서류 제목을 입력해주세요.";
+
+  return "서류 내용을 입력해주세요.";
 }

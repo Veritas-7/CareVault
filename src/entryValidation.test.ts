@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatDocumentRequiredFieldMessage,
   formatLabRequiredFieldMessage,
+  formatQuestionRequiredFieldMessage,
   formatRecordFormFeedbackAriaLabel,
   formatRecordFormFeedbackClearedStatus,
+  formatSymptomRequiredFieldMessage,
+  formatVisitRequiredFieldMessage,
   hasRequiredTextValues,
   recordRequiredFieldMessages,
   recordFormFeedbackLabels,
@@ -26,6 +30,7 @@ describe("recordRequiredFieldMessages", () => {
     expect(recordRequiredFieldMessages.visit).toContain("병원/과");
     expect(recordRequiredFieldMessages.document).toContain("서류 제목");
     expect(recordRequiredFieldMessages.symptom).toContain("증상");
+    expect(recordRequiredFieldMessages.symptom).toContain("몸 상태 메모");
     expect(recordRequiredFieldMessages.question).toContain("질문 주제");
     expect(recordRequiredFieldMessages.lab).toContain("검사 항목");
   });
@@ -43,6 +48,75 @@ describe("formatLabRequiredFieldMessage", () => {
 
   it("returns no guidance when the lab item and value are both present", () => {
     expect(formatLabRequiredFieldMessage(" CRP ", " 1.2 ")).toBeNull();
+  });
+});
+
+describe("formatVisitRequiredFieldMessage", () => {
+  it("keeps the combined guidance when both required visit fields are blank", () => {
+    expect(formatVisitRequiredFieldMessage("", " ")).toBe(recordRequiredFieldMessages.visit);
+  });
+
+  it("narrows the guidance to the missing visit hospital or reason", () => {
+    expect(formatVisitRequiredFieldMessage("", "추적 상담")).toBe("병원/과를 입력해주세요.");
+    expect(formatVisitRequiredFieldMessage("세브란스 종양내과", "")).toBe(
+      "방문 이유를 입력해주세요.",
+    );
+  });
+
+  it("returns no guidance when the visit hospital and reason are both present", () => {
+    expect(formatVisitRequiredFieldMessage(" 세브란스 ", " 추적 상담 ")).toBeNull();
+  });
+});
+
+describe("formatQuestionRequiredFieldMessage", () => {
+  it("keeps the combined guidance when both required question fields are blank", () => {
+    expect(formatQuestionRequiredFieldMessage("", " ")).toBe(recordRequiredFieldMessages.question);
+  });
+
+  it("narrows the guidance to the missing question topic or body", () => {
+    expect(formatQuestionRequiredFieldMessage("", "부작용이 심하면 어떻게 하나요?")).toBe(
+      "질문 주제를 입력해주세요.",
+    );
+    expect(formatQuestionRequiredFieldMessage("항암 부작용", "")).toBe(
+      "질문 내용을 입력해주세요.",
+    );
+  });
+
+  it("returns no guidance when the question topic and body are both present", () => {
+    expect(formatQuestionRequiredFieldMessage(" 항암 부작용 ", " 피로 기준 질문 ")).toBeNull();
+  });
+});
+
+describe("formatSymptomRequiredFieldMessage", () => {
+  it("requires either a symptom name or a body note", () => {
+    expect(formatSymptomRequiredFieldMessage("", " ")).toBe(recordRequiredFieldMessages.symptom);
+  });
+
+  it("allows a symptom name without a body note", () => {
+    expect(formatSymptomRequiredFieldMessage(" 오심 ", "")).toBeNull();
+  });
+
+  it("allows a body note without a symptom name", () => {
+    expect(formatSymptomRequiredFieldMessage("", " 식후 피로가 심해짐 ")).toBeNull();
+  });
+});
+
+describe("formatDocumentRequiredFieldMessage", () => {
+  it("keeps the combined guidance when both required document fields are blank", () => {
+    expect(formatDocumentRequiredFieldMessage("", " ")).toBe(recordRequiredFieldMessages.document);
+  });
+
+  it("narrows the guidance to the missing document title or body", () => {
+    expect(formatDocumentRequiredFieldMessage("", "검사 수치 메모")).toBe(
+      "서류 제목을 입력해주세요.",
+    );
+    expect(formatDocumentRequiredFieldMessage("6월 혈액검사", "")).toBe(
+      "서류 내용을 입력해주세요.",
+    );
+  });
+
+  it("returns no guidance when the document title and body are both present", () => {
+    expect(formatDocumentRequiredFieldMessage(" 6월 혈액검사 ", " WBC 추적 ")).toBeNull();
   });
 });
 

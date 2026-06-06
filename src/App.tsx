@@ -105,8 +105,10 @@ import {
 import {
   buildLabFollowupQuestionButtonLabels,
   buildLabQuestionPrompt,
+  formatLabFollowupQuestionAlreadyAddedStatus,
   formatLabFollowupQuestionAddedStatus,
   getNextQuestionDate,
+  hasExistingLabFollowupQuestion,
 } from "./labQuestionPrompts";
 import {
   buildLabPanelSummary,
@@ -241,10 +243,13 @@ import {
 } from "./sidebarNavigation";
 import { buildAppointmentReminders } from "./appointmentReminders";
 import {
+  formatDocumentRequiredFieldMessage,
   formatLabRequiredFieldMessage,
+  formatQuestionRequiredFieldMessage,
   formatRecordFormFeedbackAriaLabel,
+  formatSymptomRequiredFieldMessage,
+  formatVisitRequiredFieldMessage,
   hasRequiredTextValues,
-  recordRequiredFieldMessages,
   resolveRecordFormFeedbackClearedSaveLabel,
   shouldClearRecordFormFeedback,
   type RecordFormFeedbackId,
@@ -974,12 +979,12 @@ function App() {
     if (
       shouldClearRecordFormFeedback(
         recordFormFeedback.symptom,
-        hasRequiredTextValues(symptomDraft.symptom),
+        !formatSymptomRequiredFieldMessage(symptomDraft.symptom, symptomDraft.body),
       )
     ) {
       clearRecordFormValidationFeedback("symptom", { refreshStaleSaveLabel: true });
     }
-  }, [recordFormFeedback.symptom, symptomDraft.symptom]);
+  }, [recordFormFeedback.symptom, symptomDraft.body, symptomDraft.symptom]);
 
   useEffect(() => {
     setSymptomSupportQuestionFeedback(null);
@@ -1936,9 +1941,14 @@ function App() {
   };
 
   const addVisit = () => {
-    if (!hasRequiredTextValues(visitDraft.hospital, visitDraft.reason)) {
+    const requiredFieldMessage = formatVisitRequiredFieldMessage(
+      visitDraft.hospital,
+      visitDraft.reason,
+    );
+
+    if (requiredFieldMessage) {
       setVisitSaveFeedback(null);
-      setRecordFormValidationFeedback("visit", recordRequiredFieldMessages.visit);
+      setRecordFormValidationFeedback("visit", requiredFieldMessage);
       return;
     }
 
@@ -1992,9 +2002,14 @@ function App() {
   };
 
   const addDocument = () => {
-    if (!hasRequiredTextValues(documentDraft.title, documentDraft.body)) {
+    const requiredFieldMessage = formatDocumentRequiredFieldMessage(
+      documentDraft.title,
+      documentDraft.body,
+    );
+
+    if (requiredFieldMessage) {
       setDocumentSaveFeedback(null);
-      setRecordFormValidationFeedback("document", recordRequiredFieldMessages.document);
+      setRecordFormValidationFeedback("document", requiredFieldMessage);
       return;
     }
 
@@ -2689,9 +2704,14 @@ function App() {
   };
 
   const addSymptom = () => {
-    if (!hasRequiredTextValues(symptomDraft.symptom)) {
+    const requiredFieldMessage = formatSymptomRequiredFieldMessage(
+      symptomDraft.symptom,
+      symptomDraft.body,
+    );
+
+    if (requiredFieldMessage) {
       setSymptomSaveFeedback(null);
-      setRecordFormValidationFeedback("symptom", recordRequiredFieldMessages.symptom);
+      setRecordFormValidationFeedback("symptom", requiredFieldMessage);
       return;
     }
 
@@ -2714,9 +2734,14 @@ function App() {
   };
 
   const addQuestion = () => {
-    if (!hasRequiredTextValues(questionDraft.topic, questionDraft.question)) {
+    const requiredFieldMessage = formatQuestionRequiredFieldMessage(
+      questionDraft.topic,
+      questionDraft.question,
+    );
+
+    if (requiredFieldMessage) {
       setQuestionSaveFeedback(null);
-      setRecordFormValidationFeedback("question", recordRequiredFieldMessages.question);
+      setRecordFormValidationFeedback("question", requiredFieldMessage);
       return;
     }
 
@@ -3055,9 +3080,20 @@ function App() {
   };
 
   const addLabQuestion = (lab: LabResult, assessment: ReturnType<typeof assessLabTextValue>) => {
+    const questionPrompt = buildLabQuestionPrompt(lab, assessment);
+    const includesSourceEvidence = Boolean(buildLabSourceEvidenceParts(lab).sourceLabel);
+    const hasExistingQuestion = hasExistingLabFollowupQuestion(state.questions, questionPrompt);
+
+    if (hasExistingQuestion) {
+      const feedback = formatLabFollowupQuestionAlreadyAddedStatus(lab.name, includesSourceEvidence);
+      setLabQuestionFeedback({ labId: lab.id, message: feedback });
+      setActionSaveLabel(feedback);
+      return;
+    }
+
     const feedback = formatLabFollowupQuestionAddedStatus(
       lab.name,
-      Boolean(buildLabSourceEvidenceParts(lab).sourceLabel),
+      includesSourceEvidence,
     );
 
     setState((current) => ({
@@ -3068,7 +3104,7 @@ function App() {
           id: createId("question"),
           date: getNextQuestionDate(current.visits, today),
           topic: "검사 수치",
-          question: buildLabQuestionPrompt(lab, assessment),
+          question: questionPrompt,
           priority: "high",
           status: "open",
           answer: "",
@@ -6399,9 +6435,15 @@ function App() {
                   result.upper,
                   result.unit,
                 );
+                const labQuestionPrompt = buildLabQuestionPrompt(result, assessment);
+                const labQuestionAlreadyAdded = hasExistingLabFollowupQuestion(
+                  state.questions,
+                  labQuestionPrompt,
+                );
                 const labQuestionButtonLabels = buildLabFollowupQuestionButtonLabels(
                   result.name,
                   Boolean(labSourceEvidence.sourceLabel),
+                  labQuestionAlreadyAdded,
                 );
 
                 return (
@@ -6445,9 +6487,10 @@ function App() {
                             onClick={() => addLabQuestion(result, assessment)}
                             aria-label={labQuestionButtonLabels.ariaLabel}
                             title={labQuestionButtonLabels.title}
+                            disabled={labQuestionAlreadyAdded}
                           >
                             <MessageSquare aria-hidden="true" />
-                            질문으로 추가
+                            {labQuestionAlreadyAdded ? "질문 추가됨" : "질문으로 추가"}
                           </button>
                           {labQuestionFeedback?.labId === result.id ? (
                             <div className="lab-followup-feedback" role="status">

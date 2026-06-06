@@ -731,6 +731,7 @@ CareVault is a working health-record tool for Korean patients and caregivers who
 - 2026-06-04: Added Markdown, CSV, and caregiver HTML regression coverage for markerless source-backed cervical warning record labels in direct symptom rows.
 - 2026-06-04: Added a screen-reader label plus explicit `aria-label` and title to the saved-document search input while keeping the compact icon-only search field.
 - 2026-06-06: Made lab-entry required-field feedback name the specific missing side, so partial drafts like a filled test name with an empty value say `검사 값을 입력해주세요.` locally and globally.
+- 2026-06-06: Made generated lab follow-up question actions become `질문 추가됨` after the matching question exists, preventing duplicate clinician-question drafts across autosave and reload.
 
 ## Do's and Don'ts
 

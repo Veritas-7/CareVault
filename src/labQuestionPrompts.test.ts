@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   buildLabFollowupQuestionButtonLabels,
   buildLabQuestionPrompt,
+  formatLabFollowupQuestionAlreadyAddedStatus,
   formatLabFollowupQuestionAddedStatus,
   getNextQuestionDate,
+  hasExistingLabFollowupQuestion,
 } from "./labQuestionPrompts";
 
 describe("labQuestionPrompts", () => {
@@ -93,6 +95,11 @@ describe("labQuestionPrompts", () => {
       ariaLabel: "WBC 검사 질문 추가 · 메모와 근거 포함",
       title: "WBC 검사 질문 추가 · 메모와 근거 포함",
     });
+
+    expect(buildLabFollowupQuestionButtonLabels("WBC", true, true)).toEqual({
+      ariaLabel: "WBC 검사 질문 이미 추가됨 · 메모와 근거 포함",
+      title: "WBC 검사 질문 이미 추가됨 · 메모와 근거 포함",
+    });
   });
 
   it("uses a stable fallback for blank lab names in follow-up button labels", () => {
@@ -112,6 +119,33 @@ describe("labQuestionPrompts", () => {
     expect(formatLabFollowupQuestionAddedStatus("  ", true)).toBe(
       "검사 수치 질문 추가됨 · 메모와 근거 포함",
     );
+  });
+
+  it("formats duplicate lab follow-up question feedback with the same evidence scope", () => {
+    expect(formatLabFollowupQuestionAlreadyAddedStatus("WBC", true)).toBe(
+      "WBC 검사 질문 이미 추가됨 · 메모와 근거 포함",
+    );
+    expect(formatLabFollowupQuestionAlreadyAddedStatus("HDL-C", false)).toBe(
+      "HDL-C 검사 질문 이미 추가됨 · 메모 포함",
+    );
+  });
+
+  it("detects existing generated lab follow-up questions by topic and prompt", () => {
+    expect(
+      hasExistingLabFollowupQuestion(
+        [
+          { topic: "검사 수치", question: "WBC follow-up" },
+          { topic: "혈액검사", question: "WBC follow-up" },
+        ],
+        "WBC follow-up",
+      ),
+    ).toBe(true);
+    expect(
+      hasExistingLabFollowupQuestion(
+        [{ topic: "혈액검사", question: "WBC follow-up" }],
+        "WBC follow-up",
+      ),
+    ).toBe(false);
   });
 
   it("uses the next upcoming appointment date for generated questions", () => {
