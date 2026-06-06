@@ -20803,3 +20803,26 @@
   - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
 - Next durable app slice:
   - Continue the cmux direct-click sweep for record mutation paths outside vitals, backup import/export edge cases, or another low-risk patient workflow.
+
+## 2026-06-06 19:20 KST - Caregiver Document Record Stale cmux QA
+
+- Improvement target:
+  - Verify an open caregiver-share HTML preview becomes stale when an included saved-document record changes, then regenerates with the updated document-derived attention state and restores cleanly.
+- Runtime/browser notes:
+  - PASS setup: reused only the existing `암관리` right browser `surface:7` at `http://127.0.0.1:1420/#care-plan`; no new browser pane/tab was opened.
+  - PASS baseline: repo was `## main...origin/main`; save chip was `브라우저 자동 저장됨`; saved document `혈액검사 메모` was in review status `care-question`; counts were vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`; no export preview panel, no attachment dialog, and `No browser errors`.
+  - PASS caregiver preview open: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverDocumentStaleBaseline"]`, clicked the real `공유본 미리보기` action with all 7 sections included, and opened `.export-preview-panel` with focus on the panel.
+  - PASS preview content: preview format was `보호자 공유본`, title `보호자 공유본 미리보기`, rendered iframe was present, summary chips showed `101줄`, `49,789자`, `72,969B`, `근거/출처 111개`, the HTML contained `혈액검사 메모`, and copy/print/download were enabled with matching aria/title summaries.
+  - PASS stale trigger: changed the real saved-document `혈액검사 메모 검토 상태` select from `의료진 질문` to `정리 완료`; persisted review status became `done`, history tail added `상태 변경` with detail `의료진 질문 → 정리 완료`, local feedback showed `혈액검사 메모 검사 서류 상태 정리 완료로 업데이트됨`, and save chip showed the same status plus `브라우저 자동 저장됨`.
+  - PASS record-stale alert: the open caregiver preview kept the old `49,789자` snapshot while `.export-preview-stale-alert[role=status]` appeared with aria `보호자 공유본 미리보기 기록 변경 감지`, focus moved to the alert, text included `보호자 공유본 기록이 바뀌었습니다`, the stale action was visible as `공유 기록 반영` with aria/title `새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용`, and no settings-difference panel appeared.
+  - PASS disabled action labels: stale copy, print, and download buttons were disabled; each aria/title preserved the compact summary plus `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.`.
+  - PASS fresh action: clicked `공유 기록 반영`; stale alert disappeared, focus returned to the preview panel, copy/print/download actions were enabled, summary chips updated to `101줄`, `49,565자`, `72,648B`, `근거/출처 111개`, and the previous `혈액검사 메모` attention item disappeared from the regenerated caregiver HTML after the document moved to `정리 완료`.
+  - Tool note: the first regenerate probe timed out while waiting for literal `정리 완료` in the preview HTML; a follow-up live probe proved the actual fresh behavior was correct because the done document no longer appeared as a caregiver attention item, stale state cleared, and actions were enabled.
+  - PASS cleanup: closed the regenerated preview, restored the captured `localStorage` snapshot, removed the session baseline key, reloaded the same surface, and confirmed URL `http://127.0.0.1:1420/#care-plan`, save chip `브라우저 자동 저장됨`, document status back to `care-question`, original-only document history, no temporary status-history id, no export preview panel, no stale alert, no attachment dialog, and `No browser errors`.
+- Automated verification:
+  - No code changed in this QA-only slice; caregiver content fingerprints and stale action labels remain covered by `src/caregiverExport.test.ts` and `src/exportPreviewSummary.test.ts`.
+- Current state:
+  - The CareVault repo is clean except for this `working.md` QA entry.
+  - The Vite dev server is still running at `http://127.0.0.1:1420/` for the existing cmux browser surface.
+- Next durable app slice:
+  - Continue the cmux direct-click sweep for backup import/export edge cases, non-vital record mutations in CSV/Markdown previews, or another low-risk patient workflow.
