@@ -21921,6 +21921,42 @@
   - Continue source-level false-positive stale-preview hardening only if direct cmux control remains unavailable.
   - Ask the user before any cmux app restart/quit/force-quit/replacement recovery.
 
+## 2026-06-07 04:54 KST - Vital Question Draft Invalid Input Direct QA
+
+- Current Goal:
+  - Directly verify that the real `질문 초안` action in the `혈압·혈당·체온 입력` helper fails closed when the visible blood-pressure draft is invalid.
+  - Confirm the click shows local required/number feedback, does not fill or overwrite the pre-visit question form, and leaves persisted health records unchanged.
+- Context:
+  - Repo started clean and synced at `d5a7770`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault runtime was running.
+  - Recent direct QA already covers valid vital-standard question drafts and invalid `혈압 기록 추가`, but I did not find same-surface recovered evidence for clicking the helper `질문 초안` button with invalid vital input.
+  - Source checks show `applyVitalStandardQuestion()` routes invalid vital drafts through `validateVitalDraft()` and `setRecordFormValidationFeedback("vital", ...)` before any question-draft mutation.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only the existing `암관리` `workspace:4` / `surface:7` browser.
+  - Capture browser-local `carevault.v1` and current question draft fields as a baseline.
+  - Set the real blood-pressure draft to an invalid value, click the real helper `질문 초안` button, and verify local feedback plus save chip show `혈압 수축기와 이완기를 0보다 크게 입력해주세요.`.
+  - Verify `.vital-standard-question-feedback` remains empty, the pre-visit question topic/body/priority are not overwritten, saved record counts and `carevault.v1` stay unchanged, then restore the visible draft and browser baseline.
+- Direct QA results:
+  - PASS started temporary Vite on `127.0.0.1:1420` and reused only the existing `workspace:4` / `surface:7` browser.
+  - PASS navigated only `surface:7` to `http://127.0.0.1:1420/#care-plan` and waited for `#care-plan`; title stayed `CareVault`.
+  - PASS baseline captured browser-local `carevault.v1` into `sessionStorage.carevault.__testVitalQuestionInvalidBaseline`: raw length `1871`, storage keys only `carevault.v1`, visible blood-pressure draft `128/78`, helper action aria/title `혈압 기준 진료 질문 초안 만들기`, no local vital feedback, question topic/body empty, priority `next-visit`.
+  - PASS filled the real `혈압 입력 수축기 혈압(mmHg)` input with `0`, then clicked the real helper `질문 초안` button.
+  - PASS invalid-click feedback: local `.record-form-feedback` showed `혈압 수축기와 이완기를 0보다 크게 입력해주세요.` with aria `혈압·혈당·체온 입력 필수 항목 안내 · 혈압 수축기와 이완기를 0보다 크게 입력해주세요.`, and the top save chip showed the same error text.
+  - PASS fail-closed non-mutation: `carevault.v1` stayed byte-identical to the captured baseline (`1871` bytes), counts stayed `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labResults 1`, `.vital-standard-question-feedback` and `.vital-save-feedback` stayed absent, and no export preview/dialog opened.
+  - PASS question draft guard: the pre-visit question form remained empty (`topic=""`, `body=""`, priority `next-visit`) after the invalid helper click.
+  - PASS recovery: filled the same real systolic input back to `128`; the record-form feedback cleared and the save chip changed to `혈압·혈당·체온 입력 필수 입력 확인됨`; the add button aria/title returned to `혈압 기록 추가 · 혈압 128/78 mmHg · 주의혈압 범위 · 성인 남녀 공통 · 한국 성인 혈압`.
+  - PASS final cleanup: removed the session test key, reloaded only the same surface, and confirmed storage keys only `carevault.v1`, no `carevault.__test*` session keys, draft back to `128/78`, question topic/body empty, record feedback count `0`, no vital-standard feedback, no preview/dialog/alert, and counts still restored to `4/1/1/1/1/0/1`.
+  - PASS browser diagnostics after cleanup: `cmux browser --surface surface:7 errors list` => `No browser errors`; console contained only Vite debug connect messages.
+- Issues:
+  - No source bug found in this slice; the invalid helper click correctly routes through the local form validation guard before question-draft mutation.
+  - The final save chip remains `혈압·혈당·체온 입력 필수 입력 확인됨` after the local feedback clears, which is the expected scoped ready status from the form-feedback design contract.
+- Verification:
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS `npm run runtime:doctor`: port `1420` free, no installed/release CareVault.app process, no CareVault dev processes.
+  - PASS `npm test -- src/vitalValidation.test.ts src/healthStandards.test.ts` => `2 passed`, `37 passed`.
+  - PASS `git diff --check -- working.md`.
+- Next Steps:
+  - Run staged secret scan, commit/push this focused QA log, and record post-push status.
+
 ## 2026-06-07 00:44 KST - Caregiver Old Symptom Fingerprint Scope
 
 - Current Goal:
