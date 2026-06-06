@@ -23782,6 +23782,42 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 04:37 KST - CSV Download Unsupported Direct QA
+
+- Current Goal:
+  - Directly verify that the real `CSV 내보내기` button reports the hard unsupported download state when the WebView is Safari-like but has no usable clipboard writer.
+  - Keep the check non-mutating, use only the existing `암관리` `workspace:4` / `surface:7` browser, and restore the browser environment by reloading/recovering the same surface.
+- Context:
+  - Repo started clean and synced at `3f2375c`; `npm run runtime:doctor` confirmed port `1420` was free and no CareVault runtime was running.
+  - Older direct QA covered Safari/WebKit clipboard fallback success for CSV export, and the backup hard-unsupported branch now has same-surface evidence. I did not find fresh same-`surface:7` evidence for the hard `브라우저 다운로드/클립보드 없음` branch on the real CSV export action with CSV-specific scope summary.
+  - Source tests cover the generic `downloadTextFile()` unsupported result, but this slice verifies the user-facing CSV action label/status and non-mutation in the live UI.
+- Planned verification:
+  - Start temporary Vite on `127.0.0.1:1420` and reuse only `surface:7`.
+  - Capture browser-local `carevault.v1` as a baseline and verify the CSV export aria/title scope.
+  - In the same WebView, force a Safari-like navigator, make `navigator.clipboard.writeText` unavailable, and instrument blob/download helpers to prove no blob download is attempted.
+  - Click the real `CSV 내보내기` button and verify the save chip reports `CSV 다운로드 미지원 · 브라우저 다운로드/클립보드 없음 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`, storage is unchanged, no preview/dialog opens, and cleanup removes the temporary environment.
+- Direct QA results:
+  - PASS started temporary Vite on `127.0.0.1:1420` and reused only the existing `workspace:4` / `surface:7` browser.
+  - PASS setup found the live CareVault DOM at `http://127.0.0.1:1420/#care-plan`, title `CareVault`, with the real `CSV 내보내기` button present.
+  - PASS setup verified CSV export scope before click: visible text `CSV 내보내기`, aria/title `CSV 내보내기 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`; browser-local baseline length was `1871`, storage keys were only `carevault.v1`, counts were `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labResults 1`.
+  - PASS forced a Safari-like user agent/vendor in the same WebView, exposed no usable `navigator.clipboard.writeText`, and instrumented `URL.createObjectURL` plus anchor `click`.
+  - PASS clicked the real `CSV 내보내기` button and observed save chip `CSV 다운로드 미지원 · 브라우저 다운로드/클립보드 없음 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 없음 · 기준/출처 포함 · 로컬 경로 제외`.
+  - PASS post-click storage stayed byte-identical to the captured `carevault.v1` baseline (`1871` bytes), storage keys stayed only `carevault.v1`, and record counts stayed unchanged.
+  - PASS unsupported branch made no blob download attempt: instrumentation showed `blobCalls: 0`, `anchorClicks: 0`, `writeAccessed: true`, and no define errors.
+  - PASS no export preview/dialog opened; app URL stayed `http://127.0.0.1:1420/#care-plan`.
+  - PASS cleanup restored the baseline, removed `carevault.__testCsvUnsupportedBaseline`, reloaded only the same surface, recovered the recurring post-reload `about:blank` JS context by setting `location.href` on `surface:7`, and confirmed no test globals remained.
+  - PASS final cleanup state: storage keys only `carevault.v1`, no `carevault.__test*` session keys, save chip `브라우저 자동 저장됨`, CSV aria/title remained unchanged, no preview/dialog, counts restored to `vitals 4`, `visits 1`, `symptoms 1`, `questions 1`, `documents 1`, `deletedDocuments 0`, `labResults 1`, and empty `foodQuery`.
+  - PASS browser diagnostics after cleanup: `cmux browser --surface surface:7 errors` => `No browser errors`; console contained only Vite debug connect messages.
+- Issues:
+  - `surface:7` again showed the known stale `about:blank` JavaScript execution context after reload even though URL/title and the accessibility snapshot showed CareVault. Same-surface URL reassignment recovered it; no new browser, tab, pane, workspace, surface, or headless browser was opened, and cmux was not restarted, quit, force-quit, replaced, or signaled.
+- Verification:
+  - PASS temporary Vite cleanup: the dev server stopped via Ctrl-C.
+  - PASS `npm run runtime:doctor`: port `1420` free, no installed/release CareVault.app process, no CareVault dev processes.
+  - PASS `npm test -- src/textFileDownload.test.ts src/csvExport.test.ts` => `2 passed`, `27 passed`.
+  - PASS `git diff --check -- working.md`.
+- Next Steps:
+  - Run staged secret scanning, commit/push this focused QA log, then record post-push clean/sync status.
+
 ## 2026-06-07 00:09 KST - Caregiver Attachment Status Fingerprint Scope
 
 - Improvement target:
