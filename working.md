@@ -25657,3 +25657,32 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 08:11 KST - Backup Import Read Error Status Fix
+
+- Current Goal:
+  - Directly verify the backup-import file-read failure branch in the existing single `암관리` cmux browser.
+  - Fix any misleading user-facing status if the app cannot read the selected backup file before JSON parsing.
+- Context:
+  - Recent same-surface backup import QA already covered invalid JSON, malformed backup shape, valid import, attachment path sanitization, and all-off caregiver-section import normalization.
+  - `src/App.tsx` still had a distinct `FileReader.onerror` branch with detail `파일을 읽지 못했습니다. 기존 건강 기록은 그대로 유지되었습니다.`, but the top save chip reused the generic `JSON 검증 실패` status.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only existing `workspace:4` / `pane:8` / `surface:7` and navigated it to `http://127.0.0.1:1420/#care-plan`.
+  - NOTE: The first long eval timed out, and `surface:7` later briefly showed the known split where `get-url`/snapshot reported CareVault while JS eval ran in `about:blank`; the same surface recovered via `location.href = "http://127.0.0.1:1420/#care-plan"` without opening any new browser, tab, pane, workspace, or surface.
+  - RED direct QA before the patch: replacing only `window.FileReader` with a failing test reader and dispatching `carevault-read-error-qa.json` through the real hidden `CareVault 백업 JSON 파일 선택` input showed the visible alert detail `파일을 읽지 못했습니다. 기존 건강 기록은 그대로 유지되었습니다.`, but the top save chip incorrectly showed `백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음`.
+  - PASS fail-closed guard before/after patch: the failing reader attempted exactly one read of `carevault-read-error-qa.json` (`application/json`, 48 bytes), `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline length `1871`, record counts stayed vitals `4`, visits `1`, symptoms `1`, questions `1`, documents `1`, deleted documents `0`, labs `1`, and no export preview or dialog opened.
+  - PASS patched direct QA: the same failing-reader path now shows role `alert`, aria `백업 가져오기 실패`, detail `파일을 읽지 못했습니다. 기존 건강 기록은 그대로 유지되었습니다.`, and top save chip `백업 가져오기 실패 · 파일 읽기 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음`.
+  - PASS cleanup: restored the native `FileReader`, removed `carevault.__testBackupReadErrorBaseline`, reloaded the same `surface:7`, and confirmed storage keys only `carevault.v1`, no session test keys, no FileReader test globals, feedback count `0`, save chip `브라우저 자동 저장됨`, no preview/dialog, and `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Changes:
+  - `src/backupState.ts`: added `formatCareVaultBackupImportReadFailureStatus()` for file-read failures before JSON parsing.
+  - `src/App.tsx`: changed only `FileReader.onerror` to use the new read-failure status while leaving JSON parse/shape failures on the existing JSON-validation status.
+  - `src/backupState.test.ts`: pinned both JSON-validation failure and file-read failure status strings.
+- Verification:
+  - PASS focused tests: `npm test -- src/backupState.test.ts src/textFileDownload.test.ts` => `2 passed`, `14 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build` => `2475` modules transformed.
+  - PASS runtime cleanup: temporary Vite PID was stopped with `SIGINT`, then `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff check: `git diff --check -- src/App.tsx src/backupState.ts src/backupState.test.ts working.md`.
+- Current state:
+  - `src/App.tsx`, `src/backupState.ts`, `src/backupState.test.ts`, and `working.md` are dirty with this focused backup-import read-error status fix and same-surface QA evidence.
+  - Stage only those paths, run staged secret checks, commit/push, then record post-push status.

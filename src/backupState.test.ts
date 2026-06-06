@@ -7,6 +7,7 @@ import {
   formatCareVaultBackupExportStatus,
   formatCareVaultBackupImportDescription,
   formatCareVaultBackupImportFailureStatus,
+  formatCareVaultBackupImportReadFailureStatus,
   formatCareVaultBackupImportStatus,
   formatCareVaultBackupImportSuccessDetail,
   formatCareVaultBackupScopeCompactSummary,
@@ -253,6 +254,9 @@ describe("backupState", () => {
     );
     expect(formatCareVaultBackupImportFailureStatus()).toBe(
       "백업 가져오기 실패 · JSON 검증 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음",
+    );
+    expect(formatCareVaultBackupImportReadFailureStatus()).toBe(
+      "백업 가져오기 실패 · 파일 읽기 실패 · 기존 기록 유지 · 첨부 재연결 변경 없음",
     );
     expect(formatCareVaultBackupImportSuccessDetail(importedState)).not.toContain(
       "/Users/wj/private",

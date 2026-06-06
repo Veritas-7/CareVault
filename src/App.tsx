@@ -363,6 +363,7 @@ import {
   formatCareVaultBackupScopeCompactSummary,
   formatCareVaultBackupImportDescription,
   formatCareVaultBackupImportFailureStatus,
+  formatCareVaultBackupImportReadFailureStatus,
   formatCareVaultBackupImportStatus,
   formatCareVaultBackupImportSuccessDetail,
   prepareCareVaultBackupImport,
@@ -3767,7 +3768,12 @@ function App() {
 
     const reader = new FileReader();
     reader.onerror = () => {
-      showImportFailure("파일을 읽지 못했습니다. 기존 건강 기록은 그대로 유지되었습니다.");
+      setBackupImportFeedback({
+        detail: "파일을 읽지 못했습니다. 기존 건강 기록은 그대로 유지되었습니다.",
+        title: "백업 가져오기 실패",
+        tone: "error",
+      });
+      setSaveLabel(formatCareVaultBackupImportReadFailureStatus());
     };
     reader.onload = () => {
       let parsed: unknown;
