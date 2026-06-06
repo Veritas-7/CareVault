@@ -21625,3 +21625,28 @@
   - Recover only the existing `surface:7` without opening a new browser or restarting cmux, then verify whether the caregiver fresh action applied.
   - Restore `carevault.v1` from `carevault.__testCaregiverSettingsStaleBaseline`, remove all `carevault.__test*` keys, reload the same surface, and verify baseline state plus browser errors/console before committing any completion log.
   - If `surface:7` remains blocked, report the cmux surface blocker and ask the user before any cmux app restart.
+
+## 2026-06-06 23:19 KST - cmux Surface Blocker Follow-up
+
+- Improvement target:
+  - Continue the blocked caregiver-share fresh-preview/cleanup task without opening a new browser and without restarting cmux.
+- Runtime/browser notes:
+  - PASS goal guard: `get_goal` plus `codex_handoff.py inspect 019e9ba9-99e0-7bf3-923d-b30048552240 --tail 12` still matched the persisted CareVault objective and target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - PASS repo/server shallow checks: repo started clean/synced with `origin/main`, `cmux ping` returned `PONG`, `cmux browser-status` returned `enabled`, and `curl -I --max-time 5 http://127.0.0.1:1420/` returned HTTP `200`.
+  - BLOCKED same-surface reads: `cmux browser --surface surface:7 snapshot`, `url`, `is-webview-focused`, `reload`, `current-workspace`, `surface-health --workspace workspace:4`, `list-pane-surfaces --workspace workspace:4 --pane pane:8`, and `tree --workspace workspace:4` all timed out.
+  - BLOCKED CUA workspace focus: read-only Computer Use confirmed cmux was focused on another workspace (`working.md`) while the target `암관리` workspace still existed in the sidebar. Clicking the existing `암관리` workspace row by AX element and by coordinates did not switch focus; it did not open a new surface or touch the Worklog app content.
+  - BLOCKED non-restart recovery: `cmux reload-config` failed with `Error: Command timed out`. This was attempted because cmux help documents it as an in-place config/terminal reload, not an app restart.
+  - Runtime guard: no new browser pane/tab/surface was opened, and cmux was not restarted, quit, force-quit, or signaled.
+- Changes:
+  - No source code changed in this slice. This is a blocker escalation note after exhausting non-restart recovery paths.
+- Verification:
+  - PASS `cmux version` => `cmux 0.64.13 (93)`.
+  - PASS `cmux capabilities` returned normal socket capabilities, so the socket accepts shallow/system commands.
+  - PASS `cmux ping && cmux browser-status` => `PONG`, `enabled`.
+  - BLOCKED target workspace/surface commands as listed above.
+- Current state:
+  - The repo is clean except for this `working.md` blocker follow-up entry.
+  - The target CareVault browser-local state may still include `carevault.__testCaregiverSettingsStaleBaseline` and a caregiver-share preview/settings state from the blocked test.
+- Next durable app slice:
+  - User approval is required before any cmux app restart/quit/force-quit/replacement recovery.
+  - After cmux workspace/surface control recovers, immediately return to `workspace:4`/`surface:7`, restore the caregiver-share baseline from `carevault.__testCaregiverSettingsStaleBaseline`, remove all `carevault.__test*` keys, reload the same surface, and verify browser errors/console.
