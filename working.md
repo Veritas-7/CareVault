@@ -23,9 +23,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit is pushed and the repository is synced after source push; post-push verification is recorded below.
+  - No new blocking issue. Source commit and verification log commit were pushed; repository sync/runtime status is verified below.
 - Next Steps:
-  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-08 00:36 KST - Post-Push NCC Healthy-Eating Daily Fruit Snack Terms
 
@@ -34,6 +34,7 @@
 - Result:
   - Source commit pushed: `cb63734` (`Add NCC healthy eating fruit snack terms`).
   - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `cb637343c1968edf51fea7d1dca7a7c1b6fb2357`.
+  - Post-push verification log commit pushed: `69cdad5` (`Log NCC healthy eating fruit snack verification`).
 - Verification:
   - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `a29ced1cd61cbd6018054b9494baae8fe57521bc`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
   - PASS RED/GREEN path:
@@ -51,9 +52,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+  - No new blocking issue. Source commit and post-push log commit were pushed; this cleanup update removes stale next-step wording.
 - Next Steps:
-  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-08 00:21 KST - NCC Healthy-Eating Meat Cooking Method Terms
 
