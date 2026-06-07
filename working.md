@@ -27277,3 +27277,31 @@
   - Runtime is clean; source code is unchanged in this QA-only slice.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:55 KST - Food Empty Input Failure Direct QA
+
+- Current Goal:
+  - Direct-QA the nutrition panel's empty-food-input failure state in the existing `암관리` / `surface:7` cmux browser.
+  - Continue honoring the user's no-window-occupation instruction by using non-window same-surface cmux browser commands only.
+- Context:
+  - Prior nutrition QA covered the source-backed success path for the saved food query `브로콜리, 현미밥, 베이컨, 자몽 주스`.
+  - This slice covers the distinct empty-input failure path where the low-WBC immune food context still contributes two source labels, but no food match exists and no question draft should be generated.
+- Changes:
+  - No source code changes in this slice; the current implementation passed same-surface empty-input failure QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated in place to `http://127.0.0.1:1420/#nutrition`. No new browser, surface, tab, desktop window, Computer Use path, or WebView focus handoff was used.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testFoodEmptyBaseline"]`; storage length was `1872`, saved food query was `브로콜리, 현미밥, 베이컨, 자몽 주스`, question topic/body were blank, counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `labResults=1`, and the real food question button rendered `95x44` with aria/title `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함`.
+  - PASS real empty-input action: filled the real `암환자 음식 판단 음식 또는 식단 입력` textarea with an empty value, then clicked the real `.food-question-actions button`.
+  - PASS failure feedback: `.food-question-draft-feedback[role=status]` showed `음식 판단 질문 초안 준비 실패 · 입력 음식 입력 없음 · 일치 0개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 2개`; question topic/body stayed blank, and no food chips rendered.
+  - PASS empty panel state: the question button aria changed to `음식 판단 진료 질문 초안 만들기 · 근거 2개 포함`; the summary aria became `음식 판단 요약 매칭 없음 · 분류 대기 · 공식 출처 2개`; the verdict text stayed non-directive: `판단 근거 부족...음식명을 더 구체적으로 입력...`.
+  - PASS persistence observation: after the browser save queue flushed, `localStorage["carevault.v1"]` reflected the empty food query and save chip showed `음식 판단 업데이트됨 · 입력 없음 · 판단 근거 부족 · 매칭 없음 · 공식 출처 2개 · 브라우저 자동 저장됨`; record counts stayed unchanged.
+  - PASS cleanup: restored the captured baseline into `localStorage["carevault.v1"]`, removed `carevault.__testFoodEmptyBaseline`, reloaded the same `surface:7`, and confirmed food query restored, storage length `1872`, no `carevault.__test*` session keys, no food draft feedback, blank question topic/body, no preview/dialog/alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/foodQuestionPrompts.test.ts src/foodMetric.test.ts src/immuneFoodContext.test.ts` => `3 passed`, `15 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main` before logging; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `working.md` is dirty with verified food empty-input failure QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
