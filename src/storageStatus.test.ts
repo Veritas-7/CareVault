@@ -13,7 +13,7 @@ describe("storageStatus", () => {
     expect(formatStorageReadyLabel("memory")).toBe("임시 메모리 저장 준비");
     expect(formatStorageSavedLabel("sqlite", true)).toBe("SQLite 자동 저장됨");
     expect(formatStorageSavedLabel("localStorage")).toBe("브라우저 저장됨");
-    expect(formatStorageSavedLabel("memory")).toBe("임시 메모리 저장됨");
+    expect(formatStorageSavedLabel("memory")).toBe("임시 메모리에만 저장됨");
   });
 
   it("formats save failure feedback with backend and automatic/manual context", () => {
@@ -35,6 +35,6 @@ describe("storageStatus", () => {
     expect(formatStorageSavedWithActionLabel("sqlite", " 검사 상태 변경 ", true)).toBe(
       "검사 상태 변경 · SQLite 자동 저장됨",
     );
-    expect(formatStorageSavedWithActionLabel("memory", "  ")).toBe("임시 메모리 저장됨");
+    expect(formatStorageSavedWithActionLabel("memory", "  ")).toBe("임시 메모리에만 저장됨");
   });
 });

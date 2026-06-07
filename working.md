@@ -27564,3 +27564,27 @@
   - Runtime is clean; no temporary Vite process is running.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 13:36 KST - Temporary Memory Save Label Clarity Started
+
+- Current Goal:
+  - Improve the browser blocked/quota-limited storage fallback UX so temporary-memory saves cannot be mistaken for durable browser or SQLite persistence.
+- Context:
+  - The previous storage slices verified invalid JSON and missing-key fallback paths. The remaining write-failure path in `src/storage.ts` does not throw to App; `savePersistedState()` returns backend `memory` when browser `localStorage.setItem()` fails.
+  - Current same-surface cmux browser state is partially blocked: existing `surface:7` still reports `http://localhost:1420/#dashboard` and title `CareVault`, but DOM/storage/screenshot/eval automation commands returned `about:blank` or timed out after `cmux refresh-surfaces`. No new browser, surface, tab, desktop focus handoff, Computer Use, `focus-webview`, cmux restart, or cmux termination was used.
+  - Because direct browser mutation is blocked, this slice is limited to source-level UX improvement and automated tests until the existing `surface:7` automation channel is usable again.
+- Changes:
+  - `src/storageStatus.ts`: changed saved labels for the `memory` backend to say `임시 메모리에만 저장됨` / `임시 메모리에만 자동 저장됨`, while keeping SQLite and browser labels unchanged.
+  - `src/storageStatus.test.ts`: updated exact label coverage for memory fallback save feedback.
+- Tests:
+  - PASS focused tests: `npm test -- src/storageStatus.test.ts src/storage.test.ts` => `2 passed`, `19 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `63 passed`, `538 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - BLOCKED direct same-surface browser label QA: temporary Vite served port `1420`, existing `surface:7` was navigated in place to `http://localhost:1420/#dashboard`, and `get url`/`get title` returned `http://localhost:1420/#dashboard` / `CareVault`, but `eval` still returned `{"href":"about:blank","title":"","ready":"complete","profile":false,"saveChip":null}`. Existing `surface:7` `errors list` returned `No browser errors`. The temporary Vite process was stopped afterward.
+- Issues:
+  - BLOCKED direct cmux browser QA for this slice: the only allowed browser surface currently exposes app URL/title but not a working DOM/storage/eval automation context.
+- Next Steps:
+  - Run repo diff checks and staged secret gates.
+  - Commit the focused source/test/working.md change with explicit-path staging if the gates pass.

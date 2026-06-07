@@ -6,12 +6,17 @@ function formatStorageBackendLabel(backend: PersistenceBackend) {
   return "임시 메모리";
 }
 
+function formatStorageSavedTarget(backend: PersistenceBackend) {
+  if (backend === "memory") return "임시 메모리에만";
+  return formatStorageBackendLabel(backend);
+}
+
 export function formatStorageReadyLabel(backend: PersistenceBackend) {
   return `${formatStorageBackendLabel(backend)} 저장 준비`;
 }
 
 export function formatStorageSavedLabel(backend: PersistenceBackend, automatic = false) {
-  return `${formatStorageBackendLabel(backend)} ${automatic ? "자동 저장됨" : "저장됨"}`;
+  return `${formatStorageSavedTarget(backend)} ${automatic ? "자동 저장됨" : "저장됨"}`;
 }
 
 export function formatStorageSavedWithActionLabel(
