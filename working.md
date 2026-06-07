@@ -29278,6 +29278,36 @@
 - Next Steps:
   - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
 
+## 2026-06-07 18:52 KST - Post-Push HPV Schedule Observation Memo Split
+
+- Current Goal:
+  - Record post-push verification for the HPV vaccination schedule/observation memo split.
+- Result:
+  - Source commit pushed: `82f893d` (`Split HPV vaccine schedule memo`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `82f893d045aa4a597d3ffb85be35166bc95bbd96`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/cervicalCancerCare.test.ts` failed before implementation because the prevention guide list still had 5 items and no separate HPV schedule/observation item.
+    - GREEN focused: `npm test -- src/cervicalCancerCare.test.ts` => 1 file / 25 tests.
+  - PASS related export tests: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` => 5 files / 133 tests.
+  - PASS metric count regression: `npm test -- src/cervicalCancerCareMetric.test.ts` => 1 file / 2 tests.
+  - PASS full tests: `npm test` => 64 files / 588 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - KDCA National Health Information Portal cervical-cancer vaccine page: `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=3987`
+  - National Cancer Information Center HPV prevention page: `https://www.cancer.go.kr/lay1/S1T250C254/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 588 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`; `git diff --cached --check`; `gitleaks protect --staged --no-banner --redact`.
+  - Commit/push this log-only update, then recheck sync/runtime cleanup.
+
 ## 2026-06-07 17:06 KST - Official Food Example Matching Expansion
 
 - Current Goal:
