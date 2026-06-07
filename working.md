@@ -29387,3 +29387,26 @@
   - No new blocking issue. This remains a conservative keyword matcher, not a full Korean morphological parser.
 - Next Steps:
   - Run diff/secret gates, then commit/push the focused food one-syllable boundary guard if green.
+
+## 2026-06-07 17:24 KST - Post-Push Food One-Syllable Boundary Guard
+
+- Current Goal:
+  - Record post-push verification for the one-syllable food boundary guard.
+- Result:
+  - Source commit pushed: `84eab85` (`Guard one-syllable food matches`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `84eab8541e239684bb90d1a5f325ec4ad9e3dd9c`.
+- Verification:
+  - PASS focused RED/GREEN path: `npm test -- src/healthRules.test.ts` => 1 file / 17 tests after the fix.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 580 tests.
+  - PASS build: `npm run build`.
+  - PASS browser smoke with `with_server.py` and one Playwright Chromium session: no `술` chip for `수술`, no `회` chip for `회복`, alcohol/raw-food suffix matches preserved, food-question draft feedback confirmed, and no 390px horizontal overflow.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. The clarified objective excludes cmux same-surface browser control in this environment, so reproducible Playwright/browser smoke remains the direct UI verification path here.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
