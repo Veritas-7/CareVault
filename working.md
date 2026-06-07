@@ -28026,3 +28026,28 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:24 KST - Blank Attachment Preview URL Guard Started
+
+- Current Goal:
+  - Treat blank runtime-converted attachment preview URLs as preview failures before rendering or probing an empty image source.
+- Context:
+  - Re-read thread identity, current repo sync, latest `working.md`, same-surface cmux diagnostics, and attachment recovery code/tests before editing.
+  - Existing cmux `surface:7` was used only for non-focusing diagnostics. It reports `http://127.0.0.1:1420/#dashboard` / `CareVault`, but `eval` still returns `about:blank` with no `#root` and empty body text; `errors list` returns `No browser errors`.
+  - No Computer Use, focus change, workspace selection, new browser, new tab, or new surface was used.
+  - `resolveRuntimeAttachmentPreview()` could return a successful preview with a whitespace-only URL if `convertFileSrc()` returned blank output, especially when no loader was available to reject the URL.
+- Changes:
+  - `src/attachmentRecovery.test.ts`: added RED coverage for blank converted preview URLs; image loading must not be attempted.
+  - `src/attachmentRecovery.ts`: added a fail-closed blank preview URL check before runtime image probing and success return.
+- Tests:
+  - RED confirmed: `npm test -- src/attachmentRecovery.test.ts` failed because blank converted URLs returned `preview`.
+  - PASS focused test after fix: `npm test -- src/attachmentRecovery.test.ts` => `1 passed`, `14 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `549 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` URL/title remained CareVault and `errors list` returned `No browser errors`; eval still reports `about:blank`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface and do not steal focus.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused blank attachment preview URL guard if green.

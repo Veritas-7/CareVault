@@ -226,6 +226,34 @@ describe("attachmentRecovery", () => {
     });
   });
 
+  it("uses preview-failure recovery when runtime conversion returns a blank preview URL", async () => {
+    const loadImage = vi.fn(async (_previewUrl: string) => undefined);
+
+    await expect(
+      resolveRuntimeAttachmentPreview(
+        {
+          attachmentName: "scan.png",
+          attachmentPath: "/tmp/existing-scan.png",
+          id: "doc-fixture",
+          title: "영상 첨부 복구 테스트",
+        },
+        {
+          convertFileSrc: () => "   ",
+          exists: async () => true,
+          loadImage,
+        },
+      ),
+    ).resolves.toEqual({
+      recovery: {
+        historyDetail: "scan.png: 이미지 미리보기 실패 - 재첨부 필요",
+        historyLabel: "첨부 미리보기 실패",
+        status: "이미지 미리보기 실패 - 재첨부 필요",
+      },
+      type: "recovery",
+    });
+    expect(loadImage).not.toHaveBeenCalled();
+  });
+
   it("checks supported image signatures before runtime preview", () => {
     expect(
       hasSupportedImageSignature("scan.png", [

@@ -230,6 +230,10 @@ export async function resolveRuntimeAttachmentPreview(
     }
 
     const previewUrl = runtime.convertFileSrc(attachmentPath);
+    if (!previewUrl.trim()) {
+      throw new Error("blank preview URL");
+    }
+
     if (runtime.loadImage) {
       await withPreviewProbeTimeout(runtime.loadImage(previewUrl), previewProbeTimeoutMs);
     }
