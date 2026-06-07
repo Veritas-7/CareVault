@@ -546,6 +546,38 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC prevention protein guidance terms without duplicating dish examples", () => {
+    const assessment = assessCancerFood("단백질 식품, 적정량 단백질, 고등어구이");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["단백질 식품", "적정량 단백질", "고등어구이"]);
+    expect(terms).not.toContain("생선");
+    expect(terms).not.toContain("고등어");
+    expect(matchesByTerm["단백질 식품"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 단백질 식품 적정량 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["적정량 단백질"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 단백질 식품 적정량 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.고등어구이).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm["단백질 식품"])).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention red-meat portion watch examples", () => {
     const assessment = assessCancerFood("소고기, 돼지고기, 붉은 육류, 불고기");
     const terms = assessment.matches.map((match) => match.term);
