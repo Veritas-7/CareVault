@@ -939,6 +939,18 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("숯불로 굽거나 직접 구워 탄 음식 섭취 삼가");
     expect(limitGuideText).toContain("숯불로 굽거나 직접 구워서 탄 음식의 섭취는 삼가합니다");
     expect(limitGuideText).toContain("숯불로 굽거나 직접 구워서 탄 음식 섭취 삼가");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain(
+      "육류 섭취 시 이를 구워 먹기(숯불구이, 직접 구이 등)보다는 삶거나 끓여서(수육, 보쌈 등) 먹습니다",
+    );
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("육류 구워 먹기보다는 삶거나 끓여서 수육 보쌈 먹기");
     expect(limitGuideText).toContain("직접 구워 탄 음식");
     expect(limitGuideText).toContain("지방 함량이 많은 부위의 육류 섭취는 제한합니다");
     expect(limitGuideText).toContain("지방 함량이 많은 육류 부위 섭취 제한");
@@ -1646,6 +1658,33 @@ describe("healthRules", () => {
     expect(JSON.stringify([...supportAssessment.matches, ...watchAssessment.matches])).not.toMatch(
       /치료 음식|완치|암을 낫게/,
     );
+  });
+
+  it("recognizes the exact NCC healthy-eating boiled meat cooking sentence", () => {
+    const assessment = assessCancerFood(
+      "육류 섭취 시 이를 구워 먹기(숯불구이, 직접 구이 등)보다는 삶거나 끓여서(수육, 보쌈 등) 먹습니다; 육류 구워 먹기보다는 삶거나 끓여서 수육 보쌈 먹기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "육류 섭취 시 이를 구워 먹기(숯불구이, 직접 구이 등)보다는 삶거나 끓여서(수육, 보쌈 등) 먹습니다",
+      "육류 구워 먹기보다는 삶거나 끓여서 수육 보쌈 먹기",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 삶거나 끓인 육류 조리 예시 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
