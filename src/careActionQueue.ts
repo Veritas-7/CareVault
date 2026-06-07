@@ -330,14 +330,17 @@ export function buildCareActionQueue(
       : [];
 
   const vitalActions = (state.vitals ?? []).flatMap<CareAction>((vital, index) => {
+    const date = getValidIsoDate(vital.date);
+    if (!date) return [];
+
     if (vital.type === "blood-pressure" && vital.systolic && vital.diastolic) {
       const assessment = assessBloodPressure(vital.systolic, vital.diastolic);
       if (assessment.level === "ok" || assessment.level === "neutral") return [];
 
       return [
         {
-          id: `vital:${vital.id ?? `${vital.date}:${index}`}`,
-          date: vital.date,
+          id: `vital:${vital.id ?? `${date}:${index}`}`,
+          date,
           source: "vital",
           tone: "watch",
           label: assessment.label,
@@ -361,8 +364,8 @@ export function buildCareActionQueue(
 
       return [
         {
-          id: `vital:${vital.id ?? `${vital.date}:${index}`}`,
-          date: vital.date,
+          id: `vital:${vital.id ?? `${date}:${index}`}`,
+          date,
           source: "vital",
           tone: "watch",
           label: assessment.label,
@@ -385,8 +388,8 @@ export function buildCareActionQueue(
 
       return [
         {
-          id: `vital:${vital.id ?? `${vital.date}:${index}`}`,
-          date: vital.date,
+          id: `vital:${vital.id ?? `${date}:${index}`}`,
+          date,
           source: "vital",
           tone: "watch",
           label: assessment.label,
@@ -404,30 +407,36 @@ export function buildCareActionQueue(
     return [];
   });
 
-  const questionActions = state.questions
-    .filter((question) => question.status === "open")
-    .map<CareAction>((question, index) => {
-      const priority = normalizeQuestionPriority(question.priority);
-      return {
-        id: `question:${question.id ?? `${question.date}:${index}`}`,
-        date: question.date,
+  const questionActions = state.questions.flatMap<CareAction>((question, index) => {
+    const date = getValidIsoDate(question.date);
+    if (question.status !== "open" || !date) return [];
+
+    const priority = normalizeQuestionPriority(question.priority);
+    return [
+      {
+        id: `question:${question.id ?? `${date}:${index}`}`,
+        date,
         source: "question",
         tone: priority === "routine" ? "neutral" : "watch",
         label: `질문 · ${questionPriorityLabel[priority]}`,
         title: question.topic,
         detail: formatTextWithSourceEvidence(question.question),
         sortRank: questionPrioritySortRank[priority],
-      };
-    });
+      },
+    ];
+  });
 
   const labActions = state.labResults.flatMap<CareAction>((lab, index) => {
+    const date = getValidIsoDate(lab.date);
+    if (!date) return [];
+
     const assessment = assessLabTextValue(lab.value, lab.lower, lab.upper);
     if (assessment.flag === "normal") return [];
 
     return [
       {
-        id: `lab:${lab.id ?? `${lab.date}:${index}`}`,
-        date: lab.date,
+        id: `lab:${lab.id ?? `${date}:${index}`}`,
+        date,
         source: "lab",
         tone: assessment.flag === "unknown" ? "neutral" : "watch",
         label: assessment.label,
@@ -437,19 +446,27 @@ export function buildCareActionQueue(
     ];
   });
 
-  const documentActions = state.documents
-    .filter(hasActiveReviewStatus)
-    .map<CareAction>((document, index) => ({
-      id: `document:${document.id ?? `${document.date}:${index}`}`,
-      date: document.date,
-      source: "document",
-      tone: document.reviewStatus === "waiting-result" ? "neutral" : "watch",
-      label: documentStatusLabel[document.reviewStatus],
-      title: document.title,
-      detail: firstText(document.nextAction, document.body, document.tags),
-    }));
+  const documentActions = state.documents.flatMap<CareAction>((document, index) => {
+    const date = getValidIsoDate(document.date);
+    if (!hasActiveReviewStatus(document) || !date) return [];
+
+    return [
+      {
+        id: `document:${document.id ?? `${date}:${index}`}`,
+        date,
+        source: "document",
+        tone: document.reviewStatus === "waiting-result" ? "neutral" : "watch",
+        label: documentStatusLabel[document.reviewStatus],
+        title: document.title,
+        detail: firstText(document.nextAction, document.body, document.tags),
+      },
+    ];
+  });
 
   const symptomActions = state.symptoms.flatMap<CareAction>((symptom, index) => {
+    const date = getValidIsoDate(symptom.date);
+    if (!date) return [];
+
     const isCervicalWarning = isCervicalWarningSymptom(symptom);
     const isStructuredCervicalWarning = isStructuredCervicalWarningDraft(symptom);
     const contactThresholdTemplate = getContactThresholdSymptomTemplate(symptom);
@@ -468,8 +485,8 @@ export function buildCareActionQueue(
 
     return [
       {
-        id: `symptom:${symptom.id ?? `${symptom.date}:${index}`}`,
-        date: symptom.date,
+        id: `symptom:${symptom.id ?? `${date}:${index}`}`,
+        date,
         source: "symptom",
         tone: "watch",
         label,

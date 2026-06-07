@@ -842,6 +842,85 @@ describe("caregiverExport", () => {
     expect(html).not.toContain("2026-13-01");
   });
 
+  it("omits malformed active task dates from caregiver summaries and care queue", () => {
+    const html = buildCaregiverExportHtml(
+      {
+        ...state,
+        questions: [
+          ...state.questions,
+          {
+            date: "2026-06-31",
+            topic: "깨진 날짜 질문",
+            question: "렌더링되지 않아야 하는 질문",
+            priority: "high",
+            status: "open",
+            answer: "",
+          },
+        ],
+        documents: [
+          ...state.documents,
+          {
+            date: "2026-02-31",
+            title: "깨진 날짜 서류",
+            category: "lab",
+            reviewStatus: "needs-review",
+            nextAction: "렌더링되지 않아야 하는 서류 조치",
+            attachmentName: "bad-date.pdf",
+            attachmentStatus: "파일 확인됨",
+          },
+        ],
+        labResults: [
+          ...state.labResults,
+          {
+            date: "2026-13-01",
+            name: "ANC",
+            value: "0.4",
+            unit: "10^3/uL",
+            lower: "1.5",
+            upper: "8.0",
+            note: "렌더링되지 않아야 하는 큐 검사",
+          },
+        ],
+        symptoms: [
+          ...state.symptoms,
+          {
+            date: "2026-11-31",
+            symptom: "고열",
+            severity: 8,
+            body: "렌더링되지 않아야 하는 큐 증상",
+            action: "진료팀 확인",
+          },
+        ],
+        vitals: [
+          ...state.vitals,
+          {
+            date: "2026-12-32",
+            type: "temperature",
+            temperatureC: 39.1,
+            note: "렌더링되지 않아야 하는 큐 체온",
+          },
+        ],
+      },
+      "2026-06-03T10:00:00.000Z",
+    );
+
+    expect(html).toContain("오심 조절을 어떻게 볼까요?");
+    expect(html).toContain("검사 결과 &quot;A&quot;");
+    expect(html).toContain("2026-06-01 WBC 3.4 10^3/uL");
+    expect(html).not.toContain("깨진 날짜 질문");
+    expect(html).not.toContain("렌더링되지 않아야 하는 질문");
+    expect(html).not.toContain("깨진 날짜 서류");
+    expect(html).not.toContain("렌더링되지 않아야 하는 서류 조치");
+    expect(html).not.toContain("렌더링되지 않아야 하는 큐 검사");
+    expect(html).not.toContain("렌더링되지 않아야 하는 큐 증상");
+    expect(html).not.toContain("렌더링되지 않아야 하는 큐 체온");
+    expect(html).not.toContain("2026-06-31");
+    expect(html).not.toContain("2026-02-31");
+    expect(html).not.toContain("2026-13-01");
+    expect(html).not.toContain("2026-11-31");
+    expect(html).not.toContain("2026-12-32");
+  });
+
   it("opens every caregiver export source link outside the share document", () => {
     const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z");
     const anchors = html.match(/<a\b[^>]*>/g) ?? [];

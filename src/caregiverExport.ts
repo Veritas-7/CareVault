@@ -180,12 +180,12 @@ export function buildCaregiverExportContentFingerprint(
   return JSON.stringify({
     documents: enabledSections.documents
       ? state.documents
-          .filter((document) => document.reviewStatus !== "done")
+          .filter((document) => document.reviewStatus !== "done" && getValidIsoDate(document.date))
           .map((document) => ({
             attachmentName: document.attachmentName,
             attachmentStatus: document.attachmentName ? document.attachmentStatus : "",
             category: document.nextAction ? "" : document.category,
-            date: document.date,
+            date: getValidIsoDate(document.date) ?? "",
             nextAction: document.nextAction,
             reviewStatus: document.reviewStatus,
             title: document.title,
@@ -202,8 +202,11 @@ export function buildCaregiverExportContentFingerprint(
     profile,
     questions: enabledSections.questions
       ? state.questions
-          .filter((question) => question.status === "open")
-          .map(formatQuestionFingerprint)
+          .filter((question) => question.status === "open" && getValidIsoDate(question.date))
+          .map((question) => ({
+            ...formatQuestionFingerprint(question),
+            date: getValidIsoDate(question.date) ?? "",
+          }))
       : [],
     symptoms: enabledSections.symptoms
       ? {
@@ -555,8 +558,12 @@ export function buildCaregiverExportHtml(
     ...caregiverExportSectionDefaults,
     ...options.sections,
   };
-  const activeQuestions = state.questions.filter((question) => question.status === "open");
-  const activeDocuments = state.documents.filter((document) => document.reviewStatus !== "done");
+  const activeQuestions = state.questions.filter(
+    (question) => question.status === "open" && getValidIsoDate(question.date),
+  );
+  const activeDocuments = state.documents.filter(
+    (document) => document.reviewStatus !== "done" && getValidIsoDate(document.date),
+  );
   const foodQuery = state.foodQuery?.trim() ?? "";
   const foodAssessment = foodQuery ? assessCancerFood(foodQuery) : null;
   const immuneFoodContext =
