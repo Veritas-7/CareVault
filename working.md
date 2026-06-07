@@ -26353,3 +26353,16 @@
 - Current state:
   - `src/App.tsx`, `src/questionDraftMerge.ts`, `src/questionDraftMerge.test.ts`, and `working.md` are dirty with this verified UX-safety improvement.
   - Next: run final diff/staged checks, stage only these explicit paths, run `gitleaks protect --staged --no-banner --redact`, commit/push, then record post-push status.
+
+## 2026-06-07 10:08 KST - Post-Push Generated Question Draft Append Guard
+
+- Verification:
+  - PASS focused commit: `e70c72d` (`Preserve in-progress generated question drafts`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - Generated source-backed question shortcuts now share the append/non-overwrite guard for in-progress editable drafts.
+  - Browser-local draft/test state was cleaned up; runtime is clean.
+- Next Steps:
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
