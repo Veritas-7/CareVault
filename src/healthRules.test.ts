@@ -286,6 +286,38 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy-eating salted storage and soup-broth limit terms", () => {
+    const assessment = assessCancerFood(
+      "젓갈류, 염 저장식품, 소금 저장식품, 김치 또는 장아찌류, 국이나 찌개의 국물, 찌개 국물, 국물 섭취",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "젓갈류",
+      "염 저장식품",
+      "소금 저장식품",
+      "김치 또는 장아찌류",
+      "국이나 찌개의 국물",
+      "찌개 국물",
+      "국물 섭취",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 젓갈류·염 저장식품·국/찌개 국물 제한 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("uses the immune-function diet source for raw or unpasteurized food safety checks", () => {
     const assessment = assessCancerFood("생굴, 회, 날계란, 비살균 우유");
     const matchesByTerm = Object.fromEntries(

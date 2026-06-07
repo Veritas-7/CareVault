@@ -1,5 +1,32 @@
 # CareVault Working Notes
 
+## 2026-06-08 00:41 KST - NCC Healthy-Eating Salted Storage and Soup Broth Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on limiting salted storage foods and soup or stew broth.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `6255837b29413fc3583c83357f28c50ea33c7416`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, updated 2025-09-29, whose guidance says to limit `젓갈류`, `염(소금) 저장식품(김치 또는 장아찌류 등)`, and `국이나 찌개의 국물`.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `젓갈류`, `염 저장식품`, `소금 저장식품`, `김치 또는 장아찌류`, `국이나 찌개의 국물`, `찌개 국물`, and `국물 섭취` as source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the seven salted-storage and soup-broth watch terms under `nccPreventionDiet` and aligned the salty-food guide examples with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating salted-storage and soup-broth limit terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new phrases collapsed to existing shorter `젓갈`, `장아찌`, and `국물` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 53 tests.
+  - PASS full tests: `npm test` => 64 files / 618 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-08 00:35 KST - NCC Healthy-Eating Daily Fruit Snack Terms
 
 - Current Goal:
