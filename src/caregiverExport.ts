@@ -213,15 +213,21 @@ export function buildCaregiverExportContentFingerprint(
       : [],
     visits: enabledSections.visits
       ? state.visits
-          .filter((visit) => visit.nextDate || visit.date)
-          .map((visit) => ({
-            date: visit.date,
-            hospital: visit.hospital,
-            nextDate: visit.nextDate,
-            plan: visit.plan,
-            reason: visit.reason,
-            summary: visit.plan ? "" : visit.summary,
-          }))
+          .flatMap((visit) => {
+            const displayDate = getVisitDisplayDate(visit);
+            if (!displayDate) return [];
+
+            return [
+              {
+                date: getValidIsoDate(visit.date) ?? "",
+                hospital: visit.hospital,
+                nextDate: getValidIsoDate(visit.nextDate) ?? "",
+                plan: visit.plan,
+                reason: visit.reason,
+                summary: visit.plan ? "" : visit.summary,
+              },
+            ];
+          })
       : [],
     vitals: enabledSections.vitals
       ? {
@@ -350,6 +356,25 @@ function formatCervicalScreeningSummaryHtml(summary: CervicalCancerScreeningSumm
 
 function latestByDate<T extends { date: string }>(items: T[], limit: number) {
   return [...items].sort((a, b) => b.date.localeCompare(a.date)).slice(0, limit);
+}
+
+function getValidIsoDate(value: string | undefined) {
+  const trimmed = value?.trim() ?? "";
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (!match) return undefined;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const normalized = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+
+  return normalized === trimmed ? trimmed : undefined;
+}
+
+function getVisitDisplayDate(
+  visit: Pick<CaregiverExportState["visits"][number], "date" | "nextDate">,
+) {
+  return getValidIsoDate(visit.nextDate) ?? getValidIsoDate(visit.date);
 }
 
 function formatRecentSymptomFingerprint(symptom: CaregiverExportState["symptoms"][number]) {
@@ -536,8 +561,11 @@ export function buildCaregiverExportHtml(
       ? buildImmuneFoodSafetyContext(state.labResults)
       : null;
   const upcomingVisits = state.visits
-    .filter((visit) => visit.nextDate || visit.date)
-    .sort((a, b) => (a.nextDate || a.date).localeCompare(b.nextDate || b.date))
+    .flatMap((visit) => {
+      const displayDate = getVisitDisplayDate(visit);
+      return displayDate ? [{ ...visit, displayDate }] : [];
+    })
+    .sort((a, b) => a.displayDate.localeCompare(b.displayDate))
     .slice(0, 5);
   const careActions = buildCareActionQueue(
     {
@@ -563,7 +591,7 @@ export function buildCaregiverExportHtml(
   );
   const visitItems = upcomingVisits.map(
     (visit) =>
-      `<strong>${escapeHtml(visit.nextDate || visit.date)} ${escapeHtml(visit.hospital)}</strong><br>${escapeHtml(visit.reason)}${visit.plan ? `<br><small>${escapeHtml(visit.plan)}</small>` : ""}`,
+      `<strong>${escapeHtml(visit.displayDate)} ${escapeHtml(visit.hospital)}</strong><br>${escapeHtml(visit.reason)}${visit.plan ? `<br><small>${escapeHtml(visit.plan)}</small>` : ""}`,
   );
   const documentItems = activeDocuments.map((document) =>
     [

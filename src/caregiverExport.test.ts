@@ -374,6 +374,37 @@ describe("caregiverExport", () => {
     expect(undatedVisitChangedFingerprint).toBe(fingerprint);
   });
 
+  it("ignores malformed visit changes in caregiver content fingerprints", () => {
+    const stateWithMalformedVisit: CaregiverExportState = {
+      ...state,
+      visits: [
+        ...state.visits,
+        {
+          date: "2026-02-31",
+          hospital: "깨진 날짜 병원",
+          reason: "렌더링되지 않는 방문 사유",
+          summary: "렌더링되지 않는 방문 요약",
+          plan: "렌더링되지 않는 방문 계획",
+          nextDate: "",
+        },
+      ],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithMalformedVisit);
+    const malformedVisitChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithMalformedVisit,
+      visits: [
+        stateWithMalformedVisit.visits[0],
+        {
+          ...stateWithMalformedVisit.visits[1],
+          hospital: "렌더링되지 않는 깨진 날짜 병원 변경",
+          plan: "렌더링되지 않는 깨진 날짜 방문 계획 변경",
+        },
+      ],
+    });
+
+    expect(malformedVisitChangedFingerprint).toBe(fingerprint);
+  });
+
   it("ignores internal lab ids in caregiver content fingerprints", () => {
     const stateWithLabId = {
       ...state,
@@ -733,6 +764,30 @@ describe("caregiverExport", () => {
     expect(html).toContain("첨부 파일명만 포함");
     expect(html).toContain("result.pdf");
     expect(html).toContain("진단, 처방, 치료 지시가 아니며");
+  });
+
+  it("omits malformed visit dates from caregiver upcoming visits", () => {
+    const html = buildCaregiverExportHtml(
+      {
+        ...state,
+        visits: [
+          ...state.visits,
+          {
+            date: "2026-02-31",
+            hospital: "깨진 날짜 병원",
+            reason: "복원 오류",
+            summary: "렌더링되지 않아야 하는 요약",
+            plan: "렌더링되지 않아야 하는 계획",
+            nextDate: "",
+          },
+        ],
+      },
+      "2026-06-03T10:00:00.000Z",
+    );
+
+    expect(html).toContain("서울암센터");
+    expect(html).not.toContain("깨진 날짜 병원");
+    expect(html).not.toContain("렌더링되지 않아야 하는 계획");
   });
 
   it("opens every caregiver export source link outside the share document", () => {
