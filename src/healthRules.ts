@@ -192,7 +192,7 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         detail:
           "국가암정보센터 암예방 식단 예시는 잡곡밥, 채소 반찬, 생선·달걀·콩·닭고기 단백질 식품, 등푸른 생선 주 2회 이상, 간편식의 통밀·귀리 등 통곡물 빵과 샐러드·저지방 유제품·과일 예시, 단체 급식의 다양한 채소 반찬과 적정량 단백질 예시를 균형식 후보로 제시합니다.",
         examples:
-          "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 생선, 달걀, 콩, 닭고기, 등푸른 생선, 고등어, 통밀빵, 귀리빵, 귀리 식빵, 귀리, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 플레인 요구르트, 플레인 요거트, 저지방 유제품, 저지방 요구르트, 저지방 요거트, 방울토마토, 블루베리, 미역국, 상추쌈, 버섯나물, 불고기",
+          "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 생선, 달걀, 콩, 닭고기, 등푸른 생선, 고등어, 통밀빵, 통밀 식빵, 통밀, 귀리빵, 귀리 식빵, 귀리, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 플레인 요구르트, 플레인 요거트, 저지방 유제품, 저지방 요구르트, 저지방 요거트, 방울토마토, 블루베리, 미역국, 상추쌈, 버섯나물, 불고기",
         sourceIds: ["nccPreventionMealExamples"],
       },
       {
@@ -364,9 +364,10 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["샐러드(달걀)", "국가암정보센터 암예방 샐러드 단백질 예시 후보", "nccPreventionMealExamples"],
   ["샐러드(치즈)", "국가암정보센터 암예방 샐러드 유제품 단백질·칼슘 예시 후보", "nccPreventionMealExamples"],
   ["모차렐라", "국가암정보센터 암예방 샐러드 유제품 단백질·칼슘 예시 후보", "nccPreventionMealExamples"],
+  ["통밀 식빵", "국가암정보센터 암예방 샐러드 통곡물 예시 후보", "nccPreventionMealExamples"],
   ["귀리 식빵", "국가암정보센터 암예방 샐러드 통곡물 예시 후보", "nccPreventionMealExamples"],
   ["귀리빵", "국가암정보센터 암예방 샐러드 통곡물 예시 후보", "nccPreventionMealExamples"],
-  ["통밀", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
+  ["통밀", "국가암정보센터 암예방 샐러드 통곡물 예시 후보", "nccPreventionMealExamples"],
   ["당근", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
   ["시금치", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
   ["미역", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],

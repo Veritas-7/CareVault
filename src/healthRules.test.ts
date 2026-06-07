@@ -214,6 +214,11 @@ describe("healthRules", () => {
       cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
+    ).toContain("통밀 식빵");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
     ).toContain("등푸른 생선");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
@@ -806,6 +811,28 @@ describe("healthRules", () => {
       });
     }
     expect(formatFoodMatchEvidence(matchesByTerm.귀리빵)).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes NCC prevention whole-wheat bread examples without cure claims", () => {
+    const assessment = assessCancerFood("통밀 식빵, 통밀빵, 통밀");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["통밀 식빵", "통밀빵", "통밀"]);
+    for (const term of ["통밀 식빵", "통밀빵", "통밀"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암예방 샐러드 통곡물 예시 후보",
+        sourceId: "nccPreventionMealExamples",
+      });
+    }
+    expect(formatFoodMatchEvidence(matchesByTerm["통밀 식빵"])).toContain(
       "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
