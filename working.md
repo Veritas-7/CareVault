@@ -27197,3 +27197,29 @@
   - Runtime is clean, browser-local `carevault.__test*` keys were removed, and no extra browser/surface/window was opened.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:45 KST - Link-Inclusive Interactive Surface Direct QA
+
+- Current Goal:
+  - Reuse only the existing `암관리` / `surface:7` cmux in-app browser to audit visible buttons, links, disclosure summaries, inputs, textareas, and selects together after the form-control hit-target fix.
+  - Treat `DESIGN.md`'s desktop sidebar 42px contract as expected, but verify the current rendered surface has no accessible-name gaps, aria/title mismatches, sub-44 visible controls, sub-32 links, or unsafe external-link targets.
+- Context:
+  - The prior select hit-target scan did not include `a[href]` links. This slice extends the same-surface audit to link-heavy medical-source areas without repeating a single feature flow.
+  - Source review confirmed `DESIGN.md` still documents desktop sidebar links at 42px, while mobile/narrow widths use the broader 44px touch-target contract.
+- Changes:
+  - No source code changes in this slice; the current implementation passed the link-inclusive same-surface audit and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated to `http://127.0.0.1:1420/#dashboard`. No new browser, surface, tab, desktop window, or Computer Use path was used.
+  - PASS link-inclusive route scan: `#dashboard`, `#records`, `#profile`, `#care-plan`, `#labs`, `#nutrition`, `#documents`, and `#export` each reported `count=308`, `missingNameCount=0`, `mismatchCount=0`, `lowControlsCount=0`, and `lowLinksUnder32Count=0` for visible interactive elements.
+  - PASS sidebar metadata: all six sidebar anchors rendered `44px` high on the current cmux surface and retained matching destination labels/titles: `대시보드`, `입력 기록`, `증상·질문`, `검사 수치`, `음식 판단`, and `서류 보관`.
+  - PASS external-link safety: each route reported `externalLinkCount=150` and `externalMissingSafetyCount=0`, confirming current official-source anchors that open new contexts carry `noreferrer`.
+  - PASS cleanup state: final eval on `#export` returned title `CareVault`, ready `complete`, localStorage keys only `carevault.v1`, no `carevault.__test*` session keys, no export preview, no dialog, no alert, six nav links, and 150 external links.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/sidebarNavigation.test.ts src/disclosureLabels.test.ts src/exportPreviewSummary.test.ts` => `3 passed`, `17 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main` before logging; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `working.md` is dirty with verified link-inclusive surface QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
