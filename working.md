@@ -29540,3 +29540,38 @@
   - No new blocking issue. The clarified objective excludes cmux same-surface browser control in this environment, so reproducible Playwright/browser smoke remains the direct UI verification path here.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 18:04 KST - Symptom Multi-Source UI
+
+- Current Goal:
+  - Preserve every official source behind source-backed symptom records through the latest-symptom metric card and recent-timeline symptom row.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - The tree was clean and synced before this slice.
+  - Used systematic debugging, TDD, webapp-testing, and frontend-design guidance. The shared parser already returned `sources[]`, but `src/symptomDisplay.ts` still collapsed symptom action/body evidence to the first source and `src/App.tsx` rendered symptom evidence through a single-source helper.
+  - `DESIGN.md` requires source-backed latest symptom metric cards and recent-timeline symptom rows to remove raw `출처:` text and render extracted official evidence as compact linked `근거:` rows.
+- Changes:
+  - `src/symptomDisplay.ts`: `SymptomDisplayParts` now exposes `sources[]`, formats `sourceEvidence` with `formatSourceEvidenceList`, and merges deduplicated sources from the visible action plus the stored symptom body.
+  - `src/symptomDisplay.test.ts`: added RED/PASS coverage for action/body multi-source symptom evidence and updated existing expectations to include `sources`.
+  - `src/App.tsx`: latest symptom metric card and recent-timeline symptom rows now render every parsed symptom source as separate compact official-source links.
+- Tests:
+  - RED confirmed: `npm test -- src/symptomDisplay.test.ts` failed before the fix because `sources` was missing and the action/body multi-source case kept only the first source.
+  - PASS focused tests:
+    - `npm test -- src/symptomDisplay.test.ts` => 1 file / 4 tests.
+    - `npm test -- src/symptomDisplay.test.ts src/questionDisplay.test.ts src/sourceEvidence.test.ts` => 3 files / 15 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS Playwright browser smoke on `http://127.0.0.1:1420/` using `node /tmp/carevault_symptom_multisource_ui_smoke.mjs`:
+    - Entered a source-backed `성교 후 출혈` symptom with one source in the action and one source in the body.
+    - Confirmed the latest symptom metric card renders separate links for `국가암정보센터 자궁경부암 일반적 증상` and `질병관리청 국가건강정보포털 자궁경부암`.
+    - Confirmed the recent-timeline symptom row detail does not leak raw `출처:`.
+    - Confirmed the recent-timeline symptom row renders separate links for both official sources.
+    - Confirmed no 390px mobile horizontal overflow.
+    - Screenshots: `/tmp/carevault-symptom-multisource-ui-desktop.png`, `/tmp/carevault-symptom-multisource-ui-mobile.png`.
+  - PASS full tests: `npm test` => 64 files / 583 tests.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS whitespace gate: `git diff --check`.
+- Issues:
+  - No new blocking issue. This completes the symptom-display follow-up left by the previous saved-question multi-source UI slice.
+- Next Steps:
+  - Stage explicit paths, run staged diff/secret gates, then commit/push if green.

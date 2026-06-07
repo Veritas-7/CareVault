@@ -1,4 +1,8 @@
-import { formatSourceEvidence, parseSourceEvidence } from "./sourceEvidence";
+import {
+  formatSourceEvidenceList,
+  parseSourceEvidence,
+  type SourceEvidence,
+} from "./sourceEvidence";
 
 export type SymptomDisplaySource = {
   action: string;
@@ -11,23 +15,47 @@ export type SymptomDisplayParts = {
   sourceEvidence: string;
   sourceLabel: string;
   sourceUrl: string;
+  sources: SourceEvidence[];
 };
+
+function mergeSymptomSources(...sourceLists: SourceEvidence[][]): SourceEvidence[] {
+  const mergedSources: SourceEvidence[] = [];
+
+  for (const sourceList of sourceLists) {
+    for (const source of sourceList) {
+      if (!source.sourceLabel.trim()) continue;
+      if (
+        mergedSources.some(
+          (existingSource) =>
+            existingSource.sourceLabel === source.sourceLabel
+            && existingSource.sourceUrl === source.sourceUrl,
+        )
+      ) {
+        continue;
+      }
+      mergedSources.push(source);
+    }
+  }
+
+  return mergedSources;
+}
 
 export function buildSymptomDisplayParts(symptom: SymptomDisplaySource): SymptomDisplayParts {
   const primaryText = symptom.action || symptom.body;
   const primaryEvidence = parseSourceEvidence(primaryText);
   const secondaryText = symptom.action ? symptom.body : symptom.action;
-  const secondaryEvidence = primaryEvidence.sourceLabel
-    ? { sourceLabel: "", sourceUrl: "" }
-    : parseSourceEvidence(secondaryText);
-  const sourceLabel = primaryEvidence.sourceLabel || secondaryEvidence.sourceLabel;
-  const sourceUrl = primaryEvidence.sourceUrl || secondaryEvidence.sourceUrl;
+  const secondaryEvidence = parseSourceEvidence(secondaryText);
+  const sources = mergeSymptomSources(primaryEvidence.sources, secondaryEvidence.sources);
+  const firstSource = sources[0];
+  const sourceLabel = firstSource?.sourceLabel ?? "";
+  const sourceUrl = firstSource?.sourceUrl ?? "";
 
   return {
-    body: primaryEvidence.body || primaryText,
+    body: primaryEvidence.body || (primaryEvidence.sources.length ? "" : primaryText),
     compactSourceEvidence: sourceLabel ? `근거: ${sourceLabel}` : "",
-    sourceEvidence: formatSourceEvidence(sourceLabel, sourceUrl),
+    sourceEvidence: formatSourceEvidenceList(sources),
     sourceLabel,
+    sources,
     sourceUrl,
   };
 }

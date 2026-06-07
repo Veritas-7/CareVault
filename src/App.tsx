@@ -1424,6 +1424,9 @@ function App() {
     ? formatSymptomRecordLabel(latestSymptom)
     : "";
   const latestSymptomHasSourceEvidence = Boolean(latestSymptomDisplay?.sourceEvidence);
+  const latestSymptomSourceEvidenceLabels = latestSymptomDisplay
+    ? formatDisplaySourceLabels(latestSymptomDisplay.sources, latestSymptomDisplay.sourceLabel)
+    : "";
   const symptomDraftHasRecordPreview = Boolean(
     symptomDraft.symptom.trim()
     || symptomDraft.medication.trim()
@@ -4517,19 +4520,27 @@ function App() {
                 {latestSymptomHasSourceEvidence && latestSymptomDisplay ? (
                   <small
                     className="metric-source-evidence"
-                    aria-label={`최근 증상 근거 ${latestSymptomDisplay.sourceLabel}`}
+                    aria-label={`최근 증상 근거 ${latestSymptomSourceEvidenceLabels}`}
                   >
                     <ShieldCheck aria-hidden="true" />
-                    {latestSymptomDisplay.sourceUrl ? (
-                      <a
-                        href={latestSymptomDisplay.sourceUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`최근 증상 근거 ${latestSymptomDisplay.sourceLabel} 열기`}
-                        title={`최근 증상 근거 ${latestSymptomDisplay.sourceLabel} 열기`}
-                      >
-                        {latestSymptomDisplay.compactSourceEvidence}
-                      </a>
+                    <span>근거:</span>
+                    {latestSymptomDisplay.sources.length ? (
+                      latestSymptomDisplay.sources.map((source) =>
+                        source.sourceUrl ? (
+                          <a
+                            href={source.sourceUrl}
+                            key={`${source.sourceLabel}-${source.sourceUrl}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`최근 증상 근거 ${source.sourceLabel} 열기`}
+                            title={`최근 증상 근거 ${source.sourceLabel} 열기`}
+                          >
+                            {source.sourceLabel}
+                          </a>
+                        ) : (
+                          <span key={source.sourceLabel}>{source.sourceLabel}</span>
+                        ),
+                      )
                     ) : (
                       <span>{latestSymptomDisplay.compactSourceEvidence}</span>
                     )}
@@ -5926,10 +5937,7 @@ function App() {
                   title: `${item.symptom} · ${item.severity}/10`,
                   detail: symptomDisplay.body,
                   sourceEvidence: symptomDisplay.sourceEvidence,
-                  sourceEvidenceSources: buildSingleDisplaySource(
-                    symptomDisplay.sourceLabel,
-                    symptomDisplay.sourceUrl,
-                  ),
+                  sourceEvidenceSources: symptomDisplay.sources,
                   sourceEvidenceTypeLabel: "기록",
                   sourceLabel: symptomDisplay.sourceLabel,
                   sourceUrl: symptomDisplay.sourceUrl,
