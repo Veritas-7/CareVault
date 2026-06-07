@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-08 05:53 KST - NCC Immune-Low Purchase And Storage Food Safety
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center immune-function-low food purchase, storage, cooking, and pasteurized-product guidance.
+- Context:
+  - Continued from clean/synced CareVault state after `3479b11f65d26a7595b99e9027c94bc0d9b722c2`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept this slice limited to food-safety phrases such as `완전히 익힌 음식`, `저온살균 요구르트`, `상온 30분 이상 운반`, and `녹슨 캔` rather than broad standalone words like `캔` or `요구르트`.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The page says that after chemotherapy or radiation treatment, reduced white blood cells require special infection precautions; it recommends cooked foods, checking expiration dates, refrigerating foods transported at room temperature for 30 minutes or more, avoiding rusted or dented cans and thawed frozen products, thawing meat in the refrigerator, discarding refrigerated leftovers after 3-4 days, avoiding raw/undercooked foods, washing fruits/vegetables, and choosing pasteurized juice, milk, and yogurt products.
+  - Applied the source as food-safety support/check guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, and no-cure-claim coverage for immune-low purchase/storage and pasteurized-product phrases.
+  - `src/healthRules.ts`: expanded the immune-low balanced/care-team guide cards and added source-backed ok/risk matching terms for cooked/pasteurized choices and purchase/storage warning signs.
+  - `README.md`: added the new immune-low food-safety phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new immune-low food-safety phrases returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 91 tests.
+  - PASS full tests: `npm test` => 64 files / 656 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `3479b11f65d26a7595b99e9027c94bc0d9b722c2`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 14.74 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://www.cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice so far.
+- Next Steps:
+  - Commit and push this source slice, then run post-push sync/runtime verification.
+
 ## 2026-06-08 05:50 KST - Final NCC Weight Change Food Log
 
 - Current Goal:

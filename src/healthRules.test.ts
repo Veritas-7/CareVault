@@ -2841,6 +2841,74 @@ describe("healthRules", () => {
     expect(Object.keys(matchesByTerm)).not.toContain("딸기");
   });
 
+  it("recognizes immune-low purchase storage and pasteurized product phrases", () => {
+    const assessment = assessCancerFood(
+      "완전히 익힌 음식, 저온살균 요구르트, 유통기한 확인, 냉장고에서 해동, 상온 30분 이상 운반, 녹슨 캔, 움푹해진 캔, 냉동제품 녹음, 3~4일 지난 남은 음식",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "완전히 익힌 음식",
+      "저온살균 요구르트",
+      "유통기한 확인",
+      "냉장고에서 해동",
+      "상온 30분 이상 운반",
+      "녹슨 캔",
+      "움푹해진 캔",
+      "냉동제품 녹음",
+      "3~4일 지난 남은 음식",
+    ]);
+    for (const term of ["완전히 익힌 음식", "저온살균 요구르트"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 익힌 음식·저온살균 제품 선택 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    for (const term of ["유통기한 확인", "냉장고에서 해동"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 구매·해동 안전 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(matchesByTerm["상온 30분 이상 운반"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 상온 운반 후 즉시 냉장 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    for (const term of ["녹슨 캔", "움푹해진 캔", "냉동제품 녹음"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "면역저하 시 손상 캔·해동 냉동제품 구매 주의",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(matchesByTerm["3~4일 지난 남은 음식"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 3~4일 지난 남은 음식 폐기 기준 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(balancedGuideText).toContain("완전히 익힌 음식");
+    expect(balancedGuideText).toContain("저온살균 요구르트");
+    expect(careTeamGuideText).toContain("상온 30분 이상 운반");
+    expect(careTeamGuideText).toContain("녹슨 캔");
+    expect(careTeamGuideText).toContain("3~4일 지난 남은 음식");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("does not match one-syllable food warnings inside unrelated Korean words", () => {
     const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
     const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);
