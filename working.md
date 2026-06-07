@@ -26870,3 +26870,34 @@
   - Browser-local CSV preview test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 11:55 KST - Caregiver Preview Settings Stale-State Direct QA
+
+- Current Goal:
+  - Direct-QA the caregiver-share preview settings stale-state workflow in the same existing `암관리` / `surface:7` cmux browser without occupying the visible window.
+  - Verify profile-redaction setting changes take stale-alert precedence over record/content stale state and restore browser-local state afterward.
+- Context:
+  - `DESIGN.md` requires caregiver-share export/preview labels and status feedback to preserve share-scope summaries, stale caregiver previews to block copy/print/download when share settings or shared records change, and settings-change alerts to take precedence for settings-only changes.
+  - The implementation snapshots both `caregiverShareSettingsFingerprint` and `caregiverShareContentFingerprint`; `exportPreviewHasStaleCaregiverContent` is suppressed while `exportPreviewHasStaleCaregiverSettings` is true.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was used at `http://127.0.0.1:1420/#export`, with no new browser/surface/tab and no visible-window control.
+  - PASS initial controls: `보호자 공유본 미리보기` measured `44px` high and exposed aria/title `보호자 공유본 미리보기 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개`; profile-redaction toggle exposed `보호자 공유본 프로필 가리기 꺼짐 · 선택하면 이름과 기본 프로필 정보를 숨깁니다`.
+  - PASS real preview click: clicked the real `보호자 공유본 미리보기` button; preview opened with summary `보호자 공유본`, `98줄`, `50,441자`, `73,905B`, and `근거/출처 112개`; preview copy action measured `44px`.
+  - PASS generated settings snapshot: preview showed `생성 시점 설정`, `직접 설정`, `프로필 표시`, `전달 메모 없음`, all seven sections included, and no excluded sections.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverPreviewBaseline"]`; storage length `1872`, local keys only `carevault.v1`, default caregiver settings, and record counts `documents=1`, `deletedDocuments=0`, `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `labResults=1`.
+  - PASS actual user event nuance: `cmux browser check` changed the DOM checked property without triggering React state, so the direct QA switched to a pure `click` from the unchecked state. That real click updated storage to `redactProfile=true`, changed the toggle label to `켜짐`, and save chip to `보호자 공유 프로필 가림 · 브라우저 자동 저장됨`.
+  - PASS settings stale alert: `.export-preview-stale-alert` appeared with aria `보호자 공유본 미리보기 변경 감지`, text `공유 설정이 바뀌었습니다`, `현재 미리보기는 이전 설정으로 생성되었습니다.`, and visible action `공유 설정 반영`; the refresh action aria was `새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용`.
+  - PASS precedence and blocking: no duplicate `보호자 공유본 미리보기 기록 변경 감지` alert rendered while the settings alert was active; preview copy was disabled and its aria added `비활성: 공유 설정이 바뀌어 다시 생성이 필요합니다.`
+  - PASS difference panel: `바뀐 설정` listed `프로필`, `생성 시점 프로필 표시`, and `현재 프로필 가림`.
+  - PASS refresh action: clicked `공유 설정 반영`; stale alert and differences disappeared, copy became enabled again, generated settings snapshot updated to `프로필 가림`, and refreshed preview summary became `98줄`, `50,420자`, `73,877B`, `근거/출처 112개`.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testCaregiverPreviewBaseline`, reloaded the same `surface:7`, and confirmed URL `http://127.0.0.1:1420/#export`, preview count `0`, stale-alert count `0`, storage length `1872`, local keys only `carevault.v1`, no `carevault.__test*` session keys, default caregiver settings restored, original record counts restored, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/caregiverShareSettings.test.ts src/caregiverExport.test.ts src/exportPreviewSummary.test.ts src/textFileDownload.test.ts` => `4 passed`, `90 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with verified caregiver preview settings stale-state direct QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
