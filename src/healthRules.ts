@@ -44,6 +44,7 @@ export type FoodGuidanceSourceId =
   | "nccCervicalPracticeDiet"
   | "nccTreatmentEating"
   | "nccTreatmentNutrients"
+  | "nccTreatmentRightEating"
   | "nccTreatmentHealthyEatingTips"
   | "kdcaNutrition"
   | "kdcaAlcohol";
@@ -197,6 +198,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 치료 중 영양소",
     url: "https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
   },
+  nccTreatmentRightEating: {
+    label: "국가암정보센터 치료 중 올바르게 식사하기",
+    url: "https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+  },
   nccTreatmentHealthyEatingTips: {
     label: "국가암정보센터 치료 중 건강식을 먹는 요령",
     url: "https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
@@ -263,6 +268,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "치료 중 균형 잡힌 식사, 치료 중 충분한 열량과 단백질, 치료 중 비타민 및 무기질, 여러 가지 음식을 골고루",
         sourceIds: ["nccTreatmentEating"],
+      },
+      {
+        label: "치료 중 적정 열량·고단백 회복식",
+        detail:
+          "국가암정보센터 치료 중 올바르게 식사하기 자료는 적정 열량과 필수 영양소 섭취를 강조하며, 충분한 열량·단백질·비타민·무기질로 좋은 영양 상태를 유지하고 고칼로리·고단백질 음식을 포함한 다양한 음식을 골고루 먹도록 안내합니다.",
+        examples:
+          "치료 중 적정 열량과 필수 영양소, 치료 중 충분한 열량 단백질 비타민 무기질, 치료 중 고칼로리 고단백질 음식, 치료 중 좋아하는 음식과 여러 식품, 치료 중 다양한 음식 골고루",
+        sourceIds: ["nccTreatmentRightEating"],
       },
       {
         label: "치료 중 탄수화물·단백질·수분",
@@ -480,6 +493,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "국가암정보센터 치료 중 일반적인 식생활 자료는 특정 식품이나 영양소를 특효 항암 수단으로 보지 않고, 균형 잡힌 식사와 충분한 영양 상태 유지를 강조합니다.",
         examples: "특별한 항암 식품, 특별한 항암 영양소, 특효 식품, 특효 영양소",
         sourceIds: ["nccTreatmentEating"],
+      },
+      {
+        label: "소문난 식품·백혈구 특효 음식 주장",
+        detail:
+          "국가암정보센터 치료 중 올바르게 식사하기 자료는 몸에 좋다고 소문난 특정 식품이나 영양소에만 관심을 기울이면 전체 열량과 중요한 영양소가 부족해질 수 있고, 백혈구 수치를 올리는 특별한 음식은 없으므로 식사 고민은 의료진·영양사와 상담하도록 안내합니다.",
+        examples:
+          "몸에 좋다고 소문난 식품, 몸에 좋다고 소문난 영양소, 특정 식품이나 영양소 편중, 백혈구 수치를 올리는 특별한 음식",
+        sourceIds: ["nccTreatmentRightEating"],
       },
       {
         label: "날음식·비살균·보관/세척 주의 식품",
@@ -801,6 +822,31 @@ const supportiveFoods: FoodRuleTerm[] = [
     "치료 중 채소와 과일",
     "국가암정보센터 치료 중 영양소 단백질·지방·비타민/무기질 식품 후보",
     "nccTreatmentNutrients",
+  ],
+  [
+    "치료 중 적정 열량과 필수 영양소",
+    "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "치료 중 충분한 열량 단백질 비타민 무기질",
+    "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "치료 중 고칼로리 고단백질 음식",
+    "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "치료 중 좋아하는 음식과 여러 식품",
+    "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "치료 중 다양한 음식 골고루",
+    "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+    "nccTreatmentRightEating",
   ],
   [
     "치료 중 규칙적인 아침 점심 저녁",
@@ -1509,6 +1555,26 @@ const careTeamFoods: FoodRuleTerm[] = [
     "특별한 항암 영양소",
     "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
     "nccTreatmentEating",
+  ],
+  [
+    "몸에 좋다고 소문난 식품",
+    "국가암정보센터 치료 중 소문난 식품·백혈구 특효 음식 확인 필요",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "몸에 좋다고 소문난 영양소",
+    "국가암정보센터 치료 중 소문난 식품·백혈구 특효 음식 확인 필요",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "특정 식품이나 영양소 편중",
+    "국가암정보센터 치료 중 소문난 식품·백혈구 특효 음식 확인 필요",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "백혈구 수치를 올리는 특별한 음식",
+    "국가암정보센터 치료 중 소문난 식품·백혈구 특효 음식 확인 필요",
+    "nccTreatmentRightEating",
   ],
   ["생굴", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],
   ["육회", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],

@@ -1470,6 +1470,73 @@ describe("healthRules", () => {
     expect(careTeamGuideText).toContain("특별한 항암 영양소");
   });
 
+  it("recognizes NCC treatment right-eating calorie nutrient and rumor-food guidance", () => {
+    const assessment = assessCancerFood(
+      "치료 중 적정 열량과 필수 영양소, 치료 중 충분한 열량 단백질 비타민 무기질, 치료 중 고칼로리 고단백질 음식, 치료 중 좋아하는 음식과 여러 식품, 치료 중 다양한 음식 골고루, 몸에 좋다고 소문난 식품, 특정 식품이나 영양소 편중, 백혈구 수치를 올리는 특별한 음식",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccTreatmentRightEating.label).toBe(
+      "국가암정보센터 치료 중 올바르게 식사하기",
+    );
+    expect(foodGuidanceSources.nccTreatmentRightEating.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "치료 중 적정 열량과 필수 영양소",
+      "치료 중 충분한 열량 단백질 비타민 무기질",
+      "치료 중 고칼로리 고단백질 음식",
+      "치료 중 좋아하는 음식과 여러 식품",
+      "치료 중 다양한 음식 골고루",
+      "몸에 좋다고 소문난 식품",
+      "특정 식품이나 영양소 편중",
+      "백혈구 수치를 올리는 특별한 음식",
+    ]);
+    for (const term of [
+      "치료 중 적정 열량과 필수 영양소",
+      "치료 중 충분한 열량 단백질 비타민 무기질",
+      "치료 중 고칼로리 고단백질 음식",
+      "치료 중 좋아하는 음식과 여러 식품",
+      "치료 중 다양한 음식 골고루",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+        sourceId: "nccTreatmentRightEating",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 치료 중 올바르게 식사하기 - https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+      );
+    }
+    for (const term of [
+      "몸에 좋다고 소문난 식품",
+      "특정 식품이나 영양소 편중",
+      "백혈구 수치를 올리는 특별한 음식",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 치료 중 소문난 식품·백혈구 특효 음식 확인 필요",
+        sourceId: "nccTreatmentRightEating",
+      });
+    }
+    expect(balancedGuideText).toContain("치료 중 고칼로리 고단백질 음식");
+    expect(balancedGuideText).toContain("치료 중 좋아하는 음식과 여러 식품");
+    expect(careTeamGuideText).toContain("몸에 좋다고 소문난 식품");
+    expect(careTeamGuideText).toContain("백혈구 수치를 올리는 특별한 음식");
+  });
+
   it("recognizes NCC treatment healthy-eating practical meal examples", () => {
     const assessment = assessCancerFood(
       "치료 중 규칙적인 아침 점심 저녁, 치료 중 밥 반 그릇에서 한 그릇, 치료 중 죽 하루 4~5번 이상, 치료 중 단백질 반찬 충분히, 치료 중 채소 반찬 매끼 두 가지 이상, 치료 중 과일 하루 한두 번, 치료 중 우유와 유제품 하루 1컵, 치료 중 요구르트 두유 치즈",

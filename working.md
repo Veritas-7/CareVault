@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-08 06:34 KST - NCC Treatment Right Eating Calories Protein Rumor Food Guidance
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center treatment-period right-eating guidance around adequate calories, essential nutrients, high-calorie/high-protein foods, and rumor/special-food claims.
+- Context:
+  - Continued from clean/synced CareVault state after `e2f361bd33f93eb95791a69388900aa46fceccbf`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept new supportive examples scoped to `치료 중 ...` phrases so generic high-calorie or high-protein wording does not override broader food-safety and weight-change guidance.
+- Research:
+  - Checked National Cancer Information Center `올바르게 식사하기`, final update 2015-01-05. The page emphasizes adequate calories and essential nutrients, balanced eating with sufficient calories, protein, vitamins, and minerals, and high-calorie/high-protein foods for treatment participation and recovery support. It also says special foods or nutrients do not cure cancer, focusing on rumored foods or nutrients can create imbalances, and there is no special food that raises WBC count; patients with eating concerns should consult clinicians or dietitians.
+  - Applied the source as treatment-period nutrition-support and special-food-claim safety guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, balanced guide-card, care-team guide-card, ok-match, risk-match, and source-evidence coverage for treatment-period right-eating calorie/nutrient and rumor-food guidance.
+  - `src/healthRules.ts`: added `nccTreatmentRightEating`, a balanced guide-card item, a care-team guide-card item, source-backed ok terms for adequate calories/nutrients and high-calorie/high-protein recovery food context, and source-backed risk terms for rumored foods, nutrient/food overfocus, and WBC special-food claims.
+  - `README.md`: added the new NCC treatment right-eating calorie/nutrient and rumor-food phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccTreatmentRightEating` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 96 tests.
+  - PASS full tests: `npm test` => 64 files / 661 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `e2f361bd33f93eb95791a69388900aa46fceccbf`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 10.99 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `올바르게 식사하기`, `https://www.cancer.go.kr/lay1/S1T471C474/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice so far.
+- Next Steps:
+  - Run full verification, GitHub readiness, whole-tree and staged secret scans, then commit and push if all gates pass.
+
 ## 2026-06-08 06:30 KST - Final NCC Treatment Healthy Eating Food Log
 
 - Current Goal:
