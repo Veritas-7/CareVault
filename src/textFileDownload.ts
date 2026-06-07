@@ -122,14 +122,23 @@ export async function downloadTextFile(
         // The link may not have been attached yet, or the host document may reject removal.
       }
     }
+    if (downloadClicked) {
+      if (url) {
+        try {
+          revokeLater(() => URLLike.revokeObjectURL(url), 5000);
+        } catch {
+          // A started download should keep its success status even if delayed cleanup cannot be scheduled.
+        }
+      }
+      return "download-started";
+    }
     if (url) {
       try {
         URLLike.revokeObjectURL(url);
       } catch {
-        // Revoke cleanup is best-effort after the host browser has already failed another step.
+        // Revoke cleanup is best-effort after the host browser failed before the download started.
       }
     }
-    if (downloadClicked) return "download-started";
     return copyTextFileDownloadFallback(content, navigatorLike);
   }
 }

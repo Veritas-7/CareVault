@@ -27808,3 +27808,30 @@
   - Direct DOM QA still remains blocked because the existing `surface:7` eval context reports `about:blank` while the surface URL/title report CareVault; no focus/workspace switch or new browser/surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:01 KST - Text Download Delayed Revoke Guard Started
+
+- Current Goal:
+  - Avoid invalidating a just-started text download by immediately revoking its blob URL when post-click cleanup fails.
+- Context:
+  - Re-read thread identity, `working.md`, `DESIGN.md`, and current repo state before editing.
+  - Started current-source Vite dev server on `127.0.0.1:1420` and reused only existing cmux `surface:7`.
+  - `cmux browser surface:7 navigate http://127.0.0.1:1420/#dashboard --snapshot-after` and `cmux open ... --surface surface:7 --focus false` updated the surface URL, but `eval` still reported `about:blank`, snapshot stayed empty, screenshot failed with `Failed to capture snapshot`, and JS commands timed out.
+  - `cmux tree --all` confirmed `surface:7` is the CareVault browser in workspace `암관리`, while the selected workspace is another workspace. No `select-workspace`, `focus-webview`, Computer Use, new browser, new tab, or new surface was used.
+  - Root cause evidence points to a cmux surface automation context mismatch rather than an app server failure; `curl http://127.0.0.1:1420/` returned the Vite HTML.
+- Changes:
+  - `src/textFileDownload.test.ts`: tightened the post-click cleanup failure case so a clicked download schedules delayed blob URL revoke and does not revoke immediately.
+  - `src/textFileDownload.ts`: when `link.click()` has already succeeded, cleanup errors now keep `download-started` and schedule delayed revoke best-effort instead of immediate revoke.
+- Tests:
+  - RED confirmed: `npm test -- src/textFileDownload.test.ts` failed because delayed revoke was not scheduled.
+  - PASS focused test after fix: `npm test -- src/textFileDownload.test.ts` => `1 passed`, `8 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `63 passed`, `541 passed`.
+  - PASS build: `npm run build`.
+  - NOTE: `npm run runtime:doctor:dev` failed because only the Vite web dev server was intentionally running, not a full Tauri dev CLI/debug binary session.
+  - PASS runtime cleanup after stopping Vite: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` eval/snapshot mismatch. Browser diagnostics still use only that surface.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused delayed-revoke guard if green.

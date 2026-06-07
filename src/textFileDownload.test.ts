@@ -164,6 +164,11 @@ describe("textFileDownload", () => {
       throw new Error("remove failed");
     });
     const revokeObjectURL = vi.fn();
+    let scheduledRevoke: (() => void) | undefined;
+    const timeout = vi.fn<(callback: () => void, delay?: number) => number>((callback) => {
+      scheduledRevoke = callback;
+      return 1;
+    });
     const writeText = vi.fn(async (_text: string) => undefined);
     const link = {
       click,
@@ -191,12 +196,15 @@ describe("textFileDownload", () => {
           userAgent: "Mozilla/5.0 Chrome/121.0.0.0 Safari/537.36",
           vendor: "Google Inc.",
         },
-        setTimeout: vi.fn(),
+        setTimeout: timeout as unknown as typeof window.setTimeout,
       }),
     ).resolves.toBe("download-started");
 
     expect(click).toHaveBeenCalledTimes(1);
     expect(writeText).not.toHaveBeenCalled();
+    expect(timeout).toHaveBeenCalledWith(expect.any(Function), 5000);
+    expect(revokeObjectURL).not.toHaveBeenCalled();
+    scheduledRevoke?.();
     expect(revokeObjectURL).toHaveBeenCalledWith("blob:download-url");
   });
 
