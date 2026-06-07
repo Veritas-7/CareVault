@@ -4433,14 +4433,15 @@ textarea:focus-visible {
 }
 
 .question-priority-control select {
-  min-height: 32px;
+  height: 44px;
+  min-height: 44px;
   padding: 5px 8px;
   font-size: 0.78rem;
 }
 
 .question-copy-button {
   justify-content: flex-start;
-  min-height: 32px;
+  min-height: 44px;
   padding-inline: 9px;
   font-size: 0.78rem;
 }
@@ -4452,7 +4453,7 @@ textarea:focus-visible {
 }
 
 .inline-actions button {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 9px;
   border-radius: 8px;
   color: #526066;

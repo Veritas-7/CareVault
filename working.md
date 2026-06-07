@@ -26581,3 +26581,29 @@
   - Browser-local caregiver-share test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 10:58 KST - Saved Question Answered Status Direct QA
+
+- Current Goal:
+  - Direct-QA the saved question `답변 완료` status branch in the existing single `암관리` / `surface:7` cmux browser.
+  - Verify status feedback, copy aria, care-queue scope propagation, cleanup, and saved-question row touch-target accessibility.
+- Context:
+  - Recent direct QA covered saved-question priority changes and the `보류` status branch, but not the `답변 완료` branch.
+  - The app was served by temporary Vite on `127.0.0.1:1420`; no extra browser, pane, tab, workspace, or surface was opened.
+- Changes:
+  - `src/App.css`: raised saved-question priority select, copy button, and status buttons to an actual `44px` height/min-height so the repeated row actions match the app's current touch-target pattern.
+- Direct same-surface QA:
+  - PASS baseline: captured `localStorage["carevault.v1"]` in `sessionStorage["carevault.__testQuestionAnsweredBaseline"]`; storage length `1872`, keys only `carevault.v1`, saved question `혈액검사` had `priority=high`, `status=open`, date `2026-06-15`, counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`, and no preview/stale/dialog was open.
+  - PASS real click: clicked the real `혈액검사 질문 상태를 답변 완료로 변경` button.
+  - PASS status propagation: storage changed only the saved question status to `answered`; row feedback became `혈액검사 질문 상태: 답변 완료`; top save chip became `혈액검사 질문 상태: 답변 완료 · 브라우저 자동 저장됨`.
+  - PASS scope propagation: saved-question copy aria/title changed to `혈액검사 질문 복사 · 2026-06-15 · 이번 진료 우선 · 답변 완료 · 근거 없음`; care-queue copy aria changed from `진료 준비 큐 8개 항목 · 확인 필요 6개 · ... · 질문 1` to `진료 준비 큐 7개 항목 · 확인 필요 5개 · ...` because answered questions drop out of the actionable queue.
+  - PASS accessibility polish: before the CSS fix, the saved-question copy button measured `32px` and status buttons measured `34px`; after the fix, copy/status buttons measured `44px`, and the priority select measured `44px`.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testQuestionAnsweredBaseline`, reloaded the same `surface:7`, and confirmed status returned to `open`, save chip `브라우저 자동 저장됨`, row feedback absent, sessionStorage empty, storage length `1872`, counts restored, no preview/stale/dialog, and all saved-question row controls still measured `44px`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors` before cleanup and after cleanup.
+- Verification:
+  - PASS focused tests: `npm test -- src/questionStatus.test.ts src/questionDisplay.test.ts src/questionMetric.test.ts` => `3 passed`, `13 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.css` and `working.md` are dirty with one verified UI accessibility fix plus direct QA evidence.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/App.css` and `working.md` for commit/push.
