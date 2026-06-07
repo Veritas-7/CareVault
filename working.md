@@ -27898,3 +27898,27 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:11 KST - Obsolete Print Window Status Cleanup Started
+
+- Current Goal:
+  - Remove stale export-preview print-window failure copy after the app moved preview printing into the current document frame.
+- Context:
+  - Re-read thread identity, latest `working.md`, and repo status before editing; repo was clean at `origin/main`.
+  - Existing `surface:7` still reports CareVault URL/title, but `eval` remains `about:blank` with no `#root`; browser errors remain `No browser errors`. No focus/workspace switch, new browser, new tab, or Computer Use was used.
+  - `formatExportPreviewPrintWindowFailedStatus()` was no longer referenced by `App.tsx` after the in-frame print slice, leaving stale `_blank`/window-opening copy in source tests.
+- Changes:
+  - `src/exportPreviewSummary.ts`: removed the obsolete `formatExportPreviewPrintWindowFailedStatus()` formatter.
+  - `src/exportPreviewSummary.test.ts`: removed the obsolete import and expectation while keeping the active print unavailable/failure status coverage.
+- Tests:
+  - PASS focused summary test: `npm test -- src/exportPreviewSummary.test.ts` => `1 passed`, `9 passed`.
+  - PASS stale-symbol scan: `rg -n "formatExportPreviewPrintWindowFailedStatus|인쇄 창 열기 실패" src -S` found no source matches.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `545 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the obsolete print-window status cleanup if green.
