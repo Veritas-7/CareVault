@@ -29683,3 +29683,28 @@
   - No new blocking issue. The care queue, visit packet, CSV, and related source-evidence tests stay green with the normalized symptom detail path.
 - Next Steps:
   - Stage explicit paths, run diff/secret gates, then commit/push if green.
+
+## 2026-06-07 18:20 KST - Post-Push Contact-Threshold Symptom Source Normalization
+
+- Current Goal:
+  - Record post-push verification for the contact-threshold symptom source normalization slice.
+- Result:
+  - Source commit pushed: `2bba376` (`Normalize symptom queue sources`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `2bba376cab860bc48303dc1d40aa6d180ce62ee3`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/careActionQueue.test.ts` failed before the fix because the fever/chills queue detail leaked raw `출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/vaccine`.
+    - GREEN: `npm test -- src/careActionQueue.test.ts` => 1 file / 31 tests.
+  - PASS full tests: `npm test` => 64 files / 585 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - INFO: `npm run lint` is not available in this package.
+- Issues:
+  - No new blocking issue. Contact-threshold symptom queue details now keep additional official sources as `근거:` evidence and avoid raw `출처:` leakage in copied queue text.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
