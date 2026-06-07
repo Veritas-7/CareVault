@@ -145,6 +145,39 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes the NCC healthy-eating vegetable and fruit heading", () => {
+    const assessment = assessCancerFood(
+      "채소와 과일을 충분히 먹습니다; 채소와 과일 충분히 먹기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "채소와 과일을 충분히 먹습니다",
+      "채소와 과일 충분히 먹기",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 채소와 과일 충분히 섭취 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("채소와 과일을 충분히 먹습니다");
+    expect(balancedGuideText).toContain("채소와 과일 충분히 먹기");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating unrefined grain and legume guidance terms", () => {
     const assessment = assessCancerFood("도정하지 않은 곡류, 두류, 두류 가공품, 두유, 두부");
     const terms = assessment.matches.map((match) => match.term);
