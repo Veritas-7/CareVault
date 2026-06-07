@@ -167,6 +167,7 @@ import {
   hasActiveDocumentFilters as hasActiveDocumentFilterState,
 } from "./documentFilterActions";
 import {
+  formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
   formatDocumentArchiveCanceledStatusLabel,
@@ -2718,7 +2719,12 @@ function App() {
     const confirmed = window.confirm(
       `"${document.title}" 삭제 보관함의 첨부 연결만 정리할까요? 서류 기록은 그대로 복구할 수 있습니다.`,
     );
-    if (!confirmed) return;
+    if (!confirmed) {
+      const feedback = formatDeletedDocumentAttachmentCleanupCanceledStatusLabel(document);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
+      return;
+    }
 
     const removed = await removeSandboxAttachment(document);
     if (!removed) return;

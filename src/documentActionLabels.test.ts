@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { type CareDocument } from "./appState";
 import {
+  formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
+  formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
   formatDocumentArchiveCanceledStatusLabel,
   formatDocumentArchiveStatusLabel,
-  formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
   formatDocumentAttachmentCheckedStatusLabel,
   formatDocumentAttachmentPreviewActionLabel,
@@ -130,6 +131,14 @@ describe("documentActionLabels", () => {
     );
     expect(formatDeletedDocumentAttachmentCleanedStatusLabel(deletedDocumentWithAttachment)).toBe(
       "복부 CT 영상 서류 삭제 보관함 첨부 정리됨 · 제거한 첨부 ct.png",
+    );
+    expect(
+      formatDeletedDocumentAttachmentCleanupCanceledStatusLabel({
+        ...deletedDocumentWithAttachment,
+        attachmentStatus: "브라우저 파일명 참조",
+      }),
+    ).toBe(
+      "복부 CT 영상 서류 삭제 보관함 첨부 정리 취소됨 · 현재 첨부 ct.png · 첨부 상태 브라우저 파일명 참조",
     );
     expect(formatDocumentAttachmentRemovedStatusLabel({ ...baseDocument, attachmentName: "  " })).toBe(
       "혈액검사 메모 검사 서류 첨부 제거됨 · 제거한 첨부 파일명 미확인",

@@ -102,6 +102,12 @@ export function formatDeletedDocumentAttachmentCleanedStatusLabel(document: Care
   return `${formatDocumentContext(document)} 삭제 보관함 첨부 정리됨 · ${formatRemovedAttachmentContext(document)}`;
 }
 
+export function formatDeletedDocumentAttachmentCleanupCanceledStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 삭제 보관함 첨부 정리 취소됨 · ${formatCurrentAttachmentContext(
+    document,
+  )}`;
+}
+
 export function formatDocumentAttachmentReferenceStatusLabel(
   document: CareDocument,
   attachmentName: string | undefined,
