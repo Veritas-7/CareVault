@@ -3321,6 +3321,52 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low leftover discard and abnormal food condition wording", () => {
+    const assessment = assessCancerFood(
+      "냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다, 식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다",
+      "식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다",
+    ]);
+    expect(matchesByTerm["냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 3~4일 지난 남은 음식 폐기 기준 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(
+      matchesByTerm["식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다"],
+    ).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 냄새·모양 이상 식품 사용 금지 기준 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(careTeamGuideText).toContain(
+      "냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다",
+    );
+    expect(careTeamGuideText).toContain(
+      "식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다",
+    );
+    expect(
+      formatFoodMatchEvidence(
+        matchesByTerm["식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다"],
+      ),
+    ).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low purchase freshness and direct-ground meat safety wording", () => {
     const assessment = assessCancerFood(
       "유통기한 꼭 확인, 신선도 유지, 대량 구입하지 않기, 소량씩 구입, 직접 갈아주는 곳에서 구입, 가는 과정에서 오염 가능",

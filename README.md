@@ -54,6 +54,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC immune-low purchase-safety matching for 유통기한 꼭 확인/신선도 유지/대량 구입하지 않기/소량씩 구입/직접 갈아주는 곳에서 구입 plus 가는 과정에서 오염 가능, keeping freshness and small-quantity practices as `ok` support and ground-meat contamination wording as care-team `risk`
 - NCC immune-low room-temperature transport matching for 30분 이상 상온에서 운반 plus 곧바로 냉장고에 넣어 차갑게/상온 운반 후 즉시 냉장, keeping transport duration as a care-team `risk` check and immediate refrigeration wording as `ok` support
 - NCC immune-low damaged-can and thawed-frozen-product purchase matching for 녹슬거나 움푹해진 캔 and 냉동제품이 녹아 있다면 구입하지 않도록, preserving longer NCC purchase-warning wording instead of only shorter 녹슨 캔/움푹해진 캔/냉동제품 녹음 terms
+- NCC immune-low leftover-discard and abnormal-food-condition matching for 냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다 and 식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다, preserving longer storage/discard wording as care-team `risk`
 - NCC treatment eating balance and no-special-food guidance matching for 치료 중 균형 잡힌 식사/치료 중 충분한 열량과 단백질/치료 중 비타민 및 무기질/여러 가지 음식을 골고루 plus special-food/special-nutrient cure-claim confirmation
 - NCC mouth-pain soft and irritating food matching for 흰죽/닭죽/호박죽/쌀미음/바나나/수박/과일통조림/토마토주스/토스트/크래커/말린 음식
 - NCC dry-mouth moisture and saliva-stimulation matching for 물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기
