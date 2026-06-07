@@ -26078,3 +26078,28 @@
 - Current state:
   - `src/App.tsx`, `src/documentActionLabels.ts`, `src/documentActionLabels.test.ts`, and `working.md` are dirty with this verified deleted-archive attachment cleanup cancel-feedback improvement.
   - Next: run final diff checks, stage only these paths, run staged secret scan, commit/push, then record post-push status.
+
+## 2026-06-07 09:12 KST - Post-Push Deleted Attachment Cleanup Cancel Feedback
+
+- Improvement target:
+  - Record post-push state for the deleted-archive attachment cleanup confirm-cancel feedback improvement.
+- Verification:
+  - PASS direct same-surface QA: existing `surface:7` clicked real saved-document controls to attach `deleted-cleanup-cancel-qa.pdf`, archive the document, and then click the real deleted-row cleanup action with `window.confirm` returning `false`.
+  - PASS cancel feedback: the cleanup prompt was `"혈액검사 메모" 삭제 보관함의 첨부 연결만 정리할까요? 서류 기록은 그대로 복구할 수 있습니다.`; `.document-action-feedback` and `.save-status-chip` both showed `혈액검사 메모 검사 서류 삭제 보관함 첨부 정리 취소됨 · 현재 첨부 deleted-cleanup-cancel-qa.pdf · 첨부 상태 브라우저 파일명 참조`.
+  - PASS non-cleanup and cleanup: after cancel, attachment metadata stayed on the deleted document, the cleanup action remained visible, and no `보관 첨부 정리` history was appended. Cleanup removed QA globals/session keys and QA file traces from storage/DOM; final browser storage had counts `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`, no deleted panel, no QA filename, and save chip `브라우저 자동 저장됨`.
+  - NOTE cleanup caveat: original pre-QA storage length was `1871`; final restored browser baseline structure length was `1872` after the `2026-06-06` `128/78` blood-pressure row was restored with id `bp-3`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors` returned `No browser errors`; console showed only normal Vite debug connection messages.
+  - PASS RED check: `npm test -- src/documentActionLabels.test.ts` failed before implementation because `formatDeletedDocumentAttachmentCleanupCanceledStatusLabel` did not exist.
+  - PASS focused tests: `npm test -- src/documentActionLabels.test.ts src/documentHistory.test.ts src/attachmentArchive.test.ts` => `3 passed`, `25 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `532 passed`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- src/App.tsx src/documentActionLabels.ts src/documentActionLabels.test.ts working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `f7a528a Show deleted attachment cleanup cancel feedback`.
+  - PASS push: `git push` updated `origin/main` from `89314c3` to `f7a528a`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS post-push runtime: `npm run runtime:doctor` stayed clean with port `1420` free and no CareVault app/dev processes.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
