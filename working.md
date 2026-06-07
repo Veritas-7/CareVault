@@ -27602,3 +27602,19 @@
   - Runtime is clean; no temporary Vite process is running.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser when the surface automation context is usable again, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 13:41 KST - Temporary Memory Autosave Label Coverage Started
+
+- Current Goal:
+  - Add explicit automated coverage for automatic save labels after the temporary-memory wording change.
+- Context:
+  - The App autosave path calls `formatStorageSavedWithActionLabel(backend, actionLabel, true)`. The previous focused test updated manual memory save wording, but did not explicitly pin the automatic `memory` wording or action-label combination.
+  - cmux state check without focus handoff: `cmux tree --all` showed `surface:7` is still the single CareVault browser in workspace `암관리`, but the selected workspace is currently `프롬프트`. To avoid stealing the user's window/workspace, I did not run `select-workspace`, `focus-webview`, Computer Use, or create a new browser/surface.
+- Changes:
+  - `src/storageStatus.test.ts`: added exact assertions for `브라우저 자동 저장됨`, `임시 메모리에만 자동 저장됨`, and action-prefixed temporary-memory autosave feedback.
+- Tests:
+  - PASS focused test: `npm test -- src/storageStatus.test.ts` => `1 passed`, `3 passed`.
+- Issues:
+  - Direct same-surface DOM QA remains blocked unless `surface:7` becomes automation-usable again without selecting/focusing the workspace.
+- Next Steps:
+  - Commit/push this narrow test coverage update with explicit-path staging and standard diff/secret gates.
