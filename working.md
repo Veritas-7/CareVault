@@ -1,5 +1,33 @@
 # CareVault Working Notes
 
+## 2026-06-07 23:35 KST - NCC Healthy-Eating Low-Fat Milk Daily Guidance Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on low-fat milk at about one cup per day.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `90df3c3fdebabdb5fd13fffb0f84005a68e7269d`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, whose guidance says to drink low-fat milk at about one cup per day.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `하루 1잔 저지방 우유`, `저지방 우유 하루 1잔`, `저지방 우유 1잔`, and `저지방 우유` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the three longer low-fat milk daily guidance terms under `nccPreventionDiet`, updated the guide examples/detail, and aligned the existing `저지방 우유` reason with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating low-fat milk terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the longer daily low-fat milk phrases collapsed to repeated `저지방 우유` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 48 tests.
+  - PASS full tests: `npm test` => 64 files / 613 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-07 23:24 KST - NCC Healthy-Eating Grain and Legume Guidance Terms
 
 - Current Goal:
