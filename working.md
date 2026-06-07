@@ -1,5 +1,33 @@
 # CareVault Working Notes
 
+## 2026-06-07 22:47 KST - NCC Prevention Daily Fruit Guidance Terms
+
+- Current Goal:
+  - Add a narrow source-backed food-judgment match for National Cancer Information Center daily fruit guidance from the cancer-prevention meal examples.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `5fa42d9cabc0b6e16a22330e05a8344d786b01f9`.
+  - Used TDD and kept the change to one food-rule slice.
+  - Official-source re-check used National Cancer Information Center `암예방을 위한 요리`, whose salad example labels `블루베리` as `과일류` and says to eat fruit 1-2 times daily.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `과일류` and `매일 과일` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added those exact support terms under `nccPreventionMealExamples` and exposed them in the balanced guide examples/detail.
+  - `README.md`: added the new official-example terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new terms produced `neutral` instead of `ok`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 43 tests.
+  - PASS full tests: `npm test` => 64 files / 608 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-07 22:39 KST - NCC Prevention Fresh Seasonal Vegetable Guidance Terms
 
 - Current Goal:

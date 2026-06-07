@@ -843,6 +843,28 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC prevention daily fruit guidance terms without cure claims", () => {
+    const assessment = assessCancerFood("과일류, 매일 과일");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["과일류", "매일 과일"]);
+    for (const term of ["과일류", "매일 과일"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암예방 샐러드 매일 과일 예시 후보",
+        sourceId: "nccPreventionMealExamples",
+      });
+    }
+    expect(formatFoodMatchEvidence(matchesByTerm.과일류)).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention oat bread whole-grain examples without cure claims", () => {
     const assessment = assessCancerFood("귀리빵, 귀리 식빵, 귀리");
     const terms = assessment.matches.map((match) => match.term);
