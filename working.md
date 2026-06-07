@@ -29733,3 +29733,28 @@
   - No new blocking issue. Dashboard care queue source links now stay clean for repeated `근거:` groups.
 - Next Steps:
   - Stage explicit paths, run diff/secret gates, then commit/push if green.
+
+## 2026-06-07 18:26 KST - Post-Push Repeated Queue Evidence Link Labels
+
+- Current Goal:
+  - Record post-push verification for the repeated queue evidence link label slice.
+- Result:
+  - Source commit pushed: `230fcba` (`Clean queue evidence link labels`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `230fcbadf7870ed475a20e89dd925f12bb1db974`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/careActionVisibleDetail.test.ts` failed before the fix because the second source label was `/ 근거: 국가암정보센터 감염 의료진 상담 기준`.
+    - GREEN: `npm test -- src/careActionVisibleDetail.test.ts` => 1 file / 4 tests.
+  - PASS related tests: `npm test -- src/careActionVisibleDetail.test.ts src/careActionQueue.test.ts src/caregiverExport.test.ts src/csvExport.test.ts src/visitPacket.test.ts` => 5 files / 138 tests.
+  - PASS full tests: `npm test` => 64 files / 586 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. Dashboard care queue visible evidence links no longer expose repeated group markers in source labels.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
