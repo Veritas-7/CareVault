@@ -279,6 +279,30 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes exact cervical practice-guide dish examples over generic food terms", () => {
+    const assessment = assessCancerFood("브로콜리회, 시금치나물");
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(matchesByTerm.브로콜리회).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.시금치나물).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.브로콜리).toBeUndefined();
+    expect(matchesByTerm.시금치).toBeUndefined();
+    expect(matchesByTerm.나물).toBeUndefined();
+    expect(matchesByTerm.회).toBeUndefined();
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide limit examples without contradicting replacements", () => {
     const assessment = assessCancerFood(
       "햄구이, 초코칩쿠키, 단무지, 국물, 과일샐러드, 채소샐러드",

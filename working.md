@@ -29895,10 +29895,41 @@
   - PASS staged gate: `git diff --cached --check`.
   - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
   - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
 - Issues:
   - No blocker so far. Source commit/push and post-push sync check still need to run.
 - Next Steps:
   - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
+
+## 2026-06-07 20:01 KST - Cervical Exact Practice Dish Examples
+
+- Current Goal:
+  - Preserve exact official cervical-cancer practice-guide dish names in food matching so source evidence does not fall back to generic `브로콜리`, `시금치`, `나물`, or raw-food `회` matches.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`; local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed TDD and incremental-implementation guidance; this is a narrow source-backed food-rule slice.
+  - Reviewed `DESIGN.md` food guidance contract: food guidance must use official Korean sources, show source evidence, and avoid diagnosis/treatment instructions.
+  - Official-source re-check used the National Cancer Information Center `국민 암예방 수칙 실천지침 _ 자궁경부암` PDF, whose example meal plan includes `브로콜리회` and `시금치나물`.
+- Changes:
+  - `src/healthRules.ts`: added exact `브로콜리회` and `시금치나물` source-backed `ok` candidates using `nccCervicalPracticeDiet`, and exposed `브로콜리회` in the balanced guide-card examples.
+  - `src/healthRules.test.ts`: added RED/PASS coverage that exact practice-guide dish names override generic food terms and do not trigger the standalone raw-food `회` rule.
+  - `README.md`: updated the nutrition feature list with the exact official cervical-cancer practice-guide dish examples.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `브로콜리회` was not matched as an exact `nccCervicalPracticeDiet` term.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 28 tests.
+  - PASS full tests: `npm test` => 64 files / 592 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center PDF: `국민 암예방 수칙 실천지침 _ 자궁경부암`, `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Issues:
+  - No blocker so far. Source commit/push and post-push log still need to run.
+- Next Steps:
+  - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record post-push verification.
 
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 

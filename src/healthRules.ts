@@ -172,7 +172,7 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         label: "실천지침 식단 예시",
         detail:
           "국민 암예방 수칙 자궁경부암 실천지침은 채소·과일을 충분히 섭취하고 짠 음식과 탄 음식을 제한하는 식단 예시를 제시합니다.",
-        examples: "과일샐러드, 채소샐러드, 귤, 시금치나물, 우엉볶음",
+        examples: "과일샐러드, 채소샐러드, 브로콜리회, 귤, 시금치나물, 우엉볶음",
         sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
@@ -331,6 +331,8 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["차", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention", standaloneFoodTermOptions],
   ["과일샐러드", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["채소샐러드", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  ["브로콜리회", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  ["시금치나물", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["우엉볶음", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["귤", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["브로콜리", "채소 중심 식단에 적합", "nccPreventionDiet"],
