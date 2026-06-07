@@ -27398,3 +27398,30 @@
   - Runtime is clean; source code is unchanged in this QA-only slice.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 13:09 KST - Caregiver Unknown Preset Recovery Direct QA
+
+- Current Goal:
+  - Direct-QA the caregiver-share recovery path for an unknown persisted preset id in the existing `암관리` / `surface:7` cmux browser.
+  - Verify the select stays in a valid option state, custom memo/section settings survive normalization, and autosave rewrites the invalid preset id.
+- Context:
+  - `src/caregiverShareSettings.test.ts` covers `presetId: "retired-preset"` normalizing to an empty preset id, but the current browser session did not yet have same-surface direct evidence for a corrupted persisted preset id.
+  - This pass used only non-window same-surface cmux browser commands; no new browser, surface, tab, desktop focus handoff, Computer Use, or cmux restart was used.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface unknown-preset recovery QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated in place to `http://127.0.0.1:1420/#export`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testUnknownPresetBaseline"]`; baseline preset id and select value were empty, select aria/title were `보호자 공유 설정 프리셋 · 현재 프리셋 미선택 · 선택하면 해당 공유 설정을 적용합니다`, reset was disabled with the default-share reason, storage length was `1872`, and localStorage keys were only `carevault.v1`.
+  - PASS corrupted storage injection: wrote `caregiverShareSettings.presetId = "retired-preset"`, `coverMemo = "진료 준비만 공유해주세요."`, and `sections.documents = false` into the same browser `localStorage`, then reloaded only `surface:7`.
+  - PASS UI recovery before autosave: the rendered select value stayed empty with `현재 프리셋 미선택`, panel summary showed `의도 직접 설정`, memo textarea preserved `진료 준비만 공유해주세요.`, documents was excluded, reset/export/preview labels showed `메모 포함 · 포함 6개 · 제외 1개`, and no invalid preset option appeared.
+  - PASS persisted normalization: after autosave settled, `localStorage["carevault.v1"]` rewrote `caregiverShareSettings.presetId` from `retired-preset` to `""` while preserving the memo and `documents=false`; save chip returned to `브라우저 자동 저장됨`.
+  - PASS cleanup: restored the captured baseline into `localStorage["carevault.v1"]`, removed `carevault.__testUnknownPresetBaseline`, reloaded the same `surface:7`, and confirmed preset id, memo, and select value were empty, documents was included again, reset aria returned to the default disabled reason, storage length returned to `1872`, no `carevault.__test*` keys remained, no preview/dialog/alert was open, and save chip returned to `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/caregiverShareSettings.test.ts src/appStateNormalization.test.ts src/caregiverExport.test.ts` => `3 passed`, `82 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo diagnostics: `git status --short --branch` showed `## main...origin/main` before logging.
+- Current state:
+  - `working.md` is dirty with verified caregiver unknown-preset recovery QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
