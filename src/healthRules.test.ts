@@ -245,6 +245,8 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("돼지고기");
     expect(limitGuideText).toContain("육가공품");
     expect(limitGuideText).toContain("가공육");
+    expect(limitGuideText).toContain("직화 구이");
+    expect(limitGuideText).toContain("튀김 조리");
     expect(processedMeatGuide?.sourceIds).toContain("nccPreventionMealExamples");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
@@ -586,6 +588,33 @@ describe("healthRules", () => {
       sourceId: "nccPreventionDiet",
     });
     expect(formatFoodMatchEvidence(matchesByTerm.햄)).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes NCC prevention direct-flame and fried cooking watch examples", () => {
+    const assessment = assessCancerFood("직화 구이, 직화구이, 튀김 조리, 튀긴 음식, 튀김, 탄 음식");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual(["직화 구이", "직화구이", "튀김 조리", "튀긴 음식", "튀김", "탄 음식"]);
+    for (const term of ["직화 구이", "직화구이", "튀김 조리", "튀긴 음식", "튀김"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
+        sourceId: "nccPreventionMealExamples",
+      });
+    }
+    expect(matchesByTerm["탄 음식"]).toMatchObject({
+      level: "watch",
+      reason: "직화·탄 음식 조리법 피하기",
+      sourceId: "nccPreventionDiet",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm["직화 구이"])).toContain(
       "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);

@@ -221,8 +221,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "가공육·탄 음식·튀김",
         detail:
-          "국가암정보센터 암예방 식단 예시는 햄·소시지 등 가공육류를 가급적 적게 섭취하도록 안내하고, 공식 암예방 식이 자료는 탄 음식과 직화구이·튀김 조리법도 피하도록 안내합니다.",
-        examples: "햄, 소시지, 가공육류, 가공육, 육가공품, 베이컨, 탄 고기, 숯불 직화, 직화구이, 튀김",
+          "국가암정보센터 암예방 식단 예시는 햄·소시지 등 가공육류를 가급적 적게 섭취하고 직화 구이와 튀김 조리법을 피하도록 안내하며, 공식 암예방 식이 자료는 탄 음식도 피하도록 안내합니다.",
+        examples:
+          "햄, 소시지, 가공육류, 가공육, 육가공품, 베이컨, 탄 고기, 숯불 직화, 직화 구이, 직화구이, 튀김 조리, 튀긴 음식, 튀김",
         sourceIds: ["nccPreventionMealExamples", "nccPreventionDiet"],
       },
       {
@@ -461,7 +462,16 @@ const limitFoods: FoodRuleTerm[] = [
     "국가암정보센터 암예방 식단 가공육류 가급적 적게 섭취 예시",
     "nccPreventionMealExamples",
   ],
-  ["직화구이", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
+  [
+    "직화 구이",
+    "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
+    "nccPreventionMealExamples",
+  ],
+  [
+    "직화구이",
+    "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
+    "nccPreventionMealExamples",
+  ],
   ["직화", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
   ["숯불", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
   ["탄 고기", "직화·탄 음식 조리법 피하기", "nccPreventionDiet"],
@@ -483,8 +493,31 @@ const limitFoods: FoodRuleTerm[] = [
   ["열무김치", "암예방 식단 염장식품 소량 예시", "nccPreventionMealExamples"],
   ["짠 김치", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["국물", "국·찌개 국물 제한 예시", "nccCervicalPracticeDiet"],
-  ["튀김", "치료 중 소화 불편 가능", "nccSideEffectDiet"],
-  ["튀긴", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
+  [
+    "튀김 조리법",
+    "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
+    "nccPreventionMealExamples",
+  ],
+  [
+    "튀김 조리",
+    "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
+    "nccPreventionMealExamples",
+  ],
+  [
+    "튀긴 음식",
+    "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
+    "nccPreventionMealExamples",
+  ],
+  [
+    "튀김",
+    "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
+    "nccPreventionMealExamples",
+  ],
+  [
+    "튀긴",
+    "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
+    "nccPreventionMealExamples",
+  ],
   ["기름진", "치료 중 소화 불편 가능", "nccSideEffectDiet"],
 ];
 
