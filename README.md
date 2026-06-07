@@ -38,6 +38,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating artificial seasoning limit sentence matching for 인공조미료(화학조미료 포함)의 사용을 제한하며 음식을 싱겁게 만들어 먹습니다/인공조미료 화학조미료 사용 제한 싱겁게 만들어 먹기
 - NCC healthy-eating added salt/soy-sauce avoid matching for 음식을 먹을 때 추가로 소금이나 간장을 사용하지 않습니다/소금이나 간장 사용하지 않기
 - NCC healthy-eating salted storage food limit sentence matching for 젓갈류와 염(소금) 저장식품(김치 또는 장아찌류 등)의 섭취는 제한합니다/젓갈류 염 소금 저장식품 김치 장아찌류 섭취 제한
+- NCC healthy-eating soup broth limit sentence matching for 국이나 찌개의 국물 섭취는 제한합니다/국이나 찌개 국물 섭취 제한
 - NCC healthy-eating low-salt kimchi preparation matching for 김치류는 짜지 않게 만들어 먹습니다/김치류 짜지 않게 만들기
 - dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes with text/category/status filtering
 - saved-document panel summary chips for review-status mix, open next actions, attachment recovery needs, and deleted-document archive count

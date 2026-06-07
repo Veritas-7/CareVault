@@ -562,6 +562,33 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes the exact NCC healthy-eating soup broth limit sentence", () => {
+    const assessment = assessCancerFood(
+      "국이나 찌개의 국물 섭취는 제한합니다; 국이나 찌개 국물 섭취 제한",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "국이나 찌개의 국물 섭취는 제한합니다",
+      "국이나 찌개 국물 섭취 제한",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 국/찌개 국물 섭취 제한 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating low-salt kimchi guidance terms", () => {
     const assessment = assessCancerFood(
       "저염 김치, 짜지 않은 김치, 싱겁게 만든 김치, 짜지 않은 김치류",
@@ -862,6 +889,8 @@ describe("healthRules", () => {
       "젓갈류와 염(소금) 저장식품(김치 또는 장아찌류 등)의 섭취는 제한합니다",
     );
     expect(limitGuideText).toContain("젓갈류 염 소금 저장식품 김치 장아찌류 섭취 제한");
+    expect(limitGuideText).toContain("국이나 찌개의 국물 섭취는 제한합니다");
+    expect(limitGuideText).toContain("국이나 찌개 국물 섭취 제한");
     expect(limitGuideText).toContain("햄·소시지 등 육가공품");
     expect(limitGuideText).toContain("햄, 소시지 등의 육가공품을 가급적 먹지 않습니다");
     expect(limitGuideText).toContain("햄 소시지 등의 육가공품 가급적 먹지 않기");

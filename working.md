@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 03:46 KST - NCC Healthy-Eating Soup Broth Limit Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating sentence about limiting soup and stew broth.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `c93097364629a437b20d050e62987ec0f6eb22cc`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` keeps nutrition judgment source-backed and prohibits cure/treatment food claims; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page says `국이나 찌개의 국물 섭취는 제한합니다`.
+  - Applied the source as watch/limit guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `국이나 찌개의 국물 섭취는 제한합니다` and `국이나 찌개 국물 섭취 제한` as source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the two longer soup-broth phrases under `nccPreventionDiet` before shorter `국이나 찌개의 국물`, `찌개 국물`, and `국물 섭취` fallback matches, and aligned the limit guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating soup broth limit sentence phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source phrase collapsed to shorter `국이나 찌개의 국물` and `찌개 국물` matches and the guide strings were missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 75 tests.
+  - PASS full tests: `npm test` => 64 files / 640 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue so far.
+- Next Steps:
+  - Run full tests, typecheck, build, runtime doctor, then stage only this slice's source/docs/log paths for secret-safe commit and push.
+
 ## 2026-06-08 03:42 KST - Post-Push NCC Healthy-Eating Salted Storage Food Limit Sentence
 
 - Current Goal:
