@@ -25,6 +25,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating burnt-food avoid matching for 탄 음식은 먹지 않기/탄 음식은 먹지 않습니다/숯불로 구운 탄 음식/직접 구워 탄 음식/탄 음식 섭취 삼가
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
 - NCC healthy-eating daily legume matching for 두류 매일 섭취/두류 가공품 매일 섭취/두유 두부 매일 섭취
+- NCC healthy-eating low-fat milk daily matching for 저지방 우유 하루 1잔 정도/하루 1잔 정도 저지방 우유
 - dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes with text/category/status filtering
 - saved-document panel summary chips for review-status mix, open next actions, attachment recovery needs, and deleted-document archive count
 - document search/category/status filters with an explicit no-match empty state and one-click filter reset

@@ -1,5 +1,34 @@
 # CareVault Working Notes
 
+## 2026-06-08 02:11 KST - NCC Healthy-Eating Low-Fat Milk About-One-Cup Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance that low-fat milk is about one cup daily.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `ebacbad07b1d5c5e61a44d697f4a649f0e3dd566`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page states low-fat milk should be consumed about one cup daily.
+  - Applied the source as supportive food guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `저지방 우유 하루 1잔 정도` and `하루 1잔 정도 저지방 우유` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the two about-one-cup low-fat milk support phrases under `nccPreventionDiet` before shorter low-fat milk fallback matching and aligned the balanced-diet guide examples with the same official source.
+  - `README.md`: added the new official healthy-eating low-fat milk about-one-cup terms to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new guide strings were missing and the new phrases collapsed to shorter `저지방 우유 하루 1잔` and `저지방 우유` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 60 tests.
+  - PASS full tests: `npm test` => 64 files / 625 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue so far.
+- Next Steps:
+  - Run full verification gates, then stage only the touched source/log paths with explicit secret checks before committing.
+
 ## 2026-06-08 02:04 KST - Post-Push NCC Healthy-Eating Daily Legume Terms
 
 - Current Goal:
