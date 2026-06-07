@@ -1372,6 +1372,67 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain soft and irritating food examples", () => {
+    const assessment = assessCancerFood(
+      "흰죽, 닭죽, 호박죽, 쌀미음, 바나나, 수박, 과일통조림, 토마토주스, 토스트, 크래커, 말린 음식",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "흰죽",
+      "닭죽",
+      "호박죽",
+      "쌀미음",
+      "바나나",
+      "수박",
+      "과일통조림",
+      "토마토주스",
+      "토스트",
+      "크래커",
+      "말린 음식",
+    ]);
+    for (const term of ["흰죽", "닭죽", "호박죽", "쌀미음", "바나나", "수박", "과일통조림"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보",
+        sourceId: "nccMouthPainDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+      );
+    }
+    for (const term of ["토마토주스", "토스트", "크래커", "말린 음식"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보",
+        sourceId: "nccMouthPainDiet",
+      });
+    }
+    expect(balancedGuideText).toContain("흰죽");
+    expect(balancedGuideText).toContain("과일통조림");
+    expect(limitGuideText).toContain("토마토주스");
+    expect(limitGuideText).toContain("크래커");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention meal example dishes without cure claims", () => {
     const assessment = assessCancerFood(
       "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",

@@ -27,6 +27,7 @@ export type FoodGuidanceSourceId =
   | "nccPreventionDiet"
   | "nccPreventionMealExamples"
   | "nccSideEffectDiet"
+  | "nccMouthPainDiet"
   | "nccImmuneLowDiet"
   | "nccComplementaryTherapy"
   | "nccCervicalDiet"
@@ -117,6 +118,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 치료부작용시 식생활",
     url: "https://www.cancer.go.kr/lay1/S1T477C478/contents.do",
   },
+  nccMouthPainDiet: {
+    label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    url: "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+  },
   nccImmuneLowDiet: {
     label: "국가암정보센터 증상별 식생활 - 면역기능의 저하",
     url: "https://cancer.go.kr/lay1/S1T479C489/contents.do",
@@ -204,6 +209,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "감자, 고구마, 옥수수, 물 6~8컵, 하루 6~8컵 물, 육류 섭취 시 이를 구워 먹기(숯불구이, 직접 구이 등)보다는 삶거나 끓여서(수육, 보쌈 등) 먹습니다, 육류 구워 먹기보다는 삶거나 끓여서 수육 보쌈 먹기, 익힌 생선·닭고기·달걀, 수육, 보쌈, 고등어, 두부, 저지방 우유, 플레인 요구르트, 물",
         sourceIds: ["nccTreatmentNutrients", "nccPreventionDiet", "nccImmuneLowDiet"],
       },
+      {
+        label: "입·목 통증 시 부드러운 음식",
+        detail:
+          "국가암정보센터 입과 목의 통증 자료는 부드럽고 촉촉하며 씹고 삼키기 쉬운 음식으로 죽류, 미음, 부드럽게 조리한 고기·생선, 익히거나 데친 채소, 바나나·배·수박·과일통조림처럼 시지 않은 과일을 예시로 안내합니다.",
+        examples:
+          "흰죽, 닭죽, 고기죽, 전복죽, 호박죽, 야채죽, 계란죽, 쌀미음, 조미음, 잣미음, 깨미음, 녹두미음, 부드러운 야채, 데친 채소, 바나나, 배, 수박, 과일통조림",
+        sourceIds: ["nccMouthPainDiet"],
+      },
     ],
   },
   {
@@ -250,6 +263,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "너무 뜨겁거나 매운 음식의 섭취는 피합니다, 너무 뜨겁거나 매운 음식 섭취 피하기, 너무 뜨겁거나 매운 음식, 매운 음식, 아주 뜨거운 음식, 장 불편을 악화시키는 음식",
         sourceIds: ["nccCervicalDiet", "nccPreventionDiet"],
+      },
+      {
+        label: "입안 자극 음식",
+        detail:
+          "국가암정보센터 입과 목의 통증 자료는 입안을 자극할 수 있는 오렌지·포도·레몬·토마토주스, 향신료를 많이 사용하거나 소금에 절인 음식, 토스트·크래커·말린 음식은 통증 상황에서 피하도록 안내합니다.",
+        examples:
+          "토마토주스, 토스트, 크래커, 말린 음식, 오렌지, 포도, 레몬, 향신료를 많이 사용한 음식, 소금에 절인 음식",
+        sourceIds: ["nccMouthPainDiet"],
       },
       {
         label: "가당 유제품",
@@ -580,6 +601,13 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["옥수수", "국가암정보센터 치료 중 영양소 탄수화물·수분 보충 후보", "nccTreatmentNutrients"],
   ["물 6~8컵", "국가암정보센터 치료 중 영양소 탄수화물·수분 보충 후보", "nccTreatmentNutrients"],
   ["하루 6~8컵 물", "국가암정보센터 치료 중 영양소 탄수화물·수분 보충 후보", "nccTreatmentNutrients"],
+  ["흰죽", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
+  ["닭죽", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
+  ["호박죽", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
+  ["쌀미음", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
+  ["바나나", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
+  ["수박", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
+  ["과일통조림", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["견과", "불포화지방과 간식 대체", "kdcaNutrition"],
   ["호두", "견과류", "kdcaNutrition"],
   [
@@ -912,6 +940,10 @@ const limitFoods: FoodRuleTerm[] = [
     "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 피하기 후보",
     "nccPreventionDiet",
   ],
+  ["토마토주스", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
+  ["토스트", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
+  ["크래커", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
+  ["말린 음식", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
   ["단무지", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   ["우엉조림", "자궁경부암 실천지침 나트륨 감소 대체 전 예시", "nccCervicalPracticeDiet"],
   [

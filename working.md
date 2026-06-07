@@ -1,5 +1,34 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:40 KST - NCC Mouth-Pain Soft And Irritating Food Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center mouth-pain soft-food and irritating-food examples.
+- Context:
+  - Continued from clean/synced CareVault state after `bdfa4938416666aac02ce48fa06de1158c92e71e`.
+  - Used TDD and kept the change to one official-source symptom-specific food-rule slice.
+  - Because mouth-pain food guidance is symptom-specific, generic fruit names such as orange, grape, and lemon are exposed in the guide card but not broad-matched as standalone watch terms in this slice.
+- Research:
+  - Re-checked National Cancer Information Center `입과 목의 통증`, final update 2013-02-01. The page lists soft, moist, easy-to-swallow foods such as porridge/gruel and non-sour fruits, and says to avoid mouth-irritating items such as tomato juice, toast, crackers, and dried foods when mouth/throat pain is present.
+  - Applied the source as symptom-context food support/watch guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `흰죽`, `닭죽`, `호박죽`, `쌀미음`, `바나나`, `수박`, `과일통조림`, `토마토주스`, `토스트`, `크래커`, and `말린 음식`.
+  - `src/healthRules.ts`: added `nccMouthPainDiet`, guide cards for soft foods and irritating foods, and source-backed ok/watch matching terms.
+  - `README.md`: added the new NCC mouth-pain food examples to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccMouthPainDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 82 tests.
+  - PASS full tests: `npm test` => 64 files / 647 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Perform git/secret readiness checks, then commit and push this source slice if all checks pass.
+
 ## 2026-06-08 04:35 KST - Post-Push NCC Treatment Nutrient Carbohydrate And Hydration Examples
 
 - Current Goal:
