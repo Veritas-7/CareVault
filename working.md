@@ -1,5 +1,32 @@
 # CareVault Working Notes
 
+## 2026-06-08 01:29 KST - NCC Healthy-Eating Burnt-Food Avoid Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on avoiding burnt foods and foods burnt by charcoal or direct grilling.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `3d4c87e16321b8b0b0a2df5745ecd2be020ceb2e`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, updated 2025-09-29, whose guidance says burnt foods should not be eaten and foods burnt by charcoal or direct grilling should be avoided.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `탄 음식은 먹지 않기`, `탄 음식은 먹지 않습니다`, `숯불로 구운 탄 음식`, `직접 구워 탄 음식`, and `탄 음식 섭취 삼가` as source-backed watch terms without cure claims, plus guide-card coverage for the burnt-food avoid wording.
+  - `src/healthRules.ts`: added the five burnt-food avoid watch terms under `nccPreventionDiet` before shorter `탄 음식`/`숯불` fallbacks and aligned the guide detail/examples with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating burnt-food avoid terms to the feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new guide strings were missing and the new phrases collapsed to shorter `탄 음식`/`숯불` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 57 tests.
+  - PASS full tests: `npm test` => 64 files / 622 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Ready for explicit-path staging, secret scans, commit, and push.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`, then run staged checks before publishing to `origin main`.
+
 ## 2026-06-08 01:17 KST - NCC Healthy-Eating Processed-Meat Avoid Terms
 
 - Current Goal:

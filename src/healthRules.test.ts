@@ -494,6 +494,8 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("가급적 먹지 않기");
     expect(limitGuideText).toContain("육가공품");
     expect(limitGuideText).toContain("가공육");
+    expect(limitGuideText).toContain("탄 음식은 먹지 않기");
+    expect(limitGuideText).toContain("직접 구워 탄 음식");
     expect(limitGuideText).toContain("직화 구이");
     expect(limitGuideText).toContain("튀김 조리");
     expect(processedMeatGuide?.sourceIds).toContain("nccPreventionMealExamples");
@@ -958,6 +960,36 @@ describe("healthRules", () => {
     expect(formatFoodMatchEvidence(matchesByTerm["직화 구이"])).toContain(
       "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
     );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes NCC healthy-eating burnt-food avoid guidance terms", () => {
+    const assessment = assessCancerFood(
+      "탄 음식은 먹지 않기, 탄 음식은 먹지 않습니다, 숯불로 구운 탄 음식, 직접 구워 탄 음식, 탄 음식 섭취 삼가",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "탄 음식은 먹지 않기",
+      "탄 음식은 먹지 않습니다",
+      "숯불로 구운 탄 음식",
+      "직접 구워 탄 음식",
+      "탄 음식 섭취 삼가",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 탄 음식 섭취 삼가기 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
