@@ -3475,6 +3475,61 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low validity-period checks and pasteurized juice spelling variants", () => {
+    const assessment = assessCancerFood(
+      "사용하기 전에 유효기간 확인, 유효기간 확인, 저온살균 쥬스, 쥬스 우유 요구르트 저온살균 제품, 비살균 쥬스, 비살균 요구르트",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "사용하기 전에 유효기간 확인",
+      "유효기간 확인",
+      "저온살균 쥬스",
+      "쥬스 우유 요구르트 저온살균 제품",
+      "비살균 쥬스",
+      "비살균 요구르트",
+    ]);
+    for (const term of [
+      "사용하기 전에 유효기간 확인",
+      "유효기간 확인",
+      "저온살균 쥬스",
+      "쥬스 우유 요구르트 저온살균 제품",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 유효기간·저온살균 제품 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    for (const term of ["비살균 쥬스", "비살균 요구르트"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "면역저하 시 저온살균 제품 여부 확인 필요",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(terms).not.toContain("비살균");
+    expect(balancedGuideText).toContain("사용하기 전에 유효기간 확인");
+    expect(balancedGuideText).toContain("저온살균 쥬스");
+    expect(careTeamGuideText).toContain("비살균 요구르트");
+    expect(formatFoodMatchEvidence(matchesByTerm["저온살균 쥬스"])).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low cooking hygiene safety practices from official guidance", () => {
     const assessment = assessCancerFood(
       "손톱 밑까지 깨끗이 씻기, 음식물에 머리카락 들어가지 않게, 조리 기구 식기 수저 소독, 식기 도마 칼 분리 사용, 생고기 닭고기 생선 즙이 다른 식품에 떨어지지 않게, 외식보다는 직접 요리",

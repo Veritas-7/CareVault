@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 07:43 KST - NCC Immune-Low Validity And Pasteurized Spelling Matching
+
+- Current Goal:
+  - Add narrow source-backed food-safety matches for National Cancer Information Center immune-low validity-period checks and pasteurized juice spelling variants.
+- Context:
+  - Continued from clean/synced CareVault state after `e6a71552841df7f7dc1b89b192b9280fdbd6b861`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept validity-period and pasteurized-product wording as `ok` support while unpasteurized juice/yogurt wording stays a care-team `risk` check in the immune-low context.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The preparation section says all foods should be checked for validity period before use and that juice, milk, and yogurt should be pasteurized products.
+  - Applied the source only as immune-low food-safety record support. It does not diagnose immune suppression, create a universal diet rule, or claim a cancer-curing food.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `사용하기 전에 유효기간 확인`, `유효기간 확인`, `저온살균 쥬스`, `쥬스 우유 요구르트 저온살균 제품`, `비살균 쥬스`, and `비살균 요구르트`, including a guard against collapsing exact unpasteurized products to generic `비살균`.
+  - `src/healthRules.ts`: added a visible `면역저하 유효기간·저온살균 후보` guide-card item, source-backed ok matches for validity-period and pasteurized spelling variants, and care-team risk matches for unpasteurized juice/yogurt variants.
+  - `README.md`: added the new NCC immune-low validity-period and pasteurized spelling matching to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new wording collapsed to `저온살균 제품` and generic `비살균`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 106 tests.
+  - PASS full tests: `npm test` => 64 files / 671 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `e6a71552841df7f7dc1b89b192b9280fdbd6b861`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD and full verification slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 07:42 KST - Final NCC Immune-Low Cooking Doneness Log
 
 - Current Goal:
