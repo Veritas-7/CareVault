@@ -185,6 +185,11 @@ describe("healthRules", () => {
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
     ).toContain("당근");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("잡곡밥");
     const limitGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "limit",
     )?.items;
@@ -198,6 +203,7 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("초코칩쿠키");
     expect(limitGuideText).toContain("단무지");
     expect(limitGuideText).toContain("국물");
+    expect(limitGuideText).toContain("우엉조림");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
         .map((item) => item.label)
@@ -303,6 +309,31 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide grain and sodium-reduction replacements", () => {
+    const assessment = assessCancerFood("잡곡밥, 우엉조림, 우엉볶음");
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(matchesByTerm.잡곡밥).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.우엉조림).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 나트륨 감소 대체 전 예시",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.우엉볶음).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide limit examples without contradicting replacements", () => {
     const assessment = assessCancerFood(
       "햄구이, 초코칩쿠키, 단무지, 국물, 과일샐러드, 채소샐러드",
@@ -357,8 +388,8 @@ describe("healthRules", () => {
     expect(assessment.level).toBe("risk");
     expect(matchesByTerm.잡곡밥).toMatchObject({
       level: "ok",
-      reason: "잡곡·통곡물 식단 후보",
-      sourceId: "nccPreventionDiet",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
     });
     expect(matchesByTerm.닭고기).toMatchObject({
       level: "ok",

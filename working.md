@@ -29898,6 +29898,9 @@
   - PASS staged gate: `git diff --cached --check`.
   - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
   - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
 - Issues:
   - No blocker so far. Source commit/push and post-push sync check still need to run.
 - Next Steps:
@@ -29958,6 +29961,34 @@
 - Next Steps:
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 592 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
+
+## 2026-06-07 20:11 KST - Cervical Grain and Sodium Replacement Examples
+
+- Current Goal:
+  - Preserve the official cervical-cancer practice-guide grain/root replacement examples in food matching and guide cards without overclaiming that any single food treats cancer.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`; local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed TDD and incremental-implementation guidance; this is a narrow source-backed food-rule and guide-card slice.
+  - Reviewed `DESIGN.md` food guidance contract: food guidance must use official Korean sources, show source evidence, and avoid diagnosis/treatment instructions.
+  - Official-source re-check used the National Cancer Information Center `국민 암예방 수칙 실천지침 _ 자궁경부암` PDF, whose example meal plan lists `쌀밥 → 잡곡밥` for fiber increase and `우엉조림 → 우엉볶음` for sodium reduction.
+- Changes:
+  - `src/healthRules.ts`: moved `잡곡밥` to the cervical practice-guide source, added `우엉조림` as a `watch` candidate for a sodium-reduction replacement example, and exposed both examples in the balanced/limit guide cards.
+  - `src/healthRules.test.ts`: added RED/PASS coverage for `잡곡밥`, `우엉조림`, and `우엉볶음` source behavior, updated guide-card assertions, and preserved no-cure wording checks.
+  - `README.md`: updated the nutrition feature list with `우엉조림`.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because guide cards lacked `우엉조림`, `우엉조림` was not a `watch` match, and `잡곡밥` still used the generic prevention-diet source.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 29 tests.
+  - PASS full tests: `npm test` => 64 files / 593 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center PDF: `국민 암예방 수칙 실천지침 _ 자궁경부암`, `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Issues:
+  - No blocker so far. Source commit/push and post-push log still need to run.
+- Next Steps:
+  - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record post-push verification.
 
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 

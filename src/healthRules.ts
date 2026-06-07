@@ -172,7 +172,7 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         label: "실천지침 식단 예시",
         detail:
           "국민 암예방 수칙 자궁경부암 실천지침은 채소·과일을 충분히 섭취하고 짠 음식과 탄 음식을 제한하는 식단 예시를 제시합니다.",
-        examples: "과일샐러드, 채소샐러드, 브로콜리회, 귤, 시금치나물, 우엉볶음",
+        examples: "잡곡밥, 과일샐러드, 채소샐러드, 브로콜리회, 귤, 시금치나물, 우엉볶음",
         sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
@@ -215,8 +215,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "실천지침 대체 식단 예시",
         detail:
-          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 가공육·달콤한 간식·짠 반찬·국물 과다를 줄이고 과일·채소 예시로 바꾸는 방향을 보여줍니다.",
-        examples: "햄구이, 초코칩쿠키, 단무지, 국·찌개 국물, 국물 과다",
+          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여줍니다.",
+        examples: "햄구이, 초코칩쿠키, 단무지, 우엉조림, 국·찌개 국물, 국물 과다",
         sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
@@ -322,7 +322,7 @@ const standaloneFoodTermOptions: FoodRuleTermOptions = {
 };
 
 const supportiveFoods: FoodRuleTerm[] = [
-  ["잡곡밥", "잡곡·통곡물 식단 후보", "nccPreventionDiet"],
+  ["잡곡밥", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["통밀빵", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
   ["통밀", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
   ["당근", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
@@ -389,6 +389,7 @@ const limitFoods: FoodRuleTerm[] = [
   ["가당 요구르트", "가당 유제품 피하고 저지방 유제품 확인", "nccPreventionDiet"],
   ["가당 요거트", "가당 유제품 피하고 저지방 유제품 확인", "nccPreventionDiet"],
   ["단무지", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
+  ["우엉조림", "자궁경부암 실천지침 나트륨 감소 대체 전 예시", "nccCervicalPracticeDiet"],
   ["젓갈", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["장아찌", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["염장", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
