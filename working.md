@@ -26406,3 +26406,33 @@
   - Browser-local draft/test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 10:20 KST - Symptom Support Question Append Direct QA
+
+- Current Goal:
+  - Direct-QA the symptom-support `질문 초안` handler after the shared generated-question merge helper landed.
+  - Verify the real source-backed symptom template button appends to an in-progress editable pre-visit question draft without overwriting the user's current fields or mutating persisted health records.
+- Context:
+  - The previous source change routed `applySymptomSupportTemplate()` through `mergeGeneratedQuestionDraft()`.
+  - Vital-standard and food handlers already had direct browser proof; this slice covers the symptom-support branch through its real `피로감·우울` template button.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `workspace:4` / `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: captured baseline `localStorage["carevault.v1"]` length `1872`; counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; no `carevault.__test*` session keys were present before storing `carevault.__testSymptomQuestionAppendBaseline`.
+  - PASS template trigger: typed the real symptom field `피로와 불면이 계속됩니다`; the real source-backed template band appeared with button aria/title `피로감·우울 질문 초안 채우기` and source link aria/title `피로감·우울 공식 출처 국가암정보센터 증상별 식생활 - 피로감과 우울 열기`.
+  - PASS seeded in-progress draft: used the real question form controls to set date `2026-06-11`, topic `기존 증상 질문`, priority `routine`, body `이미 작성 중인 증상 질문입니다.`, and answer memo `기존 증상 답변 메모`; persisted storage stayed byte-identical to baseline before click.
+  - PASS real click: clicked the real `.symptom-template-band` `질문 초안` button.
+  - PASS append preservation: the question draft kept date `2026-06-11`, topic `기존 증상 질문`, priority `routine`, and answer memo `기존 증상 답변 메모`; the body still started with `이미 작성 중인 증상 질문입니다.` and appended the generated fatigue/insomnia question below it.
+  - PASS appended evidence: appended text included `피로와 불면이 계속됩니다 기록과 관련해`, the clinician-review question about `혈구수, 영양섭취, 수면, 우울·불면, 약물 부작용, 치료 일정`, and `출처: 국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do`.
+  - PASS symptom action support: the symptom `다음 행동` field was filled only because it was blank, and included the same source citation URL for later saved-record evidence.
+  - PASS non-directive guard: the generated question did not contain direct treatment/order phrases such as `치료하세요`, `복용하세요`, or `처방하세요`.
+  - PASS feedback and focus: `.symptom-template-draft-feedback` and the top save chip both showed `피로감·우울 질문 초안 준비됨 · 근거 국가암정보센터 증상별 식생활 - 피로감과 우울 · 질문 초안에는 이 출처와 URL이 함께 남습니다.`; the add button aria became `진료 전 질문 추가 · 기존 증상 질문 입력 준비됨 · 우선순위 일반 확인`; focus moved to `진료 전 질문 내용`.
+  - PASS non-mutation: `localStorage["carevault.v1"]` stayed byte-for-byte equal to baseline length `1872`; persisted counts stayed `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; no preview, dialog, or stale alert opened.
+  - PASS cleanup: restored baseline browser storage, removed `carevault.__testSymptomQuestionAppendBaseline`, forced a same-`surface:7` reload, and confirmed storage keys only `carevault.v1`, no `carevault.__test*` session keys, counts restored, symptom/question drafts blank, question date `2026-06-07`, priority `next-visit`, no symptom template/feedback, no QA text, no preview/stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/questionDraftMerge.test.ts src/symptomSupportTemplates.test.ts src/questionDisplay.test.ts` => `3 passed`, `30 passed`.
+  - PASS source status: no app source files changed during this QA slice.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks and secret scan, then commit/push the QA note.
