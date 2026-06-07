@@ -88,6 +88,29 @@ describe("textFileDownload", () => {
     expect(createObjectURL).not.toHaveBeenCalled();
   });
 
+  it("uses clipboard fallback when anchor download APIs are unavailable but clipboard exists", async () => {
+    const writeText = vi.fn(async (_text: string) => undefined);
+    const createObjectURL = vi.fn(() => "blob:download-url");
+
+    await expect(
+      downloadTextFile("backup body", "backup.json", "application/json", {
+        BlobCtor: Blob,
+        URLCtor: {
+          createObjectURL,
+          revokeObjectURL: vi.fn(),
+        },
+        navigator: {
+          clipboard: { writeText },
+          userAgent: "Mozilla/5.0 Chrome/121.0.0.0 Safari/537.36",
+          vendor: "Google Inc.",
+        },
+      }),
+    ).resolves.toBe("clipboard-fallback");
+
+    expect(writeText).toHaveBeenCalledWith("backup body");
+    expect(createObjectURL).not.toHaveBeenCalled();
+  });
+
   it("starts an anchor download in non-Safari browsers", async () => {
     const click = vi.fn();
     const appendChild = vi.fn();

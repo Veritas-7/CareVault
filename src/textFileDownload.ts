@@ -53,6 +53,21 @@ export function formatTextFileDownloadFailedStatus(label: string, summary: strin
   return `${label} 다운로드 실패 · 클립보드 복사 실패 · ${summary}`;
 }
 
+async function copyTextFileDownloadFallback(
+  content: string,
+  navigatorLike: TextFileDownloadNavigator | undefined,
+): Promise<TextFileDownloadResult> {
+  const writeText = navigatorLike?.clipboard?.writeText;
+  if (!writeText) return "unsupported";
+
+  try {
+    await writeText.call(navigatorLike?.clipboard, content);
+    return "clipboard-fallback";
+  } catch {
+    return "clipboard-failed";
+  }
+}
+
 export async function downloadTextFile(
   content: string,
   filename: string,
@@ -62,15 +77,7 @@ export async function downloadTextFile(
   const navigatorLike = environment.navigator ?? globalThis.navigator;
 
   if (shouldUseClipboardDownloadFallback(navigatorLike)) {
-    const writeText = navigatorLike.clipboard?.writeText;
-    if (!writeText) return "unsupported";
-
-    try {
-      await writeText.call(navigatorLike.clipboard, content);
-      return "clipboard-fallback";
-    } catch {
-      return "clipboard-failed";
-    }
+    return copyTextFileDownloadFallback(content, navigatorLike);
   }
 
   const documentLike = environment.document ?? globalThis.document;
@@ -85,7 +92,7 @@ export async function downloadTextFile(
     !BlobLike ||
     !revokeLater
   ) {
-    return "unsupported";
+    return copyTextFileDownloadFallback(content, navigatorLike);
   }
 
   let url = "";
@@ -120,6 +127,6 @@ export async function downloadTextFile(
         // Revoke best-effort cleanup; the user-facing result remains unsupported.
       }
     }
-    return "unsupported";
+    return copyTextFileDownloadFallback(content, navigatorLike);
   }
 }

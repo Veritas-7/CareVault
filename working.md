@@ -27729,3 +27729,27 @@
   - Runtime is clean; no temporary Vite process is running.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow. Direct browser QA still must use only existing `surface:7`; do not focus/select the inactive `암관리` workspace or open another browser without explicit approval.
+
+## 2026-06-07 13:51 KST - Text Download Clipboard Fallback After Missing Anchor APIs Started
+
+- Current Goal:
+  - Use Clipboard API as a fallback when anchor-download APIs are unavailable, instead of returning unsupported while a usable clipboard exists.
+- Context:
+  - The previous slice made missing non-Safari anchor-download APIs return `unsupported` instead of throwing.
+  - A better user path is available when `navigator.clipboard.writeText()` exists: copy the export content and let App show the existing `다운로드 대신 클립보드 복사됨` status.
+  - Existing `surface:7` still reports `http://localhost:1420/#dashboard` / `CareVault`, but `eval` returns `about:blank`; browser errors remain `No browser errors`. No focus, workspace selection, Computer Use, or new browser/surface was used.
+- Changes:
+  - `src/textFileDownload.test.ts`: added a RED test for missing anchor-download APIs plus available Clipboard API returning `clipboard-fallback` without creating an object URL.
+  - `src/textFileDownload.ts`: factored clipboard fallback into `copyTextFileDownloadFallback()` and reused it for Safari fallback, missing anchor APIs, and anchor-download exceptions.
+- Tests:
+  - RED confirmed: `npm test -- src/textFileDownload.test.ts` initially returned `unsupported` instead of `clipboard-fallback`.
+  - PASS focused test after fix: `npm test -- src/textFileDownload.test.ts` => `1 passed`, `7 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `63 passed`, `540 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM QA remains blocked by the inactive/non-evaluable `surface:7` context.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused clipboard-fallback improvement if green.
