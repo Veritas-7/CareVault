@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 02:42 KST - NCC Healthy-Eating Exact Charcoal/Direct-Burnt Food Source Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the exact National Cancer Information Center healthy-eating source sentence about avoiding foods burnt by charcoal or direct grilling.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `cf11f95d5bc5ec50d16419cc7f48372430d11958`.
+  - Used TDD and kept the change to one official-source food-rule accuracy slice.
+  - `DESIGN.md` confirms the nutrition panel should keep source-backed matched food chips and official Korean source links; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page states `숯불로 굽거나 직접 구워 탄 음식의 섭취는 삼가합니다`.
+  - Applied the source as risk/limit food guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `숯불로 굽거나 직접 구워 탄 음식의 섭취는 삼가합니다` and `숯불로 굽거나 직접 구워 탄 음식 섭취 삼가` as exact source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the two exact source-sentence phrases under `nccPreventionDiet` before shorter `숯불`/`직접 구워 탄 음식` fallback matching and aligned the limit guide detail/examples with the exact official wording.
+  - `README.md`: updated the healthy-eating charcoal/direct-burnt food sentence feature line to name the exact source wording while keeping common `구워서` variants supported.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide strings were missing and the new source phrases collapsed to shorter `숯불`/`직접 구워 탄 음식` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 65 tests.
+  - PASS full tests: `npm test` => 64 files / 630 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and repository sync verification are still pending.
+- Next Steps:
+  - Stage explicit changed paths, run diff/secret checks, commit, push, and record post-push verification.
+
 ## 2026-06-08 02:37 KST - Post-Push NCC Healthy-Eating Charcoal/Direct-Burnt Food Sentence Phrases
 
 - Current Goal:
