@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 08:42 KST - NCC Immune-Low Fruit Vegetable Washing Source Wording
+
+- Current Goal:
+  - Add exact National Cancer Information Center immune-low fruit/vegetable washing and hard-to-wash fruit caution source wording to CareVault's built-in cancer food-safety matching.
+- Context:
+  - Continued from clean/synced CareVault state after `232d78338e69b16fefcbd96566b28ad25ed6dbbc`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept washing guidance as immune-low food-safety support, while hard-to-wash fruit wording remains a care-team `risk` check.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The food-preparation section says vegetables and fruits should be washed before eating, hard-to-wash fruits such as strawberries should be eaten with caution, and fruits/vegetables should be washed before cutting.
+  - Applied the source only as immune-low food-preparation safety record support.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `채소와 과일은 먹기 전에 깨끗이 씻어 드시기 바랍니다`, `딸기 등 꼼꼼히 씻기 어려운 과일은 주의해서 드시고`, and `과일이나 채소는 썰기 전에 깨끗이 씻어야 합니다`, including source evidence and a guard against collapsing to generic `딸기`.
+  - `src/healthRules.ts`: added the longer NCC washing source wording to the visible balanced guide card, supportive food-safety terms, and care-team hard-to-wash fruit caution term.
+  - `README.md`: documented the expanded NCC immune-low fruit/vegetable washing source wording.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source wording only matched the shorter `딸기 등 꼼꼼히 씻기 어려운 과일` term.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 114 tests.
+  - PASS full tests: `npm test` => 64 files / 679 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `232d78338e69b16fefcbd96566b28ad25ed6dbbc`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 08:39 KST - Final NCC Immune-Low Storage Thawing Log
 
 - Current Goal:
