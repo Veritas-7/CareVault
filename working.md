@@ -27144,3 +27144,16 @@
   - `working.md` is dirty with verified chart source-data direct QA evidence only; source code is unchanged.
 - Next Steps:
   - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
+
+## 2026-06-07 12:31 KST - Post-Push Vital Chart Source Data QA
+
+- Verification:
+  - PASS focused commit: `080e2c5` (`Log vital chart source data QA`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `080e2c5`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - The vital chart source-data disclosure flow is directly verified on the existing `암관리` `surface:7` through cmux CLI-only browser operations, committed, pushed, and synced.
+  - Browser-local chart disclosure test state was cleaned up; runtime is clean.
+- Next Steps:
+  - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
