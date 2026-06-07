@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 02:55 KST - NCC Healthy-Eating Red-Meat Portion Limit Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating sentence about limiting red meat to one serving at a time and no more than three servings per week.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `46c90760a8e097aee7acf01b879530137c3a8613`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` confirms the nutrition panel should keep source-backed matched food chips and official Korean source links; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page states red meat should not exceed one serving at a time and three servings per week, with cooked-state 350-500g wording.
+  - Applied the source as risk/limit food guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `붉은색 육류 섭취 시 1회에 1인분씩, 주 3인분(익힌 상태로 350~500g)을 넘지 않도록 합니다` and `붉은색 육류 1회 1인분 주 3인분 350~500g 이하` as source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the two longer red-meat portion limit phrases under `nccPreventionDiet` before shorter `붉은색 육류`/`주 3인분` fallback matching and aligned the limit guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating red-meat portion sentence phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide strings were missing and the new source phrase collapsed to the shorter `붉은색 육류` match.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 67 tests.
+  - PASS full tests: `npm test` => 64 files / 632 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and repository sync verification are still pending.
+- Next Steps:
+  - Stage explicit changed paths, run diff/secret checks, commit, push, and record post-push verification.
+
 ## 2026-06-08 02:51 KST - Post-Push NCC Healthy-Eating Fatty Meat Part Limit Sentence
 
 - Current Goal:

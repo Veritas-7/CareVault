@@ -25,6 +25,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating burnt-food avoid matching for 탄 음식은 먹지 않기/탄 음식은 먹지 않습니다/숯불로 구운 탄 음식/직접 구워 탄 음식/탄 음식 섭취 삼가
 - NCC healthy-eating charcoal/direct-burnt food avoid sentence matching for 숯불로 굽거나 직접 구워 탄 음식의 섭취는 삼가합니다/숯불로 굽거나 직접 구워 탄 음식 섭취 삼가 plus common 구워서 variants
 - NCC healthy-eating fatty meat part limit sentence matching for 지방 함량이 많은 부위의 육류 섭취는 제한합니다/지방 함량이 많은 육류 부위 섭취 제한
+- NCC healthy-eating red-meat portion sentence matching for 붉은색 육류 섭취 시 1회에 1인분씩, 주 3인분(익힌 상태로 350~500g)을 넘지 않도록 합니다/붉은색 육류 1회 1인분 주 3인분 350~500g 이하
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
 - NCC healthy-eating daily legume matching for 두류 매일 섭취/두류 가공품 매일 섭취/두유 두부 매일 섭취
 - NCC healthy-eating low-fat milk daily matching for 저지방 우유 하루 1잔 정도/하루 1잔 정도 저지방 우유

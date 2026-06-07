@@ -670,6 +670,10 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("소고기");
     expect(limitGuideText).toContain("돼지고기");
     expect(limitGuideText).toContain("붉은색 육류 주 3인분");
+    expect(limitGuideText).toContain(
+      "붉은색 육류 섭취 시 1회에 1인분씩, 주 3인분(익힌 상태로 350~500g)을 넘지 않도록 합니다",
+    );
+    expect(limitGuideText).toContain("붉은색 육류 1회 1인분 주 3인분 350~500g 이하");
     expect(limitGuideText).toContain("익힌 상태 350~500g");
     expect(limitGuideText).toContain("너무 뜨겁거나 매운 음식의 섭취는 피합니다");
     expect(limitGuideText).toContain("너무 뜨겁거나 매운 음식 섭취 피하기");
@@ -1080,6 +1084,33 @@ describe("healthRules", () => {
       "붉은 육류 주 3인분",
       "붉은 육류 350~500g",
       "익힌 상태 350~500g",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 붉은색 육류 주 3인분·350~500g 이하 제한 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes the exact NCC healthy-eating red meat portion limit sentence", () => {
+    const assessment = assessCancerFood(
+      "붉은색 육류 섭취 시 1회에 1인분씩, 주 3인분(익힌 상태로 350~500g)을 넘지 않도록 합니다; 붉은색 육류 1회 1인분 주 3인분 350~500g 이하",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "붉은색 육류 섭취 시 1회에 1인분씩, 주 3인분(익힌 상태로 350~500g)을 넘지 않도록 합니다",
+      "붉은색 육류 1회 1인분 주 3인분 350~500g 이하",
     ]);
     for (const term of terms) {
       expect(matchesByTerm[term]).toMatchObject({
