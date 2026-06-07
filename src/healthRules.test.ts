@@ -269,6 +269,38 @@ describe("healthRules", () => {
     });
   });
 
+  it("recognizes immune-low food handling risk phrases from official guidance", () => {
+    const assessment = assessCancerFood(
+      "다진 고기, 씻지 않은 딸기, 오래된 남은 음식, 상한 음식",
+    );
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("risk");
+    expect(matchesByTerm["다진 고기"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 갈아둔 고기는 충분히 익힘 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(matchesByTerm["씻지 않은 딸기"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 씻기 어려운 과일 주의",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(matchesByTerm["오래된 남은 음식"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 오래 보관한 남은 음식 폐기 기준 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(matchesByTerm["상한 음식"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 냄새·모양 이상 식품 사용 금지 기준 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(Object.keys(matchesByTerm)).not.toContain("딸기");
+  });
+
   it("does not match one-syllable food warnings inside unrelated Korean words", () => {
     const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
     const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);

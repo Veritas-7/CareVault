@@ -29807,3 +29807,33 @@
   - No new blocking issue. Source commit is pushed and the repository is synced after push.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 18:41 KST - Immune-Low Food Handling Rules
+
+- Current Goal:
+  - Strengthen built-in cancer-care nutrition checks with official-source immune-low food handling phrases that users may actually type.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed `DESIGN.md` food judgment contract: matched food chips must show source-backed support/limit/care-team categories with official Korean source links and no diagnosis/treatment claim.
+  - Official-source re-check used National Cancer Information Center immune-function low food safety plus the existing cervical-cancer food boundary and cancer-prevention diet sources. The source-backed research note was updated at `/Users/wj/Ai/System/12_Research/CareVault_Health_Tauri_2026-06-03/03_CervicalCancer_Food_Guidance_2026-06-07.md`; that file is untracked in the separate `12_Research` repo and was intentionally not staged there because that repo has broad unrelated dirty state.
+  - AutoResearch skill was inspected but not run: this was a narrow source-backed content/test slice, not an iterative experiment loop.
+- Changes:
+  - `src/healthRules.ts`: added `nccImmuneLowDiet` care-team matches for `다진 고기`, `갈은 고기`, `갈아둔 고기`, `씻지 않은 딸기`, `씻지 않은 과일`, `씻지 않은 채소`, `오래된 남은 음식`, `오래된 반찬`, `상한 음식`, and `냄새 이상한 음식`; expanded the visible care-team guide card from raw/unpasteurized only to storage/cleaning food safety.
+  - `src/healthRules.test.ts`: added RED/PASS coverage proving those immune-low handling phrases become risk-level care-team checks and longer phrases override the generic `딸기` support chip.
+  - `README.md`: updated the nutrition feature list with the new concrete food-safety examples and source boundary.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts` failed before the fix because the new phrase set was only `ok` due to generic `딸기` matching and missing immune-low handling matches.
+  - PASS focused test: `npm test -- src/healthRules.test.ts` => 1 file / 18 tests.
+  - PASS related tests: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts src/foodQuestionPrompts.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts` => 6 files / 133 tests.
+  - PASS full tests: `npm test` => 64 files / 588 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Research:
+  - National Cancer Information Center immune-low food safety supports fully cooking meat, chicken, fish, and ground meat; washing fruits/vegetables; caution with hard-to-wash fruits such as strawberries; checking expiration/storage; discarding old leftovers; and not using moldy or abnormal-smelling food.
+  - Changes remain framed as `진료팀 확인` food-safety prompts, not blanket food bans or diagnosis claims.
+- Issues:
+  - No new blocking issue in CareVault. The separate `/Users/wj/Ai/System/12_Research` repo has many unrelated dirty/untracked files, so only the local research note was updated there.
+- Next Steps:
+  - Stage explicit CareVault paths, run diff/secret gates, then commit/push if green.
