@@ -190,9 +190,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "암예방 식단 예시",
         detail:
-          "국가암정보센터 암예방 식단 예시는 잡곡밥, 채소 반찬, 생선·달걀·콩·닭고기 단백질 식품, 등푸른 생선 주 2회 이상, 간편식의 통밀·귀리 등 통곡물 빵과 샐러드·저지방 유제품·과일 예시, 단체 급식의 다양한 채소 반찬과 적정량 단백질 예시를 균형식 후보로 제시합니다.",
+          "국가암정보센터 암예방 식단 예시는 매 식사에 채소 반찬(생채·샐러드·나물·쌈 등) 2가지 이상, 잡곡밥, 생선·달걀·콩·닭고기 단백질 식품, 등푸른 생선 주 2회 이상, 간편식의 통밀·귀리 등 통곡물 빵과 샐러드·저지방 유제품·과일 예시, 단체 급식의 다양한 채소 반찬과 적정량 단백질 예시를 균형식 후보로 제시합니다.",
         examples:
-          "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 생선, 달걀, 콩, 닭고기, 등푸른 생선, 고등어, 통밀빵, 통밀 식빵, 통밀, 귀리빵, 귀리 식빵, 귀리, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 플레인 요구르트, 플레인 요거트, 저지방 유제품, 저지방 요구르트, 저지방 요거트, 방울토마토, 블루베리, 미역국, 상추쌈, 버섯나물, 불고기",
+          "채소 반찬, 생채, 나물, 채소 쌈, 아욱된장국, 호박나물, 콩나물무침, 고등어구이, 생선, 달걀, 콩, 닭고기, 등푸른 생선, 고등어, 통밀빵, 통밀 식빵, 통밀, 귀리빵, 귀리 식빵, 귀리, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 플레인 요구르트, 플레인 요거트, 저지방 유제품, 저지방 요구르트, 저지방 요거트, 방울토마토, 블루베리, 미역국, 상추쌈, 버섯나물, 불고기",
         sourceIds: ["nccPreventionMealExamples"],
       },
       {
@@ -359,6 +359,9 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["상추쌈", "국가암정보센터 암예방 식단 예시 후보", "nccPreventionMealExamples"],
   ["버섯나물", "국가암정보센터 암예방 식단 예시 후보", "nccPreventionMealExamples"],
   ["불고기", "국가암정보센터 암예방 식단 단백질 적정량 예시 후보", "nccPreventionMealExamples"],
+  ["채소 반찬", "국가암정보센터 암예방 식단 채소 반찬 충분히 섭취 예시 후보", "nccPreventionMealExamples"],
+  ["채소 쌈", "국가암정보센터 암예방 식단 채소 반찬 충분히 섭취 예시 후보", "nccPreventionMealExamples"],
+  ["생채", "국가암정보센터 암예방 식단 채소 반찬 충분히 섭취 예시 후보", "nccPreventionMealExamples"],
   ["통밀빵", "국가암정보센터 암예방 샐러드 통곡물 예시 후보", "nccPreventionMealExamples"],
   ["샐러드(채소)", "국가암정보센터 암예방 샐러드 신선채소 예시 후보", "nccPreventionMealExamples"],
   ["샐러드(달걀)", "국가암정보센터 암예방 샐러드 단백질 예시 후보", "nccPreventionMealExamples"],
@@ -387,7 +390,7 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["사과", "과일 다양성에 도움", "nccPreventionDiet"],
   ["토마토", "채소 다양성에 도움", "nccPreventionDiet"],
   ["콩나물", "채소 반찬 후보", "nccPreventionDiet"],
-  ["나물", "채소 반찬 후보", "nccPreventionDiet"],
+  ["나물", "국가암정보센터 암예방 식단 채소 반찬 충분히 섭취 예시 후보", "nccPreventionMealExamples"],
   ["상추", "채소 반찬 후보", "nccPreventionDiet"],
   ["버섯", "채소 반찬 후보", "nccPreventionDiet"],
   [
