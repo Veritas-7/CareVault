@@ -4591,6 +4591,10 @@ textarea:focus-visible {
   font-size: 0.88rem;
 }
 
+.export-preview-stale-alert .secondary-inline-button {
+  min-height: 44px;
+}
+
 .export-preview-setting-differences {
   display: grid;
   gap: 9px;

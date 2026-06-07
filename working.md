@@ -26539,3 +26539,32 @@
   - Browser-local draft/test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 10:47 KST - Caregiver Share Settings Stale Guard Direct QA
+
+- Current Goal:
+  - Direct-QA the caregiver share HTML preview when settings change after a preview is already open.
+  - Verify stale-preview guarding, settings-difference disclosure, fresh-preview regeneration, storage cleanup, and touch-target accessibility in the same existing `암관리` / `surface:7` cmux browser.
+- Context:
+  - This slice intentionally reused only the visible CareVault browser at `http://127.0.0.1:1420/#dashboard`; no additional browser was opened.
+  - Baseline storage was captured in `sessionStorage["carevault.__testCaregiverSettingsStaleBaseline"]` before changing caregiver settings.
+  - A first DOM-only `cmux browser check` attempt was discarded because it toggled the checkbox property without proving the React state, aria labels, or stale guard. The accepted evidence below uses real browser clicks.
+- Changes:
+  - `src/App.css`: added a scoped `min-height: 44px` rule for `.export-preview-stale-alert .secondary-inline-button` so the stale-alert fresh-preview CTA matches the export action touch target.
+- Direct same-surface QA:
+  - PASS baseline: before the valid rerun, storage length was `1872`, localStorage keys were only `carevault.v1`, and counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`.
+  - PASS initial preview: clicked the real `보호자 공유본 미리보기` button; preview opened with no stale alert, copy/print/download/close enabled, summary `98줄 · 50,441자 · 73,905B · 근거/출처 112개`, snapshot `직접 설정`, `프로필 표시`, `전달 메모 없음`, all 7 sections included, and storage byte-equal to baseline.
+  - PASS real settings change: clicked the real `보호자 공유본 프로필 가리기` checkbox; aria changed to `보호자 공유본 프로필 가리기 켜짐`, top export/preview labels changed to `프로필 가림`, and the open preview raised `.export-preview-stale-alert[role=status]` with aria `보호자 공유본 미리보기 변경 감지`.
+  - PASS stale guard: settings differences showed `프로필` changed from `생성 시점 프로필 표시` to `현재 프로필 가림`; copy, print, and download buttons were disabled with `비활성: 공유 설정이 바뀌어 다시 생성이 필요합니다.` in aria/title, while close stayed enabled.
+  - PASS accessibility polish: before the CSS fix, the stale-alert `공유 설정 반영` CTA measured `36px`; after the scoped CSS change it measured `44px` and remained enabled with aria `새 미리보기 생성 · 보호자 공유본 · 변경된 공유 설정 적용`.
+  - PASS fresh preview: clicked the real `공유 설정 반영` CTA; stale alert and settings-difference panel disappeared, copy/print/download/close all became enabled at `44px`, summary updated to `98줄 · 50,420자 · 73,877B · 근거/출처 112개`, and the settings snapshot showed `프로필 가림`.
+  - PASS record preservation: changing the caregiver setting only changed `caregiverShareSettings.redactProfile` from `false` to `true`; record counts stayed equal to baseline for vitals, visits, symptoms, questions, documents, deletedDocuments, and labResults.
+  - PASS cleanup: restored baseline `carevault.v1`, removed `carevault.__testCaregiverSettingsStaleBaseline`, reloaded the same `surface:7`, and confirmed storage length `1872`, no sessionStorage keys, profile redaction off, preview/stale panels closed, save chip `브라우저 자동 저장됨`, and all record counts restored.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors` before cleanup and after cleanup.
+- Verification:
+  - PASS focused tests: `npm test -- src/caregiverShareSettings.test.ts src/caregiverExport.test.ts src/exportPreviewSummary.test.ts` => `3 passed`, `85 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.css` and `working.md` are dirty with one verified UI accessibility fix plus direct QA evidence.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/App.css` and `working.md` for commit/push.
