@@ -29837,3 +29837,31 @@
   - No new blocking issue in CareVault. The separate `/Users/wj/Ai/System/12_Research` repo has many unrelated dirty/untracked files, so only the local research note was updated there.
 - Next Steps:
   - Stage explicit CareVault paths, run diff/secret gates, then commit/push if green.
+
+## 2026-06-07 18:43 KST - Post-Push Immune-Low Food Handling Rules
+
+- Current Goal:
+  - Record post-push verification for the official-source immune-low food handling rule expansion.
+- Result:
+  - Source commit pushed: `e6916af` (`Expand immune food handling rules`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `e6916af38c429a9dd81917fdecc52731fbf01acd`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts` failed before the fix because the new phrase set was only `ok` due to generic `딸기` matching and missing immune-low handling matches.
+    - GREEN: `npm test -- src/healthRules.test.ts` => 1 file / 18 tests.
+  - PASS related tests: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts src/foodQuestionPrompts.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts` => 6 files / 133 tests.
+  - PASS full tests: `npm test` => 64 files / 588 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS CareVault whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS research-note secret scan: `gitleaks dir /Users/wj/Ai/System/12_Research/CareVault_Health_Tauri_2026-06-03 --no-banner --redact` reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Research:
+  - Source-backed note remains saved at `/Users/wj/Ai/System/12_Research/CareVault_Health_Tauri_2026-06-03/03_CervicalCancer_Food_Guidance_2026-06-07.md`; the separate research repo path is untracked and not included in the CareVault commit.
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
