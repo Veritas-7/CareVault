@@ -28812,3 +28812,28 @@
   - No `focus-webview`, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
 - Next Steps:
   - Run staged diff/secret gates, then commit the focused question clipboard restored date guard if green. Treat GitHub push as blocked if staged gitleaks fails.
+
+## 2026-06-07 16:02 KST - Post-Push Question Clipboard Restored Date Guard
+
+- Current Goal:
+  - Record post-push verification for question clipboard restored date filtering.
+- Result:
+  - Source commit pushed: `d0c4b41` (`Guard question clipboard restored dates`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `d0c4b41`.
+  - GitHub repo visibility check returned `{"isPrivate":true,"url":"https://github.com/Veritas-7/CareVault","visibility":"PRIVATE"}`.
+- Verification:
+  - PASS focused test: `npm test -- src/questionClipboard.test.ts` => `1 passed`, `8 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `569 passed`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks in the GitHub-bound diff.
+  - BLOCKED whole-directory secret scan remains unchanged: `gitleaks dir . --no-banner --redact` found 4 `generic-api-key` matches in ignored `src-tauri/target/**/libmuda-*.rmeta` build artifacts; those paths are not tracked by `git ls-files` and are ignored by `src-tauri/.gitignore`.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned the URL value, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing cmux WebView context mismatch; no focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used.
+  - Whole-directory gitleaks should be resolved by an approved scan/ignore policy for ignored build artifacts, not by deleting or hiding user/build outputs.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
