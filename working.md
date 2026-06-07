@@ -29304,6 +29304,47 @@
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
 
+## 2026-06-07 17:31 KST - Food Question Multi-Source Evidence
+
+- Current Goal:
+  - Preserve every official source behind a food-safety clinician-question draft through question copy, visit Markdown, CSV, and caregiver HTML outputs.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Current source tree was clean before this slice.
+  - Used systematic debugging plus TDD. Root cause was that `buildFoodQuestionDraft` emitted only the first matched food source, and the shared `sourceEvidence` parser/formatter only promoted the first `출처:` line while allowing later source lines to leak as body text or be lost in export rows.
+- Changes:
+  - `src/foodQuestionPrompts.ts`: food question drafts now emit deduplicated `출처:` lines for all matched official food sources, plus the immune-low food source when low WBC/ANC context exists.
+  - `src/sourceEvidence.ts`: parser now returns a `sources` array, consumes multiple source lines, and formats them as one clinic-readable `근거:` list without raw `출처:` leakage.
+  - `src/csvExport.ts` and `src/caregiverExport.ts`: question/export formatting now uses all parsed sources rather than only the first source.
+  - `src/App.css`: mobile grid/card tracks now use shrinkable `minmax(0, 1fr)` patterns, and long clinical question/timeline text wraps instead of forcing horizontal page scroll.
+  - Tests updated in `src/foodQuestionPrompts.test.ts`, `src/sourceEvidence.test.ts`, `src/csvExport.test.ts`, and `src/caregiverExport.test.ts` for multi-source evidence retention.
+- Tests:
+  - RED confirmed:
+    - `npm test -- src/sourceEvidence.test.ts` failed because `sources` was missing and the second `출처:` line stayed in the body.
+    - `npm test -- src/foodQuestionPrompts.test.ts` failed because the `보충제` source line was missing from the food question.
+    - `npm test -- src/csvExport.test.ts` failed because the direct `question` CSV row kept only the first source.
+  - PASS focused tests:
+    - `npm test -- src/sourceEvidence.test.ts` => 1 file / 4 tests.
+    - `npm test -- src/foodQuestionPrompts.test.ts` => 1 file / 5 tests.
+    - `npm test -- src/csvExport.test.ts` => 1 file / 23 tests.
+    - `npm test -- src/caregiverExport.test.ts src/sourceEvidence.test.ts src/foodQuestionPrompts.test.ts src/questionClipboard.test.ts src/visitPacket.test.ts` => 5 files / 97 tests.
+  - PASS typecheck after removing an obsolete CSV import: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 581 tests.
+  - PASS build: `npm run build`.
+  - PASS Playwright browser smoke via `with_server.py` on `http://127.0.0.1:1420/`:
+    - Entered `자몽 주스, 보충제` and generated a food-question draft.
+    - Confirmed the draft includes both `질병관리청 국가건강정보포털 식이영양` and `국가암정보센터 보완대체요법 상담` source lines.
+    - Saved the question, opened CSV preview, and confirmed the food-safety `question` row keeps both source labels as `근거:` without raw `출처:` leakage.
+    - Opened caregiver share preview source and confirmed both source links remain in the generated HTML without raw complementary `출처:` leakage.
+    - Reproduced and fixed the 390px mobile overflow caused by shrink-resistant grid/card text surfaces; final smoke confirmed no horizontal overflow.
+    - Screenshots: `/tmp/carevault-food-multisource-smoke-desktop.png`, `/tmp/carevault-food-multisource-smoke-mobile.png`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS whitespace gate: `git diff --check`.
+- Issues:
+  - Saved question card and timeline source rows still expose the first source link as their primary compact link; copy/export paths now retain all sources.
+- Next Steps:
+  - Stage explicit paths, run staged diff/secret gates, then commit/push if green.
+
 ## 2026-06-07 17:13 KST - Food Keyword Overlap Guard
 
 - Current Goal:

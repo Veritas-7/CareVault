@@ -1134,7 +1134,7 @@ describe("caregiverExport", () => {
             date: "2026-06-20",
             topic: "부작용: 질건조·성교통/성생활 상담",
             question:
-              "성생활 재개 시점을 어떻게 상담할까요?\n출처: 국가암정보센터 자궁경부암 성생활 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5373",
+              "성생활 재개 시점을 어떻게 상담할까요?\n출처: 국가암정보센터 자궁경부암 성생활 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5373\n출처: 국가암정보센터 보완대체요법 상담 - https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
             priority: "next-visit",
             status: "open",
             answer: "",
@@ -1151,7 +1151,11 @@ describe("caregiverExport", () => {
     expect(html).toContain(
       '근거: <a href="https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&amp;menu_seq=5373" target="_blank" rel="noreferrer">국가암정보센터 자궁경부암 성생활</a>',
     );
+    expect(html).toContain(
+      '<a href="https://www.cancer.go.kr/lay1/S1T365C368/contents.do" target="_blank" rel="noreferrer">국가암정보센터 보완대체요법 상담</a>',
+    );
     expect(html).not.toContain("출처: 국가암정보센터 자궁경부암 성생활");
+    expect(html).not.toContain("출처: 국가암정보센터 보완대체요법 상담");
   });
 
   it("formats generated lab follow-up question evidence in caregiver exports", () => {

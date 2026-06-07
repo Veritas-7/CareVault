@@ -2,6 +2,11 @@ import type { FoodAssessment, FoodMatch } from "./healthRules";
 import type { ImmuneFoodSafetyContext } from "./immuneFoodContext";
 import { questionPriorityLabel, type QuestionPriority } from "./questionPriority";
 
+type FoodQuestionSource = {
+  sourceLabel: string;
+  sourceUrl: string;
+};
+
 export type FoodQuestionDraftInput = {
   assessment: FoodAssessment;
   foodQuery: string;
@@ -35,14 +40,45 @@ function summarizeMatches(matches: FoodMatch[]) {
   return matches.map((match) => `${match.term}: ${match.reason}`).join("; ");
 }
 
-function buildQuestionSourceLine(matches: FoodMatch[], immuneContext: ImmuneFoodSafetyContext | null) {
+function addFoodQuestionSource(sources: FoodQuestionSource[], source: FoodQuestionSource) {
+  if (!source.sourceLabel) return;
+  if (
+    sources.some(
+      (existing) =>
+        existing.sourceLabel === source.sourceLabel && existing.sourceUrl === source.sourceUrl,
+    )
+  ) {
+    return;
+  }
+  sources.push(source);
+}
+
+function buildQuestionSourceLines(
+  matches: FoodMatch[],
+  immuneContext: ImmuneFoodSafetyContext | null,
+) {
+  const sources: FoodQuestionSource[] = [];
   if (immuneContext) {
-    return `출처: ${immuneContext.foodSafetySourceLabel} - ${immuneContext.foodSafetySourceUrl}`;
+    addFoodQuestionSource(sources, {
+      sourceLabel: immuneContext.foodSafetySourceLabel,
+      sourceUrl: immuneContext.foodSafetySourceUrl,
+    });
   }
 
-  const firstSource = uniqueBySource(matches)[0];
-  if (!firstSource) return "";
-  return `출처: ${firstSource.sourceLabel} - ${firstSource.sourceUrl}`;
+  for (const match of uniqueBySource(matches)) {
+    addFoodQuestionSource(sources, {
+      sourceLabel: match.sourceLabel,
+      sourceUrl: match.sourceUrl,
+    });
+  }
+
+  return sources
+    .map((source) =>
+      source.sourceUrl
+        ? `출처: ${source.sourceLabel} - ${source.sourceUrl}`
+        : `출처: ${source.sourceLabel}`,
+    )
+    .join("\n");
 }
 
 function countSources(matches: FoodMatch[], immuneContext: ImmuneFoodSafetyContext | null) {
@@ -63,7 +99,7 @@ export function buildFoodQuestionDraft({
   if (!matches.length && !immuneContext) return null;
 
   const matchedSummary = summarizeMatches(matches);
-  const sourceLine = buildQuestionSourceLine(matches, immuneContext);
+  const sourceLines = buildQuestionSourceLines(matches, immuneContext);
   const sourceCount = countSources(matches, immuneContext);
   const questionParts = immuneContext
     ? [
@@ -75,13 +111,13 @@ export function buildFoodQuestionDraft({
               immuneContext.labSourceUrl ? ` (${immuneContext.labSourceUrl})` : ""
             }`
           : "",
-        sourceLine,
+        sourceLines,
       ]
     : [
         `현재 음식/식단(${query})에 의료진 확인 항목이 포함되어 있습니다.`,
         "약물 상호작용이나 치료 상호작용, 식품 안전 문제를 진료팀 기준으로 어떻게 확인하면 좋을까요?",
         matchedSummary ? `음식 판단 근거: ${matchedSummary}` : "",
-        sourceLine,
+        sourceLines,
       ];
 
   return {

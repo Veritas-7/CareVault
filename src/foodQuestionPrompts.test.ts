@@ -80,6 +80,22 @@ describe("foodQuestionPrompts", () => {
     expect(draft?.question).toContain(
       "출처: 질병관리청 국가건강정보포털 식이영양 - https://health.kdca.go.kr/",
     );
+    expect(draft?.question).toContain(
+      "출처: 국가암정보센터 보완대체요법 상담 - https://www.cancer.go.kr/",
+    );
+
+    const copied = formatQuestionClipboardText({
+      answer: "",
+      date: "2026-06-15",
+      priority: draft?.priority,
+      question: draft?.question ?? "",
+      status: "open",
+      topic: draft?.topic ?? "",
+    });
+
+    expect(copied).toContain("근거: 질병관리청 국가건강정보포털 식이영양");
+    expect(copied).toContain("국가암정보센터 보완대체요법 상담");
+    expect(copied).not.toContain("출처: 국가암정보센터 보완대체요법 상담");
   });
 
   it("returns null for an empty or unclassified food check", () => {

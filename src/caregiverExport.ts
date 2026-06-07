@@ -314,11 +314,12 @@ function formatCervicalPromptEvidenceHtml(
 
 function formatTextWithSourceEvidenceHtml(text: string) {
   const evidence = parseSourceEvidence(text);
-  const source = evidence.sourceLabel
-    ? evidence.sourceUrl
-      ? `근거: ${formatExternalLinkHtml(evidence.sourceUrl, evidence.sourceLabel)}`
-      : `근거: ${escapeHtml(evidence.sourceLabel)}`
-    : "";
+  const sourceItems = evidence.sources.map((source) =>
+    source.sourceUrl
+      ? formatExternalLinkHtml(source.sourceUrl, source.sourceLabel)
+      : escapeHtml(source.sourceLabel),
+  );
+  const source = sourceItems.length ? `근거: ${sourceItems.join("; ")}` : "";
   return [multilineHtml(evidence.body), source].filter(Boolean).join(" / ");
 }
 

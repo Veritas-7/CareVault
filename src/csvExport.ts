@@ -18,7 +18,7 @@ import {
 } from "./healthStandards";
 import { formatLabNoteWithSourceEvidence } from "./labSourceEvidence";
 import {
-  formatSourceEvidence,
+  formatSourceEvidenceList,
   formatTextWithSourceEvidence,
   parseSourceEvidence,
 } from "./sourceEvidence";
@@ -454,7 +454,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
         joinDetail([
           questionPriorityLabel[priority],
           question.answer,
-          formatSourceEvidence(questionEvidence.sourceLabel, questionEvidence.sourceUrl),
+          formatSourceEvidenceList(questionEvidence.sources),
         ]),
       ]),
     );

@@ -555,6 +555,7 @@ h2 {
 .backup-import-feedback,
 .action-queue-panel,
 .cervical-care-panel {
+  min-width: 0;
   border: 1px solid #d7e2e1;
   border-radius: 8px;
   background: #fbfdfc;
@@ -824,6 +825,7 @@ label,
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 18px;
+  min-width: 0;
   margin-bottom: 18px;
 }
 
@@ -1904,11 +1906,13 @@ label,
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  min-width: 0;
 }
 
 label {
   display: grid;
   gap: 6px;
+  min-width: 0;
   font-size: 0.88rem;
 }
 
@@ -3330,6 +3334,7 @@ textarea:focus-visible {
 .timeline-item p {
   display: block;
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .timeline-record-badges {
@@ -4448,25 +4453,37 @@ textarea:focus-visible {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
+  min-width: 0;
   padding: 14px;
   border: 1px solid #dce6e5;
   border-radius: 8px;
   background: #ffffff;
 }
 
+.question-item > *,
+.lab-item > *,
+.document-item > *,
+.action-row > *,
+.timeline-item > * {
+  min-width: 0;
+}
+
 .question-item span,
 .question-item small {
   color: #526066;
+  overflow-wrap: anywhere;
 }
 
 .question-item strong {
   display: block;
   margin: 3px 0 4px;
+  overflow-wrap: anywhere;
 }
 
 .question-item p {
   margin-bottom: 6px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .question-source-evidence {
@@ -5071,7 +5088,7 @@ textarea:focus-visible {
   .standards-range-filter,
   .standards-profile-strip,
   .nav-stack {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .cervical-care-panel {
@@ -5118,7 +5135,12 @@ textarea:focus-visible {
   .document-item,
   .document-filter-row,
   .document-update-controls {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .question-card-controls {
+    min-width: 0;
+    width: 100%;
   }
 
   .document-actions {
