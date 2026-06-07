@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 02:49 KST - NCC Healthy-Eating Fatty Meat Part Limit Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating sentence about limiting meat parts with high fat content.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `6b7034b035653ac916a9822784d4befc4b920f5c`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` confirms the nutrition panel should keep source-backed matched food chips and official Korean source links; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page states `지방 함량이 많은 부위의 육류 섭취는 제한합니다`.
+  - Applied the source as risk/limit food guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `지방 함량이 많은 부위의 육류 섭취는 제한합니다` and `지방 함량이 많은 육류 부위 섭취 제한` as source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the two longer fatty-meat-part limit phrases under `nccPreventionDiet` before shorter `지방 함량이 많은 부위` fallback matching and aligned the limit guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating fatty meat part limit sentence phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide strings were missing and the new source phrase collapsed to the shorter `지방 함량이 많은 부위` match.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 66 tests.
+  - PASS full tests: `npm test` => 64 files / 631 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and repository sync verification are still pending.
+- Next Steps:
+  - Stage explicit changed paths, run diff/secret checks, commit, push, and record post-push verification.
+
 ## 2026-06-08 02:45 KST - Post-Push NCC Healthy-Eating Exact Charcoal/Direct-Burnt Food Source Sentence
 
 - Current Goal:
