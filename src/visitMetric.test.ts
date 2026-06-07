@@ -71,6 +71,28 @@ describe("visitMetric", () => {
     });
   });
 
+  it("does not count calendar-rollover visit dates as upcoming", () => {
+    expect(
+      buildVisitPanelSummary(
+        [
+          {
+            date: "2026-02-31",
+            hospital: "날짜 오류 병원",
+            id: "visit-invalid-date",
+            nextDate: "",
+            plan: "",
+            reason: "잘못된 복구 날짜",
+            summary: "",
+          },
+        ],
+        "2026-02-27",
+      ),
+    ).toMatchObject({
+      reminderWindowCount: 0,
+      upcomingCount: 0,
+    });
+  });
+
   it("formats visit added feedback with hospital, reason, and schedule context", () => {
     expect(
       formatVisitAddedStatus({

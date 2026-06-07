@@ -28225,3 +28225,28 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:49 KST - Calendar-Rollover Visit Date Guard Started
+
+- Current Goal:
+  - Prevent impossible restored or imported visit dates from being counted as upcoming appointments after JavaScript calendar rollover.
+- Context:
+  - Re-read thread identity, current repo sync, latest `working.md`, TDD/custom-git skills, runtime doctor, and existing `surface:7` diagnostics before editing.
+  - Existing `surface:7` was used only for non-focusing URL/title/error diagnostics; no `select-workspace`, `focus-webview`, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+  - `appointmentReminders.ts` and `visitMetric.ts` parsed `YYYY-MM-DD` with `Date.UTC()` but did not verify the round-trip calendar date. Values like `2026-02-31` could roll over into March and be counted as upcoming.
+- Changes:
+  - `src/appointmentReminders.test.ts`: added RED coverage proving impossible appointment dates should not create reminders.
+  - `src/visitMetric.test.ts`: added RED coverage proving impossible visit dates should not increment upcoming or soon summary counts.
+  - `src/appointmentReminders.ts` and `src/visitMetric.ts`: added strict `YYYY-MM-DD` round-trip validation before converting a date to a UTC day.
+- Tests:
+  - RED confirmed: `npm test -- src/appointmentReminders.test.ts src/visitMetric.test.ts` failed because `2026-02-31` produced a 4-day reminder and incremented visit summary counts.
+  - PASS focused tests after fix: `npm test -- src/appointmentReminders.test.ts src/visitMetric.test.ts` => `2 passed`, `10 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `554 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS browser diagnostics: existing `surface:7` URL/title remained `http://127.0.0.1:1420/#dashboard` / `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the current `surface:7` blank-document automation context unless it recovers without focus handoff.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused visit-date guard if green.

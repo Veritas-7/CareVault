@@ -62,4 +62,21 @@ describe("appointmentReminders", () => {
   it("returns no reminders for invalid today values", () => {
     expect(buildAppointmentReminders(visits, "not-a-date")).toEqual([]);
   });
+
+  it("ignores calendar-rollover appointment dates", () => {
+    expect(
+      buildAppointmentReminders(
+        [
+          {
+            ...visits[0],
+            id: "visit-invalid-date",
+            date: "2026-02-31",
+            nextDate: "",
+          },
+        ],
+        "2026-02-27",
+        14,
+      ),
+    ).toEqual([]);
+  });
 });

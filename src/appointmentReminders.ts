@@ -22,9 +22,17 @@ export type AppointmentReminder = {
 const dayMs = 24 * 60 * 60 * 1000;
 
 function dateToUtcDay(dateIso: string) {
-  const [year, month, day] = dateIso.split("-").map(Number);
-  if (!year || !month || !day) return Number.NaN;
-  return Date.UTC(year, month - 1, day);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateIso.trim());
+  if (!match) return Number.NaN;
+
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const utcDay = Date.UTC(year, month - 1, day);
+  const normalized = new Date(utcDay).toISOString().slice(0, 10);
+
+  return normalized === dateIso.trim() ? utcDay : Number.NaN;
 }
 
 function firstText(...values: Array<string | undefined>) {
