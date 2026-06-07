@@ -190,8 +190,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "암예방 식단 예시",
         detail:
-          "국가암정보센터 암예방 식단 예시는 잡곡밥, 채소 반찬, 생선 단백질 식품, 단체 급식의 다양한 채소 반찬과 적정량 단백질 예시를 균형식 후보로 제시합니다.",
-        examples: "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 미역국, 상추쌈, 버섯나물, 불고기",
+          "국가암정보센터 암예방 식단 예시는 잡곡밥, 채소 반찬, 생선 단백질 식품, 간편식의 통곡물·샐러드·저지방 유제품·과일 예시, 단체 급식의 다양한 채소 반찬과 적정량 단백질 예시를 균형식 후보로 제시합니다.",
+        examples:
+          "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 통밀빵, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 플레인 요구르트, 방울토마토, 블루베리, 미역국, 상추쌈, 버섯나물, 불고기",
         sourceIds: ["nccPreventionMealExamples"],
       },
       {
@@ -343,7 +344,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["상추쌈", "국가암정보센터 암예방 식단 예시 후보", "nccPreventionMealExamples"],
   ["버섯나물", "국가암정보센터 암예방 식단 예시 후보", "nccPreventionMealExamples"],
   ["불고기", "국가암정보센터 암예방 식단 단백질 적정량 예시 후보", "nccPreventionMealExamples"],
-  ["통밀빵", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
+  ["통밀빵", "국가암정보센터 암예방 샐러드 통곡물 예시 후보", "nccPreventionMealExamples"],
+  ["샐러드(채소)", "국가암정보센터 암예방 샐러드 신선채소 예시 후보", "nccPreventionMealExamples"],
+  ["샐러드(달걀)", "국가암정보센터 암예방 샐러드 단백질 예시 후보", "nccPreventionMealExamples"],
+  ["샐러드(치즈)", "국가암정보센터 암예방 샐러드 유제품 단백질·칼슘 예시 후보", "nccPreventionMealExamples"],
+  ["모차렐라", "국가암정보센터 암예방 샐러드 유제품 단백질·칼슘 예시 후보", "nccPreventionMealExamples"],
   ["통밀", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
   ["당근", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
   ["시금치", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
@@ -358,8 +363,8 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["브로콜리", "채소 중심 식단에 적합", "nccPreventionDiet"],
   ["양배추", "십자화과 채소", "nccPreventionDiet"],
   ["케일", "짙은 잎채소", "nccPreventionDiet"],
-  ["방울토마토", "채소 다양성에 도움", "nccPreventionDiet"],
-  ["블루베리", "과일 다양성에 도움", "nccPreventionDiet"],
+  ["방울토마토", "국가암정보센터 암예방 샐러드 신선채소 예시 후보", "nccPreventionMealExamples"],
+  ["블루베리", "국가암정보센터 암예방 샐러드 과일 예시 후보", "nccPreventionMealExamples"],
   ["딸기", "과일 다양성에 도움", "nccPreventionDiet"],
   ["사과", "과일 다양성에 도움", "nccPreventionDiet"],
   ["토마토", "채소 다양성에 도움", "nccPreventionDiet"],
@@ -377,11 +382,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["닭고기", "단백질 식품 후보", "nccPreventionDiet"],
   ["달걀", "단백질 식품 후보", "nccPreventionDiet"],
   ["생선", "단백질 공급원", "nccSideEffectDiet"],
-  ["플레인 요구르트", "저지방 유제품 후보", "nccPreventionDiet"],
+  ["플레인 요구르트", "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보", "nccPreventionMealExamples"],
   ["플레인 요거트", "저지방 유제품 후보", "nccPreventionDiet"],
   ["저지방 유제품", "저지방 유제품 후보", "nccPreventionDiet"],
   ["저지방 우유", "저지방 유제품 후보", "nccPreventionDiet"],
-  ["리코타 치즈", "유제품 단백질·칼슘 후보", "nccPreventionDiet"],
+  ["리코타 치즈", "국가암정보센터 암예방 샐러드 유제품 단백질·칼슘 예시 후보", "nccPreventionMealExamples"],
   ["요거트", "단백질과 섭취 용이성", "nccPreventionDiet"],
 ];
 

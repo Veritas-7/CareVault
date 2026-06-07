@@ -200,6 +200,16 @@ describe("healthRules", () => {
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
     ).toContain("미역국");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("샐러드(달걀)");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("모차렐라");
     const limitGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "limit",
     )?.items;
@@ -422,8 +432,8 @@ describe("healthRules", () => {
     });
     expect(matchesByTerm["플레인 요구르트"]).toMatchObject({
       level: "ok",
-      reason: "저지방 유제품 후보",
-      sourceId: "nccPreventionDiet",
+      reason: "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보",
+      sourceId: "nccPreventionMealExamples",
     });
     expect(matchesByTerm["탄 고기"]).toMatchObject({
       level: "watch",
@@ -544,6 +554,81 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC prevention snack-salad example foods without cure claims", () => {
+    const assessment = assessCancerFood(
+      "통밀빵, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 방울토마토, 블루베리, 플레인 요구르트",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "통밀빵",
+      "샐러드(채소)",
+      "샐러드(달걀)",
+      "샐러드(치즈)",
+      "모차렐라",
+      "리코타 치즈",
+      "방울토마토",
+      "블루베리",
+      "플레인 요구르트",
+    ]);
+    expect(terms).not.toContain("달걀");
+    expect(terms).not.toContain("치즈");
+    expect(terms).not.toContain("토마토");
+    expect(matchesByTerm.통밀빵).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 통곡물 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["샐러드(채소)"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 신선채소 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["샐러드(달걀)"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 단백질 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["샐러드(치즈)"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 유제품 단백질·칼슘 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.모차렐라).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 유제품 단백질·칼슘 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["리코타 치즈"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 유제품 단백질·칼슘 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.방울토마토).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 신선채소 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.블루베리).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 과일 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["플레인 요구르트"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm["샐러드(달걀)"])).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("keeps longer risk food phrases from producing contradictory shorter support chips", () => {
     const assessment = assessCancerFood("생선회, 날달걀, 통밀빵, 비살균 우유");
     const terms = assessment.matches.map((match) => match.term);
@@ -568,7 +653,7 @@ describe("healthRules", () => {
     });
     expect(matchesByTerm.통밀빵).toMatchObject({
       level: "ok",
-      sourceId: "nccPreventionDiet",
+      sourceId: "nccPreventionMealExamples",
     });
     expect(matchesByTerm["비살균 우유"]).toMatchObject({
       level: "risk",
