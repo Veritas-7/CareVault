@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:12 KST - Post-Push NCC Healthy-Eating Low-Salt Food Heading
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center healthy-eating low-salt food heading slice.
+- Result:
+  - Source commit pushed: `a343c54` (`Add NCC low-salt food heading terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `a343c5444d273cae4b3d2dda3a2888024821986a`.
+  - Post-push verification log commit is pending.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `3f778733b419168ad19e35ec1af00f7948312cfa`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new heading was classified `neutral`.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 78 tests.
+  - PASS full tests before push: `npm test` => 64 files / 643 tests.
+  - PASS typecheck before push: `npm run typecheck`.
+  - PASS build before push: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 9.23 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 643 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; post-push verification log commit is pending.
+- Next Steps:
+  - Commit and push this post-push verification log, then verify post-log sync/runtime status.
+
 ## 2026-06-08 04:09 KST - NCC Healthy-Eating Low-Salt Food Heading
 
 - Current Goal:
