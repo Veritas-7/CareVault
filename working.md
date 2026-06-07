@@ -30267,9 +30267,37 @@
 - Sources:
   - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
 - Issues:
-  - No blocker so far. Staged checks, secret scans, commit/push, and post-push sync checks still need to run.
+  - No blocker. Source commit is pushed and the repository is synced after push; post-push verification is recorded below.
 - Next Steps:
-  - Run the full verification gate, stage explicit CareVault paths, run staged checks and gitleaks scans, commit/push, then record post-push verification.
+  - Run log-only gates after adding the post-push section, then commit/push this `working.md` update and recheck final sync/runtime cleanup.
+
+## 2026-06-07 21:06 KST - Post-Push NCC Prevention Added-Sugar Dairy Limit
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center prevention snack/salad added-sugar dairy limit slice.
+- Result:
+  - Source commit pushed: `811a7cb` (`Add NCC prevention added-sugar dairy limit`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `811a7cb50021f26cc795c79448e6a474db013030`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the limit guide card lacked `가당 제품`, and `가당 제품`/`가당 유제품` did not match any food rule.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 33 tests.
+  - PASS full tests: `npm test` => 64 files / 598 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 6.93 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 598 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
+  - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
 
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 
