@@ -677,6 +677,48 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC prevention snack-salad low-fat dairy support terms", () => {
+    const assessment = assessCancerFood(
+      "저지방 유제품, 저지방 요구르트, 저지방 요거트, 플레인 요거트",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "저지방 유제품",
+      "저지방 요구르트",
+      "저지방 요거트",
+      "플레인 요거트",
+    ]);
+    expect(matchesByTerm["저지방 유제품"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["저지방 요구르트"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["저지방 요거트"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["플레인 요거트"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm["저지방 유제품"])).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("keeps longer risk food phrases from producing contradictory shorter support chips", () => {
     const assessment = assessCancerFood("생선회, 날달걀, 통밀빵, 비살균 우유");
     const terms = assessment.matches.map((match) => match.term);
