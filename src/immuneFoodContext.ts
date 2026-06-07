@@ -44,6 +44,19 @@ function getLabFlag(lab: ImmuneFoodLabResult): LabFlag {
   return assessLabTextValue(lab.value, lab.lower, lab.upper).flag;
 }
 
+function isValidIsoDate(value: string) {
+  const trimmed = value.trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const normalized = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+
+  return normalized === trimmed;
+}
+
 function sortContextCandidates(a: ImmuneFoodLabResult, b: ImmuneFoodLabResult) {
   const dateOrder = b.date.localeCompare(a.date);
   if (dateOrder !== 0) return dateOrder;
@@ -56,7 +69,12 @@ function findImmuneFoodLabContext(labs: ImmuneFoodLabResult[]) {
   return [...labs]
     .filter((lab) => {
       const lower = parseFiniteNumberText(lab.lower);
-      return lower !== undefined && isImmuneLabName(lab.name) && getLabFlag(lab) === "low";
+      return (
+        lower !== undefined &&
+        isValidIsoDate(lab.date) &&
+        isImmuneLabName(lab.name) &&
+        getLabFlag(lab) === "low"
+      );
     })
     .sort(sortContextCandidates)[0];
 }

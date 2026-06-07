@@ -104,4 +104,33 @@ describe("immuneFoodContext", () => {
       ]),
     ).toBeNull();
   });
+
+  it("ignores malformed lab dates when selecting immune food safety context", () => {
+    const context = buildImmuneFoodSafetyContext([
+      {
+        date: "2026-06-31",
+        name: "ANC",
+        value: "0.4",
+        unit: "10^3/uL",
+        lower: "1.5",
+        upper: "",
+        note: "깨진 날짜 검사",
+      },
+      {
+        date: "2026-06-01",
+        name: "WBC",
+        value: "3.4",
+        unit: "10^3/uL",
+        lower: "4.0",
+        upper: "10.0",
+        note: "실제 날짜 검사",
+      },
+    ]);
+
+    expect(context).toMatchObject({
+      labName: "WBC",
+      labValueLabel: "2026-06-01 WBC 3.4 10^3/uL",
+    });
+    expect(context?.summary).not.toContain("2026-06-31");
+  });
 });
