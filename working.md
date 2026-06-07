@@ -26743,3 +26743,33 @@
   - Browser-local document search/reset test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 11:29 KST - Food Question Draft Direct QA
+
+- Current Goal:
+  - Direct-QA the source-backed food/nutrition question draft flow in the same existing `암관리` / `surface:7` cmux browser.
+  - Continue honoring the user's instruction to avoid visible window occupation by using only `cmux browser --surface surface:7` CLI operations.
+- Context:
+  - `DESIGN.md` requires the nutrition panel to show source-backed matched food chips and a compact `질문 초안` action that fills the editable pre-visit question form with food reasons, low-lab context when present, and a parseable source line without saving automatically.
+  - The current seed nutrition state uses `브로콜리, 현미밥, 베이컨, 자몽 주스`, a low WBC context, and official food/source links.
+- Changes:
+  - No source code changes in this slice; the existing implementation passed direct same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; the existing `surface:7` browser was reused at `http://127.0.0.1:1420/#nutrition`.
+  - PASS same-surface recovery: an early broad DOM read found the frame at `about:blank`; cmux was not restarted and no new browser/surface/tab was created. The same frame was recovered with `location.href = "http://127.0.0.1:1420/#nutrition"`, then verified as `document.readyState=complete`.
+  - PASS hit-target/source scan: the food question button rendered `44px` high with aria/title `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함`; nutrition source links measured `44px`, `46px`, `44px`, `44px`, `44px`, `44px`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testFoodQuestionBaseline"]`; storage length `1872`, local keys only `carevault.v1`, food query `브로콜리, 현미밥, 베이컨, 자몽 주스`, blank question topic/body, priority `next-visit`, save chip `브라우저 자동 저장됨`, and counts were `documents=1`, `deletedDocuments=0`, `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `labResults=1`.
+  - PASS real click: clicked the real `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함` button.
+  - PASS draft behavior: topic became `식단·음식 안전`, priority became `high`, body included low WBC context (`2026-06-01 WBC 3.4 10^3/uL` below the `4.0 10^3/uL` lower bound), the current food query, risk topics (`날음식·비살균 식품`, `외식`, `자몽/보충제/약물 상호작용`), matched food reasons (`브로콜리`, `현미`, `베이컨`, `자몽`), the Seoul Asan CBC lab reference, and `출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do`.
+  - PASS source contract check: an initial verifier predicate returned `hasSources=false` only because it incorrectly required `질병관리청`; `src/foodQuestionPrompts.ts` and `src/foodQuestionPrompts.test.ts` intentionally use one immune food safety `출처:` line when immune-low context exists, and the observed draft matched that contract.
+  - PASS non-directive guard: the generated question draft did not contain direct order phrases such as `치료하세요`, `복용하세요`, or `처방하세요`.
+  - PASS feedback/non-mutation: `.food-question-draft-feedback` and the top save chip both showed `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 브로콜리, 현미밥, 베이컨, 자몽 주스 · 일치 4개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 4개`; `localStorage["carevault.v1"]` stayed byte-equal to baseline and record counts stayed unchanged.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testFoodQuestionBaseline`, reloaded the same `surface:7`, and confirmed URL `http://127.0.0.1:1420/#nutrition`, storage length `1872`, keys only `carevault.v1`, no `carevault.__test*` session keys, food query restored, empty question topic/body, priority `next-visit`, blank food feedback, save chip `브라우저 자동 저장됨`, record counts restored, question button still `44px`, and all nutrition source links still at least `44px`.
+  - PASS browser diagnostics after cleanup: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/foodQuestionPrompts.test.ts src/foodMetric.test.ts src/healthRules.test.ts src/immuneFoodContext.test.ts` => `4 passed`, `28 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with verified food/nutrition direct QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
