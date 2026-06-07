@@ -160,6 +160,18 @@ describe("labQuestionPrompts", () => {
     ).toBe("2026-06-15");
   });
 
+  it("ignores malformed future-looking visit dates for generated questions", () => {
+    expect(
+      getNextQuestionDate(
+        [
+          { date: "2026-02-31", nextDate: "" },
+          { date: "not-a-date", nextDate: "unknown" },
+        ],
+        "2026-02-27",
+      ),
+    ).toBe("2026-02-27");
+  });
+
   it("falls back to today when no future visit exists", () => {
     expect(getNextQuestionDate([{ date: "2026-05-01", nextDate: "2026-05-15" }], "2026-06-03")).toBe(
       "2026-06-03",

@@ -21,6 +21,19 @@ export type LabFollowupQuestionCandidate = {
   question: string;
 };
 
+function isValidIsoDate(date: string) {
+  const trimmed = date.trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (!match) return false;
+
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const normalized = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+  return normalized === trimmed;
+}
+
 export function buildLabFollowupQuestionButtonLabels(
   labName: string,
   includesSourceEvidence: boolean,
@@ -124,7 +137,8 @@ export function getNextQuestionDate(visits: VisitQuestionDateSource[], todayIso:
   const futureDates = visits
     .flatMap((visit) => [visit.nextDate, visit.date])
     .filter((date): date is string => Boolean(date))
-    .filter((date) => date >= todayIso)
+    .map((date) => date.trim())
+    .filter((date) => isValidIsoDate(date) && date >= todayIso)
     .sort();
 
   return futureDates[0] ?? todayIso;
