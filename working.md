@@ -27024,3 +27024,16 @@
   - `working.md` is dirty with verified cancer care mode toggle direct QA evidence only; source code is unchanged.
 - Next Steps:
   - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
+
+## 2026-06-07 12:12 KST - Post-Push Cancer Care Mode Toggle QA
+
+- Verification:
+  - PASS focused commit: `3af8ad6` (`Log cancer care mode toggle QA`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `3af8ad6`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - The cancer care mode toggle flow is directly verified on the existing `암관리` `surface:7` through cmux CLI-only browser operations, committed, pushed, and synced.
+  - Browser-local cancer mode test state was cleaned up; runtime is clean.
+- Next Steps:
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
