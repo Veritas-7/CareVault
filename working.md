@@ -29,6 +29,36 @@
 - Next Steps:
   - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
 
+## 2026-06-07 23:16 KST - Post-Push NCC Healthy-Eating Daily Vegetable Guidance Terms
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center healthy-eating daily vegetable guidance source split and term slice.
+- Result:
+  - Source commit pushed: `95e9104` (`Add NCC healthy eating vegetable terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `95e91042c6aa10ad20b64fb92a70e3b7654cc74c`.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `ba7517f680450ec41dcd8ccefdda7c2f2de34ea6`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccPreventionDiet` still used the old label/URL and `채소류`, `매끼니 채소`, and `매일 채소` produced `neutral`.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 46 tests.
+  - PASS export regression update: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts src/csvExport.test.ts src/visitPacket.test.ts` => 4 files / 95 tests.
+  - PASS full tests: `npm test` => 64 files / 611 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 7.40 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 611 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
+  - Commit/push this `working.md` update and recheck final sync/runtime cleanup.
+
 ## 2026-06-07 23:05 KST - NCC Prevention Protein Guidance Terms
 
 - Current Goal:
