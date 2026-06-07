@@ -26,7 +26,7 @@
 - Issues:
   - No new blocking issue. Source commit is pushed and the repository is synced after source push; post-push verification is recorded below.
 - Next Steps:
-  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-08 00:11 KST - Post-Push NCC Healthy-Eating Seasoning and Added Salt/Soy Limit Terms
 
@@ -52,9 +52,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+  - No new blocking issue. Source commit and post-push log commit were pushed; this cleanup update removes stale next-step wording.
 - Next Steps:
-  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-07 23:46 KST - NCC Healthy-Eating Hot/Spicy Food Limit Terms
 
