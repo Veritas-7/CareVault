@@ -196,6 +196,35 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy-eating daily fruit snack guidance terms", () => {
+    const assessment = assessCancerFood(
+      "매일 1회 이상 과일, 과일 매일 1회 이상, 과일 간식, 매일 과일 간식",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "매일 1회 이상 과일",
+      "과일 매일 1회 이상",
+      "과일 간식",
+      "매일 과일 간식",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 과일류 매일 1회 이상 간식 섭취 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating hot or spicy food limit terms", () => {
     const assessment = assessCancerFood(
       "너무 뜨겁거나 매운 음식, 너무 뜨거운 음식, 뜨거운 음식, 너무 매운 음식, 매운 음식",

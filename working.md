@@ -1,5 +1,32 @@
 # CareVault Working Notes
 
+## 2026-06-08 00:35 KST - NCC Healthy-Eating Daily Fruit Snack Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on eating fruit at least once daily as a snack.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `a29ced1cd61cbd6018054b9494baae8fe57521bc`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, updated 2025-09-29, whose guidance says `과일류` should be eaten at least once daily as a snack.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `매일 1회 이상 과일`, `과일 매일 1회 이상`, `과일 간식`, and `매일 과일 간식` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the four daily fruit snack support terms under `nccPreventionDiet` and aligned the balanced food guide text/examples with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating daily fruit snack terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new daily fruit snack phrases collapsed to only existing `매일 과일`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 52 tests.
+  - PASS full tests: `npm test` => 64 files / 617 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-08 00:21 KST - NCC Healthy-Eating Meat Cooking Method Terms
 
 - Current Goal:
