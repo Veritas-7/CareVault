@@ -27650,3 +27650,16 @@
   - QualityGate read-only scan is unavailable because the configured binary path is missing.
 - Next Steps:
   - Commit/push the README/working.md documentation update with explicit-path staging and standard secret gates.
+
+## 2026-06-07 13:45 KST - Post-Push Browser Storage Fallback README Alignment
+
+- Verification:
+  - PASS focused commit: `e9f2521` (`Document browser storage memory fallback`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `e9f2521`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - README Storage Notes now match the current browser persistence behavior: localStorage when available, temporary memory when storage access or writes are blocked, with explicit temporary-memory save labels.
+  - Runtime is clean; no temporary Vite process is running.
+- Next Steps:
+  - Continue with another non-duplicate CareVault workflow. Direct browser QA still must use only the existing `surface:7` without selecting/focusing the inactive `암관리` workspace unless the user explicitly approves that focus change.
