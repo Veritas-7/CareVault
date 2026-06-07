@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 03:16 KST - NCC Healthy-Eating Daily Fruit Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating sentence about eating fruit at least once daily as a snack.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `0e5ae680971b44ba6d71994b45a74b40e26a6bdf`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` keeps nutrition judgment source-backed and prohibits cure/treatment food claims; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page says `과일류는 매일 1회 이상 간식으로 섭취합니다`.
+  - Applied the source as support/balanced diet guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `과일류는 매일 1회 이상 간식으로 섭취합니다` and `과일류 매일 1회 이상 간식 섭취` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the two longer daily-fruit phrases under `nccPreventionDiet` before shorter fruit fallback matching and aligned the balanced guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating daily fruit sentence phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide strings were missing and the new source phrase collapsed to shorter `과일류` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 70 tests.
+  - PASS full tests: `npm test` => 64 files / 635 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue so far.
+- Next Steps:
+  - Run git diff/secrets checks, then stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` and push if clean.
+
 ## 2026-06-08 03:12 KST - Post-Push NCC Healthy-Eating Daily Vegetable Sentence
 
 - Current Goal:

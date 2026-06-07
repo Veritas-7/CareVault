@@ -29,6 +29,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating processed-meat avoid sentence matching for 햄, 소시지 등의 육가공품을 가급적 먹지 않습니다/햄 소시지 등의 육가공품 가급적 먹지 않기
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
 - NCC healthy-eating daily vegetable sentence matching for 채소류(생채소, 나물, 샐러드, 쌈류 등)를 매일, 매끼니 충분히 먹습니다/채소류 생채소 나물 샐러드 쌈류 매일 매끼니 충분히
+- NCC healthy-eating daily fruit sentence matching for 과일류는 매일 1회 이상 간식으로 섭취합니다/과일류 매일 1회 이상 간식 섭취
 - NCC healthy-eating daily legume matching for 두류 매일 섭취/두류 가공품 매일 섭취/두유 두부 매일 섭취
 - NCC healthy-eating low-fat milk daily matching for 저지방 우유 하루 1잔 정도/하루 1잔 정도 저지방 우유
 - NCC healthy-eating hot/spicy-food avoid matching for 너무 뜨겁거나 매운 음식의 섭취는 피합니다/너무 뜨겁거나 매운 음식 섭취 피하기
