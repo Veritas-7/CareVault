@@ -46,6 +46,7 @@ export type FoodGuidanceSourceId =
   | "nccTreatmentNutrients"
   | "nccTreatmentRightEating"
   | "nccTreatmentHealthyEatingTips"
+  | "nccAfterTreatmentHealthyEating"
   | "kdcaNutrition"
   | "kdcaAlcohol";
 
@@ -206,6 +207,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 치료 중 건강식을 먹는 요령",
     url: "https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
   },
+  nccAfterTreatmentHealthyEating: {
+    label: "국가암정보센터 치료 후 건강한 식생활",
+    url: "https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+  },
   kdcaNutrition: {
     label: "질병관리청 국가건강정보포털 식이영양",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=6693",
@@ -292,6 +297,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "치료 중 규칙적인 아침 점심 저녁, 치료 중 밥 반 그릇에서 한 그릇, 치료 중 죽 하루 4~5번 이상, 치료 중 단백질 반찬 충분히, 치료 중 채소 반찬 매끼 두 가지 이상, 치료 중 과일 하루 한두 번, 치료 중 우유와 유제품 하루 1컵, 치료 중 요구르트 두유 치즈",
         sourceIds: ["nccTreatmentHealthyEatingTips"],
+      },
+      {
+        label: "치료 후 균형식·전곡류",
+        detail:
+          "국가암정보센터 치료 후 건강한 식생활 자료는 모든 암 치료가 끝난 후 건강한 식생활 지침을 따르도록 하며, 곡류·단백질 식품·채소류를 포함한 균형 잡힌 식사, 우유 및 유제품류와 과일류, 다양한 색의 과일·채소·전곡류를 충분히 먹는 방향을 안내합니다.",
+        examples:
+          "치료 후 건강한 식생활, 치료 후 다채로운 식단과 균형잡힌 식사, 치료 후 다양한 단백질 식품과 채소류, 치료 후 우유 및 유제품류 과일류, 치료 후 과일 채소 전곡류 충분히",
+        sourceIds: ["nccAfterTreatmentHealthyEating"],
       },
       {
         label: "메스꺼움 시 위 부담 적은 음식",
@@ -394,6 +407,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "햄, 소시지, 가공육류, 가공육, 육가공품, 햄, 소시지 등의 육가공품을 가급적 먹지 않습니다, 햄 소시지 등의 육가공품 가급적 먹지 않기, 햄·소시지, 햄 소시지, 햄 소시지 육가공품, 육가공품 가급적 먹지 않기, 육가공품 가급적 먹지 않습니다, 베이컨, 탄 고기, 숯불구이, 숯불 직화, 직접 구이, 직접구이, 탄 음식은 먹지 않기, 탄 음식은 먹지 않습니다, 숯불로 굽거나 직접 구워 탄 음식의 섭취는 삼가합니다, 숯불로 굽거나 직접 구워 탄 음식 섭취 삼가, 숯불로 굽거나 직접 구워서 탄 음식의 섭취는 삼가합니다, 숯불로 굽거나 직접 구워서 탄 음식 섭취 삼가, 숯불로 구운 탄 음식, 직접 구워 탄 음식, 탄 음식 섭취 삼가, 지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한, 지방 함량이 많은 부위, 직화 구이, 직화구이, 튀김 조리, 튀긴 음식, 튀김",
         sourceIds: ["nccPreventionMealExamples", "nccPreventionDiet"],
+      },
+      {
+        label: "치료 후 가공육·탄 음식·짠 음식·술",
+        detail:
+          "국가암정보센터 치료 후 건강한 식생활 자료는 가공육 섭취를 제한하고 탄 음식을 피하며, 짠 음식은 피하고 싱겁게 먹고, 하루 한두 잔의 음주도 피하도록 안내합니다.",
+        examples:
+          "치료 후 가공육 제한, 치료 후 탄 음식 피하기, 치료 후 짠 음식 피하기, 치료 후 하루 한 두 잔 술도 피하기",
+        sourceIds: ["nccAfterTreatmentHealthyEating"],
       },
       {
         label: "붉은 육류 적정량",
@@ -501,6 +522,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "몸에 좋다고 소문난 식품, 몸에 좋다고 소문난 영양소, 특정 식품이나 영양소 편중, 백혈구 수치를 올리는 특별한 음식",
         sourceIds: ["nccTreatmentRightEating"],
+      },
+      {
+        label: "치료 후 식사 어려움·보조식품 상담",
+        detail:
+          "국가암정보센터 치료 후 건강한 식생활 자료는 치료 후 부작용 등으로 적절한 식사 섭취가 힘들거나 고혈압·당뇨병·고지혈증 등으로 식사조절이 필요하면 담당의사 및 임상영양사와 상담하고, 건강보조식품이나 민간요법은 안전성과 효과가 과학적으로 입증되지 않은 경우가 많아 주의하도록 안내합니다.",
+        examples:
+          "치료 후 부작용으로 식사 섭취 힘듦, 치료 후 건강보조식품 민간요법 주의",
+        sourceIds: ["nccAfterTreatmentHealthyEating"],
       },
       {
         label: "날음식·비살균·보관/세척 주의 식품",
@@ -888,6 +917,31 @@ const supportiveFoods: FoodRuleTerm[] = [
     "국가암정보센터 치료 중 건강식 실천 식품 후보",
     "nccTreatmentHealthyEatingTips",
   ],
+  [
+    "치료 후 건강한 식생활",
+    "국가암정보센터 치료 후 건강한 식생활 균형식 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "치료 후 다채로운 식단과 균형잡힌 식사",
+    "국가암정보센터 치료 후 건강한 식생활 균형식 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "치료 후 다양한 단백질 식품과 채소류",
+    "국가암정보센터 치료 후 건강한 식생활 균형식 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "치료 후 우유 및 유제품류 과일류",
+    "국가암정보센터 치료 후 건강한 식생활 균형식 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "치료 후 과일 채소 전곡류 충분히",
+    "국가암정보센터 치료 후 건강한 식생활 균형식 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
   ["흰죽", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["닭죽", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["호박죽", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
@@ -1110,6 +1164,26 @@ const limitFoods: FoodRuleTerm[] = [
   ["알코올", "암 예방 관점에서 제한 권고", "kdcaAlcohol"],
   ["맥주", "알코올", "kdcaAlcohol"],
   ["와인", "알코올", "kdcaAlcohol"],
+  [
+    "치료 후 가공육 제한",
+    "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "치료 후 탄 음식 피하기",
+    "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "치료 후 짠 음식 피하기",
+    "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "치료 후 하루 한 두 잔 술도 피하기",
+    "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",
+    "nccAfterTreatmentHealthyEating",
+  ],
   ["소고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["돼지고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["붉은 육류", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
@@ -1575,6 +1649,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "백혈구 수치를 올리는 특별한 음식",
     "국가암정보센터 치료 중 소문난 식품·백혈구 특효 음식 확인 필요",
     "nccTreatmentRightEating",
+  ],
+  [
+    "치료 후 부작용으로 식사 섭취 힘듦",
+    "국가암정보센터 치료 후 식사 어려움·보조식품 상담 필요",
+    "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "치료 후 건강보조식품 민간요법 주의",
+    "국가암정보센터 치료 후 식사 어려움·보조식품 상담 필요",
+    "nccAfterTreatmentHealthyEating",
   ],
   ["생굴", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],
   ["육회", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],

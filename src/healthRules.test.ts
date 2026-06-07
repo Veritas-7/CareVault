@@ -1583,6 +1583,90 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/암을 낫게|특효|완치/);
   });
 
+  it("recognizes NCC after-treatment healthy eating and limit guidance", () => {
+    const assessment = assessCancerFood(
+      "치료 후 건강한 식생활, 치료 후 다채로운 식단과 균형잡힌 식사, 치료 후 다양한 단백질 식품과 채소류, 치료 후 우유 및 유제품류 과일류, 치료 후 과일 채소 전곡류 충분히, 치료 후 가공육 제한, 치료 후 탄 음식 피하기, 치료 후 짠 음식 피하기, 치료 후 하루 한 두 잔 술도 피하기, 치료 후 부작용으로 식사 섭취 힘듦, 치료 후 건강보조식품 민간요법 주의",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccAfterTreatmentHealthyEating.label).toBe(
+      "국가암정보센터 치료 후 건강한 식생활",
+    );
+    expect(foodGuidanceSources.nccAfterTreatmentHealthyEating.url).toBe(
+      "https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "치료 후 건강한 식생활",
+      "치료 후 다채로운 식단과 균형잡힌 식사",
+      "치료 후 다양한 단백질 식품과 채소류",
+      "치료 후 우유 및 유제품류 과일류",
+      "치료 후 과일 채소 전곡류 충분히",
+      "치료 후 가공육 제한",
+      "치료 후 탄 음식 피하기",
+      "치료 후 짠 음식 피하기",
+      "치료 후 하루 한 두 잔 술도 피하기",
+      "치료 후 부작용으로 식사 섭취 힘듦",
+      "치료 후 건강보조식품 민간요법 주의",
+    ]);
+    for (const term of [
+      "치료 후 건강한 식생활",
+      "치료 후 다채로운 식단과 균형잡힌 식사",
+      "치료 후 다양한 단백질 식품과 채소류",
+      "치료 후 우유 및 유제품류 과일류",
+      "치료 후 과일 채소 전곡류 충분히",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 치료 후 건강한 식생활 균형식 후보",
+        sourceId: "nccAfterTreatmentHealthyEating",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 치료 후 건강한 식생활 - https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+      );
+    }
+    for (const term of [
+      "치료 후 가공육 제한",
+      "치료 후 탄 음식 피하기",
+      "치료 후 짠 음식 피하기",
+      "치료 후 하루 한 두 잔 술도 피하기",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",
+        sourceId: "nccAfterTreatmentHealthyEating",
+      });
+    }
+    for (const term of [
+      "치료 후 부작용으로 식사 섭취 힘듦",
+      "치료 후 건강보조식품 민간요법 주의",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 치료 후 식사 어려움·보조식품 상담 필요",
+        sourceId: "nccAfterTreatmentHealthyEating",
+      });
+    }
+    expect(balancedGuideText).toContain("치료 후 과일 채소 전곡류 충분히");
+    expect(limitGuideText).toContain("치료 후 가공육 제한");
+    expect(careTeamGuideText).toContain("치료 후 부작용으로 식사 섭취 힘듦");
+  });
+
   it("recognizes NCC mouth-pain soft and irritating food examples", () => {
     const assessment = assessCancerFood(
       "흰죽, 닭죽, 호박죽, 쌀미음, 바나나, 수박, 과일통조림, 토마토주스, 토스트, 크래커, 말린 음식",

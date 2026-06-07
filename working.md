@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-08 06:43 KST - NCC After-Treatment Healthy Eating Guidance
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center after-treatment healthy-eating guidance.
+- Context:
+  - Continued from clean/synced CareVault state after `c3a4b9fd70f19aa2ecda0e9549eef1af753d6071`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept new post-treatment terms scoped to `치료 후 ...` phrases so generic food terms do not change existing prevention/treatment source precedence.
+- Research:
+  - Checked National Cancer Information Center PDF `치료 후 건강한 식생활`. The PDF says after all cancer treatments are over, patients should follow healthy eating guidelines; no specific food or nutrient has been reported to prevent recurrence; balanced meals should include grains, 1-2 protein foods, 2-3 vegetable dishes, milk/dairy and fruit snacks; colorful fruits, vegetables and whole grains should be eaten sufficiently; processed meat should be limited, burnt food avoided, salty food avoided, and even one or two drinks per day avoided.
+  - The PDF also says patients should consult the doctor and clinical dietitian when after-treatment side effects make adequate intake difficult or when hypertension, diabetes, hyperlipidemia, or similar conditions require diet control, and cautions that health supplements and folk remedies often lack scientifically proven safety/effect.
+  - Applied the source as after-treatment balanced-diet, limit, and clinician/dietitian consultation guidance only; no recurrence-prevention food or cure-food claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, balanced guide-card, limit guide-card, care-team guide-card, ok-match, watch-match, risk-match, and source-evidence coverage for after-treatment healthy-eating guidance.
+  - `src/healthRules.ts`: added `nccAfterTreatmentHealthyEating`, visible guide-card items for balanced eating, limit guidance, and consultation needs, plus source-backed ok/watch/risk terms scoped to `치료 후 ...` phrases.
+  - `README.md`: added the new NCC after-treatment healthy-eating phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccAfterTreatmentHealthyEating` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 97 tests.
+  - PASS full tests: `npm test` => 64 files / 662 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `c3a4b9fd70f19aa2ecda0e9549eef1af753d6071`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 12.97 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `치료 후 건강한 식생활`, `https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf`
+- Issues:
+  - No new blocking issue found in the focused TDD slice so far.
+- Next Steps:
+  - Run full verification, GitHub readiness, whole-tree and staged secret scans, then commit and push if all gates pass.
+
 ## 2026-06-08 06:37 KST - Final NCC Treatment Right Eating Food Log
 
 - Current Goal:
