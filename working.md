@@ -28764,3 +28764,22 @@
   - No `focus-webview`, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the focused question list restored date ordering change if green.
+
+## 2026-06-07 15:55 KST - Post-Push Question List Restored Date Ordering
+
+- Current Goal:
+  - Record post-push verification for question list restored date ordering.
+- Result:
+  - Source commit pushed: `bb48bef` (`Guard question list restored dates`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `bb48bef`.
+- Verification:
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing split cmux context; no focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used.
+  - A combined `git rev-parse --short HEAD origin/main` check was discarded because Git expects a single revision with `--short`; separate `HEAD` and `origin/main` checks passed.
+- Next Steps:
+  - Continue with code-level and non-focusing cmux diagnostics while direct DOM context remains blocked.
