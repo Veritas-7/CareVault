@@ -790,6 +790,58 @@ describe("caregiverExport", () => {
     expect(html).not.toContain("렌더링되지 않아야 하는 계획");
   });
 
+  it("omits malformed recent clinical row dates from caregiver summaries", () => {
+    const html = buildCaregiverExportHtml(
+      {
+        ...state,
+        symptoms: [
+          ...state.symptoms,
+          {
+            date: "2026-06-31",
+            symptom: "깨진 날짜 증상",
+            severity: 1,
+            body: "렌더링되지 않아야 하는 증상",
+            action: "",
+          },
+        ],
+        labResults: [
+          ...state.labResults,
+          {
+            date: "2026-02-31",
+            name: "WBC",
+            value: "5.4",
+            unit: "10^3/uL",
+            lower: "4.0",
+            upper: "10.0",
+            note: "렌더링되지 않아야 하는 검사",
+          },
+        ],
+        vitals: [
+          ...state.vitals,
+          {
+            date: "2026-13-01",
+            type: "blood-pressure",
+            systolic: 118,
+            diastolic: 76,
+            note: "렌더링되지 않아야 하는 혈압",
+          },
+        ],
+      },
+      "2026-06-03T10:00:00.000Z",
+    );
+
+    expect(html).toContain("2026-06-01 WBC 3.4 10^3/uL");
+    expect(html).toContain("혈압 132/84 mmHg");
+    expect(html).toContain("오심");
+    expect(html).not.toContain("깨진 날짜 증상");
+    expect(html).not.toContain("렌더링되지 않아야 하는 증상");
+    expect(html).not.toContain("렌더링되지 않아야 하는 검사");
+    expect(html).not.toContain("렌더링되지 않아야 하는 혈압");
+    expect(html).not.toContain("2026-06-31");
+    expect(html).not.toContain("2026-02-31");
+    expect(html).not.toContain("2026-13-01");
+  });
+
   it("opens every caregiver export source link outside the share document", () => {
     const html = buildCaregiverExportHtml(state, "2026-06-03T10:00:00.000Z");
     const anchors = html.match(/<a\b[^>]*>/g) ?? [];

@@ -28574,3 +28574,29 @@
   - Non-focusing `cmux browser surface:7 get title` still returned the URL value during this post-push pass.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 15:33 KST - Caregiver Recent Clinical Date Guard Started
+
+- Current Goal:
+  - Prevent malformed restored dates from appearing in the caregiver share summary's recent symptoms, lab results, and vitals sections.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Existing cmux `surface:7` was used only through non-focusing CLI diagnostics. No `select-workspace`, `focus-webview`, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+  - `latestByDate()` was shared by caregiver recent symptoms, lab results, vitals, and content fingerprints, but it sorted raw date strings without validating that they were real ISO calendar dates.
+- Changes:
+  - `src/caregiverExport.test.ts`: added RED coverage for malformed symptom, lab, and vital dates in the caregiver HTML summary.
+  - `src/caregiverExport.ts`: filtered `latestByDate()` to strict valid `YYYY-MM-DD` calendar dates before sorting and slicing recent clinical rows.
+- Tests:
+  - RED confirmed: `npm test -- src/caregiverExport.test.ts` failed because `2026-06-31` symptom, `2026-02-31` lab, and `2026-13-01` vital rows appeared in the caregiver HTML.
+  - PASS focused test after fix: `npm test -- src/caregiverExport.test.ts` => `1 passed`, `53 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `563 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS cmux browser diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `errors list` returned `No browser errors`, and `get title` returned the URL value instead of `CareVault`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the current `surface:7` automation context mismatch: `snapshot --compact` reports `about:blank`, `get html body` previously returned an empty body, and `get count button` returned `0`.
+  - Non-focusing `cmux browser surface:7 get title` still returns the URL value.
+  - Question, document, and care queue date rendering paths still need a separate scoped pass; this change intentionally covered only recent clinical rows.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused caregiver recent clinical date guard if green.

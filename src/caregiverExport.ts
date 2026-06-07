@@ -355,7 +355,10 @@ function formatCervicalScreeningSummaryHtml(summary: CervicalCancerScreeningSumm
 }
 
 function latestByDate<T extends { date: string }>(items: T[], limit: number) {
-  return [...items].sort((a, b) => b.date.localeCompare(a.date)).slice(0, limit);
+  return [...items]
+    .filter((item) => getValidIsoDate(item.date))
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, limit);
 }
 
 function getValidIsoDate(value: string | undefined) {
