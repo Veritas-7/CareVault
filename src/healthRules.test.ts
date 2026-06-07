@@ -1584,6 +1584,54 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC taste-change protein alternatives and seasoning examples", () => {
+    const assessment = assessCancerFood(
+      "입맛 변화 생선, 입맛 변화 계란, 입맛 변화 두부, 입맛 변화 콩, 입맛 변화 우유나 유제품, 고기 싫을 때 생선, 레몬즙 양념, 새콤달콤한 소스, 입맛 변화 오렌지, 입맛 변화 레몬",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccTasteChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입맛의 변화",
+    );
+    expect(foodGuidanceSources.nccTasteChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "입맛 변화 생선",
+      "입맛 변화 계란",
+      "입맛 변화 두부",
+      "입맛 변화 콩",
+      "입맛 변화 우유나 유제품",
+      "고기 싫을 때 생선",
+      "레몬즙 양념",
+      "새콤달콤한 소스",
+      "입맛 변화 오렌지",
+      "입맛 변화 레몬",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보",
+        sourceId: "nccTasteChangeDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 입맛의 변화 - https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("입맛 변화 생선");
+    expect(balancedGuideText).toContain("레몬즙 양념");
+    expect(balancedGuideText).toContain("새콤달콤한 소스");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC appetite-loss snack and liquid-food examples", () => {
     const assessment = assessCancerFood(
       "식욕부진 간식, 식욕부진 죽, 식욕부진 미음, 식욕부진 쥬스, 식욕부진 주스, 식욕부진 스프, 특수영양 보충음료",

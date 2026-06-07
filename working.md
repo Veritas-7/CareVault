@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 05:19 KST - NCC Taste-Change Protein Alternatives And Seasoning Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center taste-change protein alternatives and seasoning examples.
+- Context:
+  - Continued from clean/synced CareVault state after `81b09d19b9feea428851568987b92c1ed203124d`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - Used TDD and kept this slice limited to taste-change-context phrases to avoid broad global matches on standalone `생선`, `계란`, `두부`, `콩`, `우유`, `오렌지`, or `레몬`.
+- Research:
+  - Re-checked National Cancer Information Center `입맛의 변화`, final update 2013-02-01. The page says taste or smell changes can occur from cancer, anticancer treatment, or dental issues; if meat is disliked, use fish, eggs, tofu, beans, milk or dairy; use aromatic seasonings such as wine or lemon juice, sweet-and-sour sauces for meat/fish dishes, and sour foods such as orange or lemon for metallic taste while being cautious if mouth/throat pain is present.
+  - Applied the source as symptom-context support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `입맛 변화 생선`, `입맛 변화 계란`, `입맛 변화 두부`, `입맛 변화 콩`, `입맛 변화 우유나 유제품`, `고기 싫을 때 생선`, `레몬즙 양념`, `새콤달콤한 소스`, `입맛 변화 오렌지`, and `입맛 변화 레몬`.
+  - `src/healthRules.ts`: added `nccTasteChangeDiet`, a balanced guide card for taste-change protein alternatives/seasoning examples, and source-backed ok matching terms.
+  - `README.md`: added the new NCC taste-change examples to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccTasteChangeDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 87 tests.
+  - PASS full tests: `npm test` => 64 files / 652 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `81b09d19b9feea428851568987b92c1ed203124d`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 12.47 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `입맛의 변화`, `https://www.cancer.go.kr/lay1/S1T479C484/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Commit and push this source slice, then run post-push sync/runtime verification.
+
 ## 2026-06-08 05:16 KST - Post-Push NCC Vomiting Food Verification
 
 - Current Goal:

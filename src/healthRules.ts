@@ -30,6 +30,7 @@ export type FoodGuidanceSourceId =
   | "nccAppetiteLossDiet"
   | "nccNauseaDiet"
   | "nccVomitingDiet"
+  | "nccTasteChangeDiet"
   | "nccMouthPainDiet"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
@@ -133,6 +134,10 @@ export const foodGuidanceSources: Record<
   nccVomitingDiet: {
     label: "국가암정보센터 증상별 식생활 - 구토",
     url: "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+  },
+  nccTasteChangeDiet: {
+    label: "국가암정보센터 증상별 식생활 - 입맛의 변화",
+    url: "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
   },
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
@@ -243,6 +248,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "구토 조절 후 물, 구토 조절 후 육수, 구토 맑은 유동식, 구토 후 미음, 구토 후 부드러운 식사, 우유가 들어있지 않은 제품",
         sourceIds: ["nccVomitingDiet"],
+      },
+      {
+        label: "입맛 변화 시 단백질 대체·향미 조절",
+        detail:
+          "국가암정보센터 입맛의 변화 자료는 고기가 싫다면 생선, 계란, 두부, 콩, 우유나 유제품을 이용하고, 고기나 생선요리에 와인·레몬즙 같은 향이 좋은 양념류나 새콤달콤한 소스를 사용하며, 금속성 맛에는 오렌지나 레몬 같은 시큼한 식품이 도움이 될 수 있으나 입과 목 통증이 있으면 주의하도록 안내합니다.",
+        examples:
+          "입맛 변화 생선, 입맛 변화 계란, 입맛 변화 두부, 입맛 변화 콩, 입맛 변화 우유나 유제품, 고기 싫을 때 생선, 레몬즙 양념, 새콤달콤한 소스, 입맛 변화 오렌지, 입맛 변화 레몬",
+        sourceIds: ["nccTasteChangeDiet", "nccMouthPainDiet"],
       },
       {
         label: "식욕부진 시 가까이 두는 간식",
@@ -675,6 +688,16 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["구토 후 미음", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
   ["구토 후 부드러운 식사", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
   ["우유가 들어있지 않은 제품", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
+  ["입맛 변화 생선", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["입맛 변화 계란", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["입맛 변화 두부", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["입맛 변화 콩", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["입맛 변화 우유나 유제품", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["고기 싫을 때 생선", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["레몬즙 양념", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["새콤달콤한 소스", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["입맛 변화 오렌지", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["입맛 변화 레몬", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 죽", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 미음", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
