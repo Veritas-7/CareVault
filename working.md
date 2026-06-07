@@ -27037,3 +27037,30 @@
   - Browser-local cancer mode test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:16 KST - Caregiver Share Family Preset Reset Direct QA
+
+- Current Goal:
+  - Direct-QA the caregiver share preset dropdown and reset path on the existing `암관리` / `surface:7` cmux browser without occupying the visible window.
+  - Verify the `가족 요약` preset applies its accessible labels, memo, included/excluded sections, save status, and then returns to the byte-exact baseline through the real reset button.
+- Context:
+  - Prior caregiver-share slices covered preview stale-state and other preset/status paths; this slice narrows to the `family-overview` preset plus user-facing reset cleanup.
+  - The test reused the existing cmux browser surface only; no new browser, surface, tab, or desktop `Computer Use` interaction was used.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated to `http://127.0.0.1:1420/#export`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverPresetBaseline"]`; storage length was `1872`, local keys only `carevault.v1`, select value was empty, select aria/title was `보호자 공유 설정 프리셋 · 현재 프리셋 미선택 · 선택하면 해당 공유 설정을 적용합니다`, reset was disabled with `비활성: 이미 기본 공유 설정입니다`, and status was `암환자 관리 켜짐 · 브라우저 자동 저장됨`.
+  - PASS preset apply: selected `family-overview` with the real `.caregiver-share-preset-select` combobox; storage length changed to `1925`, select value became `family-overview`, aria/title became `보호자 공유 설정 프리셋 · 현재 가족 요약 · 선택하면 해당 공유 설정을 적용합니다`, memo became `다가오는 진료, 아직 열린 질문, 최근 증상만 먼저 확인해주세요.`, and save status became `보호자 공유 프리셋 적용: 가족 요약 · 의도 가족 요약 · 프로필 표시 · 메모 포함 · 포함 5개 · 제외 2개 · 브라우저 자동 저장됨`.
+  - PASS preset scope: reset/export/preview aria all exposed `의도 가족 요약 · 프로필 표시 · 메모 포함 · 포함 5개 · 제외 2개`; 진료/질문/서류/증상/검사 were included, and 음식 plus 혈압·혈당·체온 were excluded.
+  - PASS reset cleanup: clicked the real `보호자 공유 설정 초기화` button; select value returned to empty, aria/title returned to `현재 프리셋 미선택`, memo cleared, all 7 sections were included, reset became disabled with `비활성: 이미 기본 공유 설정입니다`, and save status became `보호자 공유 설정 초기화됨 · 의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 7개 · 제외 0개 · 브라우저 자동 저장됨`.
+  - PASS storage cleanup: localStorage matched the captured baseline byte-for-byte (`1872` bytes), `carevault.__testCaregiverPresetBaseline` was removed, and no `carevault.__test*` session keys remained.
+  - PASS browser diagnostics after cleanup: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/caregiverShareSettings.test.ts src/caregiverExport.test.ts src/exportPreviewSummary.test.ts` => `3 passed`, `85 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main`; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `working.md` is dirty with verified caregiver share family preset reset QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
