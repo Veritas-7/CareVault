@@ -29990,6 +29990,34 @@
 - Next Steps:
   - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record post-push verification.
 
+## 2026-06-07 20:14 KST - Post-Push Cervical Grain and Sodium Replacement Examples
+
+- Current Goal:
+  - Record post-push verification for the cervical practice-guideline grain and sodium-reduction food example slice.
+- Result:
+  - Source commit pushed: `017987e` (`Add cervical grain sodium food examples`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `017987ec7e88556bf29a090cd367e3dc0aee5ee4`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because guide cards lacked `우엉조림`, `우엉조림` was not a `watch` match, and `잡곡밥` still used the generic prevention-diet source.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 29 tests.
+  - PASS full tests: `npm test` => 64 files / 593 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center PDF: `국민 암예방 수칙 실천지침 _ 자궁경부암`, `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 593 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
+  - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
+
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 
 - Current Goal:
