@@ -77,17 +77,49 @@ export async function downloadTextFile(
   const URLLike = environment.URLCtor ?? globalThis.URL;
   const BlobLike = environment.BlobCtor ?? globalThis.Blob;
   const revokeLater = environment.setTimeout ?? globalThis.setTimeout;
-  const blob = new BlobLike([content], { type: mimeType });
-  const url = URLLike.createObjectURL(blob);
-  const link = documentLike.createElement("a");
+  if (
+    !documentLike?.body ||
+    !documentLike.createElement ||
+    !URLLike?.createObjectURL ||
+    !URLLike.revokeObjectURL ||
+    !BlobLike ||
+    !revokeLater
+  ) {
+    return "unsupported";
+  }
 
-  link.href = url;
-  link.download = filename;
-  link.style.display = "none";
-  documentLike.body.appendChild(link);
-  link.click();
-  documentLike.body.removeChild(link);
-  revokeLater(() => URLLike.revokeObjectURL(url), 5000);
+  let url = "";
+  let link: HTMLAnchorElement | null = null;
 
-  return "download-started";
+  try {
+    const blob = new BlobLike([content], { type: mimeType });
+    url = URLLike.createObjectURL(blob);
+    link = documentLike.createElement("a");
+
+    link.href = url;
+    link.download = filename;
+    link.style.display = "none";
+    documentLike.body.appendChild(link);
+    link.click();
+    documentLike.body.removeChild(link);
+    revokeLater(() => URLLike.revokeObjectURL(url), 5000);
+
+    return "download-started";
+  } catch {
+    if (link) {
+      try {
+        documentLike.body.removeChild(link);
+      } catch {
+        // The link may not have been attached yet, or the host document may reject removal.
+      }
+    }
+    if (url) {
+      try {
+        URLLike.revokeObjectURL(url);
+      } catch {
+        // Revoke best-effort cleanup; the user-facing result remains unsupported.
+      }
+    }
+    return "unsupported";
+  }
 }

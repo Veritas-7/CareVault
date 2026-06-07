@@ -68,6 +68,26 @@ describe("textFileDownload", () => {
     ).resolves.toBe("clipboard-failed");
   });
 
+  it("reports unsupported when anchor download APIs are unavailable", async () => {
+    const createObjectURL = vi.fn(() => "blob:download-url");
+
+    await expect(
+      downloadTextFile("backup body", "backup.json", "application/json", {
+        BlobCtor: Blob,
+        URLCtor: {
+          createObjectURL,
+          revokeObjectURL: vi.fn(),
+        },
+        navigator: {
+          userAgent: "Mozilla/5.0 Chrome/121.0.0.0 Safari/537.36",
+          vendor: "Google Inc.",
+        },
+      }),
+    ).resolves.toBe("unsupported");
+
+    expect(createObjectURL).not.toHaveBeenCalled();
+  });
+
   it("starts an anchor download in non-Safari browsers", async () => {
     const click = vi.fn();
     const appendChild = vi.fn();

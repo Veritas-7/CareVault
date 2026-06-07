@@ -27693,3 +27693,26 @@
   - Runtime is clean; no temporary Vite process is running.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow. Direct browser QA still must use only the existing `surface:7`; do not focus/select the inactive `암관리` workspace or open another browser without explicit approval.
+
+## 2026-06-07 13:49 KST - Text Download Unsupported API Guard Started
+
+- Current Goal:
+  - Make text export/download flows fail closed with an explicit unsupported result when non-Safari anchor-download APIs are missing.
+- Context:
+  - `downloadTextFile()` already returned `unsupported` for Safari/WebKit clipboard fallback without Clipboard API, but non-Safari paths assumed `document`, `Blob`, and `URL.createObjectURL()` were available.
+  - Without those APIs, export/backup actions could reject before App receives a `TextFileDownloadResult`, preventing the existing unsupported status label from rendering.
+  - Existing `surface:7` still reports `http://localhost:1420/#dashboard` / `CareVault`, but `eval` returns `about:blank`; browser errors remain `No browser errors`. No focus, workspace selection, Computer Use, or new browser/surface was used.
+- Changes:
+  - `src/textFileDownload.test.ts`: added a RED test for missing anchor-download APIs returning `unsupported` without creating an object URL.
+  - `src/textFileDownload.ts`: checks for required anchor-download APIs before creating a blob URL, catches anchor-download failures, best-effort cleans up link/blob URLs, and returns `unsupported` so App can show the existing unsupported status.
+- Tests:
+  - RED confirmed: `npm test -- src/textFileDownload.test.ts` initially failed with `TypeError: Cannot read properties of undefined (reading 'createElement')`.
+  - PASS focused test after fix: `npm test -- src/textFileDownload.test.ts` => `1 passed`, `6 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `63 passed`, `539 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - Direct same-surface DOM QA remains blocked by the inactive/non-evaluable `surface:7` context.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused download-failure guard if green.
