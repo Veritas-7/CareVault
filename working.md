@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:57 KST - NCC Nausea Easier-Food And Trigger-Food Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center nausea easier-food and nausea-triggering examples.
+- Context:
+  - Continued from clean/synced CareVault state after `6e49369250185a76d37c028493b0e020d0b30ff0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - Used TDD and kept this slice limited to nausea-context examples. `토스트` and `크래커` were not added as nausea support terms because they already carry mouth-pain watch context in the global matcher.
+- Research:
+  - Re-checked National Cancer Information Center `메스꺼움`, final update 2013-02-01. The page says patients should not force food when nausea is severe, can choose other easier foods, lists low-burden foods such as sherbet, canned peach/soft fruit, clear liquid food, and ice pieces, and lists nausea-triggering foods such as fatty, very sweet, strongly scented/hot, or odd-smelling foods.
+  - Applied the source as symptom-context support/watch guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `샤베트`, `복숭아통조림`, `맑은 유동식`, `얼음조각`, `기름진 음식`, `매우 단 음식`, `향이 강하거나 뜨거운 음식`, and `이상한 냄새가 나는 음식`.
+  - `src/healthRules.ts`: added `nccNauseaDiet`, balanced and limit guide cards for nausea examples, and source-backed ok/watch matching terms.
+  - `README.md`: added the new NCC nausea examples to the source-backed nutrition feature list.
+- Tests:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `6e49369250185a76d37c028493b0e020d0b30ff0`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccNauseaDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 84 tests.
+  - PASS full tests: `npm test` => 64 files / 649 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned staged changes and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Run git/secret readiness checks, then commit and push this source slice if all checks pass.
+
 ## 2026-06-08 04:53 KST - Post-Push NCC Dry-Mouth Food Verification
 
 - Current Goal:

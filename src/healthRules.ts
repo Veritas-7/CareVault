@@ -27,6 +27,7 @@ export type FoodGuidanceSourceId =
   | "nccPreventionDiet"
   | "nccPreventionMealExamples"
   | "nccSideEffectDiet"
+  | "nccNauseaDiet"
   | "nccMouthPainDiet"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
@@ -118,6 +119,10 @@ export const foodGuidanceSources: Record<
   nccSideEffectDiet: {
     label: "국가암정보센터 치료부작용시 식생활",
     url: "https://www.cancer.go.kr/lay1/S1T477C478/contents.do",
+  },
+  nccNauseaDiet: {
+    label: "국가암정보센터 증상별 식생활 - 메스꺼움",
+    url: "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
   },
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
@@ -215,6 +220,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccTreatmentNutrients", "nccPreventionDiet", "nccImmuneLowDiet"],
       },
       {
+        label: "메스꺼움 시 위 부담 적은 음식",
+        detail:
+          "국가암정보센터 메스꺼움 자료는 증상이 있을 때 억지로 먹지 말고 먹기 좋은 다른 음식을 선택하도록 하며, 비교적 위에 부담이 적은 식품으로 샤베트, 복숭아통조림 같은 부드러운 과일, 맑은 유동식, 얼음조각 등을 예시로 안내합니다.",
+        examples: "샤베트, 복숭아통조림, 맑은 유동식, 얼음조각",
+        sourceIds: ["nccNauseaDiet"],
+      },
+      {
         label: "입·목 통증 시 부드러운 음식",
         detail:
           "국가암정보센터 입과 목의 통증 자료는 부드럽고 촉촉하며 씹고 삼키기 쉬운 음식으로 죽류, 미음, 부드럽게 조리한 고기·생선, 익히거나 데친 채소, 바나나·배·수박·과일통조림처럼 시지 않은 과일을 예시로 안내합니다.",
@@ -283,6 +295,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "토마토주스, 토스트, 크래커, 말린 음식, 오렌지, 포도, 레몬, 향신료를 많이 사용한 음식, 소금에 절인 음식",
         sourceIds: ["nccMouthPainDiet"],
+      },
+      {
+        label: "메스꺼움 유발 가능 음식",
+        detail:
+          "국가암정보센터 메스꺼움 자료는 메스꺼움을 더 유발할 수 있는 음식으로 기름진 음식, 사탕·쿠키·케익처럼 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식을 피하도록 안내합니다.",
+        examples: "기름진 음식, 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식",
+        sourceIds: ["nccNauseaDiet"],
       },
       {
         label: "가당 유제품",
@@ -620,6 +639,10 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["바나나", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["수박", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["과일통조림", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
+  ["샤베트", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
+  ["복숭아통조림", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
+  ["맑은 유동식", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
+  ["얼음조각", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["물 조금씩 자주", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
   ["물 한 모금", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
   ["소스나 드레싱", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
@@ -962,6 +985,18 @@ const limitFoods: FoodRuleTerm[] = [
     "매운 음식",
     "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 피하기 후보",
     "nccPreventionDiet",
+  ],
+  ["기름진 음식", "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보", "nccNauseaDiet"],
+  ["매우 단 음식", "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보", "nccNauseaDiet"],
+  [
+    "향이 강하거나 뜨거운 음식",
+    "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보",
+    "nccNauseaDiet",
+  ],
+  [
+    "이상한 냄새가 나는 음식",
+    "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보",
+    "nccNauseaDiet",
   ],
   ["토마토주스", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
   ["토스트", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],

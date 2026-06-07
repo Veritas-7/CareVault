@@ -1477,6 +1477,69 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC nausea easier foods and nausea-triggering food examples", () => {
+    const assessment = assessCancerFood(
+      "샤베트, 복숭아통조림, 맑은 유동식, 얼음조각, 기름진 음식, 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 메스꺼움",
+    );
+    expect(foodGuidanceSources.nccNauseaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "샤베트",
+      "복숭아통조림",
+      "맑은 유동식",
+      "얼음조각",
+      "기름진 음식",
+      "매우 단 음식",
+      "향이 강하거나 뜨거운 음식",
+      "이상한 냄새가 나는 음식",
+    ]);
+    for (const term of ["샤베트", "복숭아통조림", "맑은 유동식", "얼음조각"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보",
+        sourceId: "nccNauseaDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+      );
+    }
+    for (const term of [
+      "기름진 음식",
+      "매우 단 음식",
+      "향이 강하거나 뜨거운 음식",
+      "이상한 냄새가 나는 음식",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보",
+        sourceId: "nccNauseaDiet",
+      });
+    }
+    expect(balancedGuideText).toContain("샤베트");
+    expect(balancedGuideText).toContain("맑은 유동식");
+    expect(limitGuideText).toContain("매우 단 음식");
+    expect(limitGuideText).toContain("향이 강하거나 뜨거운 음식");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention meal example dishes without cure claims", () => {
     const assessment = assessCancerFood(
       "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",
