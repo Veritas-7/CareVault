@@ -3288,6 +3288,60 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low purchase freshness and direct-ground meat safety wording", () => {
+    const assessment = assessCancerFood(
+      "유통기한 꼭 확인, 신선도 유지, 대량 구입하지 않기, 소량씩 구입, 직접 갈아주는 곳에서 구입, 가는 과정에서 오염 가능",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "유통기한 꼭 확인",
+      "신선도 유지",
+      "대량 구입하지 않기",
+      "소량씩 구입",
+      "직접 갈아주는 곳에서 구입",
+      "가는 과정에서 오염 가능",
+    ]);
+    for (const term of [
+      "유통기한 꼭 확인",
+      "신선도 유지",
+      "대량 구입하지 않기",
+      "소량씩 구입",
+      "직접 갈아주는 곳에서 구입",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 식품 구입 신선도·소량 구입 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(matchesByTerm["가는 과정에서 오염 가능"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 갈아둔 고기 오염 가능성 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(terms).not.toContain("고기");
+    expect(balancedGuideText).toContain("대량 구입하지 않기");
+    expect(balancedGuideText).toContain("직접 갈아주는 곳에서 구입");
+    expect(careTeamGuideText).toContain("가는 과정에서 오염 가능");
+    expect(formatFoodMatchEvidence(matchesByTerm["유통기한 꼭 확인"])).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low storage and thawing safety practices from official guidance", () => {
     const assessment = assessCancerFood(
       "상하기 쉬운 음식 냉장고 냉동고 보관, 요리하기 전의 고기 생선 닭고기 분리 보관, 고기나 생선즙이 떨어지지 않도록 보관, 냉동고 식품 랩이나 팩 포장, 해동한 후 즉시 요리, 남은 음식 즉시 냉장 보관",
