@@ -26177,3 +26177,24 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 09:27 KST - Visit Summary Preview Range Stale Direct QA
+
+- Current Goal:
+  - Direct-QA the visit-summary export preview stale guard when the summary range changes after preview generation.
+  - Keep this slice source-neutral unless the direct browser flow exposes a real defect.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#dashboard`.
+  - PASS initial preview: clicked the real `요약 미리보기` button. The panel rendered `진료 요약 미리보기 (최근 30일)` with enabled copy/print/download actions, each 44px tall and described as `234줄`, `33,369자`, `56,648B`, `근거/출처 111개`.
+  - PASS stale detection: changed the real `진료 요약 범위` select from `30d` to `7d`. The preview title stayed `진료 요약 미리보기 (최근 30일)`, stale alert aria label was `진료 요약 미리보기 범위 변경 감지`, alert text showed `진료 요약 범위가 바뀌었습니다` and `현재 미리보기는 이전 범위로 생성되었습니다.`, and the fresh action was `요약 범위 반영`.
+  - PASS stale accessibility guard: the fresh action exposed aria/title `새 미리보기 생성 · 진료 요약 · 변경된 범위 적용`, remained enabled, and stayed 44px tall.
+  - PASS stale disabled actions: copy, print, and download became disabled while preserving their preview metrics and adding `비활성: 진료 요약 범위가 바뀌어 다시 생성이 필요합니다.` to both aria labels and titles. Close stayed enabled with `내보내기 미리보기 닫기`.
+  - PASS regenerate: clicked the real `요약 범위 반영` button. The stale alert disappeared, the panel updated to `진료 요약 미리보기 (최근 7일)`, copy/print/download re-enabled, and their aria/title metrics updated to `231줄`, `32,722자`, `55,670B`, `근거/출처 108개`.
+  - PASS cleanup: clicked `미리보기 닫기`, reset the range select to `30d`, and confirmed no export preview panel and no stale alert remained.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+- Verification:
+  - PASS source status: no app source files changed during this QA slice.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks, commit/push the QA note, and continue with another non-duplicate direct-click workflow.
