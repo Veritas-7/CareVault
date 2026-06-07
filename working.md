@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 08:22 KST - Final NCC Immune-Low Handwashing Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center immune-low handwashing and hair-control source-wording slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `d6aaa36` (`Add NCC immune-low handwashing hygiene guidance`).
+  - Post-push verification log commit pushed: `d87c200` (`Log NCC immune-low handwashing verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `d87c200259731a2ffad9549ebe4da6e7ddb1cf55`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and verification log were pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Continue with the next narrow official-source cervical-cancer nutrition, safety, or record-prep slice after rechecking current source coverage.
+
 ## 2026-06-08 08:21 KST - Post-Push NCC Immune-Low Handwashing Verification
 
 - Current Goal:
