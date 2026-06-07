@@ -28879,3 +28879,30 @@
   - Whole-directory secret scanning is now green while preserving default gitleaks rules and only allowlisting generated `libmuda-*.rmeta` metadata under ignored `src-tauri/target`.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 16:11 KST - Non-Focusing cmux Reload Diagnostic
+
+- Current Goal:
+  - Further isolate why direct DOM/click QA remains blocked inside existing cmux `surface:7` while avoiding any focus or window takeover.
+- Context:
+  - Used `systematic-debugging` for this blocker investigation.
+  - Read `cmux browser --help`; existing CLI supports `reload`, `wait --selector`, `click`, `fill`, `press`, `snapshot`, `screenshot`, `console`, and `errors` against an existing surface.
+  - No `focus-webview`, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+  - Temporarily started this project's Vite server with `npm run dev -- --host 127.0.0.1 --port 1420`, then stopped it and verified runtime clean.
+- Diagnostics:
+  - Preflight `npm run runtime:doctor` passed with port `1420` free before starting Vite.
+  - Vite served successfully; `curl -I --max-time 3 http://127.0.0.1:1420/` returned `HTTP/1.1 200 OK`.
+  - `cmux browser surface:7 reload --snapshot-after` returned `OK` but the snapshot was `document "page"` with empty content.
+  - `cmux browser surface:7 wait --selector '#root' --timeout-ms 5000` failed with `Condition not met before timeout`.
+  - `eval` after reload returned `{"href":"about:blank","title":"","readyState":"complete","bodyLength":0,"htmlLength":39,"root":false,"buttons":0}` and `get html --selector body` returned `<body></body>`.
+  - `console list` returned `No console entries`; one `errors list` call later timed out waiting for JavaScript.
+  - `cmux browser surface:7 navigate http://127.0.0.1:1420/#dashboard --snapshot-after` returned `OK`, but snapshot stayed empty.
+  - `tab list`, `frame main`, and `is-webview-focused` returned `OK`, `OK`, and `false`.
+  - `cmux browser surface:7 screenshot --out /tmp/carevault-surface7.png` failed with `internal_error: Failed to capture snapshot`.
+  - Final metadata while Vite was running returned URL `http://127.0.0.1:1420/#dashboard`, title `CareVault`, and `console list` reported no entries.
+- Result:
+  - The blocker is not local Vite reachability. It is localized to cmux's existing `surface:7` automation/snapshot layer: metadata can see the target URL/title, but DOM/snapshot/screenshot does not expose the app document.
+  - Runtime cleanup after stopping Vite: `npm run runtime:doctor` passed with port `1420` free and no CareVault dev processes.
+- Next Steps:
+  - Continue code-level verification and non-focusing cmux metadata diagnostics while direct DOM/click QA remains blocked.
+  - If direct click QA must be unblocked, use only user-approved cmux steps that preserve the existing single surface and do not steal focus.
