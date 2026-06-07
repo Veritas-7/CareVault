@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 03:27 KST - NCC Healthy-Eating Daily Legume Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating sentence about eating legumes and legume products daily.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `db24c7c0ab9ef65a9ae0ca0f6aec19db40e3f27e`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` keeps nutrition judgment source-backed and prohibits cure/treatment food claims; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page says `두류와 두류 가공품 (두유, 두부 등)을 매일 섭취합니다`.
+  - Applied the source as support/balanced diet guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `두류와 두류 가공품 (두유, 두부 등)을 매일 섭취합니다` and `두류 두류 가공품 두유 두부 매일 섭취` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the two longer daily-legume phrases under `nccPreventionDiet` so they take precedence over shorter `두류`, `두류 가공품`, `두유`, and `두부` fallback matches, and aligned the balanced guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating daily legume sentence phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source phrase collapsed to shorter `두류`, `두류 가공품`, `두유`, `두부`, and `두유 두부 매일 섭취` matches and the guide strings were missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 72 tests.
+  - PASS full tests: `npm test` => 64 files / 637 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue so far.
+- Next Steps:
+  - Run git diff/secrets checks, then stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` and push if clean.
+
 ## 2026-06-08 03:24 KST - Post-Push NCC Healthy-Eating Unrefined Grain Sentence
 
 - Current Goal:

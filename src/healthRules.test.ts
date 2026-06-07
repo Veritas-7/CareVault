@@ -222,6 +222,33 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes the exact NCC healthy-eating daily legume sentence", () => {
+    const assessment = assessCancerFood(
+      "두류와 두류 가공품 (두유, 두부 등)을 매일 섭취합니다; 두류 두류 가공품 두유 두부 매일 섭취",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "두류와 두류 가공품 (두유, 두부 등)을 매일 섭취합니다",
+      "두류 두류 가공품 두유 두부 매일 섭취",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 두류·두류 가공품 매일 섭취 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating low-fat milk one-cup-about phrases", () => {
     const assessment = assessCancerFood(
       "저지방 우유 하루 1잔 정도, 하루 1잔 정도 저지방 우유",
@@ -715,6 +742,16 @@ describe("healthRules", () => {
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
     ).toContain("두유 두부 매일 섭취");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("두류와 두류 가공품 (두유, 두부 등)을 매일 섭취합니다");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("두류 두류 가공품 두유 두부 매일 섭취");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
