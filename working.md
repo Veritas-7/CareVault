@@ -23,9 +23,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit is ready for explicit-path staging and secret-scan gates.
+  - No new blocking issue. Source commit and verification log commit were pushed; repository sync/runtime status is verified below.
 - Next Steps:
-  - Stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`, then run staged and whole-directory secret scans before commit/push.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-08 00:57 KST - Post-Push NCC Healthy-Eating Low-Salt Kimchi Terms
 
@@ -34,6 +34,8 @@
 - Result:
   - Source commit pushed: `287b4b4` (`Add NCC healthy eating low-salt kimchi terms`).
   - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `287b4b4a7d96cce1751bfebb909193d98099caa4`.
+  - Post-push verification log commit pushed: `4b6d1a8` (`Log NCC healthy eating low-salt kimchi verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `4b6d1a8317701f9136d24a610fd821308e95fcd5`.
 - Verification:
   - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `43c4d6817312c6a61d493ba296b8536ca246955d`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
   - PASS RED/GREEN path:
@@ -51,9 +53,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit was pushed; this post-push verification log is ready for log-only gates.
+  - No new blocking issue. Source commit and post-push log commit were pushed; this cleanup update removes stale next-step wording.
 - Next Steps:
-  - Run log-only tests, stage `working.md`, secret-scan the staged log update, commit, push, and verify final sync/runtime status.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-08 00:41 KST - NCC Healthy-Eating Salted Storage and Soup Broth Terms
 
