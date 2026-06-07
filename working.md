@@ -28860,3 +28860,22 @@
   - This policy intentionally targets only generated `libmuda-*.rmeta` metadata under ignored `src-tauri/target`; it does not allowlist source files, docs, environment files, or tracked runtime hooks.
 - Next Steps:
   - Run staged diff/secret gates, then commit/push the focused gitleaks scan policy if green.
+
+## 2026-06-07 16:07 KST - Post-Push Gitleaks Build Artifact Scan Policy
+
+- Current Goal:
+  - Record post-push verification for the whole-directory gitleaks build artifact scan policy.
+- Result:
+  - Source commit pushed: `1d8ad17` (`Allowlist generated gitleaks metadata`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `1d8ad17`.
+- Verification:
+  - PASS whole-directory secret scan after push: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported `no leaks found`.
+  - PASS staged secret scan before commit: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whitespace gates: `git diff --check` and `git diff --cached --check`.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned the URL value, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing cmux WebView context mismatch; no focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used.
+  - Whole-directory secret scanning is now green while preserving default gitleaks rules and only allowlisting generated `libmuda-*.rmeta` metadata under ignored `src-tauri/target`.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
