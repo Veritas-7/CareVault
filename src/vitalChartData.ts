@@ -67,6 +67,19 @@ function isPositiveMeasurement(value: number | undefined): value is number {
   return Number.isFinite(value) && value !== undefined && value > 0;
 }
 
+function isValidIsoDate(value: string) {
+  const trimmed = value.trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const normalized = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+
+  return normalized === trimmed;
+}
+
 function formatBloodPressureAssessment(record: VitalRecordForChart) {
   if (record.type !== "blood-pressure") return undefined;
 
@@ -95,7 +108,7 @@ export function buildVitalChartData(
   options: BloodGlucoseOptions = {},
 ): VitalChartPoint[] {
   return records
-    .filter((record) => record.type !== "temperature")
+    .filter((record) => record.type !== "temperature" && isValidIsoDate(record.date))
     .map((record, index) => ({
       bloodPressureAssessment: formatBloodPressureAssessment(record),
       date: record.date.slice(5),

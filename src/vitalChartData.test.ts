@@ -82,6 +82,26 @@ describe("vitalChartData", () => {
     ]);
   });
 
+  it("omits malformed dated vital records from chart data", () => {
+    const points = buildVitalChartData([
+      {
+        date: "2026-06-31",
+        diastolic: 95,
+        systolic: 150,
+        type: "blood-pressure",
+      },
+      {
+        date: "2026-06-01",
+        glucoseContext: "fasting",
+        glucoseMgDl: 96,
+        type: "glucose",
+      },
+    ]);
+
+    expect(points.map((point) => point.dateLabel)).toEqual(["2026-06-01"]);
+    expect(buildVitalChartAccessibleRows(points)[0]?.summary).not.toContain("2026-06-31");
+  });
+
   it("formats chart tooltip values with Korean labels and units", () => {
     expect(formatVitalChartTooltipValue("systolic", 132)).toBe("수축기 132 mmHg");
     expect(formatVitalChartTooltipValue("diastolic", 82)).toBe("이완기 82 mmHg");

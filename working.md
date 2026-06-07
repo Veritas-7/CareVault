@@ -28486,3 +28486,28 @@
   - Non-focusing `cmux browser surface:7 get title` still returned the URL value during this post-push pass.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 15:19 KST - Vital Chart Date Guard Started
+
+- Current Goal:
+  - Prevent malformed vital dates from appearing in chart points, summary periods, or accessible chart rows.
+- Context:
+  - Re-read current sync state and `vitalChartData` source/tests after the immune-food date guard landed.
+  - Existing cmux `surface:7` was used only for non-focusing URL/title/error diagnostics. No `select-workspace`, `focus-webview`, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+  - `buildVitalChartData()` filtered out temperature records but accepted BP/glucose records with raw malformed dates, so `2026-06-31` could appear as a chart point and screen-reader row.
+- Changes:
+  - `src/vitalChartData.test.ts`: added RED coverage proving malformed dated vital records are omitted from chart data and accessible rows.
+  - `src/vitalChartData.ts`: added strict ISO date validation before BP/glucose rows become chart points.
+- Tests:
+  - RED confirmed: `npm test -- src/vitalChartData.test.ts` failed because `2026-06-31` remained in chart `dateLabel` output.
+  - PASS focused test after fix: `npm test -- src/vitalChartData.test.ts` => `1 passed`, `9 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `561 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS cmux browser diagnostics: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `errors list` returned `No browser errors`, and `get title` returned the URL value instead of `CareVault`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the current `surface:7` automation context mismatch unless it recovers without focus handoff.
+  - Non-focusing `cmux browser surface:7 get title` still returns the URL value.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused vital chart date guard if green.
