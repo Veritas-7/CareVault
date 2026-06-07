@@ -27922,3 +27922,21 @@
   - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the obsolete print-window status cleanup if green.
+
+## 2026-06-07 14:13 KST - Post-Push Obsolete Print Window Status Cleanup
+
+- Current Goal:
+  - Record post-push verification for removing the obsolete preview print-window failure status.
+- Result:
+  - Source commit pushed: `97d90aa` (`Remove obsolete preview print window status`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `97d90aa`.
+- Verification:
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics: existing `surface:7` URL/title remained CareVault and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
