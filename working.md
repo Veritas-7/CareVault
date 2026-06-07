@@ -28183,3 +28183,27 @@
   - Continue using only non-focusing existing-surface cmux commands for browser diagnostics.
   - Do not use `select-workspace`, `focus-webview`, Computer Use, new browser/surface/tab, or cmux restart/termination unless the user explicitly approves that specific action.
   - Until the existing `surface:7` DOM automation context recovers without focus handoff, continue source/test-only improvements for safe non-duplicate reliability slices and record the blocked direct-click QA evidence.
+
+## 2026-06-07 14:45 KST - Malformed Restored Date Ordering Guard Started
+
+- Current Goal:
+  - Prevent malformed restored/imported dates from appearing as the newest dashboard or timeline records.
+- Context:
+  - Re-read thread identity, current repo state, latest `working.md`, TDD/custom-git skills, runtime doctor, and existing `surface:7` diagnostics before editing.
+  - Existing `surface:7` was used only for non-focusing metadata/error diagnostics; no `select-workspace`, `focus-webview`, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+  - `latestDatedItem()` and `sortDatedItemsNewestFirst()` compared raw date strings. A restored malformed value such as `unknown` could sort above a valid ISO date and appear as the latest record.
+- Changes:
+  - `src/recordOrdering.test.ts`: added RED coverage proving malformed and blank restored dates must not outrank a valid dated record.
+  - `src/recordOrdering.ts`: added an ISO `YYYY-MM-DD` validation sort key and uses invalid dates as the oldest bucket while preserving same-date insertion/order tie-breaks.
+- Tests:
+  - RED confirmed: `npm test -- src/recordOrdering.test.ts` failed because `latestDatedItem()` selected the malformed `unknown` date.
+  - PASS focused test after fix: `npm test -- src/recordOrdering.test.ts` => `1 passed`, `5 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `552 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS browser diagnostics: existing `surface:7` URL/title remained `http://127.0.0.1:1420/#dashboard` / `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the current `surface:7` blank-document automation context unless it recovers without focus handoff.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused restored-date ordering guard if green.

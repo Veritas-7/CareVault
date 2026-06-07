@@ -20,6 +20,14 @@ describe("recordOrdering", () => {
     expect(latestDatedItem([newest, laterInsertedOlderDate])).toBe(newest);
   });
 
+  it("does not let malformed restored dates outrank valid dated records", () => {
+    const validLatest = { date: "2026-06-05", label: "최신 정상 날짜" };
+    const malformed = { date: "unknown", label: "복구된 잘못된 날짜" };
+    const blank = { date: "   ", label: "빈 날짜" };
+
+    expect(latestDatedItem([validLatest, malformed, blank])).toBe(validLatest);
+  });
+
   it("selects the latest matching record by date before insertion order", () => {
     const newerGlucose = { date: "2026-06-05", label: "최신 혈당", type: "glucose" };
     const newerBp = { date: "2026-06-06", label: "최신 혈압", type: "blood-pressure" };
