@@ -30119,6 +30119,34 @@
 - Next Steps:
   - Run diff checks plus staged and whole-directory gitleaks scans; then commit/push explicit paths and record post-push verification.
 
+## 2026-06-07 19:44 KST - Post-Push Cervical Practice Food Examples
+
+- Current Goal:
+  - Record post-push verification for the cervical practice-guideline food example slice.
+- Result:
+  - Source commit pushed: `b75cd6c` (`Add cervical practice food examples`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `b75cd6c63bcd410ca342bc1d80579700271579af`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `시금치` still used the generic prevention-diet source and `nccCervicalPracticeDiet` was missing.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 26 tests.
+  - PASS full tests: `npm test` => 64 files / 590 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center cervical-cancer prevention and food page: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885`
+  - National Cancer Information Center PDF: `국민 암예방 수칙 실천지침 _ 자궁경부암`, `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 590 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
+  - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
+
 ## 2026-06-07 19:03 KST - Post-Push HPV Delayed Dose Memo
 
 - Current Goal:
