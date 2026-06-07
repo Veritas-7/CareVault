@@ -226,6 +226,37 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy-eating seasoning and added salt or soy sauce limit terms", () => {
+    const assessment = assessCancerFood(
+      "인공조미료, 화학조미료, 추가 소금, 소금 추가, 추가 간장, 간장 추가",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "인공조미료",
+      "화학조미료",
+      "추가 소금",
+      "소금 추가",
+      "추가 간장",
+      "간장 추가",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 인공조미료·추가 소금/간장 제한 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("uses the immune-function diet source for raw or unpasteurized food safety checks", () => {
     const assessment = assessCancerFood("생굴, 회, 날계란, 비살균 우유");
     const matchesByTerm = Object.fromEntries(

@@ -258,8 +258,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "짠 저장식품·국물 과다",
         detail:
-          "암예방 식생활 자료는 짜게 먹지 않기, 염장식품 제한, 국이나 찌개 국물 제한을 안내하며, 예시 식단의 배추김치·열무김치도 나트륨을 줄이기 위해 조금만 섭취하는 항목으로 설명합니다.",
-        examples: "젓갈, 장아찌, 염장식품, 짠 김치, 배추김치, 열무김치, 국물 과다",
+          "암예방 식생활 자료는 짜게 먹지 않기, 인공조미료 사용 제한, 먹을 때 추가 소금·간장 사용하지 않기, 염장식품 제한, 국이나 찌개 국물 제한을 안내하며, 예시 식단의 배추김치·열무김치도 나트륨을 줄이기 위해 조금만 섭취하는 항목으로 설명합니다.",
+        examples:
+          "인공조미료, 화학조미료, 추가 소금, 추가 간장, 젓갈, 장아찌, 염장식품, 짠 김치, 배추김치, 열무김치, 국물 과다",
         sourceIds: ["nccPreventionDiet", "nccPreventionMealExamples"],
       },
     ],
@@ -566,6 +567,36 @@ const limitFoods: FoodRuleTerm[] = [
   ],
   ["단무지", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   ["우엉조림", "자궁경부암 실천지침 나트륨 감소 대체 전 예시", "nccCervicalPracticeDiet"],
+  [
+    "인공조미료",
+    "국가암정보센터 건강한 식생활 인공조미료·추가 소금/간장 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "화학조미료",
+    "국가암정보센터 건강한 식생활 인공조미료·추가 소금/간장 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "추가 소금",
+    "국가암정보센터 건강한 식생활 인공조미료·추가 소금/간장 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "소금 추가",
+    "국가암정보센터 건강한 식생활 인공조미료·추가 소금/간장 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "추가 간장",
+    "국가암정보센터 건강한 식생활 인공조미료·추가 소금/간장 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "간장 추가",
+    "국가암정보센터 건강한 식생활 인공조미료·추가 소금/간장 제한 후보",
+    "nccPreventionDiet",
+  ],
   ["젓갈", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["장아찌", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["염장", "염장 식품은 조금만 섭취", "nccPreventionDiet"],

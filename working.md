@@ -1,5 +1,33 @@
 # CareVault Working Notes
 
+## 2026-06-07 23:59 KST - NCC Healthy-Eating Seasoning and Added Salt/Soy Limit Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance to limit artificial seasoning and added salt or soy sauce while eating.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `02b2fc29018f1c78ccfb54747a4bfdf82094acbf`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, updated 2025-09-29, whose guidance says to limit artificial seasoning, avoid adding salt or soy sauce while eating, and eat foods less salty.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `인공조미료`, `화학조미료`, `추가 소금`, `소금 추가`, `추가 간장`, and `간장 추가` as source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the six seasoning/added salt-soy limit terms under `nccPreventionDiet` and aligned the salty-food guide text/examples with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating seasoning and added salt/soy sauce limit terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new seasoning and added salt/soy terms produced `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 50 tests.
+  - PASS full tests: `npm test` => 64 files / 615 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-07 23:46 KST - NCC Healthy-Eating Hot/Spicy Food Limit Terms
 
 - Current Goal:
