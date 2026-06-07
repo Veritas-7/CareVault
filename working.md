@@ -27,6 +27,34 @@
 - Next Steps:
   - Stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`, then run staged and whole-directory secret scans before commit/push.
 
+## 2026-06-08 01:20 KST - Post-Push NCC Healthy-Eating Processed-Meat Avoid Terms
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center healthy-eating processed-meat avoid term slice.
+- Result:
+  - Source commit pushed: `b8a2e36` (`Add NCC healthy eating processed meat limits`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `b8a2e36ddcea8eb405d21d90f8bb883580242db4`.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `a3b04d0bb68edefb29614bda0693102a2e723d09`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new processed-meat phrases were missing from the guide and collapsed to shorter `햄`, `소시지`, and `육가공품` matches.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 56 tests.
+  - PASS full tests: `npm test` => 64 files / 621 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 8.58 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; this post-push verification log is ready for log-only gates.
+- Next Steps:
+  - Run log-only tests, stage `working.md`, secret-scan the staged log update, commit, push, and verify final sync/runtime status.
+
 ## 2026-06-08 01:07 KST - NCC Healthy-Eating Red-Meat Weekly Limit Terms
 
 - Current Goal:
