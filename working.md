@@ -28646,3 +28646,22 @@
   - Non-focusing `cmux browser surface:7 get title` still returns the URL value.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the focused caregiver active task date guard if green.
+
+## 2026-06-07 15:39 KST - Post-Push Caregiver Active Task Date Guard
+
+- Current Goal:
+  - Record post-push verification for caregiver active task and care queue date filtering.
+- Result:
+  - Source commit pushed: `cd72b0c` (`Guard caregiver active task dates`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `cd72b0c`.
+- Verification:
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `errors list` returned `No browser errors`, and `get title` returned the URL instead of `CareVault`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used.
+  - Non-focusing `cmux browser surface:7 get title` still returned the URL value during this post-push pass.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
