@@ -28113,3 +28113,30 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:34 KST - Attachment Preview URL Creation Guard Started
+
+- Current Goal:
+  - Keep browser-reference attachment saving usable even if image preview object URL creation fails.
+- Context:
+  - Re-read thread identity, current repo sync, latest `working.md`, same-surface cmux diagnostics, and attachment preview object URL creation paths before editing.
+  - Started the current-source Vite dev server on `127.0.0.1:1420` and navigated only existing cmux `surface:7` to `http://127.0.0.1:1420/#dashboard`.
+  - `curl http://127.0.0.1:1420/` returned the Vite HTML, but `surface:7 eval` still reported `about:blank` with no `#root`; `errors list` returned `No browser errors`.
+  - No Computer Use, focus change, workspace selection, new browser, new tab, or new surface was used.
+  - App browser-reference image attachment paths called `URL.createObjectURL(file)` directly. If object URL creation failed, the attachment metadata update path could be interrupted even though preview is optional.
+- Changes:
+  - `src/attachmentPreview.test.ts`: added RED coverage for a fail-safe preview URL creation helper.
+  - `src/attachmentPreview.ts`: added `createAttachmentPreviewUrl()` that returns `null` for non-images, missing support, blank URLs, or creation failures.
+  - `src/App.tsx`: replaced direct browser-reference preview URL creation with the fail-safe helper.
+- Tests:
+  - RED confirmed: `npm test -- src/attachmentPreview.test.ts` failed because `createAttachmentPreviewUrl` did not exist.
+  - PASS focused test after fix: `npm test -- src/attachmentPreview.test.ts` => `1 passed`, `6 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `551 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup after stopping temporary Vite: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` URL/title remained CareVault and `errors list` returned `No browser errors`; eval still reports `about:blank` after the dev server was stopped.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch, even with the current-source Vite server running. Browser diagnostics still use only that surface and do not steal focus.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused attachment preview URL creation guard if green.

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   attachmentPreviewCloseActionLabel,
   attachmentPreviewClosedStatusLabel,
+  createAttachmentPreviewUrl,
   isPreviewableImageAttachment,
   revokeAttachmentPreviewUrl,
 } from "./attachmentPreview";
@@ -25,6 +26,28 @@ describe("attachmentPreview", () => {
     expect(isPreviewableImageAttachment("blood-test.pdf")).toBe(false);
     expect(isPreviewableImageAttachment("visit-note.docx")).toBe(false);
     expect(isPreviewableImageAttachment("no-extension")).toBe(false);
+  });
+
+  it("creates preview object URLs only when image preview support succeeds", () => {
+    const imageFile = { name: "scan.png" } as File;
+    const documentFile = { name: "scan.pdf" } as File;
+    const createObjectURL = vi.fn((file: File) =>
+      file.name === "scan.png" ? "blob:scan-preview" : "blob:document-preview",
+    );
+    const throwingCreateObjectURL = vi.fn((_file: File) => {
+      throw new Error("preview URL blocked");
+    });
+
+    expect(createAttachmentPreviewUrl(imageFile, { createObjectURL })).toBe(
+      "blob:scan-preview",
+    );
+    expect(createAttachmentPreviewUrl(documentFile, { createObjectURL })).toBeNull();
+    expect(
+      createAttachmentPreviewUrl(imageFile, {
+        createObjectURL: throwingCreateObjectURL,
+      }),
+    ).toBeNull();
+    expect(createAttachmentPreviewUrl(imageFile, { createObjectURL: undefined })).toBeNull();
   });
 
   it("revokes preview object URLs without letting cleanup failures interrupt UI state updates", () => {

@@ -7,9 +7,28 @@ type PreviewUrlRevokeEnvironment = {
   revokeObjectURL?: (url: string) => void;
 };
 
+type PreviewUrlCreateEnvironment = {
+  createObjectURL?: (file: File) => string;
+};
+
 export function isPreviewableImageAttachment(fileName?: string) {
   const extension = fileName?.trim().toLowerCase().match(/\.([^.\\/]+)$/)?.[1];
   return Boolean(extension && previewableImageExtensions.has(extension));
+}
+
+export function createAttachmentPreviewUrl(
+  file: File,
+  environment: PreviewUrlCreateEnvironment = {},
+) {
+  const createObjectURL = environment.createObjectURL ?? globalThis.URL?.createObjectURL;
+  if (!isPreviewableImageAttachment(file.name) || !createObjectURL) return null;
+
+  try {
+    const previewUrl = createObjectURL(file);
+    return previewUrl.trim() ? previewUrl : null;
+  } catch {
+    return null;
+  }
 }
 
 export function revokeAttachmentPreviewUrl(

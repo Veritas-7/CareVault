@@ -144,6 +144,7 @@ import { buildCareActionVisibleDetailParts } from "./careActionVisibleDetail";
 import {
   attachmentPreviewCloseActionLabel,
   attachmentPreviewClosedStatusLabel,
+  createAttachmentPreviewUrl,
   isPreviewableImageAttachment,
   revokeAttachmentPreviewUrl,
 } from "./attachmentPreview";
@@ -2237,9 +2238,7 @@ function App() {
     if (!file) return;
     clearDocumentDraftAttachmentPreviewUrl();
     documentDraftAttachmentFileRef.current = file;
-    documentDraftAttachmentPreviewUrlRef.current = isPreviewableImageAttachment(file.name)
-      ? URL.createObjectURL(file)
-      : null;
+    documentDraftAttachmentPreviewUrlRef.current = createAttachmentPreviewUrl(file);
     updateDocumentDraft({
       attachmentName: file.name,
       attachmentPath: undefined,
@@ -2431,8 +2430,9 @@ function App() {
   };
 
   const rememberBrowserAttachmentPreviewUrl = (documentId: string, file: File) => {
-    if (!isPreviewableImageAttachment(file.name)) return;
-    setBrowserAttachmentPreviewUrl(documentId, URL.createObjectURL(file));
+    const previewUrl = createAttachmentPreviewUrl(file);
+    if (!previewUrl) return;
+    setBrowserAttachmentPreviewUrl(documentId, previewUrl);
   };
 
   const updateSavedDocumentAttachment = (
