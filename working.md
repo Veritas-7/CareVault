@@ -27550,3 +27550,17 @@
   - `src/storage.test.ts` and `working.md` are dirty with the missing storage-key fallback test and verified same-surface QA evidence.
 - Next Steps:
   - Run diff/secret checks, then stage only `src/storage.test.ts` and `working.md` for a focused commit/push.
+
+## 2026-06-07 13:28 KST - Post-Push Missing Storage Key Fallback QA
+
+- Verification:
+  - PASS focused commit: `fdacb65` (`Test missing storage fallback`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `fdacb65`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS browser surface health: existing `surface:7` stayed at `http://localhost:1420/#dashboard` with title `CareVault`.
+  - PASS browser diagnostics: the first post-push `cmux browser surface:7 errors list` attempt timed out waiting for JavaScript, but a same-surface retry returned `No browser errors`; cmux was not restarted and no browser/surface/window was created.
+- Current state:
+  - The missing `carevault.v1` first-run fallback path is unit-covered, directly verified on the existing `암관리` `surface:7`, committed, pushed, and synced.
+  - Runtime is clean; no temporary Vite process is running.
+- Next Steps:
+  - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
