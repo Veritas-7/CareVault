@@ -29632,3 +29632,29 @@
   - No new blocking issue. This tightens the label shared by symptom previews, latest metric cards, timeline rows, care queue, visit packets, CSV, and caregiver exports.
 - Next Steps:
   - Stage explicit paths, run staged diff/secret gates, then commit/push if green.
+
+## 2026-06-07 18:13 KST - Post-Push Multi-Source Cervical Symptom Label
+
+- Current Goal:
+  - Record post-push verification for the multi-source cervical symptom label slice.
+- Result:
+  - Source commit pushed: `87a9c2a` (`Detect all symptom warning sources`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `87a9c2a0eaffdec56e7ffd104086c621df560017`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/symptomRecordLabels.test.ts` failed with `expected '증상 기록' to be '자궁경부암 경고 기록'` before the fix.
+    - GREEN: `npm test -- src/symptomRecordLabels.test.ts` => 1 file / 9 tests.
+    - GREEN: `npm test -- src/symptomRecordLabels.test.ts src/symptomMetric.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/visitPacket.test.ts` => 6 files / 144 tests.
+  - PASS browser smoke through `with_server.py` and one Playwright Chromium session: multi-source `성교 후 출혈과 악취 분비물` record kept `자궁경부암 경고 기록` in save preview, save feedback, latest symptom metric card, and recent-timeline row; both official source links rendered; 390px mobile had no horizontal overflow.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 584 tests.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. This preserves source-backed cervical warning labels even when an earlier non-warning source line is present.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
