@@ -27157,3 +27157,30 @@
   - Browser-local chart disclosure test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:39 KST - Select Hit Target Route Scan Direct QA
+
+- Current Goal:
+  - Reuse only the existing `암관리` / `surface:7` cmux in-app browser to scan the rendered CareVault routes for remaining interactive-control accessibility and hit-target defects.
+  - Patch only real defects found by the same-surface scan, then verify with a representative real select interaction and focused tests.
+- Context:
+  - Recent direct slices covered many individual feature flows, so this slice used a route-level control scan to avoid duplicating the same workflow.
+  - The first scan across `#dashboard`, `#records`, `#profile`, `#care-plan`, `#labs`, `#nutrition`, `#documents`, and `#export` found `missingName=0` everywhere, but common visible `select` controls rendered at `40px`; hidden file inputs also measured `1x40` because the shared form-control `min-height` overrode `.visually-hidden`.
+- Changes:
+  - `src/App.css`: raised shared `input`, `select`, and `textarea` minimum height from `40px` to `44px`; raised base `select` height from `40px` to `44px`; added `min-height: 1px` to `.visually-hidden` so hidden file inputs remain physically 1x1.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated/reloaded in place. No new browser, surface, tab, desktop window, or Computer Use path was used.
+  - PASS RED scan: before the patch, the route scan reported `missingName=0` but `lowHeight` entries for visible selects including `기본 정보 성별`, `혈압·혈당·체온 입력 종류 선택`, `진료 전 질문 우선순위`, `서류 수기 보관 분류`, and `서류 수기 보관 검토 상태`; hidden file inputs measured `1x40`.
+  - PASS patched scan: after reload on the same `surface:7`, every scanned route reported `selectHeights: [44]`, no low select entries, and hidden file inputs measured `1x1` with computed `height: 1px` and `min-height: 1px`.
+  - PASS route-level control scan: all 8 routes reported `missingName=0` and `lowHeightCount=0` for visible non-checkbox/non-radio controls after excluding `.visually-hidden` inputs.
+  - PASS real select interaction: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testSelectHeightBaseline"]`, used the real `혈압·혈당·체온 입력 종류 선택` select to switch `blood-pressure -> glucose -> blood-pressure`, verified the glucose field and glucose context select rendered at `44px`, then verified the restored blood-pressure inputs and `혈압 기록 추가 · 혈압 128/78 mmHg ...` action returned.
+  - PASS non-mutation and cleanup: localStorage stayed byte-equal to the `1872` byte baseline during the select round trip, hidden file inputs stayed `1x1`, `carevault.__testSelectHeightBaseline` was removed, and no `carevault.__test*` session keys remained.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/profileValidation.test.ts src/vitalMetric.test.ts src/documentFilterActions.test.ts src/caregiverShareSettings.test.ts src/healthStandards.test.ts` => `5 passed`, `74 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main` with only `src/App.css` dirty before this log; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `src/App.css` and `working.md` are dirty with the verified select hit-target/accessibility route-scan improvement.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/App.css` and `working.md` for a focused commit/push.
