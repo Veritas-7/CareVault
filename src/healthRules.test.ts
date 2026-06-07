@@ -3724,6 +3724,40 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low handwashing and hair-control source wording", () => {
+    const assessment = assessCancerFood(
+      "음식을 만지거나 요리를 하려면 손을 깨끗이 씻도록 합니다, 손톱 밑부분까지 깨끗이 씻도록 합니다, 음식물에 머리카락이 들어가지 않도록 합니다",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "음식을 만지거나 요리를 하려면 손을 깨끗이 씻도록 합니다",
+      "손톱 밑부분까지 깨끗이 씻도록 합니다",
+      "음식물에 머리카락이 들어가지 않도록 합니다",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 조리 위생·교차오염 예방 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("음식을 만지거나 요리를 하려면 손을 깨끗이 씻도록 합니다");
+    expect(balancedGuideText).toContain("음식물에 머리카락이 들어가지 않도록 합니다");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low cooking doneness and egg-in-food safety wording", () => {
     const assessment = assessCancerFood(
       "고기 닭고기 생선 완전히 익히기, 갈아둔 고기 충분히 익히기, 다른 재료들과 섞기 전에 충분히 익히기, 날계란이나 덜 익힌 계란이 들어간 음식",

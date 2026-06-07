@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 08:17 KST - NCC Immune-Low Handwashing And Hair-Control Source Wording
+
+- Current Goal:
+  - Add narrow source-backed matching for National Cancer Information Center immune-low handwashing and hair-control wording so official food-preparation hygiene sentences are preserved as `ok` support.
+- Context:
+  - Continued from clean/synced CareVault state after `20f64426d72b62d4341765d766eff169e7f121d8`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept handwashing/hair-control wording as immune-low food-safety support, not as a cure or diagnosis claim.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The food-safety section tells patients to wash hands before touching/cooking food, clean under fingernails, and keep hair out of food during preparation.
+  - Applied the source only as immune-low food-preparation hygiene record support.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `음식을 만지거나 요리를 하려면 손을 깨끗이 씻도록 합니다`, `손톱 밑부분까지 깨끗이 씻도록 합니다`, and `음식물에 머리카락이 들어가지 않도록 합니다`, including source evidence and no cure-food wording.
+  - `src/healthRules.ts`: added the longer NCC handwashing/hair-control examples to the visible balanced guide card and supportive food-safety matching terms.
+  - `README.md`: documented the expanded NCC immune-low cooking-hygiene source wording.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source wording returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 111 tests.
+  - PASS full tests: `npm test` => 64 files / 676 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `20f64426d72b62d4341765d766eff169e7f121d8`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD and full verification slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 08:14 KST - Final NCC Immune-Low Uncooked Food Log
 
 - Current Goal:
