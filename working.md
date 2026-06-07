@@ -29601,3 +29601,34 @@
   - No new blocking issue. The latest symptom metric card, symptom timeline row, saved question card, and question timeline row now all preserve multiple parsed source links.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 18:11 KST - Multi-Source Cervical Symptom Label
+
+- Current Goal:
+  - Preserve `자궁경부암 경고 기록` labeling when a symptom record has multiple official sources and the cervical warning source is not the first `출처:` line.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - The tree was clean and synced before this slice.
+  - Used systematic debugging plus TDD. Root cause: `src/symptomRecordLabels.ts` inspected only `parseSourceEvidence(text).sourceLabel`, so it checked the first parsed source only. A symptom action with a first non-warning official source and second `국가암정보센터 자궁경부암 일반적 증상` source stayed labeled as generic `증상 기록`.
+- Changes:
+  - `src/symptomRecordLabels.ts`: cervical warning label detection now scans every parsed source in body/action.
+  - `src/symptomRecordLabels.test.ts`: added RED/PASS coverage for a multi-source symptom where the cervical warning source appears after a non-warning source, including save button and saved-status labels.
+- Tests:
+  - RED confirmed: `npm test -- src/symptomRecordLabels.test.ts` failed with `expected '증상 기록' to be '자궁경부암 경고 기록'`.
+  - PASS focused tests:
+    - `npm test -- src/symptomRecordLabels.test.ts` => 1 file / 9 tests.
+    - `npm test -- src/symptomRecordLabels.test.ts src/symptomMetric.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/visitPacket.test.ts` => 6 files / 144 tests.
+  - PASS Playwright browser smoke through `with_server.py`:
+    - Saved a `성교 후 출혈과 악취 분비물` symptom whose action has a first non-warning vaccine source and second cervical-warning source.
+    - Confirmed the save preview, save feedback, latest symptom metric card, and recent-timeline symptom row all show `자궁경부암 경고 기록`.
+    - Confirmed the timeline row keeps both official source links and no 390px mobile horizontal overflow.
+    - Screenshots: `/tmp/carevault-symptom-warning-label-multisource-desktop.png`, `/tmp/carevault-symptom-warning-label-multisource-mobile.png`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 584 tests.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS whitespace gate: `git diff --check`.
+- Issues:
+  - No new blocking issue. This tightens the label shared by symptom previews, latest metric cards, timeline rows, care queue, visit packets, CSV, and caregiver exports.
+- Next Steps:
+  - Stage explicit paths, run staged diff/secret gates, then commit/push if green.

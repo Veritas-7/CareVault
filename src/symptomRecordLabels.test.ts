@@ -48,6 +48,21 @@ describe("symptomRecordLabels", () => {
     ).toBe("자궁경부암 경고 기록");
   });
 
+  it("labels cervical warning records when the warning source is not the first source", () => {
+    const record = {
+      action: [
+        "발생 시기·양·유발 상황을 적고 진료팀 확인",
+        "출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/vaccine",
+        "출처: 국가암정보센터 자궁경부암 일반적 증상 - https://www.cancer.go.kr/symptoms",
+      ].join("\n"),
+      body: "성교 후 출혈과 악취 분비물",
+    };
+
+    expect(formatSymptomRecordLabel(record)).toBe("자궁경부암 경고 기록");
+    expect(formatSymptomRecordSaveActionLabel(record)).toBe("자궁경부암 경고 기록 추가");
+    expect(formatSymptomRecordSavedStatusLabel(record)).toBe("자궁경부암 경고 기록 추가됨");
+  });
+
   it("does not treat non-warning cervical prevention sources as warning records", () => {
     expect(
       formatSymptomRecordLabel({

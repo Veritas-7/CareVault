@@ -12,8 +12,12 @@ const cervicalWarningSourceLabelFragments = [
 
 function hasCervicalWarningSourceEvidence(symptom: SymptomRecordLabelSource) {
   return [symptom.body, symptom.action].some((text) => {
-    const sourceLabel = parseSourceEvidence(text).sourceLabel;
-    return cervicalWarningSourceLabelFragments.some((fragment) => sourceLabel.includes(fragment));
+    const sources = parseSourceEvidence(text).sources;
+    return sources.some((source) =>
+      cervicalWarningSourceLabelFragments.some((fragment) =>
+        source.sourceLabel.includes(fragment),
+      ),
+    );
   });
 }
 
