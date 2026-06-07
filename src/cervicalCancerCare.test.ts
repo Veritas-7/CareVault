@@ -505,8 +505,14 @@ describe("cervicalCancerCare", () => {
     const text = cervicalCancerCarePreventionGuides
       .map((item) => `${item.label} ${item.detail}`)
       .join(" ");
+    const hpvFamilyGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 백신 가족 안내",
+    );
+    const hpvScheduleGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 접종 일정·관찰 확인",
+    );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(5);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(6);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -520,6 +526,18 @@ describe("cervicalCancerCare", () => {
     expect(text).toContain("치료 효과 확인 용도가 아닙니다");
     expect(text).toContain("선별검사는 변경 없이");
     expect(text).toContain("정기검진 유지");
+    expect(hpvFamilyGuide?.detail).toContain("정기검진 유지");
+    expect(hpvFamilyGuide?.detail).not.toContain("20~30분 관찰");
+    expect(hpvScheduleGuide).toMatchObject({
+      label: "HPV 접종 일정·관찰 확인",
+      sourceId: "kdcaHpv",
+    });
+    expect(hpvScheduleGuide?.detail).toContain("9세 이상");
+    expect(hpvScheduleGuide?.detail).toContain("만 12세");
+    expect(hpvScheduleGuide?.detail).toContain("6개월 간격");
+    expect(hpvScheduleGuide?.detail).toContain("접종 후 20~30분 관찰");
+    expect(hpvScheduleGuide?.detail).toContain("선별검사 유지");
+    expect(hpvScheduleGuide?.detail).not.toContain("치료하세요");
     expect(cervicalCancerCarePreventionGuides.every((item) => item.sourceId)).toBe(true);
   });
 

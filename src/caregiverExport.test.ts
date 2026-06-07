@@ -1923,6 +1923,10 @@ describe("caregiverExport", () => {
     expect(html).toContain("HPV 백신은 예방용");
     expect(html).toContain("접종 후에도 자궁경부암 선별검사");
     expect(html).toContain("선별검사는 변경 없이");
+    expect(html).toContain("HPV 접종 일정·관찰 확인");
+    expect(html).toContain("9세 이상");
+    expect(html).toContain("만 12세");
+    expect(html).toContain("접종 후 20~30분 관찰");
     expect(html).toContain(">국가암정보센터 국가암검진 검진주기 및 검진방법</a>");
     expect(html).toContain(">국가암정보센터 자궁경부암 일반적 증상</a>");
     expect(html).toContain(">질병관리청 국가건강정보포털 자궁경부암 백신</a>");

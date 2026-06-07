@@ -29244,6 +29244,40 @@
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
 
+## 2026-06-07 18:49 KST - HPV Schedule Observation Memo Split
+
+- Current Goal:
+  - Separate HPV vaccine family explanation from vaccination schedule and post-shot observation details in the source-backed cervical-cancer prevention memo list.
+- Context:
+  - Re-checked the active CareVault tree before editing; local `HEAD` and `origin/main` were synced.
+  - Reviewed the TDD and debugging skill instructions for this behavior change.
+  - Reviewed `DESIGN.md` cervical-care contract: HPV vaccine guidance must stay source-backed, keep vaccination prevention separate from continued screening, and avoid diagnosis/treatment instructions.
+  - Official-source re-check used:
+    - KDCA National Health Information Portal cervical-cancer vaccine page: `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=3987`
+    - National Cancer Information Center HPV prevention page: `https://www.cancer.go.kr/lay1/S1T250C254/contents.do`
+- Changes:
+  - `src/cervicalCancerCare.ts`: kept `HPV 백신 가족 안내` focused on prevention-versus-treatment boundary, continued screening, and family explanation; added separate `HPV 접종 일정·관찰 확인` memo with 9세 이상, 만 12세, schedule, post-shot 20~30분 observation, and continued screening notes under the existing KDCA source.
+  - `src/cervicalCancerCare.test.ts`: added RED/PASS coverage for the split, source ID, schedule/observation detail, and no direct treatment order.
+  - `src/cervicalCancerCareClipboard.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, `src/caregiverExport.test.ts`: updated copied-note counts and export assertions so the new memo is preserved across clinic-prep text, Markdown, CSV, and caregiver HTML.
+  - `README.md`: updated the cervical-care feature list with the separate HPV vaccination schedule/observation memo.
+- Tests:
+  - RED confirmed: `npm test -- src/cervicalCancerCare.test.ts` failed before implementation because the prevention guide list still had 5 items and no separate HPV schedule/observation item.
+  - PASS focused test after implementation: `npm test -- src/cervicalCancerCare.test.ts` => 1 file / 25 tests.
+  - PASS related export tests: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` => 5 files / 133 tests.
+  - PASS metric count regression after full-suite discovery: `npm test -- src/cervicalCancerCareMetric.test.ts` => 1 file / 2 tests.
+  - PASS full tests: `npm test` => 64 files / 588 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+- Issues:
+  - No blocker so far. Source commit/push and post-push sync check still need to run.
+- Next Steps:
+  - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
+
 ## 2026-06-07 17:06 KST - Official Food Example Matching Expansion
 
 - Current Goal:

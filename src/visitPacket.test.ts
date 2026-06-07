@@ -615,6 +615,10 @@ describe("visit packet", () => {
     expect(markdown).toContain("HPV 백신은 예방용");
     expect(markdown).toContain("접종 후에도 자궁경부암 선별검사");
     expect(markdown).toContain("선별검사는 변경 없이");
+    expect(markdown).toContain("HPV 접종 일정·관찰 확인");
+    expect(markdown).toContain("9세 이상");
+    expect(markdown).toContain("만 12세");
+    expect(markdown).toContain("접종 후 20~30분 관찰");
     expect(markdown).toContain("국가암정보센터 자궁경부암 일반적 증상");
     expect(markdown).toContain("## 진료 준비 큐");
     expect(markdown).toContain("저장된 기록에서 가져온 확인 항목입니다.");
