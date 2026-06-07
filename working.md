@@ -29658,3 +29658,28 @@
   - No new blocking issue. This preserves source-backed cervical warning labels even when an earlier non-warning source line is present.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 18:18 KST - Contact-Threshold Symptom Source Normalization
+
+- Current Goal:
+  - Prevent raw `출처:` leakage in 진료 준비 큐 details when a contact-threshold symptom action contains both the matched template citation and an additional official source line.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - The tree was clean and synced before this slice.
+  - Used systematic debugging, TDD, webapp-testing, and custom-git guidance. Root cause: `stripSymptomTemplateCitation` removed the matched template citation and immediately collapsed all whitespace, so remaining source lines were no longer line-shaped and `formatTextWithSourceEvidence` could not normalize them.
+  - `DESIGN.md` requires 진료 준비 큐 copied/details text to split official evidence into `근거:` lines instead of leaking raw `출처:` text.
+- Changes:
+  - `src/careActionQueue.ts`: contact-threshold symptom detail formatting now preserves line structure until source evidence parsing runs, then normalizes final display whitespace.
+  - `src/careActionQueue.test.ts`: added RED/PASS coverage for a fever/chills action containing one extra official source plus the infection template citation; queue details and clipboard text must contain only `근거:` evidence.
+- Tests:
+  - RED confirmed: `npm test -- src/careActionQueue.test.ts` failed before the fix because the queue detail contained `출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/vaccine`.
+  - PASS focused test: `npm test -- src/careActionQueue.test.ts` => 1 file / 31 tests.
+  - PASS full tests: `npm test` => 64 files / 585 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - INFO: `npm run lint` is not available in this package.
+- Issues:
+  - No new blocking issue. The care queue, visit packet, CSV, and related source-evidence tests stay green with the normalized symptom detail path.
+- Next Steps:
+  - Stage explicit paths, run diff/secret gates, then commit/push if green.

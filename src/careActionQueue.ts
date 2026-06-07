@@ -272,7 +272,20 @@ function formatSymptomTemplateEvidence(template: SymptomSupportTemplate) {
 
 function stripSymptomTemplateCitation(text: string | undefined, template: SymptomSupportTemplate) {
   const citation = `출처: ${template.sourceLabel} - ${template.sourceUrl}`;
-  return (text ?? "").replace(citation, "").replace(/\s+/g, " ").trim();
+  return (text ?? "").replace(citation, "").trim();
+}
+
+function normalizeSymptomDetailText(text: string) {
+  return text.replace(/\s+/g, " ").trim();
+}
+
+function formatSymptomTextWithoutTemplateCitation(
+  text: string | undefined,
+  template: SymptomSupportTemplate,
+) {
+  return normalizeSymptomDetailText(
+    formatTextWithSourceEvidence(stripSymptomTemplateCitation(text, template)),
+  );
 }
 
 function extractCervicalRecordMemoBasis(text: string | undefined) {
@@ -292,11 +305,15 @@ function formatSymptomActionDetail(
     return formatTextWithSourceEvidence(firstText(symptom.action, symptom.body, symptom.medication));
   }
 
-  const actionText = stripSymptomTemplateCitation(symptom.action, template);
-  const bodyText = stripSymptomTemplateCitation(symptom.body, template);
+  const actionText = formatSymptomTextWithoutTemplateCitation(symptom.action, template);
+  const bodyText = formatSymptomTextWithoutTemplateCitation(symptom.body, template);
   const memoBasis = extractCervicalRecordMemoBasis(symptom.body);
   return joinText(
-    firstText(actionText, bodyText, stripSymptomTemplateCitation(symptom.medication, template)),
+    firstText(
+      actionText,
+      bodyText,
+      formatSymptomTextWithoutTemplateCitation(symptom.medication, template),
+    ),
     memoBasis && memoBasis !== actionText ? memoBasis : undefined,
     formatSymptomTemplateEvidence(template),
   );

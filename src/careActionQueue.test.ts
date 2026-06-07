@@ -754,6 +754,44 @@ describe("careActionQueue", () => {
     );
   });
 
+  it("normalizes extra source lines in contact-threshold symptom queue details", () => {
+    const kdcaVaccineUrl = "https://health.kdca.go.kr/vaccine";
+    const actions = buildCareActionQueue(
+      {
+        ...state,
+        documents: [],
+        labResults: [],
+        questions: [],
+        symptoms: [
+          {
+            id: "symptom-fever-extra-source",
+            date: "2026-06-04",
+            symptom: "38도 발열과 오한",
+            severity: 3,
+            medication: "",
+            body: "체온 38.2℃, 오한 30분 지속",
+            action: [
+              "배뇨 통증과 카테터 부위 발적 여부를 같이 확인",
+              `출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - ${kdcaVaccineUrl}`,
+              `출처: 국가암정보센터 감염 의료진 상담 기준 - ${nccInfectionUrl}`,
+            ].join("\n"),
+          },
+        ],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-03",
+    );
+
+    expect(actions[0]).toMatchObject({
+      id: "symptom:symptom-fever-extra-source",
+      detail:
+        `배뇨 통증과 카테터 부위 발적 여부를 같이 확인 / 근거: 질병관리청 국가건강정보포털 자궁경부암 백신 (${kdcaVaccineUrl}) / 근거: 국가암정보센터 감염 의료진 상담 기준 (${nccInfectionUrl})`,
+    });
+    expect(actions[0].detail).not.toContain("출처:");
+    expect(formatCareActionQueueClipboardText(actions, "2026-06-04")).not.toContain("출처:");
+  });
+
   it("surfaces source-backed lymphedema symptoms even below high severity", () => {
     const actions = buildCareActionQueue(
       {
