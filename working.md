@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:09 KST - NCC Healthy-Eating Low-Salt Food Heading
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating heading about eating foods less salty.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `3f778733b419168ad19e35ec1af00f7948312cfa`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` keeps nutrition judgment source-backed and prohibits cure/treatment food claims; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page uses the heading `음식을 짜지 않게 먹습니다`.
+  - Applied the source as low-salt balanced/support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `음식을 짜지 않게 먹습니다` and `음식을 짜지 않게 먹기` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the two low-salt heading phrases under `nccPreventionDiet`, and aligned the balanced guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating low-salt food heading phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new heading was classified `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 78 tests.
+  - PASS full tests: `npm test` => 64 files / 643 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Perform git/secret readiness checks, then commit and push this source slice if all checks pass.
+
 ## 2026-06-08 04:03 KST - Post-Push NCC Healthy-Eating Boiled Meat Cooking Exact Sentence
 
 - Current Goal:
