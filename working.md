@@ -21967,6 +21967,38 @@
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
 
+## 2026-06-07 10:32 KST - Cervical Care Prompt Append Direct QA
+
+- Current Goal:
+  - Direct-QA the cervical-care prompt `질문 초안` handler after the shared generated-question merge helper landed.
+  - Verify the real `검진·진단검사 구분` button appends to an in-progress editable pre-visit question draft without overwriting the user's current fields or mutating persisted health records.
+- Context:
+  - Vital-standard, food, and symptom-support question draft branches already had direct browser proof.
+  - This slice covers a cervical-care prompt branch through the real button in the existing single cmux browser surface.
+  - Tried to create exact-case `Working.md`, but the filesystem treats `Working.md` and `working.md` as the same file; immediately restored the accidental summary overwrite and kept the established project convention: detailed active worklog stays in `working.md`, with `workingd.md` as a pointer.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `surface:7` cmux browser and did not open another browser surface.
+  - PASS baseline: captured `localStorage["carevault.v1"]` in `sessionStorage["carevault.__testCervicalQuestionAppendBaseline"]`; baseline storage length was `1872`, profile was 암환자 관리 ON female age 56, and counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`.
+  - PASS seeded in-progress draft: used the real question form controls to set date `2026-06-12`, topic `기존 자궁경부 질문`, priority `routine`, body `이미 작성 중인 자궁경부 질문입니다.`, and answer memo `기존 자궁경부 답변 메모`; persisted localStorage stayed equal to baseline before the click.
+  - PASS real click: clicked the real button with aria/title `검진·진단검사 구분 자궁경부암 질문 초안 만들기`.
+  - PASS append preservation: the draft kept date `2026-06-12`, topic `기존 자궁경부 질문`, priority `routine`, and answer memo `기존 자궁경부 답변 메모`; the body still started with `이미 작성 중인 자궁경부 질문입니다.` and appended the generated cervical screening-versus-diagnostic-test question below it.
+  - PASS source and safety wording: appended text included `검진`, `진단검사`, `골반내진`, `자궁경부세포검사`, `HPV 검사`, `질확대경`, `조직검사`, `경질초음파`, `골반 MRI`, and `출처: 국립암센터 자궁경부암 조기 진단과 예방법 - https://www.cancer.go.kr/download.do?uuid=adf8879c-4343-445e-b67d-0c60e5ac9b58.pdf`; generated text did not include directive phrases such as `치료하세요`, `복용하세요`, `처방하세요`, or `먹지 마세요`.
+  - PASS feedback and focus: `.cervical-care-question-feedback` and `.save-status-chip` both showed `자궁경부암 질문 초안 준비됨: 검진·진단검사 구분`; the add button aria became `진료 전 질문 추가 · 기존 자궁경부 질문 입력 준비됨 · 우선순위 일반 확인`; focus moved to `진료 전 질문 내용`.
+  - PASS duplicate guard: clicked the same real button a second time; the question text was unchanged at length `264`, the generated question occurred once, and the `국립암센터 자궁경부암 조기 진단과 예방법` source occurred once.
+  - PASS non-mutation: `localStorage["carevault.v1"]` stayed byte-for-byte equal to the captured baseline throughout; persisted counts stayed `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; no export preview or stale alert opened.
+  - PASS cleanup: restored baseline storage, removed `carevault.__testCervicalQuestionAppendBaseline` and `carevault.__testCervicalQuestionBeforeDuplicateClick`, reloaded only `surface:7`, and confirmed storage length `1872`, localStorage key only `carevault.v1`, no session keys, question date `2026-06-07`, blank topic/body/answer, priority `next-visit`, no cervical-care question feedback, no preview/stale alert, save chip `브라우저 자동 저장됨`, and counts restored.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/questionDraftMerge.test.ts src/cervicalCancerCare.test.ts` => `2 passed`, `29 passed`.
+  - No app source patch was needed because the current cervical-care prompt branch already met the append/non-overwrite contract.
+- Current state:
+  - `working.md` is dirty with this direct QA evidence only.
+  - Temporary Vite is still running for the next immediate verification step and should be stopped before final runtime-clean verification.
+- Next Steps:
+  - Stop temporary Vite and run `npm run runtime:doctor`.
+  - Run diff checks, stage only `working.md`, run staged secret scan, commit/push the QA note if committing this log-only slice.
+  - Continue with another non-duplicate direct-click workflow from the same existing `암관리` `surface:7` browser, preferably the profile-based cervical screening `질문 초안` branch.
+
 ## 2026-06-07 04:54 KST - Vital Question Draft Invalid Input Direct QA
 
 - Current Goal:
