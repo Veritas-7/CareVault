@@ -23,9 +23,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit is pushed and the repository is synced after source push; post-push verification is recorded below.
+  - No new blocking issue. Source commit and verification log commit were pushed; repository sync/runtime status is verified below.
 - Next Steps:
-  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-08 00:45 KST - Post-Push NCC Healthy-Eating Salted Storage and Soup Broth Terms
 
@@ -34,6 +34,7 @@
 - Result:
   - Source commit pushed: `228e931` (`Add NCC healthy eating salted storage limits`).
   - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `228e931f12f472ae92b6c3c85a01f4c428aa3285`.
+  - Post-push verification log commit pushed: `7c6b550` (`Log NCC healthy eating salted storage verification`).
 - Verification:
   - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `6255837b29413fc3583c83357f28c50ea33c7416`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
   - PASS RED/GREEN path:
@@ -51,9 +52,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+  - No new blocking issue. Source commit and post-push log commit were pushed; this cleanup update removes stale next-step wording.
 - Next Steps:
-  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-08 00:35 KST - NCC Healthy-Eating Daily Fruit Snack Terms
 
