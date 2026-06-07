@@ -26619,3 +26619,32 @@
   - Browser-local question-status test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 11:06 KST - Cervical Care Action Target Direct QA
+
+- Current Goal:
+  - Improve and direct-QA the current `#care-plan` cervical-care/care-queue action targets in the same existing `암관리` / `surface:7` cmux browser.
+  - Verify the larger targets do not break source-backed cervical record-draft behavior, local feedback, cleanup, or browser diagnostics.
+- Context:
+  - A same-surface DOM scan on the current `#care-plan` view found several core cancer-care action buttons still at `34px`: `진료 큐 복사`, `노트 복사`, cervical warning `기록 초안`, profile-screening `질문 초안`, and cervical record-check `기록 초안`.
+  - Earlier slices covered much of the cervical logic; this slice targets the current rendered hit-target/accessibility gap without changing data or medical-source logic.
+- Changes:
+  - `src/App.css`: raised scoped desktop `min-height` from `34px` to `44px` for `.queue-copy-button`, `.cervical-copy-button`, `.cervical-alert-actions .secondary-inline-button`, `.cervical-screening-question-button`, and `.cervical-check-draft-button`.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; visible cmux workspace had drifted to `블로그`, so I switched only to the existing `암관리` workspace and reused the existing `surface:7` browser at `http://127.0.0.1:1420/#care-plan`.
+  - PASS browser diagnostics before action: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+  - PASS hit-target scan after CSS: rendered heights were `44px` for `진료 큐 복사`, `노트 복사`, all 4 cervical warning-card `기록 초안` buttons, the profile-screening `질문 초안`, and the first 9 cervical record-check `기록 초안` buttons.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCervicalTargetBaseline"]`; storage length `1872`, local keys only `carevault.v1`, draft symptom/body/action empty, save chip `브라우저 자동 저장됨`, and counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`.
+  - PASS real click: clicked the real `생활 제한 확인 자궁경부암 기록 메모 초안 만들기` button.
+  - PASS draft behavior: symptom became `생활 제한 확인`; body began with `자궁경부암 기록 메모 초안`, included `기록 항목: 생활 제한 확인`, retained `출처: 국가암정보센터 자궁경부암 치료 후 생활 - https://www.cancer.go.kr/...`, and action became `생활 제한 확인 내용을 다음 진료 때 진료팀에 확인`.
+  - PASS non-directive guard: the generated draft did not contain direct order phrases such as `치료하세요`, `복용하세요`, or `처방하세요`.
+  - PASS feedback/non-mutation: `.cervical-care-symptom-feedback` and the top save chip both showed `자궁경부암 기록 메모 초안 준비됨: 생활 제한 확인`; `localStorage["carevault.v1"]` stayed byte-equal to baseline and record counts stayed unchanged.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testCervicalTargetBaseline`, reloaded the same `surface:7`, and confirmed URL `http://127.0.0.1:1420/#care-plan`, storage length `1872`, keys only `carevault.v1`, no `carevault.__test*` session keys, empty symptom/body/action draft, save chip `브라우저 자동 저장됨`, record counts restored, and all patched action groups still measured `44px`.
+  - PASS browser diagnostics after cleanup: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/disclosureLabels.test.ts` => `3 passed`, `32 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.css` and `working.md` are dirty with one verified UI accessibility fix plus direct QA evidence.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/App.css` and `working.md` for commit/push.

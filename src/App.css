@@ -1276,7 +1276,7 @@ label,
 }
 
 .cervical-alert-actions .secondary-inline-button {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 8px;
   border-color: #ead6c0;
   color: #7a4a00;
@@ -1358,7 +1358,7 @@ label,
 .cervical-screening-question-button {
   justify-self: start;
   max-width: 100%;
-  min-height: 34px;
+  min-height: 44px;
   border-color: #c7ded9;
   color: #0f4c5c;
   background: #ffffff;
@@ -1515,7 +1515,7 @@ label,
 }
 
 .cervical-check-draft-button {
-  min-height: 34px;
+  min-height: 44px;
   padding-inline: 8px;
   font-size: 0.74rem;
   font-weight: 900;
@@ -1873,13 +1873,13 @@ label,
 }
 
 .queue-copy-button {
-  min-height: 34px;
+  min-height: 44px;
   padding-inline: 10px;
   font-size: 0.8rem;
 }
 
 .cervical-copy-button {
-  min-height: 34px;
+  min-height: 44px;
   padding-inline: 10px;
   font-size: 0.8rem;
 }
