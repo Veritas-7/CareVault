@@ -24,9 +24,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit is pushed and the repository is synced after source push; post-push verification is recorded below.
+  - No new blocking issue. Source commit and verification log commit were pushed; repository sync/runtime status is verified below.
 - Next Steps:
-  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-08 00:29 KST - Post-Push NCC Healthy-Eating Meat Cooking Method Terms
 
@@ -35,6 +35,7 @@
 - Result:
   - Source commit pushed: `f6f66d0` (`Add NCC healthy eating meat cooking terms`).
   - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `f6f66d084f5bec30f60f33e1e2d1571f24c0729f`.
+  - Post-push verification log commit pushed: `0faad73` (`Log NCC healthy eating meat cooking verification`).
 - Verification:
   - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `5373894439ca516095a9a7871965d6242aad01e9`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
   - PASS RED/GREEN path:
@@ -52,9 +53,9 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+  - No new blocking issue. Source commit and post-push log commit were pushed; this cleanup update removes stale next-step wording.
 - Next Steps:
-  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+  - Continue with the next narrow official-source nutrition or safety slice after rechecking current source coverage.
 
 ## 2026-06-07 23:59 KST - NCC Healthy-Eating Seasoning and Added Salt/Soy Limit Terms
 
