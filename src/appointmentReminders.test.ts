@@ -59,6 +59,22 @@ describe("appointmentReminders", () => {
     });
   });
 
+  it("falls back to the visit date when a restored next appointment date is malformed", () => {
+    const reminders = buildAppointmentReminders(
+      [{ ...visits[0], id: "visit-restored-next-date", date: "2026-06-07", nextDate: "2026-13-01" }],
+      "2026-06-03",
+      14,
+    );
+
+    expect(reminders).toHaveLength(1);
+    expect(reminders[0]).toMatchObject({
+      date: "2026-06-07",
+      id: "appointment:visit-restored-next-date:2026-06-07",
+      label: "4일 후",
+      tone: "neutral",
+    });
+  });
+
   it("returns no reminders for invalid today values", () => {
     expect(buildAppointmentReminders(visits, "not-a-date")).toEqual([]);
   });

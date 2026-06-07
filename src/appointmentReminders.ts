@@ -39,6 +39,12 @@ function firstText(...values: Array<string | undefined>) {
   return values.map((value) => value?.trim()).find(Boolean) ?? "진료 전 기록 확인";
 }
 
+function firstValidIsoDate(...dates: string[]) {
+  return dates
+    .map((date) => date.trim())
+    .find((date) => Number.isFinite(dateToUtcDay(date)));
+}
+
 export function buildAppointmentReminders(
   visits: AppointmentReminderVisit[],
   todayIso: string,
@@ -49,7 +55,9 @@ export function buildAppointmentReminders(
 
   return visits
     .flatMap<AppointmentReminder>((visit) => {
-      const date = visit.nextDate.trim() || visit.date;
+      const date = firstValidIsoDate(visit.nextDate, visit.date);
+      if (!date) return [];
+
       const target = dateToUtcDay(date);
       if (Number.isNaN(target)) return [];
 

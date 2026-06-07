@@ -47,6 +47,10 @@ function getValidIsoDate(dateIso: string) {
   return Number.isFinite(dateToUtcDay(trimmed)) ? trimmed : "";
 }
 
+function firstValidIsoDate(...dates: string[]) {
+  return dates.map(getValidIsoDate).find(Boolean) ?? "";
+}
+
 function formatVisitDate(dateIso: string) {
   return getValidIsoDate(dateIso) || "날짜 미입력";
 }
@@ -89,7 +93,7 @@ export function buildVisitPanelSummary(
   const upcomingCount = Number.isNaN(today)
     ? 0
     : visits.filter((visit) => {
-        const date = visit.nextDate.trim() || visit.date;
+        const date = firstValidIsoDate(visit.nextDate, visit.date);
         const target = dateToUtcDay(date);
         return Number.isFinite(target) && target >= today;
       }).length;

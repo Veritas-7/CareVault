@@ -28955,3 +28955,30 @@
   - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 16:20 KST - Restored Next Appointment Date Fallback
+
+- Current Goal:
+  - Prevent malformed restored `nextDate` values from hiding otherwise valid visit dates in appointment reminders and visit summary chips.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Used the TDD path for this behavior change.
+  - `buildAppointmentReminders()` and `buildVisitPanelSummary()` previously selected `nextDate` whenever it was non-empty before validating it. A malformed restored `nextDate` could therefore suppress a valid upcoming `date`.
+- Changes:
+  - `src/appointmentReminders.test.ts`: added RED coverage for falling back to a valid visit date when restored `nextDate` is malformed.
+  - `src/visitMetric.test.ts`: added RED coverage that visit panel `upcomingCount` and `reminderWindowCount` still count the valid visit date when `nextDate` is malformed.
+  - `src/appointmentReminders.ts`: added valid-date-first selection across `nextDate` and `date`.
+  - `src/visitMetric.ts`: changed upcoming summary selection to use the first valid ISO date across `nextDate` and `date`.
+- Tests:
+  - RED confirmed: `npm test -- src/appointmentReminders.test.ts src/visitMetric.test.ts` failed with no reminder and zero summary counts for malformed `nextDate`.
+  - PASS focused tests after fix: `npm test -- src/appointmentReminders.test.ts src/visitMetric.test.ts` => `2 passed`, `13 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `572 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux browser metadata diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing cmux automation/snapshot context mismatch.
+  - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+- Next Steps:
+  - Run diff and secret gates, then commit/push the focused restored next appointment date fallback if green.

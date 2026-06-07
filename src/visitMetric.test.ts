@@ -93,6 +93,28 @@ describe("visitMetric", () => {
     });
   });
 
+  it("falls back to valid visit dates when restored next schedule dates are malformed", () => {
+    expect(
+      buildVisitPanelSummary(
+        [
+          {
+            date: "2026-06-07",
+            hospital: "서울암센터",
+            id: "visit-restored-next-date",
+            nextDate: "2026-13-01",
+            plan: "",
+            reason: "복구 일정 점검",
+            summary: "",
+          },
+        ],
+        "2026-06-03",
+      ),
+    ).toMatchObject({
+      reminderWindowCount: 1,
+      upcomingCount: 1,
+    });
+  });
+
   it("formats visit added feedback with hospital, reason, and schedule context", () => {
     expect(
       formatVisitAddedStatus({
