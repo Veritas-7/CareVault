@@ -1,5 +1,32 @@
 # CareVault Working Notes
 
+## 2026-06-08 01:17 KST - NCC Healthy-Eating Processed-Meat Avoid Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on avoiding ham, sausage, and processed meat products.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `a3b04d0bb68edefb29614bda0693102a2e723d09`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, updated 2025-09-29, whose guidance says 햄, 소시지 등의 육가공품 should preferably not be eaten.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `햄·소시지`, `햄 소시지`, `햄 소시지 육가공품`, `육가공품 가급적 먹지 않기`, and `육가공품 가급적 먹지 않습니다` as source-backed watch terms without cure claims, plus guide-card coverage for the processed-meat avoid wording.
+  - `src/healthRules.ts`: added the five processed-meat avoid watch terms under `nccPreventionDiet` and aligned the processed-meat guide detail/examples with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating processed-meat avoid terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new processed-meat phrases were missing from the guide and collapsed to shorter `햄`, `소시지`, and `육가공품` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 56 tests.
+  - PASS full tests: `npm test` => 64 files / 621 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is ready for explicit-path staging and secret-scan gates.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`, then run staged and whole-directory secret scans before commit/push.
+
 ## 2026-06-08 01:07 KST - NCC Healthy-Eating Red-Meat Weekly Limit Terms
 
 - Current Goal:
