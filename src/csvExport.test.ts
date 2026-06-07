@@ -687,6 +687,10 @@ describe("csvExport", () => {
     expect(csv).toContain("클라미디아");
     expect(csv).toContain("검진 접근");
     expect(csv).toContain("국가암정보센터 자궁경부암 위험요인");
+    expect(csv).toContain("생활요인 근거 경계 메모");
+    expect(csv).toContain("연관성은 아직 입증되지");
+    expect(csv).toContain("일반 암예방수칙");
+    expect(csv).toContain("국가암정보센터 국민 암예방 수칙 실천지침 자궁경부암");
     expect(csv).toContain("국가암정보센터 자궁경부암 일반적 증상");
   });
 

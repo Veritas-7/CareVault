@@ -62,6 +62,7 @@ describe("cervicalCancerCare", () => {
       "nccHpvVaccine",
       "nccCervicalPrevention",
       "nccCervicalRiskFactors",
+      "nccCervicalPracticeGuideline",
     ]);
     expect(cervicalCancerCareSources.nccSymptoms.url).toContain("cancer.go.kr");
     expect(cervicalCancerCareSources.nccLymphedemaCare.url).toContain("S1T429C431");
@@ -69,6 +70,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
+    expect(cervicalCancerCareSources.nccCervicalPracticeGuideline.url).toContain("6fb06571");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -526,8 +528,11 @@ describe("cervicalCancerCare", () => {
     const immuneInfectionRiskGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "면역·감염·출산력 위험요인 메모",
     );
+    const lifestyleEvidenceBoundaryGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "생활요인 근거 경계 메모",
+    );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(9);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(10);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -592,6 +597,20 @@ describe("cervicalCancerCare", () => {
     expect(immuneInfectionRiskGuide?.detail).toContain("진료팀");
     expect(immuneInfectionRiskGuide?.detail).not.toContain("치료하세요");
     expect(immuneInfectionRiskGuide?.detail).not.toContain("검사하세요");
+    expect(lifestyleEvidenceBoundaryGuide).toMatchObject({
+      label: "생활요인 근거 경계 메모",
+      sourceId: "nccCervicalPracticeGuideline",
+    });
+    expect(lifestyleEvidenceBoundaryGuide?.detail).toContain("음주");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).toContain("비만");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).toContain("신체활동 부족");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).toContain("직업적·환경적 유해물질");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).toContain("연관성은 아직 입증되지");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).toContain("일반 암예방수칙");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).toContain("진료팀");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).not.toContain("음주가 자궁경부암 위험");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).not.toContain("비만이 자궁경부암 위험");
+    expect(lifestyleEvidenceBoundaryGuide?.detail).not.toContain("운동하세요");
     expect(cervicalCancerCarePreventionGuides.every((item) => item.sourceId)).toBe(true);
   });
 

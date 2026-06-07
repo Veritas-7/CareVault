@@ -634,6 +634,10 @@ describe("visit packet", () => {
     expect(markdown).toContain("클라미디아");
     expect(markdown).toContain("검진 접근");
     expect(markdown).toContain("국가암정보센터 자궁경부암 위험요인");
+    expect(markdown).toContain("생활요인 근거 경계 메모");
+    expect(markdown).toContain("연관성은 아직 입증되지");
+    expect(markdown).toContain("일반 암예방수칙");
+    expect(markdown).toContain("국가암정보센터 국민 암예방 수칙 실천지침 자궁경부암");
     expect(markdown).toContain("국가암정보센터 자궁경부암 일반적 증상");
     expect(markdown).toContain("## 진료 준비 큐");
     expect(markdown).toContain("저장된 기록에서 가져온 확인 항목입니다.");

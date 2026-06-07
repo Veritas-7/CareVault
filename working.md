@@ -29900,6 +29900,33 @@
 - Next Steps:
   - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
 
+## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
+
+- Current Goal:
+  - Add an official-source evidence-boundary memo so alcohol, obesity, physical inactivity, and workplace/environment exposure are not overclaimed as direct cervical-cancer risk factors in the app.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice (`0 0`).
+  - Applied TDD plus incremental implementation: first add failing source/guide/export/count expectations, then implement one source-backed prevention memo.
+  - Official-source re-check used the National Cancer Information Center PDF `국민 암예방 수칙 실천지침 _ 자궁경부암`: `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Changes:
+  - `src/cervicalCancerCare.ts`: added `nccCervicalPracticeGuideline` source and the new `생활요인 근거 경계 메모`, stating that the cited PDF says alcohol, obesity, physical inactivity, and occupational/environmental harmful substances are not yet proven to be linked to cervical cancer.
+  - `src/cervicalCancerCare.test.ts`: added RED/PASS coverage for the source key, memo content, evidence-boundary wording, and no direct overclaim/order wording.
+  - `src/cervicalCancerCareClipboard.test.ts`, `src/cervicalCancerCareMetric.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, `src/caregiverExport.test.ts`: updated source/item counts and export assertions so the boundary memo is preserved across copy, panel chips, Markdown, CSV, and caregiver HTML.
+  - `README.md`: updated cervical-care feature summaries with lifestyle-factor evidence-boundary coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` failed before implementation because `nccCervicalPracticeGuideline`, the new prevention guide, updated counts, and export text were missing.
+  - PASS related tests after implementation: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` => 6 files / 135 tests.
+  - PASS full tests: `npm test` => 64 files / 589 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Issues:
+  - No blocker so far. Staged and whole-directory secret checks still need to run before commit/push.
+- Next Steps:
+  - Run the full gate, stage only explicit CareVault paths, run staged and whole-directory secret scans, then commit/push the source change and record post-push verification.
+
 ## 2026-06-07 19:25 KST - Cervical Immune/Infection/Birth Risk-Factor Memo
 
 - Current Goal:

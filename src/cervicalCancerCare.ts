@@ -166,6 +166,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 위험요인",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4884",
   },
+  nccCervicalPracticeGuideline: {
+    label: "국가암정보센터 국민 암예방 수칙 실천지침 자궁경부암",
+    url: "https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf",
+  },
 };
 
 export const cervicalCancerCareAlerts: CervicalCancerCareAlert[] = [
@@ -444,6 +448,12 @@ export const cervicalCancerCarePreventionGuides: CervicalCancerCarePreventionGui
     detail:
       "국가암정보센터는 HIV 감염처럼 면역체계가 약해지는 경우, 클라미디아 감염, 과일·채소 섭취가 적은 식이, 장기간 경구피임약 사용, 출산 횟수가 많은 경우, 낮은 사회경제수준도 자궁경부암 위험요인으로 알려져 있다고 설명합니다. 면역저하 이력, 성매개감염 치료·재검 기록, 출산 횟수, 검진 접근 어려움과 지원 필요 여부를 진료팀 질문으로 남깁니다.",
     sourceId: "nccCervicalRiskFactors",
+  },
+  {
+    label: "생활요인 근거 경계 메모",
+    detail:
+      "국가암정보센터 국민 암예방 수칙 실천지침은 음주, 비만, 신체활동 부족, 직업적·환경적 유해물질과 자궁경부암의 연관성은 아직 입증되지 않았다고 설명합니다. 해당 생활요인은 자궁경부암 직접 위험요인으로 표시하지 말고, 일반 암예방수칙이나 개인 건강목표로 분리해 기록하며, 내 검진·치료 이력에서 어떤 우선순위로 다룰지 진료팀에 질문으로 남깁니다.",
+    sourceId: "nccCervicalPracticeGuideline",
   },
 ];
 
