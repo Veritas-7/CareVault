@@ -23,9 +23,37 @@
 - Sources:
   - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
 - Issues:
-  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+  - No new blocking issue. Source commit is pushed and the repository is synced after source push; post-push verification is recorded below.
 - Next Steps:
-  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
+
+## 2026-06-08 00:45 KST - Post-Push NCC Healthy-Eating Salted Storage and Soup Broth Terms
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center healthy-eating salted-storage and soup-broth limit term slice.
+- Result:
+  - Source commit pushed: `228e931` (`Add NCC healthy eating salted storage limits`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `228e931f12f472ae92b6c3c85a01f4c428aa3285`.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `6255837b29413fc3583c83357f28c50ea33c7416`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new phrases collapsed to existing shorter `젓갈`, `장아찌`, and `국물` matches.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 53 tests.
+  - PASS full tests: `npm test` => 64 files / 618 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 7.86 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Continue with the next narrow official-source nutrition or safety slice after final log-only sync/runtime cleanup is verified.
 
 ## 2026-06-08 00:35 KST - NCC Healthy-Eating Daily Fruit Snack Terms
 
