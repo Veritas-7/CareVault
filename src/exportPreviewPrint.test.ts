@@ -79,6 +79,32 @@ describe("exportPreviewPrint", () => {
     expect(removeChild).toHaveBeenCalledWith(frame);
   });
 
+  it("keeps a successful print status when delayed frame cleanup cannot be scheduled", () => {
+    const { documentLike, frame, print, removeChild } = createPrintFrameEnvironment();
+    const timeout = vi.fn<(callback: () => void, delay?: number) => number>(() => {
+      throw new Error("timer unavailable");
+    });
+
+    expect(
+      printExportPreviewInFrame(
+        {
+          content: "진료 요약 본문",
+          filename: "summary.md",
+          isHtml: false,
+          title: "진료 요약",
+        },
+        {
+          document: documentLike as unknown as Document,
+          setTimeout: timeout as unknown as typeof window.setTimeout,
+        },
+      ),
+    ).toBe("printed");
+
+    expect(print).toHaveBeenCalledTimes(1);
+    expect(timeout).toHaveBeenCalledWith(expect.any(Function), 1000);
+    expect(removeChild).toHaveBeenCalledWith(frame);
+  });
+
   it("returns an explicit failure and removes the print frame when print throws", () => {
     const { documentLike, frame, removeChild } = createPrintFrameEnvironment({
       printThrows: true,

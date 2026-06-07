@@ -27940,3 +27940,28 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:16 KST - Export Preview Print Cleanup Guard Started
+
+- Current Goal:
+  - Keep export-preview print status successful after the print request has been issued, even if delayed iframe cleanup cannot be scheduled.
+- Context:
+  - Re-read thread identity, latest `working.md`, current repo sync, and `src/exportPreviewPrint.ts` / `src/exportPreviewPrint.test.ts` before editing.
+  - Existing cmux `surface:7` was used only for non-focusing diagnostics. It reports `http://127.0.0.1:1420/#dashboard` / `CareVault`, but `eval` still returns `about:blank` with no `#root` and empty body text; `errors list` returns `No browser errors`.
+  - No Computer Use, focus change, workspace selection, new browser, new tab, or new surface was used.
+  - Current code returned `print-failed` if `setTimeout` failed after `frameWindow.print()` had already run, which could mislead the user after the actual print request was accepted.
+- Changes:
+  - `src/exportPreviewPrint.test.ts`: added a RED case where `frameWindow.print()` succeeds but delayed cleanup scheduling throws; expected status remains `printed`.
+  - `src/exportPreviewPrint.ts`: isolated post-print cleanup scheduling in its own best-effort `try/catch`, with immediate cleanup fallback while preserving the `printed` result after a successful print request.
+- Tests:
+  - RED confirmed: `npm test -- src/exportPreviewPrint.test.ts` failed because the new case received `print-failed` instead of `printed`.
+  - PASS focused test after fix: `npm test -- src/exportPreviewPrint.test.ts` => `1 passed`, `5 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `546 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` URL/title remained CareVault and `errors list` returned `No browser errors`; eval still reports `about:blank`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface and do not steal focus.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused print cleanup guard if green.

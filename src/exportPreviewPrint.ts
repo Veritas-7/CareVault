@@ -75,13 +75,21 @@ export function printExportPreviewInFrame(
     frameDocument.close();
     frameWindow.focus();
     frameWindow.print();
-    delay(() => {
+    try {
+      delay(() => {
+        try {
+          documentLike.body.removeChild(frame);
+        } catch {
+          // Frame cleanup is best-effort after the print request has been issued.
+        }
+      }, 1000);
+    } catch {
       try {
         documentLike.body.removeChild(frame);
       } catch {
         // Frame cleanup is best-effort after the print request has been issued.
       }
-    }, 1000);
+    }
     return "printed";
   } catch {
     try {
