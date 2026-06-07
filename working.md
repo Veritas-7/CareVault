@@ -27480,3 +27480,32 @@
   - Runtime is clean; source code is unchanged in this QA-only slice.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 13:22 KST - Invalid JSON Storage Fallback Direct QA
+
+- Current Goal:
+  - Cover the distinct persistence failure branch where `localStorage["carevault.v1"]` is not parseable JSON.
+  - Verify the app rewrites the bad value to the default fallback state, renders safely, and leaves no test keys after cleanup in the existing `암관리` / `surface:7` cmux browser.
+- Context:
+  - The previous malformed-state pass covered parseable but structurally invalid state. This pass covers a harder load-time parse failure before `normalizeAppState()` can inspect object fields.
+  - `src/storage.ts` catches `JSON.parse` failures in `loadFromLocalStorage()` and writes the fallback state back to `carevault.v1`.
+  - This pass used only existing-surface cmux browser commands: `navigate`, `eval`, `wait`, `console list`, and `errors list`. No new browser, surface, tab, desktop focus handoff, Computer Use, `focus-webview`, or cmux restart was used.
+- Changes:
+  - `src/storage.test.ts`: added focused coverage that invalid browser `localStorage` JSON is replaced with the fallback state during load and reports the `localStorage` backend when the replacement write succeeds.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served port `1420`; existing `surface:7` was navigated in place to `http://localhost:1420/#dashboard` and rendered `CareVault`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testInvalidJsonBaseline"]`; baseline storage length was `1774`, profile was `나의 건강 기록` / `56` / `female`, food query was `브로콜리, 현미밥, 베이컨, 자몽 주스`, counts were `vitals=3`, `visits=1`, `documents=1`, `deletedDocuments=0`, `symptoms=1`, `questions=1`, `labResults=1`, and save chip was `브라우저 자동 저장됨`.
+  - PASS invalid JSON injection: wrote the literal invalid value `{invalid-json` into `localStorage["carevault.v1"]`, then reloaded only the same `surface:7`.
+  - PASS fallback rewrite: after load, `localStorage["carevault.v1"]` was valid JSON again, storage length was `1774`, and the raw prefix started with the default profile payload instead of the invalid string.
+  - PASS rendered fallback state: profile inputs showed `나의 건강 기록`, `56`, `female`, `164`, `62`, `82`; cancer-care, diabetes, and hypertension toggles rendered on; food query restored to `브로콜리, 현미밥, 베이컨, 자몽 주스`; backup scope showed `기록 8개`; care queue showed `7개 항목`.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testInvalidJsonBaseline`, reloaded the same `surface:7`, and confirmed storage length `1774`, no `carevault.__test*` session keys, no preview/dialog/alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`; `console list` contained only normal Vite debug connection lines.
+- Verification:
+  - PASS focused test before direct QA: `npm test -- src/storage.test.ts` => `1 passed`, `15 passed`.
+  - PASS focused tests after direct QA: `npm test -- src/storage.test.ts src/appStateNormalization.test.ts` => `2 passed`, `21 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed only `src/storage.test.ts` modified before logging; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `src/storage.test.ts` and `working.md` are dirty with the invalid JSON fallback test and verified same-surface QA evidence.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/storage.test.ts` and `working.md` for a focused commit/push.

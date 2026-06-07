@@ -216,6 +216,21 @@ describe("storage normalized mirror", () => {
     expect(storage.setItem).toHaveBeenCalledWith("carevault.v1", JSON.stringify(fallback));
   });
 
+  it("replaces invalid browser localStorage JSON with the fallback state during load", async () => {
+    const fallback = { profile: "fallback" };
+    const storage = {
+      getItem: vi.fn(() => "{invalid-json"),
+      setItem: vi.fn(),
+    };
+    stubBrowserLocalStorage(storage);
+
+    await expect(loadPersistedState(fallback)).resolves.toEqual({
+      state: fallback,
+      backend: "localStorage",
+    });
+    expect(storage.setItem).toHaveBeenCalledWith("carevault.v1", JSON.stringify(fallback));
+  });
+
   it("falls back to memory when browser localStorage writes are blocked during save", async () => {
     const state = { profile: "saved" };
     const storage = {
