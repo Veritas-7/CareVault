@@ -27077,3 +27077,29 @@
   - Browser-local caregiver preset test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:24 KST - Profile Number Validation Direct QA
+
+- Current Goal:
+  - Direct-QA the `기본 정보` numeric profile input behavior in the existing `암관리` / `surface:7` cmux browser without occupying the visible window.
+  - Verify blank numeric input handling, invalid zero validation, local status feedback, persisted-storage guard, and clean restoration of the profile height baseline.
+- Context:
+  - `DESIGN.md` requires form controls to provide local `role=status` feedback for validation and to avoid relying only on offscreen global save chips.
+  - Prior profile-number validation was already covered earlier; this slice records the current no-window same-`surface:7` pass and the cmux native number-input behavior observed today.
+- Changes:
+  - No source code changes in this slice; the current implementation passed same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated to `http://127.0.0.1:1420/#profile`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testProfileNumberBaseline"]`; storage length was `1872`, profile height was `164`, local keys were only `carevault.v1`, profile numeric inputs had no `aria-invalid`, and `.profile-field-feedback` was absent.
+  - PASS native number-input observation: cmux `fill` of `-1` and `0` into the real `기본 정보 키(cm)` number input was normalized by the browser/native field behavior to an empty value. The app allows blank numeric profile fields while editing, so the stored height became empty and the save chip showed `키 수정됨 · 브라우저 자동 저장됨`.
+  - PASS invalid app-validation branch: dispatching the same-surface `input` event with value `0` made the input show `0`, kept the stored profile height at `164`, set `aria-invalid="true"` and `aria-describedby="profile-field-feedback"`, rendered local `.profile-field-feedback[role=status][aria-live=polite]` as `키는 0보다 크게 입력해주세요.`, and set the top save chip to the same validation sentence.
+  - PASS cleanup: dispatching the same-surface input event with `164` restored stored height and visible input to `164`, cleared `aria-invalid`/`aria-describedby` and `.profile-field-feedback`, removed `carevault.__testProfileNumberBaseline`, left no `carevault.__test*` session keys, and returned storage length to `1872`.
+  - PASS browser diagnostics after cleanup: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/profileValidation.test.ts src/profileModeToggle.test.ts src/storage.test.ts` => `3 passed`, `24 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main`; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `working.md` is dirty with verified profile number validation QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
