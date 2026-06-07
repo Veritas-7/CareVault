@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatDatedRecordDisplayDate,
   latestDatedItem,
   latestDatedItemMatching,
   sortDatedItemsNewestFirst,
@@ -27,6 +28,12 @@ describe("recordOrdering", () => {
     const blank = { date: "   ", label: "빈 날짜" };
 
     expect(latestDatedItem([validLatest, malformed, blank])).toBe(validLatest);
+  });
+
+  it("formats malformed restored record dates with a visible fallback", () => {
+    expect(formatDatedRecordDisplayDate("2026-06-05")).toBe("2026-06-05");
+    expect(formatDatedRecordDisplayDate("2026-06-31")).toBe("날짜 미입력");
+    expect(formatDatedRecordDisplayDate("   ")).toBe("날짜 미입력");
   });
 
   it("selects the latest matching record by date before insertion order", () => {

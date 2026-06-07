@@ -16,6 +16,10 @@ function getValidDateSortKey(date: string) {
     : trimmed;
 }
 
+export function formatDatedRecordDisplayDate(date: string) {
+  return getValidDateSortKey(date) || "날짜 미입력";
+}
+
 export function latestDatedItem<T extends DatedRecord>(items: readonly T[]) {
   return items
     .map((item, index) => ({ index, item }))

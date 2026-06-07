@@ -29055,3 +29055,29 @@
   - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 16:31 KST - Restored Date Display Fallback
+
+- Current Goal:
+  - Keep malformed or blank restored dates visible as an explicit fallback in read-only record UI instead of rendering an empty date slot.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Used the TDD path for this behavior change.
+  - `sortDatedItemsNewestFirst()` already prevents malformed restored dates from outranking valid dates, but recent timeline rows and question cards still displayed the raw `date` string.
+- Changes:
+  - `src/recordOrdering.test.ts`: added RED coverage for a display-date fallback that preserves valid ISO dates and renders malformed/blank dates as `날짜 미입력`.
+  - `src/recordOrdering.ts`: added `formatDatedRecordDisplayDate()`.
+  - `src/App.tsx`: used the display fallback in question list date labels and recent timeline `<time>` labels.
+- Tests:
+  - RED confirmed: `npm test -- src/recordOrdering.test.ts` failed because `formatDatedRecordDisplayDate` was not exported.
+  - PASS focused test after fix: `npm test -- src/recordOrdering.test.ts` => `1 passed`, `7 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `574 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux browser metadata diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing cmux automation/snapshot context mismatch.
+  - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+- Next Steps:
+  - Run diff and secret gates, then commit/push the focused restored date display fallback if green.

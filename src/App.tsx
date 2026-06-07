@@ -445,6 +445,7 @@ import {
 } from "./questionDisplay";
 import { buildQuestionListSummary, buildQuestionMetricSummary } from "./questionMetric";
 import {
+  formatDatedRecordDisplayDate,
   latestDatedItem,
   latestDatedItemMatching,
   sortDatedItemsNewestFirst,
@@ -5975,7 +5976,7 @@ function App() {
 
                 return (
                   <article className="timeline-item" key={item.id}>
-                    <time>{item.date}</time>
+                    <time>{formatDatedRecordDisplayDate(item.date)}</time>
                     {item.icon}
                     <div>
                       {item.recordLabel ? (
@@ -6301,7 +6302,8 @@ function App() {
                     <article className="question-item" key={question.id}>
                       <div>
                         <span>
-                          {question.date} · {questionPriorityLabel[question.priority]}
+                          {formatDatedRecordDisplayDate(question.date)} ·{" "}
+                          {questionPriorityLabel[question.priority]}
                         </span>
                         <strong>{question.topic}</strong>
                         <p>{questionDisplay.body}</p>
