@@ -324,6 +324,11 @@ function formatTextWithSourceEvidenceHtml(text: string) {
 }
 
 const sourceCitationPattern = /([^();]+?)\s*\((https?:\/\/[^\s)]+)\)/g;
+const repeatedGroundLabelPattern = /^\/\s*근거:\s*/;
+
+function normalizeSourceCitationLabel(label: string) {
+  return label.trim().replace(repeatedGroundLabelPattern, "").trim();
+}
 
 function linkSourceCitationListHtml(value: string) {
   let html = "";
@@ -331,9 +336,14 @@ function linkSourceCitationListHtml(value: string) {
 
   for (const match of value.matchAll(sourceCitationPattern)) {
     const index = match.index ?? 0;
-    const label = match[1].trim();
+    const rawLabel = match[1].trim();
+    const hasRepeatedGroundLabel = repeatedGroundLabelPattern.test(rawLabel);
+    const label = normalizeSourceCitationLabel(rawLabel);
     const url = match[2].trim();
     html += escapeHtml(value.slice(lastIndex, index));
+    if (hasRepeatedGroundLabel && html.trim()) {
+      html += " / ";
+    }
     html += formatExternalLinkHtml(url, label);
     lastIndex = index + match[0].length;
   }

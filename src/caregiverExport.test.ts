@@ -1023,6 +1023,50 @@ describe("caregiverExport", () => {
     );
   });
 
+  it("keeps repeated caregiver care queue evidence link labels clean", () => {
+    const kdcaVaccineUrl = "https://health.kdca.go.kr/vaccine";
+    const html = buildCaregiverExportHtml(
+      {
+        ...state,
+        documents: [],
+        foodQuery: "",
+        labResults: [],
+        profile: { ...state.profile, cancerCareMode: false },
+        questions: [],
+        symptoms: [
+          {
+            date: "2026-06-04",
+            symptom: "38도 발열과 오한",
+            severity: 3,
+            body: "체온 38.2℃, 오한 30분 지속",
+            action: [
+              "배뇨 통증과 카테터 부위 발적 여부를 같이 확인",
+              `출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - ${kdcaVaccineUrl}`,
+              `출처: 국가암정보센터 감염 의료진 상담 기준 - ${nccInfectionUrl}`,
+            ].join("\n"),
+          },
+        ],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-04T10:00:00.000Z",
+    );
+
+    expect(html).toContain("증상 · 감염 의심 기록");
+    expect(html).toContain(
+      `<a href="${kdcaVaccineUrl}" target="_blank" rel="noreferrer">질병관리청 국가건강정보포털 자궁경부암 백신</a>`,
+    );
+    expect(html).toContain(
+      `<a href="${nccInfectionUrl}" target="_blank" rel="noreferrer">국가암정보센터 감염 의료진 상담 기준</a>`,
+    );
+    expect(html).toContain(
+      `근거: <a href="${kdcaVaccineUrl}" target="_blank" rel="noreferrer">질병관리청 국가건강정보포털 자궁경부암 백신</a> / <a href="${nccInfectionUrl}" target="_blank" rel="noreferrer">국가암정보센터 감염 의료진 상담 기준</a>`,
+    );
+    expect(html).not.toContain("> / 근거: 국가암정보센터 감염 의료진 상담 기준</a>");
+    expect(html).not.toContain(">/ 근거: 국가암정보센터 감염 의료진 상담 기준</a>");
+    expect(html).not.toContain("출처: 국가암정보센터 감염 의료진 상담 기준");
+  });
+
   it("includes source-backed cancer-pain symptoms in caregiver care queues", () => {
     const painTemplate = findSymptomSupportTemplate("통증점수와 진통제 효과")!;
     const html = buildCaregiverExportHtml(

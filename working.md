@@ -29758,3 +29758,27 @@
   - No new blocking issue. Dashboard care queue visible evidence links no longer expose repeated group markers in source labels.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 18:32 KST - Caregiver Queue Evidence Link Labels
+
+- Current Goal:
+  - Keep caregiver HTML 진료 준비 큐 evidence links clean when one queue detail contains repeated slash-separated `근거:` groups.
+- Context:
+  - Re-checked the CareVault worktree; local `HEAD` and `origin/main` were synced before this slice.
+  - The dashboard visible-detail parser already handled this pattern, but caregiver HTML still linked repeated evidence citations through `formatGroundedTextHtml`.
+  - Root cause: `linkSourceCitationListHtml` captured the repeated ` / 근거:` marker as part of the second citation label, so the second anchor could render as `/ 근거: 국가암정보센터 ...`.
+- Changes:
+  - `src/caregiverExport.ts`: normalizes repeated caregiver source citation labels and preserves a compact ` / ` separator between linked evidence sources.
+  - `src/caregiverExport.test.ts`: added RED/PASS coverage for a fever/chills caregiver queue row with two official source lines.
+- Tests:
+  - RED confirmed: `npm test -- src/caregiverExport.test.ts` failed before the fix because the caregiver queue evidence line rendered the second source as an anchor with `/ 근거:` in its label.
+  - PASS focused test: `npm test -- src/caregiverExport.test.ts` => 1 file / 55 tests.
+  - PASS related tests: `npm test -- src/caregiverExport.test.ts src/careActionQueue.test.ts src/careActionVisibleDetail.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/sourceEvidence.test.ts` => 6 files / 143 tests.
+  - PASS full tests: `npm test` => 64 files / 587 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. Caregiver care queue HTML now keeps repeated official evidence links compact and avoids leaking repeated `근거:` markers into anchor labels.
+- Next Steps:
+  - Stage explicit paths, run diff/secret gates, then commit/push if green.
