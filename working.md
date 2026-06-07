@@ -29892,6 +29892,10 @@
   - PASS build: `npm run build`.
   - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
   - PASS pre-commit gate: `git diff --check`.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `3cdcd4ed7c3a32b187f5e12b8f855001f86750f6`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 7.03 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
   - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `9f63f1cf9bce019db64cf31a80b7d2d0b85f7faf`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
   - PASS staged gate: `git diff --cached --check`.
   - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 8.46 KB and reported no leaks.
@@ -30472,6 +30476,33 @@
 - Next Steps:
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 601 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this `working.md` update and recheck final sync/runtime cleanup.
+
+## 2026-06-07 21:44 KST - NCC Prevention Processed-Meat Watch Terms
+
+- Current Goal:
+  - Tighten National Cancer Information Center prevention meal-example source mapping for processed-meat watch terms.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`; local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed `DESIGN.md` food guidance contract: food judgment must show official Korean source evidence and avoid treatment/cure claims.
+  - Official-source re-check used National Cancer Information Center `암예방을 위한 요리`, which says ham, sausage, and processed meat should be eaten as little as possible in the example prevention meal guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/PASS coverage that the processed-meat guide item includes `nccPreventionMealExamples`, and that `햄`/`소시지`/`가공육류`/`가공육`/`육가공품` map to the meal-example source while `베이컨` remains the broader prevention-diet fallback.
+  - `src/healthRules.ts`: added exact `가공육` and `육가공품` watch terms and source-tightened `햄`, `소시지`, and `가공육류` to `nccPreventionMealExamples`; kept the broader `nccPreventionDiet` source for carbonized/직화/fried fallback items.
+  - `README.md`: added the newly source-tightened processed-meat examples to the nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `가공육` and `육가공품` were missing from matched terms, and the source-tightened processed-meat expectations were not yet satisfied.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 37 tests.
+  - PASS full tests: `npm test` => 64 files / 602 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No blocker so far. Source commit/push and post-push log still need to run.
+- Next Steps:
+  - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
 
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 

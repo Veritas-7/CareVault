@@ -223,6 +223,9 @@ describe("healthRules", () => {
     const limitGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "limit",
     )?.items;
+    const processedMeatGuide = limitGuideItems?.find(
+      (item) => item.label === "가공육·탄 음식·튀김",
+    );
     const limitGuideText = limitGuideItems
       ?.map((item) => `${item.label} ${item.detail} ${item.examples}`)
       .join(" ");
@@ -240,6 +243,9 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("가당 제품");
     expect(limitGuideText).toContain("소고기");
     expect(limitGuideText).toContain("돼지고기");
+    expect(limitGuideText).toContain("육가공품");
+    expect(limitGuideText).toContain("가공육");
+    expect(processedMeatGuide?.sourceIds).toContain("nccPreventionMealExamples");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
         .map((item) => item.label)
@@ -553,6 +559,33 @@ describe("healthRules", () => {
       sourceId: "nccPreventionMealExamples",
     });
     expect(formatFoodMatchEvidence(matchesByTerm.소고기)).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes NCC prevention processed-meat watch examples", () => {
+    const assessment = assessCancerFood("햄, 소시지, 가공육류, 가공육, 육가공품, 베이컨");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual(["햄", "소시지", "가공육류", "가공육", "육가공품", "베이컨"]);
+    for (const term of ["햄", "소시지", "가공육류", "가공육", "육가공품"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 암예방 식단 가공육류 가급적 적게 섭취 예시",
+        sourceId: "nccPreventionMealExamples",
+      });
+    }
+    expect(matchesByTerm.베이컨).toMatchObject({
+      level: "watch",
+      reason: "가공육",
+      sourceId: "nccPreventionDiet",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm.햄)).toContain(
       "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);

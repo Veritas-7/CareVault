@@ -221,9 +221,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "가공육·탄 음식·튀김",
         detail:
-          "공식 암예방 식이 자료는 햄·소시지 같은 육가공품을 가급적 적게 먹고, 탄 음식과 직화구이·튀김 조리법을 피하도록 안내합니다.",
-        examples: "햄, 소시지, 베이컨, 가공육류, 탄 고기, 숯불 직화, 직화구이, 튀김",
-        sourceIds: ["nccPreventionDiet"],
+          "국가암정보센터 암예방 식단 예시는 햄·소시지 등 가공육류를 가급적 적게 섭취하도록 안내하고, 공식 암예방 식이 자료는 탄 음식과 직화구이·튀김 조리법도 피하도록 안내합니다.",
+        examples: "햄, 소시지, 가공육류, 가공육, 육가공품, 베이컨, 탄 고기, 숯불 직화, 직화구이, 튀김",
+        sourceIds: ["nccPreventionMealExamples", "nccPreventionDiet"],
       },
       {
         label: "붉은 육류 적정량",
@@ -431,12 +431,36 @@ const limitFoods: FoodRuleTerm[] = [
   ["흰쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet"],
   ["쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["햄구이", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
-  ["소시지", "가공육", "nccPreventionDiet"],
+  [
+    "소시지",
+    "국가암정보센터 암예방 식단 가공육류 가급적 적게 섭취 예시",
+    "nccPreventionMealExamples",
+  ],
   ["베이컨", "가공육", "nccPreventionDiet"],
-  ["햄", "가공육", "nccPreventionDiet", standaloneFoodTermOptions],
+  [
+    "햄",
+    "국가암정보센터 암예방 식단 가공육류 가급적 적게 섭취 예시",
+    "nccPreventionMealExamples",
+    standaloneFoodTermOptions,
+  ],
   ["핫도그", "가공육", "nccPreventionDiet"],
   ["살라미", "가공육", "nccPreventionDiet"],
-  ["가공육류", "가공육", "nccPreventionDiet"],
+  [
+    "가공육류",
+    "국가암정보센터 암예방 식단 가공육류 가급적 적게 섭취 예시",
+    "nccPreventionMealExamples",
+  ],
+  [
+    "가공육",
+    "국가암정보센터 암예방 식단 가공육류 가급적 적게 섭취 예시",
+    "nccPreventionMealExamples",
+    standaloneFoodTermOptions,
+  ],
+  [
+    "육가공품",
+    "국가암정보센터 암예방 식단 가공육류 가급적 적게 섭취 예시",
+    "nccPreventionMealExamples",
+  ],
   ["직화구이", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
   ["직화", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
   ["숯불", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
