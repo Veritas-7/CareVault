@@ -29303,3 +29303,33 @@
   - No new blocking issue. The clarified objective excludes cmux same-surface browser control in this environment, so reproducible Playwright/browser smoke remains the direct UI verification path here.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 17:13 KST - Food Keyword Overlap Guard
+
+- Current Goal:
+  - Prevent longer source-backed food phrases such as `생선회`, `날달걀`, `통밀빵`, and `비살균 우유` from also producing contradictory shorter chips such as `생선`, `회`, `달걀`, `통밀`, or `비살균`.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Current source tree was clean before this slice.
+  - Used systematic debugging plus TDD. Root cause was `normalized.includes(term)` matching every substring independently, so longer risk phrases could also show shorter support chips.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/PASS coverage for overlapping food keywords and updated the prior immune-low food safety expectation to prefer the more specific `비살균 우유` phrase.
+  - `src/healthRules.ts`: replaced direct `includes` loops with candidate collection plus longest non-overlapping selection while preserving input order in the final chip list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts` failed with extra terms `통밀`, `달걀`, `생선`, `회`, and `비살균` for the overlapping query.
+  - PASS focused test: `npm test -- src/healthRules.test.ts` => 1 file / 16 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 579 tests.
+  - PASS build: `npm run build`.
+  - PASS Playwright browser smoke via `with_server.py` on `http://127.0.0.1:1420/`:
+    - Entered `생선회, 날달걀, 통밀빵, 비살균 우유`.
+    - Confirmed risk verdict `의료진 확인 필요`.
+    - Confirmed exact chip terms `["생선회","날달걀","통밀빵","비살균 우유"]`.
+    - Confirmed no shorter contradictory chips for `생선`, `회`, `달걀`, `통밀`, or `비살균`.
+    - Confirmed food question draft feedback.
+    - Screenshot: `/tmp/carevault-food-overlap-smoke-desktop.png`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. This is a precision guard for keyword matching, not a full natural-language diet parser.
+- Next Steps:
+  - Run diff/secret gates and commit/push the focused food keyword overlap guard if green.

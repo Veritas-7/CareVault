@@ -135,7 +135,7 @@ describe("healthRules", () => {
     expect(matchesByTerm.날계란.sourceUrl).toBe(
       "https://cancer.go.kr/lay1/S1T479C489/contents.do",
     );
-    expect(matchesByTerm.비살균.sourceUrl).toBe(
+    expect(matchesByTerm["비살균 우유"].sourceUrl).toBe(
       "https://cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(formatFoodMatchEvidence(matchesByTerm.회)).toContain(
@@ -235,6 +235,38 @@ describe("healthRules", () => {
     expect(formatFoodMatchEvidence(matchesByTerm.초밥)).toContain(
       "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
     );
+  });
+
+  it("keeps longer risk food phrases from producing contradictory shorter support chips", () => {
+    const assessment = assessCancerFood("생선회, 날달걀, 통밀빵, 비살균 우유");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual(["생선회", "날달걀", "통밀빵", "비살균 우유"]);
+    expect(terms).not.toContain("생선");
+    expect(terms).not.toContain("회");
+    expect(terms).not.toContain("달걀");
+    expect(terms).not.toContain("통밀");
+    expect(terms).not.toContain("비살균");
+    expect(matchesByTerm["생선회"]).toMatchObject({
+      level: "risk",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(matchesByTerm.날달걀).toMatchObject({
+      level: "risk",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(matchesByTerm.통밀빵).toMatchObject({
+      level: "ok",
+      sourceId: "nccPreventionDiet",
+    });
+    expect(matchesByTerm["비살균 우유"]).toMatchObject({
+      level: "risk",
+      sourceId: "nccImmuneLowDiet",
+    });
   });
 
   it("classifies lab values against user-entered reference ranges", () => {

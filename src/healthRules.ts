@@ -244,6 +244,14 @@ export const koreanHealthStandardSummary = {
 } as const;
 
 type FoodRuleTerm = [term: string, reason: string, sourceId: FoodGuidanceSourceId];
+type FoodRuleMatchCandidate = {
+  end: number;
+  level: FoodMatch["level"];
+  reason: string;
+  sourceId: FoodGuidanceSourceId;
+  start: number;
+  term: string;
+};
 
 const supportiveFoods: FoodRuleTerm[] = [
   ["잡곡밥", "잡곡·통곡물 식단 후보", "nccPreventionDiet"],
@@ -353,6 +361,58 @@ function createFoodMatch(
     sourceLabel: source.label,
     sourceUrl: source.url,
   };
+}
+
+function collectFoodMatchCandidates(
+  normalizedInput: string,
+  rules: FoodRuleTerm[],
+  level: FoodMatch["level"],
+): FoodRuleMatchCandidate[] {
+  const candidates: FoodRuleMatchCandidate[] = [];
+
+  for (const [term, reason, sourceId] of rules) {
+    const normalizedTerm = term.toLowerCase();
+    let start = normalizedInput.indexOf(normalizedTerm);
+
+    while (start !== -1) {
+      candidates.push({
+        end: start + normalizedTerm.length,
+        level,
+        reason,
+        sourceId,
+        start,
+        term,
+      });
+      start = normalizedInput.indexOf(normalizedTerm, start + normalizedTerm.length);
+    }
+  }
+
+  return candidates;
+}
+
+function rangesOverlap(
+  first: Pick<FoodRuleMatchCandidate, "end" | "start">,
+  second: Pick<FoodRuleMatchCandidate, "end" | "start">,
+) {
+  return first.start < second.end && second.start < first.end;
+}
+
+function selectFoodMatchCandidates(candidates: FoodRuleMatchCandidate[]) {
+  const selected: FoodRuleMatchCandidate[] = [];
+
+  for (const candidate of [...candidates].sort(
+    (first, second) =>
+      second.term.length - first.term.length
+      || first.start - second.start
+      || first.term.localeCompare(second.term),
+  )) {
+    if (selected.some((existing) => rangesOverlap(existing, candidate))) {
+      continue;
+    }
+    selected.push(candidate);
+  }
+
+  return selected.sort((first, second) => first.start - second.start || first.end - second.end);
 }
 
 export function calculateBmi(heightCm: number, weightKg: number): BmiAssessment {
@@ -751,23 +811,14 @@ export function assessLabTextValue(
 
 export function assessCancerFood(input: string): FoodAssessment {
   const normalized = input.toLowerCase();
-  const matches: FoodMatch[] = [];
-
-  for (const [term, reason, sourceId] of supportiveFoods) {
-    if (normalized.includes(term.toLowerCase())) {
-      matches.push(createFoodMatch(term, "ok", reason, sourceId));
-    }
-  }
-  for (const [term, reason, sourceId] of limitFoods) {
-    if (normalized.includes(term.toLowerCase())) {
-      matches.push(createFoodMatch(term, "watch", reason, sourceId));
-    }
-  }
-  for (const [term, reason, sourceId] of careTeamFoods) {
-    if (normalized.includes(term.toLowerCase())) {
-      matches.push(createFoodMatch(term, "risk", reason, sourceId));
-    }
-  }
+  const candidates = [
+    ...collectFoodMatchCandidates(normalized, supportiveFoods, "ok"),
+    ...collectFoodMatchCandidates(normalized, limitFoods, "watch"),
+    ...collectFoodMatchCandidates(normalized, careTeamFoods, "risk"),
+  ];
+  const matches = selectFoodMatchCandidates(candidates).map((candidate) =>
+    createFoodMatch(candidate.term, candidate.level, candidate.reason, candidate.sourceId),
+  );
 
   if (matches.some((match) => match.level === "risk")) {
     return {
