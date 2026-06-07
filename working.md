@@ -29220,3 +29220,26 @@
   - Research repo `/Users/wj/Ai/System/12_Research` has many unrelated dirty/untracked files; only the new CareVault evidence file is relevant to this slice.
 - Next Steps:
   - Run diff/secret gates and commit/push focused CareVault source changes if green.
+
+## 2026-06-07 17:00 KST - Post-Push Source-Backed Food Guide
+
+- Current Goal:
+  - Record post-push verification for the official-source cervical-cancer/cancer-care food guide.
+- Result:
+  - Source commit pushed: `09e3d67` (`Add source-backed food guide`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `09e3d67394d8c430842fac50d015a1943cc2f967`.
+- Verification:
+  - PASS focused test: `npm test -- src/healthRules.test.ts` => 1 file / 14 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 577 tests.
+  - PASS build: `npm run build`.
+  - PASS browser smoke with `with_server.py` and one Playwright Chromium session: 3 guide cards, 15 HTTPS official source links, food query risk verdict, food question feedback, and no 390px horizontal overflow.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - The `/12_Research` evidence file is saved on disk under the existing CareVault research folder, but the separate research repo has many unrelated dirty/untracked files; this CareVault source push did not attempt to stage or push that separate repo.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
