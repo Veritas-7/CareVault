@@ -31,6 +31,7 @@ export type FoodGuidanceSourceId =
   | "nccNauseaDiet"
   | "nccVomitingDiet"
   | "nccTasteChangeDiet"
+  | "nccDiarrheaDiet"
   | "nccMouthPainDiet"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
@@ -138,6 +139,10 @@ export const foodGuidanceSources: Record<
   nccTasteChangeDiet: {
     label: "국가암정보센터 증상별 식생활 - 입맛의 변화",
     url: "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+  },
+  nccDiarrheaDiet: {
+    label: "국가암정보센터 증상별 식생활 - 설사",
+    url: "https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
   },
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
@@ -258,6 +263,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccTasteChangeDiet", "nccMouthPainDiet"],
       },
       {
+        label: "설사 시 수분·전해질·부드러운 음식",
+        detail:
+          "국가암정보센터 설사 자료는 수분을 충분히 보충하고, 염분과 칼륨 손실 보충 식품으로 육수, 스포츠 음료, 바나나, 삶거나 으깬 감자, 복숭아, 토마토 등을 예시로 들며, 소화되기 쉽고 부드러운 죽류·미음을 조금씩 자주 먹도록 안내합니다.",
+        examples:
+          "설사 육수, 설사 스포츠 음료, 설사 바나나, 설사 으깬 감자, 설사 복숭아, 설사 토마토, 설사 흰죽, 설사 쌀미음",
+        sourceIds: ["nccDiarrheaDiet"],
+      },
+      {
         label: "식욕부진 시 가까이 두는 간식",
         detail:
           "국가암정보센터 식욕부진 자료는 조금씩 자주 먹고 간식을 가까이 두며, 간식으로 죽·미음·쥬스·스프·우유 및 유제품 등을 활용하고, 식사섭취가 계속 힘들면 특수영양 보충음료를 이용하도록 안내합니다.",
@@ -341,6 +354,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "국가암정보센터 메스꺼움 자료는 메스꺼움을 더 유발할 수 있는 음식으로 기름진 음식, 사탕·쿠키·케익처럼 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식을 피하도록 안내합니다.",
         examples: "기름진 음식, 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식",
         sourceIds: ["nccNauseaDiet"],
+      },
+      {
+        label: "설사 시 장 자극·고섬유·유당·카페인 확인",
+        detail:
+          "국가암정보센터 설사 자료는 설사 중에는 기름진 음식, 생야채, 생과일의 껍질·씨·끈적한 섬유소 부분, 브로콜리·옥수수·말린 콩 같은 고섬유 채소, 너무 뜨겁거나 차가운 식품·음료, 커피·초콜릿 등 카페인 식품과 음료, 우유 및 유제품을 주의하도록 안내합니다.",
+        examples:
+          "설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",
+        sourceIds: ["nccDiarrheaDiet"],
       },
       {
         label: "가당 유제품",
@@ -698,6 +719,14 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["새콤달콤한 소스", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
   ["입맛 변화 오렌지", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
   ["입맛 변화 레몬", "국가암정보센터 입맛 변화 시 단백질 대체·향미 조절 후보", "nccTasteChangeDiet"],
+  ["설사 육수", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
+  ["설사 스포츠 음료", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
+  ["설사 바나나", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
+  ["설사 으깬 감자", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
+  ["설사 복숭아", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
+  ["설사 토마토", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
+  ["설사 흰죽", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
+  ["설사 쌀미음", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 죽", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 미음", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
@@ -1064,6 +1093,14 @@ const limitFoods: FoodRuleTerm[] = [
   ["토스트", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
   ["크래커", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
   ["말린 음식", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
+  ["설사 생야채", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
+  ["설사 생과일 껍질", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
+  ["설사 브로콜리", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
+  ["설사 옥수수", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
+  ["설사 말린 콩", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
+  ["설사 커피", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
+  ["설사 초콜릿", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
+  ["설사 우유 및 유제품", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
   ["단무지", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   ["우엉조림", "자궁경부암 실천지침 나트륨 감소 대체 전 예시", "nccCervicalPracticeDiet"],
   [

@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-08 05:29 KST - NCC Diarrhea Hydration Soft-Food And Trigger Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center diarrhea hydration, soft-food, and trigger-food examples.
+- Context:
+  - Continued from clean/synced CareVault state after `c924fe8abbb3cfcaa63fe4e9b63cab2c92583a71`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept this slice limited to diarrhea-context phrases to avoid broad global matches on standalone `육수`, `바나나`, `감자`, `복숭아`, `토마토`, `브로콜리`, `옥수수`, `커피`, `초콜릿`, or `우유`.
+- Research:
+  - Re-checked National Cancer Information Center `설사`, final update 2013-02-01. The page says diarrhea can occur from chemotherapy, infection, food sensitivity, or discomfort, and can interfere with nutrient absorption and cause dehydration. It recommends fluid replacement, small frequent meals, salt/potassium foods such as broth, sports drinks, banana, boiled or mashed potato, peach, and tomato, and soft/easy-to-digest foods such as porridge and 미음. It also advises avoiding or limiting fatty foods, raw vegetables, fruit peels/seeds/stringy fiber, high-fiber vegetables such as broccoli/corn/dried beans, very hot or cold foods/drinks, caffeine foods/drinks such as coffee and chocolate, and caution with milk/dairy.
+  - Applied the source as symptom-context support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `설사 육수`, `설사 스포츠 음료`, `설사 바나나`, `설사 으깬 감자`, `설사 복숭아`, `설사 토마토`, `설사 흰죽`, `설사 쌀미음`, `설사 생야채`, `설사 생과일 껍질`, `설사 브로콜리`, `설사 옥수수`, `설사 말린 콩`, `설사 커피`, `설사 초콜릿`, and `설사 우유 및 유제품`.
+  - `src/healthRules.ts`: added `nccDiarrheaDiet`, balanced and limit guide-card items for diarrhea-context food examples, and source-backed ok/watch matching terms.
+  - `README.md`: added the new NCC diarrhea examples to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccDiarrheaDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 88 tests.
+  - PASS full tests: `npm test` => 64 files / 653 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `c924fe8abbb3cfcaa63fe4e9b63cab2c92583a71`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 15.86 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice so far.
+- Next Steps:
+  - Commit and push this source slice, then run post-push sync/runtime verification.
+
 ## 2026-06-08 05:24 KST - Post-Push NCC Taste-Change Food Verification
 
 - Current Goal:

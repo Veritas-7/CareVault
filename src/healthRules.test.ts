@@ -1677,6 +1677,91 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC diarrhea hydration soft-food and trigger examples", () => {
+    const assessment = assessCancerFood(
+      "설사 육수, 설사 스포츠 음료, 설사 바나나, 설사 으깬 감자, 설사 복숭아, 설사 토마토, 설사 흰죽, 설사 쌀미음, 설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDiarrheaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 설사",
+    );
+    expect(foodGuidanceSources.nccDiarrheaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "설사 육수",
+      "설사 스포츠 음료",
+      "설사 바나나",
+      "설사 으깬 감자",
+      "설사 복숭아",
+      "설사 토마토",
+      "설사 흰죽",
+      "설사 쌀미음",
+      "설사 생야채",
+      "설사 생과일 껍질",
+      "설사 브로콜리",
+      "설사 옥수수",
+      "설사 말린 콩",
+      "설사 커피",
+      "설사 초콜릿",
+      "설사 우유 및 유제품",
+    ]);
+    for (const term of [
+      "설사 육수",
+      "설사 스포츠 음료",
+      "설사 바나나",
+      "설사 으깬 감자",
+      "설사 복숭아",
+      "설사 토마토",
+      "설사 흰죽",
+      "설사 쌀미음",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보",
+        sourceId: "nccDiarrheaDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 설사 - https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+      );
+    }
+    for (const term of [
+      "설사 생야채",
+      "설사 생과일 껍질",
+      "설사 브로콜리",
+      "설사 옥수수",
+      "설사 말린 콩",
+      "설사 커피",
+      "설사 초콜릿",
+      "설사 우유 및 유제품",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보",
+        sourceId: "nccDiarrheaDiet",
+      });
+    }
+    expect(balancedGuideText).toContain("설사 스포츠 음료");
+    expect(balancedGuideText).toContain("설사 쌀미음");
+    expect(limitGuideText).toContain("설사 생야채");
+    expect(limitGuideText).toContain("설사 커피");
+    expect(limitGuideText).toContain("설사 우유 및 유제품");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention meal example dishes without cure claims", () => {
     const assessment = assessCancerFood(
       "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",
