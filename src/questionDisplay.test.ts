@@ -18,6 +18,12 @@ describe("questionDisplay", () => {
       body: "성생활 재개 시점을 어떻게 상담할까요?",
       sourceEvidence: "근거: 국가암정보센터 자궁경부암 성생활 (https://www.cancer.go.kr/example)",
       sourceLabel: "국가암정보센터 자궁경부암 성생활",
+      sources: [
+        {
+          sourceLabel: "국가암정보센터 자궁경부암 성생활",
+          sourceUrl: "https://www.cancer.go.kr/example",
+        },
+      ],
       sourceUrl: "https://www.cancer.go.kr/example",
     });
   });
@@ -27,8 +33,38 @@ describe("questionDisplay", () => {
       body: "백혈구 수치가 낮을 때 외식 기준을 확인할까요?",
       sourceEvidence: "",
       sourceLabel: "",
+      sources: [],
       sourceUrl: "",
     });
+  });
+
+  it("keeps every source-backed saved question source available for compact UI rows", () => {
+    const display = buildQuestionDisplayParts(
+      [
+        "현재 음식/식단(자몽 주스, 보충제)에 의료진 확인 항목이 포함되어 있습니다.",
+        "출처: 질병관리청 국가건강정보포털 식이영양 - https://health.kdca.go.kr/example",
+        "출처: 국가암정보센터 보완대체요법 상담 - https://www.cancer.go.kr/complementary",
+      ].join("\n"),
+    );
+
+    expect(display).toEqual({
+      body: "현재 음식/식단(자몽 주스, 보충제)에 의료진 확인 항목이 포함되어 있습니다.",
+      sourceEvidence:
+        "근거: 질병관리청 국가건강정보포털 식이영양 (https://health.kdca.go.kr/example); 국가암정보센터 보완대체요법 상담 (https://www.cancer.go.kr/complementary)",
+      sourceLabel: "질병관리청 국가건강정보포털 식이영양",
+      sources: [
+        {
+          sourceLabel: "질병관리청 국가건강정보포털 식이영양",
+          sourceUrl: "https://health.kdca.go.kr/example",
+        },
+        {
+          sourceLabel: "국가암정보센터 보완대체요법 상담",
+          sourceUrl: "https://www.cancer.go.kr/complementary",
+        },
+      ],
+      sourceUrl: "https://health.kdca.go.kr/example",
+    });
+    expect(display.body).not.toContain("출처:");
   });
 
   it("builds timeline details without leaking source lines into the paragraph", () => {
@@ -42,6 +78,12 @@ describe("questionDisplay", () => {
       detail: "확인 필요: 혈당 목표를 어떻게 조정할까요?",
       sourceEvidence: "근거: 대한당뇨병학회 당뇨병 관리 목표 (https://www.diabetes.or.kr/example)",
       sourceLabel: "대한당뇨병학회 당뇨병 관리 목표",
+      sources: [
+        {
+          sourceLabel: "대한당뇨병학회 당뇨병 관리 목표",
+          sourceUrl: "https://www.diabetes.or.kr/example",
+        },
+      ],
       sourceUrl: "https://www.diabetes.or.kr/example",
     });
   });

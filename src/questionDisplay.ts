@@ -1,10 +1,15 @@
-import { formatSourceEvidence, parseSourceEvidence } from "./sourceEvidence";
+import {
+  formatSourceEvidenceList,
+  parseSourceEvidence,
+  type SourceEvidence,
+} from "./sourceEvidence";
 
 export type QuestionDisplayParts = {
   body: string;
   sourceEvidence: string;
   sourceLabel: string;
   sourceUrl: string;
+  sources: SourceEvidence[];
 };
 
 export type QuestionTimelineDisplayParts = QuestionDisplayParts & {
@@ -13,13 +18,14 @@ export type QuestionTimelineDisplayParts = QuestionDisplayParts & {
 
 export function buildQuestionDisplayParts(questionText: string): QuestionDisplayParts {
   const evidence = parseSourceEvidence(questionText);
-  const sourceEvidence = formatSourceEvidence(evidence.sourceLabel, evidence.sourceUrl);
+  const sourceEvidence = formatSourceEvidenceList(evidence.sources);
 
   return {
     body: evidence.body || questionText,
     sourceEvidence,
     sourceLabel: evidence.sourceLabel,
     sourceUrl: evidence.sourceUrl,
+    sources: evidence.sources,
   };
 }
 

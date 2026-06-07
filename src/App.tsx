@@ -805,6 +805,29 @@ function renderMetricStandardEvidence(evidence: DashboardMetricStandardEvidence 
   );
 }
 
+type DisplaySourceEvidenceSource = {
+  sourceLabel: string;
+  sourceUrl: string;
+};
+
+function buildSingleDisplaySource(
+  sourceLabel: string,
+  sourceUrl: string,
+): DisplaySourceEvidenceSource[] {
+  return sourceLabel ? [{ sourceLabel, sourceUrl }] : [];
+}
+
+function formatDisplaySourceLabels(
+  sources: DisplaySourceEvidenceSource[],
+  fallbackSourceLabel: string,
+) {
+  return sources
+    .map((source) => source.sourceLabel)
+    .filter(Boolean)
+    .join(", ")
+    || fallbackSourceLabel;
+}
+
 const sidebarNavigationIcon = {
   dashboard: LineChartIcon,
   records: ClipboardList,
@@ -5848,6 +5871,10 @@ function App() {
                   title: formatVitalTimelineTitle(item),
                   detail: item.note,
                   sourceEvidence: vitalDisplay.sourceEvidence,
+                  sourceEvidenceSources: buildSingleDisplaySource(
+                    vitalDisplay.sourceLabel,
+                    vitalDisplay.sourceUrl,
+                  ),
                   sourceEvidenceTypeLabel: "활력",
                   sourceLabel: vitalDisplay.sourceLabel,
                   sourceUrl: vitalDisplay.sourceUrl,
@@ -5864,6 +5891,7 @@ function App() {
                 title: `${item.hospital} · ${item.reason}`,
                 detail: item.summary,
                 sourceEvidence: "",
+                sourceEvidenceSources: [],
                 sourceEvidenceTypeLabel: "",
                 sourceLabel: "",
                 sourceUrl: "",
@@ -5879,6 +5907,7 @@ function App() {
                 title: `${documentLabel[item.category]} · ${item.title}`,
                 detail: `${documentReviewStatusLabel[item.reviewStatus]}${item.nextAction ? ` · ${item.nextAction}` : item.tags ? ` · ${item.tags}` : ""}`,
                 sourceEvidence: "",
+                sourceEvidenceSources: [],
                 sourceEvidenceTypeLabel: "",
                 sourceLabel: "",
                 sourceUrl: "",
@@ -5897,6 +5926,10 @@ function App() {
                   title: `${item.symptom} · ${item.severity}/10`,
                   detail: symptomDisplay.body,
                   sourceEvidence: symptomDisplay.sourceEvidence,
+                  sourceEvidenceSources: buildSingleDisplaySource(
+                    symptomDisplay.sourceLabel,
+                    symptomDisplay.sourceUrl,
+                  ),
                   sourceEvidenceTypeLabel: "기록",
                   sourceLabel: symptomDisplay.sourceLabel,
                   sourceUrl: symptomDisplay.sourceUrl,
@@ -5924,6 +5957,7 @@ function App() {
                   title: `질문 · ${item.topic}`,
                   detail: questionDisplay.detail,
                   sourceEvidence: questionDisplay.sourceEvidence,
+                  sourceEvidenceSources: questionDisplay.sources,
                   sourceEvidenceTypeLabel: "질문",
                   sourceLabel: questionDisplay.sourceLabel,
                   sourceUrl: questionDisplay.sourceUrl,
@@ -5953,6 +5987,10 @@ function App() {
                     labSourceEvidence.sourceLabel,
                     labSourceEvidence.sourceUrl,
                   ),
+                  sourceEvidenceSources: buildSingleDisplaySource(
+                    labSourceEvidence.sourceLabel,
+                    labSourceEvidence.sourceUrl,
+                  ),
                   sourceEvidenceTypeLabel: "검사",
                   sourceLabel: labSourceEvidence.sourceLabel,
                   sourceUrl: labSourceEvidence.sourceUrl,
@@ -5961,19 +5999,16 @@ function App() {
             ])
               .slice(0, 8)
               .map((item, timelineIndex) => {
+                const sourceEvidenceLabels = formatDisplaySourceLabels(
+                  item.sourceEvidenceSources,
+                  item.sourceLabel,
+                );
                 const sourceEvidenceLabel = formatTimelineSourceEvidenceLabel({
                   date: item.date,
                   position: timelineIndex + 1,
                   title: item.title,
                   sourceEvidenceTypeLabel: item.sourceEvidenceTypeLabel,
-                  sourceLabel: item.sourceLabel,
-                });
-                const sourceEvidenceOpenLabel = formatTimelineSourceEvidenceOpenLabel({
-                  date: item.date,
-                  position: timelineIndex + 1,
-                  title: item.title,
-                  sourceEvidenceTypeLabel: item.sourceEvidenceTypeLabel,
-                  sourceLabel: item.sourceLabel,
+                  sourceLabel: sourceEvidenceLabels,
                 });
 
                 return (
@@ -6005,18 +6040,38 @@ function App() {
                           aria-label={sourceEvidenceLabel}
                         >
                           <ShieldCheck aria-hidden="true" />
-                          {item.sourceUrl ? (
-                            <a
-                              href={item.sourceUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              aria-label={sourceEvidenceOpenLabel}
-                              title={sourceEvidenceOpenLabel}
-                            >
-                              {item.sourceEvidence}
-                            </a>
+                          <span>근거:</span>
+                          {item.sourceEvidenceSources.length ? (
+                            item.sourceEvidenceSources.map((source) =>
+                              source.sourceUrl ? (
+                                <a
+                                  href={source.sourceUrl}
+                                  key={`${source.sourceLabel}-${source.sourceUrl}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  aria-label={formatTimelineSourceEvidenceOpenLabel({
+                                    date: item.date,
+                                    position: timelineIndex + 1,
+                                    title: item.title,
+                                    sourceEvidenceTypeLabel: item.sourceEvidenceTypeLabel,
+                                    sourceLabel: source.sourceLabel,
+                                  })}
+                                  title={formatTimelineSourceEvidenceOpenLabel({
+                                    date: item.date,
+                                    position: timelineIndex + 1,
+                                    title: item.title,
+                                    sourceEvidenceTypeLabel: item.sourceEvidenceTypeLabel,
+                                    sourceLabel: source.sourceLabel,
+                                  })}
+                                >
+                                  {source.sourceLabel}
+                                </a>
+                              ) : (
+                                <span key={source.sourceLabel}>{source.sourceLabel}</span>
+                              ),
+                            )
                           ) : (
-                            <span>{item.sourceEvidence}</span>
+                            <span>{item.sourceEvidence.replace(/^근거:\s*/, "")}</span>
                           )}
                         </small>
                       ) : null}
@@ -6288,13 +6343,13 @@ function App() {
                     formatQuestionClipboardCopyDescription(question);
                   const questionDisplay = buildQuestionDisplayParts(question.question);
                   const answerMemoDisplay = formatQuestionAnswerMemoDisplay(question.answer);
-                  const questionSourceEvidenceLabel = formatQuestionSourceEvidenceLabel(
-                    question.topic,
+                  const questionSourceEvidenceLabels = formatDisplaySourceLabels(
+                    questionDisplay.sources,
                     questionDisplay.sourceLabel,
                   );
-                  const questionSourceEvidenceOpenLabel = formatQuestionSourceEvidenceOpenLabel(
+                  const questionSourceEvidenceLabel = formatQuestionSourceEvidenceLabel(
                     question.topic,
-                    questionDisplay.sourceLabel,
+                    questionSourceEvidenceLabels,
                   );
                   const questionAnswerMemoLabel = formatQuestionAnswerMemoLabel(question.topic);
                   const questionPriorityControlDescription =
@@ -6315,18 +6370,32 @@ function App() {
                             aria-label={questionSourceEvidenceLabel}
                           >
                             <ShieldCheck aria-hidden="true" />
-                            {questionDisplay.sourceUrl ? (
-                              <a
-                                href={questionDisplay.sourceUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                aria-label={questionSourceEvidenceOpenLabel}
-                                title={questionSourceEvidenceOpenLabel}
-                              >
-                                {questionDisplay.sourceEvidence}
-                              </a>
+                            <span>근거:</span>
+                            {questionDisplay.sources.length ? (
+                              questionDisplay.sources.map((source) =>
+                                source.sourceUrl ? (
+                                  <a
+                                    href={source.sourceUrl}
+                                    key={`${source.sourceLabel}-${source.sourceUrl}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    aria-label={formatQuestionSourceEvidenceOpenLabel(
+                                      question.topic,
+                                      source.sourceLabel,
+                                    )}
+                                    title={formatQuestionSourceEvidenceOpenLabel(
+                                      question.topic,
+                                      source.sourceLabel,
+                                    )}
+                                  >
+                                    {source.sourceLabel}
+                                  </a>
+                                ) : (
+                                  <span key={source.sourceLabel}>{source.sourceLabel}</span>
+                                ),
+                              )
                             ) : (
-                              <span>{questionDisplay.sourceEvidence}</span>
+                              <span>{questionDisplay.sourceEvidence.replace(/^근거:\s*/, "")}</span>
                             )}
                           </small>
                         ) : null}

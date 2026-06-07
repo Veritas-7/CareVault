@@ -29304,6 +29304,42 @@
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
 
+## 2026-06-07 17:54 KST - Saved Question Multi-Source UI
+
+- Current Goal:
+  - Carry multi-source question evidence from the saved question helper through the visible saved-question card and recent-timeline question row, not only copy/export outputs.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Current source tree was clean before this slice.
+  - Used systematic debugging plus TDD. The previous slice preserved `sources[]` in parsing/export, but `src/questionDisplay.ts` still formatted only `sourceLabel/sourceUrl` from the first parsed source, so the compact saved-question and recent-timeline UI could not render additional official sources.
+  - `DESIGN.md` explicitly requires source-backed saved questions and recent-timeline rows to remove raw `출처:` text and render extracted evidence as compact `근거:` rows.
+- Changes:
+  - `src/questionDisplay.ts`: `QuestionDisplayParts` now exposes `sources[]` and formats `sourceEvidence` with all parsed sources via `formatSourceEvidenceList`.
+  - `src/questionDisplay.test.ts`: added RED/PASS coverage for multi-source saved question display parts and updated existing expectations to include `sources`.
+  - `src/App.tsx`: saved question cards and recent-timeline source rows now render each parsed question source as its own compact official-source link, while non-question source rows continue to use their single-source evidence data.
+- Tests:
+  - RED confirmed: `npm test -- src/questionDisplay.test.ts` failed because `sources` was missing and the multi-source saved question display kept only the first source.
+  - PASS focused tests:
+    - `npm test -- src/questionDisplay.test.ts` => 1 file / 7 tests.
+    - `npm test -- src/questionDisplay.test.ts src/timelineSourceEvidenceLabels.test.ts src/sourceEvidence.test.ts` => 3 files / 13 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS Playwright browser smoke via `with_server.py` on `http://127.0.0.1:1420/`:
+    - Entered `자몽 주스, 보충제`, generated a food-question draft, and saved it as a question.
+    - Confirmed the saved question card body does not leak raw `출처:`.
+    - Confirmed the saved question card renders separate links for `질병관리청 국가건강정보포털 식이영양` and `국가암정보센터 보완대체요법 상담`.
+    - Confirmed the recent-timeline `질문 · 식단·음식 안전` row detail does not leak raw `출처:`.
+    - Confirmed the recent-timeline row renders separate links for both official sources.
+    - Confirmed no 390px mobile horizontal overflow.
+    - Screenshots: `/tmp/carevault-question-multisource-ui-desktop.png`, `/tmp/carevault-question-multisource-ui-mobile.png`.
+  - PASS full tests: `npm test` => 64 files / 582 tests.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS whitespace gate: `git diff --check`.
+- Issues:
+  - No new blocking issue. Symptom display still normalizes to its first source when a symptom body/action has multiple source lines; that is outside this saved-question UI slice.
+- Next Steps:
+  - Stage explicit paths, run staged diff/secret gates, then commit/push if green.
+
 ## 2026-06-07 17:31 KST - Food Question Multi-Source Evidence
 
 - Current Goal:
