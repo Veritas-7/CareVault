@@ -27588,3 +27588,17 @@
 - Next Steps:
   - Run repo diff checks and staged secret gates.
   - Commit the focused source/test/working.md change with explicit-path staging if the gates pass.
+
+## 2026-06-07 13:40 KST - Post-Push Temporary Memory Save Label Clarity
+
+- Verification:
+  - PASS focused commit: `83c10b1` (`Clarify temporary memory save labels`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `83c10b1`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - Temporary-memory fallback save labels now say `임시 메모리에만 저장됨` / `임시 메모리에만 자동 저장됨` so blocked browser storage is not presented like durable localStorage or SQLite persistence.
+  - Direct same-surface label QA remains blocked because existing `surface:7` URL/title works but DOM/eval automation still attaches to `about:blank`; no cmux restart, focus handoff, or new browser/surface was used.
+  - Runtime is clean; no temporary Vite process is running.
+- Next Steps:
+  - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser when the surface automation context is usable again, using non-window cmux browser commands only unless the user explicitly asks otherwise.
