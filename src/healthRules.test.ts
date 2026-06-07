@@ -680,6 +680,8 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("음식을 먹을 때 추가로 소금이나 간장을 사용하지 않습니다");
     expect(limitGuideText).toContain("소금이나 간장 사용하지 않기");
     expect(limitGuideText).toContain("햄·소시지 등 육가공품");
+    expect(limitGuideText).toContain("햄, 소시지 등의 육가공품을 가급적 먹지 않습니다");
+    expect(limitGuideText).toContain("햄 소시지 등의 육가공품 가급적 먹지 않기");
     expect(limitGuideText).toContain("가급적 먹지 않기");
     expect(limitGuideText).toContain("육가공품");
     expect(limitGuideText).toContain("가공육");
@@ -1168,6 +1170,33 @@ describe("healthRules", () => {
       "햄 소시지 육가공품",
       "육가공품 가급적 먹지 않기",
       "육가공품 가급적 먹지 않습니다",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 햄·소시지 등 육가공품 가급적 피하기 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes the exact NCC healthy-eating processed meat avoid sentence", () => {
+    const assessment = assessCancerFood(
+      "햄, 소시지 등의 육가공품을 가급적 먹지 않습니다; 햄 소시지 등의 육가공품 가급적 먹지 않기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "햄, 소시지 등의 육가공품을 가급적 먹지 않습니다",
+      "햄 소시지 등의 육가공품 가급적 먹지 않기",
     ]);
     for (const term of terms) {
       expect(matchesByTerm[term]).toMatchObject({
