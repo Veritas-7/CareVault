@@ -26285,3 +26285,27 @@
 - Current state:
   - `working.md` is dirty with direct QA evidence only.
   - Next: stage only `working.md`, run staged checks, commit/push the QA note, then continue with another non-duplicate direct-click workflow.
+
+## 2026-06-07 09:58 KST - Fever Infection Question Append QA
+
+- Current Goal:
+  - Direct-QA the `체온·감염 연락 기준` standards-card `질문 초안` button in the current existing `surface:7` browser when the user already has an unsaved question draft.
+  - Verify the shortcut appends the source-backed fever/infection question without overwriting the user's topic, date, priority, or existing body.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `workspace:4` / `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: live DOM had `CareVault`, storage length `1872`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, save chip `브라우저 자동 저장됨`, and the real button aria/title `체온·감염 연락 기준 진료 질문 초안 만들기`.
+  - PASS seeded in-progress draft: set the real question fields to date `2026-06-09`, topic `기존 질문 주제`, priority `routine`, and body `이미 작성 중인 질문입니다.`.
+  - PASS real click: clicked the real `체온·감염 연락 기준 진료 질문 초안 만들기` button. The draft kept date `2026-06-09`, topic `기존 질문 주제`, and priority `routine`; the body still started with `이미 작성 중인 질문입니다.` and appended the generated fever/infection question below it.
+  - PASS source and safety wording: appended text included `체온 38℃ 이상 또는 오한 기록과 관련해`, `연락 또는 응급실 기준`, and `출처: 국가암정보센터 감염 의료진 상담 기준 - https://www.cancer.go.kr/lay1/S1T435C439/contents.do`.
+  - PASS feedback and focus: `.standard-range-draft-feedback` and the top save chip both showed `발열·오한/감염 의심 질문 초안 준비됨 · 근거 국가암정보센터 감염 의료진 상담 기준 · 저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.`; focus moved to `진료 전 질문 내용`.
+  - PASS non-mutation: `localStorage["carevault.v1"]` stayed byte-identical to the captured baseline, counts stayed `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`, and no export preview, dialog, or stale alert opened.
+  - PASS cleanup: restored baseline storage, removed `carevault.__testFeverQuestionAppendBaseline`, forced a same-`surface:7` reload, and confirmed question topic/body blank again, priority `next-visit`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, counts restored, no draft feedback, no preview/dialog/stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+- Verification:
+  - `working.md` only; no source patch was needed because the non-overwrite append behavior matched the implementation contract.
+  - PASS focused tests: `npm test -- src/symptomSupportTemplates.test.ts src/healthStandards.test.ts` => `2 passed`, `50 passed`.
+  - PASS diff check: `git diff --check -- working.md`.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks and secret scan, then commit/push the QA note.
