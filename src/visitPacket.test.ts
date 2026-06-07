@@ -623,6 +623,12 @@ describe("visit packet", () => {
     expect(markdown).toContain("접종시기를 놓친 경우");
     expect(markdown).toContain("처음부터 다시 시작하지는 않습니다");
     expect(markdown).toContain("국가암정보센터 자궁경부암 HPV 예방백신");
+    expect(markdown).toContain("흡연·성생활 위험요인 메모");
+    expect(markdown).toContain("대부분 성접촉");
+    expect(markdown).toContain("성상대자수");
+    expect(markdown).toContain("콘돔");
+    expect(markdown).toContain("경구피임약");
+    expect(markdown).toContain("국가암정보센터 자궁경부암 예방법");
     expect(markdown).toContain("국가암정보센터 자궁경부암 일반적 증상");
     expect(markdown).toContain("## 진료 준비 큐");
     expect(markdown).toContain("저장된 기록에서 가져온 확인 항목입니다.");

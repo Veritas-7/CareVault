@@ -158,6 +158,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 HPV 예방백신",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
   },
+  nccCervicalPrevention: {
+    label: "국가암정보센터 자궁경부암 예방법",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+  },
 };
 
 export const cervicalCancerCareAlerts: CervicalCancerCareAlert[] = [
@@ -424,6 +428,12 @@ export const cervicalCancerCarePreventionGuides: CervicalCancerCarePreventionGui
     detail:
       "국가암정보센터는 HPV 접종시기를 놓친 경우 '남은 주사를 가능한 빨리 맞으며 처음부터 다시 시작하지는 않습니다'라고 설명합니다. 1차 후 일정 지연 시 2차와 3차 접종 간격은 적어도 12주인지 확인하고, 추가접종은 권고된 바가 없으므로 내 백신 종류·접종일·치료 일정 기준으로 접종기관과 진료팀에 질문으로 남깁니다.",
     sourceId: "nccHpvVaccine",
+  },
+  {
+    label: "흡연·성생활 위험요인 메모",
+    detail:
+      "국가암정보센터는 사람유두종바이러스가 대부분 성접촉으로 감염되고 첫 성경험 나이와 성상대자수 같은 안전한 성생활 기록이 도움이 된다고 설명하며, 콘돔의 HPV 전파 예방 효과는 논란이 많다고 설명합니다. 흡연은 자궁경부암 위험이 높아지므로 흡연 여부·금연 지원 상담, 경구피임약 5년 이상 장기 복용 여부, 파트너/검진/예방접종 질문을 진료팀에 남깁니다.",
+    sourceId: "nccCervicalPrevention",
   },
 ];
 

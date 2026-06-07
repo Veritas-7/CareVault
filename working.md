@@ -29928,6 +29928,36 @@
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 588 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this log-only update, then recheck sync/runtime cleanup.
 
+## 2026-06-07 19:09 KST - Cervical Smoking and Sexual-Risk Prevention Memo
+
+- Current Goal:
+  - Add a source-backed cervical-cancer prevention memo for smoking, sexual-history risk questions, condom uncertainty, and long-term oral-contraceptive consultation without turning it into a direct behavior order.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`; local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed `DESIGN.md` cervical-care contract: every new medical statement needs an official source label and must stay framed as record/clinician-question support.
+  - Applied TDD plus incremental implementation: one source-backed prevention memo, then copy/export count updates.
+  - Official-source re-check used National Cancer Information Center's cervical-cancer prevention section: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885`
+- Changes:
+  - `src/cervicalCancerCare.ts`: added `nccCervicalPrevention` source and a new `흡연·성생활 위험요인 메모` prevention guide covering HPV sexual-contact context, first sexual experience/partner-count questions, condom-effect uncertainty, smoking-risk recording, and 5-year-plus oral-contraceptive consultation.
+  - `src/cervicalCancerCare.test.ts`: added RED/PASS coverage for the source key, prevention item, clinician-question framing, and no direct stop-smoking order.
+  - `src/cervicalCancerCareClipboard.test.ts`, `src/cervicalCancerCareMetric.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, `src/caregiverExport.test.ts`: updated source/item counts and export assertions so the new memo is preserved across copy, panel chips, Markdown, CSV, and caregiver HTML.
+  - `README.md`: updated the cervical-care feature list with smoking/sexual-history risk-factor consultation memo coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` failed before implementation because `nccCervicalPrevention`, the new prevention guide, and updated counts/exports were missing.
+  - PASS related tests after implementation: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` => 6 files / 135 tests.
+  - PASS full tests: `npm test` => 64 files / 588 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+- Issues:
+  - No blocker so far. Source commit/push and post-push sync check still need to run.
+- Next Steps:
+  - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
+
 ## 2026-06-07 18:52 KST - Post-Push HPV Schedule Observation Memo Split
 
 - Current Goal:

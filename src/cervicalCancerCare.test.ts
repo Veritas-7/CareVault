@@ -60,11 +60,13 @@ describe("cervicalCancerCare", () => {
       "nccLymphedemaCare",
       "kdcaHpv",
       "nccHpvVaccine",
+      "nccCervicalPrevention",
     ]);
     expect(cervicalCancerCareSources.nccSymptoms.url).toContain("cancer.go.kr");
     expect(cervicalCancerCareSources.nccLymphedemaCare.url).toContain("S1T429C431");
     expect(cervicalCancerCareSources.kdcaHpv.url).toContain("health.kdca.go.kr");
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
+    expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("menu_seq=4885");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -516,8 +518,11 @@ describe("cervicalCancerCare", () => {
     const hpvDelayedDoseGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 지연·추가접종 메모",
     );
+    const preventionRiskGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "흡연·성생활 위험요인 메모",
+    );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(7);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(8);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -555,6 +560,21 @@ describe("cervicalCancerCare", () => {
     expect(hpvDelayedDoseGuide?.detail).toContain("추가접종");
     expect(hpvDelayedDoseGuide?.detail).toContain("권고된 바가 없으므로");
     expect(hpvDelayedDoseGuide?.detail).not.toContain("맞으세요");
+    expect(preventionRiskGuide).toMatchObject({
+      label: "흡연·성생활 위험요인 메모",
+      sourceId: "nccCervicalPrevention",
+    });
+    expect(preventionRiskGuide?.detail).toContain("대부분 성접촉");
+    expect(preventionRiskGuide?.detail).toContain("첫 성경험");
+    expect(preventionRiskGuide?.detail).toContain("성상대자수");
+    expect(preventionRiskGuide?.detail).toContain("콘돔");
+    expect(preventionRiskGuide?.detail).toContain("논란");
+    expect(preventionRiskGuide?.detail).toContain("흡연");
+    expect(preventionRiskGuide?.detail).toContain("위험이 높아지므로");
+    expect(preventionRiskGuide?.detail).toContain("경구피임약");
+    expect(preventionRiskGuide?.detail).toContain("5년 이상");
+    expect(preventionRiskGuide?.detail).toContain("진료팀");
+    expect(preventionRiskGuide?.detail).not.toContain("끊으세요");
     expect(cervicalCancerCarePreventionGuides.every((item) => item.sourceId)).toBe(true);
   });
 

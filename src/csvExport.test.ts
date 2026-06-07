@@ -676,6 +676,12 @@ describe("csvExport", () => {
     expect(csv).toContain("접종시기를 놓친 경우");
     expect(csv).toContain("처음부터 다시 시작하지는 않습니다");
     expect(csv).toContain("국가암정보센터 자궁경부암 HPV 예방백신");
+    expect(csv).toContain("흡연·성생활 위험요인 메모");
+    expect(csv).toContain("대부분 성접촉");
+    expect(csv).toContain("성상대자수");
+    expect(csv).toContain("콘돔");
+    expect(csv).toContain("경구피임약");
+    expect(csv).toContain("국가암정보센터 자궁경부암 예방법");
     expect(csv).toContain("국가암정보센터 자궁경부암 일반적 증상");
   });
 
