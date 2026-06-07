@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 06:05 KST - Post-Push NCC Fatigue Depression Food Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center fatigue/depression meal-support guidance slice.
+- Result:
+  - Source commit pushed: `cf68d47` (`Add NCC fatigue depression food terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `cf68d4726f8d31c5c56fb32961532e294e772324`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 657 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `피로감과 우울`, `https://www.cancer.go.kr/lay1/S1T479C490/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 06:02 KST - NCC Fatigue Depression Meal Support Examples
 
 - Current Goal:
