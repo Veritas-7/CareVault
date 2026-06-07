@@ -212,7 +212,7 @@ h2 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 14px;
   border-radius: 8px;
   color: white;
@@ -236,8 +236,8 @@ h2 {
 }
 
 .summary-range-select {
-  height: 40px;
-  min-height: 40px;
+  height: 44px;
+  min-height: 44px;
   max-width: 150px;
   padding: 0 12px;
   border: 1px solid #c7d8da;

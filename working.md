@@ -26786,3 +26786,33 @@
   - Browser-local food-question draft test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 11:39 KST - Visit Summary Preview Stale-State And Topbar Target QA
+
+- Current Goal:
+  - Direct-QA the topbar visit-summary preview stale-state workflow in the same existing `암관리` / `surface:7` cmux browser.
+  - Improve topbar export/preview/manual-save hit targets without changing caregiver memo preset sizing promised by `DESIGN.md`.
+- Context:
+  - `DESIGN.md` requires visit-summary export/preview labels and stale previews to preserve the selected range and block copy/print/download until regenerated.
+  - Same-surface measurement found the primary topbar export/preview/manual-save controls and visit-summary range select rendering at `40px`; preview-panel actions already rendered at `44px`.
+  - During setup, `surface:7` briefly reported a blank frame even though cmux tree still showed the existing CareVault browser surface; no new browser/surface/tab was created, and the same `surface:7` browser recovered through cmux tree/snapshot checks and same-surface navigation.
+- Changes:
+  - `src/App.css`: raised the base `.top-actions button` and `.summary-range-select` target height from `40px` to `44px`.
+  - Left the more specific `.memo-preset-button`, `.caregiver-reset-button`, and `.caregiver-share-preset-select` 40px rules intact because `DESIGN.md` explicitly calls for at least 40px caregiver preset controls in constrained right-pane layouts.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was used at `http://127.0.0.1:1420/#export`.
+  - PASS pre-fix measurement: `진료 요약 내보내기`, `진료 요약 미리보기`, `CSV 내보내기`, `CSV 미리보기`, `보호자 공유본 미리보기`, `현재 CareVault 기록 수동 저장`, and `진료 요약 범위` measured `40px`.
+  - PASS real preview click: clicked `진료 요약 미리보기 · 범위 최근 30일`; export preview opened with summary `진료 요약`, `234줄`, `33,369자`, `56,648B`, and `근거/출처 111개`.
+  - PASS preview actions: preview copy/print/download labels preserved summary size/source counts, and preview action buttons rendered `44px`.
+  - PASS stale-state trigger: changed the real `진료 요약 범위` select from `30d` to `7d`; preview copy/print/download became disabled and their accessible labels added `비활성: 진료 요약 범위가 바뀌어 다시 생성이 필요합니다.`
+  - PASS stale alert: `.export-preview-stale-alert` showed `진료 요약 범위가 바뀌었습니다`, `현재 미리보기는 이전 범위로 생성되었습니다.`, and the refresh action aria `새 미리보기 생성 · 진료 요약 · 변경된 범위 적용`.
+  - PASS refresh action: clicked `새 미리보기 생성`; the 7-day preview regenerated with summary `231줄`, `32,722자`, `55,670B`, `근거/출처 108개`, the stale alert disappeared, and copy/print/download were enabled again.
+  - PASS post-fix measurement after HMR: topbar export/preview/manual-save controls plus the visit-summary range select measured `44px`; the patched controls retained their existing visible labels and aria/title scope.
+  - PASS cleanup: changed the visit-summary range back to `30d`, closed `내보내기 미리보기`, and confirmed preview count `0`, stale-alert count `0`, range value `30d`, save chip `진료 요약 미리보기 닫힘 · 231줄 · 32,722자 · 55,670B · 근거/출처 108개`, and browser diagnostics `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/visitPacket.test.ts src/exportPreviewSummary.test.ts src/textFileDownload.test.ts src/csvExport.test.ts` => `4 passed`, `58 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.css` and `working.md` are dirty with one scoped topbar target-size improvement plus direct visit-summary stale-preview QA evidence.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/App.css` and `working.md` for commit/push.
