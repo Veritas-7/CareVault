@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 03:49 KST - Post-Push NCC Healthy-Eating Soup Broth Limit Sentence
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center healthy-eating soup broth limit sentence slice.
+- Result:
+  - Source commit pushed: `808d74c` (`Add NCC soup broth limit terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `808d74c6495b0ebc0e9a0f603b44491bba93e03b`.
+  - Post-push verification log commit is pending in this entry.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `c93097364629a437b20d050e62987ec0f6eb22cc`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source phrase collapsed to shorter `국이나 찌개의 국물` and `찌개 국물` matches and the guide strings were missing.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 75 tests.
+  - PASS full tests before push: `npm test` => 64 files / 640 tests.
+  - PASS typecheck before push: `npm run typecheck`.
+  - PASS build before push: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 5.79 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 640 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; post-push verification log commit is pending.
+- Next Steps:
+  - Commit and push this post-push verification log, then re-check sync and runtime status.
+
 ## 2026-06-08 03:46 KST - NCC Healthy-Eating Soup Broth Limit Sentence
 
 - Current Goal:
