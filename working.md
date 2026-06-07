@@ -29892,6 +29892,10 @@
   - PASS build: `npm run build`.
   - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
   - PASS pre-commit gate: `git diff --check`.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `9f63f1cf9bce019db64cf31a80b7d2d0b85f7faf`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 8.46 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
   - PASS staged gate: `git diff --cached --check`.
   - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
   - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
@@ -30412,6 +30416,33 @@
 - Next Steps:
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 600 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this `working.md` update and recheck final sync/runtime cleanup.
+
+## 2026-06-07 21:34 KST - NCC Prevention Protein Choice Support Terms
+
+- Current Goal:
+  - Tighten the National Cancer Information Center prevention meal-example source mapping for protein-choice support terms.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`; local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed `DESIGN.md` food guidance contract: food checks must stay source-backed, clickable, and avoid treatment/cure claims.
+  - Official-source re-check used National Cancer Information Center `암예방을 위한 요리`, which lists fish, eggs, beans, chicken, beef, and pork as protein options, recommends blue-backed fish at least twice weekly, limits red meat to 3 servings or fewer weekly, and minimizes processed meats.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/PASS coverage that the balanced food guide exposes `등푸른 생선` and `콩`, and that `생선`/`달걀`/`콩`/`닭고기`/`등푸른 생선`/`고등어` map to `nccPreventionMealExamples` without cure wording.
+  - `src/healthRules.ts`: updated the balanced `암예방 식단 예시` guide item and exact support rules so protein-choice terms use the direct National Cancer Information Center meal-example source instead of broader fallback sources.
+  - `README.md`: added the newly source-tightened protein-choice examples to the nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide card lacked `등푸른 생선`, `닭고기` still used `nccPreventionDiet`, and `등푸른 생선` collapsed to the shorter `생선` term.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 36 tests.
+  - PASS full tests: `npm test` => 64 files / 601 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No blocker so far. Source commit/push and post-push log still need to run.
+- Next Steps:
+  - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
 
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 

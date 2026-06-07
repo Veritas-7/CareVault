@@ -209,6 +209,16 @@ describe("healthRules", () => {
       cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
+    ).toContain("등푸른 생선");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("콩");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
     ).toContain("모차렐라");
     const limitGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "limit",
@@ -430,8 +440,8 @@ describe("healthRules", () => {
     });
     expect(matchesByTerm.닭고기).toMatchObject({
       level: "ok",
-      reason: "단백질 식품 후보",
-      sourceId: "nccPreventionDiet",
+      reason: "국가암정보센터 암예방 식단 단백질 적정량 예시 후보",
+      sourceId: "nccPreventionMealExamples",
     });
     expect(matchesByTerm["플레인 요구르트"]).toMatchObject({
       level: "ok",
@@ -543,6 +553,51 @@ describe("healthRules", () => {
       sourceId: "nccPreventionMealExamples",
     });
     expect(formatFoodMatchEvidence(matchesByTerm.소고기)).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes NCC prevention protein-choice support examples", () => {
+    const assessment = assessCancerFood("생선, 달걀, 콩, 닭고기, 등푸른 생선, 고등어");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["생선", "달걀", "콩", "닭고기", "등푸른 생선", "고등어"]);
+    expect(matchesByTerm.생선).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 단백질 적정량 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.달걀).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 단백질 적정량 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.콩).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 단백질 적정량 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.닭고기).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 단백질 적정량 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["등푸른 생선"]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 등푸른 생선 주 2회 이상 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.고등어).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 등푸른 생선 주 2회 이상 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm["등푸른 생선"])).toContain(
       "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);

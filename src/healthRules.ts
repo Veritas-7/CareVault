@@ -190,9 +190,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "암예방 식단 예시",
         detail:
-          "국가암정보센터 암예방 식단 예시는 잡곡밥, 채소 반찬, 생선 단백질 식품, 간편식의 통곡물·샐러드·저지방 유제품·과일 예시, 단체 급식의 다양한 채소 반찬과 적정량 단백질 예시를 균형식 후보로 제시합니다.",
+          "국가암정보센터 암예방 식단 예시는 잡곡밥, 채소 반찬, 생선·달걀·콩·닭고기 단백질 식품, 등푸른 생선 주 2회 이상, 간편식의 통곡물·샐러드·저지방 유제품·과일 예시, 단체 급식의 다양한 채소 반찬과 적정량 단백질 예시를 균형식 후보로 제시합니다.",
         examples:
-          "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 통밀빵, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 플레인 요구르트, 플레인 요거트, 저지방 유제품, 저지방 요구르트, 저지방 요거트, 방울토마토, 블루베리, 미역국, 상추쌈, 버섯나물, 불고기",
+          "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 생선, 달걀, 콩, 닭고기, 등푸른 생선, 고등어, 통밀빵, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 플레인 요구르트, 플레인 요거트, 저지방 유제품, 저지방 요구르트, 저지방 요거트, 방울토마토, 블루베리, 미역국, 상추쌈, 버섯나물, 불고기",
         sourceIds: ["nccPreventionMealExamples"],
       },
       {
@@ -386,16 +386,30 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["나물", "채소 반찬 후보", "nccPreventionDiet"],
   ["상추", "채소 반찬 후보", "nccPreventionDiet"],
   ["버섯", "채소 반찬 후보", "nccPreventionDiet"],
-  ["콩", "식물성 단백질과 섬유질", "kdcaNutrition", standaloneFoodTermOptions],
+  [
+    "콩",
+    "국가암정보센터 암예방 식단 단백질 적정량 예시 후보",
+    "nccPreventionMealExamples",
+    standaloneFoodTermOptions,
+  ],
   ["두부", "식물성 단백질", "kdcaNutrition"],
   ["현미", "통곡물", "nccPreventionDiet"],
   ["귀리", "통곡물", "nccPreventionDiet"],
   ["견과", "불포화지방과 간식 대체", "kdcaNutrition"],
   ["호두", "견과류", "kdcaNutrition"],
-  ["고등어", "등푸른 생선 단백질 후보", "nccPreventionDiet"],
-  ["닭고기", "단백질 식품 후보", "nccPreventionDiet"],
-  ["달걀", "단백질 식품 후보", "nccPreventionDiet"],
-  ["생선", "단백질 공급원", "nccSideEffectDiet"],
+  [
+    "등푸른 생선",
+    "국가암정보센터 암예방 식단 등푸른 생선 주 2회 이상 예시 후보",
+    "nccPreventionMealExamples",
+  ],
+  [
+    "고등어",
+    "국가암정보센터 암예방 식단 등푸른 생선 주 2회 이상 예시 후보",
+    "nccPreventionMealExamples",
+  ],
+  ["닭고기", "국가암정보센터 암예방 식단 단백질 적정량 예시 후보", "nccPreventionMealExamples"],
+  ["달걀", "국가암정보센터 암예방 식단 단백질 적정량 예시 후보", "nccPreventionMealExamples"],
+  ["생선", "국가암정보센터 암예방 식단 단백질 적정량 예시 후보", "nccPreventionMealExamples"],
   ["플레인 요구르트", "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보", "nccPreventionMealExamples"],
   ["플레인 요거트", "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보", "nccPreventionMealExamples"],
   ["저지방 유제품", "국가암정보센터 암예방 샐러드 저지방 유제품 예시 후보", "nccPreventionMealExamples"],
