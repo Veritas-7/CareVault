@@ -18,6 +18,16 @@ const questionStatusLabel: Record<string, string> = {
   deferred: "보류",
 };
 
+function formatQuestionDate(date: string) {
+  const trimmed = date.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return "날짜 미입력";
+
+  const [year, month, day] = trimmed.split("-").map(Number);
+  const normalized = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+
+  return normalized === trimmed ? trimmed : "날짜 미입력";
+}
+
 function formatQuestionStatus(value: ClipboardQuestionStatus) {
   return questionStatusLabel[value] ?? value;
 }
@@ -28,7 +38,7 @@ export function formatQuestionClipboardActionSummary(question: QuestionClipboard
   const hasAnswerMemo = Boolean(question.answer?.trim());
 
   return [
-    question.date || "날짜 미입력",
+    formatQuestionDate(question.date),
     questionPriorityLabel[priority],
     formatQuestionStatus(question.status),
     hasSourceEvidence ? "근거 포함" : "근거 없음",
@@ -67,7 +77,7 @@ export function formatQuestionClipboardText(question: QuestionClipboardInput) {
   const lines = [
     "[진료 질문]",
     `요약: ${formatQuestionClipboardActionSummary(question)}`,
-    `날짜: ${question.date}`,
+    `날짜: ${formatQuestionDate(question.date)}`,
     `주제: ${question.topic}`,
     `우선순위: ${questionPriorityLabel[priority]}`,
     `상태: ${formatQuestionStatus(question.status)}`,

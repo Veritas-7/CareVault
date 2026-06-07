@@ -61,6 +61,35 @@ describe("questionClipboard", () => {
     );
   });
 
+  it("replaces malformed restored dates in question copy labels and text", () => {
+    const malformedDateQuestion = {
+      answer: "",
+      date: "2026-06-31",
+      priority: "next-visit",
+      question: "복구된 질문 날짜를 확인할까요?",
+      status: "open",
+      topic: "복구 점검",
+    };
+
+    expect(formatQuestionClipboardActionSummary(malformedDateQuestion)).toBe(
+      "날짜 미입력 · 다음 진료 · 확인 필요 · 근거 없음",
+    );
+    expect(formatQuestionClipboardCopyDescription(malformedDateQuestion)).toBe(
+      "복구 점검 질문 복사 · 날짜 미입력 · 다음 진료 · 확인 필요 · 근거 없음",
+    );
+    expect(formatQuestionClipboardText(malformedDateQuestion)).toBe(
+      [
+        "[진료 질문]",
+        "요약: 날짜 미입력 · 다음 진료 · 확인 필요 · 근거 없음",
+        "날짜: 날짜 미입력",
+        "주제: 복구 점검",
+        "우선순위: 다음 진료",
+        "상태: 확인 필요",
+        "질문: 복구된 질문 날짜를 확인할까요?",
+      ].join("\n"),
+    );
+  });
+
   it("formats source-backed question text as separated evidence", () => {
     expect(
       formatQuestionClipboardText({

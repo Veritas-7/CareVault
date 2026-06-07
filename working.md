@@ -28783,3 +28783,32 @@
   - A combined `git rev-parse --short HEAD origin/main` check was discarded because Git expects a single revision with `--short`; separate `HEAD` and `origin/main` checks passed.
 - Next Steps:
   - Continue with code-level and non-focusing cmux diagnostics while direct DOM context remains blocked.
+
+## 2026-06-07 15:59 KST - Question Clipboard Restored Date Guard
+
+- Current Goal:
+  - Prevent malformed restored question dates from being copied into question clipboard labels or clipboard text.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Read parent AGENTS rules and verified this folder is its own repo with `origin` mapped to `https://github.com/Veritas-7/CareVault.git`.
+  - Used the `test-driven-development` skill for this behavior change and the `custom-git` skill for explicit staging/gates.
+  - `copyQuestionForVisit()` calls `formatQuestionClipboard*()` from the question card UI; those helpers previously emitted `question.date` directly in action labels and copied text.
+- Changes:
+  - `src/questionClipboard.test.ts`: added RED coverage for malformed restored question dates in copy descriptions and copied text.
+  - `src/questionClipboard.ts`: added strict `YYYY-MM-DD` calendar date formatting for question clipboard output; invalid or blank dates now render as `날짜 미입력`.
+- Tests:
+  - RED confirmed: `npm test -- src/questionClipboard.test.ts` failed because `formatQuestionClipboardActionSummary()` returned `2026-06-31`.
+  - PASS focused test after fix: `npm test -- src/questionClipboard.test.ts` => `1 passed`, `8 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `569 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup before and after temporary Vite check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS local Vite reachability: `curl -I --max-time 3 http://127.0.0.1:1420/` returned `HTTP/1.1 200 OK`.
+  - PARTIAL cmux browser diagnostics without focus takeover: existing `surface:7` `navigate http://127.0.0.1:1420/#dashboard` returned `OK`, `get url` returned the dashboard URL, `get title` returned the URL value, and `errors list` returned `No browser errors`.
+  - BLOCKED whole-directory secret scan: `gitleaks dir . --no-banner --redact` found 4 `generic-api-key` matches in ignored Rust build artifacts under `src-tauri/target/**/libmuda-*.rmeta`; `git ls-files` returned no tracked files for those paths and `git check-ignore -v` confirmed they are ignored by `src-tauri/.gitignore`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by cmux WebView context mismatch: with Vite serving HTTP 200 locally, `eval` returned the dashboard URL but no `#root`, one reload button, and body text length 128; `snapshot --compact --max-depth 3` showed a Korean "이 페이지에 연결할 수 없습니다" document.
+  - Whole-directory gitleaks remains noisy on ignored `src-tauri/target` build metadata; do not remove, hide, untrack, or stub user/build artifacts to force that gate green. Use staged gitleaks to prove the GitHub-bound diff is clean, and keep the full-dir finding visible until the repo gets an approved ignore/scan policy.
+  - No `focus-webview`, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+- Next Steps:
+  - Run staged diff/secret gates, then commit the focused question clipboard restored date guard if green. Treat GitHub push as blocked if staged gitleaks fails.
