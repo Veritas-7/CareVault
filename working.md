@@ -30228,6 +30228,33 @@
 - Next Steps:
   - Run staged and whole-directory gitleaks scans; then commit/push explicit paths and record post-push verification.
 
+## 2026-06-07 19:56 KST - Post-Push Cervical Limit Food Guide Card
+
+- Current Goal:
+  - Record post-push verification for the cervical practice-guideline limit food guide-card slice.
+- Result:
+  - Source commit pushed: `def2025` (`Add cervical limit food guide card`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `def20250f39ae816274471a95468d9c12f614eaf`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the limit guide cards did not include `nccCervicalPracticeDiet`.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 27 tests.
+  - PASS full tests: `npm test` => 64 files / 591 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center PDF: `국민 암예방 수칙 실천지침 _ 자궁경부암`, `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 591 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
+  - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
+
 ## 2026-06-07 19:03 KST - Post-Push HPV Delayed Dose Memo
 
 - Current Goal:
