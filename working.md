@@ -29130,3 +29130,27 @@
   - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
 - Next Steps:
   - Run diff and secret gates, then commit/push the focused timeline evidence label date fallback if green.
+
+## 2026-06-07 16:40 KST - Post-Push Timeline Evidence Label Date Fallback
+
+- Current Goal:
+  - Record post-push verification for timeline source-evidence label date fallback.
+- Result:
+  - Source commit pushed: `5f695bc` (`Guard timeline evidence label dates`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `5f695bc`.
+- Verification:
+  - PASS focused test: `npm test -- src/timelineSourceEvidenceLabels.test.ts` => `1 passed`, `2 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `575 passed`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing cmux automation/snapshot context mismatch.
+  - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
