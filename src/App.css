@@ -2243,7 +2243,7 @@ textarea:focus-visible {
 
 .vital-standard-question-button {
   justify-self: start;
-  min-height: 32px;
+  min-height: 44px;
   margin-top: 2px;
   padding: 0 9px;
   font-size: 0.74rem;
@@ -2693,7 +2693,7 @@ textarea:focus-visible {
 
 .standard-range-action-button {
   justify-self: start;
-  min-height: 32px;
+  min-height: 44px;
   padding: 0 8px;
   font-size: 0.74rem;
 }

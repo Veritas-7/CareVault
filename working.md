@@ -26661,3 +26661,31 @@
   - Browser-local cervical draft test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 11:13 KST - Vital Standard Action Target Direct QA
+
+- Current Goal:
+  - Improve and direct-QA the source-backed vital/medical-standard question action targets in the same existing `암관리` / `surface:7` cmux browser.
+  - Follow the user's latest instruction to avoid visible window occupation and use only `cmux browser --surface surface:7` CLI operations for navigation, DOM reads, clicks, and diagnostics.
+- Context:
+  - A fresh same-surface DOM scan on `#care-plan` showed the remaining source-backed medical-standard draft actions at `32px`: two `체온·감염 연락 기준` buttons and one `혈압 기준 진료 질문 초안 만들기` button.
+  - The slice did not use Computer Use, did not switch workspaces, and did not create a new browser/surface/tab/pane.
+- Changes:
+  - `src/App.css`: raised `.standard-range-action-button` and `.vital-standard-question-button` from `32px` to `44px` min-height.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; the existing `surface:7` was moved to `http://127.0.0.1:1420/#care-plan` with `cmux browser --surface surface:7 goto ... --snapshot-after`.
+  - PASS hit-target scan after CSS: `.standard-range-action-button` rendered `[44, 44]` and `.vital-standard-question-button` rendered `[44]`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testVitalStandardTargetBaseline"]`; storage length `1872`, keys only `carevault.v1`, blood-pressure vital `128/78`, empty question draft fields, save chip `브라우저 자동 저장됨`, and counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`.
+  - PASS real click: clicked the real `혈압 기준 진료 질문 초안 만들기` button with `cmux browser --surface surface:7 click --selector 'button[aria-label="혈압 기준 진료 질문 초안 만들기"]' --snapshot-after`.
+  - PASS draft behavior: topic became `혈압 기준 확인`, priority stayed `next-visit`, body included `혈압 128/78 mmHg`, `주의혈압 범위`, and `질병관리청 국가건강정보포털 고혈압` / `https://health.kdca.go.kr` source text.
+  - PASS non-directive guard: the generated question draft did not contain direct order phrases such as `치료하세요`, `복용하세요`, or `처방하세요`.
+  - PASS feedback/non-mutation: `.vital-standard-question-feedback` and the top save chip both showed `활력 기준 질문 초안 준비됨 · 혈압 128/78 mmHg · 판정 주의혈압 범위 · 기준 성인 남녀 공통 한국 성인 혈압 기준 · 근거 질병관리청 국가건강정보포털 고혈압`; `localStorage["carevault.v1"]` stayed byte-equal to baseline and record counts stayed unchanged.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testVitalStandardTargetBaseline`, reloaded the same `surface:7`, and confirmed URL `http://127.0.0.1:1420/#care-plan`, storage length `1872`, keys only `carevault.v1`, no `carevault.__test*` session keys, empty question topic/body, priority `next-visit`, save chip `브라우저 자동 저장됨`, record counts restored, and patched buttons still measured `44px`.
+  - PASS browser diagnostics after cleanup: `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/healthStandards.test.ts src/questionDraftMerge.test.ts src/questionClipboard.test.ts` => `3 passed`, `41 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.css` and `working.md` are dirty with one verified UI accessibility fix plus direct QA evidence.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/App.css` and `working.md` for commit/push.
