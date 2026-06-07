@@ -28051,3 +28051,21 @@
   - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface and do not steal focus.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the focused blank attachment preview URL guard if green.
+
+## 2026-06-07 14:25 KST - Post-Push Blank Attachment Preview URL Guard
+
+- Current Goal:
+  - Record post-push verification for the blank runtime-converted attachment preview URL guard.
+- Result:
+  - Source commit pushed: `5bdc2f5` (`Guard blank attachment preview URLs`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `5bdc2f5`.
+- Verification:
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics: existing `surface:7` returned `No browser errors`; eval still reports `about:blank`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
