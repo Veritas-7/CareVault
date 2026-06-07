@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 07:01 KST - Post-Push KDCA Alcohol Type Verification
+
+- Current Goal:
+  - Record post-push verification for the KDCA risk-drinking alcohol type matching slice.
+- Result:
+  - Source commit pushed: `b66cf2a` (`Add KDCA alcohol drink type guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `b66cf2a77d7e82264b94891e041f4b2d106ce96f`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 664 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - KDCA National Health Information Portal `위험음주! 알려드리겠습니다!`, `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5355`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 06:58 KST - KDCA Risk-Drinking Alcohol Type Matching
 
 - Current Goal:
