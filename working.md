@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 02:02 KST - NCC Healthy-Eating Daily Legume Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on eating legumes and legume products such as soy milk and tofu every day.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `28302100069ee1426479732637042e54e6420045`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` confirms the nutrition panel should keep source-backed matched food chips and official Korean source links; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page states legumes and legume products such as soy milk and tofu should be eaten every day.
+  - Applied the source as supportive food guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `두류 매일 섭취`, `두류 가공품 매일 섭취`, and `두유 두부 매일 섭취` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the three daily-legume support phrases under `nccPreventionDiet` before shorter `두류`/`두유`/`두부` fallback matching and aligned the balanced-diet guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating daily-legume terms to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new guide strings were missing and the new phrases collapsed to shorter `두류`, `두류 가공품`, `두유`, and `두부` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 59 tests.
+  - PASS full tests: `npm test` => 64 files / 624 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Ready for explicit-path staging, secret scans, commit, and push.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`, then run staged checks before publishing to `origin main`.
+
 ## 2026-06-08 01:50 KST - Post-Push NCC Healthy-Eating Daily Vegetable Terms
 
 - Current Goal:
