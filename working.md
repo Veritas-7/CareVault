@@ -26198,3 +26198,25 @@
 - Current state:
   - `working.md` is dirty with direct QA evidence only.
   - Next: stage only `working.md`, run staged checks, commit/push the QA note, and continue with another non-duplicate direct-click workflow.
+
+## 2026-06-07 09:34 KST - Saved Question Feedback Current Surface QA
+
+- Current Goal:
+  - Direct-QA the saved-question priority and status feedback after earlier source/test coverage was partially blocked by an inactive browser surface.
+  - Verify the current `surface:7` UI preserves the target question topic in local feedback, topbar status, copy aria, question summary, and care-queue scope.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `surface:7` cmux browser, selected the existing CareVault workspace, and navigated to `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: stored `localStorage["carevault.v1"]` in `sessionStorage["carevault.__testQuestionFeedbackBaseline"]`; baseline had one saved question `혈액검사`, priority `high`, status `open`, storage length `1872`, storage keys only `carevault.v1`, and no row feedback.
+  - PASS baseline labels: saved priority select aria/title was `혈액검사 우선순위 변경 · 현재 이번 진료 우선`, status buttons exposed `혈액검사 질문 현재 상태: 확인 필요`, `혈액검사 질문 상태를 답변 완료로 변경`, and `혈액검사 질문 상태를 보류로 변경`; all status buttons were at least 34px high.
+  - PASS priority change: changed the real saved-card priority select to `일반 확인`. Browser storage updated to `priority: "routine"`, select aria/title became `혈액검사 우선순위 변경 · 현재 일반 확인`, row feedback became `혈액검사 우선순위: 일반 확인`, and the top save chip became `혈액검사 우선순위: 일반 확인 · 브라우저 자동 저장됨`.
+  - PASS priority scope propagation: the saved-question copy aria changed to `혈액검사 질문 복사 · 2026-06-15 · 일반 확인 · 확인 필요 · 근거 없음`, while the care-queue copy aria changed from `확인 필요 6개 · 일정/일반 2개` to `확인 필요 5개 · 일정/일반 3개`.
+  - PASS status change: clicked the real `보류 처리` status button. Browser storage updated to `status: "deferred"`, row feedback became `혈액검사 질문 상태: 보류`, the top save chip became `혈액검사 질문 상태: 보류 · 브라우저 자동 저장됨`, and the current `보류 처리` button became disabled with aria/title `혈액검사 질문 현재 상태: 보류`.
+  - PASS status scope propagation: question summary became `저장 질문 요약 전체 1개 · 보류 1개 · 근거 없음 · 답변 메모 없음`, saved-question copy aria became `혈액검사 질문 복사 · 2026-06-15 · 일반 확인 · 보류 · 근거 없음`, and care-queue copy aria dropped the question row to `진료 준비 큐 7개 항목`.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testQuestionFeedbackBaseline`, reloaded the same surface, and confirmed priority `high`, status `open`, one saved question, no row feedback, save chip `브라우저 자동 저장됨`, no `carevault.__test*` session keys, no preview panel, and no stale alert.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+- Verification:
+  - PASS source status: no app source files changed during this QA slice.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks, commit/push the QA note, and continue with another non-duplicate direct-click workflow.
