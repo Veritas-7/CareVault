@@ -30356,6 +30356,34 @@
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 599 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
 
+## 2026-06-07 21:22 KST - NCC Prevention Red-Meat Portion Watch Terms
+
+- Current Goal:
+  - Add National Cancer Information Center `암예방을 위한 요리` red-meat portion guidance as source-specific watch food matches for `소고기`, `돼지고기`, and `붉은 육류`.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed `DESIGN.md` food guidance contract: food guidance must use official Korean sources, show source labels, and avoid diagnosis/treatment instructions.
+  - Official-source re-check used National Cancer Information Center `암예방을 위한 요리`, example 1 `한식(밥과 국, 반찬)`, which lists `소고기, 돼지고기` as protein examples and says red meat should be kept to 3 servings or fewer per week in appropriate amounts.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/PASS coverage for the limit guide card plus `소고기`, `돼지고기`, and `붉은 육류` as `nccPreventionMealExamples` watch matches while preserving `불고기` as the source-specific ok example.
+  - `src/healthRules.ts`: added a `붉은 육류 적정량` guide item and exact red-meat portion watch rules sourced to `nccPreventionMealExamples`.
+  - `README.md`: updated the built-in nutrition example list with the red-meat portion watch terms.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide card lacked `소고기`/`돼지고기`, the exact `소고기`/`돼지고기` terms did not match, and `붉은 육류` still used the generic prevention-diet source.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 35 tests.
+  - PASS full tests: `npm test` => 64 files / 600 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, secret scans, commit/push, and post-push sync checks still need to run.
+- Next Steps:
+  - Stage explicit CareVault paths, run staged checks and gitleaks scans, commit/push, then record post-push verification.
+
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 
 - Current Goal:

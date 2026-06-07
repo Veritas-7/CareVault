@@ -226,6 +226,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccPreventionDiet"],
       },
       {
+        label: "붉은 육류 적정량",
+        detail:
+          "국가암정보센터 암예방 식단 예시는 소고기와 돼지고기 같은 붉은 육류를 주 3인분 이하로 적정량 섭취하도록 안내합니다.",
+        examples: "소고기, 돼지고기, 붉은 육류",
+        sourceIds: ["nccPreventionMealExamples"],
+      },
+      {
         label: "실천지침 대체 식단 예시",
         detail:
           "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 식이섬유를 늘리는 잡곡밥 대체 예시와 함께 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여줍니다.",
@@ -404,6 +411,9 @@ const limitFoods: FoodRuleTerm[] = [
   ["알코올", "암 예방 관점에서 제한 권고", "kdcaAlcohol"],
   ["맥주", "알코올", "kdcaAlcohol"],
   ["와인", "알코올", "kdcaAlcohol"],
+  ["소고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
+  ["돼지고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
+  ["붉은 육류", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["흰쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet"],
   ["쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["햄구이", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
@@ -435,7 +445,6 @@ const limitFoods: FoodRuleTerm[] = [
   ["열무김치", "암예방 식단 염장식품 소량 예시", "nccPreventionMealExamples"],
   ["짠 김치", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["국물", "국·찌개 국물 제한 예시", "nccCervicalPracticeDiet"],
-  ["붉은 육류", "붉은 육류는 주 3인분 이하로 적당량 확인", "nccPreventionDiet"],
   ["튀김", "치료 중 소화 불편 가능", "nccSideEffectDiet"],
   ["튀긴", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
   ["기름진", "치료 중 소화 불편 가능", "nccSideEffectDiet"],

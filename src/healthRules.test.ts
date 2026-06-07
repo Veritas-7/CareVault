@@ -228,6 +228,8 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("배추김치");
     expect(limitGuideText).toContain("열무김치");
     expect(limitGuideText).toContain("가당 제품");
+    expect(limitGuideText).toContain("소고기");
+    expect(limitGuideText).toContain("돼지고기");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
         .map((item) => item.label)
@@ -506,6 +508,41 @@ describe("healthRules", () => {
       sourceId: "nccPreventionMealExamples",
     });
     expect(formatFoodMatchEvidence(matchesByTerm.아욱된장국)).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes NCC prevention red-meat portion watch examples", () => {
+    const assessment = assessCancerFood("소고기, 돼지고기, 붉은 육류, 불고기");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual(["소고기", "돼지고기", "붉은 육류", "불고기"]);
+    expect(matchesByTerm.소고기).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.돼지고기).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["붉은 육류"]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.불고기).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 단백질 적정량 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm.소고기)).toContain(
       "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
