@@ -35,6 +35,26 @@
 - Next Steps:
   - Commit and push this source slice, then run post-push sync/runtime verification.
 
+## 2026-06-08 05:49 KST - Post-Push NCC Weight Change Food Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change calorie/protein and high-sodium/high-calorie example slice.
+- Result:
+  - Source commit pushed: `39620c4` (`Add NCC weight change food terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `39620c489205c43b9a4995acd0cece31c2a06904`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 655 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 05:40 KST - Post-Push NCC Constipation Food Verification
 
 - Current Goal:
