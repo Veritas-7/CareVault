@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 05:16 KST - Post-Push NCC Vomiting Food Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center vomiting staged liquid and soft-food example slice.
+- Result:
+  - Source commit pushed: `bd194f7` (`Add NCC vomiting food terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `bd194f7f1dcd2736c27c2a59b761316a292fe8de`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 651 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `구토`, `https://www.cancer.go.kr/lay1/S1T479C482/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this post-push verification log, then recheck sync/runtime.
+
 ## 2026-06-08 05:12 KST - NCC Vomiting Staged Liquid And Soft-Food Examples
 
 - Current Goal:
