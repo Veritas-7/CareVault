@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 05:12 KST - NCC Vomiting Staged Liquid And Soft-Food Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center vomiting staged liquid and soft-food examples.
+- Context:
+  - Continued from clean/synced CareVault state after `51ce7714cbd207e24ee5e8d3fcff4fa03bc3de4c`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - Used TDD and kept this slice limited to vomiting-context phrases to avoid broad global matches on standalone `물`, `육수`, or `미음`.
+- Research:
+  - Re-checked National Cancer Information Center `구토`, final update 2013-02-01. The page says not to eat or drink while vomiting symptoms are active, then after symptoms are controlled to start with small amounts of clear liquids such as water or broth, increase gradually, move to 미음 or soft meals when clear liquids are tolerated, and use milk-free products if milk is difficult to digest.
+  - Applied the source as symptom-context support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `구토 조절 후 물`, `구토 조절 후 육수`, `구토 맑은 유동식`, `구토 후 미음`, `구토 후 부드러운 식사`, and `우유가 들어있지 않은 제품`.
+  - `src/healthRules.ts`: added `nccVomitingDiet`, a balanced guide card for vomiting staged liquids/soft foods, and source-backed ok matching terms.
+  - `README.md`: added the new NCC vomiting examples to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccVomitingDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 86 tests.
+  - PASS full tests: `npm test` => 64 files / 651 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `51ce7714cbd207e24ee5e8d3fcff4fa03bc3de4c`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 10.79 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `구토`, `https://www.cancer.go.kr/lay1/S1T479C482/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Commit and push this source slice, then run post-push sync/runtime verification.
+
 ## 2026-06-08 05:09 KST - Post-Push NCC Appetite-Loss Food Verification
 
 - Current Goal:

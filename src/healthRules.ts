@@ -29,6 +29,7 @@ export type FoodGuidanceSourceId =
   | "nccSideEffectDiet"
   | "nccAppetiteLossDiet"
   | "nccNauseaDiet"
+  | "nccVomitingDiet"
   | "nccMouthPainDiet"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
@@ -128,6 +129,10 @@ export const foodGuidanceSources: Record<
   nccNauseaDiet: {
     label: "국가암정보센터 증상별 식생활 - 메스꺼움",
     url: "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+  },
+  nccVomitingDiet: {
+    label: "국가암정보센터 증상별 식생활 - 구토",
+    url: "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
   },
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
@@ -230,6 +235,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "국가암정보센터 메스꺼움 자료는 증상이 있을 때 억지로 먹지 말고 먹기 좋은 다른 음식을 선택하도록 하며, 비교적 위에 부담이 적은 식품으로 샤베트, 복숭아통조림 같은 부드러운 과일, 맑은 유동식, 얼음조각 등을 예시로 안내합니다.",
         examples: "샤베트, 복숭아통조림, 맑은 유동식, 얼음조각",
         sourceIds: ["nccNauseaDiet"],
+      },
+      {
+        label: "구토 조절 후 단계적 유동식",
+        detail:
+          "국가암정보센터 구토 자료는 구토 증상이 있을 때는 먹거나 마시지 않고, 증상이 조절되면 물이나 육수 같은 맑은 유동식부터 조금씩 시작해 미음이나 부드러운 식사로 바꾸며, 우유 소화가 힘들면 우유가 들어있지 않은 제품을 이용하도록 안내합니다.",
+        examples:
+          "구토 조절 후 물, 구토 조절 후 육수, 구토 맑은 유동식, 구토 후 미음, 구토 후 부드러운 식사, 우유가 들어있지 않은 제품",
+        sourceIds: ["nccVomitingDiet"],
       },
       {
         label: "식욕부진 시 가까이 두는 간식",
@@ -656,6 +669,12 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["복숭아통조림", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["맑은 유동식", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["얼음조각", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
+  ["구토 조절 후 물", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
+  ["구토 조절 후 육수", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
+  ["구토 맑은 유동식", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
+  ["구토 후 미음", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
+  ["구토 후 부드러운 식사", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
+  ["우유가 들어있지 않은 제품", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 죽", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 미음", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],

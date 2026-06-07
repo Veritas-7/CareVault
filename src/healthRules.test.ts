@@ -1540,6 +1540,50 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC vomiting staged liquid and soft-food examples", () => {
+    const assessment = assessCancerFood(
+      "구토 조절 후 물, 구토 조절 후 육수, 구토 맑은 유동식, 구토 후 미음, 구토 후 부드러운 식사, 우유가 들어있지 않은 제품",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccVomitingDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 구토",
+    );
+    expect(foodGuidanceSources.nccVomitingDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "구토 조절 후 물",
+      "구토 조절 후 육수",
+      "구토 맑은 유동식",
+      "구토 후 미음",
+      "구토 후 부드러운 식사",
+      "우유가 들어있지 않은 제품",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보",
+        sourceId: "nccVomitingDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 구토 - https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("구토 조절 후 물");
+    expect(balancedGuideText).toContain("구토 맑은 유동식");
+    expect(balancedGuideText).toContain("우유가 들어있지 않은 제품");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC appetite-loss snack and liquid-food examples", () => {
     const assessment = assessCancerFood(
       "식욕부진 간식, 식욕부진 죽, 식욕부진 미음, 식욕부진 쥬스, 식욕부진 주스, 식욕부진 스프, 특수영양 보충음료",
