@@ -141,6 +141,20 @@ export function formatExportPreviewPrintStatus(format: string, summary: ExportPr
   return `${format} 미리보기 인쇄 준비 · ${formatExportPreviewCompactSummary(summary)}`;
 }
 
+export function formatExportPreviewPrintUnavailableStatus(
+  format: string,
+  summary: ExportPreviewSummary,
+) {
+  return `${format} 미리보기 인쇄 준비 미지원 · ${formatExportPreviewCompactSummary(summary)}`;
+}
+
+export function formatExportPreviewPrintFailedStatus(
+  format: string,
+  summary: ExportPreviewSummary,
+) {
+  return `${format} 미리보기 인쇄 실패 · ${formatExportPreviewCompactSummary(summary)}`;
+}
+
 export function formatExportPreviewPrintWindowFailedStatus(
   format: string,
   summary: ExportPreviewSummary,

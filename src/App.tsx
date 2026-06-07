@@ -348,11 +348,13 @@ import {
   formatExportPreviewFreshActionDescription,
   formatExportPreviewFreshActionVisibleLabel,
   formatExportPreviewPrintDescription,
-  formatExportPreviewPrintWindowFailedStatus,
+  formatExportPreviewPrintFailedStatus,
+  formatExportPreviewPrintUnavailableStatus,
   formatExportPreviewPrintStatus,
   formatExportPreviewStaleStatus,
   type ExportPreviewFreshActionReason,
 } from "./exportPreviewSummary";
+import { printExportPreviewInFrame } from "./exportPreviewPrint";
 import {
   buildCaregiverExportContentFingerprint,
   buildCaregiverExportHtml,
@@ -574,14 +576,6 @@ type BackupImportFeedback = {
   title: string;
   tone: "error" | "success";
 };
-
-function escapePrintHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
 
 function isHtmlExportPreview(preview: ExportPreviewState) {
   return preview.mimeType.toLowerCase().startsWith("text/html");
@@ -3662,40 +3656,21 @@ function App() {
     if (!exportPreview) return;
     if (!guardFreshExportPreview()) return;
     const summary = buildExportPreviewSummary(exportPreview.content);
+    const printResult = printExportPreviewInFrame({
+      content: exportPreview.content,
+      filename: exportPreview.filename,
+      isHtml: isHtmlExportPreview(exportPreview),
+      title: exportPreview.title,
+    });
 
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      setSaveLabel(formatExportPreviewPrintWindowFailedStatus(exportPreview.format, summary));
+    if (printResult === "frame-unavailable") {
+      setSaveLabel(formatExportPreviewPrintUnavailableStatus(exportPreview.format, summary));
       return;
     }
-
-    if (isHtmlExportPreview(exportPreview)) {
-      printWindow.document.write(exportPreview.content);
-    } else {
-      printWindow.document.write(`<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapePrintHtml(exportPreview.title)}</title>
-  <style>
-    body { margin: 24px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #111; }
-    h1 { margin: 0 0 4px; font-size: 20px; }
-    p { margin: 0 0 14px; color: #526066; }
-    pre { white-space: pre-wrap; word-break: break-word; font: 12px/1.55 "SFMono-Regular", Consolas, monospace; }
-    @media print { body { margin: 14mm; } }
-  </style>
-</head>
-<body>
-  <h1>${escapePrintHtml(exportPreview.title)}</h1>
-  <p>${escapePrintHtml(exportPreview.filename)}</p>
-  <pre>${escapePrintHtml(exportPreview.content)}</pre>
-</body>
-</html>`);
+    if (printResult === "print-failed") {
+      setSaveLabel(formatExportPreviewPrintFailedStatus(exportPreview.format, summary));
+      return;
     }
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
     setSaveLabel(exportPreviewPrintStatus || `${exportPreview.format} 인쇄 준비`);
   };
 

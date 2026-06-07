@@ -14,6 +14,8 @@ import {
   formatExportPreviewFreshActionDescription,
   formatExportPreviewFreshActionVisibleLabel,
   formatExportPreviewPrintDescription,
+  formatExportPreviewPrintFailedStatus,
+  formatExportPreviewPrintUnavailableStatus,
   formatExportPreviewPrintWindowFailedStatus,
   formatExportPreviewPrintStatus,
   formatExportPreviewStaleStatus,
@@ -99,6 +101,12 @@ describe("exportPreviewSummary", () => {
     );
     expect(formatExportPreviewPrintStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 인쇄 준비 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewPrintUnavailableStatus("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 인쇄 준비 미지원 · 2줄 · 7자 · 11B · 근거/출처 1개",
+    );
+    expect(formatExportPreviewPrintFailedStatus("진료 요약", summary)).toBe(
+      "진료 요약 미리보기 인쇄 실패 · 2줄 · 7자 · 11B · 근거/출처 1개",
     );
     expect(formatExportPreviewPrintWindowFailedStatus("진료 요약", summary)).toBe(
       "진료 요약 미리보기 인쇄 창 열기 실패 · 2줄 · 7자 · 11B · 근거/출처 1개",

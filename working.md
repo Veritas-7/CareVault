@@ -27853,3 +27853,30 @@
   - Direct DOM/click QA is still blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:07 KST - Export Preview In-Frame Print Started
+
+- Current Goal:
+  - Keep export-preview print inside the current browser document and surface explicit print failure statuses instead of relying on `_blank` window printing.
+- Context:
+  - Re-read thread identity and latest `working.md`; repo was clean at `origin/main`.
+  - Existing `surface:7` still reports CareVault URL/title, but direct DOM context remains `about:blank`; `body` exists while `#root` count is 0. No focus/workspace switch, new browser, new tab, or Computer Use was used.
+  - Current `printExportPreview()` used `window.open("", "_blank")`, which can create another browser window/tab and can throw during document write/print without a scoped status.
+- Changes:
+  - `src/exportPreviewPrint.test.ts`: added RED coverage for escaped printable HTML, in-document iframe printing, print failure cleanup, and unavailable host document handling.
+  - `src/exportPreviewSummary.test.ts`: added expected status labels for print unavailable and print failure states.
+  - `src/exportPreviewPrint.ts`: added a temporary iframe print helper that writes/prints inside the current document and removes the frame after print or failure.
+  - `src/exportPreviewSummary.ts`: added explicit print unavailable and print failed status formatters.
+  - `src/App.tsx`: replaced `_blank` print-window logic with the in-frame print helper and scoped status handling.
+- Tests:
+  - RED confirmed: `npm test -- src/exportPreviewPrint.test.ts src/exportPreviewSummary.test.ts` failed because `./exportPreviewPrint` and new print status formatters did not exist.
+  - PASS focused tests after fix: `npm test -- src/exportPreviewPrint.test.ts src/exportPreviewSummary.test.ts` => `2 passed`, `13 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `545 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the in-frame print guard if green.
