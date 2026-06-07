@@ -3181,6 +3181,7 @@ function App() {
   const addLabResult = () => {
     const requiredFieldMessage = formatLabRequiredFieldMessage(labDraft.name, labDraft.value);
     if (requiredFieldMessage) {
+      setLabSaveFeedback(null);
       setRecordFormValidationFeedback("lab", requiredFieldMessage);
       return;
     }

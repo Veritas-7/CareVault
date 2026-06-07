@@ -26125,3 +26125,31 @@
 - Current state:
   - `working.md` is dirty with direct QA evidence only.
   - Next: stage only `working.md`, run staged checks, commit/push the QA note, and continue with another non-duplicate direct-click workflow.
+
+## 2026-06-07 09:21 KST - Lab Required Feedback Clears Stale Success
+
+- Current Goal:
+  - Fix the lab-entry validation path so an empty `검사 수치 추가` click clears the previous lab success message before showing the local required-field warning.
+  - Keep this slice limited to stale feedback cleanup; do not change lab saving, assessment, source evidence, or storage schema.
+- Context:
+  - Source review found `addLabResult()` was the only required-field guarded add flow that did not clear its local success feedback before calling `setRecordFormValidationFeedback()`.
+  - This contradicted the `DESIGN.md` requirement that required add/save validation feedback be local, current, and not mixed with stale saved-state messaging.
+- RED direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#labs`.
+  - RED: saved a valid `QA-CRP` lab, then clicked the real empty `검사 수치 추가` button. The required feedback appeared as `검사 항목과 값을 입력해주세요.`, but stale `.lab-save-feedback` still showed `QA-CRP 검사 수치 추가됨 · 1.2 mg/L · 판정 기준 범위 없음 · 근거 없음`.
+- Change:
+  - `src/App.tsx`: in the `addLabResult()` required-field branch, call `setLabSaveFeedback(null)` before `setRecordFormValidationFeedback("lab", requiredFieldMessage)`.
+- PASS direct same-surface QA:
+  - PASS cleanup before retest: restored baseline storage length `1872`, removed QA lab records, and reloaded `#labs`.
+  - PASS retest: saved a valid `QA-CRP` lab, then clicked the real empty `검사 수치 추가` button. The stale `.lab-save-feedback` was gone, local `[data-record-form-feedback=lab]` showed `검사 항목과 값을 입력해주세요.` with role `status` and aria label `검사 수치 입력 필수 항목 안내 · 검사 항목과 값을 입력해주세요.`, and topbar save chip showed `검사 항목과 값을 입력해주세요.`
+  - PASS non-save guard: after the empty click, the temporary state had only one `QA-CRP` lab from the valid save and did not add another blank lab.
+  - PASS cleanup after retest: restored baseline storage, removed `carevault.__testLabFeedbackFixBaseline`, reloaded `#labs`, and confirmed counts restored to `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`, no `QA-CRP` labs, no `.lab-save-feedback`, no lab required feedback, no `carevault.__test*` session keys, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors` returned `No browser errors`; console showed only normal Vite debug connection messages.
+- Verification:
+  - PASS focused tests: `npm test -- src/entryValidation.test.ts src/labMetric.test.ts` => `2 passed`, `30 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `532 passed`.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.tsx` and `working.md` are dirty with this verified stale-feedback fix and direct QA evidence.
+  - Next: run final diff checks, stage only these paths, run staged secret scan, commit/push, then record post-push status.
