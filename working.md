@@ -28713,3 +28713,27 @@
   - Direct DOM/click QA remains blocked by the existing split cmux context; no focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 15:48 KST - Non-Focusing cmux DOM Context Diagnostic
+
+- Current Goal:
+  - Determine whether direct DOM/click QA can be recovered inside existing cmux `surface:7` without stealing focus or opening another browser surface.
+- Context:
+  - Ran only non-focusing cmux CLI commands against existing `surface:7`.
+  - No `focus-webview`, no workspace/window selection, no Computer Use, no new browser, no new tab, no new surface, and no cmux restart/termination was used.
+  - Temporarily started this project's Vite server with `npm run dev -- --host 127.0.0.1 --port 1420`, then stopped it and verified runtime clean.
+- Diagnostics:
+  - `cmux browser status` => `enabled`.
+  - `cmux browser identify --surface surface:7` => `OK`.
+  - `cmux browser surface:7 tab list` => `OK`.
+  - `cmux browser surface:7 frame main` => `OK`.
+  - `cmux browser surface:7 is-webview-focused` => `false`.
+  - With Vite running, `cmux browser surface:7 navigate http://127.0.0.1:1420/#dashboard` => `OK`.
+  - With Vite running, `get url` returned `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+  - With Vite running, `eval` still returned `{"href":"about:blank","title":"","readyState":"complete","bodyLength":0,"root":false,"buttons":0}` and `snapshot --compact --max-depth 3` still reported `url: about:blank`.
+- Result:
+  - Direct DOM/click QA remains blocked by a split cmux context: surface metadata sees CareVault, while automation DOM/eval sees an empty `about:blank` document.
+  - Runtime cleanup after stopping Vite: `npm run runtime:doctor` passed with port `1420` free and no CareVault dev processes.
+- Next Steps:
+  - Continue code-level and non-focusing cmux URL/title/error diagnostics while direct DOM context remains blocked.
+  - If direct click QA becomes mandatory for closure, resolve the cmux surface automation context with user-approved steps that do not steal focus.
