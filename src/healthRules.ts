@@ -34,6 +34,7 @@ export type FoodGuidanceSourceId =
   | "nccDiarrheaDiet"
   | "nccConstipationDiet"
   | "nccWeightChangeDiet"
+  | "nccFatigueDepressionDiet"
   | "nccMouthPainDiet"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
@@ -153,6 +154,10 @@ export const foodGuidanceSources: Record<
   nccWeightChangeDiet: {
     label: "국가암정보센터 증상별 식생활 - 체중변화",
     url: "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+  },
+  nccFatigueDepressionDiet: {
+    label: "국가암정보센터 증상별 식생활 - 피로감과 우울",
+    url: "https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
   },
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
@@ -295,6 +300,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "체중감소 김밥, 체중감소 주먹밥, 체중감소 야채죽, 체중감소 전복죽, 체중감소 계란죽, 체중감소 잣죽, 체중감소 감자, 체중감소 고구마, 체중감소 떡, 체중감소 만두, 체중감소 과일주스, 체중감소 과일통조림, 체중감소 땅콩버터, 체중감소 계란찜, 체중감소 두유, 체중감소 두부조림, 체중감소 생선전, 체중감소 어묵, 체중감소 요구르트",
         sourceIds: ["nccWeightChangeDiet"],
+      },
+      {
+        label: "피로감·우울 시 먹기 쉬운 시점·간식",
+        detail:
+          "국가암정보센터 피로감과 우울 자료는 치료 중 피로가 불충분한 열량·영양소 섭취와 관련될 수 있어 영양이 풍부한 음식을 충분히 먹고, 하루 중 몸 상태가 가장 좋은 때나 휴식 후에 먹으며, 적은 양의 식사와 간식을 자주 먹고, 가족·친구 도움이나 음식배달서비스를 이용하며, 치료를 받지 않을 때 좋아하는 음식을 먹도록 안내합니다.",
+        examples:
+          "피로감 영양이 풍부한 음식, 피로감 하루 중 가장 좋은 시간에 많이 먹기, 피로감 휴식 후 먹기, 피로감 적은 양의 식사와 간식, 피로감 음식배달서비스, 우울 좋아하는 음식",
+        sourceIds: ["nccFatigueDepressionDiet"],
       },
       {
         label: "식욕부진 시 가까이 두는 간식",
@@ -791,6 +804,36 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["체중감소 생선전", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
   ["체중감소 어묵", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
   ["체중감소 요구르트", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  [
+    "피로감 영양이 풍부한 음식",
+    "국가암정보센터 피로감·우울 시 영양 보충·식사 빈도 후보",
+    "nccFatigueDepressionDiet",
+  ],
+  [
+    "피로감 하루 중 가장 좋은 시간에 많이 먹기",
+    "국가암정보센터 피로감·우울 시 영양 보충·식사 빈도 후보",
+    "nccFatigueDepressionDiet",
+  ],
+  [
+    "피로감 휴식 후 먹기",
+    "국가암정보센터 피로감·우울 시 영양 보충·식사 빈도 후보",
+    "nccFatigueDepressionDiet",
+  ],
+  [
+    "피로감 적은 양의 식사와 간식",
+    "국가암정보센터 피로감·우울 시 영양 보충·식사 빈도 후보",
+    "nccFatigueDepressionDiet",
+  ],
+  [
+    "피로감 음식배달서비스",
+    "국가암정보센터 피로감·우울 시 영양 보충·식사 빈도 후보",
+    "nccFatigueDepressionDiet",
+  ],
+  [
+    "우울 좋아하는 음식",
+    "국가암정보센터 피로감·우울 시 영양 보충·식사 빈도 후보",
+    "nccFatigueDepressionDiet",
+  ],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 죽", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 미음", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],

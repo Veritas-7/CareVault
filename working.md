@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-08 06:02 KST - NCC Fatigue Depression Meal Support Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center fatigue/depression meal timing, nutrient-rich food, snack frequency, delivery-help, and favorite-food guidance.
+- Context:
+  - Continued from clean/synced CareVault state after `f3e2b994ed8511266e004bba1b43118fce698602`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept this slice limited to symptom-context phrases such as `피로감 영양이 풍부한 음식` and `우울 좋아하는 음식` rather than broad standalone words like `음식`, `간식`, or `좋아하는 음식`.
+- Research:
+  - Re-checked National Cancer Information Center `피로감과 우울`, final update 2013-02-01. The page says fatigue during treatment may relate to poor intake, reduced activity, low blood counts, depressed mood, insomnia, and medications; it recommends discussing causes with the physician. For eating difficulty, it recommends nutrient-rich foods, eating more at the best time of day or after rest, frequent small meals/snacks, family/friend help or available food-delivery service, and favorite foods when not receiving treatment.
+  - Applied the source as meal-support and care-prep guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for the NCC fatigue/depression meal-support phrases.
+  - `src/healthRules.ts`: added `nccFatigueDepressionDiet`, a balanced guide-card item for fatigue/depression meal timing and snack support, and source-backed ok matching terms.
+  - `README.md`: added the new NCC fatigue/depression meal-support phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccFatigueDepressionDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 92 tests.
+  - PASS full tests: `npm test` => 64 files / 657 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `f3e2b994ed8511266e004bba1b43118fce698602`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 13.87 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `피로감과 우울`, `https://www.cancer.go.kr/lay1/S1T479C490/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice so far.
+- Next Steps:
+  - Run full tests, typecheck, build, runtime doctor, GitHub readiness, secret scans, then commit and push this source slice if all gates pass.
+
 ## 2026-06-08 05:57 KST - Final NCC Immune-Low Food Safety Log
 
 - Current Goal:
