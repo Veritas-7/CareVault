@@ -27753,3 +27753,16 @@
   - Direct same-surface DOM QA remains blocked by the inactive/non-evaluable `surface:7` context.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the focused clipboard-fallback improvement if green.
+
+## 2026-06-07 13:53 KST - Post-Push Text Download Clipboard Fallback
+
+- Verification:
+  - PASS focused commit: `fdc827c` (`Use clipboard fallback when downloads are unavailable`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `fdc827c`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - Text export/download actions now copy content to clipboard when anchor-download APIs are unavailable but Clipboard API exists, reusing the existing clipboard-fallback status path.
+  - Runtime is clean; no temporary Vite process is running.
+- Next Steps:
+  - Continue with another non-duplicate CareVault workflow. Direct browser QA still must use only existing `surface:7`; do not focus/select the inactive `암관리` workspace or open another browser without explicit approval.
