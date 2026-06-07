@@ -464,6 +464,21 @@ describe("healthRules", () => {
       cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
+    ).toContain("생채소");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("쌈류");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("매일 매끼니 충분히");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
     ).toContain("모차렐라");
     const limitGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "limit",
@@ -541,6 +556,30 @@ describe("healthRules", () => {
     expect(formatFoodMatchEvidence(matchesByTerm.당근)).toContain(
       "국가암정보센터 자궁경부암 예방과 음식 - https://www.cancer.go.kr/",
     );
+  });
+
+  it("recognizes NCC healthy-eating daily vegetable guidance terms", () => {
+    const assessment = assessCancerFood(
+      "생채소, 샐러드, 쌈류, 매일 매끼니 충분히",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["생채소", "샐러드", "쌈류", "매일 매끼니 충분히"]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
   it("recognizes cervical prevention practice-guide meal examples without treatment claims", () => {

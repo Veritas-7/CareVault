@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 01:45 KST - NCC Healthy-Eating Daily Vegetable Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on eating vegetables such as fresh vegetables, salads, and wraps every day and every meal.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `1d80375ccdbee90389b52dedcd9a626e8699d647`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` confirms the nutrition panel should keep source-backed matched food chips and official Korean source links; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page states vegetables such as fresh vegetables, namul, salads, and wraps should be eaten sufficiently every day and every meal.
+  - Applied the source as supportive food guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `생채소`, `샐러드`, `쌈류`, and `매일 매끼니 충분히` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the four daily-vegetable support terms under `nccPreventionDiet` before shorter `생채` fallback matching and aligned the balanced-diet guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating daily-vegetable terms to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide lacked `생채소` and `생채소` collapsed to the shorter `생채` match while `샐러드`, `쌈류`, and `매일 매끼니 충분히` were missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 58 tests.
+  - PASS full tests: `npm test` => 64 files / 623 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Ready for explicit-path staging, secret scans, commit, and push.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`, then run staged checks before publishing to `origin main`.
+
 ## 2026-06-08 01:34 KST - Post-Push NCC Healthy-Eating Burnt-Food Avoid Terms
 
 - Current Goal:
