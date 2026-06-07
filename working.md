@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 07:51 KST - NCC Immune-Low Transport Refrigeration Matching
+
+- Current Goal:
+  - Add narrow source-backed food-safety matches for National Cancer Information Center immune-low room-temperature transport and immediate refrigeration wording.
+- Context:
+  - Continued from clean/synced CareVault state after `0be2496c7c6e09c5e51d98ef51ac70bc9a90661e`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept 30-minute room-temperature transport wording as a care-team `risk` check while immediate refrigeration wording stays `ok` support.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The storage section says that if foods have been transported at room temperature for more than 30 minutes, they should be promptly put in a refrigerator and kept cold.
+  - Applied the source only as immune-low food-safety record support. It does not diagnose immune suppression, create a universal diet rule, or claim a cancer-curing food.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `30분 이상 상온에서 운반`, `곧바로 냉장고에 넣어 차갑게`, and `상온 운반 후 즉시 냉장`, including source evidence and no cure-food wording.
+  - `src/healthRules.ts`: added a visible `면역저하 상온 운반 후 냉장 후보` guide-card item, source-backed ok matches for immediate refrigeration wording, and a care-team risk match for the room-temperature transport duration phrase.
+  - `README.md`: added the new NCC immune-low room-temperature transport matching to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new wording returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 107 tests.
+  - PASS full tests: `npm test` => 64 files / 672 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `0be2496c7c6e09c5e51d98ef51ac70bc9a90661e`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD and full verification slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 07:46 KST - Final NCC Immune-Low Validity And Pasteurized Spelling Log
 
 - Current Goal:
