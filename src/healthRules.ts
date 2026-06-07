@@ -29,6 +29,7 @@ export type FoodGuidanceSourceId =
   | "nccImmuneLowDiet"
   | "nccComplementaryTherapy"
   | "nccCervicalDiet"
+  | "nccCervicalFoodPrevention"
   | "nccTreatmentNutrients"
   | "kdcaNutrition"
   | "kdcaAlcohol";
@@ -122,6 +123,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 자궁경부암 식생활",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
   },
+  nccCervicalFoodPrevention: {
+    label: "국가암정보센터 자궁경부암 예방과 음식",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+  },
   nccTreatmentNutrients: {
     label: "국가암정보센터 치료 중 영양소",
     url: "https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
@@ -150,6 +155,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "공식 자료는 자궁경부암 환자가 특별히 피하거나 추천하는 음식은 없고 충분한 영양과 휴식이 중요하다고 설명합니다.",
         examples: "평소 먹기 쉬운 음식, 소량씩 자주 먹기, 통증·식욕 저하를 진료팀에 공유",
         sourceIds: ["nccCervicalDiet"],
+      },
+      {
+        label: "카로테노이드·신선식품 메모",
+        detail:
+          "자궁경부암 예방과 음식 자료는 카로테노이드·비타민 식품의 예방 효과가 아직 명확하지 않다고 설명하므로 치료식으로 보지 않고 신선한 채소·과일·해조류 섭취 질문으로 남깁니다.",
+        examples: "당근, 시금치, 차, 미역, 신선한 채소, 과일, 해조류",
+        sourceIds: ["nccCervicalFoodPrevention"],
       },
       {
         label: "채소·과일·통곡물·콩류",
@@ -294,6 +306,9 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["잡곡밥", "잡곡·통곡물 식단 후보", "nccPreventionDiet"],
   ["통밀빵", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
   ["통밀", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
+  ["당근", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
+  ["미역", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
+  ["차", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention", standaloneFoodTermOptions],
   ["브로콜리", "채소 중심 식단에 적합", "nccPreventionDiet"],
   ["양배추", "십자화과 채소", "nccPreventionDiet"],
   ["케일", "짙은 잎채소", "nccPreventionDiet"],

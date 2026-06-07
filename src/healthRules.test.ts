@@ -172,15 +172,56 @@ describe("healthRules", () => {
       ),
     ).toContain("nccImmuneLowDiet");
     expect(
+      cancerFoodGuideCategories.flatMap((category) =>
+        category.items.flatMap((item) => item.sourceIds),
+      ),
+    ).toContain("nccCervicalFoodPrevention");
+    expect(
       cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items[0]
         .detail,
     ).toContain("특별히 피하거나 추천하는 음식은 없");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("당근");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
         .map((item) => item.label)
         .join(" "),
     ).toContain("날음식·비살균");
     expect(JSON.stringify(cancerFoodGuideCategories)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes cervical-specific fresh food examples without cure claims", () => {
+    const assessment = assessCancerFood("당근, 미역, 차");
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.nccCervicalFoodPrevention.label).toBe(
+      "국가암정보센터 자궁경부암 예방과 음식",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(matchesByTerm.당근).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 예방 관련 신선식품 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
+    expect(matchesByTerm.미역).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 예방 관련 신선식품 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
+    expect(matchesByTerm.차).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 예방 관련 신선식품 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
+    expect(assessment.summary).toContain("암을 치료하지");
+    expect(formatFoodMatchEvidence(matchesByTerm.당근)).toContain(
+      "국가암정보센터 자궁경부암 예방과 음식 - https://www.cancer.go.kr/",
+    );
   });
 
   it("recognizes concrete official-source food examples across support, limit, and care-team checks", () => {

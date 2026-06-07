@@ -29927,6 +29927,34 @@
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 588 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this log-only update, then recheck sync/runtime cleanup.
 
+## 2026-06-07 19:16 KST - Cervical Food Prevention Examples
+
+- Current Goal:
+  - Add official cervical-cancer prevention-food examples to the food judgment rules without implying that any food treats or cures cancer.
+- Context:
+  - Continued from clean/synced CareVault state after the smoking/sexual-risk prevention memo push.
+  - Reviewed `DESIGN.md` food and cervical-care contracts: food guidance must use official Korean sources, preserve source labels, and avoid treatment/cure claims.
+  - Official-source re-check used National Cancer Information Center's cervical-cancer prevention and food-related section: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885`
+- Changes:
+  - `src/healthRules.ts`: added `nccCervicalFoodPrevention` source, a balanced-guide `카로테노이드·신선식품 메모`, and concrete source-backed `당근`, `미역`, `차` food matches as prevention-related fresh-food candidates.
+  - `src/healthRules.test.ts`: added RED/PASS coverage for the new source, guide item, fresh-food examples, source evidence formatting, and no cure-food claims.
+  - `README.md`: updated the food feature list with `당근/차/미역` official-example matching.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccCervicalFoodPrevention` and the new food matches were missing.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 25 tests.
+  - PASS full tests: `npm test` => 64 files / 589 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+- Issues:
+  - No blocker so far. Source commit/push and post-push sync check still need to run.
+- Next Steps:
+  - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
+
 ## 2026-06-07 19:03 KST - Post-Push HPV Delayed Dose Memo
 
 - Current Goal:
