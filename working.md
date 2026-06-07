@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 08:34 KST - NCC Immune-Low Storage And Thawing Source Wording
+
+- Current Goal:
+  - Add exact National Cancer Information Center immune-low food-storage and thawing source wording to CareVault's built-in cancer food-safety matching.
+- Context:
+  - Continued from clean/synced CareVault state after `9c445257d688293131b222bbc4e4ebbda4d491ef`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept the storage/thawing wording as immune-low food-safety support, not as a cure, diagnosis, or treatment claim.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The food-storage section says perishable foods should be kept in a refrigerator or freezer, meat should be thawed in the refrigerator, freezer foods should be wrapped, thawed food should be cooked immediately, and leftovers should be wrapped and refrigerated immediately.
+  - Applied the source only as immune-low food-storage and thawing safety record support.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `상하기 쉬운 음식은 냉장고, 혹은 냉동고에 보관합니다`, `냉동고에 식품을 보관할 때는 랩이나 팩에 포장합니다`, `고기는 냉장고에서 녹입니다`, `해동한 후 즉시 요리하는 것이 좋습니다`, and `남은 음식은 포장하여 즉시 냉장 보관합니다`, including source evidence and no cure-food framing.
+  - `src/healthRules.ts`: added the longer NCC source wording to the visible balanced guide card and supportive food-safety matching terms while preserving existing shorter storage/thawing phrases.
+  - `README.md`: documented the expanded NCC immune-low storage/thawing source wording.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source wording only matched the shorter `해동한 후 즉시 요리` term.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 113 tests.
+  - PASS full tests: `npm test` => 64 files / 678 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `9c445257d688293131b222bbc4e4ebbda4d491ef`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 08:30 KST - Final NCC Immune-Low Utensil Safety Log
 
 - Current Goal:

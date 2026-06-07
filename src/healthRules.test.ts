@@ -3535,6 +3535,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low storage and thawing source wording", () => {
+    const assessment = assessCancerFood(
+      "상하기 쉬운 음식은 냉장고, 혹은 냉동고에 보관합니다, 냉동고에 식품을 보관할 때는 랩이나 팩에 포장합니다, 고기는 냉장고에서 녹입니다, 해동한 후 즉시 요리하는 것이 좋습니다, 남은 음식은 포장하여 즉시 냉장 보관합니다",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "상하기 쉬운 음식은 냉장고, 혹은 냉동고에 보관합니다",
+      "냉동고에 식품을 보관할 때는 랩이나 팩에 포장합니다",
+      "고기는 냉장고에서 녹입니다",
+      "해동한 후 즉시 요리하는 것이 좋습니다",
+      "남은 음식은 포장하여 즉시 냉장 보관합니다",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 식품 보관·해동 안전 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(balancedGuideText).toContain("고기는 냉장고에서 녹입니다");
+    expect(balancedGuideText).toContain("남은 음식은 포장하여 즉시 냉장 보관합니다");
+    expect(formatFoodMatchEvidence(matchesByTerm["고기는 냉장고에서 녹입니다"])).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low fruit and vegetable washing practices from official guidance", () => {
     const assessment = assessCancerFood(
       "채소와 과일 먹기 전 세척, 과일이나 채소 썰기 전 세척, 딸기 등 꼼꼼히 씻기 어려운 과일",
