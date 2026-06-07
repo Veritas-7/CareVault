@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:32 KST - NCC Treatment Nutrient Carbohydrate And Hydration Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center treatment-nutrient carbohydrate examples and hydration wording.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `37d275d237cec0c545b4b416c5f8f51fd3892857`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` keeps nutrition judgment source-backed and prohibits cure/treatment food claims; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `영양소의 이해`, updated 2015-01-05. The page lists carbohydrate-rich foods such as potatoes, sweet potatoes, and corn, and says adults generally need 6-8 cups of water per day.
+  - Applied the source as treatment-period nutrition-support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `감자`, `고구마`, `옥수수`, `물 6~8컵`, and `하루 6~8컵 물` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the treatment-nutrient examples under `nccTreatmentNutrients`, and aligned the balanced guide detail/examples with the same official source.
+  - `README.md`: added the new official treatment-nutrient carbohydrate and hydration examples to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new examples were classified `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 81 tests.
+  - PASS full tests: `npm test` => 64 files / 646 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `영양소의 이해`, `https://www.cancer.go.kr/lay1/S1T471C473/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Perform git/secret readiness checks, then commit and push this source slice if all checks pass.
+
 ## 2026-06-08 04:27 KST - Post-Push NCC Healthy-Eating Balanced Diet Heading
 
 - Current Goal:

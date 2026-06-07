@@ -1342,6 +1342,36 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC treatment nutrient carbohydrate and hydration examples", () => {
+    const assessment = assessCancerFood("감자, 고구마, 옥수수, 물 6~8컵, 하루 6~8컵 물");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["감자", "고구마", "옥수수", "물 6~8컵", "하루 6~8컵 물"]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 치료 중 영양소 탄수화물·수분 보충 후보",
+        sourceId: "nccTreatmentNutrients",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 치료 중 영양소 - https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("감자");
+    expect(balancedGuideText).toContain("고구마");
+    expect(balancedGuideText).toContain("옥수수");
+    expect(balancedGuideText).toContain("물 6~8컵");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention meal example dishes without cure claims", () => {
     const assessment = assessCancerFood(
       "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",
