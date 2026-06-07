@@ -145,6 +145,7 @@ import {
   attachmentPreviewCloseActionLabel,
   attachmentPreviewClosedStatusLabel,
   isPreviewableImageAttachment,
+  revokeAttachmentPreviewUrl,
 } from "./attachmentPreview";
 import { formatLabReferenceRangeLabel } from "./exportSourceLabels";
 import { clearAttachmentMetadata, hasAttachmentMetadata } from "./attachmentArchive";
@@ -1161,10 +1162,10 @@ function App() {
   useEffect(
     () => () => {
       Object.values(browserAttachmentPreviewUrlsRef.current).forEach((url) =>
-        URL.revokeObjectURL(url),
+        revokeAttachmentPreviewUrl(url),
       );
       if (documentDraftAttachmentPreviewUrlRef.current) {
-        URL.revokeObjectURL(documentDraftAttachmentPreviewUrlRef.current);
+        revokeAttachmentPreviewUrl(documentDraftAttachmentPreviewUrlRef.current);
       }
     },
     [],
@@ -2403,7 +2404,7 @@ function App() {
   const clearBrowserAttachmentPreviewUrl = (documentId: string) => {
     const currentUrl = browserAttachmentPreviewUrlsRef.current[documentId];
     if (currentUrl) {
-      URL.revokeObjectURL(currentUrl);
+      revokeAttachmentPreviewUrl(currentUrl);
     }
 
     delete browserAttachmentPreviewUrlsRef.current[documentId];
@@ -2416,7 +2417,7 @@ function App() {
 
   const clearDocumentDraftAttachmentPreviewUrl = () => {
     if (!documentDraftAttachmentPreviewUrlRef.current) return;
-    URL.revokeObjectURL(documentDraftAttachmentPreviewUrlRef.current);
+    revokeAttachmentPreviewUrl(documentDraftAttachmentPreviewUrlRef.current);
     documentDraftAttachmentPreviewUrlRef.current = null;
   };
 

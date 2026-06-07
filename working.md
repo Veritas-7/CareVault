@@ -28069,3 +28069,29 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:29 KST - Attachment Preview Revoke Guard Started
+
+- Current Goal:
+  - Keep attachment preview UI cleanup and state updates running even if object URL revoke fails.
+- Context:
+  - Re-read thread identity, current repo sync, latest `working.md`, same-surface cmux diagnostics, and object URL cleanup paths before editing.
+  - Existing cmux `surface:7` was used only for non-focusing diagnostics. It reports `http://127.0.0.1:1420/#dashboard`; `errors list` returns `No browser errors`, but `#root` is still not visible through eval.
+  - No Computer Use, focus change, workspace selection, new browser, new tab, or new surface was used.
+  - App attachment preview cleanup called `URL.revokeObjectURL()` directly during unmount, saved-preview cleanup, and draft-preview cleanup. If revoke failed, later state cleanup could be interrupted.
+- Changes:
+  - `src/attachmentPreview.test.ts`: added RED coverage for a fail-safe object URL revoke helper.
+  - `src/attachmentPreview.ts`: added `revokeAttachmentPreviewUrl()` that returns false instead of throwing on blank URLs, missing revoke support, or revoke failures.
+  - `src/App.tsx`: replaced attachment preview direct `URL.revokeObjectURL()` cleanup calls with the fail-safe helper.
+- Tests:
+  - RED confirmed: `npm test -- src/attachmentPreview.test.ts` failed because `revokeAttachmentPreviewUrl` did not exist.
+  - PASS focused test after fix: `npm test -- src/attachmentPreview.test.ts` => `1 passed`, `5 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `550 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`; eval now reports `http://127.0.0.1:1420/#dashboard` but still no `#root`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface and do not steal focus.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused attachment preview revoke guard if green.

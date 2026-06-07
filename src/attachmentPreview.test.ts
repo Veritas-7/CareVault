@@ -1,8 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   attachmentPreviewCloseActionLabel,
   attachmentPreviewClosedStatusLabel,
   isPreviewableImageAttachment,
+  revokeAttachmentPreviewUrl,
 } from "./attachmentPreview";
 
 describe("attachmentPreview", () => {
@@ -24,5 +25,18 @@ describe("attachmentPreview", () => {
     expect(isPreviewableImageAttachment("blood-test.pdf")).toBe(false);
     expect(isPreviewableImageAttachment("visit-note.docx")).toBe(false);
     expect(isPreviewableImageAttachment("no-extension")).toBe(false);
+  });
+
+  it("revokes preview object URLs without letting cleanup failures interrupt UI state updates", () => {
+    const revokeObjectURL = vi.fn((url: string) => {
+      if (url === "blob:broken-preview") throw new Error("revoke blocked");
+    });
+
+    expect(revokeAttachmentPreviewUrl("blob:healthy-preview", { revokeObjectURL })).toBe(true);
+    expect(revokeAttachmentPreviewUrl("blob:broken-preview", { revokeObjectURL })).toBe(
+      false,
+    );
+    expect(revokeAttachmentPreviewUrl("", { revokeObjectURL })).toBe(false);
+    expect(revokeObjectURL).toHaveBeenCalledTimes(2);
   });
 });
