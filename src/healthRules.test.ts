@@ -183,6 +183,60 @@ describe("healthRules", () => {
     expect(JSON.stringify(cancerFoodGuideCategories)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes concrete official-source food examples across support, limit, and care-team checks", () => {
+    const assessment = assessCancerFood(
+      "잡곡밥, 닭고기, 플레인 요구르트, 탄 고기, 젓갈, 초밥, 덜 익힌 계란, 약초",
+    );
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("risk");
+    expect(matchesByTerm.잡곡밥).toMatchObject({
+      level: "ok",
+      reason: "잡곡·통곡물 식단 후보",
+      sourceId: "nccPreventionDiet",
+    });
+    expect(matchesByTerm.닭고기).toMatchObject({
+      level: "ok",
+      reason: "단백질 식품 후보",
+      sourceId: "nccPreventionDiet",
+    });
+    expect(matchesByTerm["플레인 요구르트"]).toMatchObject({
+      level: "ok",
+      reason: "저지방 유제품 후보",
+      sourceId: "nccPreventionDiet",
+    });
+    expect(matchesByTerm["탄 고기"]).toMatchObject({
+      level: "watch",
+      reason: "직화·탄 음식 조리법 피하기",
+      sourceId: "nccPreventionDiet",
+    });
+    expect(matchesByTerm.젓갈).toMatchObject({
+      level: "watch",
+      reason: "염장 식품은 조금만 섭취",
+      sourceId: "nccPreventionDiet",
+    });
+    expect(matchesByTerm.초밥).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 익히지 않은 음식 주의",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(matchesByTerm["덜 익힌 계란"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 날계란·덜 익힌 계란 주의",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(matchesByTerm.약초).toMatchObject({
+      level: "risk",
+      reason: "보완대체요법·약초 복용 사실 진료팀 공유",
+      sourceId: "nccComplementaryTherapy",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm.초밥)).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+  });
+
   it("classifies lab values against user-entered reference ranges", () => {
     expect(assessLabValue(4.2, 4, 10).flag).toBe("normal");
     expect(assessLabValue(3.1, 4, 10).label).toBe("기준보다 낮음");

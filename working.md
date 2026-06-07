@@ -29243,3 +29243,40 @@
   - The `/12_Research` evidence file is saved on disk under the existing CareVault research folder, but the separate research repo has many unrelated dirty/untracked files; this CareVault source push did not attempt to stage or push that separate repo.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 17:06 KST - Official Food Example Matching Expansion
+
+- Current Goal:
+  - Strengthen the nutrition checker so user-entered concrete foods from official cancer nutrition and immune-low food-safety examples are classified, sourced, and carried into the existing food-question flow.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Current source tree was clean before this slice.
+  - Used the incremental TDD path: first added failing coverage for official example foods, then expanded the food rules.
+  - Re-verified official National Cancer Information Center source pages live on 2026-06-07:
+    - 자궁경부암 식생활: no cervical-cancer-specific special food; avoid irritating foods during radiation/chemotherapy bowel changes; avoid/clear folk remedies and supplements during chemotherapy.
+    - 암예방을 위한 요리: 잡곡밥, 채소, 생선/달걀/콩/닭고기, 플레인 요구르트/저지방 유제품, limit processed meat, direct-grill/fry cooking, and salted foods.
+    - 면역기능의 저하: after WBC decrease, prefer cooked foods; avoid raw egg/undercooked egg, raw meat/seafood/sushi/shellfish, and use pasteurized juice/milk/yogurt products.
+    - 보완대체요법 상담: tell the care team about herbs/supplements/complementary approaches because treatment interference or side effects are possible.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/PASS coverage for concrete official-source food examples across support, limit, and care-team checks.
+  - `src/healthRules.ts`: expanded `supportiveFoods`, `limitFoods`, and `careTeamFoods` with source-backed examples such as 잡곡밥, 통밀빵, 닭고기, 고등어, 플레인 요구르트, 직화구이, 탄 고기, 젓갈, 염장식품, 초밥, 육회, 생조개, 덜 익힌 계란, 비살균 우유/주스, 약초, 한약, and 민간요법.
+  - `src/healthRules.ts`: updated guide-card examples so the visible guide and matching dictionary stay aligned.
+  - `README.md`: updated the nutrition feature summary with representative concrete food examples.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts` failed because the new example-food query returned `neutral` before the rule expansion.
+  - PASS focused test: `npm test -- src/healthRules.test.ts` => 1 file / 15 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 578 tests.
+  - PASS build: `npm run build`.
+  - PASS Playwright browser smoke via `with_server.py` on `http://127.0.0.1:1420/`:
+    - Verified 3 food guide cards and 15 HTTPS official source links.
+    - Verified guide text now exposes `직화구이`, `덜 익힌 계란`, and `약초`.
+    - Entered `잡곡밥, 닭고기, 플레인 요구르트, 탄 고기, 젓갈, 초밥, 덜 익힌 계란, 약초`.
+    - Confirmed risk verdict `의료진 확인 필요`, expected match chips, question-draft feedback, and no 390px mobile horizontal overflow.
+    - Screenshots: `/tmp/carevault-food-guide-smoke-desktop.png`, `/tmp/carevault-food-guide-smoke-mobile.png`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - Direct cmux same-surface DOM/click QA remains excluded by the clarified thread objective; this slice used reproducible headless Playwright against the current-source dev listener instead.
+  - Food matching is intentionally source-backed keyword support, not diagnosis, treatment instruction, or a full diet prescription.
+- Next Steps:
+  - Run diff/secret gates and commit/push the focused source-backed food dictionary expansion if green.
