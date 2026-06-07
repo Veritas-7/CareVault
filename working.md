@@ -29782,3 +29782,28 @@
   - No new blocking issue. Caregiver care queue HTML now keeps repeated official evidence links compact and avoids leaking repeated `근거:` markers into anchor labels.
 - Next Steps:
   - Stage explicit paths, run diff/secret gates, then commit/push if green.
+
+## 2026-06-07 18:34 KST - Post-Push Caregiver Queue Evidence Link Labels
+
+- Current Goal:
+  - Record post-push verification for the caregiver queue evidence link label slice.
+- Result:
+  - Source commit pushed: `5261844` (`Clean caregiver evidence link labels`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `5261844a5acdd2641561ea1409f2da7bf1265ec7`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/caregiverExport.test.ts` failed before the fix because the caregiver queue evidence line rendered the second source as an anchor with `/ 근거:` in its label.
+    - GREEN: `npm test -- src/caregiverExport.test.ts` => 1 file / 55 tests.
+  - PASS related tests: `npm test -- src/caregiverExport.test.ts src/careActionQueue.test.ts src/careActionVisibleDetail.test.ts src/csvExport.test.ts src/visitPacket.test.ts src/sourceEvidence.test.ts` => 6 files / 143 tests.
+  - PASS full tests: `npm test` => 64 files / 587 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
