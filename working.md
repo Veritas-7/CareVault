@@ -29356,3 +29356,34 @@
   - No new blocking issue. The food keyword matcher now prefers longer non-overlapping phrases, but it remains keyword-based by design.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 17:20 KST - Food One-Syllable Boundary Guard
+
+- Current Goal:
+  - Prevent one-syllable source-backed food warning terms from matching inside unrelated Korean words such as `수술` or `회복`, while preserving explicit food/alcohol list inputs.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Current source tree was clean before this slice.
+  - Used systematic debugging plus TDD. Root cause was that the candidate collector still used raw substring positions, so the previous longest-overlap guard could not block non-overlapping internal-word false positives.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/PASS coverage that `수술 후 식사로 통밀빵과 닭고기` does not produce a `술` warning chip and `회복 중 식사로 닭고기` does not produce a `회` raw-fish chip.
+  - `src/healthRules.ts`: added standalone-match options for one-syllable terms such as `술`, `회`, `햄`, and `콩`, with Korean suffix support for explicit food/alcohol phrases like `술을` or `회를`.
+  - `src/healthRules.ts`: filters candidate occurrences before the longest non-overlapping selection step, so unrelated internal Korean words no longer affect the food verdict.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts` failed because `수술 후 식사로 통밀빵과 닭고기` returned `watch`.
+  - PASS focused test: `npm test -- src/healthRules.test.ts` => 1 file / 17 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 580 tests.
+  - PASS build: `npm run build`.
+  - PASS Playwright browser smoke via `with_server.py` on `http://127.0.0.1:1420/`:
+    - Entered `수술 후 식사로 통밀빵과 닭고기`; confirmed supportive verdict with exact chips `["통밀빵","닭고기"]`.
+    - Entered `회복 중 식사로 닭고기`; confirmed supportive verdict with exact chip `["닭고기"]`.
+    - Entered `술을 줄이고 맥주도 피하기`; confirmed watch verdict with exact chips `["술","맥주"]`.
+    - Entered `회를 먹고 생굴`; confirmed care-team verdict with exact chips `["회","생굴"]` and food-question draft feedback.
+    - Confirmed no 390px mobile horizontal overflow.
+    - Screenshots: `/tmp/carevault-food-boundary-smoke-desktop.png`, `/tmp/carevault-food-boundary-smoke-mobile.png`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. This remains a conservative keyword matcher, not a full Korean morphological parser.
+- Next Steps:
+  - Run diff/secret gates, then commit/push the focused food one-syllable boundary guard if green.

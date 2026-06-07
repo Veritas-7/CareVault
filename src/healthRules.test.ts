@@ -269,6 +269,26 @@ describe("healthRules", () => {
     });
   });
 
+  it("does not match one-syllable food warnings inside unrelated Korean words", () => {
+    const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
+    const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);
+    const recoveryAssessment = assessCancerFood("회복 중 식사로 닭고기");
+    const recoveryTerms = recoveryAssessment.matches.map((match) => match.term);
+
+    expect(postSurgeryAssessment.level).toBe("ok");
+    expect(postSurgeryTerms).toEqual(["통밀빵", "닭고기"]);
+    expect(postSurgeryTerms).not.toContain("술");
+    expect(recoveryAssessment.level).toBe("ok");
+    expect(recoveryTerms).toEqual(["닭고기"]);
+    expect(recoveryTerms).not.toContain("회");
+
+    const alcoholAssessment = assessCancerFood("술, 맥주");
+    const alcoholTerms = alcoholAssessment.matches.map((match) => match.term);
+
+    expect(alcoholAssessment.level).toBe("watch");
+    expect(alcoholTerms).toEqual(["술", "맥주"]);
+  });
+
   it("classifies lab values against user-entered reference ranges", () => {
     expect(assessLabValue(4.2, 4, 10).flag).toBe("normal");
     expect(assessLabValue(3.1, 4, 10).label).toBe("기준보다 낮음");

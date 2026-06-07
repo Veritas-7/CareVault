@@ -243,7 +243,16 @@ export const koreanHealthStandardSummary = {
   waist: "대한비만학회 한국인 복부비만: 남성 90cm 이상, 여성 85cm 이상",
 } as const;
 
-type FoodRuleTerm = [term: string, reason: string, sourceId: FoodGuidanceSourceId];
+type FoodRuleTermOptions = {
+  allowedKoreanSuffixes?: readonly string[];
+  matchMode?: "standalone";
+};
+type FoodRuleTerm = [
+  term: string,
+  reason: string,
+  sourceId: FoodGuidanceSourceId,
+  options?: FoodRuleTermOptions,
+];
 type FoodRuleMatchCandidate = {
   end: number;
   level: FoodMatch["level"];
@@ -251,6 +260,33 @@ type FoodRuleMatchCandidate = {
   sourceId: FoodGuidanceSourceId;
   start: number;
   term: string;
+};
+
+const commonKoreanFoodTermSuffixes = [
+  "으로",
+  "에서",
+  "에게",
+  "부터",
+  "까지",
+  "처럼",
+  "보다",
+  "은",
+  "는",
+  "이",
+  "가",
+  "을",
+  "를",
+  "도",
+  "만",
+  "와",
+  "과",
+  "로",
+  "에",
+] as const;
+
+const standaloneFoodTermOptions: FoodRuleTermOptions = {
+  allowedKoreanSuffixes: commonKoreanFoodTermSuffixes,
+  matchMode: "standalone",
 };
 
 const supportiveFoods: FoodRuleTerm[] = [
@@ -270,7 +306,7 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["나물", "채소 반찬 후보", "nccPreventionDiet"],
   ["상추", "채소 반찬 후보", "nccPreventionDiet"],
   ["버섯", "채소 반찬 후보", "nccPreventionDiet"],
-  ["콩", "식물성 단백질과 섬유질", "kdcaNutrition"],
+  ["콩", "식물성 단백질과 섬유질", "kdcaNutrition", standaloneFoodTermOptions],
   ["두부", "식물성 단백질", "kdcaNutrition"],
   ["현미", "통곡물", "nccPreventionDiet"],
   ["귀리", "통곡물", "nccPreventionDiet"],
@@ -289,13 +325,13 @@ const supportiveFoods: FoodRuleTerm[] = [
 ];
 
 const limitFoods: FoodRuleTerm[] = [
-  ["술", "암 예방 관점에서 제한 권고", "kdcaAlcohol"],
+  ["술", "암 예방 관점에서 제한 권고", "kdcaAlcohol", standaloneFoodTermOptions],
   ["알코올", "암 예방 관점에서 제한 권고", "kdcaAlcohol"],
   ["맥주", "알코올", "kdcaAlcohol"],
   ["와인", "알코올", "kdcaAlcohol"],
   ["소시지", "가공육", "nccPreventionDiet"],
   ["베이컨", "가공육", "nccPreventionDiet"],
-  ["햄", "가공육", "nccPreventionDiet"],
+  ["햄", "가공육", "nccPreventionDiet", standaloneFoodTermOptions],
   ["핫도그", "가공육", "nccPreventionDiet"],
   ["살라미", "가공육", "nccPreventionDiet"],
   ["가공육류", "가공육", "nccPreventionDiet"],
@@ -331,7 +367,7 @@ const careTeamFoods: FoodRuleTerm[] = [
   ["육회", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],
   ["생조개", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],
   ["생선회", "면역저하 시 날음식 주의", "nccImmuneLowDiet"],
-  ["회", "면역저하 시 날음식 주의", "nccImmuneLowDiet"],
+  ["회", "면역저하 시 날음식 주의", "nccImmuneLowDiet", standaloneFoodTermOptions],
   ["초밥", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],
   ["날달걀", "면역저하 시 날계란·덜 익힌 계란 주의", "nccImmuneLowDiet"],
   ["날계란", "면역저하 시 날계란·덜 익힌 계란 주의", "nccImmuneLowDiet"],
@@ -363,6 +399,37 @@ function createFoodMatch(
   };
 }
 
+function isFoodTermBoundaryChar(char: string | undefined) {
+  return !char || !/[\p{L}\p{N}]/u.test(char);
+}
+
+function hasAllowedKoreanTermSuffix(
+  normalizedInput: string,
+  end: number,
+  allowedSuffixes: readonly string[] | undefined,
+) {
+  return Boolean(
+    allowedSuffixes?.some((suffix) => {
+      if (!normalizedInput.startsWith(suffix, end)) return false;
+      return isFoodTermBoundaryChar(normalizedInput[end + suffix.length]);
+    }),
+  );
+}
+
+function isFoodTermCandidateAllowed(
+  normalizedInput: string,
+  start: number,
+  end: number,
+  options: FoodRuleTermOptions | undefined,
+) {
+  if (options?.matchMode !== "standalone") return true;
+  return (
+    isFoodTermBoundaryChar(normalizedInput[start - 1])
+    && (isFoodTermBoundaryChar(normalizedInput[end])
+      || hasAllowedKoreanTermSuffix(normalizedInput, end, options.allowedKoreanSuffixes))
+  );
+}
+
 function collectFoodMatchCandidates(
   normalizedInput: string,
   rules: FoodRuleTerm[],
@@ -370,19 +437,22 @@ function collectFoodMatchCandidates(
 ): FoodRuleMatchCandidate[] {
   const candidates: FoodRuleMatchCandidate[] = [];
 
-  for (const [term, reason, sourceId] of rules) {
+  for (const [term, reason, sourceId, options] of rules) {
     const normalizedTerm = term.toLowerCase();
     let start = normalizedInput.indexOf(normalizedTerm);
 
     while (start !== -1) {
-      candidates.push({
-        end: start + normalizedTerm.length,
-        level,
-        reason,
-        sourceId,
-        start,
-        term,
-      });
+      const end = start + normalizedTerm.length;
+      if (isFoodTermCandidateAllowed(normalizedInput, start, end, options)) {
+        candidates.push({
+          end,
+          level,
+          reason,
+          sourceId,
+          start,
+          term,
+        });
+      }
       start = normalizedInput.indexOf(normalizedTerm, start + normalizedTerm.length);
     }
   }
