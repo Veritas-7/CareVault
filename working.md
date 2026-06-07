@@ -28158,3 +28158,28 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:41 KST - Non-Focusing cmux Surface Recheck
+
+- Current Goal:
+  - Reconfirm that CareVault QA uses only the existing cmux in-app browser surface without stealing the user's desktop window or workspace focus.
+- Context:
+  - User explicitly corrected the workflow: use the cmux in-app browser without occupying/taking the visible window.
+  - Goal identity still points to `/Users/wj/Ai/System/10_Projects/CareVault` and the single-browser cmux QA objective.
+  - Browser help confirms existing-surface commands are available (`navigate`, `reload`, `snapshot`, `eval`, `get`, `errors`) and that creating/opening new browser surfaces is a separate path. This pass avoided `open`, `new`, `open-split`, `select-workspace`, `focus-webview`, Computer Use, cmux restart/quit/kill, and any new tab/surface/window.
+- Tests:
+  - PASS repo sync check: `git status --short --branch` returned `## main...origin/main`; `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS same-surface metadata: existing `surface:7` returned URL `http://127.0.0.1:1420/#dashboard` and title `CareVault`.
+  - PASS runtime cleanup before and after the temporary server: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS server truth during temporary verification: `npm run dev -- --host 127.0.0.1 --port 1420` started successfully and `curl -I http://127.0.0.1:1420/` returned HTTP `200`.
+  - PASS same-surface navigation command: `cmux browser surface:7 navigate http://127.0.0.1:1420/#dashboard --snapshot-after` returned `OK`.
+  - PASS browser error diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Issues:
+  - BLOCKED direct DOM/click automation without focus handoff: `snapshot --compact`, `get html body`, `get count button`, and `eval` still attached to an empty `about:blank` document even while `get url`/`get title` reported the CareVault page.
+  - `cmux browser surface:7 screenshot --out /tmp/carevault-surface7.png` failed with `internal_error: Failed to capture snapshot`.
+  - `cmux browser surface:7 wait --url-contains 127.0.0.1:1420 --timeout-ms 3000` timed out, and a same-surface `location.href = "http://127.0.0.1:1420/#dashboard"` eval attempt timed out waiting for JavaScript.
+  - `cmux browser surface:7 is-webview-focused` returned `false`; this pass did not change focus because the user forbade window/workspace stealing.
+- Next Steps:
+  - Continue using only non-focusing existing-surface cmux commands for browser diagnostics.
+  - Do not use `select-workspace`, `focus-webview`, Computer Use, new browser/surface/tab, or cmux restart/termination unless the user explicitly approves that specific action.
+  - Until the existing `surface:7` DOM automation context recovers without focus handoff, continue source/test-only improvements for safe non-duplicate reliability slices and record the blocked direct-click QA evidence.
