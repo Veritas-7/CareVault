@@ -27425,3 +27425,16 @@
   - `working.md` is dirty with verified caregiver unknown-preset recovery QA evidence only; source code is unchanged.
 - Next Steps:
   - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
+
+## 2026-06-07 13:10 KST - Post-Push Caregiver Unknown Preset QA
+
+- Verification:
+  - PASS focused commit: `59ba912` (`Log caregiver unknown preset QA`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `59ba912`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - The caregiver-share unknown persisted preset recovery path is directly verified on the existing `암관리` `surface:7`, committed, pushed, and synced.
+  - Runtime is clean; source code is unchanged in this QA-only slice.
+- Next Steps:
+  - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
