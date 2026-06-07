@@ -26220,3 +26220,24 @@
 - Current state:
   - `working.md` is dirty with direct QA evidence only.
   - Next: stage only `working.md`, run staged checks, commit/push the QA note, and continue with another non-duplicate direct-click workflow.
+
+## 2026-06-07 09:40 KST - Rapid Profile Autosave Latest-Only QA
+
+- Current Goal:
+  - Direct-QA the browser autosave debounce/latest-save behavior for rapid profile-name edits in the existing single `surface:7` browser.
+  - Keep the slice source-neutral unless rapid consecutive edits persist stale profile data.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; selected the existing `workspace:4` and reused only `surface:7` at `http://127.0.0.1:1420/#care-plan`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` in `sessionStorage["carevault.__testRapidProfileBaseline"]`; baseline profile name/input/heading were `나의 건강 기록`, storage length `1872`, storage keys only `carevault.v1`, record counts `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`, no preview panel, and no stale alert.
+  - PASS rapid input: focused the real `기본 정보 이름/대상 · 기록 주체 표시` input and dispatched three short-interval input changes: `cmux rapid profile 1`, `cmux rapid profile 2`, then `cmux rapid profile final`.
+  - PASS latest-only autosave: after the autosave debounce, browser storage and the visible profile input/heading all showed only `cmux rapid profile final`; the first and second QA names were absent from page text. The captured `carevault.v1` write log had exactly one automatic write, and that write's parsed profile name was `cmux rapid profile final`.
+  - PASS feedback and non-record mutation: save chip showed `프로필 이름 수정됨 · 브라우저 자동 저장됨`; counts stayed `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; no preview panel or stale alert opened.
+  - PASS cleanup: restored the captured baseline to `localStorage`, removed the test session key, force-reloaded only `surface:7`, and confirmed profile name/input/heading returned to `나의 건강 기록`, storage length `1872`, storage keys only `carevault.v1`, no `carevault.__test*` session keys, no QA text, no QA instrumentation global, no preview panel, no stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+- Verification:
+  - PASS focused tests: `npm test -- src/persistedSaveQueue.test.ts src/storage.test.ts src/storageStatus.test.ts` => `3 passed`, `20 passed`.
+  - PASS source status: no app source files changed during this QA slice.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks, commit/push the QA note, then continue with another non-duplicate direct-click workflow.
