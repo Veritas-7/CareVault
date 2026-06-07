@@ -28292,3 +28292,21 @@
   - Direct same-surface DOM/click QA remains blocked by the current `surface:7` blank-document automation context unless it recovers without focus handoff.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the focused generated-question date guard if green.
+
+## 2026-06-07 14:55 KST - Post-Push Lab Follow-Up Question Date Guard
+
+- Current Goal:
+  - Record post-push verification for strict generated lab follow-up question date selection.
+- Result:
+  - Source commit pushed: `8590f27` (`Guard generated lab question dates`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `8590f27`.
+- Verification:
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics: existing `surface:7` URL/title remained `http://127.0.0.1:1420/#dashboard` / `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
