@@ -26702,3 +26702,31 @@
   - Browser-local vital-standard draft test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 11:22 KST - Document Search Empty-State And Attachment Target QA
+
+- Current Goal:
+  - Direct-QA the saved-document search no-match/reset flow and tighten the manual-document attachment action target in the same existing `암관리` / `surface:7` cmux browser.
+  - Continue using only `cmux browser --surface surface:7` CLI operations; no Computer Use, no new browser, no new surface, no file picker click.
+- Context:
+  - `#documents` DOM scan showed saved-document row actions already at `44px`, while the manual document `첨부 파일 선택` action remained `36px`.
+  - The file-picker action was not clicked because opening a native file chooser would occupy the window; the no-match search/reset flow was used for direct document-section interaction instead.
+- Changes:
+  - `src/App.css`: added scoped `44px` min-height for `.attachment-actions .secondary-inline-button` and `.attachment-actions .text-icon-button`.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was reused at `http://127.0.0.1:1420/#documents`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testDocumentSearchBaseline"]`; storage length `1872`, local keys only `carevault.v1`, visible saved-document rows `1`, search empty, save chip `브라우저 자동 저장됨`, and counts were `documents=1`, `deletedDocuments=0`, `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `labResults=1`.
+  - PASS real input: filled `저장된 서류 검색어` with `검색결과없음-직접QA-20260607` using cmux `fill`.
+  - PASS no-match state: visible saved-document rows became `0`, empty-state aria was `저장된 서류 필터 결과 없음`, reset action appeared with aria/title `저장된 서류 필터 초기화 · 검색어 검색결과없음-직접QA-20260607 · 분류 전체 분류 · 상태 전체 상태`, reset button measured `44px`, and storage stayed byte-equal to baseline.
+  - PASS real reset click: clicked the real `저장된 서류 필터 초기화...` button; search cleared, saved-document rows returned to `1`, empty state disappeared, and storage stayed byte-equal.
+  - PASS attachment target after CSS: after reloading the same `surface:7`, the manual `서류 메모 첨부 파일 선택` button computed `min-height: 44px` and rendered `44px` high with the same visible text and aria label.
+  - PASS cleanup: restored baseline, removed `carevault.__testDocumentSearchBaseline`, reloaded/recovered the same `surface:7`, and confirmed URL `http://127.0.0.1:1420/#documents`, `document.readyState=complete`, local keys only `carevault.v1`, no `carevault.__test*` session keys, storage length `1872`, search empty, visible document rows `1`, empty state absent, save chip `브라우저 자동 저장됨`, and attachment action still `44px`.
+  - Note: one post-cleanup `wait --load-state complete` and one heavy DOM read timed out while the same surface briefly reported an `about:blank` frame; cmux was not restarted, and the surface recovered through same-frame navigation with final DOM/count/error checks passing.
+  - PASS browser diagnostics: final `cmux browser --surface surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/documentMetric.test.ts src/documentActionLabels.test.ts src/documentAttachmentActions.test.ts src/attachmentArchive.test.ts src/attachmentRecovery.test.ts` => `5 passed`, `37 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.css` and `working.md` are dirty with one verified document-section UI accessibility fix plus direct QA evidence.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/App.css` and `working.md` for commit/push.
