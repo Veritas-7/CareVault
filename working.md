@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 08:53 KST - Post-Push NCC Immune-Low Cooking Doneness Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center immune-low cooking doneness and egg-avoidance source-wording slice.
+- Result:
+  - Source commit pushed: `f88c565` (`Add NCC immune-low cooking doneness guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `f88c565756f8a33566c61ba66e3040ace7f37bbf`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 680 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 08:49 KST - NCC Immune-Low Cooking Doneness Source Wording
 
 - Current Goal:
