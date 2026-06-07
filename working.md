@@ -1,5 +1,32 @@
 # CareVault Working Notes
 
+## 2026-06-08 00:53 KST - NCC Healthy-Eating Low-Salt Kimchi Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on making kimchi less salty.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `43c4d6817312c6a61d493ba296b8536ca246955d`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, updated 2025-09-29, whose guidance says `김치류는 짜지 않게 만들어 먹습니다`.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `저염 김치`, `짜지 않은 김치`, `싱겁게 만든 김치`, and `짜지 않은 김치류` as source-backed support terms without cure claims, plus guide-card coverage for `저염 김치`.
+  - `src/healthRules.ts`: added the four low-salt kimchi support terms under `nccPreventionDiet` and aligned the balanced food guide detail/examples with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating low-salt kimchi terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new low-salt kimchi phrases produced `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 54 tests.
+  - PASS full tests: `npm test` => 64 files / 619 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is ready for explicit-path staging and secret-scan gates.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`, then run staged and whole-directory secret scans before commit/push.
+
 ## 2026-06-08 00:41 KST - NCC Healthy-Eating Salted Storage and Soup Broth Terms
 
 - Current Goal:
