@@ -190,6 +190,11 @@ describe("healthRules", () => {
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
     ).toContain("잡곡밥");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("아욱된장국");
     const limitGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "limit",
     )?.items;
@@ -205,6 +210,7 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("국물");
     expect(limitGuideText).toContain("우엉조림");
     expect(limitGuideText).toContain("쌀밥");
+    expect(limitGuideText).toContain("배추김치");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
         .map((item) => item.label)
@@ -441,6 +447,51 @@ describe("healthRules", () => {
     expect(formatFoodMatchEvidence(matchesByTerm.초밥)).toContain(
       "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
     );
+  });
+
+  it("recognizes NCC prevention meal example dishes without cure claims", () => {
+    const assessment = assessCancerFood(
+      "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual(["아욱된장국", "호박나물", "콩나물무침", "고등어구이", "배추김치"]);
+    expect(terms).not.toContain("나물");
+    expect(terms).not.toContain("콩나물");
+    expect(terms).not.toContain("고등어");
+    expect(matchesByTerm.아욱된장국).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.호박나물).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.콩나물무침).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.고등어구이).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 암예방 식단 예시 후보",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm.배추김치).toMatchObject({
+      level: "watch",
+      reason: "암예방 식단 염장식품 소량 예시",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm.아욱된장국)).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
   it("keeps longer risk food phrases from producing contradictory shorter support chips", () => {

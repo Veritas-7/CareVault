@@ -25,6 +25,7 @@ export type WaistAssessment = HealthAssessment & {
 
 export type FoodGuidanceSourceId =
   | "nccPreventionDiet"
+  | "nccPreventionMealExamples"
   | "nccSideEffectDiet"
   | "nccImmuneLowDiet"
   | "nccComplementaryTherapy"
@@ -108,6 +109,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 암예방 식이",
     url: "https://cancer.go.kr/lay1/S1T226C230/contents.do",
   },
+  nccPreventionMealExamples: {
+    label: "국가암정보센터 암예방 식단 예시",
+    url: "https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+  },
   nccSideEffectDiet: {
     label: "국가암정보센터 치료부작용시 식생활",
     url: "https://www.cancer.go.kr/lay1/S1T477C478/contents.do",
@@ -183,6 +188,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccPreventionDiet"],
       },
       {
+        label: "암예방 식단 예시",
+        detail:
+          "국가암정보센터 암예방 식단 예시는 잡곡밥, 채소 반찬, 생선 단백질 식품을 균형식 후보로 제시합니다.",
+        examples: "아욱된장국, 호박나물, 콩나물무침, 고등어구이",
+        sourceIds: ["nccPreventionMealExamples"],
+      },
+      {
         label: "익힌 단백질·수분",
         detail:
           "치료 중 영양 자료는 탄수화물, 단백질, 비타민·무기질, 물을 기본 영양소로 설명합니다. 면역저하가 있으면 안전하게 익힌 음식인지 함께 확인합니다.",
@@ -229,9 +241,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "짠 저장식품·국물 과다",
         detail:
-          "암예방 식생활 자료는 짜게 먹지 않기, 염장식품 제한, 국이나 찌개 국물 제한을 안내합니다.",
-        examples: "젓갈, 장아찌, 염장식품, 짠 김치, 국물 과다",
-        sourceIds: ["nccPreventionDiet"],
+          "암예방 식생활 자료는 짜게 먹지 않기, 염장식품 제한, 국이나 찌개 국물 제한을 안내하며, 예시 식단의 배추김치도 나트륨을 줄이기 위해 조금만 섭취하는 항목으로 설명합니다.",
+        examples: "젓갈, 장아찌, 염장식품, 짠 김치, 배추김치, 국물 과다",
+        sourceIds: ["nccPreventionDiet", "nccPreventionMealExamples"],
       },
     ],
   },
@@ -323,6 +335,10 @@ const standaloneFoodTermOptions: FoodRuleTermOptions = {
 
 const supportiveFoods: FoodRuleTerm[] = [
   ["잡곡밥", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  ["아욱된장국", "국가암정보센터 암예방 식단 예시 후보", "nccPreventionMealExamples"],
+  ["호박나물", "국가암정보센터 암예방 식단 예시 후보", "nccPreventionMealExamples"],
+  ["콩나물무침", "국가암정보센터 암예방 식단 예시 후보", "nccPreventionMealExamples"],
+  ["고등어구이", "국가암정보센터 암예방 식단 예시 후보", "nccPreventionMealExamples"],
   ["통밀빵", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
   ["통밀", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
   ["당근", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
@@ -395,6 +411,7 @@ const limitFoods: FoodRuleTerm[] = [
   ["젓갈", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["장아찌", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["염장", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
+  ["배추김치", "암예방 식단 염장식품 소량 예시", "nccPreventionMealExamples"],
   ["짠 김치", "염장 식품은 조금만 섭취", "nccPreventionDiet"],
   ["국물", "국·찌개 국물 제한 예시", "nccCervicalPracticeDiet"],
   ["붉은 육류", "붉은 육류는 주 3인분 이하로 적당량 확인", "nccPreventionDiet"],

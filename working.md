@@ -30075,6 +30075,34 @@
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 594 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
 
+## 2026-06-07 20:32 KST - NCC Prevention Meal Example Dishes
+
+- Current Goal:
+  - Add exact source-backed matching for National Cancer Information Center cancer-prevention meal example dishes that were not yet covered by CareVault's food rules.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice (`0 0`, `f2e2007`).
+  - Applied TDD plus incremental implementation after the previous `쌀밥/흰쌀밥` slice was fully pushed.
+  - Official-source re-check used National Cancer Information Center `암예방을 위한 요리`, whose first meal-example table lists `잡곡밥`, `아욱된장국`, `호박나물`, `콩나물무침`, `고등어구이`, and `배추김치`; the same table labels `배추김치` with sodium-reduction/염장식품 소량 wording.
+- Changes:
+  - `src/healthRules.ts`: added `nccPreventionMealExamples` source, balanced exact matches for `아욱된장국`, `호박나물`, `콩나물무침`, `고등어구이`, and a watch exact match for `배추김치`.
+  - `src/healthRules.test.ts`: added RED/PASS expectations for guide-card exposure, exact long-term matching over shorter generic terms, source ids, and no cure-food wording.
+  - `README.md`: updated the nutrition feature list with the new concrete official meal examples.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `아욱된장국` was absent from guide cards and `배추김치` was not a watch match.
+  - PASS focused GREEN: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 30 tests.
+  - PASS full tests: `npm test` => 64 files / 595 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, secret scans, commit/push, and post-push sync/runtime checks still need to run.
+- Next Steps:
+  - Stage explicit CareVault paths, run staged checks and gitleaks scans, commit/push, then recheck sync/runtime cleanup.
+
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 
 - Current Goal:
