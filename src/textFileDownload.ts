@@ -97,6 +97,7 @@ export async function downloadTextFile(
 
   let url = "";
   let link: HTMLAnchorElement | null = null;
+  let downloadClicked = false;
 
   try {
     const blob = new BlobLike([content], { type: mimeType });
@@ -108,6 +109,7 @@ export async function downloadTextFile(
     link.style.display = "none";
     documentLike.body.appendChild(link);
     link.click();
+    downloadClicked = true;
     documentLike.body.removeChild(link);
     revokeLater(() => URLLike.revokeObjectURL(url), 5000);
 
@@ -124,9 +126,10 @@ export async function downloadTextFile(
       try {
         URLLike.revokeObjectURL(url);
       } catch {
-        // Revoke best-effort cleanup; the user-facing result remains unsupported.
+        // Revoke cleanup is best-effort after the host browser has already failed another step.
       }
     }
+    if (downloadClicked) return "download-started";
     return copyTextFileDownloadFallback(content, navigatorLike);
   }
 }

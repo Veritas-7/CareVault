@@ -157,6 +157,49 @@ describe("textFileDownload", () => {
     expect(revokeObjectURL).toHaveBeenCalledWith("blob:download-url");
   });
 
+  it("keeps a started download successful when post-click cleanup fails", async () => {
+    const click = vi.fn();
+    const appendChild = vi.fn();
+    const removeChild = vi.fn(() => {
+      throw new Error("remove failed");
+    });
+    const revokeObjectURL = vi.fn();
+    const writeText = vi.fn(async (_text: string) => undefined);
+    const link = {
+      click,
+      download: "",
+      href: "",
+      style: { display: "" },
+    } as unknown as HTMLAnchorElement;
+
+    await expect(
+      downloadTextFile("csv body", "records.csv", "text/csv", {
+        BlobCtor: Blob,
+        URLCtor: {
+          createObjectURL: vi.fn(() => "blob:download-url"),
+          revokeObjectURL,
+        },
+        document: {
+          body: {
+            appendChild,
+            removeChild,
+          },
+          createElement: vi.fn(() => link),
+        } as unknown as Document,
+        navigator: {
+          clipboard: { writeText },
+          userAgent: "Mozilla/5.0 Chrome/121.0.0.0 Safari/537.36",
+          vendor: "Google Inc.",
+        },
+        setTimeout: vi.fn(),
+      }),
+    ).resolves.toBe("download-started");
+
+    expect(click).toHaveBeenCalledTimes(1);
+    expect(writeText).not.toHaveBeenCalled();
+    expect(revokeObjectURL).toHaveBeenCalledWith("blob:download-url");
+  });
+
   it("formats fallback download statuses with the same scope summary", () => {
     expect(
       formatTextFileDownloadClipboardFallbackStatus("백업", "프로필 포함 · 기록 8개"),

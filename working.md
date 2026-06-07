@@ -27766,3 +27766,27 @@
   - Runtime is clean; no temporary Vite process is running.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow. Direct browser QA still must use only existing `surface:7`; do not focus/select the inactive `암관리` workspace or open another browser without explicit approval.
+
+## 2026-06-07 13:54 KST - Text Download Post-Click Cleanup Guard Started
+
+- Current Goal:
+  - Keep export/download status as successful once the host browser has accepted the anchor click, even if post-click cleanup fails.
+- Context:
+  - After the Clipboard fallback improvements, a cleanup failure after `link.click()` could still route to `clipboard-fallback` or `unsupported`, even though the download click had already been issued.
+  - That can mislead the top save/status chip by reporting a fallback path after a real download was started.
+  - Existing `surface:7` still reports `http://localhost:1420/#dashboard` / `CareVault`, but `eval` returns `about:blank`; browser errors remain `No browser errors`. No focus, workspace selection, Computer Use, or new browser/surface was used.
+- Changes:
+  - `src/textFileDownload.test.ts`: added a RED test where `link.click()` succeeds but `document.body.removeChild()` fails; the expected result remains `download-started`.
+  - `src/textFileDownload.ts`: tracks whether the download click was issued and returns `download-started` after post-click cleanup errors, while still using fallback paths for failures before the click.
+- Tests:
+  - RED confirmed: `npm test -- src/textFileDownload.test.ts` initially returned `clipboard-fallback` instead of `download-started`.
+  - PASS focused test after fix: `npm test -- src/textFileDownload.test.ts` => `1 passed`, `8 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `63 passed`, `541 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM QA remains blocked by the inactive/non-evaluable `surface:7` context.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused post-click cleanup guard if green.
