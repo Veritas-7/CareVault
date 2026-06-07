@@ -244,8 +244,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "자극적·너무 뜨겁거나 매운 음식",
         detail:
-          "자궁경부암 식생활 자료는 방사선치료나 항암화학요법 중 장 기능이 약해질 수 있어 자극적인 음식은 피하도록 설명합니다.",
-        examples: "매운 음식, 아주 뜨거운 음식, 장 불편을 악화시키는 음식",
+          "자궁경부암 식생활 자료는 방사선치료나 항암화학요법 중 장 기능이 약해질 수 있어 자극적인 음식은 피하도록 설명하고, 국가암정보센터 건강한 식생활 자료도 너무 뜨겁거나 매운 음식은 피하도록 안내합니다.",
+        examples: "너무 뜨겁거나 매운 음식, 매운 음식, 아주 뜨거운 음식, 장 불편을 악화시키는 음식",
         sourceIds: ["nccCervicalDiet", "nccPreventionDiet"],
       },
       {
@@ -539,6 +539,31 @@ const limitFoods: FoodRuleTerm[] = [
   ["가당 유제품", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],
   ["가당 요구르트", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],
   ["가당 요거트", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],
+  [
+    "너무 뜨겁거나 매운 음식",
+    "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 피하기 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "너무 뜨거운 음식",
+    "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 피하기 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "뜨거운 음식",
+    "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 피하기 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "너무 매운 음식",
+    "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 피하기 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "매운 음식",
+    "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 피하기 후보",
+    "nccPreventionDiet",
+  ],
   ["단무지", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   ["우엉조림", "자궁경부암 실천지침 나트륨 감소 대체 전 예시", "nccCervicalPracticeDiet"],
   ["젓갈", "염장 식품은 조금만 섭취", "nccPreventionDiet"],

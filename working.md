@@ -1,5 +1,33 @@
 # CareVault Working Notes
 
+## 2026-06-07 23:46 KST - NCC Healthy-Eating Hot/Spicy Food Limit Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance to avoid foods that are too hot or spicy.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `ba00b5f77f50fd99e1a9eaef16eeda33d13310ec`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, whose guidance says to avoid foods that are too hot or spicy.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `너무 뜨겁거나 매운 음식`, `너무 뜨거운 음식`, `뜨거운 음식`, `너무 매운 음식`, and `매운 음식` as source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the five hot/spicy limit terms under `nccPreventionDiet` and aligned the existing limit guide text with the official healthy-eating source.
+  - `README.md`: added the new official healthy-eating hot/spicy limit terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new hot/spicy terms produced `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 49 tests.
+  - PASS full tests: `npm test` => 64 files / 614 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-07 23:35 KST - NCC Healthy-Eating Low-Fat Milk Daily Guidance Terms
 
 - Current Goal:
