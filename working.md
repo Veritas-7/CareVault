@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 03:34 KST - NCC Healthy-Eating Artificial Seasoning Limit Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating sentence about limiting artificial seasoning and making food less salty.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `0fd538584d1ccca38a75fecdf2e6176d79a3f11f`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` keeps nutrition judgment source-backed and prohibits cure/treatment food claims; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page says `인공조미료(화학조미료 포함)의 사용을 제한하며 음식을 싱겁게 만들어 먹습니다`.
+  - Applied the source as watch/limit guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `인공조미료(화학조미료 포함)의 사용을 제한하며 음식을 싱겁게 만들어 먹습니다` and `인공조미료 화학조미료 사용 제한 싱겁게 만들어 먹기` as source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the two longer artificial-seasoning/salty-food phrases under `nccPreventionDiet` before shorter `인공조미료` and `화학조미료` fallback matches, and aligned the limit guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating artificial seasoning limit sentence phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source phrase collapsed to shorter `인공조미료` and `화학조미료` matches and the guide strings were missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 73 tests.
+  - PASS full tests: `npm test` => 64 files / 638 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue so far.
+- Next Steps:
+  - Run git diff/secrets checks, then stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` and push if clean.
+
 ## 2026-06-08 03:29 KST - Post-Push NCC Healthy-Eating Daily Legume Sentence
 
 - Current Goal:

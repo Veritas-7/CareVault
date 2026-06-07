@@ -449,6 +449,33 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes the exact NCC healthy-eating artificial seasoning limit sentence", () => {
+    const assessment = assessCancerFood(
+      "인공조미료(화학조미료 포함)의 사용을 제한하며 음식을 싱겁게 만들어 먹습니다; 인공조미료 화학조미료 사용 제한 싱겁게 만들어 먹기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "인공조미료(화학조미료 포함)의 사용을 제한하며 음식을 싱겁게 만들어 먹습니다",
+      "인공조미료 화학조미료 사용 제한 싱겁게 만들어 먹기",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 인공조미료 제한·싱겁게 만들기 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating added salt or soy sauce avoid phrases", () => {
     const assessment = assessCancerFood(
       "음식을 먹을 때 추가로 소금이나 간장을 사용하지 않습니다, 소금이나 간장 사용하지 않기",
@@ -798,6 +825,10 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("익힌 상태 350~500g");
     expect(limitGuideText).toContain("너무 뜨겁거나 매운 음식의 섭취는 피합니다");
     expect(limitGuideText).toContain("너무 뜨겁거나 매운 음식 섭취 피하기");
+    expect(limitGuideText).toContain(
+      "인공조미료(화학조미료 포함)의 사용을 제한하며 음식을 싱겁게 만들어 먹습니다",
+    );
+    expect(limitGuideText).toContain("인공조미료 화학조미료 사용 제한 싱겁게 만들어 먹기");
     expect(limitGuideText).toContain("음식을 먹을 때 추가로 소금이나 간장을 사용하지 않습니다");
     expect(limitGuideText).toContain("소금이나 간장 사용하지 않기");
     expect(limitGuideText).toContain("햄·소시지 등 육가공품");
