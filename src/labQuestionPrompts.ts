@@ -34,6 +34,11 @@ function isValidIsoDate(date: string) {
   return normalized === trimmed;
 }
 
+function formatLabDate(date: string) {
+  const trimmed = date.trim();
+  return isValidIsoDate(trimmed) ? trimmed : "날짜 미입력";
+}
+
 export function buildLabFollowupQuestionButtonLabels(
   labName: string,
   includesSourceEvidence: boolean,
@@ -114,23 +119,24 @@ function formatExistingLabNote(lab: LabQuestionSource) {
 }
 
 export function buildLabQuestionPrompt(lab: LabQuestionSource, assessment: LabAssessment) {
+  const date = formatLabDate(lab.date);
   const value = formatLabValue(lab);
   const range = formatRange(lab);
   const note = formatExistingLabNote(lab);
 
   if (assessment.flag === "low") {
-    return `${lab.date} ${value}가 ${range || "입력 기준"}보다 낮게 기록됐습니다. 원인, 치료 일정 영향, 감염/식사/약 조정에서 주의할 점을 확인해야 할까요?${note}`;
+    return `${date} ${value}가 ${range || "입력 기준"}보다 낮게 기록됐습니다. 원인, 치료 일정 영향, 감염/식사/약 조정에서 주의할 점을 확인해야 할까요?${note}`;
   }
 
   if (assessment.flag === "high") {
-    return `${lab.date} ${value}가 ${range || "입력 기준"}보다 높게 기록됐습니다. 추세 확인, 재검 필요성, 증상과의 관련성을 어떻게 봐야 할까요?${note}`;
+    return `${date} ${value}가 ${range || "입력 기준"}보다 높게 기록됐습니다. 추세 확인, 재검 필요성, 증상과의 관련성을 어떻게 봐야 할까요?${note}`;
   }
 
   if (assessment.flag === "unknown") {
-    return `${lab.date} ${value}의 검사실 기준 범위를 아직 입력하지 않았습니다. 이 수치의 기준 범위와 다음 추적 시점을 확인해야 할까요?${note}`;
+    return `${date} ${value}의 검사실 기준 범위를 아직 입력하지 않았습니다. 이 수치의 기준 범위와 다음 추적 시점을 확인해야 할까요?${note}`;
   }
 
-  return `${lab.date} ${value}는 현재 입력 기준 범위 안입니다. 다음 추적 간격이나 함께 봐야 할 다른 수치를 확인해야 할까요?${note}`;
+  return `${date} ${value}는 현재 입력 기준 범위 안입니다. 다음 추적 간격이나 함께 봐야 할 다른 수치를 확인해야 할까요?${note}`;
 }
 
 export function getNextQuestionDate(visits: VisitQuestionDateSource[], todayIso: string) {

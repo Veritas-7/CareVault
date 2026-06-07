@@ -85,6 +85,29 @@ describe("labQuestionPrompts", () => {
     expect(prompt).toContain("출처: 서울아산병원 전혈구검사 참고치 - https://");
   });
 
+  it("uses a stable fallback for malformed lab result dates in generated questions", () => {
+    const prompt = buildLabQuestionPrompt(
+      {
+        date: "2026-06-31",
+        name: "WBC",
+        value: "3.2",
+        unit: "10^3/uL",
+        lower: "4",
+        upper: "10",
+        note: "",
+      },
+      {
+        flag: "low",
+        level: "watch",
+        label: "기준보다 낮음",
+        summary: "검사실 기준보다 낮습니다.",
+      },
+    );
+
+    expect(prompt).toContain("날짜 미입력 WBC 3.2 10^3/uL");
+    expect(prompt).not.toContain("2026-06-31");
+  });
+
   it("builds item-specific follow-up question button labels with evidence context", () => {
     expect(buildLabFollowupQuestionButtonLabels("HDL-C", true)).toEqual({
       ariaLabel: "HDL-C 검사 질문 추가 · 메모와 근거 포함",
