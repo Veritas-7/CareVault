@@ -30243,6 +30243,34 @@
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 597 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
 
+## 2026-06-07 21:01 KST - NCC Prevention Added-Sugar Dairy Limit
+
+- Current Goal:
+  - Add the National Cancer Information Center `암예방을 위한 요리` example 2 added-sugar dairy warning as source-specific watch food matches without cure/treatment claims.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed `DESIGN.md` food guidance contract: medical food text must use official Korean sources, source labels, and record/clinician-question framing rather than treatment instructions.
+  - Official-source re-check used National Cancer Information Center `암예방을 위한 요리`, example 2 `간편식(샐러드)`, which lists `플레인 요구르트` and says 가당 제품은 피하고 저지방 유제품을 권장.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/PASS coverage for `가당 제품`, `가당 유제품`, `가당 요구르트`, and `가당 요거트` as watch terms with `nccPreventionMealExamples`, while keeping `플레인 요구르트` as the source-specific ok counterpart.
+  - `src/healthRules.ts`: added a limit guide item for NCC snack/salad added-sugar dairy and routed exact added-sugar dairy terms to `nccPreventionMealExamples`.
+  - `README.md`: updated the nutrition feature example list with the new added-sugar dairy watch terms.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the limit guide card lacked `가당 제품`, and `가당 제품`/`가당 유제품` did not match any food rule.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 33 tests.
+  - PASS full tests: `npm test` => 64 files / 598 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, secret scans, commit/push, and post-push sync checks still need to run.
+- Next Steps:
+  - Run the full verification gate, stage explicit CareVault paths, run staged checks and gitleaks scans, commit/push, then record post-push verification.
+
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 
 - Current Goal:

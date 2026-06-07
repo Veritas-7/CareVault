@@ -240,6 +240,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccCervicalDiet", "nccPreventionDiet"],
       },
       {
+        label: "가당 유제품",
+        detail:
+          "국가암정보센터 암예방 샐러드 예시는 플레인 요구르트를 칼슘·단백질 보충 후보로 제시하되 가당 제품은 피하고 저지방 유제품을 권장합니다.",
+        examples: "가당 제품, 가당 유제품, 가당 요구르트, 가당 요거트",
+        sourceIds: ["nccPreventionMealExamples"],
+      },
+      {
         label: "짠 저장식품·국물 과다",
         detail:
           "암예방 식생활 자료는 짜게 먹지 않기, 염장식품 제한, 국이나 찌개 국물 제한을 안내하며, 예시 식단의 배추김치·열무김치도 나트륨을 줄이기 위해 조금만 섭취하는 항목으로 설명합니다.",
@@ -413,8 +420,10 @@ const limitFoods: FoodRuleTerm[] = [
   ["설탕음료", "당음료", "kdcaNutrition"],
   ["가당음료", "당음료", "kdcaNutrition"],
   ["초코칩쿠키", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
-  ["가당 요구르트", "가당 유제품 피하고 저지방 유제품 확인", "nccPreventionDiet"],
-  ["가당 요거트", "가당 유제품 피하고 저지방 유제품 확인", "nccPreventionDiet"],
+  ["가당 제품", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],
+  ["가당 유제품", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],
+  ["가당 요구르트", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],
+  ["가당 요거트", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],
   ["단무지", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   ["우엉조림", "자궁경부암 실천지침 나트륨 감소 대체 전 예시", "nccCervicalPracticeDiet"],
   ["젓갈", "염장 식품은 조금만 섭취", "nccPreventionDiet"],

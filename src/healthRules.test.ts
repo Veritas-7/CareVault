@@ -227,6 +227,7 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("쌀밥");
     expect(limitGuideText).toContain("배추김치");
     expect(limitGuideText).toContain("열무김치");
+    expect(limitGuideText).toContain("가당 제품");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
         .map((item) => item.label)
@@ -624,6 +625,53 @@ describe("healthRules", () => {
       sourceId: "nccPreventionMealExamples",
     });
     expect(formatFoodMatchEvidence(matchesByTerm["샐러드(달걀)"])).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes NCC prevention snack-salad added-sugar dairy limits", () => {
+    const assessment = assessCancerFood(
+      "가당 제품, 가당 유제품, 가당 요구르트, 가당 요거트, 플레인 요구르트",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "가당 제품",
+      "가당 유제품",
+      "가당 요구르트",
+      "가당 요거트",
+      "플레인 요구르트",
+    ]);
+    expect(matchesByTerm["가당 제품"]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["가당 유제품"]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["가당 요구르트"]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["가당 요거트"]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(matchesByTerm["플레인 요구르트"]).toMatchObject({
+      level: "ok",
+      sourceId: "nccPreventionMealExamples",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm["가당 제품"])).toContain(
       "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
