@@ -27319,3 +27319,29 @@
   - Runtime is clean; source code is unchanged in this QA-only slice.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 13:00 KST - Unknown Hash Navigation Fallback Direct QA
+
+- Current Goal:
+  - Direct-QA the unknown sidebar hash fallback in the existing `암관리` / `surface:7` cmux browser.
+  - Keep the pass non-window: no new browser, surface, tab, desktop focus handoff, Computer Use, or cmux restart.
+- Context:
+  - `src/sidebarNavigation.test.ts` covers unknown hashes falling back to the dashboard active section, but the current browser session did not yet have same-surface direct evidence for a bad hash such as `#missing-direct-qa`.
+  - Previous sidebar direct QA covered the six valid sidebar links, so this slice targeted only the invalid hash fallback and cleanup path.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface fallback QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated in place to `http://127.0.0.1:1420/#missing-direct-qa`. No new browser, surface, tab, desktop window, Computer Use path, or WebView focus handoff was used.
+  - PASS fallback state: the app loaded with `document.readyState=complete`, title `CareVault`, URL hash `#missing-direct-qa`, no element with id `missing-direct-qa`, and exactly one active sidebar link.
+  - PASS active fallback: the active link was `대시보드` with href `#dashboard`, aria/title `대시보드 섹션으로 이동`; all six sidebar links preserved destination labels/titles and rendered `112x44`.
+  - PASS non-mutation baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testUnknownHashBaseline"]`; storage length was `1872`, localStorage keys were only `carevault.v1`, and no export preview, dialog, or alert opened.
+  - PASS cleanup: a real recovery click on `a[href="#dashboard"]` timed out in cmux, so cleanup used same-surface `eval` to set `location.hash = "#dashboard"` and remove the test session key. After cleanup, URL was `#dashboard`, active link stayed `대시보드`, storage remained byte-equal to baseline, no `carevault.__test*` keys remained, no preview/dialog/alert was open, and save chip returned to `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: existing `surface:7` reported title `CareVault`, URL `http://127.0.0.1:1420/#dashboard`, `document.readyState=complete`, `No browser errors`, and console contained only normal Vite debug connection lines.
+- Verification:
+  - PASS focused tests: `npm test -- src/sidebarNavigation.test.ts src/careActionQueueEmptyState.test.ts` => `2 passed`, `7 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo diagnostics: `git status --short --branch` showed `## main...origin/main` before logging.
+- Current state:
+  - `working.md` is dirty with verified unknown-hash fallback QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
