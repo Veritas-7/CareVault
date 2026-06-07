@@ -266,6 +266,49 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes cervical practice-guide limit examples without contradicting replacements", () => {
+    const assessment = assessCancerFood(
+      "햄구이, 초코칩쿠키, 단무지, 국물, 과일샐러드, 채소샐러드",
+    );
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(matchesByTerm.햄구이).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 식단 제한 예시",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.초코칩쿠키).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 식단 제한 예시",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.단무지).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 식단 제한 예시",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.국물).toMatchObject({
+      level: "watch",
+      reason: "국·찌개 국물 제한 예시",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.과일샐러드).toMatchObject({
+      level: "ok",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.채소샐러드).toMatchObject({
+      level: "ok",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm.햄구이)).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes concrete official-source food examples across support, limit, and care-team checks", () => {
     const assessment = assessCancerFood(
       "잡곡밥, 닭고기, 플레인 요구르트, 탄 고기, 젓갈, 초밥, 덜 익힌 계란, 약초",
