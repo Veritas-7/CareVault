@@ -27983,3 +27983,28 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:20 KST - Blank Attachment Runtime Path Guard Started
+
+- Current Goal:
+  - Treat blank saved attachment paths as missing files before calling desktop runtime open/preview probes.
+- Context:
+  - Re-read thread identity, current repo sync, latest `working.md`, same-surface cmux diagnostics, and attachment recovery code/tests before editing.
+  - Existing cmux `surface:7` was used only for non-focusing diagnostics. It reports `http://127.0.0.1:1420/#dashboard` / `CareVault`, but `eval` still returns `about:blank` with no `#root` and empty body text; `errors list` returns `No browser errors`.
+  - No Computer Use, focus change, workspace selection, new browser, new tab, or new surface was used.
+  - `resolveRuntimeAttachmentOpen()` and `resolveRuntimeAttachmentPreview()` could call runtime probes with an empty or whitespace-only saved path if invoked with corrupted state, allowing a blank path to be reported as opened/previewed.
+- Changes:
+  - `src/attachmentRecovery.test.ts`: added RED coverage for blank-path open and preview recovery; runtime `exists`, opener, converter, image loader, and file reader must not be called.
+  - `src/attachmentRecovery.ts`: added fail-closed blank-path guards before runtime attachment open/preview existence checks.
+- Tests:
+  - RED confirmed: `npm test -- src/attachmentRecovery.test.ts` failed because blank paths returned `opened`/`preview`.
+  - PASS focused test after fix: `npm test -- src/attachmentRecovery.test.ts` => `1 passed`, `13 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `548 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` URL/title remained CareVault and `errors list` returned `No browser errors`; eval still reports `about:blank`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface and do not steal focus.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused blank attachment path guard if green.

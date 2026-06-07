@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   buildAttachmentRecoveryUpdate,
   buildFileNameOnlyAttachmentCheckRecovery,
@@ -84,6 +84,32 @@ describe("attachmentRecovery", () => {
     expect(openCalls).toEqual([]);
   });
 
+  it("does not call the runtime opener when the saved attachment path is blank", async () => {
+    const exists = vi.fn(async () => true);
+    const openPath = vi.fn(async (_path: string) => undefined);
+
+    await expect(
+      resolveRuntimeAttachmentOpen(
+        {
+          attachmentName: "scan.pdf",
+          attachmentPath: "   ",
+          id: "doc-fixture",
+          title: "영상 첨부 복구 테스트",
+        },
+        { exists, openPath },
+      ),
+    ).resolves.toEqual({
+      recovery: {
+        historyDetail: "scan.pdf: 파일 없음 - 재첨부 필요",
+        historyLabel: "첨부 재첨부 필요",
+        status: "파일 없음 - 재첨부 필요",
+      },
+      type: "recovery",
+    });
+    expect(exists).not.toHaveBeenCalled();
+    expect(openPath).not.toHaveBeenCalled();
+  });
+
   it("uses a disposable runtime fixture for opener-failure recovery", async () => {
     await expect(
       resolveRuntimeAttachmentOpen(
@@ -134,6 +160,43 @@ describe("attachmentRecovery", () => {
       },
       type: "recovery",
     });
+  });
+
+  it("does not call runtime preview probes when the saved attachment path is blank", async () => {
+    const convertFileSrc = vi.fn(() => "asset://localhost/blank.png");
+    const exists = vi.fn(async () => true);
+    const loadImage = vi.fn(async (_previewUrl: string) => undefined);
+    const readFile = vi.fn(async (_path: string) => [
+      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+    ]);
+
+    await expect(
+      resolveRuntimeAttachmentPreview(
+        {
+          attachmentName: "scan.png",
+          attachmentPath: "",
+          id: "doc-fixture",
+          title: "영상 첨부 복구 테스트",
+        },
+        {
+          convertFileSrc,
+          exists,
+          loadImage,
+          readFile,
+        },
+      ),
+    ).resolves.toEqual({
+      recovery: {
+        historyDetail: "scan.png: 파일 없음 - 재첨부 필요",
+        historyLabel: "첨부 재첨부 필요",
+        status: "파일 없음 - 재첨부 필요",
+      },
+      type: "recovery",
+    });
+    expect(convertFileSrc).not.toHaveBeenCalled();
+    expect(exists).not.toHaveBeenCalled();
+    expect(loadImage).not.toHaveBeenCalled();
+    expect(readFile).not.toHaveBeenCalled();
   });
 
   it("uses a disposable runtime fixture for image-preview load failure recovery", async () => {

@@ -161,6 +161,13 @@ export async function resolveRuntimeAttachmentOpen(
   },
 ): Promise<RuntimeAttachmentOpenResult> {
   const attachmentPath = document.attachmentPath ?? "";
+  if (!attachmentPath.trim()) {
+    return {
+      recovery: buildAttachmentRecoveryUpdate("missing-file", document.attachmentName),
+      type: "recovery",
+    };
+  }
+
   const attachmentExists = await runtime.exists(attachmentPath).catch(() => false);
   if (!attachmentExists) {
     return {
@@ -194,6 +201,13 @@ export async function resolveRuntimeAttachmentPreview(
   },
 ): Promise<RuntimeAttachmentPreviewResult> {
   const attachmentPath = document.attachmentPath ?? "";
+  if (!attachmentPath.trim()) {
+    return {
+      recovery: buildAttachmentRecoveryUpdate("missing-file", document.attachmentName),
+      type: "recovery",
+    };
+  }
+
   const attachmentExists = await runtime.exists(attachmentPath).catch(() => false);
   if (!attachmentExists) {
     return {
