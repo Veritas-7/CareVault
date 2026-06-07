@@ -169,5 +169,19 @@ describe("resolveRecordFormFeedbackClearedSaveLabel", () => {
     expect(resolveRecordFormFeedbackClearedSaveLabel("visit", undefined, "SQLite 자동 저장됨")).toBe(
       "SQLite 자동 저장됨",
     );
+    expect(
+      resolveRecordFormFeedbackClearedSaveLabel(
+        "document",
+        recordRequiredFieldMessages.document,
+        "임시 메모리에만 자동 저장됨",
+      ),
+    ).toBe("임시 메모리에만 자동 저장됨");
+    expect(
+      resolveRecordFormFeedbackClearedSaveLabel(
+        "question",
+        recordRequiredFieldMessages.question,
+        "프로필 업데이트됨 · 임시 메모리에만 자동 저장됨",
+      ),
+    ).toBe("프로필 업데이트됨 · 임시 메모리에만 자동 저장됨");
   });
 });

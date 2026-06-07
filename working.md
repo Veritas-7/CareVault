@@ -27663,3 +27663,20 @@
   - Runtime is clean; no temporary Vite process is running.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow. Direct browser QA still must use only the existing `surface:7` without selecting/focusing the inactive `암관리` workspace unless the user explicitly approves that focus change.
+
+## 2026-06-07 13:46 KST - Required Feedback Memory Autosave Preservation Coverage Started
+
+- Current Goal:
+  - Ensure local required-field feedback cleanup never overwrites the newer temporary-memory autosave labels.
+- Context:
+  - `resolveRecordFormFeedbackClearedSaveLabel()` replaces the top save chip only when it still exactly equals the stale required-field message. That should preserve newer save labels, including `임시 메모리에만 자동 저장됨` and action-prefixed temporary-memory autosave feedback.
+  - Existing coverage preserved a newer SQLite autosave label but did not explicitly pin the temporary-memory autosave labels added in the recent storage fallback slice.
+  - Existing `surface:7` still reports `http://localhost:1420/#dashboard` / `CareVault`, but `eval` returns `about:blank`; browser errors remain `No browser errors`. No focus, workspace selection, Computer Use, or new browser/surface was used.
+- Changes:
+  - `src/entryValidation.test.ts`: added exact assertions that required-field cleanup preserves plain and action-prefixed temporary-memory autosave labels.
+- Tests:
+  - PASS focused tests: `npm test -- src/entryValidation.test.ts src/storageStatus.test.ts` => `2 passed`, `25 passed`.
+- Issues:
+  - Direct same-surface DOM QA remains blocked by the inactive/non-evaluable `surface:7` context.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the narrow test coverage update if green.
