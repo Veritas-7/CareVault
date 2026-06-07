@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 05:33 KST - Post-Push NCC Diarrhea Food Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center diarrhea hydration, soft-food, and trigger-food example slice.
+- Result:
+  - Source commit pushed: `ab2fb31` (`Add NCC diarrhea food terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `ab2fb31723e094fddc922a34bddb70606afd3089`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 653 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this post-push verification log, then run post-log sync/runtime verification.
+
 ## 2026-06-08 05:29 KST - NCC Diarrhea Hydration Soft-Food And Trigger Examples
 
 - Current Goal:
