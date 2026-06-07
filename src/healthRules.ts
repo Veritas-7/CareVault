@@ -42,6 +42,7 @@ export type FoodGuidanceSourceId =
   | "nccCervicalDiet"
   | "nccCervicalFoodPrevention"
   | "nccCervicalPracticeDiet"
+  | "nccTreatmentEating"
   | "nccTreatmentNutrients"
   | "kdcaNutrition"
   | "kdcaAlcohol";
@@ -187,6 +188,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 자궁경부암 실천지침 식생활",
     url: "https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf",
   },
+  nccTreatmentEating: {
+    label: "국가암정보센터 치료 중 일반적인 식생활",
+    url: "https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
+  },
   nccTreatmentNutrients: {
     label: "국가암정보센터 치료 중 영양소",
     url: "https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
@@ -245,6 +250,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "채소 반찬, 생채, 나물, 채소 쌈, 신선한 채소, 다양한 색의 채소, 제철 식품, 다양한 잡곡, 잡곡, 아욱된장국, 호박나물, 콩나물무침, 고등어구이, 단백질 식품, 적정량 단백질, 생선, 달걀, 콩, 닭고기, 등푸른 생선, 고등어, 통밀빵, 통밀 식빵, 통밀, 귀리빵, 귀리 식빵, 귀리, 샐러드(채소), 샐러드(달걀), 샐러드(치즈), 모차렐라, 리코타 치즈, 플레인 요구르트, 플레인 요거트, 저지방 유제품, 저지방 요구르트, 저지방 요거트, 방울토마토, 블루베리, 과일류, 매일 과일, 미역국, 상추쌈, 버섯나물, 불고기",
         sourceIds: ["nccPreventionMealExamples"],
+      },
+      {
+        label: "치료 중 균형식·충분한 영양",
+        detail:
+          "국가암정보센터 치료 중 일반적인 식생활 자료는 좋은 영양 상태 유지가 중요하므로 균형 잡힌 식사로 충분한 열량과 단백질, 비타민 및 무기질을 섭취하고 여러 가지 음식을 골고루 먹도록 안내합니다.",
+        examples:
+          "치료 중 균형 잡힌 식사, 치료 중 충분한 열량과 단백질, 치료 중 비타민 및 무기질, 여러 가지 음식을 골고루",
+        sourceIds: ["nccTreatmentEating"],
       },
       {
         label: "익힌 단백질·수분",
@@ -447,6 +460,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "약 복용 중 특정 식품 상호작용이 의심되면 처방약, 항암제, 보조제를 함께 적어 진료팀 기준으로 확인합니다.",
         examples: "자몽, 자몽 주스, 복용 약과 같이 먹는 보충제",
         sourceIds: ["kdcaNutrition", "nccComplementaryTherapy"],
+      },
+      {
+        label: "특별한 항암 식품·영양소 주장",
+        detail:
+          "국가암정보센터 치료 중 일반적인 식생활 자료는 특정 식품이나 영양소를 특효 항암 수단으로 보지 않고, 균형 잡힌 식사와 충분한 영양 상태 유지를 강조합니다.",
+        examples: "특별한 항암 식품, 특별한 항암 영양소, 특효 식품, 특효 영양소",
+        sourceIds: ["nccTreatmentEating"],
       },
       {
         label: "날음식·비살균·보관/세척 주의 식품",
@@ -854,6 +874,26 @@ const supportiveFoods: FoodRuleTerm[] = [
   ],
   ["견과", "불포화지방과 간식 대체", "kdcaNutrition"],
   ["호두", "견과류", "kdcaNutrition"],
+  [
+    "치료 중 균형 잡힌 식사",
+    "국가암정보센터 치료 중 균형식·충분한 영양 섭취 후보",
+    "nccTreatmentEating",
+  ],
+  [
+    "치료 중 충분한 열량과 단백질",
+    "국가암정보센터 치료 중 균형식·충분한 영양 섭취 후보",
+    "nccTreatmentEating",
+  ],
+  [
+    "치료 중 비타민 및 무기질",
+    "국가암정보센터 치료 중 균형식·충분한 영양 섭취 후보",
+    "nccTreatmentEating",
+  ],
+  [
+    "여러 가지 음식을 골고루",
+    "국가암정보센터 치료 중 균형식·충분한 영양 섭취 후보",
+    "nccTreatmentEating",
+  ],
   [
     "등푸른 생선",
     "국가암정보센터 암예방 식단 등푸른 생선 주 2회 이상 예시 후보",
@@ -1367,6 +1407,26 @@ const careTeamFoods: FoodRuleTerm[] = [
   ["고농축", "치료 상호작용 확인 필요", "nccComplementaryTherapy"],
   ["보충제", "치료 상호작용 확인 필요", "nccComplementaryTherapy"],
   ["영양제", "치료 상호작용 확인 필요", "nccComplementaryTherapy"],
+  [
+    "암을 낫게 해주는 특별한 식품",
+    "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
+    "nccTreatmentEating",
+  ],
+  [
+    "암을 낫게 해주는 특별한 영양소",
+    "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
+    "nccTreatmentEating",
+  ],
+  [
+    "특별한 항암 식품",
+    "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
+    "nccTreatmentEating",
+  ],
+  [
+    "특별한 항암 영양소",
+    "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
+    "nccTreatmentEating",
+  ],
   ["생굴", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],
   ["육회", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],
   ["생조개", "면역저하 시 익히지 않은 음식 주의", "nccImmuneLowDiet"],

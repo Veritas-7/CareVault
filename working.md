@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-08 06:10 KST - NCC Treatment Eating Balance And No-Special-Food Guidance
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center treatment-period balanced eating guidance and special-food/special-nutrient cure-claim confirmation.
+- Context:
+  - Continued from clean/synced CareVault state after `2222d6f51caee411c6ecd96cb94ebc8e3caee038`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and split the new general treatment eating source `nccTreatmentEating` from existing `nccTreatmentNutrients`, so general balance/cure-claim guidance does not get mixed with the nutrient example page.
+- Research:
+  - Re-checked National Cancer Information Center `치료중의 식생활 - 일반적인 식생활`, final update 2015-01-05. The page says cancer and cancer treatments affect nutritional status; good nutrition helps maintain condition for treatment, cope with side effects, reduce infection risk, and regenerate treatment-damaged cells. It also says there is no special food or nutrient that makes cancer go away, and emphasizes balanced eating with sufficient calories, protein, vitamins, and minerals through a variety of foods.
+  - Applied the source as balanced-eating support and cure-claim safety guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, balanced guide-card, care-team guide-card, source-evidence, ok-match, and risk-match coverage for treatment-period balanced eating and special-food/special-nutrient claim phrases.
+  - `src/healthRules.ts`: added `nccTreatmentEating`, a balanced guide-card item for treatment-period balanced eating, a care-team guide-card item for special anti-cancer food/nutrient claims, and source-backed ok/risk matching terms.
+  - `README.md`: added the new NCC treatment-period balanced eating and special-food/special-nutrient confirmation phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccTreatmentEating` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 93 tests.
+  - PASS full tests: `npm test` => 64 files / 658 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `2222d6f51caee411c6ecd96cb94ebc8e3caee038`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 15.39 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `치료중의 식생활 - 일반적인 식생활`, `https://www.cancer.go.kr/lay1/S1T471C472/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice so far.
+- Next Steps:
+  - Stage explicit source/log paths, run staged gates, then commit and push this source slice if all gates pass.
+
 ## 2026-06-08 06:06 KST - Final NCC Fatigue Depression Food Log
 
 - Current Goal:

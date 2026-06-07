@@ -1372,6 +1372,66 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC treatment eating balance and no-special-food guidance", () => {
+    const assessment = assessCancerFood(
+      "치료 중 균형 잡힌 식사, 치료 중 충분한 열량과 단백질, 치료 중 비타민 및 무기질, 여러 가지 음식을 골고루, 암을 낫게 해주는 특별한 식품, 암을 낫게 해주는 특별한 영양소",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccTreatmentEating.label).toBe(
+      "국가암정보센터 치료 중 일반적인 식생활",
+    );
+    expect(foodGuidanceSources.nccTreatmentEating.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "치료 중 균형 잡힌 식사",
+      "치료 중 충분한 열량과 단백질",
+      "치료 중 비타민 및 무기질",
+      "여러 가지 음식을 골고루",
+      "암을 낫게 해주는 특별한 식품",
+      "암을 낫게 해주는 특별한 영양소",
+    ]);
+    for (const term of [
+      "치료 중 균형 잡힌 식사",
+      "치료 중 충분한 열량과 단백질",
+      "치료 중 비타민 및 무기질",
+      "여러 가지 음식을 골고루",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 치료 중 균형식·충분한 영양 섭취 후보",
+        sourceId: "nccTreatmentEating",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 치료 중 일반적인 식생활 - https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
+      );
+    }
+    for (const term of ["암을 낫게 해주는 특별한 식품", "암을 낫게 해주는 특별한 영양소"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
+        sourceId: "nccTreatmentEating",
+      });
+    }
+    expect(balancedGuideText).toContain("치료 중 균형 잡힌 식사");
+    expect(balancedGuideText).toContain("치료 중 충분한 열량과 단백질");
+    expect(careTeamGuideText).toContain("특별한 항암 식품");
+    expect(careTeamGuideText).toContain("특별한 항암 영양소");
+  });
+
   it("recognizes NCC mouth-pain soft and irritating food examples", () => {
     const assessment = assessCancerFood(
       "흰죽, 닭죽, 호박죽, 쌀미음, 바나나, 수박, 과일통조림, 토마토주스, 토스트, 크래커, 말린 음식",
