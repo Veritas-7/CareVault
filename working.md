@@ -27522,3 +27522,31 @@
   - Runtime is clean; no temporary Vite process is running.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 13:26 KST - Missing Storage Key First-Run Fallback Direct QA
+
+- Current Goal:
+  - Cover the first-run persistence branch where `localStorage["carevault.v1"]` is missing, distinct from invalid JSON and malformed object recovery.
+  - Verify the app creates the fallback state, renders safely, and restores the prior browser baseline without test residue in the existing `암관리` / `surface:7` cmux browser.
+- Context:
+  - `src/storage.ts` writes the fallback state when `readLocalStorageValue("carevault.v1")` returns no value. Existing tests covered blocked writes and invalid JSON, but did not cover the successful missing-key initialization branch.
+  - This pass used only existing-surface cmux browser commands: `navigate`, `eval`, `wait`, `console list`, and `errors list`. No new browser, surface, tab, desktop focus handoff, Computer Use, `focus-webview`, or cmux restart was used.
+- Changes:
+  - `src/storage.test.ts`: added focused coverage that missing browser `localStorage` initializes with the fallback state and reports the `localStorage` backend when the fallback write succeeds.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served port `1420`; existing `surface:7` was navigated in place to `http://localhost:1420/#dashboard` and rendered `CareVault`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testMissingStorageBaseline"]`; baseline storage length was `1774`, profile was `나의 건강 기록` / `56` / `female`, food query was `브로콜리, 현미밥, 베이컨, 자몽 주스`, counts were `vitals=3`, `visits=1`, `documents=1`, `deletedDocuments=0`, `symptoms=1`, `questions=1`, `labResults=1`, and save chip was `브라우저 자동 저장됨`.
+  - PASS missing-key injection: removed only `localStorage["carevault.v1"]`, confirmed it was missing before reload, then reloaded only the same `surface:7`.
+  - PASS fallback creation: after load, `carevault.v1` existed again, parsed as valid JSON, and storage length returned to `1774`.
+  - PASS rendered fallback state: profile inputs showed `나의 건강 기록`, `56`, `female`, `164`, `62`, `82`; cancer-care, diabetes, and hypertension toggles rendered on; food query restored to `브로콜리, 현미밥, 베이컨, 자몽 주스`; backup scope showed `기록 8개`; care queue showed `7개 항목`; no preview/dialog/alert opened.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testMissingStorageBaseline`, reloaded the same `surface:7`, and confirmed storage length `1774`, no `carevault.__test*` session keys, no preview/dialog/alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`; `console list` contained only normal Vite debug connection lines.
+- Verification:
+  - PASS focused test before direct QA: `npm test -- src/storage.test.ts` => `1 passed`, `16 passed`.
+  - PASS focused tests after direct QA: `npm test -- src/storage.test.ts src/appStateNormalization.test.ts` => `2 passed`, `22 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed only `src/storage.test.ts` modified before logging; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `src/storage.test.ts` and `working.md` are dirty with the missing storage-key fallback test and verified same-surface QA evidence.
+- Next Steps:
+  - Run diff/secret checks, then stage only `src/storage.test.ts` and `working.md` for a focused commit/push.
