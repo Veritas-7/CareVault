@@ -27236,3 +27236,31 @@
   - Runtime is clean; source code is unchanged in this QA-only slice.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:52 KST - Non-Window Focus Surface QA
+
+- Current Goal:
+  - Reuse only the existing `암관리` / `surface:7` cmux in-app browser to verify the current export/caregiver focus surface after the select and link-inclusive hit-target sweeps.
+  - Avoid any desktop window control, new browser, new surface, new tab, Computer Use, or cmux WebView focus takeover while testing.
+- Context:
+  - User clarified that cmux in-app browser tests must not occupy or steal the visible desktop window. This slice continues with non-window cmux browser operations only: `eval`, existing-surface navigation, diagnostics, and storage inspection.
+  - Prior keyboard/focus work existed earlier in the project, so this pass checks current rendered state after the latest form-control and link-surface changes rather than repeating the old audit script.
+- Changes:
+  - No source code changes in this slice; the current implementation passed same-surface focus and hidden-file-input checks.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated in place to `http://127.0.0.1:1420/#export`. No new browser, surface, tab, desktop window, or Computer Use path was used.
+  - PASS focusable inventory: current `#export` rendered 304 focusable visible elements; the first export/caregiver sequence covered six sidebar links, backup export, summary-range select, summary export/preview, CSV export/preview, caregiver profile redaction, caregiver memo, three memo preset buttons, caregiver share preset select, seven caregiver section checkboxes, caregiver export/preview, backup import, and manual save.
+  - PASS hidden file inputs: all three `input[type=file]` elements stayed `className="visually-hidden"`, `tabIndex=-1`, `rect=1x1`, and were not present in the focusable list.
+  - PASS focus ring state: sampled focus targets at indexes 0-28 each became `document.activeElement`, matched `:focus-visible`, and exposed visible focus outline through either the direct control or its visible label wrapper. Sidebar anchors rendered `42px` with `3px solid rgb(152, 214, 207)` focus outlines; export buttons/selects rendered `44px`; caregiver checkbox label wrappers rendered visible focus outlines.
+  - PASS storage and cleanup: focusing sampled controls did not mutate `localStorage["carevault.v1"]`; storage length stayed `1872`, localStorage keys were only `carevault.v1`, no `carevault.__test*` session keys existed, and no export preview, dialog, or alert remained open.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts src/sidebarNavigation.test.ts src/careActionQueueEmptyState.test.ts` => `4 passed`, `42 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main` before logging; existing `surface:7` returned `No browser errors`.
+- Issues:
+  - Do not use cmux `focus-webview` or desktop focus handoff for future CareVault QA. Use non-window same-surface cmux commands only unless the user explicitly asks otherwise.
+- Current state:
+  - `working.md` is dirty with verified non-window focus surface QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
