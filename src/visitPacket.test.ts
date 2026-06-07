@@ -1196,4 +1196,39 @@ describe("visit packet", () => {
     expect(allMarkdown).toContain("2026-05-01");
     expect(allMarkdown).toContain("오래된 서류");
   });
+
+  it("excludes malformed dated records from bounded visit packet ranges", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        documents: [
+          {
+            date: "not-a-date",
+            title: "깨진 날짜 서류",
+            category: "visit-note",
+            body: "최근 범위에 들어오면 안 됨",
+            tags: "복원 오류",
+          },
+        ],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [
+          {
+            date: "unknown",
+            type: "blood-pressure",
+            systolic: 142,
+            diastolic: 92,
+            note: "깨진 날짜 혈압",
+          },
+        ],
+      },
+      { exportedAt: "2026-06-03T08:00:00.000Z", range: "7d" },
+    );
+
+    expect(markdown).toContain("범위: 최근 7일");
+    expect(markdown).not.toContain("깨진 날짜 서류");
+    expect(markdown).not.toContain("깨진 날짜 혈압");
+  });
 });

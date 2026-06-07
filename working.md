@@ -28354,3 +28354,28 @@
   - Non-focusing `cmux browser surface:7 get title` still returned the URL value during this post-push pass.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 15:02 KST - Visit Packet Range Date Guard Started
+
+- Current Goal:
+  - Prevent malformed dated records from leaking into bounded visit packet exports.
+- Context:
+  - Re-read thread identity, current repo sync, latest `working.md`, TDD/custom-git skills, and existing `surface:7` diagnostics before editing.
+  - Existing `surface:7` was used only for non-focusing URL/title/error diagnostics; no `select-workspace`, `focus-webview`, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+  - `buildVisitPacketMarkdown()` used raw string comparison in bounded range filtering. Malformed values such as `not-a-date` and `unknown` could pass a recent range and appear in clinic export markdown.
+- Changes:
+  - `src/visitPacket.test.ts`: added RED coverage proving malformed dated documents and vitals are excluded from bounded visit packet ranges.
+  - `src/visitPacket.ts`: added strict ISO date validation in bounded range filtering before comparing with the range start date.
+- Tests:
+  - RED confirmed: `npm test -- src/visitPacket.test.ts` failed because `깨진 날짜 서류` and `깨진 날짜 혈압` appeared in a `7d` export.
+  - PASS focused test after fix: `npm test -- src/visitPacket.test.ts` => `1 passed`, `23 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `557 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS browser diagnostics retry: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`; `get title` returned the URL value again; first `errors list` call timed out waiting for JavaScript, retry returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the current `surface:7` blank-document automation context unless it recovers without focus handoff.
+  - Non-focusing `cmux browser surface:7 get title` still returns the URL value, and one `errors list` call timed out before a successful retry.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused visit-packet range date guard if green.

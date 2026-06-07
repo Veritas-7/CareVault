@@ -311,9 +311,25 @@ function getRangeStartDate(exportedAt: string, range: VisitPacketRange) {
   return start.toISOString().slice(0, 10);
 }
 
+function getValidIsoDate(date: string) {
+  const trimmed = date.trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (!match) return undefined;
+
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const normalized = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+  return normalized === trimmed ? trimmed : undefined;
+}
+
 function filterByRange<T extends { date: string }>(items: T[], startDate: string | null) {
   if (!startDate) return items;
-  return items.filter((item) => item.date >= startDate);
+  return items.filter((item) => {
+    const date = getValidIsoDate(item.date);
+    return Boolean(date && date >= startDate);
+  });
 }
 
 function orNone(lines: string[]) {
