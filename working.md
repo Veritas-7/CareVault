@@ -29575,3 +29575,29 @@
   - No new blocking issue. This completes the symptom-display follow-up left by the previous saved-question multi-source UI slice.
 - Next Steps:
   - Stage explicit paths, run staged diff/secret gates, then commit/push if green.
+
+## 2026-06-07 18:06 KST - Post-Push Symptom Multi-Source UI
+
+- Current Goal:
+  - Record post-push verification for the symptom multi-source UI slice.
+- Result:
+  - Source commit pushed: `750fae5` (`Show all symptom evidence sources`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `750fae5fb7ddd39c41ea2ade7587ab6c02f1e32b`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/symptomDisplay.test.ts` failed before the fix because `sources` was missing and the action/body multi-source case kept only the first source.
+    - GREEN: `npm test -- src/symptomDisplay.test.ts` => 1 file / 4 tests.
+    - GREEN: `npm test -- src/symptomDisplay.test.ts src/questionDisplay.test.ts src/sourceEvidence.test.ts` => 3 files / 15 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 583 tests.
+  - PASS build: `npm run build`.
+  - PASS browser smoke with one Playwright Chromium session: saved a multi-source `성교 후 출혈` symptom, confirmed both official source links render in the latest symptom metric card and recent-timeline symptom row, confirmed no raw `출처:` leakage in the timeline detail, and confirmed no 390px horizontal overflow.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. The latest symptom metric card, symptom timeline row, saved question card, and question timeline row now all preserve multiple parsed source links.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
