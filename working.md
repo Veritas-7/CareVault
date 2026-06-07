@@ -29105,3 +29105,28 @@
   - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 16:38 KST - Timeline Evidence Label Date Fallback
+
+- Current Goal:
+  - Keep recent-timeline source-evidence accessibility labels aligned with the visible restored-date fallback.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Used the TDD path for this behavior change.
+  - Visible recent timeline dates now render malformed or blank restored dates as `날짜 미입력`, but `formatTimelineSourceEvidenceLabel()` still used the raw date string in source-link aria/title text.
+- Changes:
+  - `src/timelineSourceEvidenceLabels.test.ts`: added RED coverage for malformed restored dates in timeline source-evidence labels.
+  - `src/timelineSourceEvidenceLabels.ts`: reused `formatDatedRecordDisplayDate()` so source-evidence labels and visible timeline dates share the same fallback.
+- Tests:
+  - RED confirmed: `npm test -- src/timelineSourceEvidenceLabels.test.ts` failed because the label still began with `2026-06-31`.
+  - PASS focused test after fix: `npm test -- src/timelineSourceEvidenceLabels.test.ts` => `1 passed`, `2 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `575 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux browser metadata diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing cmux automation/snapshot context mismatch.
+  - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+- Next Steps:
+  - Run diff and secret gates, then commit/push the focused timeline evidence label date fallback if green.

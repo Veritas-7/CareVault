@@ -1,3 +1,5 @@
+import { formatDatedRecordDisplayDate } from "./recordOrdering";
+
 type TimelineSourceEvidenceLabelInput = {
   date: string;
   position: number;
@@ -14,7 +16,8 @@ export function formatTimelineSourceEvidenceLabel({
   sourceLabel,
 }: TimelineSourceEvidenceLabelInput) {
   const typeLabel = sourceEvidenceTypeLabel || "기록";
-  return `${date} 최근 타임라인 ${position}번째 ${title} ${typeLabel} 근거 ${sourceLabel}`;
+  const displayDate = formatDatedRecordDisplayDate(date);
+  return `${displayDate} 최근 타임라인 ${position}번째 ${title} ${typeLabel} 근거 ${sourceLabel}`;
 }
 
 export function formatTimelineSourceEvidenceOpenLabel(
