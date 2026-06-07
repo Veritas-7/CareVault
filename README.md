@@ -47,6 +47,7 @@ CareVault is a local-first health notebook for manually tracking:
 - KDCA risk-drinking alcohol-type matching for 소주/막걸리/와인/양주/고도주 with standard-drink and abstinence-guidance source evidence, kept as general cancer-prevention `watch` guidance rather than a cervical-specific risk overclaim
 - NCC immune-low food-safety matching for 저온살균 우유/저온살균 주스/저온살균 제품 plus 곰팡이가 핀 음식/곰팡이 핀 음식, keeping pasteurized choices as `ok` support and moldy-food wording as care-team `risk`
 - NCC immune-low cooking-hygiene matching for 손톱 밑까지 깨끗이 씻기/음식물에 머리카락 들어가지 않게/조리 기구 식기 수저 소독/식기 도마 칼 분리 사용/생고기 닭고기 생선 즙이 다른 식품에 떨어지지 않게/외식보다는 직접 요리, keeping source-backed safety practices as `ok` support rather than food-cure claims
+- NCC immune-low storage and thawing matching for 상하기 쉬운 음식 냉장고 냉동고 보관/요리하기 전의 고기 생선 닭고기 분리 보관/고기나 생선즙이 떨어지지 않도록 보관/냉동고 식품 랩이나 팩 포장/해동한 후 즉시 요리/남은 음식 즉시 냉장 보관, preserving long safety-practice phrases instead of collapsing to generic food names
 - NCC treatment eating balance and no-special-food guidance matching for 치료 중 균형 잡힌 식사/치료 중 충분한 열량과 단백질/치료 중 비타민 및 무기질/여러 가지 음식을 골고루 plus special-food/special-nutrient cure-claim confirmation
 - NCC mouth-pain soft and irritating food matching for 흰죽/닭죽/호박죽/쌀미음/바나나/수박/과일통조림/토마토주스/토스트/크래커/말린 음식
 - NCC dry-mouth moisture and saliva-stimulation matching for 물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기
