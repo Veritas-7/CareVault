@@ -186,6 +186,19 @@ function joinText(...values: Array<string | undefined>) {
   return values.map((value) => value?.trim()).filter(Boolean).join(" / ");
 }
 
+function getValidIsoDate(date: string | undefined) {
+  const trimmed = date?.trim() ?? "";
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (!match) return undefined;
+
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const normalized = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+  return normalized === trimmed ? trimmed : undefined;
+}
+
 function standardEvidence(standardId: string) {
   const standard = getHealthStandardCoverage(standardId);
   return standard ? `근거: ${formatHealthStandardSource(standard)}` : undefined;
@@ -467,9 +480,10 @@ export function buildCareActionQueue(
     ];
   });
 
+  const validToday = getValidIsoDate(todayIso);
   const visitActions = state.visits.flatMap<CareAction>((visit, index) => {
-    const date = visit.nextDate || visit.date;
-    if (!date || date < todayIso) return [];
+    const date = getValidIsoDate(visit.nextDate) ?? getValidIsoDate(visit.date);
+    if (!date || !validToday || date < validToday) return [];
 
     return [
       {

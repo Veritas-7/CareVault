@@ -28310,3 +28310,28 @@
   - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 14:57 KST - Care Action Visit Date Guard Started
+
+- Current Goal:
+  - Prevent malformed visit dates from appearing as scheduled visit items in the care action queue.
+- Context:
+  - Re-read thread identity, current repo sync, latest `working.md`, TDD/custom-git skills, and existing `surface:7` diagnostics before editing.
+  - Existing `surface:7` was used only for non-focusing URL/title/error diagnostics; no `select-workspace`, `focus-webview`, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+  - `buildCareActionQueue()` used raw visit date string comparison for visit queue inclusion. A malformed but future-looking date such as `2026-02-31` could appear as a scheduled visit action.
+- Changes:
+  - `src/careActionQueue.test.ts`: added RED coverage proving malformed future-looking visit dates should not create visit queue items.
+  - `src/careActionQueue.ts`: added strict ISO date validation for visit queue date candidates and `todayIso` before comparison.
+- Tests:
+  - RED confirmed: `npm test -- src/careActionQueue.test.ts` failed because a malformed `2026-02-31` visit produced a visit queue action.
+  - PASS focused test after fix: `npm test -- src/careActionQueue.test.ts` => `1 passed`, `30 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `556 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS browser diagnostics: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `errors list` returned `No browser errors`, and `get title` unexpectedly returned the URL instead of `CareVault` in this pass.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the current `surface:7` blank-document automation context unless it recovers without focus handoff.
+  - Non-focusing `cmux browser surface:7 get title` returned `http://127.0.0.1:1420/#dashboard` instead of the page title during this pass; no focus/workspace switch was used to resolve it.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused care-action visit-date guard if green.

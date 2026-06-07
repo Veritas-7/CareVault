@@ -325,6 +325,23 @@ describe("careActionQueue", () => {
     expect(actions.some((action) => action.source === "visit")).toBe(false);
   });
 
+  it("ignores malformed future-looking visit dates in the care queue", () => {
+    const actions = buildCareActionQueue(
+      {
+        ...state,
+        documents: [],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [{ ...state.visits[0], date: "2026-02-31", nextDate: "" }],
+        vitals: [],
+      },
+      "2026-02-27",
+    );
+
+    expect(actions.some((action) => action.source === "visit")).toBe(false);
+  });
+
   it("keeps partial lab number text from becoming a false abnormal queue item", () => {
     const actions = buildCareActionQueue(
       {
