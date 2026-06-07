@@ -35,6 +35,26 @@
 - Next Steps:
   - Commit and push this source slice, then run post-push sync/runtime verification.
 
+## 2026-06-08 05:56 KST - Post-Push NCC Immune-Low Food Safety Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center immune-low food purchase, storage, cooking, and pasteurized-product guidance slice.
+- Result:
+  - Source commit pushed: `2d39b19` (`Add NCC immune-low food safety terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `2d39b199f4e32d5d1fdc53efeed0320aafd636a9`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 656 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://www.cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 05:50 KST - Final NCC Weight Change Food Log
 
 - Current Goal:
