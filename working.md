@@ -27631,3 +27631,22 @@
   - Runtime is clean; no temporary Vite process is running.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow. Use only existing `surface:7` for direct cmux browser QA; do not select/focus the inactive `암관리` workspace or open a new browser unless the user explicitly approves it.
+
+## 2026-06-07 13:43 KST - Browser Storage Fallback README Alignment Started
+
+- Current Goal:
+  - Align README storage documentation with the recently hardened browser localStorage blocked/quota-limited fallback and explicit temporary-memory save labels.
+- Context:
+  - `README.md` still described browser preview as localStorage-only in two places, while current source behavior falls back to temporary memory when localStorage access or writes are blocked.
+  - `quality-gate` skill was checked for a read-only scan, but the configured binary path `/Users/wj/Ai/System/10_Projects/QualityGate/2.소스코드/.build/release/quality-gate` does not exist in the current filesystem; no auto-fix was attempted.
+  - Existing `surface:7` remains the only permitted CareVault browser target; no focus, workspace selection, Computer Use, or new browser/surface was used for this documentation slice.
+- Changes:
+  - `README.md`: updated Storage Notes to state that browser preview uses localStorage when available and degrades to temporary memory when localStorage is blocked or quota-limited.
+  - `README.md`: documented the explicit status labels `임시 메모리에만 저장됨` and `임시 메모리에만 자동 저장됨`.
+- Tests:
+  - PASS focused tests: `npm test -- src/storageStatus.test.ts src/storage.test.ts` => `2 passed`, `19 passed`.
+  - PASS diff whitespace check: `git diff --check`.
+- Issues:
+  - QualityGate read-only scan is unavailable because the configured binary path is missing.
+- Next Steps:
+  - Commit/push the README/working.md documentation update with explicit-path staging and standard secret gates.
