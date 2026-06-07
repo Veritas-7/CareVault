@@ -26997,3 +26997,30 @@
   - Browser-local diabetes toggle test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:11 KST - Cancer Care Mode Toggle Direct QA
+
+- Current Goal:
+  - Direct-QA the high-impact `암환자 관리` profile-mode workflow in the same existing `암관리` / `surface:7` cmux browser without occupying the visible window.
+  - Verify the checkbox updates accessible labels, topbar mode, CSV scope, care queue source counts, cervical care panel visibility, and restores to the exact baseline after a user-event round trip.
+- Context:
+  - `cancerCareMode` controls the topbar mode chip, CSV scope summary `자궁경부암 참고 포함/없음`, the care queue's cervical-screening item, and whether the `자궁경부암 케어 노트` panel is rendered.
+  - This slice is distinct from the diabetes toggle slice because it gates cancer-care content visibility and export scope rather than glucose assessment standards.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was reused at `http://127.0.0.1:1420/`, with no new browser/surface/tab and no visible-window control.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCancerModeBaseline"]`; storage length was `1872`, local keys only `carevault.v1`, profile `cancerCareMode=true`, topbar mode chip was `암환자 관리 모드`, toggle aria/title exposed `암환자 관리 켜짐 · 선택 해제하면 끕니다`, CSV preview scope included `자궁경부암 참고 포함`, the care queue aria included `자궁경부 1`, and the cervical care panel plus copy button were present.
+  - PASS off toggle: clicked the real `input[aria-label^="암환자 관리"]`; profile persisted `cancerCareMode=false`, toggle aria/title became `암환자 관리 꺼짐 · 선택하면 켭니다`, save chip showed `암환자 관리 꺼짐 · 브라우저 자동 저장됨`, storage length changed to `1873`, and topbar mode chip became `일반 관리 모드`.
+  - PASS cancer-care scope off: CSV export/preview aria changed to `자궁경부암 참고 없음`; care queue aria changed from `진료 준비 큐 8개 항목 ... 자궁경부 1 ...` to `진료 준비 큐 7개 항목 · 확인 필요 6개 · 일정/일반 1개 · 근거 포함 4개 · 질문 1 · 활력 3 · 검사 1 · 서류 1 · 방문 1 복사`; `.cervical-care-panel` and `.cervical-copy-button` counts were both `0`.
+  - PASS on toggle and cleanup: clicked the same checkbox again; profile persisted `cancerCareMode=true`, mode chip returned to `암환자 관리 모드`, CSV preview scope returned to `자궁경부암 참고 포함`, the care queue returned to `자궁경부 1`, the cervical care panel and copy button returned, and localStorage matched the captured baseline byte-for-byte.
+  - PASS cleanup: removed `carevault.__testCancerModeBaseline`; no `carevault.__test*` session keys remained.
+  - PASS browser diagnostics after cleanup: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/profileModeToggle.test.ts src/careActionQueue.test.ts src/csvExport.test.ts src/caregiverExport.test.ts src/visitPacket.test.ts` => `5 passed`, `124 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main`; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `working.md` is dirty with verified cancer care mode toggle direct QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
