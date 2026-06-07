@@ -44,6 +44,7 @@ export type FoodGuidanceSourceId =
   | "nccCervicalPracticeDiet"
   | "nccTreatmentEating"
   | "nccTreatmentNutrients"
+  | "nccTreatmentHealthyEatingTips"
   | "kdcaNutrition"
   | "kdcaAlcohol";
 
@@ -196,6 +197,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 치료 중 영양소",
     url: "https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
   },
+  nccTreatmentHealthyEatingTips: {
+    label: "국가암정보센터 치료 중 건강식을 먹는 요령",
+    url: "https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
+  },
   kdcaNutrition: {
     label: "질병관리청 국가건강정보포털 식이영양",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=6693",
@@ -266,6 +271,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "감자, 고구마, 옥수수, 물 6~8컵, 하루 6~8컵 물, 치료 중 단백질 식품, 치료 중 육류와 생선류, 치료 중 조개류, 치료 중 달걀 두부 우유, 치료 중 참기름 들기름 콩기름 버터, 치료 중 채소와 과일, 육류 섭취 시 이를 구워 먹기(숯불구이, 직접 구이 등)보다는 삶거나 끓여서(수육, 보쌈 등) 먹습니다, 육류 구워 먹기보다는 삶거나 끓여서 수육 보쌈 먹기, 완전히 익힌 음식, 저온살균 요구르트, 유통기한 확인, 냉장고에서 해동, 익힌 생선·닭고기·달걀, 수육, 보쌈, 고등어, 두부, 저지방 우유, 플레인 요구르트, 물",
         sourceIds: ["nccTreatmentNutrients", "nccPreventionDiet", "nccImmuneLowDiet"],
+      },
+      {
+        label: "치료 중 건강식 실천 예시",
+        detail:
+          "국가암정보센터 치료 중 건강식을 먹는 요령 자료는 식사가 치료의 보조 요법만큼 중요하다고 설명하며, 규칙적인 아침·점심·저녁 식사, 밥 반 그릇에서 한 그릇 또는 죽 하루 4~5번 이상, 끼니마다 충분한 단백질 반찬, 매끼 두 가지 이상 채소 반찬, 과일 하루 한두 번, 우유와 유제품 하루 1컵 이상과 요구르트·두유·치즈 대체를 안내합니다.",
+        examples:
+          "치료 중 규칙적인 아침 점심 저녁, 치료 중 밥 반 그릇에서 한 그릇, 치료 중 죽 하루 4~5번 이상, 치료 중 단백질 반찬 충분히, 치료 중 채소 반찬 매끼 두 가지 이상, 치료 중 과일 하루 한두 번, 치료 중 우유와 유제품 하루 1컵, 치료 중 요구르트 두유 치즈",
+        sourceIds: ["nccTreatmentHealthyEatingTips"],
       },
       {
         label: "메스꺼움 시 위 부담 적은 음식",
@@ -788,6 +801,46 @@ const supportiveFoods: FoodRuleTerm[] = [
     "치료 중 채소와 과일",
     "국가암정보센터 치료 중 영양소 단백질·지방·비타민/무기질 식품 후보",
     "nccTreatmentNutrients",
+  ],
+  [
+    "치료 중 규칙적인 아침 점심 저녁",
+    "국가암정보센터 치료 중 건강식 실천 식품 후보",
+    "nccTreatmentHealthyEatingTips",
+  ],
+  [
+    "치료 중 밥 반 그릇에서 한 그릇",
+    "국가암정보센터 치료 중 건강식 실천 식품 후보",
+    "nccTreatmentHealthyEatingTips",
+  ],
+  [
+    "치료 중 죽 하루 4~5번 이상",
+    "국가암정보센터 치료 중 건강식 실천 식품 후보",
+    "nccTreatmentHealthyEatingTips",
+  ],
+  [
+    "치료 중 단백질 반찬 충분히",
+    "국가암정보센터 치료 중 건강식 실천 식품 후보",
+    "nccTreatmentHealthyEatingTips",
+  ],
+  [
+    "치료 중 채소 반찬 매끼 두 가지 이상",
+    "국가암정보센터 치료 중 건강식 실천 식품 후보",
+    "nccTreatmentHealthyEatingTips",
+  ],
+  [
+    "치료 중 과일 하루 한두 번",
+    "국가암정보센터 치료 중 건강식 실천 식품 후보",
+    "nccTreatmentHealthyEatingTips",
+  ],
+  [
+    "치료 중 우유와 유제품 하루 1컵",
+    "국가암정보센터 치료 중 건강식 실천 식품 후보",
+    "nccTreatmentHealthyEatingTips",
+  ],
+  [
+    "치료 중 요구르트 두유 치즈",
+    "국가암정보센터 치료 중 건강식 실천 식품 후보",
+    "nccTreatmentHealthyEatingTips",
   ],
   ["흰죽", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["닭죽", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],

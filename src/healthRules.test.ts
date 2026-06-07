@@ -1470,6 +1470,52 @@ describe("healthRules", () => {
     expect(careTeamGuideText).toContain("특별한 항암 영양소");
   });
 
+  it("recognizes NCC treatment healthy-eating practical meal examples", () => {
+    const assessment = assessCancerFood(
+      "치료 중 규칙적인 아침 점심 저녁, 치료 중 밥 반 그릇에서 한 그릇, 치료 중 죽 하루 4~5번 이상, 치료 중 단백질 반찬 충분히, 치료 중 채소 반찬 매끼 두 가지 이상, 치료 중 과일 하루 한두 번, 치료 중 우유와 유제품 하루 1컵, 치료 중 요구르트 두유 치즈",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccTreatmentHealthyEatingTips.label).toBe(
+      "국가암정보센터 치료 중 건강식을 먹는 요령",
+    );
+    expect(foodGuidanceSources.nccTreatmentHealthyEatingTips.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "치료 중 규칙적인 아침 점심 저녁",
+      "치료 중 밥 반 그릇에서 한 그릇",
+      "치료 중 죽 하루 4~5번 이상",
+      "치료 중 단백질 반찬 충분히",
+      "치료 중 채소 반찬 매끼 두 가지 이상",
+      "치료 중 과일 하루 한두 번",
+      "치료 중 우유와 유제품 하루 1컵",
+      "치료 중 요구르트 두유 치즈",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 치료 중 건강식 실천 식품 후보",
+        sourceId: "nccTreatmentHealthyEatingTips",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 치료 중 건강식을 먹는 요령 - https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("치료 중 단백질 반찬 충분히");
+    expect(balancedGuideText).toContain("치료 중 채소 반찬 매끼 두 가지 이상");
+    expect(balancedGuideText).toContain("치료 중 우유와 유제품 하루 1컵");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/암을 낫게|특효|완치/);
+  });
+
   it("recognizes NCC mouth-pain soft and irritating food examples", () => {
     const assessment = assessCancerFood(
       "흰죽, 닭죽, 호박죽, 쌀미음, 바나나, 수박, 과일통조림, 토마토주스, 토스트, 크래커, 말린 음식",

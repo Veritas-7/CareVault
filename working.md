@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-08 06:27 KST - NCC Treatment Healthy Eating Practical Meal Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center treatment-period healthy-eating practical meal examples.
+- Context:
+  - Continued from clean/synced CareVault state after `c3374485732da86ce91b0905a602be21339ba8f9`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept new practical meal examples scoped to `치료 중 ...` phrases so broad generic foods such as `채소 반찬`, `두유`, or `요구르트` do not silently change source precedence.
+- Research:
+  - Checked National Cancer Information Center `건강식을 먹는 요령`, final update 2015-01-05. The page says diet is as important as therapeutic adjuncts during treatment, recommends regular breakfast/lunch/dinner, rice half bowl to one bowl or porridge 4-5 times daily if eating rice is difficult, sufficient protein side dishes at each meal, at least two vegetable side dishes per meal, fruit once or twice daily, and at least one cup of milk/dairy daily with yogurt, soy milk, or cheese alternatives.
+  - Applied the source as treatment-period practical eating support only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, balanced guide-card, ok-match, and source-evidence coverage for treatment-period healthy-eating practical meal examples.
+  - `src/healthRules.ts`: added `nccTreatmentHealthyEatingTips`, a balanced guide-card item, and source-backed ok matching terms for treatment-context regular meals, rice/porridge, protein side dishes, vegetables, fruit, dairy, and dairy alternatives.
+  - `README.md`: added the new NCC treatment healthy-eating practical meal phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccTreatmentHealthyEatingTips` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 95 tests.
+  - PASS full tests: `npm test` => 64 files / 660 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `c3374485732da86ce91b0905a602be21339ba8f9`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 15.34 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `건강식을 먹는 요령`, `https://www.cancer.go.kr/lay1/S1T471C475/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice so far.
+- Next Steps:
+  - Stage explicit source/log paths, run staged gates, then commit and push this source slice if all gates pass.
+
 ## 2026-06-08 06:22 KST - Final NCC Treatment Nutrient Food Log
 
 - Current Goal:
