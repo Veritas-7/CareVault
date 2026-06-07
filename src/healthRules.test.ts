@@ -702,6 +702,28 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC prevention fresh seasonal vegetable guidance terms", () => {
+    const assessment = assessCancerFood("신선한 채소, 다양한 색의 채소, 제철 식품");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["신선한 채소", "다양한 색의 채소", "제철 식품"]);
+    for (const term of ["신선한 채소", "다양한 색의 채소", "제철 식품"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암예방 식단 신선·제철 채소 선택 예시 후보",
+        sourceId: "nccPreventionMealExamples",
+      });
+    }
+    expect(formatFoodMatchEvidence(matchesByTerm["신선한 채소"])).toContain(
+      "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention group-meal example dishes without cure claims", () => {
     const assessment = assessCancerFood("미역국, 상추쌈, 버섯나물, 불고기, 열무김치");
     const terms = assessment.matches.map((match) => match.term);

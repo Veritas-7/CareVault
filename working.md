@@ -1,5 +1,33 @@
 # CareVault Working Notes
 
+## 2026-06-07 22:39 KST - NCC Prevention Fresh Seasonal Vegetable Guidance Terms
+
+- Current Goal:
+  - Add a narrow source-backed food-judgment match for National Cancer Information Center guidance about fresh, varied-color vegetables and seasonal foods.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `e86cf68b0140e4947b9c6e3c00bf25a60c94b1f4`.
+  - Used TDD and kept the change to one food-rule slice.
+  - Official-source re-check used National Cancer Information Center `암예방을 위한 요리`, which says to use various colored vegetables and seasonal foods, and to eat enough fresh vegetables in the salad example.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `신선한 채소`, `다양한 색의 채소`, and `제철 식품` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added those exact support terms under `nccPreventionMealExamples` and exposed them in the balanced guide examples/detail.
+  - `README.md`: added the new official-example terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new terms produced `neutral` instead of `ok`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 42 tests.
+  - PASS full tests: `npm test` => 64 files / 607 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-06 04:34 KST - Symptom Save Local Feedback cmux QA
 
 - Completed slice: add local visible feedback for symptom record saves.
