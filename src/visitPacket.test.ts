@@ -279,6 +279,91 @@ describe("visit packet", () => {
     expect(fingerprint).not.toContain("internal-1");
   });
 
+  it("ignores malformed dated records in visit packet content fingerprints", () => {
+    const stateWithMalformedDates: VisitPacketState = {
+      ...sampleState,
+      documents: [
+        ...sampleState.documents,
+        {
+          date: "2026-02-31",
+          title: "깨진 fingerprint 서류",
+          category: "visit-note",
+          body: "fingerprint에 들어오면 안 됨",
+          tags: "복원 오류",
+        },
+      ],
+      labResults: [
+        ...sampleState.labResults,
+        {
+          date: "2026-13-01",
+          name: "ANC",
+          value: "0.4",
+          unit: "10^3/uL",
+          lower: "1.5",
+          upper: "8.0",
+          note: "깨진 fingerprint 검사",
+        },
+      ],
+      questions: [
+        ...sampleState.questions,
+        {
+          date: "2026-06-31",
+          topic: "깨진 fingerprint 질문",
+          question: "fingerprint에 들어오면 안 됨",
+          priority: "high",
+          status: "open",
+          answer: "",
+        },
+      ],
+      symptoms: [
+        ...sampleState.symptoms,
+        {
+          date: "2026-11-31",
+          symptom: "고열",
+          severity: 8,
+          medication: "",
+          body: "깨진 fingerprint 증상",
+          action: "진료팀 확인",
+        },
+      ],
+      visits: [
+        ...sampleState.visits,
+        {
+          date: "2026-12-32",
+          hospital: "깨진 fingerprint 병원",
+          reason: "복원 오류",
+          summary: "fingerprint에 들어오면 안 됨",
+          plan: "",
+          nextDate: "",
+        },
+      ],
+      vitals: [
+        ...sampleState.vitals,
+        {
+          date: "2026-06-31",
+          type: "blood-pressure",
+          systolic: 142,
+          diastolic: 92,
+          note: "깨진 fingerprint 혈압",
+        },
+      ],
+    };
+
+    const fingerprint = buildVisitPacketExportFingerprint(sampleState, "브로콜리");
+    const malformedFingerprint = buildVisitPacketExportFingerprint(
+      stateWithMalformedDates,
+      "브로콜리",
+    );
+
+    expect(malformedFingerprint).toBe(fingerprint);
+    expect(malformedFingerprint).not.toContain("깨진 fingerprint");
+    expect(malformedFingerprint).not.toContain("2026-02-31");
+    expect(malformedFingerprint).not.toContain("2026-13-01");
+    expect(malformedFingerprint).not.toContain("2026-06-31");
+    expect(malformedFingerprint).not.toContain("2026-11-31");
+    expect(malformedFingerprint).not.toContain("2026-12-32");
+  });
+
   it("builds a clinician-facing markdown summary from tracked records", () => {
     const markdown = buildVisitPacketMarkdown(sampleState, {
       exportedAt: "2026-06-03T08:00:00.000Z",
@@ -1230,5 +1315,118 @@ describe("visit packet", () => {
     expect(markdown).toContain("범위: 최근 7일");
     expect(markdown).not.toContain("깨진 날짜 서류");
     expect(markdown).not.toContain("깨진 날짜 혈압");
+  });
+
+  it("excludes malformed dated records from all-range visit packet summaries", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        documents: [
+          ...sampleState.documents,
+          {
+            date: "2026-02-31",
+            title: "깨진 전체 기간 서류",
+            category: "visit-note",
+            body: "전체 기간에도 들어오면 안 됨",
+            tags: "복원 오류",
+          },
+        ],
+        labResults: [
+          ...sampleState.labResults,
+          {
+            date: "2026-13-01",
+            name: "ANC",
+            value: "0.4",
+            unit: "10^3/uL",
+            lower: "1.5",
+            upper: "8.0",
+            note: "깨진 전체 기간 검사",
+          },
+        ],
+        questions: [
+          ...sampleState.questions,
+          {
+            date: "2026-06-31",
+            topic: "깨진 전체 기간 질문",
+            question: "전체 기간 질문에 들어오면 안 됨",
+            priority: "high",
+            status: "open",
+            answer: "",
+          },
+        ],
+        symptoms: [
+          ...sampleState.symptoms,
+          {
+            date: "2026-11-31",
+            symptom: "고열",
+            severity: 8,
+            medication: "",
+            body: "전체 기간 증상에 들어오면 안 됨",
+            action: "진료팀 확인",
+          },
+        ],
+        visits: [
+          ...sampleState.visits,
+          {
+            date: "2026-12-32",
+            hospital: "깨진 전체 기간 병원",
+            reason: "복원 오류",
+            summary: "전체 기간 방문에 들어오면 안 됨",
+            plan: "",
+            nextDate: "",
+          },
+        ],
+        vitals: [
+          ...sampleState.vitals,
+          {
+            date: "2026-06-31",
+            type: "blood-pressure",
+            systolic: 142,
+            diastolic: 92,
+            note: "깨진 전체 기간 혈압",
+          },
+        ],
+      },
+      { exportedAt: "2026-06-03T08:00:00.000Z", range: "all" },
+    );
+
+    expect(markdown).toContain("범위: 전체");
+    expect(markdown).toContain("혈액검사 결과");
+    expect(markdown).toContain("2026-06-03");
+    expect(markdown).not.toContain("깨진 전체 기간 서류");
+    expect(markdown).not.toContain("깨진 전체 기간 검사");
+    expect(markdown).not.toContain("깨진 전체 기간 질문");
+    expect(markdown).not.toContain("깨진 전체 기간 증상");
+    expect(markdown).not.toContain("깨진 전체 기간 병원");
+    expect(markdown).not.toContain("깨진 전체 기간 혈압");
+    expect(markdown).not.toContain("2026-02-31");
+    expect(markdown).not.toContain("2026-13-01");
+    expect(markdown).not.toContain("2026-06-31");
+    expect(markdown).not.toContain("2026-11-31");
+    expect(markdown).not.toContain("2026-12-32");
+  });
+
+  it("omits malformed follow-up dates from visit packet visit rows", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        visits: [
+          {
+            date: "2026-06-03",
+            hospital: "종양내과",
+            reason: "정기 추적",
+            summary: "검사 결과 확인",
+            plan: "2주 뒤 재검",
+            nextDate: "2026-06-31",
+          },
+        ],
+      },
+      { exportedAt: "2026-06-03T08:00:00.000Z", range: "all" },
+    );
+
+    expect(markdown).toContain("종양내과 / 정기 추적");
+    expect(markdown).toContain("2주 뒤 재검");
+    expect(markdown).not.toContain("다음 일정: 2026-06-31");
+    expect(markdown).not.toContain("2026-06-31");
   });
 });

@@ -206,34 +206,38 @@ export function formatVisitPacketPreviewStatus(range: VisitPacketRange) {
   return `진료 요약 미리보기 생성 · 범위 ${visitPacketRangeLabels[range]}`;
 }
 
+function hasValidRecordDate<T extends { date: string }>(item: T) {
+  return Boolean(getValidIsoDate(item.date));
+}
+
 export function buildVisitPacketExportFingerprint(
   state: VisitPacketState,
   foodQuery = "",
 ) {
   return JSON.stringify({
-    documents: state.documents.map((document) => ({
+    documents: state.documents.filter(hasValidRecordDate).map((document) => ({
       attachmentName: document.attachmentName,
       body: document.body,
       category: document.category,
-      date: document.date,
+      date: getValidIsoDate(document.date) ?? "",
       nextAction: document.nextAction,
       reviewStatus: document.reviewStatus,
       tags: document.tags,
       title: document.title,
     })),
     foodQuery,
-    labResults: state.labResults.map(formatLabResultFingerprint),
+    labResults: state.labResults.filter(hasValidRecordDate).map(formatLabResultFingerprint),
     profile: state.profile,
-    questions: state.questions.map(formatQuestionFingerprint),
-    symptoms: state.symptoms.map(formatSymptomFingerprint),
-    visits: state.visits.map(formatVisitFingerprint),
-    vitals: state.vitals.map(formatVitalFingerprint),
+    questions: state.questions.filter(hasValidRecordDate).map(formatQuestionFingerprint),
+    symptoms: state.symptoms.filter(hasValidRecordDate).map(formatSymptomFingerprint),
+    visits: state.visits.filter(hasValidRecordDate).map(formatVisitFingerprint),
+    vitals: state.vitals.filter(hasValidRecordDate).map(formatVitalFingerprint),
   });
 }
 
 function formatVitalFingerprint(vital: VisitPacketState["vitals"][number]) {
   return {
-    date: vital.date,
+    date: getValidIsoDate(vital.date) ?? "",
     diastolic: vital.diastolic,
     glucoseContext: vital.glucoseContext,
     glucoseMgDl: vital.glucoseMgDl,
@@ -246,9 +250,9 @@ function formatVitalFingerprint(vital: VisitPacketState["vitals"][number]) {
 
 function formatVisitFingerprint(visit: VisitPacketState["visits"][number]) {
   return {
-    date: visit.date,
+    date: getValidIsoDate(visit.date) ?? "",
     hospital: visit.hospital,
-    nextDate: visit.nextDate,
+    nextDate: getValidIsoDate(visit.nextDate) ?? "",
     plan: visit.plan,
     reason: visit.reason,
     summary: visit.summary,
@@ -257,7 +261,7 @@ function formatVisitFingerprint(visit: VisitPacketState["visits"][number]) {
 
 function formatLabResultFingerprint(lab: VisitPacketState["labResults"][number]) {
   return {
-    date: lab.date,
+    date: getValidIsoDate(lab.date) ?? "",
     lower: lab.lower,
     name: lab.name,
     note: lab.note,
@@ -271,7 +275,7 @@ function formatSymptomFingerprint(symptom: VisitPacketState["symptoms"][number])
   return {
     action: symptom.action,
     body: symptom.body,
-    date: symptom.date,
+    date: getValidIsoDate(symptom.date) ?? "",
     medication: symptom.medication,
     severity: symptom.severity,
     symptom: symptom.symptom,
@@ -281,7 +285,7 @@ function formatSymptomFingerprint(symptom: VisitPacketState["symptoms"][number])
 function formatQuestionFingerprint(question: VisitPacketState["questions"][number]) {
   return {
     answer: question.answer,
-    date: question.date,
+    date: getValidIsoDate(question.date) ?? "",
     priority: normalizeQuestionPriority(question.priority),
     question: question.question,
     status: question.status,
@@ -325,10 +329,9 @@ function getValidIsoDate(date: string) {
 }
 
 function filterByRange<T extends { date: string }>(items: T[], startDate: string | null) {
-  if (!startDate) return items;
   return items.filter((item) => {
     const date = getValidIsoDate(item.date);
-    return Boolean(date && date >= startDate);
+    return Boolean(date && (!startDate || date >= startDate));
   });
 }
 
@@ -424,7 +427,7 @@ export function buildVisitPacketMarkdown(
     .slice(0, maxItems)
     .map(
       (visit) =>
-        `- ${visit.date}: ${visit.hospital} / ${visit.reason}${optionalSuffix(visit.summary, " / 요약: ")}${optionalSuffix(visit.plan, " / 계획: ")}${optionalSuffix(visit.nextDate, " / 다음 일정: ")}`,
+        `- ${visit.date}: ${visit.hospital} / ${visit.reason}${optionalSuffix(visit.summary, " / 요약: ")}${optionalSuffix(visit.plan, " / 계획: ")}${optionalSuffix(getValidIsoDate(visit.nextDate) ?? "", " / 다음 일정: ")}`,
     );
 
   const documentLines = latestFirst(filterByRange(state.documents, rangeStartDate))

@@ -28665,3 +28665,33 @@
   - Non-focusing `cmux browser surface:7 get title` still returned the URL value during this post-push pass.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 15:45 KST - Visit Packet All-Range Date Guard Started
+
+- Current Goal:
+  - Prevent malformed restored dates from appearing in visit packet `range: "all"` Markdown summaries or export fingerprints.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Re-read TDD and custom git instructions before this behavior change.
+  - `visitPacket.ts` already excluded malformed record dates from bounded ranges, but `range: "all"` returned raw rows before sorting/rendering.
+  - Visit rows also rendered raw `nextDate`, so a valid visit could still export an invalid follow-up date.
+- Changes:
+  - `src/visitPacket.test.ts`: added RED coverage for malformed all-range dated records, malformed visit `nextDate`, and malformed dated records in export fingerprints.
+  - `src/visitPacket.ts`: made `filterByRange()` require strict valid `YYYY-MM-DD` calendar dates even when there is no range start date.
+  - `src/visitPacket.ts`: omitted malformed visit follow-up dates from Markdown and filtered/sanitized visit packet export fingerprints to the same renderable date policy.
+- Tests:
+  - RED confirmed: `npm test -- src/visitPacket.test.ts` failed because all-range Markdown included malformed dated document, lab, question, symptom, visit, and vital rows.
+  - RED confirmed: `npm test -- src/visitPacket.test.ts` failed because a malformed visit `nextDate` rendered as `다음 일정: 2026-06-31`.
+  - RED confirmed: `npm test -- src/visitPacket.test.ts` failed because malformed dated records changed the visit packet export fingerprint.
+  - PASS focused test after fixes: `npm test -- src/visitPacket.test.ts` => `1 passed`, `26 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `567 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup before and after temporary Vite check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PARTIAL cmux browser diagnostics without focus takeover: after a temporary Vite server on port `1420`, existing `surface:7` `navigate http://127.0.0.1:1420/#dashboard --snapshot-after` returned `OK`; `get url` returned `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct DOM/click QA is still blocked by a split cmux context: `get url/title` sees CareVault, but `eval` and `snapshot` still report `about:blank`, empty body, no `#root`, and `0` buttons.
+  - `npm run runtime:doctor:dev` is not suitable for Vite-only browser checks because it expects a full current-source Tauri dev session; it correctly failed while confirming port `1420` was served by this project's Vite process.
+  - No focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used. The temporary Vite server PID was verified as this project's `node ... vite --host 127.0.0.1 --port 1420` process before it was terminated.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused visit packet all-range date guard if green.
