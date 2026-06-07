@@ -30560,6 +30560,35 @@
 - Next Steps:
   - Stage the explicit source paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
 
+## 2026-06-07 22:00 KST - Post-Push NCC Prevention Direct-Flame Fried Cooking Watch Terms
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center direct-flame/fried cooking-method source tightening slice.
+- Result:
+  - Source commit pushed: `12530db` (`Add NCC prevention cooking-method examples`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `12530db850f236564ccf2993ca9037f300acae59`.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `6ba3101403246bd572a18a8d0b7acfa30c4a685f`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide card lacked `직화 구이`, and `직화 구이`/`튀김 조리`/`튀긴 음식` were missing or mapped to broader sources.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 38 tests.
+  - PASS full tests: `npm test` => 64 files / 603 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 7.27 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 603 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
+  - Commit/push this `working.md` update and recheck final sync/runtime cleanup.
+
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 
 - Current Goal:
