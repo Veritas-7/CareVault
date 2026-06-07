@@ -27358,3 +27358,30 @@
   - Runtime is clean; source code is unchanged in this QA-only slice.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 13:05 KST - Caregiver Minimum Section Guard Direct QA
+
+- Current Goal:
+  - Direct-QA the caregiver-share section minimum guard in the existing `암관리` / `surface:7` cmux browser.
+  - Verify that at least one caregiver section must stay included, with scoped disabled labels/status and byte-clean restoration afterward.
+- Context:
+  - `src/caregiverShareSettings.test.ts` covers the minimum-section label text, but recent same-surface caregiver QA focused on presets, stale previews, and redaction/content fingerprints rather than the live last-included checkbox guard.
+  - This pass used only non-window same-surface cmux browser commands; no new browser, surface, tab, desktop focus handoff, Computer Use, or cmux restart was used.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface minimum-section QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated in place to `http://127.0.0.1:1420/#export`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverMinimumSectionBaseline"]`; storage length was `1872`, reset was disabled with `보호자 공유 설정 초기화 · 비활성: 이미 기본 공유 설정입니다`, and all seven caregiver section checkboxes were included, enabled, and rendered `14x44`.
+  - PASS real exclusion clicks: clicked the real caregiver section checkboxes for 질문, 서류, 증상, 검사, 음식, and 혈압·혈당·체온. Persisted caregiver sections became `visits=true` and the other six sections `false`; save chip showed `포함 1개 · 제외 6개 · 브라우저 자동 저장됨`.
+  - PASS minimum guard: the remaining 진료 checkbox stayed checked and became disabled with aria `보호자 공유본 포함 섹션 진료 포함됨 · 최소 1개 섹션은 포함해야 해서 해제할 수 없습니다`; reset/export/preview labels all reflected `의도 직접 설정 · 프로필 표시 · 메모 없음 · 포함 1개 · 제외 6개`.
+  - PASS disabled click guard: clicking the disabled 진료 checkbox returned without changing state; 진료 remained the only included section, storage length stayed `1878`, and the same save chip persisted.
+  - PASS cleanup: restored the captured baseline into `localStorage["carevault.v1"]`, removed `carevault.__testCaregiverMinimumSectionBaseline`, reloaded the same `surface:7`, and confirmed storage length `1872`, all seven sections restored to included/enabled, reset aria returned to the default disabled reason, no `carevault.__test*` keys remained, no preview/dialog/alert was open, and save chip returned to `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/caregiverShareSettings.test.ts src/caregiverExport.test.ts src/exportPreviewSummary.test.ts` => `3 passed`, `85 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo diagnostics: `git status --short --branch` showed `## main...origin/main` before logging.
+- Current state:
+  - `working.md` is dirty with verified caregiver minimum-section guard QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
