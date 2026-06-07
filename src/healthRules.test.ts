@@ -276,6 +276,33 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes the exact NCC healthy-eating low-fat milk sentence", () => {
+    const assessment = assessCancerFood(
+      "저지방 우유를 하루 1잔 정도 마십니다; 저지방 우유 하루 1잔 정도 마시기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "저지방 우유를 하루 1잔 정도 마십니다",
+      "저지방 우유 하루 1잔 정도 마시기",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 저지방 우유 하루 1잔 정도 섭취 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating low-fat milk daily guidance terms", () => {
     const assessment = assessCancerFood(
       "하루 1잔 저지방 우유, 저지방 우유 하루 1잔, 저지방 우유 1잔, 저지방 우유",
@@ -848,6 +875,16 @@ describe("healthRules", () => {
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
     ).toContain("모차렐라");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("저지방 우유를 하루 1잔 정도 마십니다");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("저지방 우유 하루 1잔 정도 마시기");
     const limitGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "limit",
     )?.items;

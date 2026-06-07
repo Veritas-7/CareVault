@@ -34,6 +34,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating daily legume matching for 두류 매일 섭취/두류 가공품 매일 섭취/두유 두부 매일 섭취
 - NCC healthy-eating daily legume sentence matching for 두류와 두류 가공품 (두유, 두부 등)을 매일 섭취합니다/두류 두류 가공품 두유 두부 매일 섭취
 - NCC healthy-eating low-fat milk daily matching for 저지방 우유 하루 1잔 정도/하루 1잔 정도 저지방 우유
+- NCC healthy-eating low-fat milk sentence matching for 저지방 우유를 하루 1잔 정도 마십니다/저지방 우유 하루 1잔 정도 마시기
 - NCC healthy-eating hot/spicy-food avoid matching for 너무 뜨겁거나 매운 음식의 섭취는 피합니다/너무 뜨겁거나 매운 음식 섭취 피하기
 - NCC healthy-eating artificial seasoning limit sentence matching for 인공조미료(화학조미료 포함)의 사용을 제한하며 음식을 싱겁게 만들어 먹습니다/인공조미료 화학조미료 사용 제한 싱겁게 만들어 먹기
 - NCC healthy-eating added salt/soy-sauce avoid matching for 음식을 먹을 때 추가로 소금이나 간장을 사용하지 않습니다/소금이나 간장 사용하지 않기

@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 03:54 KST - NCC Healthy-Eating Low-Fat Milk Exact Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating sentence about drinking low-fat milk about one cup daily.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `b17b07f6d528156ffc1fba063145606cbce4e35a`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` keeps nutrition judgment source-backed and prohibits cure/treatment food claims; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page says `저지방 우유를 하루 1잔 정도 마십니다`.
+  - Applied the source as balanced/support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `저지방 우유를 하루 1잔 정도 마십니다` and `저지방 우유 하루 1잔 정도 마시기` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the two longer low-fat milk source-sentence phrases under `nccPreventionDiet` before shorter low-fat milk fallback matches, and aligned the balanced guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating low-fat milk exact sentence phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence collapsed to `저지방 우유`, the normalized phrase collapsed to `저지방 우유 하루 1잔 정도`, and the guide strings were missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 76 tests.
+  - PASS full tests: `npm test` => 64 files / 641 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue so far.
+- Next Steps:
+  - Run full tests, typecheck, build, runtime doctor, then stage only this slice's source/docs/log paths for secret-safe commit and push.
+
 ## 2026-06-08 03:49 KST - Post-Push NCC Healthy-Eating Soup Broth Limit Sentence
 
 - Current Goal:
