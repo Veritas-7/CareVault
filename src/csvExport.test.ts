@@ -671,6 +671,57 @@ describe("csvExport", () => {
     expect(csv).toContain("국가암정보센터 자궁경부암 일반적 증상");
   });
 
+  it("keeps malformed date strings out of CSV rows without dropping record detail", () => {
+    const malformedCsv = buildCareVaultCsv(
+      {
+        ...state,
+        labResults: [
+          ...state.labResults,
+          {
+            date: "2026-06-31",
+            name: "CRP",
+            value: "9",
+            unit: "mg/L",
+            lower: "",
+            upper: "",
+            note: "깨진 날짜 검사",
+          },
+        ],
+        visits: [
+          ...state.visits,
+          {
+            date: "2026-02-31",
+            hospital: "깨진 날짜 병원",
+            reason: "복원 확인",
+            summary: "요약 유지",
+            plan: "계획 유지",
+            nextDate: "2026-13-01",
+          },
+        ],
+        vitals: [
+          ...state.vitals,
+          {
+            date: "2026-06-31",
+            type: "blood-pressure",
+            systolic: 150,
+            diastolic: 95,
+            note: "깨진 날짜 혈압",
+          },
+        ],
+      },
+      "2026-06-03T10:00:00.000Z",
+    );
+
+    expect(malformedCsv).toContain('"vital","","혈압","150/95 mmHg"');
+    expect(malformedCsv).toContain(
+      '"visit","","깨진 날짜 병원","복원 확인","","요약 유지 | 계획 유지"',
+    );
+    expect(malformedCsv).toContain('"lab","","CRP","9 mg/L"');
+    expect(malformedCsv).not.toContain("2026-06-31");
+    expect(malformedCsv).not.toContain("2026-02-31");
+    expect(malformedCsv).not.toContain("2026-13-01");
+  });
+
   it("exports source-backed fever or chills symptoms as care queue rows", () => {
     const csv = buildCareVaultCsv(
       {

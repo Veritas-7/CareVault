@@ -161,6 +161,19 @@ function joinDetail(parts: Array<string | undefined>) {
   return parts.map((part) => part?.trim()).filter(Boolean).join(" | ");
 }
 
+function csvIsoDate(value: string | undefined) {
+  const trimmed = value?.trim() ?? "";
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (!match) return "";
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const normalized = new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
+
+  return normalized === trimmed ? trimmed : "";
+}
+
 const profileSexLabels: Record<string, string> = {
   female: "여성",
   male: "남성",
@@ -332,7 +345,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
     rows.push(
       row([
         "care_queue",
-        action.date,
+        csvIsoDate(action.date),
         formatCareActionQueueLabel(action),
         action.title,
         action.tone,
@@ -374,7 +387,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
     rows.push(
       row([
         "vital",
-        vital.date,
+        csvIsoDate(vital.date),
         title,
         value,
         status,
@@ -387,10 +400,10 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
     rows.push(
       row([
         "visit",
-        visit.date,
+        csvIsoDate(visit.date),
         visit.hospital,
         visit.reason,
-        visit.nextDate ? `다음 예약 ${visit.nextDate}` : "",
+        csvIsoDate(visit.nextDate) ? `다음 예약 ${csvIsoDate(visit.nextDate)}` : "",
         joinDetail([visit.summary, visit.plan]),
       ]),
     );
@@ -403,7 +416,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
     rows.push(
       row([
         "lab",
-        lab.date,
+        csvIsoDate(lab.date),
         lab.name,
         `${lab.value}${lab.unit ? ` ${lab.unit}` : ""}`,
         range ? `${rangeSource} ${range}` : rangeSource,
@@ -416,7 +429,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
     rows.push(
       row([
         "symptom",
-        symptom.date,
+        csvIsoDate(symptom.date),
         symptom.symptom,
         `${symptom.severity}/10`,
         joinDetail([formatSymptomRecordLabel(symptom), symptom.medication]),
@@ -434,7 +447,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
     rows.push(
       row([
         "question",
-        question.date,
+        csvIsoDate(question.date),
         question.topic,
         questionEvidence.body,
         question.status,
@@ -451,7 +464,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
     rows.push(
       row([
         section,
-        document.date,
+        csvIsoDate(document.date),
         document.title,
         document.category,
         document.reviewStatus,

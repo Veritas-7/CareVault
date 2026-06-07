@@ -28530,3 +28530,28 @@
   - Non-focusing `cmux browser surface:7 get title` still returned the URL value during this post-push pass.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 15:25 KST - CSV Export Date Sanitization Started
+
+- Current Goal:
+  - Keep malformed restored date strings out of CSV date columns while preserving the record details.
+- Context:
+  - Re-read thread identity, repo sync, latest `working.md`, TDD/custom-git skills, `csvExport` source/tests, and existing `surface:7` diagnostics before editing.
+  - Existing cmux `surface:7` was used only for non-focusing URL/title/error diagnostics. No `select-workspace`, `focus-webview`, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+  - `buildCareVaultCsv()` wrote raw date strings into care queue, vital, visit, lab, symptom, question, and document date columns. Malformed restored values such as `2026-06-31` could appear in exported spreadsheet rows.
+- Changes:
+  - `src/csvExport.test.ts`: added RED coverage proving malformed date strings are removed from CSV rows without dropping vital, visit, or lab details.
+  - `src/csvExport.ts`: added strict ISO date sanitization for CSV date columns and visit `nextDate` status text.
+- Tests:
+  - RED confirmed: `npm test -- src/csvExport.test.ts` failed because malformed date strings remained in care queue and CSV record rows.
+  - PASS focused test after fix: `npm test -- src/csvExport.test.ts` => `1 passed`, `23 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `562 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS cmux browser diagnostics: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `errors list` returned `No browser errors`, and `get title` returned the URL value instead of `CareVault`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the current `surface:7` automation context mismatch unless it recovers without focus handoff.
+  - Non-focusing `cmux browser surface:7 get title` still returns the URL value.
+- Next Steps:
+  - Run standard diff/secret gates, then commit/push the focused CSV export date sanitization if green.
