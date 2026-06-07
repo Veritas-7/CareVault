@@ -41,6 +41,7 @@ export type FoodGuidanceSourceId =
   | "nccComplementaryTherapy"
   | "nccCervicalDiet"
   | "nccCervicalFoodPrevention"
+  | "nccCervicalRiskFactors"
   | "nccCervicalPracticeDiet"
   | "nccTreatmentEating"
   | "nccTreatmentNutrients"
@@ -186,6 +187,10 @@ export const foodGuidanceSources: Record<
   nccCervicalFoodPrevention: {
     label: "국가암정보센터 자궁경부암 예방과 음식",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+  },
+  nccCervicalRiskFactors: {
+    label: "국가암정보센터 자궁경부암 위험요인",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4884",
   },
   nccCervicalPracticeDiet: {
     label: "국가암정보센터 자궁경부암 실천지침 식생활",
@@ -430,6 +435,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 식이섬유를 늘리는 잡곡밥 대체 예시와 함께 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여줍니다.",
         examples: "쌀밥, 흰쌀밥, 햄구이, 초코칩쿠키, 단무지, 우엉조림, 국·찌개 국물, 국물 과다",
         sourceIds: ["nccCervicalPracticeDiet"],
+      },
+      {
+        label: "채소·과일 섭취 부족 확인",
+        detail:
+          "국가암정보센터 자궁경부암 위험요인 자료는 과일과 채소의 섭취가 적은 식이를 위험요인 중 하나로 설명합니다. 식단 기록에서는 부족 상태를 확인하고, 치료 효과로 과장하지 않으며 충분한 채소·과일 섭취와 진료팀 상담 질문으로 연결합니다.",
+        examples:
+          "과일과 채소의 섭취가 적은 식이, 과일 채소 섭취 부족, 채소와 과일을 거의 안 먹음",
+        sourceIds: ["nccCervicalRiskFactors"],
       },
       {
         label: "자극적·너무 뜨겁거나 매운 음식",
@@ -1225,6 +1238,21 @@ const limitFoods: FoodRuleTerm[] = [
   ["흰쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet"],
   ["쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["햄구이", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
+  [
+    "과일과 채소의 섭취가 적은 식이",
+    "국가암정보센터 자궁경부암 위험요인 채소·과일 섭취 부족 확인 후보",
+    "nccCervicalRiskFactors",
+  ],
+  [
+    "과일 채소 섭취 부족",
+    "국가암정보센터 자궁경부암 위험요인 채소·과일 섭취 부족 확인 후보",
+    "nccCervicalRiskFactors",
+  ],
+  [
+    "채소와 과일을 거의 안 먹음",
+    "국가암정보센터 자궁경부암 위험요인 채소·과일 섭취 부족 확인 후보",
+    "nccCervicalRiskFactors",
+  ],
   [
     "소시지",
     "국가암정보센터 암예방 식단 가공육류 가급적 적게 섭취 예시",

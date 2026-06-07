@@ -1097,6 +1097,46 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC cervical risk-factor low fruit and vegetable intake wording", () => {
+    const assessment = assessCancerFood(
+      "과일과 채소의 섭취가 적은 식이, 과일 채소 섭취 부족, 채소와 과일을 거의 안 먹음",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalRiskFactors.label).toBe(
+      "국가암정보센터 자궁경부암 위험요인",
+    );
+    expect(foodGuidanceSources.nccCervicalRiskFactors.url).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4884",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "과일과 채소의 섭취가 적은 식이",
+      "과일 채소 섭취 부족",
+      "채소와 과일을 거의 안 먹음",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 자궁경부암 위험요인 채소·과일 섭취 부족 확인 후보",
+        sourceId: "nccCervicalRiskFactors",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 자궁경부암 위험요인 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4884",
+      );
+    }
+    expect(limitGuideText).toContain("채소·과일 섭취 부족 확인");
+    expect(limitGuideText).toContain("과일과 채소의 섭취가 적은 식이");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating daily vegetable guidance terms", () => {
     const assessment = assessCancerFood(
       "생채소, 샐러드, 쌈류, 매일 매끼니 충분히",

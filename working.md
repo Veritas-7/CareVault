@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 06:50 KST - NCC Cervical Risk Factor Low Fruit Vegetable Intake
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center cervical-cancer risk-factor wording around low fruit and vegetable intake.
+- Context:
+  - Continued from clean/synced CareVault state after `4ec109aee116ee862463f90c21c4f5af512eddea`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept new low-intake phrases scoped to explicit 부족/적은 식이 wording so normal vegetable/fruit supportive matches retain existing source precedence.
+- Research:
+  - Re-checked National Cancer Information Center `자궁경부암 위험요인`, final update 2024-08-28. The page lists HIV infection, chlamydia infection, low fruit and vegetable intake, long-term oral contraceptive use, high number of births, and low socioeconomic status as known cervical-cancer risk factors.
+  - Applied the source only as a `watch` food-recording cue for fruit/vegetable intake shortage. It does not make a cure-food or treatment claim and points the user toward adequate intake and care-team discussion.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `과일과 채소의 섭취가 적은 식이`, `과일 채소 섭취 부족`, and `채소와 과일을 거의 안 먹음` with source evidence and no cure-food wording.
+  - `src/healthRules.ts`: added `nccCervicalRiskFactors`, a visible limit/watch guide-card item, and source-backed watch terms for low fruit/vegetable intake.
+  - `README.md`: added the new NCC cervical risk-factor low fruit/vegetable intake phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccCervicalRiskFactors` was missing from `healthRules`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 98 tests.
+  - PASS full tests: `npm test` => 64 files / 663 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `자궁경부암 위험요인`, `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4884`
+- Issues:
+  - No new blocking issue found in the focused TDD and full verification slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 06:47 KST - Final NCC After-Treatment Healthy Eating Log
 
 - Current Goal:
