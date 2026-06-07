@@ -29708,3 +29708,28 @@
   - No new blocking issue. Contact-threshold symptom queue details now keep additional official sources as `근거:` evidence and avoid raw `출처:` leakage in copied queue text.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
+## 2026-06-07 18:24 KST - Repeated Queue Evidence Link Labels
+
+- Current Goal:
+  - Keep dashboard 진료 준비 큐 visible evidence links clean when one queue detail contains repeated slash-separated `근거:` groups.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - The tree was clean and synced before this slice.
+  - Used systematic debugging plus TDD. Root cause: `buildCareActionVisibleDetailParts` captured a repeated ` / 근거:` marker inside the second source label when details looked like `... / 근거: source1 (url1) / 근거: source2 (url2)`, so the UI evidence label could render as `/ 근거: 국가암정보센터 ...`.
+  - This follows the previous contact-threshold symptom source normalization slice, which can legitimately produce multiple `근거:` detail groups.
+- Changes:
+  - `src/careActionVisibleDetail.ts`: normalizes parsed care-action evidence labels so repeated group markers are stripped from source labels before rendering.
+  - `src/careActionVisibleDetail.test.ts`: added RED/PASS coverage for two slash-separated official evidence groups from a fever/chills queue row.
+- Tests:
+  - RED confirmed: `npm test -- src/careActionVisibleDetail.test.ts` failed before the fix because the second source label was `/ 근거: 국가암정보센터 감염 의료진 상담 기준`.
+  - PASS focused test: `npm test -- src/careActionVisibleDetail.test.ts` => 1 file / 4 tests.
+  - PASS related tests: `npm test -- src/careActionVisibleDetail.test.ts src/careActionQueue.test.ts src/caregiverExport.test.ts src/csvExport.test.ts src/visitPacket.test.ts` => 5 files / 138 tests.
+  - PASS full tests: `npm test` => 64 files / 586 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. Dashboard care queue source links now stay clean for repeated `근거:` groups.
+- Next Steps:
+  - Stage explicit paths, run diff/secret gates, then commit/push if green.

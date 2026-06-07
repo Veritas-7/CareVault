@@ -38,6 +38,26 @@ describe("careActionVisibleDetail", () => {
     });
   });
 
+  it("splits repeated slash-separated evidence groups without leaking group labels", () => {
+    expect(
+      buildCareActionVisibleDetailParts(
+        "배뇨 통증과 카테터 부위 발적 여부를 같이 확인 / 근거: 질병관리청 국가건강정보포털 자궁경부암 백신 (https://health.kdca.go.kr/vaccine) / 근거: 국가암정보센터 감염 의료진 상담 기준 (https://www.cancer.go.kr/lay1/S1T435C439/contents.do)",
+      ),
+    ).toEqual({
+      body: "배뇨 통증과 카테터 부위 발적 여부를 같이 확인",
+      evidenceLinks: [
+        {
+          sourceLabel: "질병관리청 국가건강정보포털 자궁경부암 백신",
+          sourceUrl: "https://health.kdca.go.kr/vaccine",
+        },
+        {
+          sourceLabel: "국가암정보센터 감염 의료진 상담 기준",
+          sourceUrl: "https://www.cancer.go.kr/lay1/S1T435C439/contents.do",
+        },
+      ],
+    });
+  });
+
   it("leaves details without URL-backed evidence unchanged", () => {
     expect(buildCareActionVisibleDetailParts("진료 때 재확인")).toEqual({
       body: "진료 때 재확인",

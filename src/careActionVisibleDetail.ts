@@ -12,13 +12,17 @@ const careActionEvidenceGroupPattern =
   /(?:\s*\/\s*|\s*\()\s*근거:\s*((?:[^()]+?\s*\(https?:\/\/[^)]+\)(?:\s*;\s*)?)+)\)?/g;
 const careActionEvidenceLinkPattern = /([^();]+?)\s*\((https?:\/\/[^)]+)\)/g;
 
+function normalizeCareActionEvidenceLabel(label: string) {
+  return label.trim().replace(/^\/\s*근거:\s*/, "").trim();
+}
+
 export function buildCareActionVisibleDetailParts(detail: string): CareActionVisibleDetailParts {
   const evidenceGroups = Array.from(detail.matchAll(careActionEvidenceGroupPattern));
   if (!evidenceGroups.length) return { body: detail, evidenceLinks: [] };
 
   const evidenceLinks = evidenceGroups.flatMap((group) =>
     Array.from(group[1].matchAll(careActionEvidenceLinkPattern)).map((match) => ({
-      sourceLabel: match[1].trim(),
+      sourceLabel: normalizeCareActionEvidenceLabel(match[1]),
       sourceUrl: match[2].trim(),
     })),
   );
