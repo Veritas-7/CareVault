@@ -9,6 +9,7 @@ import {
   assessWaistCircumference,
   buildFoodMatchSourceLinkLabels,
   calculateBmi,
+  cancerFoodGuideCategories,
   formatFoodMatchEvidence,
   foodGuidanceSources,
   parseFiniteNumberText,
@@ -152,6 +153,34 @@ describe("healthRules", () => {
         "생굴 음식 판단 근거 국가암정보센터 증상별 식생활 - 면역기능의 저하 열기 - 면역저하 시 익히지 않은 음식 주의",
       visibleLabel: "국가암정보센터 증상별 식생활 - 면역기능의 저하",
     });
+  });
+
+  it("exposes official-source cancer food guide categories without cure-food claims", () => {
+    expect(cancerFoodGuideCategories.map((category) => category.id)).toEqual([
+      "balanced",
+      "limit",
+      "care-team",
+    ]);
+    expect(
+      cancerFoodGuideCategories.flatMap((category) =>
+        category.items.flatMap((item) => item.sourceIds),
+      ),
+    ).toContain("nccCervicalDiet");
+    expect(
+      cancerFoodGuideCategories.flatMap((category) =>
+        category.items.flatMap((item) => item.sourceIds),
+      ),
+    ).toContain("nccImmuneLowDiet");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items[0]
+        .detail,
+    ).toContain("특별히 피하거나 추천하는 음식은 없");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
+        .map((item) => item.label)
+        .join(" "),
+    ).toContain("날음식·비살균");
+    expect(JSON.stringify(cancerFoodGuideCategories)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
   it("classifies lab values against user-entered reference ranges", () => {

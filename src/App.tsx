@@ -50,6 +50,8 @@ import {
   assessWaistCircumference,
   buildFoodMatchSourceLinkLabels,
   calculateBmi,
+  cancerFoodGuideCategories,
+  foodGuidanceSources,
   koreanHealthStandardSummary,
   parseFiniteNumberText,
   type FoodAssessment,
@@ -6707,6 +6709,50 @@ function App() {
                 <strong>{item.label}</strong>
                 {item.value}
               </span>
+            ))}
+          </div>
+          <div
+            className="food-guide-grid"
+            aria-label="공식 출처 기반 자궁경부암·암환자 음식 가이드"
+          >
+            {cancerFoodGuideCategories.map((category) => (
+              <article
+                className={`food-guide-card guide-${category.level}`}
+                key={category.id}
+              >
+                <div className="food-guide-card-heading">
+                  <strong>{category.label}</strong>
+                  <span>{category.summary}</span>
+                </div>
+                <ul>
+                  {category.items.map((item) => (
+                    <li key={item.label}>
+                      <b>{item.label}</b>
+                      <span>{item.detail}</span>
+                      <small>예: {item.examples}</small>
+                      <div className="food-guide-source-row">
+                        {item.sourceIds.map((sourceId) => {
+                          const source = foodGuidanceSources[sourceId];
+
+                          return (
+                            <a
+                              href={source.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={`${item.label} 음식 가이드 공식 근거 ${source.label} 열기`}
+                              title={`${item.label} 음식 가이드 공식 근거 ${source.label} 열기`}
+                              key={`${item.label}-${sourceId}`}
+                            >
+                              {source.label}
+                              <ExternalLink aria-hidden="true" />
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </article>
             ))}
           </div>
           {immuneFoodSafetyContext ? (

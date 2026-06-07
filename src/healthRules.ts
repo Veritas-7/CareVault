@@ -28,6 +28,8 @@ export type FoodGuidanceSourceId =
   | "nccSideEffectDiet"
   | "nccImmuneLowDiet"
   | "nccComplementaryTherapy"
+  | "nccCervicalDiet"
+  | "nccTreatmentNutrients"
   | "kdcaNutrition"
   | "kdcaAlcohol";
 
@@ -38,6 +40,21 @@ export type FoodMatch = {
   sourceId: FoodGuidanceSourceId;
   sourceLabel: string;
   sourceUrl: string;
+};
+
+export type CancerFoodGuideItem = {
+  detail: string;
+  examples: string;
+  label: string;
+  sourceIds: FoodGuidanceSourceId[];
+};
+
+export type CancerFoodGuideCategory = {
+  id: "balanced" | "limit" | "care-team";
+  items: CancerFoodGuideItem[];
+  label: string;
+  level: FoodMatch["level"];
+  summary: string;
 };
 
 export type FoodMatchSourceLinkLabels = {
@@ -101,6 +118,14 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 보완대체요법 상담",
     url: "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
   },
+  nccCervicalDiet: {
+    label: "국가암정보센터 자궁경부암 식생활",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
+  },
+  nccTreatmentNutrients: {
+    label: "국가암정보센터 치료 중 영양소",
+    url: "https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
+  },
   kdcaNutrition: {
     label: "질병관리청 국가건강정보포털 식이영양",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=6693",
@@ -110,6 +135,106 @@ export const foodGuidanceSources: Record<
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5355",
   },
 };
+
+export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
+  {
+    id: "balanced",
+    label: "대체로 식단에 넣기",
+    level: "ok",
+    summary:
+      "자궁경부암 자체를 치료하는 음식이 아니라 충분한 영양과 균형 잡힌 식사 후보입니다.",
+    items: [
+      {
+        label: "자궁경부암 특수 금기/추천 없음",
+        detail:
+          "공식 자료는 자궁경부암 환자가 특별히 피하거나 추천하는 음식은 없고 충분한 영양과 휴식이 중요하다고 설명합니다.",
+        examples: "평소 먹기 쉬운 음식, 소량씩 자주 먹기, 통증·식욕 저하를 진료팀에 공유",
+        sourceIds: ["nccCervicalDiet"],
+      },
+      {
+        label: "채소·과일·통곡물·콩류",
+        detail:
+          "암예방 식생활 자료는 매끼 채소, 매일 과일, 잡곡·도정하지 않은 곡류, 두류와 두부 같은 두류 가공품을 권합니다.",
+        examples: "채소 반찬, 제철 과일, 잡곡밥, 현미, 귀리, 콩, 두부",
+        sourceIds: ["nccPreventionDiet"],
+      },
+      {
+        label: "익힌 단백질·수분",
+        detail:
+          "치료 중 영양 자료는 탄수화물, 단백질, 비타민·무기질, 물을 기본 영양소로 설명합니다. 면역저하가 있으면 안전하게 익힌 음식인지 함께 확인합니다.",
+        examples: "익힌 생선·닭고기·달걀, 두부, 저지방 우유, 플레인 요거트, 물",
+        sourceIds: ["nccTreatmentNutrients", "nccPreventionDiet", "nccImmuneLowDiet"],
+      },
+    ],
+  },
+  {
+    id: "limit",
+    label: "줄이기/피하기",
+    level: "watch",
+    summary:
+      "암예방과 치료 중 불편감 관점에서 양과 빈도를 줄이거나 피할 후보입니다.",
+    items: [
+      {
+        label: "술·알코올",
+        detail:
+          "음주는 암 예방 관점에서 제한 대상이며, 치료 중 약물·간기능·수면과도 함께 확인해야 합니다.",
+        examples: "술, 맥주, 와인, 고도주",
+        sourceIds: ["kdcaAlcohol"],
+      },
+      {
+        label: "가공육·탄 음식·튀김",
+        detail:
+          "공식 암예방 식이 자료는 햄·소시지 같은 육가공품을 가급적 적게 먹고, 탄 음식과 직화구이·튀김 조리법을 피하도록 안내합니다.",
+        examples: "햄, 소시지, 베이컨, 탄 고기, 숯불 직화, 튀김",
+        sourceIds: ["nccPreventionDiet"],
+      },
+      {
+        label: "자극적·너무 뜨겁거나 매운 음식",
+        detail:
+          "자궁경부암 식생활 자료는 방사선치료나 항암화학요법 중 장 기능이 약해질 수 있어 자극적인 음식은 피하도록 설명합니다.",
+        examples: "매운 음식, 아주 뜨거운 음식, 장 불편을 악화시키는 음식",
+        sourceIds: ["nccCervicalDiet", "nccPreventionDiet"],
+      },
+      {
+        label: "짠 저장식품·국물 과다",
+        detail:
+          "암예방 식생활 자료는 짜게 먹지 않기, 염장식품 제한, 국이나 찌개 국물 제한을 안내합니다.",
+        examples: "젓갈, 장아찌, 짠 김치, 국물 과다",
+        sourceIds: ["nccPreventionDiet"],
+      },
+    ],
+  },
+  {
+    id: "care-team",
+    label: "진료팀 확인",
+    level: "risk",
+    summary:
+      "치료 약제, 면역저하, 보완요법 여부에 따라 개인별 기준이 달라질 수 있는 항목입니다.",
+    items: [
+      {
+        label: "민간요법·건강보조식품",
+        detail:
+          "자궁경부암 식생활 자료와 보완대체요법 자료는 항암화학요법 중 민간요법·건강보조식품을 삼가거나 주치의에게 알리도록 안내합니다.",
+        examples: "고농축 보충제, 약초, 민간요법, 치료 효과를 표방하는 식품",
+        sourceIds: ["nccCervicalDiet", "nccComplementaryTherapy"],
+      },
+      {
+        label: "자몽·약물 상호작용 가능 식품",
+        detail:
+          "약 복용 중 특정 식품 상호작용이 의심되면 처방약, 항암제, 보조제를 함께 적어 진료팀 기준으로 확인합니다.",
+        examples: "자몽, 자몽 주스, 복용 약과 같이 먹는 보충제",
+        sourceIds: ["kdcaNutrition", "nccComplementaryTherapy"],
+      },
+      {
+        label: "날음식·비살균 식품",
+        detail:
+          "백혈구 감소 등 면역저하 맥락에서는 음식으로 인한 감염을 줄이기 위해 완전히 익힌 음식과 저온살균 제품 여부를 확인합니다.",
+        examples: "생굴, 회, 초밥, 날계란, 덜 익힌 고기, 비살균 우유·주스",
+        sourceIds: ["nccImmuneLowDiet"],
+      },
+    ],
+  },
+];
 
 export const koreanHealthStandardSummary = {
   bmi: "대한비만학회 한국인 성인 BMI: 정상 18.5-22.9, 비만전단계 23-24.9, 비만 25 이상",

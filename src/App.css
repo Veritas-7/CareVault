@@ -3468,6 +3468,119 @@ textarea:focus-visible {
   flex: 0 0 auto;
 }
 
+.food-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.food-guide-card {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #d7e2e1;
+  border-radius: 8px;
+  background: #fbfefd;
+}
+
+.food-guide-card.guide-ok {
+  border-color: #b9dfd6;
+  background: #f1fbf7;
+}
+
+.food-guide-card.guide-watch {
+  border-color: #f1d2a4;
+  background: #fff9ed;
+}
+
+.food-guide-card.guide-risk {
+  border-color: #efb8ad;
+  background: #fff5f2;
+}
+
+.food-guide-card-heading {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.food-guide-card-heading strong {
+  color: #143d3f;
+  font-size: 0.9rem;
+  font-weight: 950;
+}
+
+.food-guide-card-heading span {
+  color: #526066;
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.food-guide-card ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.food-guide-card li {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.food-guide-card li b {
+  color: #183f43;
+  font-size: 0.8rem;
+  font-weight: 950;
+}
+
+.food-guide-card li span,
+.food-guide-card li small {
+  color: #526066;
+  font-size: 0.74rem;
+  font-weight: 750;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.food-guide-source-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.food-guide-source-row a {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  max-width: 100%;
+  min-height: 28px;
+  color: #0f4c5c;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+}
+
+.food-guide-source-row a:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.food-guide-source-row svg {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+}
+
 .food-question-actions {
   display: flex;
   flex-wrap: wrap;
@@ -4800,6 +4913,7 @@ textarea:focus-visible {
   .content-grid,
   .two-columns,
   .nutrition-layout,
+  .food-guide-grid,
   .cervical-priority-strip,
   .cervical-care-layout {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4911,6 +5025,7 @@ textarea:focus-visible {
   .timeline-source-evidence a,
   .lab-source-evidence a,
   .question-source-evidence a,
+  .food-guide-source-row a,
   .immune-food-source-evidence a,
   .action-queue-evidence a {
     min-height: 44px;
@@ -4950,6 +5065,7 @@ textarea:focus-visible {
   .form-grid,
   .lab-preset-preview-grid,
   .nutrition-layout,
+  .food-guide-grid,
   .cervical-priority-strip,
   .cervical-care-layout,
   .standards-range-filter,

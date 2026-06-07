@@ -29179,3 +29179,44 @@
   - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
 - Next Steps:
   - Run diff and secret gates, then commit/push the focused attachment metadata normalization guard if green.
+
+## 2026-06-07 16:55 KST - Source-Backed Cervical Cancer Food Guide
+
+- Current Goal:
+  - Strengthen the nutrition panel with official-source cervical-cancer/cancer-care food guidance that distinguishes balanced-diet candidates, limit/avoid candidates, and clinician-check items without making treatment claims.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Current source tree was clean before this slice.
+  - `autoresearch-bind-session-target` was not available on PATH, so managed AutoResearch binding could not be run. Used the current explicit thread target and saved a manual official-source evidence file under `/Users/wj/Ai/System/12_Research/CareVault_Health_Tauri_2026-06-03/03_CervicalCancer_Food_Guidance_2026-06-07.md`.
+  - Official-source conclusion: National Cancer Information Center states there is no special food uniquely required or forbidden for cervical cancer itself; the app should frame food content as nutrition/support, prevention-pattern, treatment-phase, immune-low food-safety, and clinician-question guidance.
+- Research:
+  - Checked official Korean sources:
+    - 국가암정보센터 자궁경부암 식생활: no cervical-cancer-specific special recommended/forbidden food; adequate nutrition/rest; avoid irritating foods during radiation/chemotherapy bowel changes; avoid/clear folk remedies and supplements during chemotherapy.
+    - 국가암정보센터 암예방 건강한 식생활 and 암예방 식단 예시: vegetables, fruit, whole grains, beans/tofu, low-fat dairy, fish/egg/bean/protein examples; limit salty foods, charred foods, processed meat, direct grilling/frying.
+    - 국가암정보센터 치료 중 영양소: carbohydrate/protein/fat/vitamins-minerals/water are basic treatment-period nutrients.
+    - 국가암정보센터 면역기능 저하 식생활: if WBC is low after chemotherapy/radiation, use food-safety precautions such as fully cooked food and avoiding raw/undercooked or unpasteurized foods.
+    - 국가암정보센터 보완대체요법 상담: disclose herbs/supplements/complementary approaches to clinicians to reduce side-effect or treatment-interference risk.
+- Changes:
+  - `src/healthRules.ts`: added `nccCervicalDiet` and `nccTreatmentNutrients` food sources plus `cancerFoodGuideCategories` for `balanced`, `limit`, and `care-team` guide categories.
+  - `src/healthRules.test.ts`: added RED/PASS coverage that the guide categories exist, carry cervical/immune-low official sources, expose the cervical special-food boundary, and avoid cure-food wording.
+  - `src/App.tsx`: rendered the official-source food guide in the nutrition panel with item-level source links.
+  - `src/App.css`: added compact responsive guide-card styles and mobile touch-target rules for source links.
+  - `README.md`: updated the nutrition feature summary to include the official cervical-cancer food-boundary guide and guide-item source links.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts` failed before implementation because `cancerFoodGuideCategories` was undefined.
+  - PASS focused test: `npm test -- src/healthRules.test.ts` => 1 file / 14 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 577 tests.
+  - PASS build: `npm run build`.
+  - PASS Playwright browser smoke via `with_server.py` on `http://127.0.0.1:1420/`:
+    - Verified 3 guide cards and 15 HTTPS official source links.
+    - Verified guide labels `대체로 식단에 넣기`, `줄이기/피하기`, `진료팀 확인`.
+    - Verified cervical food boundary text and `날음식·비살균` immune-low guide.
+    - Entered `브로콜리, 베이컨, 생굴, 자몽 주스, 보충제`, confirmed `의료진 확인 필요`, expected match chips, and `음식 판단 질문 초안 준비됨` feedback after clicking the question-draft button.
+    - Verified mobile 390px viewport has no horizontal overflow.
+    - Screenshots: `/tmp/carevault-food-guide-smoke-desktop.png`, `/tmp/carevault-food-guide-smoke-mobile.png`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - Research repo `/Users/wj/Ai/System/12_Research` has many unrelated dirty/untracked files; only the new CareVault evidence file is relevant to this slice.
+- Next Steps:
+  - Run diff/secret gates and commit/push focused CareVault source changes if green.
