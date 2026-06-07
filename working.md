@@ -27716,3 +27716,16 @@
   - Direct same-surface DOM QA remains blocked by the inactive/non-evaluable `surface:7` context.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the focused download-failure guard if green.
+
+## 2026-06-07 13:50 KST - Post-Push Text Download Unsupported API Guard
+
+- Verification:
+  - PASS focused commit: `d116ccc` (`Guard text downloads without anchor APIs`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `d116ccc`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - Text export/download actions now return `unsupported` instead of throwing when required non-Safari anchor-download APIs are unavailable, allowing App to render the existing unsupported status label.
+  - Runtime is clean; no temporary Vite process is running.
+- Next Steps:
+  - Continue with another non-duplicate CareVault workflow. Direct browser QA still must use only existing `surface:7`; do not focus/select the inactive `암관리` workspace or open another browser without explicit approval.
