@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-08 05:46 KST - NCC Weight Change Calorie Protein And Limit Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center weight-change calorie/protein supplement examples and weight-gain high-sodium/high-calorie limit examples.
+- Context:
+  - Continued from clean/synced CareVault state after `adf65486f7f46e92ec890f4651dc192d1e602085`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept this slice limited to `체중감소 ...` / `체중증가 ...` phrases so broad terms like `김밥`, `감자`, `김치`, `초콜릿`, or `사탕` are not globally reclassified.
+- Research:
+  - Re-checked National Cancer Information Center `체중변화`, final update 2013-02-01. For treatment-related weight loss, the page says weight loss can weaken patients and reduce resistance/treatment effect, so calories and protein should be sufficient; examples include 김밥/주먹밥, 야채죽/전복죽/계란죽/잣죽, 감자/고구마/떡/만두/과일주스/과일통조림, 땅콩버터, 계란찜, 두유, 두부조림, 생선전, 어묵, 요구르트. For weight gain, it says to first discuss the cause with a physician; if fluid retention is related to anticancer drugs, limit salty foods such as processed foods, 김치, 젓갈, 장아찌류, and if appetite is increased, limit high-calorie low-nutrient foods such as soft drinks, chocolate, candy, and snacks.
+  - Applied the source as symptom-context support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `nccWeightChangeDiet`.
+  - `src/healthRules.ts`: added `nccWeightChangeDiet`, a balanced guide-card item for weight-loss calorie/protein examples, a limit guide-card item for weight-gain high-sodium/high-calorie examples, and source-backed ok/watch matching terms.
+  - `README.md`: added the new NCC weight-change examples to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccWeightChangeDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 90 tests.
+  - PASS full tests: `npm test` => 64 files / 655 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `adf65486f7f46e92ec890f4651dc192d1e602085`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 19.64 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice so far.
+- Next Steps:
+  - Commit and push this source slice, then run post-push sync/runtime verification.
+
 ## 2026-06-08 05:40 KST - Post-Push NCC Constipation Food Verification
 
 - Current Goal:

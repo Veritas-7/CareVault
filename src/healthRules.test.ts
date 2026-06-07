@@ -1807,6 +1807,119 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC weight-change calorie protein and high-calorie limit examples", () => {
+    const assessment = assessCancerFood(
+      "체중감소 김밥, 체중감소 주먹밥, 체중감소 야채죽, 체중감소 전복죽, 체중감소 계란죽, 체중감소 잣죽, 체중감소 감자, 체중감소 고구마, 체중감소 떡, 체중감소 만두, 체중감소 과일주스, 체중감소 과일통조림, 체중감소 땅콩버터, 체중감소 계란찜, 체중감소 두유, 체중감소 두부조림, 체중감소 생선전, 체중감소 어묵, 체중감소 요구르트, 체중증가 가공식품, 체중증가 김치, 체중증가 젓갈, 체중증가 장아찌류, 체중증가 청량 음료, 체중증가 초콜릿, 체중증가 사탕, 체중증가 과자류, 체중증가 고열량 간식",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(foodGuidanceSources.nccWeightChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "체중감소 김밥",
+      "체중감소 주먹밥",
+      "체중감소 야채죽",
+      "체중감소 전복죽",
+      "체중감소 계란죽",
+      "체중감소 잣죽",
+      "체중감소 감자",
+      "체중감소 고구마",
+      "체중감소 떡",
+      "체중감소 만두",
+      "체중감소 과일주스",
+      "체중감소 과일통조림",
+      "체중감소 땅콩버터",
+      "체중감소 계란찜",
+      "체중감소 두유",
+      "체중감소 두부조림",
+      "체중감소 생선전",
+      "체중감소 어묵",
+      "체중감소 요구르트",
+      "체중증가 가공식품",
+      "체중증가 김치",
+      "체중증가 젓갈",
+      "체중증가 장아찌류",
+      "체중증가 청량 음료",
+      "체중증가 초콜릿",
+      "체중증가 사탕",
+      "체중증가 과자류",
+      "체중증가 고열량 간식",
+    ]);
+    for (const term of [
+      "체중감소 김밥",
+      "체중감소 주먹밥",
+      "체중감소 야채죽",
+      "체중감소 전복죽",
+      "체중감소 계란죽",
+      "체중감소 잣죽",
+      "체중감소 감자",
+      "체중감소 고구마",
+      "체중감소 떡",
+      "체중감소 만두",
+      "체중감소 과일주스",
+      "체중감소 과일통조림",
+      "체중감소 땅콩버터",
+      "체중감소 계란찜",
+      "체중감소 두유",
+      "체중감소 두부조림",
+      "체중감소 생선전",
+      "체중감소 어묵",
+      "체중감소 요구르트",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 체중감소 시 열량·단백질 보충 후보",
+        sourceId: "nccWeightChangeDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+      );
+    }
+    for (const term of ["체중증가 가공식품", "체중증가 김치", "체중증가 젓갈", "체중증가 장아찌류"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 체중증가 시 고염분 식품 확인 후보",
+        sourceId: "nccWeightChangeDiet",
+      });
+    }
+    for (const term of [
+      "체중증가 청량 음료",
+      "체중증가 초콜릿",
+      "체중증가 사탕",
+      "체중증가 과자류",
+      "체중증가 고열량 간식",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 체중증가 시 고열량 저영양 식품 확인 후보",
+        sourceId: "nccWeightChangeDiet",
+      });
+    }
+    expect(balancedGuideText).toContain("체중감소 주먹밥");
+    expect(balancedGuideText).toContain("체중감소 두부조림");
+    expect(balancedGuideText).toContain("체중감소 요구르트");
+    expect(limitGuideText).toContain("체중증가 가공식품");
+    expect(limitGuideText).toContain("체중증가 청량 음료");
+    expect(limitGuideText).toContain("체중증가 고열량 간식");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention meal example dishes without cure claims", () => {
     const assessment = assessCancerFood(
       "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",

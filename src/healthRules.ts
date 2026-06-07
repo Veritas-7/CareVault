@@ -33,6 +33,7 @@ export type FoodGuidanceSourceId =
   | "nccTasteChangeDiet"
   | "nccDiarrheaDiet"
   | "nccConstipationDiet"
+  | "nccWeightChangeDiet"
   | "nccMouthPainDiet"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
@@ -148,6 +149,10 @@ export const foodGuidanceSources: Record<
   nccConstipationDiet: {
     label: "국가암정보센터 증상별 식생활 - 변비",
     url: "https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+  },
+  nccWeightChangeDiet: {
+    label: "국가암정보센터 증상별 식생활 - 체중변화",
+    url: "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
   },
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
@@ -284,6 +289,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccConstipationDiet"],
       },
       {
+        label: "체중감소 시 열량·단백질 보충",
+        detail:
+          "국가암정보센터 체중변화 자료는 치료 중 체중감소를 예방하기 위해 열량과 단백질을 충분히 섭취하도록 안내하며, 밥·죽을 다양하게 조리하고 감자·고구마·떡·만두·과일주스·과일통조림 같은 간식과 계란·콩·두부·생선·유제품 단백질 예시를 제시합니다.",
+        examples:
+          "체중감소 김밥, 체중감소 주먹밥, 체중감소 야채죽, 체중감소 전복죽, 체중감소 계란죽, 체중감소 잣죽, 체중감소 감자, 체중감소 고구마, 체중감소 떡, 체중감소 만두, 체중감소 과일주스, 체중감소 과일통조림, 체중감소 땅콩버터, 체중감소 계란찜, 체중감소 두유, 체중감소 두부조림, 체중감소 생선전, 체중감소 어묵, 체중감소 요구르트",
+        sourceIds: ["nccWeightChangeDiet"],
+      },
+      {
         label: "식욕부진 시 가까이 두는 간식",
         detail:
           "국가암정보센터 식욕부진 자료는 조금씩 자주 먹고 간식을 가까이 두며, 간식으로 죽·미음·쥬스·스프·우유 및 유제품 등을 활용하고, 식사섭취가 계속 힘들면 특수영양 보충음료를 이용하도록 안내합니다.",
@@ -375,6 +388,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",
         sourceIds: ["nccDiarrheaDiet"],
+      },
+      {
+        label: "체중증가 시 고염분·고열량 저영양 식품 확인",
+        detail:
+          "국가암정보센터 체중변화 자료는 체중증가 원인을 먼저 의사와 확인하도록 하며, 항암제 관련 수분 보유가 의심되면 가공식품·김치·젓갈·장아찌류 같은 염분 함량이 높은 식품을 제한하고, 식욕 증가가 있으면 청량 음료·초콜릿·사탕·과자류처럼 열량이 높고 영양가가 낮은 식품을 제한하도록 안내합니다.",
+        examples:
+          "체중증가 가공식품, 체중증가 김치, 체중증가 젓갈, 체중증가 장아찌류, 체중증가 청량 음료, 체중증가 초콜릿, 체중증가 사탕, 체중증가 과자류, 체중증가 고열량 간식",
+        sourceIds: ["nccWeightChangeDiet"],
       },
       {
         label: "가당 유제품",
@@ -747,6 +768,25 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["변비 생과일", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
   ["변비 생야채", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
   ["변비 섬유소 많은 식품", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
+  ["체중감소 김밥", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 주먹밥", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 야채죽", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 전복죽", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 계란죽", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 잣죽", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 감자", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 고구마", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 떡", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 만두", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 과일주스", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 과일통조림", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 땅콩버터", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 계란찜", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 두유", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 두부조림", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 생선전", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 어묵", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
+  ["체중감소 요구르트", "국가암정보센터 체중감소 시 열량·단백질 보충 후보", "nccWeightChangeDiet"],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 죽", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 미음", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
@@ -1121,6 +1161,15 @@ const limitFoods: FoodRuleTerm[] = [
   ["설사 커피", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
   ["설사 초콜릿", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
   ["설사 우유 및 유제품", "국가암정보센터 설사 시 장 자극·고섬유·유당·카페인 확인 후보", "nccDiarrheaDiet"],
+  ["체중증가 가공식품", "국가암정보센터 체중증가 시 고염분 식품 확인 후보", "nccWeightChangeDiet"],
+  ["체중증가 김치", "국가암정보센터 체중증가 시 고염분 식품 확인 후보", "nccWeightChangeDiet"],
+  ["체중증가 젓갈", "국가암정보센터 체중증가 시 고염분 식품 확인 후보", "nccWeightChangeDiet"],
+  ["체중증가 장아찌류", "국가암정보센터 체중증가 시 고염분 식품 확인 후보", "nccWeightChangeDiet"],
+  ["체중증가 청량 음료", "국가암정보센터 체중증가 시 고열량 저영양 식품 확인 후보", "nccWeightChangeDiet"],
+  ["체중증가 초콜릿", "국가암정보센터 체중증가 시 고열량 저영양 식품 확인 후보", "nccWeightChangeDiet"],
+  ["체중증가 사탕", "국가암정보센터 체중증가 시 고열량 저영양 식품 확인 후보", "nccWeightChangeDiet"],
+  ["체중증가 과자류", "국가암정보센터 체중증가 시 고열량 저영양 식품 확인 후보", "nccWeightChangeDiet"],
+  ["체중증가 고열량 간식", "국가암정보센터 체중증가 시 고열량 저영양 식품 확인 후보", "nccWeightChangeDiet"],
   ["단무지", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   ["우엉조림", "자궁경부암 실천지침 나트륨 감소 대체 전 예시", "nccCervicalPracticeDiet"],
   [
