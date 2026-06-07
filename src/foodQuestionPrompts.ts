@@ -101,6 +101,20 @@ export function buildFoodQuestionDraft({
   const matchedSummary = summarizeMatches(matches);
   const sourceLines = buildQuestionSourceLines(matches, immuneContext);
   const sourceCount = countSources(matches, immuneContext);
+  const nonImmuneQuestionParts =
+    assessment.level === "risk"
+      ? [
+          `현재 음식/식단(${query})에 의료진 확인 항목이 포함되어 있습니다.`,
+          "약물 상호작용이나 치료 상호작용, 식품 안전 문제를 진료팀 기준으로 어떻게 확인하면 좋을까요?",
+          matchedSummary ? `음식 판단 근거: ${matchedSummary}` : "",
+          sourceLines,
+        ]
+      : [
+          `현재 음식/식단(${query})에 공식 식단 대체 예시가 포함되어 있습니다.`,
+          "섭취 빈도, 양, 대체 후보를 진료팀 기준으로 어떻게 확인하면 좋을까요?",
+          matchedSummary ? `음식 판단 근거: ${matchedSummary}` : "",
+          sourceLines,
+        ];
   const questionParts = immuneContext
     ? [
         `${immuneContext.labValueLabel}가 입력 기준 하한 ${immuneContext.lowerLimitLabel}보다 낮게 기록되어 있습니다.`,
@@ -113,12 +127,7 @@ export function buildFoodQuestionDraft({
           : "",
         sourceLines,
       ]
-    : [
-        `현재 음식/식단(${query})에 의료진 확인 항목이 포함되어 있습니다.`,
-        "약물 상호작용이나 치료 상호작용, 식품 안전 문제를 진료팀 기준으로 어떻게 확인하면 좋을까요?",
-        matchedSummary ? `음식 판단 근거: ${matchedSummary}` : "",
-        sourceLines,
-      ];
+    : nonImmuneQuestionParts;
 
   return {
     priority: assessment.level === "risk" || immuneContext ? "high" : "next-visit",

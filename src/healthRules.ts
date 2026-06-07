@@ -215,8 +215,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "실천지침 대체 식단 예시",
         detail:
-          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여줍니다.",
-        examples: "햄구이, 초코칩쿠키, 단무지, 우엉조림, 국·찌개 국물, 국물 과다",
+          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 식이섬유를 늘리는 잡곡밥 대체 예시와 함께 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여줍니다.",
+        examples: "쌀밥, 흰쌀밥, 햄구이, 초코칩쿠키, 단무지, 우엉조림, 국·찌개 국물, 국물 과다",
         sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
@@ -370,6 +370,8 @@ const limitFoods: FoodRuleTerm[] = [
   ["알코올", "암 예방 관점에서 제한 권고", "kdcaAlcohol"],
   ["맥주", "알코올", "kdcaAlcohol"],
   ["와인", "알코올", "kdcaAlcohol"],
+  ["흰쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet"],
+  ["쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["햄구이", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   ["소시지", "가공육", "nccPreventionDiet"],
   ["베이컨", "가공육", "nccPreventionDiet"],
@@ -958,7 +960,8 @@ export function assessCancerFood(input: string): FoodAssessment {
     return {
       level: "watch",
       label: "제한 또는 소량 권장",
-      summary: "가공육, 알코올, 당음료, 기름진 음식은 섭취 빈도와 양을 줄이는 쪽으로 기록하세요.",
+      summary:
+        "공식 자료의 제한·대체 예시나 가공육, 알코올, 당음료, 기름진 음식은 섭취 빈도와 양을 기록하세요.",
       matches,
     };
   }

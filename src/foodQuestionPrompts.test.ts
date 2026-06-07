@@ -105,8 +105,8 @@ describe("foodQuestionPrompts", () => {
       immuneContext: null,
     };
     const unclassifiedInput = {
-      assessment: assessCancerFood("흰쌀밥"),
-      foodQuery: "흰쌀밥",
+      assessment: assessCancerFood("파인애플"),
+      foodQuery: "파인애플",
       immuneContext: null,
     };
 
@@ -116,7 +116,35 @@ describe("foodQuestionPrompts", () => {
     );
     expect(buildFoodQuestionDraft(unclassifiedInput)).toBeNull();
     expect(formatFoodQuestionDraftUnavailableStatus(unclassifiedInput)).toBe(
-      "음식 판단 질문 초안 준비 실패 · 입력 흰쌀밥 · 일치 0개 · 검사 연결 없음 · 근거 0개",
+      "음식 판단 질문 초안 준비 실패 · 입력 파인애플 · 일치 0개 · 검사 연결 없음 · 근거 0개",
+    );
+  });
+
+  it("builds a non-risk replacement food question with source-backed wording", () => {
+    const input = {
+      assessment: assessCancerFood("흰쌀밥"),
+      foodQuery: "흰쌀밥",
+      immuneContext: null,
+    };
+    const draft = buildFoodQuestionDraft(input);
+
+    expect(draft).toMatchObject({
+      priority: "next-visit",
+      topic: "식단·음식 안전",
+    });
+    expect(draft?.sourceCount).toBe(1);
+    expect(draft?.question).toContain("현재 음식/식단(흰쌀밥)에 공식 식단 대체 예시가 포함되어 있습니다.");
+    expect(draft?.question).toContain("섭취 빈도, 양, 대체 후보를 진료팀 기준으로 어떻게 확인하면 좋을까요?");
+    expect(draft?.question).toContain(
+      "흰쌀밥: 자궁경부암 실천지침 식이섬유 증가 대체 전 예시",
+    );
+    expect(draft?.question).toContain(
+      "출처: 국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(draft?.question).not.toContain("의료진 확인 항목");
+    expect(draft?.question).not.toContain("먹지 마세요");
+    expect(draft ? formatFoodQuestionDraftReadyStatus(input, draft) : "").toBe(
+      "음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 다음 진료 · 입력 흰쌀밥 · 일치 1개 · 검사 연결 없음 · 근거 1개",
     );
   });
 
@@ -138,8 +166,8 @@ describe("foodQuestionPrompts", () => {
       immuneContext,
     };
     const unclassifiedInput = {
-      assessment: assessCancerFood("흰쌀밥"),
-      foodQuery: "흰쌀밥",
+      assessment: assessCancerFood("파인애플"),
+      foodQuery: "파인애플",
       immuneContext,
     };
     const unclassifiedDraft = buildFoodQuestionDraft(unclassifiedInput);
@@ -152,7 +180,7 @@ describe("foodQuestionPrompts", () => {
       priority: "high",
       topic: "식단·음식 안전",
     });
-    expect(unclassifiedDraft?.question).toContain("현재 음식/식단(흰쌀밥)");
+    expect(unclassifiedDraft?.question).toContain("현재 음식/식단(파인애플)");
     expect(unclassifiedDraft?.question).toContain("검사 근거: 서울아산병원 전혈구검사 참고치");
   });
 

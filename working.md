@@ -30018,6 +30018,35 @@
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 593 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
 
+## 2026-06-07 20:22 KST - Cervical Rice Replacement Example
+
+- Current Goal:
+  - Classify `쌀밥/흰쌀밥` as official cervical practice-guideline fiber-increase replacement-before examples and adjust non-risk food question wording so it does not overstate them as risk items.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice (`0 0`, `3925122`).
+  - Applied TDD plus incremental implementation: tests first, watched RED, then added the smallest production-rule and prompt wording changes.
+  - Official-source re-check used the National Cancer Information Center `국민 암예방 수칙 실천지침 _ 자궁경부암` PDF, whose example meal plan lists `쌀밥 -> 잡곡밥` for fiber increase.
+- Changes:
+  - `src/healthRules.ts`: added `흰쌀밥` and standalone `쌀밥` as `watch` matches tied to `nccCervicalPracticeDiet`, exposed them in the limit guide card, and softened the watch summary to “제한·대체 예시” frequency/amount recording.
+  - `src/foodQuestionPrompts.ts`: kept risk/no-lab wording for interaction and care-team checks, but changed non-risk/no-lab source-backed food matches to “공식 식단 대체 예시” wording.
+  - `src/healthRules.test.ts` and `src/foodQuestionPrompts.test.ts`: added RED/PASS coverage for guide-card exposure, exact rice-source matches, non-risk draft priority/status, and no direct “먹지 마세요” wording.
+  - `README.md`: updated the nutrition feature list with `쌀밥/흰쌀밥` examples.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodQuestionPrompts.test.ts src/foodMetric.test.ts` failed before implementation because `흰쌀밥` returned no draft, `쌀밥` was absent from limit guide text, and watch summary lacked `대체 예시`.
+  - PASS focused GREEN: `npm test -- src/healthRules.test.ts src/foodQuestionPrompts.test.ts src/foodMetric.test.ts` => 3 files / 35 tests.
+  - PASS full tests: `npm test` => 64 files / 594 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center PDF: `국민 암예방 수칙 실천지침 _ 자궁경부암`, `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Issues:
+  - No blocker so far. Staged gate, secret scans, commit/push, and post-push sync/runtime checks still need to run.
+- Next Steps:
+  - Stage explicit CareVault paths, run staged checks and gitleaks scans, commit/push, then recheck sync/runtime cleanup.
+
 ## 2026-06-07 19:32 KST - Cervical Lifestyle Evidence-Boundary Memo
 
 - Current Goal:

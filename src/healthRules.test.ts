@@ -204,6 +204,7 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("단무지");
     expect(limitGuideText).toContain("국물");
     expect(limitGuideText).toContain("우엉조림");
+    expect(limitGuideText).toContain("쌀밥");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
         .map((item) => item.label)
@@ -310,12 +311,23 @@ describe("healthRules", () => {
   });
 
   it("recognizes cervical practice-guide grain and sodium-reduction replacements", () => {
-    const assessment = assessCancerFood("잡곡밥, 우엉조림, 우엉볶음");
+    const assessment = assessCancerFood("쌀밥, 흰쌀밥, 잡곡밥, 우엉조림, 우엉볶음");
     const matchesByTerm = Object.fromEntries(
       assessment.matches.map((match) => [match.term, match]),
     );
 
     expect(assessment.level).toBe("watch");
+    expect(assessment.summary).toContain("대체 예시");
+    expect(matchesByTerm.쌀밥).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 식이섬유 증가 대체 전 예시",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.흰쌀밥).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 식이섬유 증가 대체 전 예시",
+      sourceId: "nccCervicalPracticeDiet",
+    });
     expect(matchesByTerm.잡곡밥).toMatchObject({
       level: "ok",
       reason: "자궁경부암 실천지침 식단 예시 후보",
