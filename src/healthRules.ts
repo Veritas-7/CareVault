@@ -32,6 +32,7 @@ export type FoodGuidanceSourceId =
   | "nccVomitingDiet"
   | "nccTasteChangeDiet"
   | "nccDiarrheaDiet"
+  | "nccConstipationDiet"
   | "nccMouthPainDiet"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
@@ -143,6 +144,10 @@ export const foodGuidanceSources: Record<
   nccDiarrheaDiet: {
     label: "국가암정보센터 증상별 식생활 - 설사",
     url: "https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+  },
+  nccConstipationDiet: {
+    label: "국가암정보센터 증상별 식생활 - 변비",
+    url: "https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
   },
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
@@ -269,6 +274,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "설사 육수, 설사 스포츠 음료, 설사 바나나, 설사 으깬 감자, 설사 복숭아, 설사 토마토, 설사 흰죽, 설사 쌀미음",
         sourceIds: ["nccDiarrheaDiet"],
+      },
+      {
+        label: "변비 시 수분·섬유소",
+        detail:
+          "국가암정보센터 변비 자료는 하루 8~10컵 이상 수분을 충분히 섭취하고, 특히 아침 기상 직후 찬물을 마시는 것이 장운동에 도움이 될 수 있으며, 도정이 덜 된 곡류, 생과일, 생야채 등 섬유소가 많은 식품을 충분히 섭취하도록 안내합니다.",
+        examples:
+          "변비 물 8~10컵, 변비 하루 8~10컵 물, 변비 아침 찬물, 변비 도정 덜 된 곡류, 변비 생과일, 변비 생야채, 변비 섬유소 많은 식품",
+        sourceIds: ["nccConstipationDiet"],
       },
       {
         label: "식욕부진 시 가까이 두는 간식",
@@ -727,6 +740,13 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["설사 토마토", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
   ["설사 흰죽", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
   ["설사 쌀미음", "국가암정보센터 설사 시 수분·전해질 보충 및 부드러운 음식 후보", "nccDiarrheaDiet"],
+  ["변비 물 8~10컵", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
+  ["변비 하루 8~10컵 물", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
+  ["변비 아침 찬물", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
+  ["변비 도정 덜 된 곡류", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
+  ["변비 생과일", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
+  ["변비 생야채", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
+  ["변비 섬유소 많은 식품", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 죽", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 미음", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],

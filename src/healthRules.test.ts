@@ -1762,6 +1762,51 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC constipation hydration and fiber-food examples", () => {
+    const assessment = assessCancerFood(
+      "변비 물 8~10컵, 변비 하루 8~10컵 물, 변비 아침 찬물, 변비 도정 덜 된 곡류, 변비 생과일, 변비 생야채, 변비 섬유소 많은 식품",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccConstipationDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 변비",
+    );
+    expect(foodGuidanceSources.nccConstipationDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "변비 물 8~10컵",
+      "변비 하루 8~10컵 물",
+      "변비 아침 찬물",
+      "변비 도정 덜 된 곡류",
+      "변비 생과일",
+      "변비 생야채",
+      "변비 섬유소 많은 식품",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 변비 시 수분·섬유소 섭취 후보",
+        sourceId: "nccConstipationDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 변비 - https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("변비 물 8~10컵");
+    expect(balancedGuideText).toContain("변비 도정 덜 된 곡류");
+    expect(balancedGuideText).toContain("변비 생야채");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention meal example dishes without cure claims", () => {
     const assessment = assessCancerFood(
       "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",
