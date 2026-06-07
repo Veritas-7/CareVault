@@ -3328,6 +3328,51 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low fruit and vegetable washing practices from official guidance", () => {
+    const assessment = assessCancerFood(
+      "채소와 과일 먹기 전 세척, 과일이나 채소 썰기 전 세척, 딸기 등 꼼꼼히 씻기 어려운 과일",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "채소와 과일 먹기 전 세척",
+      "과일이나 채소 썰기 전 세척",
+      "딸기 등 꼼꼼히 씻기 어려운 과일",
+    ]);
+    for (const term of ["채소와 과일 먹기 전 세척", "과일이나 채소 썰기 전 세척"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 과일·채소 세척 안전 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(matchesByTerm["딸기 등 꼼꼼히 씻기 어려운 과일"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 씻기 어려운 과일 주의",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(terms).not.toContain("딸기");
+    expect(balancedGuideText).toContain("채소와 과일 먹기 전 세척");
+    expect(balancedGuideText).toContain("과일이나 채소 썰기 전 세척");
+    expect(careTeamGuideText).toContain("딸기 등 꼼꼼히 씻기 어려운 과일");
+    expect(formatFoodMatchEvidence(matchesByTerm["채소와 과일 먹기 전 세척"])).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low pasteurized drink choices and moldy-food discard wording", () => {
     const assessment = assessCancerFood(
       "저온살균 우유, 저온살균 주스, 저온살균 제품, 곰팡이가 핀 음식, 곰팡이 핀 음식",
