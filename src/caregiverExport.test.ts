@@ -1927,6 +1927,10 @@ describe("caregiverExport", () => {
     expect(html).toContain("9세 이상");
     expect(html).toContain("만 12세");
     expect(html).toContain("접종 후 20~30분 관찰");
+    expect(html).toContain("HPV 접종 지연·추가접종 메모");
+    expect(html).toContain("접종시기를 놓친 경우");
+    expect(html).toContain("처음부터 다시 시작하지는 않습니다");
+    expect(html).toContain(">국가암정보센터 자궁경부암 HPV 예방백신</a>");
     expect(html).toContain(">국가암정보센터 국가암검진 검진주기 및 검진방법</a>");
     expect(html).toContain(">국가암정보센터 자궁경부암 일반적 증상</a>");
     expect(html).toContain(">질병관리청 국가건강정보포털 자궁경부암 백신</a>");

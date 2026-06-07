@@ -619,6 +619,10 @@ describe("visit packet", () => {
     expect(markdown).toContain("9세 이상");
     expect(markdown).toContain("만 12세");
     expect(markdown).toContain("접종 후 20~30분 관찰");
+    expect(markdown).toContain("HPV 접종 지연·추가접종 메모");
+    expect(markdown).toContain("접종시기를 놓친 경우");
+    expect(markdown).toContain("처음부터 다시 시작하지는 않습니다");
+    expect(markdown).toContain("국가암정보센터 자궁경부암 HPV 예방백신");
     expect(markdown).toContain("국가암정보센터 자궁경부암 일반적 증상");
     expect(markdown).toContain("## 진료 준비 큐");
     expect(markdown).toContain("저장된 기록에서 가져온 확인 항목입니다.");

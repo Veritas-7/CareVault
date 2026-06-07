@@ -29929,3 +29929,36 @@
 - Next Steps:
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 588 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`; `git diff --cached --check`; `gitleaks protect --staged --no-banner --redact`.
   - Commit/push this log-only update, then recheck sync/runtime cleanup.
+
+## 2026-06-07 18:59 KST - HPV Delayed Dose and No-Booster Memo
+
+- Current Goal:
+  - Add a source-backed HPV vaccination memo for missed-dose and additional-dose questions without turning it into a direct vaccination order.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed TDD and incremental-implementation guidance; this is a narrow source-backed content/test slice.
+  - Reviewed `DESIGN.md` cervical-care contract: HPV vaccination guidance must stay separate from continued screening, keep official source labels, and avoid diagnosis/treatment instructions.
+  - Official-source re-check used National Cancer Information Center's cervical-cancer HPV prevention-vaccine section: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885`
+- Changes:
+  - `src/cervicalCancerCare.ts`: added `nccHpvVaccine` source and a new `HPV 접종 지연·추가접종 메모` prevention guide covering missed-dose continuation, 2차-3차 spacing, and no currently recommended booster framing as clinician questions.
+  - `src/cervicalCancerCare.test.ts`: added RED/PASS source-registry and prevention-guide coverage for missed-dose/no-booster wording and no direct vaccination order.
+  - `src/cervicalCancerCareClipboard.test.ts`, `src/cervicalCancerCareMetric.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, `src/caregiverExport.test.ts`: updated source/item counts and export assertions so the new memo is preserved across copy, panel chips, Markdown, CSV, and caregiver HTML.
+  - `README.md`: updated the cervical-care feature list with separate delayed-dose/no-booster HPV memo coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/cervicalCancerCare.test.ts` failed before implementation because `nccHpvVaccine` and the new prevention guide were missing.
+  - PASS focused test after implementation: `npm test -- src/cervicalCancerCare.test.ts` => 1 file / 25 tests.
+  - PASS related export tests: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` => 6 files / 135 tests.
+  - PASS related export tests after memo wording polish: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` => 6 files / 135 tests.
+  - PASS full tests: `npm test` => 64 files / 588 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+- Issues:
+  - No blocker so far. Source commit/push and post-push sync check still need to run.
+- Next Steps:
+  - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.

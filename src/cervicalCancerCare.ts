@@ -154,6 +154,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "질병관리청 국가건강정보포털 자궁경부암 백신",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=3987",
   },
+  nccHpvVaccine: {
+    label: "국가암정보센터 자궁경부암 HPV 예방백신",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+  },
 };
 
 export const cervicalCancerCareAlerts: CervicalCancerCareAlert[] = [
@@ -414,6 +418,12 @@ export const cervicalCancerCarePreventionGuides: CervicalCancerCarePreventionGui
     detail:
       "접종기관에서 9세 이상 가능 여부, 만 12세 권장/지원 여부, 9-13(14)세 첫 접종 6개월 간격 2회와 이후 첫 접종 3회 일정 적용 여부를 확인합니다. 접종 당일 안내에는 앉거나 누운 상태와 접종 후 20~30분 관찰, 접종 후에도 선별검사 유지 여부를 함께 기록합니다.",
     sourceId: "kdcaHpv",
+  },
+  {
+    label: "HPV 접종 지연·추가접종 메모",
+    detail:
+      "국가암정보센터는 HPV 접종시기를 놓친 경우 '남은 주사를 가능한 빨리 맞으며 처음부터 다시 시작하지는 않습니다'라고 설명합니다. 1차 후 일정 지연 시 2차와 3차 접종 간격은 적어도 12주인지 확인하고, 추가접종은 권고된 바가 없으므로 내 백신 종류·접종일·치료 일정 기준으로 접종기관과 진료팀에 질문으로 남깁니다.",
+    sourceId: "nccHpvVaccine",
   },
 ];
 

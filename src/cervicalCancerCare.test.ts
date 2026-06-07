@@ -59,10 +59,12 @@ describe("cervicalCancerCare", () => {
       "nccLymphedemaSymptoms",
       "nccLymphedemaCare",
       "kdcaHpv",
+      "nccHpvVaccine",
     ]);
     expect(cervicalCancerCareSources.nccSymptoms.url).toContain("cancer.go.kr");
     expect(cervicalCancerCareSources.nccLymphedemaCare.url).toContain("S1T429C431");
     expect(cervicalCancerCareSources.kdcaHpv.url).toContain("health.kdca.go.kr");
+    expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -511,8 +513,11 @@ describe("cervicalCancerCare", () => {
     const hpvScheduleGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 일정·관찰 확인",
     );
+    const hpvDelayedDoseGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 접종 지연·추가접종 메모",
+    );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(6);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(7);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -538,6 +543,18 @@ describe("cervicalCancerCare", () => {
     expect(hpvScheduleGuide?.detail).toContain("접종 후 20~30분 관찰");
     expect(hpvScheduleGuide?.detail).toContain("선별검사 유지");
     expect(hpvScheduleGuide?.detail).not.toContain("치료하세요");
+    expect(hpvDelayedDoseGuide).toMatchObject({
+      label: "HPV 접종 지연·추가접종 메모",
+      sourceId: "nccHpvVaccine",
+    });
+    expect(hpvDelayedDoseGuide?.detail).toContain("접종시기를 놓친 경우");
+    expect(hpvDelayedDoseGuide?.detail).toContain("처음부터 다시 시작하지는 않습니다");
+    expect(hpvDelayedDoseGuide?.detail).toContain("남은 주사");
+    expect(hpvDelayedDoseGuide?.detail).toContain("2차와 3차 접종 간격");
+    expect(hpvDelayedDoseGuide?.detail).toContain("적어도 12주");
+    expect(hpvDelayedDoseGuide?.detail).toContain("추가접종");
+    expect(hpvDelayedDoseGuide?.detail).toContain("권고된 바가 없으므로");
+    expect(hpvDelayedDoseGuide?.detail).not.toContain("맞으세요");
     expect(cervicalCancerCarePreventionGuides.every((item) => item.sourceId)).toBe(true);
   });
 

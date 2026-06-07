@@ -10,16 +10,16 @@ describe("cervicalCancerCareMetric", () => {
       ),
     ).toEqual({
       ariaLabel:
-        "전체 46개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 24개 · 공식 출처 17개",
+        "전체 47개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 25개 · 공식 출처 18개",
       items: [
-        { id: "total", label: "전체", value: "46개" },
+        { id: "total", label: "전체", value: "47개" },
         { id: "priority", label: "우선", value: "3개" },
         { id: "screening", label: "검진요약", value: "1개" },
         { id: "alert-record-field", label: "기록항목", value: "4개" },
         { id: "alert", label: "경고", value: "4개" },
         { id: "prompt", label: "질문", value: "10개" },
-        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "24개" },
-        { id: "source", label: "공식 출처", value: "17개" },
+        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "25개" },
+        { id: "source", label: "공식 출처", value: "18개" },
       ],
     });
   });
@@ -29,15 +29,15 @@ describe("cervicalCancerCareMetric", () => {
       buildCervicalCancerCarePanelSummary(buildCervicalCancerCareClipboardSummary()),
     ).toEqual({
       ariaLabel:
-        "전체 45개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 24개 · 공식 출처 17개",
+        "전체 46개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 25개 · 공식 출처 18개",
       items: [
-        { id: "total", label: "전체", value: "45개" },
+        { id: "total", label: "전체", value: "46개" },
         { id: "priority", label: "우선", value: "3개" },
         { id: "alert-record-field", label: "기록항목", value: "4개" },
         { id: "alert", label: "경고", value: "4개" },
         { id: "prompt", label: "질문", value: "10개" },
-        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "24개" },
-        { id: "source", label: "공식 출처", value: "17개" },
+        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "25개" },
+        { id: "source", label: "공식 출처", value: "18개" },
       ],
     });
   });
