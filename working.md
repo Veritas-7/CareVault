@@ -30092,6 +30092,33 @@
 - Next Steps:
   - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
 
+## 2026-06-07 19:40 KST - Cervical Practice-Guide Food Examples
+
+- Current Goal:
+  - Expand the built-in food judgment rules with additional official cervical-cancer prevention practice-guide food examples while preserving the no-cure/no-treatment boundary.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`; local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed `DESIGN.md` food guidance contract: food guidance must use official Korean sources, show source evidence, and avoid diagnosis/treatment instructions.
+  - Official-source re-check used the National Cancer Information Center cervical-cancer prevention food page and the `국민 암예방 수칙 실천지침 _ 자궁경부암` PDF.
+- Changes:
+  - `src/healthRules.ts`: added `nccCervicalPracticeDiet` as a food-guidance source for the official cervical-cancer practice-guideline PDF, added a balanced-guide `실천지침 식단 예시` item, moved `시금치` to the cervical-specific prevention-food source, and added `과일샐러드`, `채소샐러드`, `우엉볶음`, and `귤` as source-backed ok candidates.
+  - `src/healthRules.test.ts`: added RED/PASS coverage for the cervical-specific `시금치` source and for the PDF practice-guideline meal examples with no cure/treatment claims.
+  - `README.md`: updated the food feature list with the new official cervical-cancer practice-guide examples.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `시금치` still used the generic prevention-diet source and `nccCervicalPracticeDiet` was missing.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 26 tests.
+  - PASS full tests: `npm test` => 64 files / 590 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center cervical-cancer prevention and food page: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885`
+  - National Cancer Information Center PDF: `국민 암예방 수칙 실천지침 _ 자궁경부암`, `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Issues:
+  - No blocker so far. Diff checks, secret scans, source commit/push, and post-push log still need to run.
+- Next Steps:
+  - Run diff checks plus staged and whole-directory gitleaks scans; then commit/push explicit paths and record post-push verification.
+
 ## 2026-06-07 19:03 KST - Post-Push HPV Delayed Dose Memo
 
 - Current Goal:

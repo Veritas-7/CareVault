@@ -194,7 +194,7 @@ describe("healthRules", () => {
   });
 
   it("recognizes cervical-specific fresh food examples without cure claims", () => {
-    const assessment = assessCancerFood("당근, 미역, 차");
+    const assessment = assessCancerFood("당근, 미역, 차, 시금치");
     const matchesByTerm = Object.fromEntries(
       assessment.matches.map((match) => [match.term, match]),
     );
@@ -218,9 +218,51 @@ describe("healthRules", () => {
       reason: "자궁경부암 예방 관련 신선식품 후보",
       sourceId: "nccCervicalFoodPrevention",
     });
+    expect(matchesByTerm.시금치).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 예방 관련 신선식품 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
     expect(assessment.summary).toContain("암을 치료하지");
     expect(formatFoodMatchEvidence(matchesByTerm.당근)).toContain(
       "국가암정보센터 자궁경부암 예방과 음식 - https://www.cancer.go.kr/",
+    );
+  });
+
+  it("recognizes cervical prevention practice-guide meal examples without treatment claims", () => {
+    const assessment = assessCancerFood("과일샐러드, 채소샐러드, 우엉볶음, 귤");
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.nccCervicalPracticeDiet.label).toBe(
+      "국가암정보센터 자궁경부암 실천지침 식생활",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(matchesByTerm.과일샐러드).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.채소샐러드).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.우엉볶음).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm.귤).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(assessment.summary).toContain("암을 치료하지");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+    expect(formatFoodMatchEvidence(matchesByTerm.과일샐러드)).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
     );
   });
 

@@ -30,6 +30,7 @@ export type FoodGuidanceSourceId =
   | "nccComplementaryTherapy"
   | "nccCervicalDiet"
   | "nccCervicalFoodPrevention"
+  | "nccCervicalPracticeDiet"
   | "nccTreatmentNutrients"
   | "kdcaNutrition"
   | "kdcaAlcohol";
@@ -127,6 +128,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 자궁경부암 예방과 음식",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
   },
+  nccCervicalPracticeDiet: {
+    label: "국가암정보센터 자궁경부암 실천지침 식생활",
+    url: "https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf",
+  },
   nccTreatmentNutrients: {
     label: "국가암정보센터 치료 중 영양소",
     url: "https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
@@ -162,6 +167,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "자궁경부암 예방과 음식 자료는 카로테노이드·비타민 식품의 예방 효과가 아직 명확하지 않다고 설명하므로 치료식으로 보지 않고 신선한 채소·과일·해조류 섭취 질문으로 남깁니다.",
         examples: "당근, 시금치, 차, 미역, 신선한 채소, 과일, 해조류",
         sourceIds: ["nccCervicalFoodPrevention"],
+      },
+      {
+        label: "실천지침 식단 예시",
+        detail:
+          "국민 암예방 수칙 자궁경부암 실천지침은 채소·과일을 충분히 섭취하고 짠 음식과 탄 음식을 제한하는 식단 예시를 제시합니다.",
+        examples: "과일샐러드, 채소샐러드, 귤, 시금치나물, 우엉볶음",
+        sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
         label: "채소·과일·통곡물·콩류",
@@ -307,12 +319,16 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["통밀빵", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
   ["통밀", "통밀·귀리 등 통곡물 후보", "nccPreventionDiet"],
   ["당근", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
+  ["시금치", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
   ["미역", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
   ["차", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention", standaloneFoodTermOptions],
+  ["과일샐러드", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  ["채소샐러드", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  ["우엉볶음", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  ["귤", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["브로콜리", "채소 중심 식단에 적합", "nccPreventionDiet"],
   ["양배추", "십자화과 채소", "nccPreventionDiet"],
   ["케일", "짙은 잎채소", "nccPreventionDiet"],
-  ["시금치", "짙은 잎채소", "nccPreventionDiet"],
   ["방울토마토", "채소 다양성에 도움", "nccPreventionDiet"],
   ["블루베리", "과일 다양성에 도움", "nccPreventionDiet"],
   ["딸기", "과일 다양성에 도움", "nccPreventionDiet"],
