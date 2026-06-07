@@ -30201,6 +30201,33 @@
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 591 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
   - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
 
+## 2026-06-07 19:54 KST - Cervical Limit Food Guide Card
+
+- Current Goal:
+  - Expose the official cervical-cancer practice-guide limit/replacement food examples in the built-in food guide cards, not only in typed food matching chips.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`; local `HEAD` and `origin/main` were synced before this slice.
+  - Reviewed `DESIGN.md` food guidance contract: food guidance must use official Korean sources, show source evidence, and avoid diagnosis/treatment instructions.
+  - Official-source re-check used the National Cancer Information Center `국민 암예방 수칙 실천지침 _ 자궁경부암` PDF, which shows `햄구이`, `초코칩쿠키`, `단무지`, and 국/찌개 국물 as limit/replacement examples.
+- Changes:
+  - `src/healthRules.ts`: added a `실천지침 대체 식단 예시` item to the `줄이기/피하기` food guide category with `nccCervicalPracticeDiet` source evidence.
+  - `src/healthRules.test.ts`: added RED/PASS coverage that the limit guide card exposes `nccCervicalPracticeDiet` and the official limit examples while preserving no-cure/no-treatment wording.
+  - `README.md`: updated the nutrition feature list to state that cervical practice-guide replacement examples are exposed in guide cards.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the limit guide cards did not include `nccCervicalPracticeDiet`.
+  - PASS focused tests after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 27 tests.
+  - PASS full tests: `npm test` => 64 files / 591 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center PDF: `국민 암예방 수칙 실천지침 _ 자궁경부암`, `https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf`
+- Issues:
+  - No blocker so far. Staged gate, secret scans, source commit/push, and post-push log still need to run.
+- Next Steps:
+  - Run staged and whole-directory gitleaks scans; then commit/push explicit paths and record post-push verification.
+
 ## 2026-06-07 19:03 KST - Post-Push HPV Delayed Dose Memo
 
 - Current Goal:

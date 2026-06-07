@@ -213,6 +213,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccPreventionDiet"],
       },
       {
+        label: "실천지침 대체 식단 예시",
+        detail:
+          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 가공육·달콤한 간식·짠 반찬·국물 과다를 줄이고 과일·채소 예시로 바꾸는 방향을 보여줍니다.",
+        examples: "햄구이, 초코칩쿠키, 단무지, 국·찌개 국물, 국물 과다",
+        sourceIds: ["nccCervicalPracticeDiet"],
+      },
+      {
         label: "자극적·너무 뜨겁거나 매운 음식",
         detail:
           "자궁경부암 식생활 자료는 방사선치료나 항암화학요법 중 장 기능이 약해질 수 있어 자극적인 음식은 피하도록 설명합니다.",

@@ -185,6 +185,19 @@ describe("healthRules", () => {
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
     ).toContain("당근");
+    const limitGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "limit",
+    )?.items;
+    const limitGuideText = limitGuideItems
+      ?.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    expect(limitGuideItems?.flatMap((item) => item.sourceIds)).toContain(
+      "nccCervicalPracticeDiet",
+    );
+    expect(limitGuideText).toContain("햄구이");
+    expect(limitGuideText).toContain("초코칩쿠키");
+    expect(limitGuideText).toContain("단무지");
+    expect(limitGuideText).toContain("국물");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "care-team")?.items
         .map((item) => item.label)
