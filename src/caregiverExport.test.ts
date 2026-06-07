@@ -1937,6 +1937,11 @@ describe("caregiverExport", () => {
     expect(html).toContain("콘돔");
     expect(html).toContain("경구피임약");
     expect(html).toContain(">국가암정보센터 자궁경부암 예방법</a>");
+    expect(html).toContain("면역·감염·출산력 위험요인 메모");
+    expect(html).toContain("HIV");
+    expect(html).toContain("클라미디아");
+    expect(html).toContain("검진 접근");
+    expect(html).toContain(">국가암정보센터 자궁경부암 위험요인</a>");
     expect(html).toContain(">국가암정보센터 국가암검진 검진주기 및 검진방법</a>");
     expect(html).toContain(">국가암정보센터 자궁경부암 일반적 증상</a>");
     expect(html).toContain(">질병관리청 국가건강정보포털 자궁경부암 백신</a>");

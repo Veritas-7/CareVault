@@ -682,6 +682,11 @@ describe("csvExport", () => {
     expect(csv).toContain("콘돔");
     expect(csv).toContain("경구피임약");
     expect(csv).toContain("국가암정보센터 자궁경부암 예방법");
+    expect(csv).toContain("면역·감염·출산력 위험요인 메모");
+    expect(csv).toContain("HIV");
+    expect(csv).toContain("클라미디아");
+    expect(csv).toContain("검진 접근");
+    expect(csv).toContain("국가암정보센터 자궁경부암 위험요인");
     expect(csv).toContain("국가암정보센터 자궁경부암 일반적 증상");
   });
 

@@ -29900,6 +29900,33 @@
 - Next Steps:
   - Commit/push the explicit staged CareVault paths, then recheck sync/runtime cleanup and record the post-push result.
 
+## 2026-06-07 19:25 KST - Cervical Immune/Infection/Birth Risk-Factor Memo
+
+- Current Goal:
+  - Add one more official cervical-cancer risk-factor memo that covers risk factors not yet represented by the existing HPV/smoking/sexual-history food examples, without turning the app into a diagnosis or treatment-instruction surface.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice (`0 0`).
+  - Applied TDD plus incremental implementation: add a failing source/guide/export/count expectation first, then implement one source-backed prevention memo.
+  - Official-source re-check used National Cancer Information Center's cervical-cancer risk-factor page: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4884`
+- Changes:
+  - `src/cervicalCancerCare.ts`: added `nccCervicalRiskFactors` and the new `면역·감염·출산력 위험요인 메모` covering HIV/immune weakening, Chlamydia infection, low fruit/vegetable intake context, long-term oral-contraceptive use, high birth count, and screening-access support questions.
+  - `src/cervicalCancerCare.test.ts`: added RED/PASS coverage for the new official source key, memo content, clinician-question framing, and no direct test/treatment order wording.
+  - `src/cervicalCancerCareClipboard.test.ts`, `src/cervicalCancerCareMetric.test.ts`, `src/visitPacket.test.ts`, `src/csvExport.test.ts`, `src/caregiverExport.test.ts`: updated source/item counts and export assertions so the memo is preserved across copy, panel chips, Markdown, CSV, and caregiver HTML.
+  - `README.md`: updated cervical-care feature summaries with the new immune/HIV/Chlamydia/birth-count/screening-access risk-factor memo coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` failed before implementation because `nccCervicalRiskFactors`, the new prevention guide, updated counts, and export text were missing.
+  - PASS related tests after implementation: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` => 6 files / 135 tests.
+  - PASS full tests: `npm test` => 64 files / 589 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Issues:
+  - No blocker so far. Staged and whole-directory secret checks still need to run before commit/push.
+- Next Steps:
+  - Run the full gate, stage only explicit CareVault paths, run staged and whole-directory secret scans, then commit/push the source change and record post-push verification.
+
 ## 2026-06-07 19:19 KST - Post-Push Cervical Food Prevention Examples
 
 - Current Goal:

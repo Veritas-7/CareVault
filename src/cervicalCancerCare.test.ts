@@ -61,12 +61,14 @@ describe("cervicalCancerCare", () => {
       "kdcaHpv",
       "nccHpvVaccine",
       "nccCervicalPrevention",
+      "nccCervicalRiskFactors",
     ]);
     expect(cervicalCancerCareSources.nccSymptoms.url).toContain("cancer.go.kr");
     expect(cervicalCancerCareSources.nccLymphedemaCare.url).toContain("S1T429C431");
     expect(cervicalCancerCareSources.kdcaHpv.url).toContain("health.kdca.go.kr");
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("menu_seq=4885");
+    expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -521,8 +523,11 @@ describe("cervicalCancerCare", () => {
     const preventionRiskGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "흡연·성생활 위험요인 메모",
     );
+    const immuneInfectionRiskGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "면역·감염·출산력 위험요인 메모",
+    );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(8);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(9);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -575,6 +580,18 @@ describe("cervicalCancerCare", () => {
     expect(preventionRiskGuide?.detail).toContain("5년 이상");
     expect(preventionRiskGuide?.detail).toContain("진료팀");
     expect(preventionRiskGuide?.detail).not.toContain("끊으세요");
+    expect(immuneInfectionRiskGuide).toMatchObject({
+      label: "면역·감염·출산력 위험요인 메모",
+      sourceId: "nccCervicalRiskFactors",
+    });
+    expect(immuneInfectionRiskGuide?.detail).toContain("HIV");
+    expect(immuneInfectionRiskGuide?.detail).toContain("면역");
+    expect(immuneInfectionRiskGuide?.detail).toContain("클라미디아");
+    expect(immuneInfectionRiskGuide?.detail).toContain("출산 횟수");
+    expect(immuneInfectionRiskGuide?.detail).toContain("검진 접근");
+    expect(immuneInfectionRiskGuide?.detail).toContain("진료팀");
+    expect(immuneInfectionRiskGuide?.detail).not.toContain("치료하세요");
+    expect(immuneInfectionRiskGuide?.detail).not.toContain("검사하세요");
     expect(cervicalCancerCarePreventionGuides.every((item) => item.sourceId)).toBe(true);
   });
 

@@ -629,6 +629,11 @@ describe("visit packet", () => {
     expect(markdown).toContain("콘돔");
     expect(markdown).toContain("경구피임약");
     expect(markdown).toContain("국가암정보센터 자궁경부암 예방법");
+    expect(markdown).toContain("면역·감염·출산력 위험요인 메모");
+    expect(markdown).toContain("HIV");
+    expect(markdown).toContain("클라미디아");
+    expect(markdown).toContain("검진 접근");
+    expect(markdown).toContain("국가암정보센터 자궁경부암 위험요인");
     expect(markdown).toContain("국가암정보센터 자궁경부암 일반적 증상");
     expect(markdown).toContain("## 진료 준비 큐");
     expect(markdown).toContain("저장된 기록에서 가져온 확인 항목입니다.");

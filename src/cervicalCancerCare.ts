@@ -162,6 +162,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 예방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
   },
+  nccCervicalRiskFactors: {
+    label: "국가암정보센터 자궁경부암 위험요인",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4884",
+  },
 };
 
 export const cervicalCancerCareAlerts: CervicalCancerCareAlert[] = [
@@ -434,6 +438,12 @@ export const cervicalCancerCarePreventionGuides: CervicalCancerCarePreventionGui
     detail:
       "국가암정보센터는 사람유두종바이러스가 대부분 성접촉으로 감염되고 첫 성경험 나이와 성상대자수 같은 안전한 성생활 기록이 도움이 된다고 설명하며, 콘돔의 HPV 전파 예방 효과는 논란이 많다고 설명합니다. 흡연은 자궁경부암 위험이 높아지므로 흡연 여부·금연 지원 상담, 경구피임약 5년 이상 장기 복용 여부, 파트너/검진/예방접종 질문을 진료팀에 남깁니다.",
     sourceId: "nccCervicalPrevention",
+  },
+  {
+    label: "면역·감염·출산력 위험요인 메모",
+    detail:
+      "국가암정보센터는 HIV 감염처럼 면역체계가 약해지는 경우, 클라미디아 감염, 과일·채소 섭취가 적은 식이, 장기간 경구피임약 사용, 출산 횟수가 많은 경우, 낮은 사회경제수준도 자궁경부암 위험요인으로 알려져 있다고 설명합니다. 면역저하 이력, 성매개감염 치료·재검 기록, 출산 횟수, 검진 접근 어려움과 지원 필요 여부를 진료팀 질문으로 남깁니다.",
+    sourceId: "nccCervicalRiskFactors",
   },
 ];
 
