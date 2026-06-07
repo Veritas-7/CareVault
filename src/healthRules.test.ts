@@ -3308,6 +3308,39 @@ describe("healthRules", () => {
     expect(alcoholTerms).toEqual(["술", "맥주"]);
   });
 
+  it("recognizes KDCA alcohol-type wording used in drink amount records", () => {
+    const assessment = assessCancerFood("소주, 막걸리, 와인, 양주, 고도주");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.kdcaAlcohol.label).toBe(
+      "질병관리청 국가건강정보포털 위험음주",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual(["소주", "막걸리", "와인", "양주", "고도주"]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "질병관리청 위험음주 표준잔·금주 권고 확인 후보",
+        sourceId: "kdcaAlcohol",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "질병관리청 국가건강정보포털 위험음주 - https://health.kdca.go.kr/",
+      );
+    }
+    expect(limitGuideText).toContain("소주");
+    expect(limitGuideText).toContain("막걸리");
+    expect(limitGuideText).toContain("양주");
+    expect(limitGuideText).toContain("고도주");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("classifies lab values against user-entered reference ranges", () => {
     expect(assessLabValue(4.2, 4, 10).flag).toBe("normal");
     expect(assessLabValue(3.1, 4, 10).label).toBe("기준보다 낮음");

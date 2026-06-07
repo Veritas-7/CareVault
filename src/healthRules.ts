@@ -401,8 +401,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "술·알코올",
         detail:
-          "음주는 암 예방 관점에서 제한 대상이며, 치료 중 약물·간기능·수면과도 함께 확인해야 합니다.",
-        examples: "술, 맥주, 와인, 고도주",
+          "질병관리청 위험음주 자료는 최근에는 하루 한두 잔의 소량 음주도 암 발생 위험을 높인다는 연구 결과에 따라 절주보다 금주가 권장되고, 표준잔 기준으로 소주·맥주·막걸리·와인·양주 같은 음주량을 계산한다고 설명합니다. 치료 중에는 약물·간기능·수면과도 함께 확인해야 합니다.",
+        examples: "술, 소주, 맥주, 막걸리, 와인, 양주, 고도주",
         sourceIds: ["kdcaAlcohol"],
       },
       {
@@ -1173,10 +1173,14 @@ const supportiveFoods: FoodRuleTerm[] = [
 ];
 
 const limitFoods: FoodRuleTerm[] = [
-  ["술", "암 예방 관점에서 제한 권고", "kdcaAlcohol", standaloneFoodTermOptions],
-  ["알코올", "암 예방 관점에서 제한 권고", "kdcaAlcohol"],
-  ["맥주", "알코올", "kdcaAlcohol"],
-  ["와인", "알코올", "kdcaAlcohol"],
+  ["술", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol", standaloneFoodTermOptions],
+  ["알코올", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol"],
+  ["소주", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol", standaloneFoodTermOptions],
+  ["맥주", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol"],
+  ["막걸리", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol"],
+  ["와인", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol"],
+  ["양주", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol", standaloneFoodTermOptions],
+  ["고도주", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol"],
   [
     "치료 후 가공육 제한",
     "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",

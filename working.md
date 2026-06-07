@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 06:58 KST - KDCA Risk-Drinking Alcohol Type Matching
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for KDCA risk-drinking alcohol type wording used in drink amount records.
+- Context:
+  - Continued from clean/synced CareVault state after `812ccf4dff93789ca70251e6d39a008ad2f8de41`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept the new alcohol terms as general cancer-prevention `watch` guidance, not as a cervical-cancer direct-risk claim.
+- Research:
+  - Re-checked KDCA National Health Information Portal `위험음주! 알려드리겠습니다!`, updated 2026-05-08. The page explains that recent guidance recommends abstinence rather than moderation because even one or two drinks can increase cancer risk, and it describes standard-drink calculation examples for soju, beer, makgeolli, wine, and spirits.
+  - Applied the source as drink-type matching for food/drink records only. It remains separate from cervical-specific risk-factor logic because the NCC cervical practice guideline notes alcohol has not been proven as a direct cervical-cancer risk factor.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `소주`, `막걸리`, `와인`, `양주`, and `고도주` with KDCA source evidence and no cure-food wording.
+  - `src/healthRules.ts`: expanded the visible `술·알코올` guide-card examples and added KDCA-backed watch terms for common drink-type wording.
+  - `README.md`: added the new KDCA risk-drinking alcohol-type matching to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because only `와인` matched in `소주, 막걸리, 와인, 양주, 고도주`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 99 tests.
+  - PASS full tests: `npm test` => 64 files / 664 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `812ccf4dff93789ca70251e6d39a008ad2f8de41`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - KDCA National Health Information Portal `위험음주! 알려드리겠습니다!`, `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5355`
+- Issues:
+  - No new blocking issue found in the focused TDD and full verification slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 06:54 KST - Final NCC Cervical Low Fruit Vegetable Intake Log
 
 - Current Goal:
