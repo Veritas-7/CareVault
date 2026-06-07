@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:43 KST - Post-Push NCC Mouth-Pain Soft And Irritating Food Examples
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center mouth-pain soft and irritating food example slice.
+- Result:
+  - Source commit pushed: `1cc7d75` (`Add NCC mouth pain food terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `1cc7d755be0b8b666f15e957ce63a53666b22300`.
+  - Post-push verification log commit is pending.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `bdfa4938416666aac02ce48fa06de1158c92e71e`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccMouthPainDiet` was missing.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 82 tests.
+  - PASS full tests before push: `npm test` => 64 files / 647 tests.
+  - PASS typecheck before push: `npm run typecheck`.
+  - PASS build before push: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 11.47 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 647 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then re-check post-log sync/runtime status.
+
 ## 2026-06-08 04:40 KST - NCC Mouth-Pain Soft And Irritating Food Examples
 
 - Current Goal:
