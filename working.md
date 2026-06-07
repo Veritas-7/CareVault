@@ -29333,3 +29333,26 @@
   - No new blocking issue. This is a precision guard for keyword matching, not a full natural-language diet parser.
 - Next Steps:
   - Run diff/secret gates and commit/push the focused food keyword overlap guard if green.
+
+## 2026-06-07 17:15 KST - Post-Push Food Keyword Overlap Guard
+
+- Current Goal:
+  - Record post-push verification for the food keyword overlap guard.
+- Result:
+  - Source commit pushed: `22179a8` (`Guard food keyword overlaps`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `22179a853a71c6055ce5d73eb3b164bb93f8aa67`.
+- Verification:
+  - PASS focused test: `npm test -- src/healthRules.test.ts` => 1 file / 16 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 579 tests.
+  - PASS build: `npm run build`.
+  - PASS browser smoke with `with_server.py` and one Playwright Chromium session: exact chip terms `["생선회","날달걀","통밀빵","비살균 우유"]`, no shorter contradictory chips, risk verdict, and food question feedback.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. The food keyword matcher now prefers longer non-overlapping phrases, but it remains keyword-based by design.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
