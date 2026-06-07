@@ -26241,3 +26241,25 @@
 - Current state:
   - `working.md` is dirty with direct QA evidence only.
   - Next: stage only `working.md`, run staged checks, commit/push the QA note, then continue with another non-duplicate direct-click workflow.
+
+## 2026-06-07 09:48 KST - Saved WBC Lab Follow-Up Question QA
+
+- Current Goal:
+  - Direct-QA the saved abnormal WBC lab result's `질문으로 추가` workflow in the existing single `surface:7` browser.
+  - Verify the generated question carries the lab value, next-visit date, existing note, source evidence, autosave feedback, and duplicate-prevention state.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `workspace:4` / `surface:7` cmux browser. After `workspace:4` was reselected, `.app-shell` loaded and `surface:7` stayed the only CareVault browser surface.
+  - PASS baseline: `localStorage["carevault.v1"]` length was `1872`; profile name was `나의 건강 기록`; counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; the saved WBC lab was `2026-06-01 WBC 3.4 10^3/uL`, range `4.0-10.0`, note `면역저하 식품 안전 질문과 연결`.
+  - PASS baseline labels: the real WBC lab action button was enabled with aria/title `WBC 검사 질문 추가 · 메모와 근거 포함`; no `.lab-followup-feedback`, preview panel, or stale preview alert was visible.
+  - PASS click flow: clicked the real `WBC 검사 질문 추가 · 메모와 근거 포함` button. Browser storage updated to two saved questions with a new `검사 수치` question dated `2026-06-15`, priority `high`, status `open`, and prompt text containing `WBC 3.4 10^3/uL`, `기준 4.0-10.0 10^3/uL보다 낮게 기록`, `기존 메모/근거: 면역저하 식품 안전 질문과 연결`, and `출처: 서울아산병원 전혈구검사 참고치 - https://...`.
+  - PASS autosave and feedback: the captured `carevault.v1` write log had exactly one automatic write with `questions=2`; `.lab-followup-feedback` showed `WBC 검사 질문 추가됨 · 메모와 근거 포함`; top save chip showed `WBC 검사 질문 추가됨 · 메모와 근거 포함 · 브라우저 자동 저장됨`.
+  - PASS duplicate prevention and scope propagation: the WBC button became disabled with text `질문 추가됨` and aria/title `WBC 검사 질문 이미 추가됨 · 메모와 근거 포함`; the generated saved-question copy action reported `검사 수치 질문 복사 · 2026-06-15 · 이번 진료 우선 · 확인 필요 · 근거 포함`; the care-queue copy action updated to `진료 준비 큐 8개 항목 · ... · 질문 2 · ... 복사`.
+  - PASS cleanup: restored baseline browser storage, removed the test session key and storage instrumentation, reloaded only `surface:7`, and confirmed storage length `1872`, profile `나의 건강 기록`, counts restored to `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`, WBC button enabled again as `WBC 검사 질문 추가 · 메모와 근거 포함`, `.lab-followup-feedback` absent, no `carevault.__test*` session keys, no QA instrumentation globals, no generated WBC question text, no preview panel, no stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+- Verification:
+  - PASS focused tests: `npm test -- src/labQuestionPrompts.test.ts src/storage.test.ts` => `2 passed`, `24 passed`.
+  - PASS source status: no app source files changed during this QA slice.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks, commit/push the QA note, then continue with another non-duplicate direct-click workflow.
