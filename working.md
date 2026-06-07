@@ -26153,3 +26153,27 @@
 - Current state:
   - `src/App.tsx` and `working.md` are dirty with this verified stale-feedback fix and direct QA evidence.
   - Next: run final diff checks, stage only these paths, run staged secret scan, commit/push, then record post-push status.
+
+## 2026-06-07 09:22 KST - Post-Push Lab Required Feedback Cleanup
+
+- Improvement target:
+  - Record post-push state for the lab-entry stale success feedback cleanup.
+- Verification:
+  - PASS RED direct QA: before the fix, saving a valid `QA-CRP` lab and then clicking empty `검사 수치 추가` left stale `.lab-save-feedback` visible beside the new required-field warning.
+  - PASS fix: `src/App.tsx` now clears `labSaveFeedback` in the `addLabResult()` required-field branch before setting lab required feedback.
+  - PASS direct retest: after the fix, the same valid-save then empty-add flow removed stale `.lab-save-feedback`, showed only `[data-record-form-feedback=lab]` with `검사 항목과 값을 입력해주세요.`, and kept the topbar save chip on that current required-field message.
+  - PASS cleanup: browser baseline restored to counts `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; no `QA-CRP` labs, no lab save feedback, no lab required feedback, no `carevault.__test*` session keys, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors` returned `No browser errors`; console showed only normal Vite debug connection messages.
+  - PASS focused tests: `npm test -- src/entryValidation.test.ts src/labMetric.test.ts` => `2 passed`, `30 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `532 passed`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS diff checks: `git diff --check -- src/App.tsx working.md` and `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` found no leaks.
+  - PASS focused commit: `82e0fdb Clear stale lab feedback on validation`.
+  - PASS push: `git push` updated `origin/main` from `73ae94b` to `82e0fdb`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, and `git rev-list --left-right --count origin/main...HEAD` returned `0 0`.
+  - PASS post-push runtime: `npm run runtime:doctor` stayed clean with port `1420` free and no CareVault app/dev processes.
+- Current state:
+  - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
+  - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
