@@ -402,4 +402,47 @@ describe("normalizeAppState", () => {
       "",
     ]);
   });
+
+  it("normalizes restored attachment metadata before document action rendering", () => {
+    const state = normalizeAppState({
+      deletedDocuments: [
+        {
+          attachmentName: "   ",
+          attachmentPath: "   ",
+          attachmentStatus: "   ",
+          id: "deleted-blank-attachment",
+        },
+      ],
+      documents: [
+        {
+          attachmentName: " scan.pdf ",
+          attachmentPath: " /Users/wj/private/scan.pdf ",
+          attachmentStatus: " 재첨부 필요 ",
+          id: "document-spaced-attachment",
+        },
+        {
+          attachmentName: "   ",
+          attachmentPath: "   ",
+          attachmentStatus: "   ",
+          id: "document-blank-attachment",
+        },
+      ],
+    });
+
+    expect(state.documents[0]).toMatchObject({
+      attachmentName: "scan.pdf",
+      attachmentPath: "/Users/wj/private/scan.pdf",
+      attachmentStatus: "재첨부 필요",
+    });
+    expect(state.documents[1]).toMatchObject({
+      attachmentName: undefined,
+      attachmentPath: undefined,
+      attachmentStatus: undefined,
+    });
+    expect(state.deletedDocuments[0]).toMatchObject({
+      attachmentName: undefined,
+      attachmentPath: undefined,
+      attachmentStatus: undefined,
+    });
+  });
 });

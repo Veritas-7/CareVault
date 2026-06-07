@@ -372,7 +372,9 @@ function normalizeTextValue(value: unknown, fallback = "") {
 }
 
 function normalizeOptionalTextValue(value: unknown) {
-  return typeof value === "string" ? value : undefined;
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed || undefined;
 }
 
 function normalizeDateValue(value: unknown, fallback = "") {

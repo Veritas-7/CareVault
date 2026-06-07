@@ -29154,3 +29154,28 @@
   - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 16:44 KST - Attachment Metadata Normalization Guard
+
+- Current Goal:
+  - Prevent restored whitespace-only attachment metadata from making saved-document controls behave as if an attachment exists with an empty filename.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Used the TDD path for this behavior change.
+  - `hasAttachmentMetadata()` and several document labels already trim attachment filenames, but persisted `attachmentName`, `attachmentPath`, and `attachmentStatus` were restored as raw optional strings. Whitespace-only values could therefore survive state normalization and create inconsistent attachment action rendering.
+- Changes:
+  - `src/appStateNormalization.test.ts`: added RED coverage for trimming restored attachment metadata and converting whitespace-only attachment fields to `undefined` for saved and deleted documents.
+  - `src/appState.ts`: changed optional text normalization to trim non-empty metadata and drop blank strings.
+- Tests:
+  - RED confirmed: `npm test -- src/appStateNormalization.test.ts` failed because `attachmentName`, `attachmentPath`, and `attachmentStatus` still contained surrounding spaces.
+  - PASS focused test after fix: `npm test -- src/appStateNormalization.test.ts` => `1 passed`, `7 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `576 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux browser metadata diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing cmux automation/snapshot context mismatch.
+  - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+- Next Steps:
+  - Run diff and secret gates, then commit/push the focused attachment metadata normalization guard if green.
