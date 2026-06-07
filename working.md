@@ -28906,3 +28906,28 @@
 - Next Steps:
   - Continue code-level verification and non-focusing cmux metadata diagnostics while direct DOM/click QA remains blocked.
   - If direct click QA must be unblocked, use only user-approved cmux steps that preserve the existing single surface and do not steal focus.
+
+## 2026-06-07 16:15 KST - Visit Added Feedback Date Guard
+
+- Current Goal:
+  - Prevent malformed restored visit dates from being shown in the visit-added status feedback.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Used the TDD path for this behavior change.
+  - `buildVisitPanelSummary()` already uses strict date validation for upcoming counts, but `formatVisitAddedStatus()` still emitted raw trimmed `date` and `nextDate` strings.
+- Changes:
+  - `src/visitMetric.test.ts`: added RED coverage for malformed restored visit date and next-schedule date in the save feedback.
+  - `src/visitMetric.ts`: added strict date display helpers; invalid visit dates now render as `날짜 미입력`, and invalid next-schedule dates are omitted from the status line.
+- Tests:
+  - RED confirmed: `npm test -- src/visitMetric.test.ts` failed because the status included `2026-06-31` and `2026-13-01`.
+  - PASS focused test after fix: `npm test -- src/visitMetric.test.ts` => `1 passed`, `7 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => `64 passed`, `570 passed`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux browser metadata diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned `CareVault`, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct same-surface DOM/click QA remains blocked by the existing cmux automation/snapshot context mismatch.
+  - No focus/webview focusing, workspace/window selection, Computer Use, new browser, new tab, new surface, or cmux restart/termination was used.
+- Next Steps:
+  - Run diff and secret gates, then commit/push the focused visit added feedback date guard if green.

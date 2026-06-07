@@ -41,11 +41,21 @@ function dateToUtcDay(dateIso: string) {
   return normalized === dateIso.trim() ? utcDay : Number.NaN;
 }
 
+function getValidIsoDate(dateIso: string) {
+  const trimmed = dateIso.trim();
+  if (!trimmed) return "";
+  return Number.isFinite(dateToUtcDay(trimmed)) ? trimmed : "";
+}
+
+function formatVisitDate(dateIso: string) {
+  return getValidIsoDate(dateIso) || "날짜 미입력";
+}
+
 export function formatVisitAddedStatus(visit: VisitAddedStatusSource) {
   const hospital = visit.hospital.trim() || "병원/과 미입력";
   const reason = visit.reason.trim() || "방문 이유 미입력";
-  const date = visit.date.trim() || "날짜 미입력";
-  const nextDate = visit.nextDate.trim();
+  const date = formatVisitDate(visit.date);
+  const nextDate = getValidIsoDate(visit.nextDate);
 
   return [
     `${hospital} 방문 기록 추가됨`,

@@ -104,6 +104,17 @@ describe("visitMetric", () => {
     ).toBe("서울암센터 방문 기록 추가됨 · 항암 후 추적 · 방문일 2026-06-10 · 다음 일정 2026-06-24");
   });
 
+  it("filters malformed restored dates from visit added feedback", () => {
+    expect(
+      formatVisitAddedStatus({
+        date: "2026-06-31",
+        hospital: "서울암센터",
+        nextDate: "2026-13-01",
+        reason: "복구 날짜 점검",
+      }),
+    ).toBe("서울암센터 방문 기록 추가됨 · 복구 날짜 점검 · 방문일 날짜 미입력");
+  });
+
   it("formats visit add action labels for required and ready drafts", () => {
     expect(
       formatVisitAddActionLabel(
