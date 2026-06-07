@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 05:05 KST - NCC Appetite-Loss Snack And Liquid-Food Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center appetite-loss snack and liquid-food examples.
+- Context:
+  - Continued from clean/synced CareVault state after `83aaff246183155661f42289fc157f5f60df55a2`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - Used TDD and kept this slice limited to appetite-loss-context phrases to avoid broad global matches on generic `과자`, `빵`, `과일`, `우유`, or `유제품`.
+- Research:
+  - Re-checked National Cancer Information Center `식욕부진`, final update 2013-02-01. The page says appetite loss can occur from cancer itself, anticancer treatment, fear, or depressed mood; it suggests eating small amounts often, keeping snacks nearby, using snack/liquid foods such as 죽, 미음, 쥬스, 스프, 우유 및 유제품, and using special nutrition supplement drinks when intake remains difficult.
+  - Applied the source as symptom-context support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `식욕부진 간식`, `식욕부진 죽`, `식욕부진 미음`, `식욕부진 쥬스`, `식욕부진 주스`, `식욕부진 스프`, and `특수영양 보충음료`.
+  - `src/healthRules.ts`: added `nccAppetiteLossDiet`, a balanced guide card for appetite-loss snack/liquid-food examples, and source-backed ok matching terms.
+  - `README.md`: added the new NCC appetite-loss examples to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccAppetiteLossDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 85 tests.
+  - PASS full tests: `npm test` => 64 files / 650 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `83aaff246183155661f42289fc157f5f60df55a2`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 10.77 KB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `식욕부진`, `https://www.cancer.go.kr/lay1/S1T479C480/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Commit and push this source slice, then run post-push sync/runtime verification.
+
 ## 2026-06-08 05:01 KST - Post-Push NCC Nausea Food Verification
 
 - Current Goal:

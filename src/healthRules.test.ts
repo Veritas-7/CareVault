@@ -1540,6 +1540,51 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC appetite-loss snack and liquid-food examples", () => {
+    const assessment = assessCancerFood(
+      "식욕부진 간식, 식욕부진 죽, 식욕부진 미음, 식욕부진 쥬스, 식욕부진 주스, 식욕부진 스프, 특수영양 보충음료",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccAppetiteLossDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 식욕부진",
+    );
+    expect(foodGuidanceSources.nccAppetiteLossDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "식욕부진 간식",
+      "식욕부진 죽",
+      "식욕부진 미음",
+      "식욕부진 쥬스",
+      "식욕부진 주스",
+      "식욕부진 스프",
+      "특수영양 보충음료",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보",
+        sourceId: "nccAppetiteLossDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("식욕부진 간식");
+    expect(balancedGuideText).toContain("식욕부진 죽");
+    expect(balancedGuideText).toContain("특수영양 보충음료");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention meal example dishes without cure claims", () => {
     const assessment = assessCancerFood(
       "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",

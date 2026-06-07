@@ -27,6 +27,7 @@ export type FoodGuidanceSourceId =
   | "nccPreventionDiet"
   | "nccPreventionMealExamples"
   | "nccSideEffectDiet"
+  | "nccAppetiteLossDiet"
   | "nccNauseaDiet"
   | "nccMouthPainDiet"
   | "nccDryMouthDiet"
@@ -119,6 +120,10 @@ export const foodGuidanceSources: Record<
   nccSideEffectDiet: {
     label: "국가암정보센터 치료부작용시 식생활",
     url: "https://www.cancer.go.kr/lay1/S1T477C478/contents.do",
+  },
+  nccAppetiteLossDiet: {
+    label: "국가암정보센터 증상별 식생활 - 식욕부진",
+    url: "https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
   },
   nccNauseaDiet: {
     label: "국가암정보센터 증상별 식생활 - 메스꺼움",
@@ -225,6 +230,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "국가암정보센터 메스꺼움 자료는 증상이 있을 때 억지로 먹지 말고 먹기 좋은 다른 음식을 선택하도록 하며, 비교적 위에 부담이 적은 식품으로 샤베트, 복숭아통조림 같은 부드러운 과일, 맑은 유동식, 얼음조각 등을 예시로 안내합니다.",
         examples: "샤베트, 복숭아통조림, 맑은 유동식, 얼음조각",
         sourceIds: ["nccNauseaDiet"],
+      },
+      {
+        label: "식욕부진 시 가까이 두는 간식",
+        detail:
+          "국가암정보센터 식욕부진 자료는 조금씩 자주 먹고 간식을 가까이 두며, 간식으로 죽·미음·쥬스·스프·우유 및 유제품 등을 활용하고, 식사섭취가 계속 힘들면 특수영양 보충음료를 이용하도록 안내합니다.",
+        examples:
+          "식욕부진 간식, 식욕부진 죽, 식욕부진 미음, 식욕부진 쥬스, 식욕부진 주스, 식욕부진 스프, 특수영양 보충음료",
+        sourceIds: ["nccAppetiteLossDiet"],
       },
       {
         label: "입·목 통증 시 부드러운 음식",
@@ -643,6 +656,13 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["복숭아통조림", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["맑은 유동식", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["얼음조각", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
+  ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
+  ["식욕부진 죽", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
+  ["식욕부진 미음", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
+  ["식욕부진 쥬스", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
+  ["식욕부진 주스", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
+  ["식욕부진 스프", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
+  ["특수영양 보충음료", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["물 조금씩 자주", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
   ["물 한 모금", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
   ["소스나 드레싱", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
