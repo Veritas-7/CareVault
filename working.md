@@ -26103,3 +26103,25 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 09:18 KST - Document Restore And Visit Validation Direct QA
+
+- Current Goal:
+  - Continue non-duplicate same-surface direct QA by covering the saved-document archive restore path and the visit required-field local feedback path.
+  - Keep this slice source-neutral unless the direct browser flow exposes a real defect.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `surface:7` cmux browser. No extra browser, tab, pane, workspace, or surface was opened.
+  - PASS document restore preparation: on `#documents`, captured baseline storage length `1872`, storage keys only `carevault.v1`, and counts `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`.
+  - PASS archive click: clicked the real saved-row `삭제 보관` button with `window.confirm` returning `true`; captured prompt `"혈액검사 메모" 서류 기록을 삭제 보관함으로 이동할까요?`; active/deleted counts became `0/1`; deleted-row restore action exposed `혈액검사 메모 검사 서류 삭제 보관함에서 복구 · 상태 의료진 질문`; history tail became `서류 저장`, `삭제 보관`.
+  - PASS restore click: clicked the real deleted-row `복구` button; active/deleted counts became `1/0`; deleted panel disappeared; saved-row `.document-action-feedback` showed `혈액검사 메모 검사 서류 저장된 서류로 복구됨 · 상태 의료진 질문`; history tail became `서류 저장`, `삭제 보관`, `서류 복구`.
+  - PASS restore cleanup: restored baseline storage, removed `carevault.__testRestoreBaseline` plus QA confirm globals, reloaded `#documents`, and confirmed no deleted panel, no document action feedback, no `carevault.__test*` session keys, and save chip `브라우저 자동 저장됨`.
+  - PASS visit validation click: on `#records`, clicked the real empty `방문 기록 추가` button. Storage visit count stayed `1`; local `[data-record-form-feedback=visit]` rendered `병원/과와 방문 이유를 입력해주세요.` with role `status` and aria label `병원 방문 기록 필수 항목 안내 · 병원/과와 방문 이유를 입력해주세요.`; topbar save chip showed the same required-field message.
+  - PASS visit validation clear: filled real visit hospital/reason inputs with `QA 종양내과` and `필수 입력 해제 확인`; local feedback cleared without saving a visit, the button aria label changed to `방문 기록 추가 · QA 종양내과 · 필수 입력 해제 확인 입력 준비됨`, and topbar save chip changed to `병원 방문 기록 필수 입력 확인됨`.
+  - PASS visit cleanup: restored baseline storage, removed `carevault.__testVisitValidationBaseline`, reloaded `#records`, and confirmed counts restored to `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`, visit draft fields blank, no `[data-record-form-feedback]`, no `carevault.__test*` session keys, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors` returned `No browser errors`; console showed only normal Vite debug connection messages.
+- Verification:
+  - PASS source status: no app source files changed during this QA slice.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks, commit/push the QA note, and continue with another non-duplicate direct-click workflow.
