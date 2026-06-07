@@ -28837,3 +28837,26 @@
   - Whole-directory gitleaks should be resolved by an approved scan/ignore policy for ignored build artifacts, not by deleting or hiding user/build outputs.
 - Next Steps:
   - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
+
+## 2026-06-07 16:06 KST - Gitleaks Build Artifact Scan Policy
+
+- Current Goal:
+  - Restore whole-directory gitleaks verification without deleting, moving, hiding, or altering generated Tauri/Rust build outputs.
+- Context:
+  - Re-checked thread identity and confirmed the active target is `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Previous whole-directory `gitleaks dir . --no-banner --redact` failed on 4 `generic-api-key` matches in ignored generated files under `src-tauri/target/**/libmuda-*.rmeta`.
+  - `git ls-files` returned no tracked paths for those files, and `git check-ignore -v` confirmed `src-tauri/.gitignore:3:/target/` ignores them.
+  - Existing sibling project examples use `[extend] useDefault = true` with targeted allowlist paths, preserving default gitleaks rules.
+- Changes:
+  - `.gitleaks.toml`: added default-rule extension plus a narrow allowlist for generated `src-tauri/target/(debug|release)/deps/libmuda-[hash].rmeta` metadata false positives.
+- Tests:
+  - RED/baseline from previous slice: `gitleaks dir . --no-banner --redact` failed with 4 leaks in ignored `src-tauri/target/**/libmuda-*.rmeta` artifacts.
+  - PASS after policy: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported `no leaks found`.
+  - PASS whitespace gate: `git diff --check`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux browser diagnostics without focus takeover: existing `surface:7` URL remained `http://127.0.0.1:1420/#dashboard`, `get title` returned the URL value, and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing cmux WebView context mismatch; no focus/workspace switch, new browser, new tab, new surface, Computer Use, or cmux restart/termination was used.
+  - This policy intentionally targets only generated `libmuda-*.rmeta` metadata under ignored `src-tauri/target`; it does not allowlist source files, docs, environment files, or tracked runtime hooks.
+- Next Steps:
+  - Run staged diff/secret gates, then commit/push the focused gitleaks scan policy if green.
