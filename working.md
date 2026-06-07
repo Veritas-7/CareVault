@@ -26829,3 +26829,31 @@
   - Browser-local export preview test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 11:48 KST - CSV Preview Stale-State Direct QA
+
+- Current Goal:
+  - Direct-QA the CSV preview stale-state workflow in the same existing `암관리` / `surface:7` cmux browser without occupying the visible window.
+  - Keep the local browser storage byte-restorable and avoid creating any new cmux browser/surface/tab.
+- Context:
+  - The CSV preview stores `csvExportFingerprint` and should become stale when CSV-relevant state changes, blocking copy/print/download until the preview is regenerated.
+  - The existing `surface:7` metadata initially showed `http://127.0.0.1:1420/#export`, but the automation frame's `location.href` was `about:blank`; no cmux restart or new surface was used. The same frame recovered by setting `location.href = "http://127.0.0.1:1420/#export"` inside `surface:7`.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; the existing `surface:7` browser was reused at `http://127.0.0.1:1420/#export`.
+  - PASS hit target and description: `CSV 미리보기` measured `44px` high and exposed aria/title `CSV 미리보기 · 기록 9개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외`.
+  - PASS real preview click: clicked the real `CSV 미리보기` button; preview opened with summary `CSV`, `152줄`, `45,899자`, `72,056B`, and `근거/출처 84개`; preview copy action measured `44px`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCsvPreviewBaseline"]`; storage length `1872`, local keys only `carevault.v1`, counts were `documents=1`, `deletedDocuments=0`, `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `labResults=1`, and the saved document `혈액검사 메모` had next action `백혈구 수치가 낮을 때 식사 제한 기준 질문`.
+  - PASS stale trigger: filled the real saved-document textarea `혈액검사 메모 다음 조치` with `CSV 미리보기 stale 직접QA 20260607`; `.export-preview-stale-alert` appeared and copy/print/download aria labels added `비활성: CSV 기록이 바뀌어 다시 생성이 필요합니다.`
+  - PASS stale alert: alert text showed `CSV 기록이 바뀌었습니다`, `현재 미리보기는 이전 기록으로 생성되었습니다.`, and visible action `CSV 기록 반영`; the refresh action aria was `새 미리보기 생성 · CSV · 변경된 기록 적용`; the stale copy action was disabled.
+  - PASS refresh action: clicked `CSV 기록 반영`; stale alert count returned to `0`, copy became enabled again, and the regenerated preview summary updated to `152줄`, `45,907자`, `72,020B`, `근거/출처 84개`.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testCsvPreviewBaseline`, reloaded the same `surface:7`, and confirmed URL `http://127.0.0.1:1420/#export`, preview count `0`, stale-alert count `0`, storage length `1872`, local keys only `carevault.v1`, no `carevault.__test*` session keys, original document next action restored, and original record counts restored.
+  - PASS browser diagnostics after cleanup: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/csvExport.test.ts src/exportPreviewSummary.test.ts src/documentHistory.test.ts src/documentActionLabels.test.ts` => `4 passed`, `54 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with verified CSV preview stale-state direct QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
