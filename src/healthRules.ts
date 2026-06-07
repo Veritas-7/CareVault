@@ -183,9 +183,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "채소·과일·통곡물·콩류",
         detail:
-          "국가암정보센터 건강한 식생활 자료는 채소류를 매일·매끼니 충분히 먹고, 매일 과일과 잡곡·도정하지 않은 곡류, 두류와 두부 같은 두류 가공품을 권합니다.",
+          "국가암정보센터 건강한 식생활 자료는 채소류를 매일·매끼니 충분히 먹고, 매일 과일과 잡곡·도정하지 않은 곡류, 두류와 두유·두부 같은 두류 가공품을 권합니다.",
         examples:
-          "채소류, 매끼니 채소, 매일 채소, 채소 반찬, 제철 과일, 잡곡밥, 현미, 귀리, 통밀빵, 콩, 두부",
+          "채소류, 매끼니 채소, 매일 채소, 채소 반찬, 제철 과일, 잡곡밥, 도정하지 않은 곡류, 현미, 귀리, 통밀빵, 두류, 두류 가공품, 두유, 두부",
         sourceIds: ["nccPreventionDiet"],
       },
       {
@@ -395,6 +395,23 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["채소류", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
   ["매끼니 채소", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
   ["매일 채소", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
+  [
+    "도정하지 않은 곡류",
+    "국가암정보센터 건강한 식생활 도정하지 않은 곡류·두류 섭취 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "두류 가공품",
+    "국가암정보센터 건강한 식생활 도정하지 않은 곡류·두류 섭취 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "두류",
+    "국가암정보센터 건강한 식생활 도정하지 않은 곡류·두류 섭취 후보",
+    "nccPreventionDiet",
+    standaloneFoodTermOptions,
+  ],
+  ["두유", "국가암정보센터 건강한 식생활 도정하지 않은 곡류·두류 섭취 후보", "nccPreventionDiet"],
   ["방울토마토", "국가암정보센터 암예방 샐러드 신선채소 예시 후보", "nccPreventionMealExamples"],
   ["블루베리", "국가암정보센터 암예방 샐러드 과일 예시 후보", "nccPreventionMealExamples"],
   ["과일류", "국가암정보센터 암예방 샐러드 매일 과일 예시 후보", "nccPreventionMealExamples"],
@@ -412,7 +429,7 @@ const supportiveFoods: FoodRuleTerm[] = [
     "nccPreventionMealExamples",
     standaloneFoodTermOptions,
   ],
-  ["두부", "식물성 단백질", "kdcaNutrition"],
+  ["두부", "국가암정보센터 건강한 식생활 도정하지 않은 곡류·두류 섭취 후보", "nccPreventionDiet"],
   ["현미", "통곡물", "nccPreventionDiet"],
   ["귀리", "국가암정보센터 암예방 샐러드 통곡물 예시 후보", "nccPreventionMealExamples"],
   ["견과", "불포화지방과 간식 대체", "kdcaNutrition"],

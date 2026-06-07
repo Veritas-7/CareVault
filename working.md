@@ -1,5 +1,33 @@
 # CareVault Working Notes
 
+## 2026-06-07 23:24 KST - NCC Healthy-Eating Grain and Legume Guidance Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on unrefined grains, legumes, and legume processed foods.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `e34eb34613c367b01ba5bedb01ade12e465a90f1`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, whose guidance says to eat various mixed grains and unrefined grains, legumes and legume processed foods such as soy milk and tofu daily.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `도정하지 않은 곡류`, `두류`, `두류 가공품`, `두유`, and `두부` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the four missing healthy-eating grain/legume terms under `nccPreventionDiet`, updated the guide examples/detail, and aligned `두부` with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating grain/legume terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because only `두부` matched and the new grain/legume terms were missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 47 tests.
+  - PASS full tests: `npm test` => 64 files / 612 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-07 23:13 KST - NCC Healthy-Eating Daily Vegetable Guidance Terms
 
 - Current Goal:
@@ -57,7 +85,7 @@
   - No new blocking issue. Source commit is pushed and the repository is synced after push.
 - Next Steps:
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 611 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
-  - Commit/push this `working.md` update and recheck final sync/runtime cleanup.
+  - Log-only commit was pushed as `e34eb34` (`Log NCC healthy eating vegetable verification`); final sync/runtime cleanup passed.
 
 ## 2026-06-07 23:05 KST - NCC Prevention Protein Guidance Terms
 
