@@ -29280,3 +29280,26 @@
   - Food matching is intentionally source-backed keyword support, not diagnosis, treatment instruction, or a full diet prescription.
 - Next Steps:
   - Run diff/secret gates and commit/push the focused source-backed food dictionary expansion if green.
+
+## 2026-06-07 17:08 KST - Post-Push Official Food Example Matching Expansion
+
+- Current Goal:
+  - Record post-push verification for the source-backed concrete food matching expansion.
+- Result:
+  - Source commit pushed: `0172c68` (`Expand source-backed food matching`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `0172c68618f614ddb3ad38360c912602719fbf19`.
+- Verification:
+  - PASS focused test: `npm test -- src/healthRules.test.ts` => 1 file / 15 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 578 tests.
+  - PASS build: `npm run build`.
+  - PASS browser smoke with `with_server.py` and one Playwright Chromium session: guide examples, expanded food match chips, risk verdict, food question feedback, and no 390px horizontal overflow.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. The clarified objective excludes cmux same-surface browser control in this environment, so reproducible Playwright/browser smoke remains the direct UI verification path here.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
