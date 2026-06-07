@@ -1,5 +1,37 @@
 # CareVault Working Notes
 
+## 2026-06-08 02:18 KST - Post-Push NCC Healthy-Eating Hot/Spicy Food Avoid Phrases
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center healthy-eating hot/spicy-food avoid phrase slice.
+- Result:
+  - Source commit pushed: `f768051` (`Add NCC healthy eating hot spicy food terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `f768051212d96d7579a871b5a1842d7cc6c025e3`.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `d44ff3f95a77e094ff8080f745b7c2c645e70968`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new guide strings were missing and both new phrases collapsed to the shorter `너무 뜨겁거나 매운 음식` match.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 61 tests.
+  - PASS full tests: `npm test` => 64 files / 626 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 5.13 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 626 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is pushed; this post-push log update is pending its own verification commit.
+- Next Steps:
+  - Stage only `working.md`, run staged checks, commit this verification log, push, and recheck sync/runtime status.
+
 ## 2026-06-08 02:17 KST - NCC Healthy-Eating Hot/Spicy Food Avoid Phrases
 
 - Current Goal:
