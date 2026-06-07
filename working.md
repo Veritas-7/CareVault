@@ -27438,3 +27438,32 @@
   - Runtime is clean; source code is unchanged in this QA-only slice.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using non-window cmux browser commands only unless the user explicitly asks otherwise.
+
+## 2026-06-07 13:17 KST - Malformed Persisted State Recovery Direct QA
+
+- Current Goal:
+  - Direct-QA the corrupted `localStorage["carevault.v1"]` recovery path in the existing `암관리` / `surface:7` cmux browser.
+  - Verify malformed scalar fields normalize before rendering, autosave rewrites the recovered state, and the restored baseline is byte-clean afterward.
+- Context:
+  - `src/appStateNormalization.test.ts` covers malformed persisted record scalar recovery, but the current browser session did not yet have same-surface direct evidence for the full load -> render -> autosave rewrite path.
+  - This pass used only existing-surface cmux browser commands: `navigate`, `eval`, `wait`, `click`, `console list`, and `errors list`. No new browser, surface, tab, desktop focus handoff, Computer Use, `focus-webview`, or cmux restart was used.
+  - The existing `surface:7` loaded the local Vite app through `http://localhost:1420/#dashboard`; `http://127.0.0.1:1420` stayed on an older connection-refused document for this surface, so the pass kept the same surface and changed only the URL host.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface malformed-state recovery QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served port `1420`; existing `surface:7` was navigated in place to `http://localhost:1420/#dashboard` and rendered `CareVault` with `document.readyState=complete`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testMalformedStateBaseline"]`; baseline storage length was `1774`, profile was `나의 건강 기록` / `56` / `female`, food query was `브로콜리, 현미밥, 베이컨, 자몽 주스`, counts were `vitals=3`, `visits=1`, `documents=1`, `symptoms=1`, `questions=1`, `labResults=1`, no preview/dialog/alert was open, and no source files were dirty.
+  - PASS malformed storage injection: wrote malformed profile, food query, vitals, visits, documents/history, symptoms, questions, labs, and caregiver share settings into the same browser `localStorage`, then reloaded only `surface:7`.
+  - PASS rendered recovery: profile inputs showed safe normalized values `나의 건강 기록`, `56`, `other`, `164`, `62`, blank waist; mode toggles rendered cancer-care off, diabetes on, hypertension off; food query restored to `브로콜리, 현미밥, 베이컨, 자몽 주스`; caregiver labs stayed excluded while other sections stayed included.
+  - PASS persisted normalization: after autosave, storage length was `1261`; restored ids were `vital-restored-1`, `visit-restored-1`, `document-restored-1`, `history-restored-1`, `symptom-restored-1`, `question-restored-1`, and `lab-restored-1`; malformed numbers/enums/text collapsed to safe defaults; caregiver `coverMemo` normalized to empty and `sections.labs=false` was preserved.
+  - PASS recovered interaction: clicked the real `현재 CareVault 기록 수동 저장` button in the recovered state; save chip returned to `브라우저 저장됨`, storage stayed normalized, and no preview/dialog/alert opened.
+  - PASS cleanup: restored the captured baseline into `localStorage["carevault.v1"]`, removed `carevault.__testMalformedStateBaseline`, reloaded the same `surface:7`, and confirmed baseline profile/food/counts returned, storage length was again `1774`, `sessionStorage` had no `carevault.__test*` keys, no preview/dialog/alert was open, and save chip returned to `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: existing `surface:7` returned `No browser errors`; `console list` contained only normal Vite debug connection lines.
+- Verification:
+  - PASS focused tests: `npm test -- src/appStateNormalization.test.ts src/profileValidation.test.ts src/caregiverShareSettings.test.ts src/storage.test.ts` => `4 passed`, `55 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main` before logging; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `working.md` is dirty with verified malformed persisted-state recovery QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
