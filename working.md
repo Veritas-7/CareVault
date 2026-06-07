@@ -26914,3 +26914,32 @@
   - Browser-local caregiver preview test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:01 KST - Caregiver Preview Content Stale-State Direct QA
+
+- Current Goal:
+  - Direct-QA the caregiver-share preview record/content stale-state workflow in the same existing `암관리` / `surface:7` cmux browser without occupying the visible window.
+  - Verify a caregiver-shared saved-document content change raises only the record stale alert, blocks preview actions, regenerates from the changed record, and restores browser-local state afterward.
+- Context:
+  - `buildCaregiverExportContentFingerprint` includes non-done document fields such as `title`, `reviewStatus`, `nextAction`, `date`, and attachment metadata, so changing the saved document `nextAction` is a safe direct-QA trigger for caregiver content stale detection.
+  - This slice intentionally left caregiver share settings unchanged to separate record/content stale behavior from the settings-stale precedence already verified in the prior slice.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was reused at `http://127.0.0.1:1420/#export`, with no new browser/surface/tab and no visible-window control.
+  - PASS real preview click: clicked the real `보호자 공유본 미리보기` button; preview opened with summary `보호자 공유본`, `98줄`, `50,441자`, `73,905B`, and `근거/출처 112개`.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testCaregiverContentBaseline"]`; storage length was `1872`, local keys only `carevault.v1`, caregiver settings were default, record counts were `documents=1`, `deletedDocuments=0`, `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `labResults=1`, and the saved document `혈액검사 메모` had next action `백혈구 수치가 낮을 때 식사 제한 기준 질문`.
+  - PASS stale trigger: filled the real saved-document textarea `혈액검사 메모 다음 조치` with `보호자 공유본 기록 stale 직접QA 20260607`.
+  - PASS record stale alert: `.export-preview-stale-alert` appeared with aria `보호자 공유본 미리보기 기록 변경 감지`, text `보호자 공유본 기록이 바뀌었습니다`, `현재 미리보기는 이전 기록으로 생성되었습니다.`, and visible action `공유 기록 반영`; the refresh action aria was `새 미리보기 생성 · 보호자 공유본 · 변경된 보호자 공유 기록 적용`.
+  - PASS stale isolation and blocking: no settings-stale alert was present, the first preview action was disabled, and copy/print/download aria labels added `비활성: 보호자 공유본 기록이 바뀌어 다시 생성이 필요합니다.`
+  - PASS refresh action: clicked `공유 기록 반영`; stale alert count returned to `0`, copy became enabled again, and the regenerated preview summary updated to `98줄`, `50,453자`, `73,889B`, `근거/출처 112개`.
+  - PASS cleanup: restored the captured baseline, removed `carevault.__testCaregiverContentBaseline`, reloaded the same `surface:7`, and confirmed URL `http://127.0.0.1:1420/#export`, preview count `0`, stale-alert count `0`, storage length `1872`, local keys only `carevault.v1`, no `carevault.__test*` session keys, default caregiver settings restored, original document next action restored, original record counts restored, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/caregiverExport.test.ts src/caregiverShareSettings.test.ts src/exportPreviewSummary.test.ts src/documentHistory.test.ts` => `4 passed`, `91 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main`; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `working.md` is dirty with verified caregiver preview record/content stale-state direct QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
