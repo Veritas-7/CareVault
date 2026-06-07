@@ -3758,6 +3758,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low utensil separation and raw-juice source wording", () => {
+    const assessment = assessCancerFood(
+      "조리에 사용되는 기구, 식기, 수저는 반드시 소독합니다, 고기, 생선, 과일, 채소 등에 사용되는 식기, 도마, 칼 등은 가능한 분리해서 사용하거나 소독한 다음 사용합니다, 생고기, 닭고기, 생선 등에서 나오는 즙이 다른 식품이나 음식에 떨어지지 않도록 조심합니다",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "조리에 사용되는 기구, 식기, 수저는 반드시 소독합니다",
+      "고기, 생선, 과일, 채소 등에 사용되는 식기, 도마, 칼 등은 가능한 분리해서 사용하거나 소독한 다음 사용합니다",
+      "생고기, 닭고기, 생선 등에서 나오는 즙이 다른 식품이나 음식에 떨어지지 않도록 조심합니다",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 조리 위생·교차오염 예방 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      );
+    }
+    expect(terms).not.toContain("조리 기구 식기 수저 소독");
+    expect(terms).not.toContain("식기 도마 칼 분리 사용");
+    expect(balancedGuideText).toContain("조리에 사용되는 기구, 식기, 수저는 반드시 소독합니다");
+    expect(balancedGuideText).toContain("생고기, 닭고기, 생선 등에서 나오는 즙이 다른 식품이나 음식에 떨어지지 않도록 조심합니다");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low cooking doneness and egg-in-food safety wording", () => {
     const assessment = assessCancerFood(
       "고기 닭고기 생선 완전히 익히기, 갈아둔 고기 충분히 익히기, 다른 재료들과 섞기 전에 충분히 익히기, 날계란이나 덜 익힌 계란이 들어간 음식",

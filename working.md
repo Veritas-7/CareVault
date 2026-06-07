@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 08:25 KST - NCC Immune-Low Utensil Separation And Raw-Juice Source Wording
+
+- Current Goal:
+  - Add narrow source-backed matching for National Cancer Information Center immune-low utensil sanitation, utensil separation, and raw meat/fish/chicken juice cross-contamination wording.
+- Context:
+  - Continued from clean/synced CareVault state after `ac4e11ff023387d78a08cd2066a519823f9af51f`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept utensil sanitation/separation wording as immune-low food-safety support, not as a cure or diagnosis claim.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The food-preparation section says utensils/tableware/spoons should be disinfected, cutting boards/knives/tableware for meat/fish/fruit/vegetables should be separated or disinfected before use, and raw meat/chicken/fish juices should not drip onto other food.
+  - Applied the source only as immune-low food-preparation hygiene record support.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `조리에 사용되는 기구, 식기, 수저는 반드시 소독합니다`, `고기, 생선, 과일, 채소 등에 사용되는 식기, 도마, 칼 등은 가능한 분리해서 사용하거나 소독한 다음 사용합니다`, and `생고기, 닭고기, 생선 등에서 나오는 즙이 다른 식품이나 음식에 떨어지지 않도록 조심합니다`, including source evidence and a guard against collapsing the source wording to shorter summary terms.
+  - `src/healthRules.ts`: added the longer NCC utensil sanitation/separation and raw-juice cross-contamination examples to the visible balanced guide card and supportive food-safety matching terms.
+  - `README.md`: documented the expanded NCC immune-low cooking-hygiene source wording.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new raw-juice wording produced an overall `risk` via shorter `생고기` matching instead of preserving the long safe-practice phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 112 tests.
+  - PASS full tests: `npm test` => 64 files / 677 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `ac4e11ff023387d78a08cd2066a519823f9af51f`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD and full verification slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 08:22 KST - Final NCC Immune-Low Handwashing Log
 
 - Current Goal:
