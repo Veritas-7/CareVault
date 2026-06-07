@@ -3937,6 +3937,62 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low cooking doneness and egg source wording", () => {
+    const assessment = assessCancerFood(
+      "고기, 닭고기, 생선 등은 완전히 익히도록 합니다, 만약 갈아둔 고기를 요리하거나 고명으로 얹고자 할 때에는 다른 재료들과 섞기 전에 충분히 익히도록 합니다, 날계란이나 덜 익힌 계란과 이들이 들어간 음식은 먹지 않습니다",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "고기, 닭고기, 생선 등은 완전히 익히도록 합니다",
+      "만약 갈아둔 고기를 요리하거나 고명으로 얹고자 할 때에는 다른 재료들과 섞기 전에 충분히 익히도록 합니다",
+      "날계란이나 덜 익힌 계란과 이들이 들어간 음식은 먹지 않습니다",
+    ]);
+    for (const term of [
+      "고기, 닭고기, 생선 등은 완전히 익히도록 합니다",
+      "만약 갈아둔 고기를 요리하거나 고명으로 얹고자 할 때에는 다른 재료들과 섞기 전에 충분히 익히도록 합니다",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 고기·생선 완전 가열 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(matchesByTerm["날계란이나 덜 익힌 계란과 이들이 들어간 음식은 먹지 않습니다"]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 날계란·덜 익힌 계란이 들어간 음식 주의",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(terms).not.toContain("닭고기");
+    expect(terms).not.toContain("생선");
+    expect(terms).not.toContain("갈아둔 고기");
+    expect(terms).not.toContain("날계란");
+    expect(terms).not.toContain("덜 익힌 계란");
+    expect(balancedGuideText).toContain("고기, 닭고기, 생선 등은 완전히 익히도록 합니다");
+    expect(balancedGuideText).toContain(
+      "만약 갈아둔 고기를 요리하거나 고명으로 얹고자 할 때에는 다른 재료들과 섞기 전에 충분히 익히도록 합니다",
+    );
+    expect(careTeamGuideText).toContain("날계란이나 덜 익힌 계란과 이들이 들어간 음식은 먹지 않습니다");
+    expect(
+      formatFoodMatchEvidence(matchesByTerm["고기, 닭고기, 생선 등은 완전히 익히도록 합니다"]),
+    ).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("does not match one-syllable food warnings inside unrelated Korean words", () => {
     const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
     const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);
