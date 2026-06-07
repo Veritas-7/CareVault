@@ -29345,6 +29345,33 @@
 - Next Steps:
   - Stage explicit paths, run staged diff/secret gates, then commit/push if green.
 
+## 2026-06-07 17:46 KST - Post-Push Food Question Multi-Source Evidence
+
+- Current Goal:
+  - Record post-push verification for the food question multi-source evidence slice.
+- Result:
+  - Source commit pushed: `eeab6ad` (`Preserve food question sources`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `eeab6ad20b1d04124f9e626cd2376d2879bbad15`.
+- Verification:
+  - PASS focused RED/GREEN path:
+    - `npm test -- src/sourceEvidence.test.ts` => 1 file / 4 tests.
+    - `npm test -- src/foodQuestionPrompts.test.ts` => 1 file / 5 tests.
+    - `npm test -- src/csvExport.test.ts` => 1 file / 23 tests.
+    - `npm test -- src/caregiverExport.test.ts src/sourceEvidence.test.ts src/foodQuestionPrompts.test.ts src/questionClipboard.test.ts src/visitPacket.test.ts` => 5 files / 97 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 581 tests.
+  - PASS build: `npm run build`.
+  - PASS browser smoke with `with_server.py` and one Playwright Chromium session: generated a `자몽 주스, 보충제` food question, retained both official source lines in the draft, preserved both sources in CSV and caregiver HTML previews, and confirmed no 390px mobile horizontal overflow.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. Compact saved question/timeline UI still displays the first source as the primary source link, while copy/export paths now preserve every parsed source.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
 ## 2026-06-07 17:13 KST - Food Keyword Overlap Guard
 
 - Current Goal:
