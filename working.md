@@ -27116,3 +27116,31 @@
   - Runtime is clean and no source code changed.
 - Next Steps:
   - Continue with another non-duplicate CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:30 KST - Vital Chart Source Data Direct QA
+
+- Current Goal:
+  - Direct-QA the dashboard blood-pressure/glucose trend chart source-data disclosure in the existing `암관리` / `surface:7` cmux browser without occupying the visible window.
+  - Verify the visible chart legend, summary chips, accessible raw rows, temperature exclusion from the BP/glucose chart series, and storage non-mutation.
+- Context:
+  - `DESIGN.md` requires the trend chart to expose Korean BP/glucose labels, `mmHg`/`mg/dL` units, glucose context, visible summary rows, and a collapsible source-data list so users do not depend on hover.
+  - Recent direct slices covered profile validation, caregiver presets, preview stale guards, exports, documents, lab flows, and care-queue states; this slice is read-only chart evidence on the same current `surface:7`.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was navigated to `http://127.0.0.1:1420/#dashboard`, with no new browser/surface/tab and no visible-window control.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testChartBaseline"]`; storage length was `1872`, local keys were only `carevault.v1`, `.chart-panel` was present, and the chart source disclosure was initially closed.
+  - PASS chart summary: the visible summary rows were `기간 2026-05-29 - 2026-06-06`, `단위 혈압 mmHg / 혈당 mg/dL`, `기록 혈압 3개 · 혈당 1개`, `최근 혈압 128/78 mmHg`, and `최근 혈당 146 mg/dL (식후 2시간)`.
+  - PASS legend and chart frame: visible legend labels were `수축기 혈압 mmHg`, `이완기 혈압 mmHg`, and `혈당 mg/dL`; legend chips rendered `28px` high and `.chart-box` rendered `290px` high.
+  - PASS source-data disclosure: clicked the real `.vital-chart-data summary`; the disclosure opened with aria/title `혈압 혈당 차트 원자료 4개 보기` and rendered four accessible rows.
+  - PASS source rows: rows covered `2026-05-29 132/84 mmHg`, `2026-05-30 146 mg/dL (식후 2시간)`, `2026-06-01 126/78 mmHg`, and `2026-06-06 128/78 mmHg`, with BP evidence from 질병관리청 고혈압 and glucose evidence from 대한당뇨병학회 당뇨병 관리 목표.
+  - PASS temperature exclusion: no chart source row contained `체온` or `38.1`, confirming the chart stayed scoped to BP/glucose while the separate temperature metric remains outside this series.
+  - PASS non-mutation and cleanup: localStorage matched the captured baseline byte-for-byte, the disclosure was closed again, `carevault.__testChartBaseline` was removed, the same surface was reloaded, no `carevault.__test*` session keys remained, no preview or stale alert was open, and the save chip returned to `브라우저 자동 저장됨`.
+  - PASS browser diagnostics after cleanup: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/vitalChartData.test.ts src/vitalTimelineDisplay.test.ts src/vitalMetric.test.ts` => `3 passed`, `13 passed`.
+  - PASS repo state before logging: `git status --short --branch` showed `## main...origin/main`; source code was unchanged.
+- Current state:
+  - `working.md` is dirty with verified chart source-data direct QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
