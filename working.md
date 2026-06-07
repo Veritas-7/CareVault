@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 03:10 KST - NCC Healthy-Eating Daily Vegetable Sentence
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating sentence about eating vegetables every day and every meal.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `1dc2ab354f54feb0d8333cd68d0418c34d13bd6a`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` confirms the nutrition panel should keep source-backed matched food chips and official Korean source links; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page says `채소류(생채소, 나물, 샐러드, 쌈류 등)를 매일, 매끼니 충분히 먹습니다`.
+  - Applied the source as support/balanced diet guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `채소류(생채소, 나물, 샐러드, 쌈류 등)를 매일, 매끼니 충분히 먹습니다` and `채소류 생채소 나물 샐러드 쌈류 매일 매끼니 충분히` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the two longer daily-vegetable phrases under `nccPreventionDiet` before shorter `채소류`/`생채소`/`나물` fallback matching and aligned the balanced guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating daily vegetable sentence phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the guide strings were missing and the new source phrase collapsed to shorter `채소류`, `생채소`, `나물`, `샐러드`, and `쌈류` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 69 tests.
+  - PASS full tests: `npm test` => 64 files / 634 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and repository sync verification are still pending.
+- Next Steps:
+  - Stage explicit changed paths, run diff/secret checks, commit, push, and record post-push verification.
+
 ## 2026-06-08 03:06 KST - Post-Push NCC Healthy-Eating Processed-Meat Avoid Sentence
 
 - Current Goal:
