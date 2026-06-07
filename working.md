@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:25 KST - NCC Healthy-Eating Balanced Diet Heading
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for the National Cancer Information Center healthy-eating heading about eating a colorful balanced diet.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `0d7b36513a97032cf537297b408421539bcb1239`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` keeps nutrition judgment source-backed and prohibits cure/treatment food claims; this slice changes shared rule data, not layout.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page uses the heading `다채로운 식단으로 균형 잡힌 식사를 합니다`.
+  - Applied the source as balanced/support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `다채로운 식단으로 균형 잡힌 식사를 합니다` and `다채로운 식단 균형 잡힌 식사` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the two balanced-diet heading phrases under `nccPreventionDiet`, and aligned the balanced guide detail/examples with the same official source.
+  - `README.md`: added the new official healthy-eating balanced-diet heading phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new heading was classified `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 80 tests.
+  - PASS full tests: `npm test` => 64 files / 645 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Perform git/secret readiness checks, then commit and push this source slice if all checks pass.
+
 ## 2026-06-08 04:19 KST - Post-Push NCC Healthy-Eating Vegetable And Fruit Heading
 
 - Current Goal:
