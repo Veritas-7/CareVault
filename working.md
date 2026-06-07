@@ -26322,3 +26322,34 @@
   - Browser-local drafts/test keys were cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 10:07 KST - Generated Question Draft Append Guard
+
+- Current Goal:
+  - Prevent source-backed `질문 초안` shortcut buttons from silently overwriting an in-progress editable pre-visit question draft.
+  - Preserve the user's current draft date, topic, priority, answer memo, and existing body while appending generated official-source question text.
+- Context:
+  - Recent direct QA proved the `체온·감염 연락 기준` question shortcut already appended safely when a user had an unsaved draft.
+  - Source review found the vital-standard, symptom-support, cervical-care prompt, cervical screening, and food question shortcut handlers still replaced the editable question draft fields.
+- Changes:
+  - `src/questionDraftMerge.ts`: added `mergeGeneratedQuestionDraft()` to fill empty drafts normally, append generated text to in-progress drafts, preserve existing date/topic/priority/answer, avoid duplicate appends, and keep generated topics when the body exists without a topic.
+  - `src/App.tsx`: routed vital-standard, symptom-support, fever/infection standard, cervical-care prompt, cervical screening, and food question shortcut handlers through the shared merge helper.
+  - `src/questionDraftMerge.test.ts`: added focused coverage for empty fills, in-progress append preservation, duplicate prevention, and generated-topic fallback.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `workspace:4` / `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#records`.
+  - PASS seeded in-progress draft: used the real question form controls to set date `2026-06-09`, topic `기존 활력 질문`, priority `routine`, body `이미 작성 중인 활력 질문입니다.`, and answer memo `기존 답변 메모`.
+  - PASS real click: clicked the real `혈압 기준 진료 질문 초안 만들기` button. The draft kept date `2026-06-09`, topic `기존 활력 질문`, priority `routine`, and answer memo `기존 답변 메모`.
+  - PASS appended evidence: the question body still started with `이미 작성 중인 활력 질문입니다.`, then appended the generated blood-pressure question containing `혈압 128/78 mmHg`, `성인 남녀 공통 한국 성인 혈압 기준`, and `출처: 질병관리청 국가건강정보포털 고혈압 - https://health.kdca.go.kr/...thtimt_cntnts_sn=28`.
+  - PASS feedback and focus: `.vital-standard-question-feedback` and the top save chip both showed `활력 기준 질문 초안 준비됨 · 혈압 128/78 mmHg · 판정 주의혈압 범위 · 기준 성인 남녀 공통 한국 성인 혈압 기준 · 근거 질병관리청 국가건강정보포털 고혈압`; focus moved to `진료 전 질문 내용`.
+  - PASS non-mutation: `localStorage["carevault.v1"]` stayed byte-for-byte equal to baseline length `1872`; persisted counts stayed `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; no preview, dialog, or stale alert opened.
+  - PASS cleanup: restored baseline browser storage, removed `carevault.__testVitalQuestionAppendBaseline`, forced a same-`surface:7` reload, and confirmed storage keys only `carevault.v1`, no `carevault.__test*` session keys, counts restored, question date `2026-06-07`, blank topic/body/answer, priority `next-visit`, no vital draft feedback, no preview/dialog/stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors` before and after the direct QA.
+- Verification:
+  - PASS focused tests: `npm test -- src/questionDraftMerge.test.ts src/healthStandards.test.ts src/foodQuestionPrompts.test.ts src/cervicalCancerCare.test.ts src/symptomSupportTemplates.test.ts` => `5 passed`, `84 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `63 passed`, `536 passed`.
+  - PASS diff check: `git diff --check -- src/App.tsx src/questionDraftMerge.ts src/questionDraftMerge.test.ts`.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.tsx`, `src/questionDraftMerge.ts`, `src/questionDraftMerge.test.ts`, and `working.md` are dirty with this verified UX-safety improvement.
+  - Next: run final diff/staged checks, stage only these explicit paths, run `gitleaks protect --staged --no-banner --redact`, commit/push, then record post-push status.

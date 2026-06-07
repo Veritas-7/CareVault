@@ -417,6 +417,7 @@ import {
   questionPriorityLabel,
   type QuestionPriority,
 } from "./questionPriority";
+import { mergeGeneratedQuestionDraft } from "./questionDraftMerge";
 import {
   buildQuestionStatusButtonLabels,
   formatQuestionStatusUpdateStatus,
@@ -1952,14 +1953,15 @@ function App() {
 
     setVitalSaveFeedback(null);
     setQuestionSaveFeedback(null);
-    setQuestionDraft((current) => ({
-      ...current,
-      date: getNextQuestionDate(state.visits, today),
-      priority: "next-visit",
-      question: draft.question,
-      status: "open",
-      topic: draft.topic,
-    }));
+    setQuestionDraft((current) =>
+      mergeGeneratedQuestionDraft(current, {
+        date: getNextQuestionDate(state.visits, today),
+        priority: "next-visit",
+        question: draft.question,
+        status: "open",
+        topic: draft.topic,
+      }),
+    );
     clearRecordFormValidationFeedback("vital");
     const feedback = formatVitalStandardQuestionDraftStatusLabel(draftInput);
     setVitalStandardQuestionFeedback(feedback);
@@ -2882,14 +2884,15 @@ function App() {
     const feedback = formatSymptomSupportQuestionDraftReadyStatus(symptomSupportTemplate);
 
     setQuestionSaveFeedback(null);
-    setQuestionDraft((current) => ({
-      ...current,
-      date: getNextQuestionDate(state.visits, today),
-      topic: `부작용: ${symptomSupportTemplate.label}`,
-      question: buildSymptomSupportQuestion(symptomSupportTemplate, symptomDraft.symptom),
-      priority: "next-visit",
-      status: "open",
-    }));
+    setQuestionDraft((current) =>
+      mergeGeneratedQuestionDraft(current, {
+        date: getNextQuestionDate(state.visits, today),
+        topic: `부작용: ${symptomSupportTemplate.label}`,
+        question: buildSymptomSupportQuestion(symptomSupportTemplate, symptomDraft.symptom),
+        priority: "next-visit",
+        status: "open",
+      }),
+    );
     setSymptomSaveFeedback(null);
     setSymptomDraft((current) => ({
       ...current,
@@ -2938,24 +2941,15 @@ function App() {
     const generatedQuestion = buildSymptomSupportQuestion(template, "체온 38℃ 이상 또는 오한");
     const feedback = formatSymptomSupportQuestionDraftReadyStatus(template);
     setQuestionSaveFeedback(null);
-    setQuestionDraft((current) => {
-      const currentQuestion = current.question.trim();
-      const hasExistingQuestionDraft = current.topic.trim() || currentQuestion;
-      const nextQuestion = currentQuestion
-        ? current.question.includes(generatedQuestion)
-          ? current.question
-          : `${currentQuestion}\n${generatedQuestion}`
-        : generatedQuestion;
-
-      return {
-        ...current,
-        date: hasExistingQuestionDraft ? current.date : getNextQuestionDate(state.visits, today),
-        priority: hasExistingQuestionDraft ? current.priority : "next-visit",
-        question: nextQuestion,
+    setQuestionDraft((current) =>
+      mergeGeneratedQuestionDraft(current, {
+        date: getNextQuestionDate(state.visits, today),
+        priority: "next-visit",
+        question: generatedQuestion,
         status: "open",
-        topic: current.topic.trim() ? current.topic : `부작용: ${template.label}`,
-      };
-    });
+        topic: `부작용: ${template.label}`,
+      }),
+    );
     setInfectionFeverStandardDraftFeedback(feedback);
     setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
@@ -2965,13 +2959,15 @@ function App() {
     const feedback = formatCervicalCancerCarePromptQuestionDraftReadyStatus(prompt);
 
     setQuestionSaveFeedback(null);
-    setQuestionDraft((current) => ({
-      ...current,
-      ...buildCervicalCancerCarePromptQuestionDraft(
-        prompt,
-        getNextQuestionDate(state.visits, today),
+    setQuestionDraft((current) =>
+      mergeGeneratedQuestionDraft(
+        current,
+        buildCervicalCancerCarePromptQuestionDraft(
+          prompt,
+          getNextQuestionDate(state.visits, today),
+        ),
       ),
-    }));
+    );
     setCervicalCancerCareQuestionFeedback(feedback);
     setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
@@ -2983,14 +2979,15 @@ function App() {
     );
 
     setQuestionSaveFeedback(null);
-    setQuestionDraft((current) => ({
-      ...current,
-      date: getNextQuestionDate(state.visits, today),
-      topic: "자궁경부암 검진",
-      question: buildCervicalCancerScreeningQuestion(cervicalCancerScreeningSummary),
-      priority: "next-visit",
-      status: "open",
-    }));
+    setQuestionDraft((current) =>
+      mergeGeneratedQuestionDraft(current, {
+        date: getNextQuestionDate(state.visits, today),
+        topic: "자궁경부암 검진",
+        question: buildCervicalCancerScreeningQuestion(cervicalCancerScreeningSummary),
+        priority: "next-visit",
+        status: "open",
+      }),
+    );
     setCervicalCancerCareQuestionFeedback(feedback);
     setSaveLabel(feedback);
     setQuestionDraftFocusRequest((request) => request + 1);
@@ -3005,14 +3002,15 @@ function App() {
     }
 
     setQuestionSaveFeedback(null);
-    setQuestionDraft((current) => ({
-      ...current,
-      date: getNextQuestionDate(state.visits, today),
-      priority: foodQuestionDraft.priority,
-      question: foodQuestionDraft.question,
-      status: "open",
-      topic: foodQuestionDraft.topic,
-    }));
+    setQuestionDraft((current) =>
+      mergeGeneratedQuestionDraft(current, {
+        date: getNextQuestionDate(state.visits, today),
+        priority: foodQuestionDraft.priority,
+        question: foodQuestionDraft.question,
+        status: "open",
+        topic: foodQuestionDraft.topic,
+      }),
+    );
     const feedback = formatFoodQuestionDraftReadyStatus(foodQuestionDraftInput, foodQuestionDraft);
     setFoodQuestionDraftFeedback(feedback);
     setSaveLabel(feedback);
