@@ -27880,3 +27880,21 @@
   - Direct same-surface DOM/click QA remains blocked by the existing `surface:7` automation context mismatch. Browser diagnostics still use only that surface.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the in-frame print guard if green.
+
+## 2026-06-07 14:09 KST - Post-Push Export Preview In-Frame Print
+
+- Current Goal:
+  - Record post-push verification for export-preview in-frame printing.
+- Result:
+  - Source commit pushed: `1b6c63f` (`Print previews without opening a new window`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `1b6c63f`.
+- Verification:
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push cmux browser diagnostics: existing `surface:7` URL/title remained CareVault and `errors list` returned `No browser errors`.
+- Issues:
+  - Direct DOM/click QA remains blocked by the existing `surface:7` automation context mismatch; no focus/workspace switch, new browser, new tab, or new surface was used.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
