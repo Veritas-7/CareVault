@@ -3336,6 +3336,47 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low cooking hygiene safety practices from official guidance", () => {
+    const assessment = assessCancerFood(
+      "손톱 밑까지 깨끗이 씻기, 음식물에 머리카락 들어가지 않게, 조리 기구 식기 수저 소독, 식기 도마 칼 분리 사용, 생고기 닭고기 생선 즙이 다른 식품에 떨어지지 않게, 외식보다는 직접 요리",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "손톱 밑까지 깨끗이 씻기",
+      "음식물에 머리카락 들어가지 않게",
+      "조리 기구 식기 수저 소독",
+      "식기 도마 칼 분리 사용",
+      "생고기 닭고기 생선 즙이 다른 식품에 떨어지지 않게",
+      "외식보다는 직접 요리",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 조리 위생·교차오염 예방 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      );
+    }
+    expect(terms).not.toContain("생고기");
+    expect(terms).not.toContain("닭고기");
+    expect(terms).not.toContain("생선");
+    expect(balancedGuideText).toContain("손톱 밑까지 깨끗이 씻기");
+    expect(balancedGuideText).toContain("식기 도마 칼 분리 사용");
+    expect(balancedGuideText).toContain("외식보다는 직접 요리");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("does not match one-syllable food warnings inside unrelated Korean words", () => {
     const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
     const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);
