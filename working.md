@@ -27680,3 +27680,16 @@
   - Direct same-surface DOM QA remains blocked by the inactive/non-evaluable `surface:7` context.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the narrow test coverage update if green.
+
+## 2026-06-07 13:47 KST - Post-Push Required Feedback Memory Autosave Preservation
+
+- Verification:
+  - PASS focused commit: `f271c26` (`Test required feedback memory autosave preservation`) reached `origin/main`.
+  - PASS repo sync: `git status --short --branch` showed `## main...origin/main`, `git rev-list --left-right --count origin/main...HEAD` returned `0 0`, and local/remote short SHAs both resolved to `f271c26`.
+  - PASS post-push runtime: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS browser diagnostics: existing `surface:7` returned `No browser errors`.
+- Current state:
+  - Required-field feedback cleanup now has automated coverage proving it preserves temporary-memory autosave labels instead of overwriting them with a generic required-field-cleared status.
+  - Runtime is clean; no temporary Vite process is running.
+- Next Steps:
+  - Continue with another non-duplicate CareVault workflow. Direct browser QA still must use only the existing `surface:7`; do not focus/select the inactive `암관리` workspace or open another browser without explicit approval.
