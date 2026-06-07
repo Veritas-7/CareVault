@@ -29340,6 +29340,32 @@
 - Next Steps:
   - Stage explicit paths, run staged diff/secret gates, then commit/push if green.
 
+## 2026-06-07 17:56 KST - Post-Push Saved Question Multi-Source UI
+
+- Current Goal:
+  - Record post-push verification for the saved question multi-source UI slice.
+- Result:
+  - Source commit pushed: `fe2c8dc` (`Show all question evidence sources`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `fe2c8dc423af312da8858ff56d3cc892cec2fadf`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/questionDisplay.test.ts` failed before the fix because `sources` was missing and multi-source saved question display kept only the first source.
+    - GREEN: `npm test -- src/questionDisplay.test.ts` => 1 file / 7 tests.
+    - GREEN: `npm test -- src/questionDisplay.test.ts src/timelineSourceEvidenceLabels.test.ts src/sourceEvidence.test.ts` => 3 files / 13 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full tests: `npm test` => 64 files / 582 tests.
+  - PASS build: `npm run build`.
+  - PASS browser smoke with `with_server.py` and one Playwright Chromium session: saved a `자몽 주스, 보충제` food question, confirmed saved question and recent timeline bodies do not leak raw `출처:`, confirmed both official source links render in both UI locations, and confirmed no 390px mobile horizontal overflow.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Issues:
+  - No new blocking issue. Symptom display remains a possible future multi-source UI follow-up.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime cleanup.
+
 ## 2026-06-07 17:31 KST - Food Question Multi-Source Evidence
 
 - Current Goal:
