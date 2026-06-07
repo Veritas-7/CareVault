@@ -28,6 +28,35 @@
 - Next Steps:
   - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
 
+## 2026-06-07 22:42 KST - Post-Push NCC Prevention Fresh Seasonal Vegetable Guidance Terms
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center fresh seasonal vegetable guidance term slice.
+- Result:
+  - Source commit pushed: `ade929e` (`Add NCC prevention fresh vegetable terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `ade929e3748534f5cee2c301041d3eef244723c5`.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `e86cf68b0140e4947b9c6e3c00bf25a60c94b1f4`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `신선한 채소`, `다양한 색의 채소`, and `제철 식품` produced `neutral` instead of `ok`.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 42 tests.
+  - PASS full tests: `npm test` => 64 files / 607 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 6.66 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `암예방을 위한 요리`, `https://www.cancer.go.kr/lay1/S1T226C230/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 607 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
+  - Commit/push this `working.md` update and recheck final sync/runtime cleanup.
+
 ## 2026-06-06 04:34 KST - Symptom Save Local Feedback cmux QA
 
 - Completed slice: add local visible feedback for symptom record saves.
