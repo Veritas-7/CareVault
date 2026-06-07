@@ -230,9 +230,10 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "붉은 육류 적정량",
         detail:
-          "국가암정보센터 암예방 식단 예시는 소고기와 돼지고기 같은 붉은 육류를 주 3인분 이하로 적정량 섭취하도록 안내합니다.",
-        examples: "소고기, 돼지고기, 붉은 육류",
-        sourceIds: ["nccPreventionMealExamples"],
+          "국가암정보센터 암예방 식단 예시는 소고기와 돼지고기 같은 붉은 육류를 주 3인분 이하로 적정량 섭취하도록 안내하고, 건강한 식생활 자료는 붉은색 육류를 1회 1인분씩 주 3인분(익힌 상태 350~500g) 이하로 제한하도록 설명합니다.",
+        examples:
+          "소고기, 돼지고기, 붉은 육류, 붉은색 육류, 붉은색 육류 주 3인분, 붉은 육류 주 3인분, 붉은 육류 350~500g, 익힌 상태 350~500g",
+        sourceIds: ["nccPreventionMealExamples", "nccPreventionDiet"],
       },
       {
         label: "실천지침 대체 식단 예시",
@@ -531,6 +532,31 @@ const limitFoods: FoodRuleTerm[] = [
   ["소고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["돼지고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["붉은 육류", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
+  [
+    "붉은색 육류 주 3인분",
+    "국가암정보센터 건강한 식생활 붉은색 육류 주 3인분·350~500g 이하 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "붉은 육류 주 3인분",
+    "국가암정보센터 건강한 식생활 붉은색 육류 주 3인분·350~500g 이하 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "붉은 육류 350~500g",
+    "국가암정보센터 건강한 식생활 붉은색 육류 주 3인분·350~500g 이하 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "익힌 상태 350~500g",
+    "국가암정보센터 건강한 식생활 붉은색 육류 주 3인분·350~500g 이하 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "붉은색 육류",
+    "국가암정보센터 건강한 식생활 붉은색 육류 주 3인분·350~500g 이하 제한 후보",
+    "nccPreventionDiet",
+  ],
   ["흰쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet"],
   ["쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["햄구이", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],

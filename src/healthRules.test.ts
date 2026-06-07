@@ -488,6 +488,8 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("가당 제품");
     expect(limitGuideText).toContain("소고기");
     expect(limitGuideText).toContain("돼지고기");
+    expect(limitGuideText).toContain("붉은색 육류 주 3인분");
+    expect(limitGuideText).toContain("익힌 상태 350~500g");
     expect(limitGuideText).toContain("육가공품");
     expect(limitGuideText).toContain("가공육");
     expect(limitGuideText).toContain("직화 구이");
@@ -840,6 +842,36 @@ describe("healthRules", () => {
     expect(formatFoodMatchEvidence(matchesByTerm.소고기)).toContain(
       "국가암정보센터 암예방 식단 예시 - https://www.cancer.go.kr/lay1/S1T226C230/contents.do",
     );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
+  it("recognizes NCC healthy-eating red-meat weekly limit guidance terms", () => {
+    const assessment = assessCancerFood(
+      "붉은색 육류, 붉은색 육류 주 3인분, 붉은 육류 주 3인분, 붉은 육류 350~500g, 익힌 상태 350~500g",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "붉은색 육류",
+      "붉은색 육류 주 3인분",
+      "붉은 육류 주 3인분",
+      "붉은 육류 350~500g",
+      "익힌 상태 350~500g",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 붉은색 육류 주 3인분·350~500g 이하 제한 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 

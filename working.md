@@ -1,5 +1,32 @@
 # CareVault Working Notes
 
+## 2026-06-08 01:07 KST - NCC Healthy-Eating Red-Meat Weekly Limit Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on limiting red meat to weekly portion ranges.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `ad60880b4c548801c5abaab866bef3b4f1bf1084`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, updated 2025-09-29, whose guidance says 붉은색 육류 should be limited to 1 serving at a time and no more than 3 servings per week, 350-500g cooked.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `붉은색 육류`, `붉은색 육류 주 3인분`, `붉은 육류 주 3인분`, `붉은 육류 350~500g`, and `익힌 상태 350~500g` as source-backed watch terms without cure claims, plus guide-card coverage for the portion range.
+  - `src/healthRules.ts`: added the five red-meat weekly-limit watch terms under `nccPreventionDiet` and aligned the red-meat guide detail/examples with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating red-meat weekly-limit terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new red-meat weekly-limit phrases collapsed to existing shorter `붉은 육류` matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 55 tests.
+  - PASS full tests: `npm test` => 64 files / 620 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue. Source commit is ready for explicit-path staging and secret-scan gates.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`, then run staged and whole-directory secret scans before commit/push.
+
 ## 2026-06-08 00:53 KST - NCC Healthy-Eating Low-Salt Kimchi Terms
 
 - Current Goal:
