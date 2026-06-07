@@ -535,6 +535,33 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes the exact NCC healthy-eating salted storage food limit sentence", () => {
+    const assessment = assessCancerFood(
+      "젓갈류와 염(소금) 저장식품(김치 또는 장아찌류 등)의 섭취는 제한합니다; 젓갈류 염 소금 저장식품 김치 장아찌류 섭취 제한",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "젓갈류와 염(소금) 저장식품(김치 또는 장아찌류 등)의 섭취는 제한합니다",
+      "젓갈류 염 소금 저장식품 김치 장아찌류 섭취 제한",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 젓갈류·염 저장식품 제한 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating low-salt kimchi guidance terms", () => {
     const assessment = assessCancerFood(
       "저염 김치, 짜지 않은 김치, 싱겁게 만든 김치, 짜지 않은 김치류",
@@ -831,6 +858,10 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("인공조미료 화학조미료 사용 제한 싱겁게 만들어 먹기");
     expect(limitGuideText).toContain("음식을 먹을 때 추가로 소금이나 간장을 사용하지 않습니다");
     expect(limitGuideText).toContain("소금이나 간장 사용하지 않기");
+    expect(limitGuideText).toContain(
+      "젓갈류와 염(소금) 저장식품(김치 또는 장아찌류 등)의 섭취는 제한합니다",
+    );
+    expect(limitGuideText).toContain("젓갈류 염 소금 저장식품 김치 장아찌류 섭취 제한");
     expect(limitGuideText).toContain("햄·소시지 등 육가공품");
     expect(limitGuideText).toContain("햄, 소시지 등의 육가공품을 가급적 먹지 않습니다");
     expect(limitGuideText).toContain("햄 소시지 등의 육가공품 가급적 먹지 않기");
