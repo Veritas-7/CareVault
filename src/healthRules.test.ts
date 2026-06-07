@@ -3188,6 +3188,36 @@ describe("healthRules", () => {
     });
   });
 
+  it("recognizes immune-low uncooked-food source sentence as one care-team risk phrase", () => {
+    const sourcePhrase = "육회, 생선회, 생조개, 초밥 등 익히지 않은 음식은 드시지 않습니다";
+    const assessment = assessCancerFood(sourcePhrase);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourcePhrase]);
+    expect(terms).not.toContain("육회");
+    expect(terms).not.toContain("생선회");
+    expect(terms).not.toContain("생조개");
+    expect(terms).not.toContain("초밥");
+    expect(matchesByTerm[sourcePhrase]).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 익히지 않은 음식 주의",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(careTeamGuideText).toContain(sourcePhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourcePhrase])).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low food handling risk phrases from official guidance", () => {
     const assessment = assessCancerFood(
       "다진 고기, 씻지 않은 딸기, 오래된 남은 음식, 상한 음식",
