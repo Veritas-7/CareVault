@@ -26263,3 +26263,25 @@
 - Current state:
   - `working.md` is dirty with direct QA evidence only.
   - Next: stage only `working.md`, run staged checks, commit/push the QA note, then continue with another non-duplicate direct-click workflow.
+
+## 2026-06-07 09:52 KST - Food Question Draft Success QA
+
+- Current Goal:
+  - Direct-QA the food-judgment `질문 초안` success workflow with the current saved food query and low-WBC immune-food context in the existing single `surface:7` browser.
+  - Verify the action fills the editable question form without adding a saved question or mutating persisted health records.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `workspace:4` / `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#nutrition`.
+  - PASS baseline: `localStorage["carevault.v1"]` length was `1872`; saved `foodQuery` was `브로콜리, 현미밥, 베이컨, 자몽 주스`; counts were `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; the immune-food context rendered `2026-06-01 WBC 3.4 10^3/uL`, 서울아산병원 전혈구검사 참고치, and 국가암정보센터 면역기능 저하 식생활 evidence.
+  - PASS baseline labels: the real food action button was enabled with aria/title `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함`; no `.food-question-draft-feedback`, preview panel, or stale preview alert was visible.
+  - PASS click flow: clicked the real food `질문 초안` button. The editable pre-visit question form filled with date `2026-06-15`, topic `식단·음식 안전`, priority `high`, empty answer, and a question containing the WBC low context, the saved food query, `베이컨: 가공육`, `자몽: 약물 상호작용 확인 필요`, `검사 근거: 서울아산병원 전혈구검사 참고치`, and `국가암정보센터 증상별 식생활 - 면역기능의 저하`.
+  - PASS non-directive guard: the generated draft did not contain `먹지 마세요` or `치료하세요`.
+  - PASS feedback and non-save guard: `.food-question-draft-feedback` and the top save chip both showed `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 브로콜리, 현미밥, 베이컨, 자몽 주스 · 일치 4개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 4개`; the real add button became `진료 전 질문 추가 · 식단·음식 안전 질문 입력 준비됨 · 우선순위 이번 진료 우선`; captured `carevault.v1` write log stayed empty and persisted counts remained unchanged with `questions=1`.
+  - PASS cleanup: restored baseline browser storage, removed the test session key and storage instrumentation, reloaded only `surface:7`, and confirmed storage length `1872`, food query unchanged, counts restored, question draft blank with date `2026-06-07`, priority `next-visit`, no `.food-question-draft-feedback`, no `carevault.__test*` session keys, no QA instrumentation globals, no generated draft text in the DOM, no preview panel, no stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`; console showed only normal Vite debug connection messages.
+- Verification:
+  - PASS focused tests: `npm test -- src/foodQuestionPrompts.test.ts src/immuneFoodContext.test.ts src/foodMetric.test.ts` => `3 passed`, `15 passed`.
+  - PASS source status: no app source files changed during this QA slice.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks, commit/push the QA note, then continue with another non-duplicate direct-click workflow.
