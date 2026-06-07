@@ -45,6 +45,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC after-treatment healthy-eating guidance matching for 치료 후 건강한 식생활/치료 후 다채로운 식단과 균형잡힌 식사/치료 후 다양한 단백질 식품과 채소류/치료 후 우유 및 유제품류 과일류/치료 후 과일 채소 전곡류 충분히 plus 치료 후 가공육 제한/탄 음식 피하기/짠 음식 피하기/하루 한 두 잔 술도 피하기 and 치료 후 부작용 식사섭취 어려움/건강보조식품 민간요법 상담 confirmation
 - NCC cervical-cancer risk-factor low fruit/vegetable intake matching for 과일과 채소의 섭취가 적은 식이/과일 채소 섭취 부족/채소와 과일을 거의 안 먹음 with official risk-factor source evidence and no cure-food framing
 - KDCA risk-drinking alcohol-type matching for 소주/막걸리/와인/양주/고도주 with standard-drink and abstinence-guidance source evidence, kept as general cancer-prevention `watch` guidance rather than a cervical-specific risk overclaim
+- NCC immune-low food-safety matching for 저온살균 우유/저온살균 주스/저온살균 제품 plus 곰팡이가 핀 음식/곰팡이 핀 음식, keeping pasteurized choices as `ok` support and moldy-food wording as care-team `risk`
 - NCC treatment eating balance and no-special-food guidance matching for 치료 중 균형 잡힌 식사/치료 중 충분한 열량과 단백질/치료 중 비타민 및 무기질/여러 가지 음식을 골고루 plus special-food/special-nutrient cure-claim confirmation
 - NCC mouth-pain soft and irritating food matching for 흰죽/닭죽/호박죽/쌀미음/바나나/수박/과일통조림/토마토주스/토스트/크래커/말린 음식
 - NCC dry-mouth moisture and saliva-stimulation matching for 물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기

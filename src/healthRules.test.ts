@@ -3288,6 +3288,54 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low pasteurized drink choices and moldy-food discard wording", () => {
+    const assessment = assessCancerFood(
+      "저온살균 우유, 저온살균 주스, 저온살균 제품, 곰팡이가 핀 음식, 곰팡이 핀 음식",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "저온살균 우유",
+      "저온살균 주스",
+      "저온살균 제품",
+      "곰팡이가 핀 음식",
+      "곰팡이 핀 음식",
+    ]);
+    for (const term of ["저온살균 우유", "저온살균 주스", "저온살균 제품"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 저온살균 우유·주스·요구르트 제품 선택 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    for (const term of ["곰팡이가 핀 음식", "곰팡이 핀 음식"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "면역저하 시 곰팡이가 핀 음식 폐기 기준 확인",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(balancedGuideText).toContain("저온살균 우유");
+    expect(balancedGuideText).toContain("저온살균 주스");
+    expect(careTeamGuideText).toContain("곰팡이가 핀 음식");
+    expect(formatFoodMatchEvidence(matchesByTerm["저온살균 우유"])).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("does not match one-syllable food warnings inside unrelated Korean words", () => {
     const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
     const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);

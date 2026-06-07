@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 07:04 KST - NCC Immune-Low Pasteurized And Moldy Food Matching
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center immune-low food-safety wording around pasteurized drink choices and moldy-food discard.
+- Context:
+  - Continued from clean/synced CareVault state after `23774332565221d559ec950a98b30f5d361de688`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept pasteurized drink choices as `ok` support while moldy-food wording stays a care-team `risk` check in the immune-low context.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The page says when WBC is reduced after chemotherapy or radiation therapy, users should prevent foodborne infection by eating cooked food; it specifically says milk, juice, and yogurt should be pasteurized products and moldy food should not be eaten.
+  - Applied the source only as food-safety record support and risk checks. It does not diagnose immune suppression or replace clinician instructions.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `저온살균 우유`, `저온살균 주스`, `저온살균 제품`, `곰팡이가 핀 음식`, and `곰팡이 핀 음식` with source evidence and no cure-food wording.
+  - `src/healthRules.ts`: expanded the visible immune-low guide-card examples and added source-backed ok/risk terms for pasteurized drink choices and moldy-food discard wording.
+  - `README.md`: added the new NCC immune-low pasteurized/moldy-food matching to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because pasteurized drink choices did not match and moldy-food phrases collapsed to the shorter `곰팡이` chip.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 100 tests.
+  - PASS full tests: `npm test` => 64 files / 665 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `23774332565221d559ec950a98b30f5d361de688`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD and full verification slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 07:01 KST - Final KDCA Alcohol Type Log
 
 - Current Goal:
