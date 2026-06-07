@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 02:17 KST - NCC Healthy-Eating Hot/Spicy Food Avoid Phrases
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance that very hot or spicy foods should be avoided.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `d44ff3f95a77e094ff8080f745b7c2c645e70968`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - `DESIGN.md` confirms medical content should use official Korean sources and remain record/clinician-question support, not diagnosis or treatment instruction.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page states very hot or spicy food intake should be avoided.
+  - Applied the source as a watch/limit food guidance phrase only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `너무 뜨겁거나 매운 음식의 섭취는 피합니다` and `너무 뜨겁거나 매운 음식 섭취 피하기` as source-backed watch terms without cure claims.
+  - `src/healthRules.ts`: added the two hot/spicy-food avoid phrases under `nccPreventionDiet` before the shorter `너무 뜨겁거나 매운 음식` fallback and aligned the limit guide examples/detail with the same official source.
+  - `README.md`: added the new official healthy-eating hot/spicy-food avoid phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new guide strings were missing and both new phrases collapsed to the shorter `너무 뜨겁거나 매운 음식` match.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 61 tests.
+  - PASS full tests: `npm test` => 64 files / 626 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue so far.
+- Next Steps:
+  - Run full verification gates, then stage only the touched source/log paths with explicit secret checks before committing.
+
 ## 2026-06-08 02:13 KST - Post-Push NCC Healthy-Eating Low-Fat Milk About-One-Cup Terms
 
 - Current Goal:

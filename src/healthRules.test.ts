@@ -310,6 +310,33 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy-eating hot or spicy food avoid phrases", () => {
+    const assessment = assessCancerFood(
+      "너무 뜨겁거나 매운 음식의 섭취는 피합니다, 너무 뜨겁거나 매운 음식 섭취 피하기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      "너무 뜨겁거나 매운 음식의 섭취는 피합니다",
+      "너무 뜨겁거나 매운 음식 섭취 피하기",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 섭취 피하기 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC healthy-eating seasoning and added salt or soy sauce limit terms", () => {
     const assessment = assessCancerFood(
       "인공조미료, 화학조미료, 추가 소금, 소금 추가, 추가 간장, 간장 추가",
@@ -580,6 +607,8 @@ describe("healthRules", () => {
     expect(limitGuideText).toContain("돼지고기");
     expect(limitGuideText).toContain("붉은색 육류 주 3인분");
     expect(limitGuideText).toContain("익힌 상태 350~500g");
+    expect(limitGuideText).toContain("너무 뜨겁거나 매운 음식의 섭취는 피합니다");
+    expect(limitGuideText).toContain("너무 뜨겁거나 매운 음식 섭취 피하기");
     expect(limitGuideText).toContain("햄·소시지 등 육가공품");
     expect(limitGuideText).toContain("가급적 먹지 않기");
     expect(limitGuideText).toContain("육가공품");
