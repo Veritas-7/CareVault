@@ -314,7 +314,7 @@ describe("csvExport", () => {
     expect(csv).toContain("국가암정보센터 증상별 식생활 - 면역기능의 저하");
     expect(csv).toContain('"question","2026-06-10","부작용","오심 조절을 어떻게 볼까요?","open","이번 진료 우선"');
     expect(csv).toContain(
-      "브로콜리: 채소 중심 식단에 적합 (국가암정보센터 암예방 식이 - https://cancer.go.kr/lay1/S1T226C230/contents.do)",
+      "브로콜리: 채소 중심 식단에 적합 (국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do)",
     );
     expect(csv).toContain(
       "자몽: 약물 상호작용 확인 필요 (질병관리청 국가건강정보포털 식이영양 - https://health.kdca.go.kr/",

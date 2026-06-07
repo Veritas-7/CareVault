@@ -106,15 +106,43 @@ describe("healthRules", () => {
       assessment.matches.map((match) => [match.term, match]),
     );
 
-    expect(foodGuidanceSources.nccPreventionDiet.label).toBe("국가암정보센터 암예방 식이");
-    expect(matchesByTerm.브로콜리.sourceLabel).toBe("국가암정보센터 암예방 식이");
-    expect(matchesByTerm.베이컨.sourceLabel).toBe("국가암정보센터 암예방 식이");
+    expect(foodGuidanceSources.nccPreventionDiet.label).toBe("국가암정보센터 건강한 식생활");
+    expect(foodGuidanceSources.nccPreventionDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+    );
+    expect(matchesByTerm.브로콜리.sourceLabel).toBe("국가암정보센터 건강한 식생활");
+    expect(matchesByTerm.브로콜리.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+    );
+    expect(matchesByTerm.베이컨.sourceLabel).toBe("국가암정보센터 건강한 식생활");
     expect(matchesByTerm.자몽.sourceLabel).toBe("질병관리청 국가건강정보포털 식이영양");
     expect(matchesByTerm.보충제.sourceLabel).toBe("국가암정보센터 보완대체요법 상담");
     expect(assessment.matches.every((match) => match.sourceUrl.startsWith("https://"))).toBe(true);
     expect(formatFoodMatchEvidence(matchesByTerm.자몽)).toContain(
       "질병관리청 국가건강정보포털 식이영양 - https://",
     );
+  });
+
+  it("recognizes NCC healthy-eating daily vegetable guidance terms", () => {
+    const assessment = assessCancerFood("채소류, 매끼니 채소, 매일 채소");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["채소류", "매끼니 채소", "매일 채소"]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
   it("uses the immune-function diet source for raw or unpasteurized food safety checks", () => {

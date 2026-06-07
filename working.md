@@ -1,5 +1,34 @@
 # CareVault Working Notes
 
+## 2026-06-07 23:13 KST - NCC Healthy-Eating Daily Vegetable Guidance Terms
+
+- Current Goal:
+  - Split the generic National Cancer Information Center healthy-eating source from meal-example pages and add narrow source-backed food-judgment matches for daily vegetable guidance terms.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `ba7517f680450ec41dcd8ccefdda7c2f2de34ea6`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, whose guidance says to eat vegetable foods daily and at every meal.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage that `nccPreventionDiet` uses the official `건강한 식생활` label and URL, and that `채소류`, `매끼니 채소`, and `매일 채소` match as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: moved `nccPreventionDiet` to the `건강한 식생활` URL, updated the balanced guide text, and added the three daily vegetable guidance terms under `nccPreventionDiet`.
+  - `README.md`: added the new official healthy-eating vegetable terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccPreventionDiet` still used the old label/URL and the new vegetable terms produced `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 46 tests.
+  - PASS export regression update: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts src/csvExport.test.ts src/visitPacket.test.ts` => 4 files / 95 tests.
+  - PASS full tests: `npm test` => 64 files / 611 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-07 23:05 KST - NCC Prevention Protein Guidance Terms
 
 - Current Goal:
@@ -55,7 +84,7 @@
   - No new blocking issue. Source commit is pushed and the repository is synced after push.
 - Next Steps:
   - Log-only update gates also passed after adding this section: `npm test` => 64 files / 610 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
-  - Commit/push this `working.md` update and recheck final sync/runtime cleanup.
+  - Log-only commit was pushed as `ba7517f` (`Log NCC prevention protein guidance verification`); final sync/runtime cleanup passed.
 
 ## 2026-06-07 22:55 KST - NCC Prevention Mixed-Grain Guidance Terms
 

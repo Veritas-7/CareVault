@@ -672,7 +672,7 @@ describe("visit packet", () => {
     expect(markdown).toContain("브로콜리, 베이컨, 자몽 주스");
     expect(markdown).toContain("[공식 출처 기반 음식 규칙] 의료진 확인 필요");
     expect(markdown).toContain(
-      "베이컨: 가공육 (국가암정보센터 암예방 식이 - https://cancer.go.kr/lay1/S1T226C230/contents.do)",
+      "베이컨: 가공육 (국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do)",
     );
     expect(markdown).toContain(
       "자몽: 약물 상호작용 확인 필요 (질병관리청 국가건강정보포털 식이영양 - https://health.kdca.go.kr/",

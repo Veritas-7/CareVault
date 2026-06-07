@@ -106,8 +106,8 @@ export const foodGuidanceSources: Record<
   { label: string; url: string }
 > = {
   nccPreventionDiet: {
-    label: "국가암정보센터 암예방 식이",
-    url: "https://cancer.go.kr/lay1/S1T226C230/contents.do",
+    label: "국가암정보센터 건강한 식생활",
+    url: "https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
   },
   nccPreventionMealExamples: {
     label: "국가암정보센터 암예방 식단 예시",
@@ -183,8 +183,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "채소·과일·통곡물·콩류",
         detail:
-          "암예방 식생활 자료는 매끼 채소, 매일 과일, 잡곡·도정하지 않은 곡류, 두류와 두부 같은 두류 가공품을 권합니다.",
-        examples: "채소 반찬, 제철 과일, 잡곡밥, 현미, 귀리, 통밀빵, 콩, 두부",
+          "국가암정보센터 건강한 식생활 자료는 채소류를 매일·매끼니 충분히 먹고, 매일 과일과 잡곡·도정하지 않은 곡류, 두류와 두부 같은 두류 가공품을 권합니다.",
+        examples:
+          "채소류, 매끼니 채소, 매일 채소, 채소 반찬, 제철 과일, 잡곡밥, 현미, 귀리, 통밀빵, 콩, 두부",
         sourceIds: ["nccPreventionDiet"],
       },
       {
@@ -391,6 +392,9 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["브로콜리", "채소 중심 식단에 적합", "nccPreventionDiet"],
   ["양배추", "십자화과 채소", "nccPreventionDiet"],
   ["케일", "짙은 잎채소", "nccPreventionDiet"],
+  ["채소류", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
+  ["매끼니 채소", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
+  ["매일 채소", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
   ["방울토마토", "국가암정보센터 암예방 샐러드 신선채소 예시 후보", "nccPreventionMealExamples"],
   ["블루베리", "국가암정보센터 암예방 샐러드 과일 예시 후보", "nccPreventionMealExamples"],
   ["과일류", "국가암정보센터 암예방 샐러드 매일 과일 예시 후보", "nccPreventionMealExamples"],
