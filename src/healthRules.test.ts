@@ -807,6 +807,56 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy-eating boiled meat support and direct grilling or fatty meat limit terms", () => {
+    const supportAssessment = assessCancerFood("수육, 보쌈");
+    const supportTerms = supportAssessment.matches.map((match) => match.term);
+    const supportMatchesByTerm = Object.fromEntries(
+      supportAssessment.matches.map((match) => [match.term, match]),
+    );
+    const watchAssessment = assessCancerFood(
+      "숯불구이, 직접 구이, 직접구이, 지방 함량이 많은 부위, 지방 많은 부위",
+    );
+    const watchTerms = watchAssessment.matches.map((match) => match.term);
+    const watchMatchesByTerm = Object.fromEntries(
+      watchAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(supportAssessment.level).toBe("ok");
+    expect(supportTerms).toEqual(["수육", "보쌈"]);
+    for (const term of supportTerms) {
+      expect(supportMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 삶거나 끓인 육류 조리 예시 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(supportMatchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+
+    expect(watchAssessment.level).toBe("watch");
+    expect(watchTerms).toEqual([
+      "숯불구이",
+      "직접 구이",
+      "직접구이",
+      "지방 함량이 많은 부위",
+      "지방 많은 부위",
+    ]);
+    for (const term of watchTerms) {
+      expect(watchMatchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 건강한 식생활 숯불·직접 구이와 지방 많은 부위 제한 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(watchMatchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify([...supportAssessment.matches, ...watchAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes NCC prevention protein-choice support examples", () => {
     const assessment = assessCancerFood("생선, 달걀, 콩, 닭고기, 등푸른 생선, 고등어");
     const terms = assessment.matches.map((match) => match.term);

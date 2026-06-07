@@ -199,8 +199,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "익힌 단백질·수분",
         detail:
-          "치료 중 영양 자료는 탄수화물, 단백질, 비타민·무기질, 물을 기본 영양소로 설명합니다. 면역저하가 있으면 안전하게 익힌 음식인지 함께 확인합니다.",
-        examples: "익힌 생선·닭고기·달걀, 고등어, 두부, 저지방 우유, 플레인 요구르트, 물",
+          "치료 중 영양 자료는 탄수화물, 단백질, 비타민·무기질, 물을 기본 영양소로 설명합니다. 건강한 식생활 자료는 육류를 구워 먹기보다 삶거나 끓인 조리 예시를 제시하며, 면역저하가 있으면 안전하게 익힌 음식인지 함께 확인합니다.",
+        examples: "익힌 생선·닭고기·달걀, 수육, 보쌈, 고등어, 두부, 저지방 우유, 플레인 요구르트, 물",
         sourceIds: ["nccTreatmentNutrients", "nccPreventionDiet", "nccImmuneLowDiet"],
       },
     ],
@@ -222,9 +222,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "가공육·탄 음식·튀김",
         detail:
-          "국가암정보센터 암예방 식단 예시는 햄·소시지 등 가공육류를 가급적 적게 섭취하고 직화 구이와 튀김 조리법을 피하도록 안내하며, 공식 암예방 식이 자료는 탄 음식도 피하도록 안내합니다.",
+          "국가암정보센터 암예방 식단 예시는 햄·소시지 등 가공육류를 가급적 적게 섭취하고 직화 구이와 튀김 조리법을 피하도록 안내하며, 공식 암예방 식이 자료는 숯불구이·직접 구이로 탄 음식과 지방 함량이 많은 육류 부위도 제한하도록 안내합니다.",
         examples:
-          "햄, 소시지, 가공육류, 가공육, 육가공품, 베이컨, 탄 고기, 숯불 직화, 직화 구이, 직화구이, 튀김 조리, 튀긴 음식, 튀김",
+          "햄, 소시지, 가공육류, 가공육, 육가공품, 베이컨, 탄 고기, 숯불구이, 숯불 직화, 직접 구이, 직접구이, 지방 함량이 많은 부위, 직화 구이, 직화구이, 튀김 조리, 튀긴 음식, 튀김",
         sourceIds: ["nccPreventionMealExamples", "nccPreventionDiet"],
       },
       {
@@ -445,6 +445,16 @@ const supportiveFoods: FoodRuleTerm[] = [
     "국가암정보센터 암예방 식단 등푸른 생선 주 2회 이상 예시 후보",
     "nccPreventionMealExamples",
   ],
+  [
+    "수육",
+    "국가암정보센터 건강한 식생활 삶거나 끓인 육류 조리 예시 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "보쌈",
+    "국가암정보센터 건강한 식생활 삶거나 끓인 육류 조리 예시 후보",
+    "nccPreventionDiet",
+  ],
   ["닭고기", "국가암정보센터 암예방 식단 단백질 적정량 예시 후보", "nccPreventionMealExamples"],
   ["달걀", "국가암정보센터 암예방 식단 단백질 적정량 예시 후보", "nccPreventionMealExamples"],
   ["생선", "국가암정보센터 암예방 식단 단백질 적정량 예시 후보", "nccPreventionMealExamples"],
@@ -527,6 +537,31 @@ const limitFoods: FoodRuleTerm[] = [
     "직화구이",
     "국가암정보센터 암예방 식단 직화 구이·튀김 조리법 피하기 예시",
     "nccPreventionMealExamples",
+  ],
+  [
+    "숯불구이",
+    "국가암정보센터 건강한 식생활 숯불·직접 구이와 지방 많은 부위 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "직접 구이",
+    "국가암정보센터 건강한 식생활 숯불·직접 구이와 지방 많은 부위 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "직접구이",
+    "국가암정보센터 건강한 식생활 숯불·직접 구이와 지방 많은 부위 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "지방 함량이 많은 부위",
+    "국가암정보센터 건강한 식생활 숯불·직접 구이와 지방 많은 부위 제한 후보",
+    "nccPreventionDiet",
+  ],
+  [
+    "지방 많은 부위",
+    "국가암정보센터 건강한 식생활 숯불·직접 구이와 지방 많은 부위 제한 후보",
+    "nccPreventionDiet",
   ],
   ["직화", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
   ["숯불", "직화·튀김 조리법 피하기", "nccPreventionDiet"],

@@ -1,5 +1,33 @@
 # CareVault Working Notes
 
+## 2026-06-08 00:21 KST - NCC Healthy-Eating Meat Cooking Method Terms
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance on boiled meat examples and limiting charcoal/direct grilling or fatty meat cuts.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `5373894439ca516095a9a7871965d6242aad01e9`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+  - Official-source re-check used National Cancer Information Center `건강한 식생활`, updated 2025-09-29, whose guidance says to eat meat boiled or simmered such as `수육` and `보쌈` rather than grilled, avoid charcoal/direct-grilled burned foods, and limit fatty meat cuts.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `수육`, `보쌈`, `숯불구이`, `직접 구이`, `직접구이`, `지방 함량이 많은 부위`, and `지방 많은 부위` as source-backed support/watch terms without cure claims.
+  - `src/healthRules.ts`: added the two boiled-meat support terms and five direct-grilling/fatty-cut watch terms under `nccPreventionDiet`, and aligned guide card text/examples with the same official healthy-eating source.
+  - `README.md`: added the new official healthy-eating meat cooking method terms to the source-backed food-matching feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `수육` and `보쌈` produced `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 51 tests.
+  - PASS full tests: `npm test` => 64 files / 616 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No blocker so far. Staged checks, commit/push, and post-push sync still need to run.
+- Next Steps:
+  - Stage explicit paths, run staged diff and gitleaks checks, then commit/push and record post-push verification.
+
 ## 2026-06-07 23:59 KST - NCC Healthy-Eating Seasoning and Added Salt/Soy Limit Terms
 
 - Current Goal:
