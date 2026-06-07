@@ -39,3 +39,15 @@ export function sortDatedItemsNewestFirst<T extends OrderedDatedRecord>(items: r
       getValidDateSortKey(b.date).localeCompare(getValidDateSortKey(a.date)) || b.order - a.order,
   );
 }
+
+export function sortDatedItemsOldestFirst<T extends OrderedDatedRecord>(items: readonly T[]) {
+  return [...items].sort((a, b) => {
+    const aDate = getValidDateSortKey(a.date);
+    const bDate = getValidDateSortKey(b.date);
+
+    if (aDate && bDate) return aDate.localeCompare(bDate) || a.order - b.order;
+    if (aDate) return -1;
+    if (bDate) return 1;
+    return a.order - b.order;
+  });
+}

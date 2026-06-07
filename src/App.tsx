@@ -448,6 +448,7 @@ import {
   latestDatedItem,
   latestDatedItemMatching,
   sortDatedItemsNewestFirst,
+  sortDatedItemsOldestFirst,
 } from "./recordOrdering";
 import {
   formatSymptomRecordLabel,
@@ -6276,8 +6277,9 @@ function App() {
             ) : null}
             {renderRecordFormFeedback("question")}
             <div className="question-list">
-              {[...state.questions]
-                .sort((a, b) => a.date.localeCompare(b.date))
+              {sortDatedItemsOldestFirst(
+                state.questions.map((question, index) => ({ ...question, order: index })),
+              )
                 .map((question) => {
                   const questionCopyDescription =
                     formatQuestionClipboardCopyDescription(question);

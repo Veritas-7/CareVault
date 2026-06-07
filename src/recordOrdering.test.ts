@@ -3,6 +3,7 @@ import {
   latestDatedItem,
   latestDatedItemMatching,
   sortDatedItemsNewestFirst,
+  sortDatedItemsOldestFirst,
 } from "./recordOrdering";
 
 describe("recordOrdering", () => {
@@ -53,5 +54,23 @@ describe("recordOrdering", () => {
         { date: "2026-06-04", label: "new same-day", order: 2 },
       ]).map((item) => item.label),
     ).toEqual(["newer date", "new same-day", "old same-day"]);
+  });
+
+  it("sorts ascending dated records before malformed restored dates", () => {
+    expect(
+      sortDatedItemsOldestFirst([
+        { date: "", label: "blank restored date", order: 0 },
+        { date: "2026-06-04", label: "older valid", order: 1 },
+        { date: "2026-06-04", label: "later same-day valid", order: 2 },
+        { date: "2026-06-31", label: "malformed restored date", order: 3 },
+        { date: "2026-06-05", label: "newer valid", order: 4 },
+      ]).map((item) => item.label),
+    ).toEqual([
+      "older valid",
+      "later same-day valid",
+      "newer valid",
+      "blank restored date",
+      "malformed restored date",
+    ]);
   });
 });
