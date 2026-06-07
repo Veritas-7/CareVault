@@ -1372,6 +1372,44 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC treatment nutrient protein fat and vitamin mineral examples", () => {
+    const assessment = assessCancerFood(
+      "치료 중 단백질 식품, 치료 중 육류와 생선류, 치료 중 조개류, 치료 중 달걀 두부 우유, 치료 중 참기름 들기름 콩기름 버터, 치료 중 채소와 과일",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "치료 중 단백질 식품",
+      "치료 중 육류와 생선류",
+      "치료 중 조개류",
+      "치료 중 달걀 두부 우유",
+      "치료 중 참기름 들기름 콩기름 버터",
+      "치료 중 채소와 과일",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 치료 중 영양소 단백질·지방·비타민/무기질 식품 후보",
+        sourceId: "nccTreatmentNutrients",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 치료 중 영양소 - https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("치료 중 단백질 식품");
+    expect(balancedGuideText).toContain("치료 중 참기름 들기름 콩기름 버터");
+    expect(balancedGuideText).toContain("치료 중 채소와 과일");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC treatment eating balance and no-special-food guidance", () => {
     const assessment = assessCancerFood(
       "치료 중 균형 잡힌 식사, 치료 중 충분한 열량과 단백질, 치료 중 비타민 및 무기질, 여러 가지 음식을 골고루, 암을 낫게 해주는 특별한 식품, 암을 낫게 해주는 특별한 영양소",
