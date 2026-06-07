@@ -29927,6 +29927,34 @@
 - Next Steps:
   - Run the full gate, stage only explicit CareVault paths, run staged and whole-directory secret scans, then commit/push the source change and record post-push verification.
 
+## 2026-06-07 19:27 KST - Post-Push Cervical Risk-Factor Memo
+
+- Current Goal:
+  - Record post-push verification for the immune/infection/birth-count cervical risk-factor memo.
+- Result:
+  - Source commit pushed: `dd251db` (`Add cervical risk-factor memo`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `dd251dbeeef2215df6f1cd49f1ccd54a55953483`.
+- Verification:
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` failed before implementation because `nccCervicalRiskFactors`, the new prevention guide, updated counts, and export text were missing.
+    - GREEN related: `npm test -- src/cervicalCancerCare.test.ts src/cervicalCancerCareClipboard.test.ts src/cervicalCancerCareMetric.test.ts src/visitPacket.test.ts src/csvExport.test.ts src/caregiverExport.test.ts` => 6 files / 135 tests.
+  - PASS full tests: `npm test` => 64 files / 589 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center cervical-cancer risk-factor page: `https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4884`
+- Issues:
+  - No new blocking issue. Source commit is pushed and the repository is synced after push.
+- Next Steps:
+  - Log-only update gates also passed after adding this section: `npm test` => 64 files / 589 tests; `npm run typecheck`; `npm run build`; `npm run runtime:doctor`; `git diff --check`.
+  - Commit/push this `working.md` update, then recheck final sync/runtime cleanup.
+
 ## 2026-06-07 19:19 KST - Post-Push Cervical Food Prevention Examples
 
 - Current Goal:
