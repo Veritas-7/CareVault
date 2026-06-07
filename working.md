@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:35 KST - Post-Push NCC Treatment Nutrient Carbohydrate And Hydration Examples
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center treatment-nutrient carbohydrate and hydration example slice.
+- Result:
+  - Source commit pushed: `455977b` (`Add NCC treatment nutrient food terms`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `455977bda9452f7bcb2cc1b51fc4cfae3b6216f5`.
+  - Post-push verification log commit is pending.
+- Verification:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `37d275d237cec0c545b4b416c5f8f51fd3892857`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - PASS RED/GREEN path:
+    - RED: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new examples were classified `neutral`.
+    - GREEN focused: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 81 tests.
+  - PASS full tests before push: `npm test` => 64 files / 646 tests.
+  - PASS typecheck before push: `npm run typecheck`.
+  - PASS build before push: `npm run build`.
+  - PASS pre-commit runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned about 8.84 KB and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 646 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `영양소의 이해`, `https://www.cancer.go.kr/lay1/S1T471C473/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then re-check post-log sync/runtime status.
+
 ## 2026-06-08 04:32 KST - NCC Treatment Nutrient Carbohydrate And Hydration Examples
 
 - Current Goal:
