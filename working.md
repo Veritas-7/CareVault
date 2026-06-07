@@ -26956,3 +26956,31 @@
   - Browser-local caregiver content stale test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested, using cmux CLI-only control unless the user explicitly asks otherwise.
+
+## 2026-06-07 12:06 KST - Diabetes Tracking Toggle Direct QA
+
+- Current Goal:
+  - Direct-QA a non-export profile-mode workflow in the same existing `암관리` / `surface:7` cmux browser without occupying the visible window.
+  - Verify the `당뇨 추적` checkbox updates accessible labels, save feedback, dashboard glucose assessment, care queue evidence, and restores to the exact baseline after a user-event round trip.
+- Context:
+  - `formatProfileModeToggleLabel("diabetes", checked)` should expose `당뇨 추적 켜짐 · 선택 해제하면 끕니다` or `당뇨 추적 꺼짐 · 선택하면 켭니다`.
+  - With diabetes tracking off, the latest glucose card and queue evidence should switch from 대한당뇨병학회 care-target wording to KDCA blood-glucose screening wording.
+- Changes:
+  - No source code changes in this slice; the current implementation passed direct same-surface QA and focused tests.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite served `127.0.0.1:1420`; existing `surface:7` was reused at `http://127.0.0.1:1420/`, with no new browser/surface/tab and no visible-window control.
+  - PASS baseline: captured `localStorage["carevault.v1"]` into `sessionStorage["carevault.__testDiabetesToggleBaseline"]`; storage length was `1872`, local keys only `carevault.v1`, profile `diabetes=true`, and the toggle exposed `당뇨 추적 켜짐 · 선택 해제하면 끕니다`.
+  - PASS off toggle: clicked the real `input[aria-label^="당뇨 추적"]`; profile persisted `diabetes=false`, toggle aria/title became `당뇨 추적 꺼짐 · 선택하면 켭니다`, save chip showed `당뇨 추적 꺼짐 · 브라우저 자동 저장됨`, and storage length changed to `1873`.
+  - PASS screening-mode dashboard: the latest glucose card changed from `식후 목표 범위 · 성인 남녀 공통 · 당뇨 추적 혈당` to `식후 2시간 · 내당능장애 범위 · 성인 남녀 공통 · 혈당 선별 기준`, with source `질병관리청 국가건강정보포털 당뇨병`.
+  - PASS queue evidence: the care queue aria changed to `확인 필요 7개 · 일정/일반 1개 · 활력 4`, and the glucose queue row used KDCA diabetes evidence with `내당능장애 범위`.
+  - PASS on toggle and cleanup: clicked the same checkbox again; profile persisted `diabetes=true`, toggle aria/title returned to `당뇨 추적 켜짐 · 선택 해제하면 끕니다`, save chip showed `당뇨 추적 켜짐 · 브라우저 자동 저장됨`, latest glucose returned to `식후 목표 범위 · 성인 남녀 공통 · 당뇨 추적 혈당`, the timeline glucose source returned to 대한당뇨병학회, and localStorage matched the captured baseline byte-for-byte.
+  - PASS cleanup: removed `carevault.__testDiabetesToggleBaseline`; no `carevault.__test*` session keys remained.
+  - PASS browser diagnostics after cleanup: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/profileModeToggle.test.ts src/vitalMetric.test.ts src/vitalRecordLabels.test.ts src/healthStandards.test.ts src/careActionQueue.test.ts` => `5 passed`, `66 passed`.
+  - PASS runtime cleanup: temporary Vite was stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS repo/browser diagnostics: `git status --short --branch` showed `## main...origin/main`; existing `surface:7` returned `No browser errors`.
+- Current state:
+  - `working.md` is dirty with verified diabetes tracking toggle direct QA evidence only; source code is unchanged.
+- Next Steps:
+  - Run diff/secret checks, then stage only `working.md` for a log-only commit/push.
