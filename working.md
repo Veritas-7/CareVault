@@ -1,5 +1,34 @@
 # CareVault Working Notes
 
+## 2026-06-08 02:27 KST - NCC Healthy-Eating Low-Salt Kimchi Preparation Phrases
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center healthy-eating guidance to prepare kimchi products so they are not salty.
+- Context:
+  - Re-checked active thread identity and confirmed target path `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - Local `HEAD` and `origin/main` were synced before this slice at `686ac125289ffa8cb5868ed4b5574d7ee0dd7b7f`.
+  - Used TDD and kept the change to one official-source food-rule slice.
+- Research:
+  - Re-checked National Cancer Information Center `건강한 식생활`, updated 2025-09-29. The page states kimchi products should be prepared/eaten without being salty.
+  - Applied the source as supportive balanced-diet guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN guide-card and food-match coverage for `김치류는 짜지 않게 만들어 먹습니다` and `김치류 짜지 않게 만들기` as source-backed support terms without cure claims.
+  - `src/healthRules.ts`: added the two low-salt kimchi preparation phrases under `nccPreventionDiet` before shorter low-salt kimchi fallback matching and aligned the balanced-diet guide examples/detail with the same official source.
+  - `README.md`: added the new official healthy-eating low-salt kimchi preparation phrases to the source-backed nutrition feature list.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new phrases were neutral and the guide strings were missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 63 tests.
+  - PASS full tests: `npm test` => 64 files / 628 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강한 식생활`, `https://www.cancer.go.kr/lay1/S1T226C229/contents.do`
+- Issues:
+  - No new blocking issue so far.
+- Next Steps:
+  - Run full verification gates, then stage only the touched source/log paths with explicit secret checks before committing.
+
 ## 2026-06-08 02:23 KST - Post-Push NCC Healthy-Eating Added Salt/Soy-Sauce Avoid Phrases
 
 - Current Goal:

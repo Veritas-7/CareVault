@@ -451,6 +451,33 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy-eating low-salt kimchi preparation phrases", () => {
+    const assessment = assessCancerFood(
+      "김치류는 짜지 않게 만들어 먹습니다, 김치류 짜지 않게 만들기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "김치류는 짜지 않게 만들어 먹습니다",
+      "김치류 짜지 않게 만들기",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 건강한 식생활 김치류 짜지 않게 만들기 후보",
+        sourceId: "nccPreventionDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 건강한 식생활 - https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+      );
+    }
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("uses the immune-function diet source for raw or unpasteurized food safety checks", () => {
     const assessment = assessCancerFood("생굴, 회, 날계란, 비살균 우유");
     const matchesByTerm = Object.fromEntries(
@@ -569,6 +596,16 @@ describe("healthRules", () => {
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
         .join(" "),
     ).toContain("저염 김치");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("김치류는 짜지 않게 만들어 먹습니다");
+    expect(
+      cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
+        .map((item) => `${item.label} ${item.detail} ${item.examples}`)
+        .join(" "),
+    ).toContain("김치류 짜지 않게 만들기");
     expect(
       cancerFoodGuideCategories.find((category) => category.id === "balanced")?.items
         .map((item) => `${item.label} ${item.detail} ${item.examples}`)
