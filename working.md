@@ -25990,3 +25990,34 @@
 - Current state:
   - Source tree will be clean and synced after this focused post-push status note is committed and pushed.
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 09:02 KST - Document Archive Cancel Feedback
+
+- Current Goal:
+  - Improve the saved-document `삭제 보관` confirm-cancel branch so dismissing the prompt gives visible local row feedback plus the same topbar status.
+  - Keep the cancel path non-destructive: no archive move, no history append, no deleted panel, no preview/dialog side effects, and no persisted data mutation.
+- Context:
+  - Earlier direct QA proved canceling the archive prompt left storage unchanged, but source review still found `deleteDocument()` returned immediately on `!confirmed` with no feedback.
+  - This mirrors the saved attachment removal cancel improvement and keeps destructive-action cancel feedback consistent with the document row `role=status` pattern.
+- Changes:
+  - `src/documentActionLabels.ts`: added `formatDocumentArchiveCanceledStatusLabel()` with document/category/status context.
+  - `src/App.tsx`: when archive confirmation is canceled, sets the saved-document row `.document-action-feedback` and `.save-status-chip` to the scoped cancel label before returning.
+  - `src/documentActionLabels.test.ts`: added RED/PASS coverage for the archive cancel feedback sentence.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#documents`.
+  - NOTE: after one reload, `get-url` still showed the CareVault URL while the eval context saw `about:blank`; recovered inside the same `surface:7` by setting `location.href = "http://127.0.0.1:1420/#documents"`, with no new browser/surface.
+  - PASS baseline: `localStorage["carevault.v1"]` length was `1871`, storage keys were only `carevault.v1`, active `documents` was `1`, `deletedDocuments` was `0`, and the real saved-row archive action was `혈액검사 메모 검사 서류 삭제 보관함으로 이동 · 상태 의료진 질문`.
+  - PASS cancel click: installed a temporary same-WebView `window.confirm` recorder returning `false`, clicked the real `삭제 보관` button, and captured exactly one prompt: `"혈액검사 메모" 서류 기록을 삭제 보관함으로 이동할까요?`.
+  - PASS new feedback: `.document-action-feedback` and `.save-status-chip` both showed `혈액검사 메모 검사 서류 삭제 보관 취소됨 · 상태 의료진 질문`.
+  - PASS non-mutation guard: `localStorage["carevault.v1"]` stayed byte-for-byte equal to baseline, active/deleted document counts stayed `1/0`, no deleted-document panel appeared, the archive button remained visible, and no dialog/export preview/stale alert appeared.
+  - PASS cleanup: restored native `window.confirm`, removed QA globals and the `carevault.__testArchiveCancelFeedbackBaseline` session key, reloaded, recovered the eval context on the same surface, and confirmed localStorage keys only `carevault.v1`, no `carevault.__test*` session keys, no confirm globals, counts `1/0`, and storage length `1871`.
+  - PASS browser diagnostics: `cmux browser --surface surface:7 errors list` returned `No browser errors`; console showed only normal Vite `[debug] [vite] connecting...` and `[debug] [vite] connected.` lines.
+- Verification:
+  - RED before implementation: `npm test -- src/documentActionLabels.test.ts` failed because `formatDocumentArchiveCanceledStatusLabel` did not exist.
+  - PASS focused tests: `npm test -- src/documentActionLabels.test.ts src/documentHistory.test.ts src/documentFilterActions.test.ts` => `3 passed`, `30 passed`.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full test suite: `npm test` => `62 passed`, `532 passed`.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `src/App.tsx`, `src/documentActionLabels.ts`, `src/documentActionLabels.test.ts`, and `working.md` are dirty with this verified archive-cancel feedback improvement.
+  - Next: run final diff checks, stage only these paths, run staged secret scan, commit/push, then record post-push status.

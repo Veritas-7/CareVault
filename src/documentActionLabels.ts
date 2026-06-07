@@ -56,6 +56,12 @@ export function formatDocumentArchiveStatusLabel(document: CareDocument) {
   }`;
 }
 
+export function formatDocumentArchiveCanceledStatusLabel(document: CareDocument) {
+  return `${formatDocumentContext(document)} 삭제 보관 취소됨 · 상태 ${
+    documentReviewStatusLabel[document.reviewStatus]
+  }`;
+}
+
 export function formatDocumentRestoreStatusLabel(document: CareDocument) {
   return `${formatDocumentContext(document)} 저장된 서류로 복구됨 · 상태 ${
     documentReviewStatusLabel[document.reviewStatus]

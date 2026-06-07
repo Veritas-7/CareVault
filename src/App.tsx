@@ -169,6 +169,7 @@ import {
 import {
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
+  formatDocumentArchiveCanceledStatusLabel,
   formatDocumentArchiveStatusLabel,
   formatDocumentAttachmentCheckedStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
@@ -2750,7 +2751,12 @@ function App() {
 
   const deleteDocument = async (document: CareDocument) => {
     const confirmed = window.confirm(`"${document.title}" 서류 기록을 삭제 보관함으로 이동할까요?`);
-    if (!confirmed) return;
+    if (!confirmed) {
+      const feedback = formatDocumentArchiveCanceledStatusLabel(document);
+      setDocumentActionFeedback({ documentId: document.id, message: feedback });
+      setActionSaveLabel(feedback);
+      return;
+    }
 
     clearBrowserAttachmentPreviewUrl(document.id);
     if (attachmentPreview?.documentId === document.id) {

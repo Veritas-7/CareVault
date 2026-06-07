@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { type CareDocument } from "./appState";
 import {
   formatDocumentActionButtonLabel,
+  formatDocumentArchiveCanceledStatusLabel,
   formatDocumentArchiveStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentAttachmentFileNameOnlyStatusLabel,
@@ -102,6 +103,9 @@ describe("documentActionLabels", () => {
 
     expect(formatDocumentArchiveStatusLabel(deletedDocument)).toBe(
       "복부 CT 영상 서류 삭제 보관함으로 이동됨 · 상태 정리 완료",
+    );
+    expect(formatDocumentArchiveCanceledStatusLabel(deletedDocument)).toBe(
+      "복부 CT 영상 서류 삭제 보관 취소됨 · 상태 정리 완료",
     );
     expect(formatDocumentRestoreStatusLabel(deletedDocument)).toBe(
       "복부 CT 영상 서류 저장된 서류로 복구됨 · 상태 정리 완료",
