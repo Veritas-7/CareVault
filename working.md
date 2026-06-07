@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 07:01 KST - Final KDCA Alcohol Type Log
+
+- Current Goal:
+  - Finalize the KDCA risk-drinking alcohol type matching slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `b66cf2a` (`Add KDCA alcohol drink type guidance`).
+  - Post-push verification log commit pushed: `32173a5` (`Log KDCA alcohol drink type verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `32173a52fd1d19d1f74e28bf099d10a2474f4d87`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - KDCA National Health Information Portal `위험음주! 알려드리겠습니다!`, `https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5355`
+- Issues:
+  - No new blocking issue. Source commit and verification log were pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Continue with the next narrow official-source cervical-cancer nutrition, safety, or record-prep slice after rechecking current source coverage.
+
 ## 2026-06-08 07:01 KST - Post-Push KDCA Alcohol Type Verification
 
 - Current Goal:
