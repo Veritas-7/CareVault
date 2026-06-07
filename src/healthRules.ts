@@ -28,6 +28,7 @@ export type FoodGuidanceSourceId =
   | "nccPreventionMealExamples"
   | "nccSideEffectDiet"
   | "nccMouthPainDiet"
+  | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
   | "nccComplementaryTherapy"
   | "nccCervicalDiet"
@@ -121,6 +122,10 @@ export const foodGuidanceSources: Record<
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
     url: "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+  },
+  nccDryMouthDiet: {
+    label: "국가암정보센터 증상별 식생활 - 입안의 건조증",
+    url: "https://cancer.go.kr/lay1/S1T479C485/contents.do",
   },
   nccImmuneLowDiet: {
     label: "국가암정보센터 증상별 식생활 - 면역기능의 저하",
@@ -216,6 +221,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "흰죽, 닭죽, 고기죽, 전복죽, 호박죽, 야채죽, 계란죽, 쌀미음, 조미음, 잣미음, 깨미음, 녹두미음, 부드러운 야채, 데친 채소, 바나나, 배, 수박, 과일통조림",
         sourceIds: ["nccMouthPainDiet"],
+      },
+      {
+        label: "입안 건조증 시 촉촉한 음식",
+        detail:
+          "국가암정보센터 입안의 건조증 자료는 가까운 곳에 물을 두어 조금씩 자주 마시고, 삼키기 쉽도록 음식에 소스나 드레싱을 더해 촉촉하게 하며, 식사 중간에 물이나 음료를 한 모금씩 마시고, 딱딱한 사탕이나 껌으로 침 분비를 도울 수 있다고 안내합니다.",
+        examples: "물 조금씩 자주, 물 한 모금, 소스나 드레싱, 딱딱한 사탕, 껌, 껌 씹기",
+        sourceIds: ["nccDryMouthDiet"],
       },
     ],
   },
@@ -608,6 +620,17 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["바나나", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["수박", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["과일통조림", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
+  ["물 조금씩 자주", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
+  ["물 한 모금", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
+  ["소스나 드레싱", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
+  ["딱딱한 사탕", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
+  ["껌 씹기", "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보", "nccDryMouthDiet"],
+  [
+    "껌",
+    "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보",
+    "nccDryMouthDiet",
+    standaloneFoodTermOptions,
+  ],
   ["견과", "불포화지방과 간식 대체", "kdcaNutrition"],
   ["호두", "견과류", "kdcaNutrition"],
   [

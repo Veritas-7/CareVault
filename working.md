@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 04:49 KST - NCC Dry-Mouth Moisture And Saliva-Stimulation Food Examples
+
+- Current Goal:
+  - Add narrow source-backed food-judgment matches for National Cancer Information Center dry-mouth moisture and saliva-stimulation examples.
+- Context:
+  - Continued from clean/synced CareVault state after `0fb3d192ab6b9f87f1c6381080e3ca08c5faf69b`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - Used TDD and kept this slice limited to symptom-context dry-mouth phrases. Broad standalone `물`, `소스`, `드레싱`, and generic sweet/sour terms were not added.
+- Research:
+  - Re-checked National Cancer Information Center `입안의 건조증`, final update 2013-02-01. The page says dry mouth can make chewing/swallowing harder and suggests keeping water nearby to sip often, making food moist with sauces/dressings, taking small sips during meals, and using hard candy or gum to help saliva flow; severe problems should be discussed with a doctor or dentist.
+  - Applied the source as symptom-context support guidance only; no cure-food or treatment claim was added.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `물 조금씩 자주`, `물 한 모금`, `소스나 드레싱`, `딱딱한 사탕`, `껌`, and `껌 씹기`.
+  - `src/healthRules.ts`: added `nccDryMouthDiet`, a balanced guide card for dry-mouth moisture support, and source-backed ok matching terms. The short `껌` term uses standalone matching options to reduce substring false positives.
+  - `README.md`: added the new NCC dry-mouth examples to the source-backed nutrition feature list.
+- Tests:
+  - PASS GitHub readiness: `gh auth status` showed active `Veritas-7` account; `gitleaks version` reported `8.30.1`; `git ls-remote origin HEAD` resolved to pre-push `0fb3d192ab6b9f87f1c6381080e3ca08c5faf69b`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` reported `PRIVATE`.
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `nccDryMouthDiet` was missing.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 83 tests.
+  - PASS full tests: `npm test` => 64 files / 648 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` scanned staged changes and reported no leaks.
+  - PASS whole-directory secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and reported no leaks.
+- Sources:
+  - National Cancer Information Center `입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Run git/secret readiness checks, then commit and push this source slice if all checks pass.
+
 ## 2026-06-08 04:43 KST - Post-Push NCC Mouth-Pain Soft And Irritating Food Examples
 
 - Current Goal:

@@ -1433,6 +1433,50 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC dry-mouth moisture and saliva-stimulation food examples", () => {
+    const assessment = assessCancerFood(
+      "물 조금씩 자주, 물 한 모금, 소스나 드레싱, 딱딱한 사탕, 껌, 껌 씹기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDryMouthDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증",
+    );
+    expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
+      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "물 조금씩 자주",
+      "물 한 모금",
+      "소스나 드레싱",
+      "딱딱한 사탕",
+      "껌",
+      "껌 씹기",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 입안 건조증 시 침 분비·삼킴 도움 후보",
+        sourceId: "nccDryMouthDiet",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      );
+    }
+    expect(balancedGuideText).toContain("물 조금씩 자주");
+    expect(balancedGuideText).toContain("소스나 드레싱");
+    expect(balancedGuideText).toContain("딱딱한 사탕");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC prevention meal example dishes without cure claims", () => {
     const assessment = assessCancerFood(
       "아욱된장국, 호박나물, 콩나물무침, 고등어구이, 배추김치",
