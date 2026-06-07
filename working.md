@@ -26366,3 +26366,30 @@
   - Browser-local draft/test state was cleaned up; runtime is clean.
 - Next Steps:
   - Continue with another non-duplicate direct-click CareVault workflow from the same existing `암관리` `surface:7` browser if more autonomous polish is requested.
+
+## 2026-06-07 10:13 KST - Food Question Draft Append Direct QA
+
+- Current Goal:
+  - Direct-QA the food-judgment `질문 초안` handler after the shared generated-question merge helper landed.
+  - Verify the food shortcut appends source-backed text to an in-progress editable pre-visit question draft without overwriting the user's current fields or mutating persisted health records.
+- Context:
+  - The previous source change routed the food handler through `mergeGeneratedQuestionDraft()`.
+  - The vital-standard branch had direct browser proof; this slice covers the food handler through its real button and current immune-food context.
+- Direct same-surface QA:
+  - PASS setup: temporary Vite started on `127.0.0.1:1420`; reused only the existing `workspace:4` / `surface:7` cmux browser and navigated it to `http://127.0.0.1:1420/#nutrition`.
+  - PASS seeded in-progress draft: captured baseline `localStorage["carevault.v1"]` length `1872`, then used the real question form controls to set date `2026-06-10`, topic `기존 식단 질문`, priority `routine`, body `이미 작성 중인 식단 질문입니다.`, and answer memo `기존 식단 답변 메모`.
+  - PASS real click: clicked the real `음식 판단 진료 질문 초안 만들기 · 근거 4개 포함` button with the saved food input `브로콜리, 현미밥, 베이컨, 자몽 주스`.
+  - PASS append preservation: the draft kept date `2026-06-10`, topic `기존 식단 질문`, priority `routine`, and answer memo `기존 식단 답변 메모`; the body still started with `이미 작성 중인 식단 질문입니다.` and appended the generated food-safety question below it.
+  - PASS appended evidence: appended text included `2026-06-01 WBC 3.4 10^3/uL`, the food input, `브로콜리: 채소 중심 식단에 적합; 현미: 통곡물; 베이컨: 가공육; 자몽: 약물 상호작용 확인 필요`, `검사 근거: 서울아산병원 전혈구검사 참고치`, and `출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do`.
+  - PASS non-directive guard: the generated draft did not contain `먹지 마세요` or `치료하세요`.
+  - PASS feedback and focus: `.food-question-draft-feedback` and the top save chip both showed `음식 판단 질문 초안 준비됨 · 식단·음식 안전 · 우선순위 이번 진료 우선 · 입력 브로콜리, 현미밥, 베이컨, 자몽 주스 · 일치 4개 · 검사 연결 2026-06-01 WBC 3.4 10^3/uL · 근거 4개`; the add button aria became `진료 전 질문 추가 · 기존 식단 질문 입력 준비됨 · 우선순위 일반 확인`; focus moved to `진료 전 질문 내용`.
+  - PASS non-mutation: `localStorage["carevault.v1"]` stayed byte-for-byte equal to baseline length `1872`; persisted counts stayed `vitals=4`, `visits=1`, `symptoms=1`, `questions=1`, `documents=1`, `deletedDocuments=0`, `labResults=1`; no preview, dialog, or stale alert opened.
+  - PASS cleanup: restored baseline browser storage, removed `carevault.__testFoodQuestionAppendBaseline`, forced a same-`surface:7` reload, and confirmed storage keys only `carevault.v1`, no `carevault.__test*` session keys, counts restored, food input unchanged, question date `2026-06-07`, blank topic/body/answer, priority `next-visit`, no food draft feedback, no preview/dialog/stale alert, and save chip `브라우저 자동 저장됨`.
+  - PASS browser diagnostics: `cmux browser surface:7 errors list` returned `No browser errors`.
+- Verification:
+  - PASS focused tests: `npm test -- src/questionDraftMerge.test.ts src/foodQuestionPrompts.test.ts src/immuneFoodContext.test.ts` => `3 passed`, `13 passed`.
+  - PASS source status: no app source files changed during this QA slice.
+  - PASS runtime cleanup: temporary Vite stopped; `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Current state:
+  - `working.md` is dirty with direct QA evidence only.
+  - Next: stage only `working.md`, run staged checks and secret scan, then commit/push the QA note.
