@@ -27790,3 +27790,21 @@
   - Direct same-surface DOM QA remains blocked by the inactive/non-evaluable `surface:7` context.
 - Next Steps:
   - Run standard diff/secret gates, then commit/push the focused post-click cleanup guard if green.
+
+## 2026-06-07 13:56 KST - Post-Push Text Download Post-Click Cleanup Guard
+
+- Current Goal:
+  - Record post-push verification for the started-download cleanup guard.
+- Result:
+  - Source commit pushed: `f336ae5` (`Keep started text downloads successful`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `f336ae5`.
+- Verification:
+  - PASS pre-commit gate: `git diff --check`.
+  - PASS staged gate: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+  - PASS runtime cleanup after push: `npm run runtime:doctor` reported port 1420 free, no installed/release CareVault app process, and no dev processes.
+  - PASS cmux browser diagnostics after push: existing `surface:7` returned `No browser errors`.
+- Issues:
+  - Direct DOM QA still remains blocked because the existing `surface:7` eval context reports `about:blank` while the surface URL/title report CareVault; no focus/workspace switch or new browser/surface was used.
+- Next Steps:
+  - Run standard gates for this log-only update, commit, push, and recheck sync/runtime/browser diagnostics.
