@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 15:40 KST - NCC After-Treatment Soup and Salted Foods Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center after-treatment source guidance for: `국이나 찌개 섭취 시에는 건더기 위주로 섭취하며, 김치, 젓갈, 장아찌, 피클 등 염장 식품의 섭취를 줄입니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `0e769eb92e3399c3fc91c07a56c27f145c815f54`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as after-treatment limit/watch guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center PDF `치료 후 건강한 식생활`, `https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf`; it states that soup/stew should be eaten mostly as solid ingredients and salted foods such as kimchi, jeotgal, jangajji, and pickles should be reduced after cancer treatment.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC after-treatment soup/stew solids and salted-foods source sentence, source evidence, and guard checks against collapsing into shorter fallback terms.
+  - `src/healthRules.ts`: added the exact NCC after-treatment soup/stew solids and salted-foods source sentence to the limit guide text, examples, and source-backed `nccAfterTreatmentHealthyEating` matching terms.
+  - `README.md`: documented expanded NCC after-treatment soup/stew solids and salted-foods exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence collapsed into shorter `젓갈`, `장아찌`, and `염장` fallback matches.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 168 tests.
+  - PASS full tests: `npm test` => 64 files / 733 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `0e769eb92e3399c3fc91c07a56c27f145c815f54`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 15:37 KST - Final NCC After-Treatment Low-Sodium Cooking Log
 
 - Current Goal:
