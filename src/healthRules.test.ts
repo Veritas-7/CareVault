@@ -3997,6 +3997,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC dry-mouth saliva candy-gum source sentence", () => {
+    const sourceSentence =
+      "딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDryMouthDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증",
+    );
+    expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
+      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 입안 건조증 시 딱딱한 사탕과 껌을 통한 침 분비 도움 후보",
+      sourceId: "nccDryMouthDiet",
+    });
+    expect(terms).not.toContain("딱딱한 사탕");
+    expect(terms).not.toContain("껌");
+    expect(terms).not.toContain("껌 씹기");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC nausea easier foods and nausea-triggering food examples", () => {
     const assessment = assessCancerFood(
       "샤베트, 복숭아통조림, 맑은 유동식, 얼음조각, 기름진 음식, 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식",
