@@ -2908,6 +2908,36 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC after-treatment fruit and vegetable nutrient benefit source sentence", () => {
+    const sourceSentence =
+      "과일과 채소에 들어있는 비타민, 무기질, 식이섬유소, 항산화 영양소 등이 암 예방 및 건강 증진에 도움이 됩니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 후 건강한 식생활 균형식 후보",
+      sourceId: "nccAfterTreatmentHealthyEating",
+    });
+    expect(terms).not.toContain("치료 후 과일 채소 전곡류 충분히");
+    expect(terms).not.toContain("과일");
+    expect(terms).not.toContain("채소류");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 후 건강한 식생활 - https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC after-treatment fruit and vegetable frequency source sentence", () => {
     const sourceSentence =
       "다양한 종류와 색깔을 선택하고 채소는 매끼 2~3가지 이상, 과일은 매일 1~2회 섭취합니다.";
