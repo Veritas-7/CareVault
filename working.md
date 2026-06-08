@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:00 KST - Post-Push NCC Dry-Mouth Meal-Sip Straw Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center dry-mouth meal-sip straw exact source sentence slice.
+- Result:
+  - Source commit pushed: `bacd814` (`Add NCC dry-mouth meal-sip straw guidance`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `bacd814401702c752bc159b476f5e76927c525b4`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 804 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync/runtime/focused-test checks and add a final log entry.
+
 ## 2026-06-09 00:56 KST - PENDING NCC Dry-Mouth Meal-Sip Straw Source Sentence
 
 - Current Goal:
