@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 19:18 KST - Final NCC Nausea Hunger-Before-Eating Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center nausea hunger-before-eating source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `29b7a1d` (`Add NCC nausea hunger-before-eating guidance`).
+  - Post-push verification log commit pushed: `125d8d5` (`Log NCC nausea hunger-before-eating verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `125d8d50189fae5955adb3ad02def62d74740624`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and verification log were pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Continue with the next narrow official-source cervical-cancer nutrition, safety, or record-prep slice after rechecking current source coverage.
+
 ## 2026-06-08 19:17 KST - Post-Push NCC Nausea Hunger-Before-Eating Verification
 
 - Current Goal:
