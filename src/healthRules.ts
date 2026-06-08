@@ -796,6 +796,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaDiet"],
       },
       {
+        label: "구토 1~2일 이상 지속 상담",
+        detail:
+          "국가암정보센터 구토 자료는 구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의하도록 안내합니다.",
+        examples: "구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의합니다.",
+        sourceIds: ["nccVomitingDiet"],
+      },
+      {
         label: "설사 심함·혈변·2일 이상 지속 상담",
         detail:
           "국가암정보센터 설사 자료는 설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 안내합니다.",
@@ -2608,6 +2615,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "메스꺼움이 언제, 무엇 때문에 나타나는지를 체크하고 의사선생님이나 간호사와 상의합니다.",
     "국가암정보센터 메스꺼움 유발 요인 기록·의료진 상담 필요",
     "nccNauseaDiet",
+  ],
+  [
+    "구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의합니다.",
+    "국가암정보센터 구토 1~2일 이상 지속 의료진 상담 필요",
+    "nccVomitingDiet",
   ],
   [
     "설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 합니다.",

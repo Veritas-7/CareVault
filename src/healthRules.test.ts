@@ -4206,6 +4206,44 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC vomiting clinician consultation source sentence", () => {
+    const sourceSentence = "구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccVomitingDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 구토",
+    );
+    expect(foodGuidanceSources.nccVomitingDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 구토 1~2일 이상 지속 의료진 상담 필요",
+      sourceId: "nccVomitingDiet",
+    });
+    expect(terms).not.toContain("구토 조절 후 물");
+    expect(terms).not.toContain("구토 맑은 유동식");
+    expect(terms).not.toContain("구토 후 부드러운 식사");
+    expect(terms).not.toContain(
+      "미리 메스꺼움과 구토증상을 완화시키는 항구토제의 사용에 대해 의사선생님과 상의합니다.",
+    );
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 구토 - https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC taste-change protein alternatives and seasoning examples", () => {
     const assessment = assessCancerFood(
       "입맛 변화 생선, 입맛 변화 계란, 입맛 변화 두부, 입맛 변화 콩, 입맛 변화 우유나 유제품, 고기 싫을 때 생선, 레몬즙 양념, 새콤달콤한 소스, 입맛 변화 오렌지, 입맛 변화 레몬",
