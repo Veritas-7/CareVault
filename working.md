@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 02:56 KST - PENDING NCC Weight-Change Weight-Loss Protein Snack Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `만두, 피자, 샌드위치, 계란샐러드, 카스테라 등`
+- Context:
+  - Continued from clean/synced CareVault state at `d6189427e0b27031a3bbc201c930a3b868b0eb8c`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage includes the preceding exact protein-snack recommendation sentence, but does not yet preserve the source's example phrase for those snacks.
+  - This phrase is source-backed weight-loss protein-snack example guidance in context, not a generic pizza/sandwich recommendation and not a cancer treatment or cure claim, so it should be preserved as contextual `ok` guidance and exposed in the existing weight-loss calorie/protein guide item.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; immediately under the protein-rich snack recommendation it lists the examples `만두, 피자, 샌드위치, 계란샐러드, 카스테라 등`, and notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss protein snack examples phrase, source evidence, balanced guide text, and guard checks against collapsing into generic `샐러드`, nearby weight-loss examples, or weight-gain high-calorie snack limits.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the examples phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss protein snack examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase matched only the generic `샐러드` term instead of preserving the exact NCC examples phrase as source-backed weight-loss protein-snack guidance.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 255 tests.
+  - PASS source/diff checks: `rg -n "만두, 피자, 샌드위치|protein snack examples|단백질 간식 예시|NCC Weight-Change Weight-Loss Protein Snack Examples" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `d6189427e0b27031a3bbc201c930a3b868b0eb8c`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 820 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 84 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current runtime blocker observed; the latest runtime doctor passed with port `1420` free.
+- Next Steps:
+  - Add the RED test, implement the exact source-backed `ok` matcher and guide-card example text, then run focused/full verification before commit and push.
+
 ## 2026-06-09 02:54 KST - Post-Push NCC Weight-Change Weight-Loss Protein Snack Verification
 
 - Current Goal:

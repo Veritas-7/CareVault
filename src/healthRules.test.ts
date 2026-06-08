@@ -6633,6 +6633,49 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC weight-change weight-loss protein snack examples source phrase", () => {
+    const sourcePhrase = "만두, 피자, 샌드위치, 계란샐러드, 카스테라 등";
+    const assessment = assessCancerFood(sourcePhrase);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(foodGuidanceSources.nccWeightChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourcePhrase]);
+    expect(matchesByTerm[sourcePhrase]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 체중감소 시 단백질 간식 예시 후보",
+      sourceId: "nccWeightChangeDiet",
+    });
+    expect(terms).not.toContain("체중감소 만두");
+    expect(terms).not.toContain("체중감소 계란찜");
+    expect(terms).not.toContain("체중증가 고열량 간식");
+    expect(balancedGuideText).toContain(
+      "간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다.",
+    );
+    expect(balancedGuideText).toContain(sourcePhrase);
+    expect(limitGuideText).toContain("가능한 고열량의 간식은 먹지 않도록 합니다.");
+    expect(formatFoodMatchEvidence(matchesByTerm[sourcePhrase])).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC weight-change weight-gain cause consultation source sentence", () => {
     const sourceSentence =
       "그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다.";
