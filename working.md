@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 23:26 KST - PENDING NCC Vomiting Soft-Food General-Meal Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center vomiting source guidance for: `맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다. 우유를 소화시키기 힘들면 우유가 들어있지 않은 제품을 이용하도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `00f85d5e90b30428c8f0281e16429607237adaca`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC vomiting coverage recognizes staged example tokens and two exact vomiting source sentences, but not this exact soft-food/general-meal source sentence.
+  - Using TDD and keeping this as source-backed supportive staged-diet guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 구토`, `https://www.cancer.go.kr/lay1/S1T479C482/contents.do`; it includes `맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다. 우유를 소화시키기 힘들면 우유가 들어있지 않은 제품을 이용하도록 합니다.` in the vomiting guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact vomiting soft-food/general-meal source sentence is currently split into generic `맑은 유동식` and `우유가 들어있지 않은 제품` terms instead of retaining the NCC vomiting source sentence.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the soft-food/general-meal sentence in the balanced guide detail/examples.
+  - `README.md`: documented the expanded NCC vomiting soft-food/general-meal exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence matched only the generic `맑은 유동식` and `우유가 들어있지 않은 제품` terms instead of the exact NCC vomiting sentence.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 227 tests.
+  - PASS source/diff checks: `rg -n "맑은 유동식으로 구토증상이 조절되면|soft-food/general-meal|미음·일반식|일반 식사를 섭취" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `00f85d5e90b30428c8f0281e16429607237adaca`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 792 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 80 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-08 23:24 KST - Final NCC Vomiting Clear-Liquid Log
 
 - Current Goal:
