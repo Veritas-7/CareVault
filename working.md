@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 04:20 KST - Post-Push NCC Weight-Change Weight-Loss Meat Bitter Taste Seasoning Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change weight-loss meat bitter-taste seasoning examples exact source phrase slice.
+- Result:
+  - Source commit pushed: `744a598` (`Add NCC weight-change bitter seasoning examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `744a59835c9fa63b544990f9e8aac94a19b3aafc`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 832 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 04:15 KST - PENDING NCC Weight-Change Weight-Loss Meat Bitter Taste Seasoning Examples Phrase
 
 - Current Goal:
