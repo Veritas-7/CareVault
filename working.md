@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:29 KST - Post-Push NCC Weight-Change Weight-Loss Bread/Rice-Cake Calorie Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change weight-loss bread/rice-cake calorie examples exact source phrase slice.
+- Result:
+  - Source commit pushed: `11c92ad` (`Add NCC weight-change bread calorie examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `11c92ad568c4ad3a55a163f97ca956d195799798`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 824 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 03:24 KST - PENDING NCC Weight-Change Weight-Loss Bread/Rice-Cake Calorie Examples Phrase
 
 - Current Goal:
