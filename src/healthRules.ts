@@ -596,7 +596,7 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         detail:
           "국가암정보센터 치료 중 올바르게 식사하기 자료는 몸에 좋다고 소문난 특정 식품이나 영양소에만 관심을 기울이면 전체 열량과 중요한 영양소가 부족해질 수 있고, 백혈구 수치를 올리는 특별한 음식은 없으므로 식사 고민은 의료진·영양사와 상담하도록 안내합니다.",
         examples:
-          "몸에 좋다고 소문난 식품, 몸에 좋다고 소문난 영양소, 특정 식품이나 영양소 편중, 백혈구 수치를 올리는 특별한 음식",
+          "몸에 좋다고 소문난 식품, 몸에 좋다고 소문난 영양소, 특정 식품이나 영양소 편중, 백혈구 수치를 올리는 특별한 음식은 없습니다, 백혈구 수치를 올리는 특별한 음식",
         sourceIds: ["nccTreatmentRightEating"],
       },
       {
@@ -1893,6 +1893,11 @@ const careTeamFoods: FoodRuleTerm[] = [
   ],
   [
     "특정 식품이나 영양소 편중",
+    "국가암정보센터 치료 중 소문난 식품·백혈구 특효 음식 확인 필요",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "백혈구 수치를 올리는 특별한 음식은 없습니다",
     "국가암정보센터 치료 중 소문난 식품·백혈구 특효 음식 확인 필요",
     "nccTreatmentRightEating",
   ],
