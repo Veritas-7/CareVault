@@ -55,6 +55,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC appetite-loss frequent-snack-access sentence matching for 조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다. (예) 과자, 빵, 과일, 우유 및 유제품, 두유, 치즈 등
 - NCC weight-change weight-loss calorie-protein source sentence matching for 암환자는 치료과정에서 체중의 감소를 흔하게 경험할 수 있습니다. 체중감소는 환자를 허약하게 만들고 암에 대한 저항력과 치료효과 등을 떨어뜨립니다. 그러므로 체중감소를 예방하기 위해서 열량과 단백질 등을 충분히 섭취해야 합니다
 - NCC weight-change weight-gain cause consultation sentence matching for 그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다
+- NCC weight-change weight-gain balanced food-choice sentence matching for 과일과 야채 그리고 곡류의 섭취를 증가시킵니다. 가능한 한 지방이 없는 부위의 육류제품과 저지방 우유 및 유제품을 이용합니다
 - NCC diarrhea clear-liquid 12-24h sentence matching for 갑자기 설사할 경우 12~24시간 동안은 맑은 유동식만 먹도록 합니다. 이는 장을 쉬게 해 주며 설사로 손실된 수분을 보충해 줍니다
 - NCC diarrhea room-temperature drink sentence matching for 너무 뜨겁거나 차가운 식품이나 음료는 피하고, 대신 상온의 음료를 마시도록 합니다
 - NCC diarrhea caffeine-limit sentence matching for 커피와 초콜릿 등과 같은 카페인을 함유한 식품과 음료는 제한합니다

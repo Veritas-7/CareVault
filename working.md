@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 02:17 KST - PENDING NCC Weight-Change Weight-Gain Balanced Food Choice Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source guidance for: `과일과 야채 그리고 곡류의 섭취를 증가시킵니다. 가능한 한 지방이 없는 부위의 육류제품과 저지방 우유 및 유제품을 이용합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `905fb41048abc52f832574ede7660828067612d9`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - `npm run runtime:doctor` is currently blocked by an unrelated PromptVault Vite dev server on `127.0.0.1:1420`, so this slice will avoid desktop/runtime claims and use focused/full command verification.
+  - Existing `nccWeightChangeDiet` coverage includes weight-loss calorie/protein support, weight-gain cause consultation, and weight-gain high-sodium/high-calorie limit examples, but does not yet preserve the exact balanced food-choice sentence for weight-gain management after cause review.
+  - `DESIGN.md` was re-read; this remains source-backed, Korean, clinical, and non-diagnostic food guidance.
+  - Using TDD and keeping this as balanced food-choice support, not diagnosis, treatment, or individual weight-control prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-gain management methods it lists increasing fruits/vegetables/grains and choosing lean meat products plus low-fat milk/dairy.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-gain balanced food-choice source sentence, source evidence, balanced guide text, and guard checks against collapsing into nearby weight-gain limit examples or the shorter `저지방 우유` matcher.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and a balanced guide-card item for weight-gain food choices after cause review.
+  - `README.md`: documented expanded NCC weight-change weight-gain balanced food-choice exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the exact source sentence collapsed to the shorter existing `저지방 우유` matcher instead of preserving the full NCC sentence.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 249 tests.
+  - PASS source/diff checks: `rg -n "과일과 야채 그리고 곡류|weight-gain balanced food-choice|과일·야채·곡류 및 저지방 식품 선택|NCC Weight-Change Weight-Gain Balanced" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `905fb41048abc52f832574ede7660828067612d9`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 814 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 89 insertions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - Runtime blocker from unrelated PromptVault PID `27918` cleared before preflight; this session did not stop that process.
+- Next Steps:
+  - Add the RED test, implement the exact source-backed matcher and balanced guide text, then run focused/full verification before commit and push.
+
 ## 2026-06-09 02:14 KST - Runtime Port Blocker After NCC Weight-Change Calorie Protein Final Log
 
 - Current Goal:
