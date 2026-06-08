@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 04:08 KST - PENDING NCC Weight-Change Weight-Loss Meat Fruit Juice Cooking Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `고기를 과일 주스에 담그거나 과일 통조림과 함께 조리한다.`
+- Context:
+  - Continued from clean/synced CareVault state at `13ce7a6c46903babb149f99c0c9937f9ec3a37cf`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the weight-loss protein snack sentence and examples phrase, but not yet the exact protein-supplement meat cooking example immediately above that snack section.
+  - Existing broader terms include `체중감소 과일주스`, `체중감소 과일통조림`, and taste-change alternatives such as `고기 싫을 때 생선`; this slice should preserve the exact NCC weight-change context without collapsing into those broader or neighboring terms.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss protein supplementation it lists `고기를 과일 주스에 담그거나 과일 통조림과 함께 조리한다.`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss meat fruit juice cooking examples phrase, source evidence, balanced guide text, and guard checks against collapsing into `체중감소 과일주스`, `체중감소 과일통조림`, taste-change fish alternatives, or the neighboring protein snack sentence.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss meat fruit juice cooking examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase was not matched and the assessment stayed `neutral` instead of preserving the exact NCC weight-loss meat fruit juice cooking examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 266 tests.
+  - PASS source/diff checks: `rg -n "고기를 과일 주스|meat fruit juice|고기 과일주스|NCC Weight-Change Weight-Loss Meat" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `13ce7a6c46903babb149f99c0c9937f9ec3a37cf`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.04 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 831 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 79 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Re-stage `working.md`, rerun staged checks, then commit and push.
+
 ## 2026-06-09 04:06 KST - Post-Push NCC Weight-Change Weight-Loss Carbohydrate Snack Examples Verification
 
 - Current Goal:
