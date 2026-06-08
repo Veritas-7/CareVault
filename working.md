@@ -1,5 +1,37 @@
 # CareVault Working Notes
 
+## 2026-06-09 05:51 KST - PENDING NCC Mouth-Pain Porridge Examples Source Line
+
+- Current Goal:
+  - Add exact National Cancer Information Center mouth-pain source line for: `죽류 : 흰죽, 닭죽, 고기죽, 전복죽, 호박죽, 야채죽, 계란죽 등`
+- Context:
+  - Continued from clean/synced CareVault state at `188d02f491d4dc6429134b8322c81ce6ffa07edb`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccMouthPainDiet` coverage includes general soft/moist source sentences and individual soft foods such as `흰죽`, `닭죽`, `호박죽`, and `쌀미음`, while `고기죽`, `전복죽`, `야채죽`, and `계란죽` are currently represented mainly in the separate `nccWeightChangeDiet` context.
+  - This slice should preserve the NCC mouth-pain porridge source-line context without collapsing into individual mouth-pain food terms or the separate weight-change porridge examples phrase.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`; under foods easy to chew and swallow it lists the porridge examples line with white porridge, chicken porridge, meat porridge, abalone porridge, pumpkin porridge, vegetable porridge, and egg porridge. The page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage for the exact NCC mouth-pain porridge examples source line, source evidence, balanced guide text, and checks against collapsing into individual mouth-pain porridge terms or the separate weight-change porridge examples phrase.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher before the individual mouth-pain soft-food terms and exposed the source line in the mouth-pain soft-food guide-card examples.
+  - `README.md`: documented expanded NCC mouth-pain porridge examples exact-source line coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source line split into `흰죽`, `닭죽`, and `호박죽` instead of preserving the exact NCC mouth-pain porridge examples line.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 279 tests.
+  - PASS source/diff checks: `rg -n "죽류 : 흰죽|porridge examples source-line|부드러운 죽류 예시|NCC Mouth-Pain Porridge|PENDING NCC Mouth-Pain Porridge" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `git remote -v`; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `188d02f491d4dc6429134b8322c81ce6ffa07edb`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.16 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 844 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Confirm RED, implement minimal exact-source support, then run focused and full verification before commit/push.
+
 ## 2026-06-09 05:47 KST - Post-Push NCC Weight-Change Weight-Gain Appetite High-Calorie Low-Nutrition Verification
 
 - Current Goal:

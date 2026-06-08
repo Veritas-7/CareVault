@@ -3556,6 +3556,45 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain porridge examples source line", () => {
+    const sourceLine = "죽류 : 흰죽, 닭죽, 고기죽, 전복죽, 호박죽, 야채죽, 계란죽 등";
+    const assessment = assessCancerFood(sourceLine);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceLine]);
+    expect(matchesByTerm[sourceLine]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 입과 목 통증 시 부드러운 죽류 예시 후보",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(terms).not.toContain("흰죽");
+    expect(terms).not.toContain("닭죽");
+    expect(terms).not.toContain("호박죽");
+    expect(terms).not.toContain("죽 : 야채죽, 전복죽, 계란죽, 닭죽, 깨죽, 호박죽, 단팥죽, 잣죽 등");
+    expect(terms).not.toContain("체중감소 야채죽");
+    expect(terms).not.toContain("체중감소 전복죽");
+    expect(terms).not.toContain("체중감소 계란죽");
+    expect(balancedGuideText).toContain(sourceLine);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceLine])).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC mouth-pain soft-moist source sentence", () => {
     const sourceSentence = "부드럽고 촉촉한 음식을 준비합니다.";
     const assessment = assessCancerFood(sourceSentence);
