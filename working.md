@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 23:46 KST - Post-Push NCC Mouth-Pain Soft-Moist Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center mouth-pain soft/moist exact source sentence slice.
+- Result:
+  - Source commit pushed: `d93b08b` (`Add NCC mouth-pain soft-moist guidance`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `d93b08b2c16d60393faf1b318e3c3155e9eee568`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 794 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync/runtime/focused-test checks and add a final log entry.
+
 ## 2026-06-08 23:43 KST - PENDING NCC Mouth-Pain Soft-Moist Source Sentence
 
 - Current Goal:
