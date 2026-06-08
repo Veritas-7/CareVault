@@ -40,7 +40,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating low-fat milk sentence matching for 저지방 우유를 하루 1잔 정도 마십니다/저지방 우유 하루 1잔 정도 마시기
 - NCC treatment nutrient carbohydrate and hydration matching for 감자/고구마/옥수수/물 6~8컵/하루 6~8컵 물
 - NCC treatment nutrient protein, fat, and vitamin/mineral food matching for 치료 중 단백질 식품/치료 중 육류와 생선류/치료 중 조개류/치료 중 달걀 두부 우유/치료 중 참기름 들기름 콩기름 버터/치료 중 채소와 과일
-- NCC treatment right-eating calorie, nutrient, and rumor-food guidance matching for 치료 중 적정 열량과 필수 영양소/치료 중 충분한 열량 단백질 비타민 무기질/치료 중 고칼로리 고단백질 음식/치료 중 좋아하는 음식과 여러 식품/치료 중 다양한 음식 골고루 plus 몸에 좋다고 소문난 식품/특정 식품이나 영양소 편중/백혈구 수치를 올리는 특별한 음식은 없습니다/백혈구 수치를 올리는 특별한 음식 confirmation
+- NCC treatment right-eating calorie, nutrient, and rumor-food guidance matching for 치료 중 적정 열량과 필수 영양소/치료 중 충분한 열량 단백질 비타민 무기질/치료 중 고칼로리 고단백질 음식/치료 중 좋아하는 음식과 여러 식품/치료 중 다양한 음식 골고루 plus 몸에 좋다고 소문난 식품/암환자가 몸에 좋다는 특정 식품이나 영양소를 편중해서 섭취하면 일부 영양소는 과잉 상태가 되고 다른 중요한 영양소와 전체 열량은 부족한 상태가 되어 당초 의도와 달리 환자에게 나쁜 영향을 줄 수 있습니다/특정 식품이나 영양소 편중/백혈구 수치를 올리는 특별한 음식은 없습니다/백혈구 수치를 올리는 특별한 음식 confirmation
 - NCC treatment healthy-eating practical meal matching for 치료 중 규칙적인 아침 점심 저녁/치료 중 밥 반 그릇에서 한 그릇/치료 중 죽 하루 4~5번 이상/치료 중 단백질 반찬 충분히/치료 중 채소 반찬 매끼 두 가지 이상/치료 중 과일 하루 한두 번/치료 중 우유와 유제품 하루 1컵/치료 중 요구르트 두유 치즈
 - NCC after-treatment healthy-eating guidance matching for 치료 후 건강한 식생활/치료 후 다채로운 식단과 균형잡힌 식사/치료 후 다양한 단백질 식품과 채소류/치료 후 우유 및 유제품류 과일류/치료 후 과일 채소 전곡류 충분히 plus 치료 후 가공육 제한/탄 음식 피하기/짠 음식 피하기/하루 한 두 잔 술도 피하기 and 치료 후 부작용 식사섭취 어려움/건강보조식품 민간요법 상담 confirmation
 - NCC cervical-cancer risk-factor low fruit/vegetable intake matching for 과일과 채소의 섭취가 적은 식이/과일 채소 섭취 부족/채소와 과일을 거의 안 먹음 with official risk-factor source evidence and no cure-food framing

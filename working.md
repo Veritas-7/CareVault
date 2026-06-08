@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 09:53 KST - NCC Biased Food Or Nutrient Intake Warning Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center treatment right-eating warning about biased intake of rumored foods or nutrients to CareVault's built-in cancer food guidance.
+- Context:
+  - Continued from clean/synced CareVault state after `d6193d85a1fe1f065f322c1454a060e5d4427a8e`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept the sentence as a clinician-check risk/claim boundary, not treatment advice.
+- Research:
+  - Re-checked National Cancer Information Center `올바르게 식사하기`, final update 2015-01-05. The page says biased intake of foods or nutrients believed to be good can create excess in some nutrients and deficiencies in important nutrients and total calories, negatively affecting the patient.
+  - Applied the source only as anti-cure-claim and care-team discussion support.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `암환자가 몸에 좋다는 특정 식품이나 영양소를 편중해서 섭취하면 일부 영양소는 과잉 상태가 되고 다른 중요한 영양소와 전체 열량은 부족한 상태가 되어 당초 의도와 달리 환자에게 나쁜 영향을 줄 수 있습니다`, including source evidence and a guard against collapsing to `특정 식품이나 영양소 편중`.
+  - `src/healthRules.ts`: added the longer NCC biased-intake warning sentence to the care-team guide card and risk matching terms.
+  - `README.md`: documented the expanded NCC treatment right-eating biased-intake warning sentence.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence was not matched and the assessment stayed `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 123 tests.
+  - PASS full tests: `npm test` => 64 files / 688 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `d6193d85a1fe1f065f322c1454a060e5d4427a8e`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `올바르게 식사하기`, `https://www.cancer.go.kr/lay1/S1T471C474/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 09:48 KST - Final NCC No WBC-Boosting Food Log
 
 - Current Goal:
