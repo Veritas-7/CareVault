@@ -464,6 +464,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccFatigueDepressionDiet"],
       },
       {
+        label: "식욕부진 시 먹을 수 있을 때 식사",
+        detail:
+          "국가암정보센터 식욕부진 자료는 식사 시간에 얽매이지 말고 먹고 싶을 때, 먹을 수 있을 때, 또는 몸 상태가 좋을 때 먹도록 안내합니다.",
+        examples:
+          "식사 시간에 얽매이지 말고 먹고 싶을 때, 먹을 수 있을 때, 또는 몸 상태가 좋을 때 먹도록 합니다.",
+        sourceIds: ["nccAppetiteLossDiet"],
+      },
+      {
         label: "식욕부진 시 가까이 두는 간식",
         detail:
           "국가암정보센터 식욕부진 자료는 조금씩 자주 먹고 간식을 가까이 두며, 간식으로 죽·미음·쥬스·스프·우유 및 유제품 등을 활용하고, 식사섭취가 계속 힘들면 특수영양 보충음료를 이용하도록 안내합니다.",
@@ -1542,6 +1550,11 @@ const supportiveFoods: FoodRuleTerm[] = [
     "우울 좋아하는 음식",
     "국가암정보센터 피로감·우울 시 영양 보충·식사 빈도 후보",
     "nccFatigueDepressionDiet",
+  ],
+  [
+    "식사 시간에 얽매이지 말고 먹고 싶을 때, 먹을 수 있을 때, 또는 몸 상태가 좋을 때 먹도록 합니다.",
+    "국가암정보센터 식욕부진 시 먹을 수 있을 때 식사 후보",
+    "nccAppetiteLossDiet",
   ],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
   ["식욕부진 죽", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],

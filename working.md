@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 17:44 KST - NCC Appetite-Loss Eat-When-Able Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center appetite-loss source guidance for: `식사 시간에 얽매이지 말고 먹고 싶을 때, 먹을 수 있을 때, 또는 몸 상태가 좋을 때 먹도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `1c605f7df597e0ed96b1a49c815754490f5286f3`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as source-backed appetite-loss flexible meal-timing guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 식욕부진`, `https://www.cancer.go.kr/lay1/S1T479C480/contents.do`; it states the flexible meal-timing source sentence.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC appetite-loss eat-when-able source sentence, source evidence, guide-card text, and guard checks against collapsing into appetite-loss snack or fatigue timing examples.
+  - `src/healthRules.ts`: added a visible balanced guide item and exact source-backed `ok` matcher term using the existing `nccAppetiteLossDiet` source metadata.
+  - `README.md`: documented expanded NCC appetite-loss eat-when-able exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 183 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `1c605f7df597e0ed96b1a49c815754490f5286f3`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 748 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS production build: `npm run build`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 17:41 KST - Final NCC Appetite-Loss Mealtime Fluid Log
 
 - Current Goal:
