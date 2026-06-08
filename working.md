@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:50 KST - PENDING NCC Taste-Change Metallic Taste Citrus Caution Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center taste-change source guidance for: `신맛이 금속성의 맛을 제거하는 데 도움이 될 수 있으므로 오렌지나 레몬같이 시큼한 식품을 사용합니다. 그러나 입과 목에 통증 이 있다면, 이런 식품들이 염증을 자극하거나 불편하게 하므로 주의합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `c5087c55d64c3a49b16e140244241dd731cd9bcc`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing taste-change coverage includes generic `입맛 변화 오렌지` and `입맛 변화 레몬` terms, but does not yet preserve the exact NCC source sentence about using sour foods for metallic taste while cautioning when mouth or throat pain is present.
+  - `DESIGN.md` was re-read; this is shared TypeScript medical-rule data and should remain source-backed, Korean, clinical, and non-diagnostic.
+  - Using TDD and keeping this as source-backed supportive eating guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입맛의 변화`, `https://www.cancer.go.kr/lay1/S1T479C484/contents.do`; it includes `신맛이 금속성의 맛을 제거하는 데 도움이 될 수 있으므로 오렌지나 레몬같이 시큼한 식품을 사용합니다. 그러나 입과 목에 통증 이 있다면, 이런 식품들이 염증을 자극하거나 불편하게 하므로 주의합니다.` in the taste-change guidance list.
+- Changes:
+  - `src/healthRules.test.ts`: added RED source, guide-card, food-match, source-evidence, generic-term suppression, and no-cure-claim coverage for `신맛이 금속성의 맛을 제거하는 데 도움이 될 수 있으므로 오렌지나 레몬같이 시큼한 식품을 사용합니다. 그러나 입과 목에 통증 이 있다면, 이런 식품들이 염증을 자극하거나 불편하게 하므로 주의합니다.`
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the source sentence in the balanced taste-change guide examples.
+  - `README.md`: documented the expanded NCC taste-change `metallic-taste-citrus-caution` exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral` instead of preserving the exact NCC sentence as source-backed taste-change guidance.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 246 tests.
+  - PASS source/diff checks: `rg -n "신맛이 금속성의 맛|metallic-taste-citrus-caution|금속성 맛 신맛 식품·입목 통증 주의 후보|NCC Taste-Change Metallic" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `c5087c55d64c3a49b16e140244241dd731cd9bcc`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 811 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 74 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 01:49 KST - Final NCC Taste-Change Seasoning Log
 
 - Current Goal:
