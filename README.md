@@ -71,6 +71,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC weight-change weight-loss bean/tofu protein examples phrase matching for 콩, 두부 : 콩밥, 두유, 연두부찜, 두부조림, 된장찌개, 콩자반 등
 - NCC weight-change weight-loss fish protein examples phrase matching for 생선 : 생선포, 생선전, 생선조림, 어묵, 마른 오징어 등
 - NCC weight-change weight-loss dairy protein examples phrase matching for 유제품 : 우유, 요구르트, 요플레, 아이스크림, 밀크쉐이크, 치즈 등
+- NCC weight-change weight-loss milk powder drink sentence matching for 탈지분유나 분유를 우유에 타서 마신다
 - NCC weight-change weight-loss protein snack sentence matching for 간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다
 - NCC weight-change weight-loss protein snack examples phrase matching for 만두, 피자, 샌드위치, 계란샐러드, 카스테라 등
 - NCC weight-change weight-gain cause consultation sentence matching for 그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다
