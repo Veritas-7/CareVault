@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 19:59 KST - Final NCC Nausea Odd-Smell-Food Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center nausea odd-smell-food source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `66e2885` (`Add NCC nausea odd-smell-food guidance`).
+  - Post-push verification log commit pushed: `11f6fda` (`Log NCC nausea odd-smell-food verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `11f6fda40a9b323320a24fa2dae930a985f99e30`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and verification log were pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Continue with the next narrow official-source cervical-cancer nutrition, safety, or record-prep slice after rechecking current source coverage.
+
 ## 2026-06-08 19:58 KST - Post-Push NCC Nausea Odd-Smell-Food Verification
 
 - Current Goal:
