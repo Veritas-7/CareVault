@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 21:36 KST - Final NCC Diarrhea Fatty Raw Vegetable Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center diarrhea fatty-food/raw-vegetable exact source phrase slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `324149c` (`Add NCC diarrhea fatty raw vegetable guidance`).
+  - Post-push verification log commit pushed: `d129dc5` (`Log NCC diarrhea fatty raw vegetable verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `d129dc51c69b5e67b718e569eed3e6fb655c3468`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 21:35 KST - Post-Push NCC Diarrhea Fatty Raw Vegetable Verification
 
 - Current Goal:
