@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 20:52 KST - PENDING NCC Diarrhea Room-Temperature Drink Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center diarrhea source guidance for: `너무 뜨겁거나 차가운 식품이나 음료는 피하고, 대신 상온의 음료를 마시도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `fefdc40d7bf622a47459ac1f20605afde998d658`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC diarrhea guide text summarizes very hot/cold foods and drinks, but the exact official room-temperature drink sentence is not yet represented as an exact source sentence or matcher.
+  - Using TDD and keeping this as diarrhea symptom food/drink temperature support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`; it says to avoid foods or drinks that are too hot or cold and instead drink room-temperature beverages.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact diarrhea room-temperature drink source sentence is currently ignored as `neutral`.
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher and exposed the exact sentence in the diarrhea limit guide examples.
+  - `README.md`: documented the expanded NCC diarrhea room-temperature drink exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 207 tests.
+  - PASS source/diff checks: `rg -n "상온의 음료|너무 뜨겁거나 차가운|room-temperature drink|식품·음료" README.md src/healthRules.ts src/healthRules.test.ts working.md` found only the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `git ls-remote origin HEAD` => `fefdc40d7bf622a47459ac1f20605afde998d658`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 772 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS staged path check: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run diff/source checks and full pre-push gates, then stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`.
+
 ## 2026-06-08 20:49 KST - Final NCC Diarrhea Clear-Liquid Log
 
 - Current Goal:
