@@ -6548,6 +6548,51 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC weight-change weight-loss rice examples source phrase", () => {
+    const sourcePhrase = "밥 : 김밥, 초밥, 주먹밥, 볶음밥 등";
+    const assessment = assessCancerFood(sourcePhrase);
+    const standaloneSushiAssessment = assessCancerFood("초밥");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const standaloneSushiMatchesByTerm = Object.fromEntries(
+      standaloneSushiAssessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(foodGuidanceSources.nccWeightChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourcePhrase]);
+    expect(matchesByTerm[sourcePhrase]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 체중감소 시 밥 조리 예시 후보",
+      sourceId: "nccWeightChangeDiet",
+    });
+    expect(terms).not.toContain("체중감소 김밥");
+    expect(terms).not.toContain("체중감소 주먹밥");
+    expect(terms).not.toContain("초밥");
+    expect(standaloneSushiAssessment.level).toBe("risk");
+    expect(standaloneSushiMatchesByTerm.초밥).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 익히지 않은 음식 주의",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(balancedGuideText).toContain(sourcePhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourcePhrase])).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC weight-change weight-loss porridge examples source phrase", () => {
     const sourcePhrase =
       "죽 : 야채죽, 전복죽, 계란죽, 닭죽, 깨죽, 호박죽, 단팥죽, 잣죽 등";

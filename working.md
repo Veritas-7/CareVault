@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:09 KST - PENDING NCC Weight-Change Weight-Loss Rice Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `밥 : 김밥, 초밥, 주먹밥, 볶음밥 등`
+- Context:
+  - Continued from clean/synced CareVault state at `85f1befd70447cfb5c7b14d2f3717cb99dd61cbf`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the calorie/protein source sentence, the porridge examples phrase, carbohydrate-snack sentence, protein-snack sentence, and protein-snack examples phrase, but not yet the exact rice examples phrase.
+  - Standalone `초밥` must remain a `nccImmuneLowDiet` care-team risk because the immune-low source warns against uncooked foods; this slice should preserve only the exact weight-loss rice examples source phrase as contextual `ok` guidance and should not weaken the standalone sushi safety rule.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss calorie supplementation methods it lists rice examples `밥 : 김밥, 초밥, 주먹밥, 볶음밥 등`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss rice examples phrase, source evidence, balanced guide text, and guard checks that standalone `초밥` remains an immune-low `risk`.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the examples phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss rice examples exact-source phrase coverage and standalone sushi safety preservation.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase evaluated as `risk` instead of preserving the exact NCC weight-loss rice examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 257 tests.
+  - PASS source/diff checks: `rg -n "밥 : 김밥|rice examples|밥 조리 예시|NCC Weight-Change Weight-Loss Rice|standalone 초밥" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `85f1befd70447cfb5c7b14d2f3717cb99dd61cbf`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 822 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 86 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current runtime blocker observed at the last check; standalone `초밥` safety behavior must be preserved.
+- Next Steps:
+  - Run full GitHub/private repo preflight, full tests, typecheck, build, staged secret scan, then commit and push.
+
 ## 2026-06-09 03:06 KST - Post-Push NCC Weight-Change Weight-Loss Porridge Examples Verification
 
 - Current Goal:
