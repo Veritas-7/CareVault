@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 04:06 KST - Post-Push NCC Weight-Change Weight-Loss Carbohydrate Snack Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change weight-loss carbohydrate snack examples exact source phrase slice.
+- Result:
+  - Source commit pushed: `b38709d` (`Add NCC weight-change carb snack examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `b38709d41079e7868de727146c6eb70ee530f9ef`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 830 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 04:02 KST - PENDING NCC Weight-Change Weight-Loss Carbohydrate Snack Examples Phrase
 
 - Current Goal:
