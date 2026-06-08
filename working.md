@@ -1,5 +1,42 @@
 # CareVault Working Notes
 
+## 2026-06-08 19:47 KST - PENDING NCC Nausea Very-Sweet-Food Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center nausea source guidance for: `사탕, 쿠키 또는 케익 등과 같이 매우 단 음식`
+- Context:
+  - Continued from clean/synced CareVault state at `da681760e7476c774588eeba1942c2d734f9c3c0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing coverage has the generic `매우 단 음식` watch matcher, but not the exact official examples `사탕, 쿠키 또는 케익 등과 같이 매우 단 음식`.
+  - Using TDD and keeping this as source-backed nausea-trigger food confirmation support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`; it lists `사탕, 쿠키 또는 케익 등과 같이 매우 단 음식` among foods that can further trigger nausea.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact source sentence does not collapse to the generic `매우 단 음식` match.
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher before the generic `매우 단 음식` matcher and exposed the exact sentence in the limit guide examples.
+  - `README.md`: documented expanded NCC nausea very-sweet-food exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence collapsed to the generic `매우 단 음식` match.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 199 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `da681760e7476c774588eeba1942c2d734f9c3c0`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 764 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS staged file list: `git diff --cached --name-only` returned only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Add RED coverage first, confirm the exact source sentence currently collapses to the generic `매우 단 음식` match, then add the minimal exact watch matcher and guide example.
+
 ## 2026-06-08 19:45 KST - Final NCC Nausea Trigger-Check Consultation Log
 
 - Current Goal:

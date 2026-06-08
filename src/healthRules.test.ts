@@ -3663,6 +3663,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC nausea very-sweet-food source sentence", () => {
+    const sourceSentence = "사탕, 쿠키 또는 케익 등과 같이 매우 단 음식";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 메스꺼움",
+    );
+    expect(foodGuidanceSources.nccNauseaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 메스꺼움 유발 가능 매우 단 음식 확인 후보",
+      sourceId: "nccNauseaDiet",
+    });
+    expect(terms).not.toContain("매우 단 음식");
+    expect(terms).not.toContain("기름진 음식");
+    expect(terms).not.toContain("향이 강하거나 뜨거운 음식");
+    expect(terms).not.toContain("이상한 냄새가 나는 음식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC nausea do-not-force intake source sentence", () => {
     const sourceSentence = "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.";
     const assessment = assessCancerFood(sourceSentence);

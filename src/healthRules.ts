@@ -698,7 +698,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         label: "메스꺼움 유발 가능 음식",
         detail:
           "국가암정보센터 메스꺼움 자료는 메스꺼움을 더 유발할 수 있는 음식으로 기름진 음식, 사탕·쿠키·케익처럼 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식을 피하도록 안내합니다.",
-        examples: "기름진 음식, 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식",
+        examples:
+          "기름진 음식, 사탕, 쿠키 또는 케익 등과 같이 매우 단 음식, 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식",
         sourceIds: ["nccNauseaDiet"],
       },
       {
@@ -2199,6 +2200,11 @@ const limitFoods: FoodRuleTerm[] = [
     "nccNauseaDiet",
   ],
   ["기름진 음식", "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보", "nccNauseaDiet"],
+  [
+    "사탕, 쿠키 또는 케익 등과 같이 매우 단 음식",
+    "국가암정보센터 메스꺼움 유발 가능 매우 단 음식 확인 후보",
+    "nccNauseaDiet",
+  ],
   ["매우 단 음식", "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보", "nccNauseaDiet"],
   [
     "향이 강하거나 뜨거운 음식",
