@@ -412,7 +412,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         label: "메스꺼움 시 위 부담 적은 음식",
         detail:
           "국가암정보센터 메스꺼움 자료는 증상이 있을 때 억지로 먹지 말고 먹기 좋은 다른 음식을 선택하도록 하며, 비교적 위에 부담이 적은 식품으로 샤베트, 복숭아통조림 같은 부드러운 과일, 맑은 유동식, 얼음조각 등을 예시로 안내합니다.",
-        examples: "샤베트, 복숭아통조림, 맑은 유동식, 얼음조각",
+        examples:
+          "샤베트, 복숭아통조림이나 다른 부드러운 과일과 채소, 복숭아통조림, 맑은 유동식, 얼음조각",
         sourceIds: ["nccNauseaDiet"],
       },
       {
@@ -1417,6 +1418,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["수박", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["과일통조림", "국가암정보센터 입과 목 통증 시 부드럽고 삼키기 쉬운 음식 후보", "nccMouthPainDiet"],
   ["샤베트", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
+  [
+    "복숭아통조림이나 다른 부드러운 과일과 채소",
+    "국가암정보센터 메스꺼움 시 위 부담 적은 부드러운 과일·채소 후보",
+    "nccNauseaDiet",
+  ],
   ["복숭아통조림", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["맑은 유동식", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["얼음조각", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],

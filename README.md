@@ -86,6 +86,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC mouth-pain soft and irritating food matching for 흰죽/닭죽/호박죽/쌀미음/바나나/수박/과일통조림/토마토주스/토스트/크래커/말린 음식
 - NCC dry-mouth moisture and saliva-stimulation matching for 물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기
 - NCC nausea easier-food and trigger-food matching for 샤베트/복숭아통조림/맑은 유동식/얼음조각/기름진 음식/매우 단 음식/향이 강하거나 뜨거운 음식/이상한 냄새가 나는 음식
+- NCC nausea soft fruit-vegetable source-sentence matching for 복숭아통조림이나 다른 부드러운 과일과 채소
 - NCC nausea odd-smell-food source-sentence matching for 이상한 냄새가 나는 음식 등
 - NCC vomiting staged liquid and soft-food matching for 구토 조절 후 물/구토 조절 후 육수/구토 맑은 유동식/구토 후 미음/구토 후 부드러운 식사/우유가 들어있지 않은 제품
 - NCC taste-change protein alternative and seasoning matching for 입맛 변화 생선/입맛 변화 계란/입맛 변화 두부/입맛 변화 콩/입맛 변화 우유나 유제품/고기 싫을 때 생선/레몬즙 양념/새콤달콤한 소스/입맛 변화 오렌지/입맛 변화 레몬
