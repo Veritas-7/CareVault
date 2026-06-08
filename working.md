@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 22:29 KST - Post-Push NCC Constipation Morning Cold-Water Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center constipation morning cold-water exact source sentence slice.
+- Result:
+  - Source commit pushed: `fb8c4a0` (`Add NCC constipation morning cold-water guidance`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `fb8c4a0dc210bcf7f0f64b7608b0e307ef194de3`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 784 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 변비`, `https://www.cancer.go.kr/lay1/S1T479C487/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync/runtime/focused-test checks and add a final log entry.
+
 ## 2026-06-08 22:26 KST - PENDING NCC Constipation Morning Cold-Water Source Sentence
 
 - Current Goal:
