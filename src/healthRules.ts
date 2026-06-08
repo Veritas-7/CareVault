@@ -806,6 +806,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccTreatmentRightEating"],
       },
       {
+        label: "입·목 통증 시 치아·잇몸 통증 치과치료",
+        detail:
+          "국가암정보센터 입과 목의 통증 자료는 치아와 잇몸이 아프면 치과치료를 받도록 안내합니다. 식사 기록에서는 음식 판단으로 해석하지 않고 진료팀·치과 확인이 필요한 증상 신호로 분리합니다.",
+        examples: "치아와 잇몸이 아프면 치과치료를 받도록 합니다.",
+        sourceIds: ["nccMouthPainDiet"],
+      },
+      {
         label: "메스꺼움 유발 요인 기록·의료진 상담",
         detail:
           "국가암정보센터 메스꺼움 자료는 메스꺼움이 언제, 무엇 때문에 나타나는지를 체크하고 의사선생님이나 간호사와 상의하도록 안내합니다.",
@@ -2962,6 +2969,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "치료 중 식사 고민 의료진 영양사 상담",
     "국가암정보센터 치료 중 의료진·영양사 식사 상담 필요",
     "nccTreatmentRightEating",
+  ],
+  [
+    "치아와 잇몸이 아프면 치과치료를 받도록 합니다.",
+    "국가암정보센터 입과 목 통증 시 치아·잇몸 통증 치과치료 확인 필요",
+    "nccMouthPainDiet",
   ],
   [
     "메스꺼움이 언제, 무엇 때문에 나타나는지를 체크하고 의사선생님이나 간호사와 상의합니다.",
