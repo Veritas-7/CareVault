@@ -3849,6 +3849,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain citrus tomato irritating examples source line", () => {
+    const sourceLine = "오렌지, 포도, 레몬, 토마토주스";
+    const assessment = assessCancerFood(sourceLine);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceLine]);
+    expect(matchesByTerm[sourceLine]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 입과 목 통증 시 입안 자극 과일·토마토주스 확인 후보",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(terms).not.toContain("토마토주스");
+    expect(terms).not.toContain("입맛 변화 오렌지");
+    expect(terms).not.toContain("입맛 변화 레몬");
+    expect(terms).not.toContain("새콤달콤한 소스");
+    expect(limitGuideText).toContain(sourceLine);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceLine])).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC mouth-pain soft-cooking small-size source sentence", () => {
     const sourceSentence =
       "요리를 할 때는 부드럽고 연해질 때까지 하도록 하며, 음식을 작은 크기로 자릅니다.";
