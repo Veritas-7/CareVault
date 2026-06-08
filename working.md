@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:47 KST - PENDING NCC Dry-Mouth Broth-Soaking Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center dry-mouth source guidance for: `음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `60e0faba646da6df77be33efc128525f5d9ded58`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing food matching has generic or limiting `국물` terms from other NCC healthy-eating/cervical-practice sources, so this dry-mouth supportive sentence needs exact-source preservation rather than collapsing into a soup-broth limit warning.
+  - Using TDD and keeping this as source-backed supportive eating guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`; it includes `음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다.` in the dry-mouth guidance list.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다.`
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher before generic/limiting `국물` matches and exposed the source sentence in the dry-mouth balanced guide.
+  - `README.md`: documented the expanded NCC dry-mouth `broth-soaking` exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `watch` instead of preserving this dry-mouth supportive `ok` sentence.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 238 tests.
+  - PASS source/diff checks: `rg -n "음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다|broth-soaking|육수나 국물에 적셔|NCC Dry-Mouth Broth-Soaking" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `60e0faba646da6df77be33efc128525f5d9ded58`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 803 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 75 insertions, 3 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 00:44 KST - Final NCC Dry-Mouth Moist-Food Log
 
 - Current Goal:
