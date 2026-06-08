@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 20:32 KST - Post-Push NCC Nausea Antiemetic Consultation Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center nausea antiemetic consultation source sentence slice.
+- Result:
+  - Source commit pushed: `9c3b2c8` (`Add NCC nausea antiemetic consultation guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `9c3b2c8fc2fd5d02f06804d817c8a3a408bbc9cb`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 769 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 20:28 KST - PENDING NCC Nausea Antiemetic Consultation Source Sentence
 
 - Current Goal:
