@@ -1,6 +1,25 @@
 # CareVault Working Notes
 
-## 2026-06-08 19:30 KST - PENDING NCC Nausea Water-And-Clothing Source Sentence
+## 2026-06-08 19:34 KST - Post-Push NCC Nausea Water-And-Clothing Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center nausea water-and-clothing source sentence slice.
+- Result:
+  - Source commit pushed: `3b65ad3` (`Add NCC nausea water-and-clothing guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `3b65ad360a268154dc800b025820b7dc1df9f6ea`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 762 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
+## 2026-06-08 19:30 KST - NCC Nausea Water-And-Clothing Source Sentence
 
 - Current Goal:
   - Add exact National Cancer Information Center nausea source guidance for: `물은 포만감을 줄 수 있기 때문에 천천히 조금씩 마시고, 식사 시에도 조금만 마시도록 합니다. 옷은 몸이 조이지 않도록 느슨하게 입습니다.`
@@ -34,7 +53,7 @@
 - Issues:
   - No new blocking issue found before edits.
 - Next Steps:
-  - Add RED test coverage, implement the exact source-backed matcher and guide item, then run focused and pre-push gates.
+  - Commit and push the source slice, then run post-push verification.
 
 ## 2026-06-08 19:27 KST - Final NCC Nausea Meal-Environment Log
 
