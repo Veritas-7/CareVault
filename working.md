@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 18:37 KST - Final NCC Appetite-Loss Mouth-Cleaning Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center appetite-loss mouth-cleaning source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `1176d7a` (`Add NCC appetite-loss mouth cleaning guidance`).
+  - Post-push verification log commit pushed: `8c3e37b` (`Log NCC appetite-loss mouth cleaning verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `8c3e37b2f73fa65c5acfd739db00444555fd00fb`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 식욕부진`, `https://www.cancer.go.kr/lay1/S1T479C480/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and verification log were pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Continue with the next narrow official-source cervical-cancer nutrition, safety, or record-prep slice after rechecking current source coverage.
+
 ## 2026-06-08 18:36 KST - Post-Push NCC Appetite-Loss Mouth-Cleaning Verification
 
 - Current Goal:
