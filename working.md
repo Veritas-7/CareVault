@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 05:36 KST - PENDING NCC Weight-Change Weight-Gain High-Salt Food Limit Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source sentence for: `소금이 우리 몸에서 수분을 축적시키는 작용을 하므로 염분 함량이 높은 식품(예: 가공식품, 김치, 젓갈, 장아찌류 등)은 제한하고 가능한 싱겁게 먹는 것이 좋습니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `f482ea29a7e829f88b9fcf9b41152c91788b5e8f`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage includes short weight-gain high-salt context terms (`체중증가 가공식품`, `체중증가 김치`, `체중증가 젓갈`, `체중증가 장아찌류`) and exact coverage for several later weight-control bullets, but not yet this longer source-backed high-salt sentence.
+  - Existing healthy-eating low-salt and salted-storage guidance also includes broader `김치`, `젓갈`, `장아찌`, `염장식품`, `소금`-related watch terms; this slice should preserve the NCC weight-change context without weakening those separate source contexts.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; in the weight-gain section it explains that if weight gain is due to anticancer-drug-related fluid retention, salt can retain water and high-salt foods such as processed foods, kimchi, jeotgal, and jangajji should be limited and eaten blandly when possible. The page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-gain high-salt food limit sentence, source evidence, limit guide text, care-team consultation guard, and checks against collapsing into shorter weight-gain, healthy-eating salted-food, high-calorie, or cure-claim terms.
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher and exposed the sentence in the existing weight-gain high-salt/high-calorie low-nutrition guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-gain high-salt exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence collapsed into shorter `젓갈` and `장아찌` matches instead of preserving the exact NCC weight-gain high-salt sentence.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 277 tests.
+  - PASS source/diff checks: `rg -n "소금이 우리 몸에서 수분|high-salt food limit|고염분 식품 제한|NCC Weight-Change Weight-Gain High-Salt|High-Salt" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `f482ea29a7e829f88b9fcf9b41152c91788b5e8f`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.14 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 842 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 90 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Confirm RED, implement minimal exact-source support, then run focused and full verification before commit/push.
+
 ## 2026-06-09 05:33 KST - Post-Push NCC Weight-Change Weight-Loss Yogurt Cracker Bread Verification
 
 - Current Goal:
