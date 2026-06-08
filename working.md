@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 14:48 KST - Post-Push NCC After-Treatment Supplement Evidence Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center after-treatment supplement evidence source sentence slice.
+- Result:
+  - Source commit pushed: `4c617d2` (`Add NCC after-treatment supplement evidence guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `4c617d20f2602f3df6fa2a1466df6f351a07d26f`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 725 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+  - PASS post-push runtime cleanup after build: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center PDF `치료 후 건강한 식생활`, `https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 14:45 KST - NCC After-Treatment Supplement Evidence Source Sentence
 
 - Current Goal:
