@@ -61,6 +61,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC diarrhea fruit peel/seed/stringy-fiber phrase matching for 생과일의 껍질, 씨, 끈적한 섬유소 부분
 - NCC diarrhea fatty-food/raw-vegetable phrase matching for 기름진 음식, 생야채
 - NCC diarrhea hydration loss-replacement sentence matching for 수분을 충분히 섭취하여 설사로 손실된 부분을 보충합니다
+- NCC diarrhea electrolyte loss-replacement sentence matching for 염분과 칼륨이 많이 들어있는 식품을 섭취하여 설사로 인한 손실을 보충합니다
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
