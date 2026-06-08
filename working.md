@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:59 KST - Post-Push NCC Weight-Change Weight-Loss Fruit Canned Shake Calorie Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change weight-loss fruit canned/shake calorie examples exact source phrase slice.
+- Result:
+  - Source commit pushed: `fed2f2d` (`Add NCC weight-change fruit shake examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `fed2f2d10824186bbf27ab14ce3446faaf56375b`.
+- Verification:
+  - BLOCKED post-push runtime cleanup: `npm run runtime:doctor` failed because `127.0.0.1:1420` is occupied by PID `39394`, `node /Users/wj/Ai/System/10_Projects/PromptVault/node_modules/.bin/vite --host 127.0.0.1 --port 1420`, whose cwd is `/Users/wj/Ai/System/10_Projects/PromptVault`. This CareVault session did not terminate that unrelated PromptVault dev server.
+  - PASS post-push full tests: `npm test` => 64 files / 829 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - Current-source runtime cleanliness is blocked by an unrelated PromptVault dev server occupying CareVault's port `1420`; source/test/build coverage is complete for this slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, and focused-test checks before continuing with another official-source slice. Runtime doctor should be retried if port `1420` becomes free.
+
 ## 2026-06-09 03:55 KST - PENDING NCC Weight-Change Weight-Loss Fruit Canned Shake Calorie Examples Phrase
 
 - Current Goal:
