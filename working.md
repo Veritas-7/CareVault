@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-08 19:30 KST - PENDING NCC Nausea Water-And-Clothing Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center nausea source guidance for: `물은 포만감을 줄 수 있기 때문에 천천히 조금씩 마시고, 식사 시에도 조금만 마시도록 합니다. 옷은 몸이 조이지 않도록 느슨하게 입습니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `b3255a7689e6a39e933da1637376524b3a690bfb`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as source-backed nausea-context hydration and comfort support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`; it states the slow-small-sips, little water during meals, and loose-clothing source sentence for nausea.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage for exact source matching, source evidence, guide-card text, and nearby-term guard coverage.
+  - `src/healthRules.ts`: added a visible balanced guide item and exact source-backed `ok` matcher term using the existing `nccNauseaDiet` source metadata.
+  - `README.md`: documented expanded NCC nausea water-and-clothing exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 197 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `b3255a7689e6a39e933da1637376524b3a690bfb`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 762 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS staged file list: `git diff --cached --name-only` returned only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Add RED test coverage, implement the exact source-backed matcher and guide item, then run focused and pre-push gates.
+
 ## 2026-06-08 19:27 KST - Final NCC Nausea Meal-Environment Log
 
 - Current Goal:
