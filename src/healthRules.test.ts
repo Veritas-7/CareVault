@@ -6511,6 +6511,43 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC weight-change weight-loss calorie protein source sentence", () => {
+    const sourceSentence =
+      "암환자는 치료과정에서 체중의 감소를 흔하게 경험할 수 있습니다. 체중감소는 환자를 허약하게 만들고 암에 대한 저항력과 치료효과 등을 떨어뜨립니다. 그러므로 체중감소를 예방하기 위해서 열량과 단백질 등을 충분히 섭취해야 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(foodGuidanceSources.nccWeightChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 체중감소 시 열량·단백질 충분 섭취 후보",
+      sourceId: "nccWeightChangeDiet",
+    });
+    expect(terms).not.toContain("체중감소 김밥");
+    expect(terms).not.toContain("체중감소 주먹밥");
+    expect(terms).not.toContain("체중감소 계란찜");
+    expect(terms).not.toContain("체중감소 요구르트");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC weight-change weight-gain cause consultation source sentence", () => {
     const sourceSentence =
       "그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다.";
