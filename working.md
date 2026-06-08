@@ -1,5 +1,37 @@
 # CareVault Working Notes
 
+## 2026-06-08 13:10 KST - NCC Healthy Eating Rumored-Food Calorie-Essential-Nutrient Neglect Caution Source Sentence
+
+- Current Goal:
+  - Add the exact National Cancer Information Center treatment right-eating source sentence warning that focusing on rumored foods or nutrients can lead patients to neglect adequate calories and essential nutrients.
+- Context:
+  - Continued from clean/synced CareVault state after `bf9eb5f898c88d5060080db4eaf144b149581dbc`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping the source sentence as care-team caution guidance against rumor-food focus, not diagnosis, treatment, cure, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center `올바르게 식사하기`, final update 2015-01-05. The page says `암환자에게 식생활이 중요하다는 것은 누구나 압니다. 그러나 대부분의 사람들은 몸에 좋다고 소문난 식품이나 영양소에만 관심을 기울이고, 적정 열량(칼로리)과 필수 영양소의 섭취는 제대로 고려하지 않는 수가 많습니다.`
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `암환자에게 식생활이 중요하다는 것은 누구나 압니다. 그러나 대부분의 사람들은 몸에 좋다고 소문난 식품이나 영양소에만 관심을 기울이고, 적정 열량(칼로리)과 필수 영양소의 섭취는 제대로 고려하지 않는 수가 많습니다.`, including source evidence and guards against collapsing to shorter rumor-food terms.
+  - `src/healthRules.ts`: added the exact NCC source sentence to the care-team rumor-food caution guide card and risk matching terms with `nccTreatmentRightEating`.
+  - `README.md`: documented the expanded NCC treatment right-eating source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence collapsed to `몸에 좋다고 소문난 식품`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 147 tests.
+  - PASS full tests: `npm test` => 64 files / 712 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `bf9eb5f898c88d5060080db4eaf144b149581dbc`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `올바르게 식사하기`, `https://www.cancer.go.kr/lay1/S1T471C474/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 13:08 KST - Final NCC Healthy Eating Preferred-Food Variety Log
 
 - Current Goal:
