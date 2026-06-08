@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-08 18:47 KST - NCC Appetite-Loss Light-Walk Exercise Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center appetite-loss source guidance for: `가벼운 산책 등 규칙적인 운동도 입맛을 증진시키는데 도움을 줄 수 있습니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `ec3cbe775b2c3ca962cf2c4e9950f6e963a46858`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as source-backed appetite-loss support guidance, not diagnosis, cure, treatment, or individualized exercise prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 식욕부진`, `https://www.cancer.go.kr/lay1/S1T479C480/contents.do`; it states the light-walk/regular-exercise source sentence.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage for exact source matching, source evidence, guide-card text, and nearby-term guard coverage.
+  - `src/healthRules.ts`: added a visible balanced guide item and exact source-backed `ok` matcher term using the existing `nccAppetiteLossDiet` source metadata.
+  - `README.md`: documented expanded NCC appetite-loss light-walk/regular-exercise exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 192 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `ec3cbe775b2c3ca962cf2c4e9950f6e963a46858`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 757 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS staged file list: `git diff --cached --name-only` returned only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run pre-push verification gates, stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, then commit and push if all gates pass.
+
 ## 2026-06-08 18:43 KST - Final NCC Appetite-Loss Caregiver Eating-Support Log
 
 - Current Goal:

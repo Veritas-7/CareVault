@@ -496,6 +496,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccAppetiteLossDiet"],
       },
       {
+        label: "식욕부진 시 가벼운 산책",
+        detail:
+          "국가암정보센터 식욕부진 자료는 가벼운 산책 등 규칙적인 운동도 입맛을 증진시키는 데 도움을 줄 수 있다고 안내합니다.",
+        examples: "가벼운 산책 등 규칙적인 운동도 입맛을 증진시키는데 도움을 줄 수 있습니다.",
+        sourceIds: ["nccAppetiteLossDiet"],
+      },
+      {
         label: "식욕부진 시 식사 전후 입안 청결",
         detail:
           "국가암정보센터 식욕부진 자료는 입맛을 돋우기 위해 식사 전후에 입안을 청결하게 하도록 안내합니다.",
@@ -1631,6 +1638,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   [
     "식사하는 시간, 장소, 분위기를 바꾸어 봅니다. 음악을 들으며 식사를 하거나 식탁보나 식기를 바꾸어 보는 것도 좋습니다.",
     "국가암정보센터 식욕부진 시 식사 환경 변경 후보",
+    "nccAppetiteLossDiet",
+  ],
+  [
+    "가벼운 산책 등 규칙적인 운동도 입맛을 증진시키는데 도움을 줄 수 있습니다.",
+    "국가암정보센터 식욕부진 시 가벼운 산책·규칙적 운동 후보",
     "nccAppetiteLossDiet",
   ],
   [

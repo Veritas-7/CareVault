@@ -4176,6 +4176,47 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC appetite-loss light-walk exercise source sentence", () => {
+    const sourceSentence =
+      "가벼운 산책 등 규칙적인 운동도 입맛을 증진시키는데 도움을 줄 수 있습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccAppetiteLossDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 식욕부진",
+    );
+    expect(foodGuidanceSources.nccAppetiteLossDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 식욕부진 시 가벼운 산책·규칙적 운동 후보",
+      sourceId: "nccAppetiteLossDiet",
+    });
+    expect(terms).not.toContain(
+      "주위 분들도 환자가 먹기 싫어할 때 억지로 먹으라고 지나치게 강요하지 말고 환자 스스로 먹을 수 있게끔 도와줍니다.",
+    );
+    expect(terms).not.toContain("입맛을 돋우기 위해서 식사전후에 입안을 청결하게 합니다.");
+    expect(terms).not.toContain(
+      "식사하는 시간, 장소, 분위기를 바꾸어 봅니다. 음악을 들으며 식사를 하거나 식탁보나 식기를 바꾸어 보는 것도 좋습니다.",
+    );
+    expect(terms).not.toContain("피로감 음식배달서비스");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC appetite-loss mealtime fluid source sentence", () => {
     const sourceSentence = "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.";
     const assessment = assessCancerFood(sourceSentence);
