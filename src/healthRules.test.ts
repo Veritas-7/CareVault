@@ -4062,6 +4062,45 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC appetite-loss frequent-snack-access source sentence", () => {
+    const sourceSentence =
+      "조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다. (예) 과자, 빵, 과일, 우유 및 유제품, 두유, 치즈 등";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccAppetiteLossDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 식욕부진",
+    );
+    expect(foodGuidanceSources.nccAppetiteLossDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 식욕부진 시 조금씩 자주 먹는 간식 후보",
+      sourceId: "nccAppetiteLossDiet",
+    });
+    expect(terms).not.toContain("식욕부진 간식");
+    expect(terms).not.toContain("식욕부진 죽");
+    expect(terms).not.toContain("식욕부진 주스");
+    expect(terms).not.toContain(
+      "간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 합니다.",
+    );
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC appetite-loss mealtime fluid source sentence", () => {
     const sourceSentence = "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.";
     const assessment = assessCancerFood(sourceSentence);

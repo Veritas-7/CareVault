@@ -504,6 +504,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccAppetiteLossDiet"],
       },
       {
+        label: "식욕부진 시 조금씩 자주 먹는 간식",
+        detail:
+          "국가암정보센터 식욕부진 자료는 조금씩 자주 먹고 간식을 가까이 두어 먹고 싶을 때 쉽게 먹을 수 있게 하며, 과자·빵·과일·우유 및 유제품·두유·치즈 등을 예시로 제시합니다.",
+        examples:
+          "조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다. (예) 과자, 빵, 과일, 우유 및 유제품, 두유, 치즈 등",
+        sourceIds: ["nccAppetiteLossDiet"],
+      },
+      {
         label: "식욕부진 시 간식·유동식 활용",
         detail:
           "국가암정보센터 식욕부진 자료는 간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 안내합니다.",
@@ -1618,6 +1626,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   [
     "간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 합니다.",
     "국가암정보센터 식욕부진 시 간식·유동식 활용 후보",
+    "nccAppetiteLossDiet",
+  ],
+  [
+    "조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다. (예) 과자, 빵, 과일, 우유 및 유제품, 두유, 치즈 등",
+    "국가암정보센터 식욕부진 시 조금씩 자주 먹는 간식 후보",
     "nccAppetiteLossDiet",
   ],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
