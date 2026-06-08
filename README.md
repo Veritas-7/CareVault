@@ -168,6 +168,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC diarrhea hydration, soft-food, and trigger-food matching for 설사 육수/설사 스포츠 음료/설사 바나나/설사 으깬 감자/설사 복숭아/설사 토마토/설사 흰죽/설사 쌀미음/설사 생야채/설사 생과일 껍질/설사 브로콜리/설사 옥수수/설사 말린 콩/설사 커피/설사 초콜릿/설사 우유 및 유제품
 - NCC constipation hydration and fiber-food matching for 변비 물 8~10컵/변비 하루 8~10컵 물/변비 아침 찬물/변비 도정 덜 된 곡류/변비 생과일/변비 생야채/변비 섬유소 많은 식품
 - NCC fatigue/depression meal-support matching for 피로감 영양이 풍부한 음식/피로감 하루 중 가장 좋은 시간에 많이 먹기/피로감 휴식 후 먹기/피로감 적은 양의 식사와 간식/피로감 음식배달서비스/우울 좋아하는 음식
+- NCC fatigue/depression cause clinician-discussion source-sentence clinical-check matching for 만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.
 - NCC appetite-loss snack and liquid-food matching for 식욕부진 간식/식욕부진 죽/식욕부진 미음/식욕부진 쥬스/식욕부진 주스/식욕부진 스프/특수영양 보충음료
 - NCC healthy-eating hot/spicy-food avoid matching for 너무 뜨겁거나 매운 음식의 섭취는 피합니다/너무 뜨겁거나 매운 음식 섭취 피하기
 - NCC healthy-eating artificial seasoning limit sentence matching for 인공조미료(화학조미료 포함)의 사용을 제한하며 음식을 싱겁게 만들어 먹습니다/인공조미료 화학조미료 사용 제한 싱겁게 만들어 먹기
