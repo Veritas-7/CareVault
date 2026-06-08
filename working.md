@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 17:09 KST - Post-Push NCC Weight-Maintenance Alcohol Avoid Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-maintenance alcohol-avoid source sentence slice.
+- Result:
+  - Source commit pushed: `473bc67` (`Add NCC alcohol avoid guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `473bc67e62e0b7281035a1234b548eb887b4a1cc`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 743 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center PDF `적정 체중과 체지방을 유지합니다`, `https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 17:05 KST - NCC Weight-Maintenance Alcohol Avoid Source Sentence
 
 - Current Goal:
