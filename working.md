@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 14:41 KST - NCC After-Treatment Recurrence Food Myth Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center after-treatment source guidance for: `어떤 특정 식품이나 음식에 의해 암의 재발을 막는다는 연구보고는 없습니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `b5f0d1bf1a0ac6bf38eb7e9f9171c9f317faa289`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as after-treatment recurrence-prevention food myth caution, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center PDF `치료 후 건강한 식생활`, `https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf`; it states that there are no research reports that a specific food or meal prevents cancer recurrence.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC after-treatment recurrence-food myth source sentence, source evidence, and guard checks against collapsing into treatment-stage rumor-food terms.
+  - `src/healthRules.ts`: added the exact NCC after-treatment recurrence-food myth source sentence to the care-team guide text, examples, and source-backed `nccAfterTreatmentHealthyEating` matching terms.
+  - `README.md`: documented expanded NCC after-treatment recurrence-food myth exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new recurrence-food myth sentence returned `neutral` instead of the exact official `risk` source sentence.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 159 tests.
+  - PASS full tests: `npm test` => 64 files / 724 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `b5f0d1bf1a0ac6bf38eb7e9f9171c9f317faa289`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 14:39 KST - Final NCC After-Treatment Healthy Eating Log
 
 - Current Goal:
