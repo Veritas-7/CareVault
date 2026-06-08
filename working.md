@@ -1,5 +1,36 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:16 KST - PENDING NCC Mouth-Pain Hot-Food Temperature Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center mouth-pain source guidance for: `뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `83329535cd54ce2c903a9b7ecf154bce81cc21b1`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing hot-food coverage recognizes shorter generic `뜨거운 음식` and prevention-diet wording, but not this exact NCC mouth-pain temperature sentence with the cold-or-room-temperature alternative.
+  - Using TDD and keeping this as source-backed discomfort/irritation avoidance guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`; it includes `뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다.` in the mouth/throat pain guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다.`
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher and exposed the hot-food temperature guidance sentence in the limit guide detail/examples.
+  - `README.md`: documented the expanded NCC mouth-pain hot-food temperature exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence collapsed to the shorter `뜨거운 음식` term instead of the exact source sentence.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 234 tests.
+  - PASS source/diff checks: `rg -n "뜨거운 음식은 입과 목을 자극하므로|hot-food-temperature|뜨거운 음식 자극과 상온 음식|Hot-Food" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `83329535cd54ce2c903a9b7ecf154bce81cc21b1`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 799 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 00:15 KST - Final NCC Mouth-Pain Blended-Food Log
 
 - Current Goal:

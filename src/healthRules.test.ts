@@ -3737,6 +3737,43 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain hot-food temperature source sentence", () => {
+    const sourceSentence =
+      "뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 입과 목 통증 시 뜨거운 음식 자극과 상온 음식 확인 후보",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(terms).not.toContain("뜨거운 음식");
+    expect(terms).not.toContain("너무 뜨거운 음식");
+    expect(terms).not.toContain("향이 강하거나 뜨거운 음식");
+    expect(terms).not.toContain("얼음조각");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC dry-mouth moisture and saliva-stimulation food examples", () => {
     const assessment = assessCancerFood(
       "물 조금씩 자주, 물 한 모금, 소스나 드레싱, 딱딱한 사탕, 껌, 껌 씹기",
