@@ -174,6 +174,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC fatigue/depression meal-support matching for 피로감 영양이 풍부한 음식/피로감 하루 중 가장 좋은 시간에 많이 먹기/피로감 휴식 후 먹기/피로감 적은 양의 식사와 간식/피로감 음식배달서비스/우울 좋아하는 음식
 - NCC fatigue/depression nutritious-food source sentence matching for 영양이 풍부한 음식을 충분히 섭취합니다. 불충분한 열량과 영양소 섭취가 피로의 원인이 될 수 있기 때문입니다
 - NCC fatigue/depression best-time meal source sentence matching for 하루 중 가장 좋은 시간에 가능한 많이 먹습니다
+- NCC fatigue/depression rest-after meal source sentence matching for 낮잠이나 휴식 후에 먹는 것이 더 편안함을 느낄 수 있습니다
 - NCC fatigue/depression cause clinician-discussion source-sentence clinical-check matching for 만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.
 - NCC appetite-loss snack and liquid-food matching for 식욕부진 간식/식욕부진 죽/식욕부진 미음/식욕부진 쥬스/식욕부진 주스/식욕부진 스프/특수영양 보충음료
 - NCC healthy-eating hot/spicy-food avoid matching for 너무 뜨겁거나 매운 음식의 섭취는 피합니다/너무 뜨겁거나 매운 음식 섭취 피하기
