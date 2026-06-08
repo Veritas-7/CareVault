@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:30 KST - PENDING NCC Dry-Mouth Nearby-Water Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center dry-mouth source guidance for: `가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `05fe6cf4575d5e9aa8ffe5b43f577869d0fbf9ce`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing dry-mouth matching recognizes shorter support terms such as `물 조금씩 자주` and `물 한 모금`, but does not preserve this exact NCC sentence about keeping water nearby and drinking small amounts often.
+  - Using TDD and keeping this as source-backed hydration/supportive eating guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`; it includes `가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다.` in the dry-mouth guidance list.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다.`
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the nearby-water source sentence in the dry-mouth balanced guide.
+  - `README.md`: documented the expanded NCC dry-mouth nearby-water exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral` instead of `ok`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 236 tests.
+  - PASS source/diff checks: `rg -n "가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다|nearby-water|가까운 물과 잦은 소량|NCC Dry-Mouth Nearby-Water" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `05fe6cf4575d5e9aa8ffe5b43f577869d0fbf9ce`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 801 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 75 insertions, 3 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 00:27 KST - Final NCC Mouth-Pain Ice-Chip Log
 
 - Current Goal:
