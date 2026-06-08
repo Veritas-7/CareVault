@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 17:05 KST - NCC Weight-Maintenance Alcohol Avoid Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-maintenance source guidance for: `술은 마시지 않는다.`
+- Context:
+  - Continued from clean/synced CareVault state after `1543f6c06ed50711b3b2ea32ab76b0337e168c92`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as source-backed alcohol-avoid guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center PDF `적정 체중과 체지방을 유지합니다`, `https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf`; it states `술은 마시지 않는다.` in the concrete weight-maintenance guidance list.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-maintenance alcohol-avoid source sentence, source evidence, guide-card text, and guard checks against collapsing into generic `술` or after-treatment alcohol terms.
+  - `src/healthRules.ts`: added a visible limit-guide item and exact source-backed `watch` matcher term using the existing `nccWeightMaintenanceDiet` source metadata.
+  - `README.md`: documented expanded NCC weight-maintenance alcohol-avoid exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence collapsed to the generic `술` term.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 178 tests.
+  - PASS full tests: `npm test` => 64 files / 743 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `1543f6c06ed50711b3b2ea32ab76b0337e168c92`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 8.26 MB and found no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 17:01 KST - Final NCC Weight-Maintenance Varied Timely Eating Log
 
 - Current Goal:

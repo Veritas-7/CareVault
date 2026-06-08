@@ -496,6 +496,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["kdcaAlcohol"],
       },
       {
+        label: "체중 유지 음주 제한",
+        detail:
+          "국가암정보센터 적정 체중과 체지방 유지 자료는 과체중 또는 비만인 경우 적정 체중과 체지방을 유지하기 위한 노력의 일부로 술은 마시지 않도록 안내합니다.",
+        examples: "술은 마시지 않는다.",
+        sourceIds: ["nccWeightMaintenanceDiet"],
+      },
+      {
         label: "가공육·탄 음식·튀김",
         detail:
           "국가암정보센터 암예방 식단 예시는 햄·소시지 등 가공육류를 가급적 적게 섭취하고 직화 구이와 튀김 조리법을 피하도록 안내하며, 건강한 식생활 자료도 햄·소시지 등 육가공품에 대해 햄, 소시지 등의 육가공품을 가급적 먹지 않기, 탄 음식은 먹지 않기, 숯불로 굽거나 직접 구워 탄 음식의 섭취는 삼가하기, 지방 함량이 많은 부위의 육류 섭취 제한을 안내합니다.",
@@ -1625,6 +1632,11 @@ const supportiveFoods: FoodRuleTerm[] = [
 ];
 
 const limitFoods: FoodRuleTerm[] = [
+  [
+    "술은 마시지 않는다.",
+    "국가암정보센터 적정 체중과 체지방 유지 음주 제한 후보",
+    "nccWeightMaintenanceDiet",
+  ],
   ["술", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol", standaloneFoodTermOptions],
   ["알코올", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol"],
   ["소주", "질병관리청 위험음주 표준잔·금주 권고 확인 후보", "kdcaAlcohol", standaloneFoodTermOptions],

@@ -219,6 +219,41 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC weight-maintenance alcohol avoid source sentence", () => {
+    const sourceSentence = "술은 마시지 않는다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightMaintenanceDiet.label).toBe(
+      "국가암정보센터 적정 체중과 체지방 유지",
+    );
+    expect(foodGuidanceSources.nccWeightMaintenanceDiet.url).toBe(
+      "https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 적정 체중과 체지방 유지 음주 제한 후보",
+      sourceId: "nccWeightMaintenanceDiet",
+    });
+    expect(terms).not.toContain("술");
+    expect(terms).not.toContain("하루 한 두 잔의 술도 피합니다.");
+    expect(terms).not.toContain("치료 후 하루 한 두 잔 술도 피하기");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 적정 체중과 체지방 유지 - https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC healthy-eating daily vegetable guidance terms", () => {
     const assessment = assessCancerFood("채소류, 매끼니 채소, 매일 채소");
     const terms = assessment.matches.map((match) => match.term);
