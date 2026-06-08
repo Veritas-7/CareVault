@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 17:28 KST - NCC Nausea Do-Not-Force Intake Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center nausea source guidance for: `메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `cf9e9ba88abc5bfd278a77ec4b1ca39e3a8458eb`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as source-backed nausea intake caution guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`; it states the do-not-force-intake sentence for severe nausea.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC nausea do-not-force intake source sentence, source evidence, guide-card text, and guard checks against collapsing into nausea easier-food or trigger-food examples.
+  - `src/healthRules.ts`: added a visible limit guide item and exact source-backed `watch` matcher term using the existing `nccNauseaDiet` source metadata.
+  - `README.md`: documented expanded NCC nausea exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 181 tests.
+  - PASS full tests: `npm test` => 64 files / 746 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `cf9e9ba88abc5bfd278a77ec4b1ca39e3a8458eb`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 8.29 MB and found no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full verification gates, stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 17:24 KST - Final NCC Weight-Maintenance Clinical Nutrition Consult Log
 
 - Current Goal:

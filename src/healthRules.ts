@@ -572,6 +572,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccMouthPainDiet"],
       },
       {
+        label: "메스꺼움 심할 때 억지 섭취 피하기",
+        detail:
+          "국가암정보센터 메스꺼움 자료는 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 하며, 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 안내합니다.",
+        examples: "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.",
+        sourceIds: ["nccNauseaDiet"],
+      },
+      {
         label: "메스꺼움 유발 가능 음식",
         detail:
           "국가암정보센터 메스꺼움 자료는 메스꺼움을 더 유발할 수 있는 음식으로 기름진 음식, 사탕·쿠키·케익처럼 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식을 피하도록 안내합니다.",
@@ -1982,6 +1989,11 @@ const limitFoods: FoodRuleTerm[] = [
     "기름진 음식과 단 음식은 피하고, 가능한 싱겁게 먹는다.",
     "국가암정보센터 적정 체중과 체지방 유지 식사조절 후보",
     "nccWeightMaintenanceDiet",
+  ],
+  [
+    "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.",
+    "국가암정보센터 메스꺼움 시 억지 섭취 피하기 후보",
+    "nccNauseaDiet",
   ],
   ["기름진 음식", "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보", "nccNauseaDiet"],
   ["매우 단 음식", "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보", "nccNauseaDiet"],
