@@ -142,6 +142,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC mouth-pain soft vegetable examples source-line matching for 채소 : 부드러운 야채를 푹 익히거나 데쳐서
 - NCC mouth-pain non-sour fruit examples source-line matching for 과일 : 바나나, 배, 수박, 과일통조림 등과 같이 시지 않은 과일
 - NCC mouth-pain citrus/tomato-juice irritating examples source-line matching for 오렌지, 포도, 레몬, 토마토주스
+- NCC mouth-pain spice/salted irritating examples source-line matching for 향신료를 많이 사용하거나 소금에 절인 음식
 - NCC dry-mouth nearby-water/broth-soaking/soft-blended-food/moist-food/meal-sip-straw/saliva-candy-gum/sweet-sour-caution/moisture and saliva-stimulation matching for 가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다./음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다./부드럽고 곱게 간 식품을 먹도록 합니다./삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다./식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다./딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다./아주 달거나 신음식을 먹으면 침분비가 많아집니다. 단, 입안이 헐거나 목구멍이 아플 경우에는 피하도록 합니다./물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기
 - NCC nausea easier-food and trigger-food matching for 샤베트/복숭아통조림/맑은 유동식/얼음조각/기름진 음식/매우 단 음식/향이 강하거나 뜨거운 음식/이상한 냄새가 나는 음식
 - NCC nausea toast-cracker-yogurt-sherbet source-line matching for 토스트, 크래커, 요거트, 샤베트
