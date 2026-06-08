@@ -5554,6 +5554,46 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC constipation clinician consultation source sentence", () => {
+    const sourceSentence =
+      "계속적으로 변비가 조절되지 않는다면 의사선생님과 상의하도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccConstipationDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 변비",
+    );
+    expect(foodGuidanceSources.nccConstipationDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 변비 지속·조절 어려움 의료진 상담 필요",
+      sourceId: "nccConstipationDiet",
+    });
+    expect(terms).not.toContain(
+      "설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 합니다.",
+    );
+    expect(terms).not.toContain(
+      "누워만 있는 경우라도 배를 부드럽게 문질러 주면 장운동에 도움이 됩니다.",
+    );
+    expect(terms).not.toContain("변비 아침 찬물");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 변비 - https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC weight-change calorie protein and high-calorie limit examples", () => {
     const assessment = assessCancerFood(
       "체중감소 김밥, 체중감소 주먹밥, 체중감소 야채죽, 체중감소 전복죽, 체중감소 계란죽, 체중감소 잣죽, 체중감소 감자, 체중감소 고구마, 체중감소 떡, 체중감소 만두, 체중감소 과일주스, 체중감소 과일통조림, 체중감소 땅콩버터, 체중감소 계란찜, 체중감소 두유, 체중감소 두부조림, 체중감소 생선전, 체중감소 어묵, 체중감소 요구르트, 체중증가 가공식품, 체중증가 김치, 체중증가 젓갈, 체중증가 장아찌류, 체중증가 청량 음료, 체중증가 초콜릿, 체중증가 사탕, 체중증가 과자류, 체중증가 고열량 간식",

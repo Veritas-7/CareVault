@@ -71,6 +71,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC constipation food-intake source sentence matching for 음식 섭취량이 너무 적지 않도록 합니다
 - NCC constipation light-activity source sentence matching for 가벼운 산책이나 걷기 등의 자신에게 맞는 운동을 규칙적으로 하는 것이 도움이 됩니다
 - NCC constipation abdominal-massage source sentence matching for 누워만 있는 경우라도 배를 부드럽게 문질러 주면 장운동에 도움이 됩니다
+- NCC constipation clinician-consultation source sentence matching for 계속적으로 변비가 조절되지 않는다면 의사선생님과 상의하도록 합니다
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
