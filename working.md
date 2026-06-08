@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:18 KST - Final NCC Dry-Mouth Sweet-Sour Caution Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center dry-mouth sweet-sour caution exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `63c59c8` (`Add NCC dry-mouth sweet-sour caution guidance`).
+  - Post-push verification log commit pushed: `ad87242` (`Log NCC dry-mouth sweet-sour verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `ad872428353326b8b9b1034e7827b98aa9388d48`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 241 tests.
+  - PASS final coverage grep: `rg -n "아주 달거나 신음식을 먹으면 침분비가 많아집니다|sweet-sour-caution|단맛·신맛 침 분비|NCC Dry-Mouth Sweet-Sour" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 01:17 KST - Post-Push NCC Dry-Mouth Sweet-Sour Caution Verification
 
 - Current Goal:
