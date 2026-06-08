@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 04:24 KST - PENDING NCC Weight-Change Weight-Loss Egg Protein Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `계란 : 계란후라이, 계란찜, 수란, 오믈렛, 메추리알조림 등`
+- Context:
+  - Continued from clean/synced CareVault state at `352c7c159e3920bdc6f3c1c53f4ab690e22ef2a8`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the weight-loss meat bitter-taste seasoning example immediately above this protein-snack section plus the later protein snack sentence/examples phrase, but not yet the exact egg protein examples phrase.
+  - Existing broader terms include `체중감소 계란찜`, `치료 중 달걀 두부 우유`, `입맛 변화 계란`, and immune-low raw/undercooked egg safety terms; this slice should preserve the exact NCC weight-change supportive context without weakening neighboring safety or taste-change rules.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss protein supplementation snacks it lists `계란 : 계란후라이, 계란찜, 수란, 오믈렛, 메추리알조림 등`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss egg protein examples phrase, source evidence, balanced guide text, and guard checks against collapsing into broader treatment, taste-change, protein-snack, or immune-low raw/undercooked egg terms.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss egg protein examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase was not matched and the assessment stayed `neutral` instead of preserving the exact NCC weight-loss egg protein examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 268 tests.
+  - PASS source/diff checks: `rg -n "계란 : 계란후라이|egg protein|계란 단백질|NCC Weight-Change Weight-Loss Egg" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `352c7c159e3920bdc6f3c1c53f4ab690e22ef2a8`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.06 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 833 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 80 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Re-stage `working.md`, rerun staged checks, then commit and push.
+
 ## 2026-06-09 04:20 KST - Post-Push NCC Weight-Change Weight-Loss Meat Bitter Taste Seasoning Examples Verification
 
 - Current Goal:
