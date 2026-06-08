@@ -39,6 +39,13 @@ function firstText(...values: Array<string | undefined>) {
   return values.map((value) => value?.trim()).find(Boolean) ?? "진료 전 기록 확인";
 }
 
+function formatReminderTitle(hospitalText: string, departmentText: string | undefined) {
+  const hospital = hospitalText.trim();
+  const department = departmentText?.trim();
+  if (hospital && department) return `${hospital} · ${department}`;
+  return hospital || department || "병원/과 미입력";
+}
+
 function firstValidIsoDate(...dates: string[]) {
   return dates
     .map((date) => date.trim())
@@ -65,7 +72,6 @@ export function buildAppointmentReminders(
       if (daysUntil < 0 || daysUntil > windowDays) return [];
 
       const label = daysUntil === 0 ? "오늘" : `${daysUntil}일 후`;
-      const department = visit.department?.trim();
       return [
         {
           id: `appointment:${visit.id}:${date}`,
@@ -73,7 +79,7 @@ export function buildAppointmentReminders(
           daysUntil,
           label,
           tone: daysUntil <= 2 ? "watch" : "neutral",
-          title: department ? `${visit.hospital} · ${department}` : visit.hospital,
+          title: formatReminderTitle(visit.hospital, visit.department),
           detail: firstText(visit.reason, visit.plan, visit.summary),
         },
       ];

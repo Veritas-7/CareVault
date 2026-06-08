@@ -75,6 +75,45 @@ describe("appointmentReminders", () => {
     });
   });
 
+  it("normalizes reminder titles from restored hospital and department text", () => {
+    const reminders = buildAppointmentReminders(
+      [
+        {
+          ...visits[0],
+          id: "visit-trimmed-title",
+          date: "2026-06-06",
+          department: "  종양내과  ",
+          hospital: "  서울암센터  ",
+          nextDate: "",
+        },
+        {
+          ...visits[0],
+          id: "visit-department-only",
+          date: "2026-06-07",
+          department: "  방사선종양학과  ",
+          hospital: "  ",
+          nextDate: "",
+        },
+        {
+          ...visits[0],
+          id: "visit-missing-title",
+          date: "2026-06-08",
+          department: "  ",
+          hospital: "  ",
+          nextDate: "",
+        },
+      ],
+      "2026-06-03",
+      14,
+    );
+
+    expect(reminders.map((reminder) => reminder.title)).toEqual([
+      "서울암센터 · 종양내과",
+      "방사선종양학과",
+      "병원/과 미입력",
+    ]);
+  });
+
   it("returns no reminders for invalid today values", () => {
     expect(buildAppointmentReminders(visits, "not-a-date")).toEqual([]);
   });
