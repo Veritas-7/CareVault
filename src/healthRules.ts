@@ -652,7 +652,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         label: "식욕부진 시 식사 중 수분 조금만",
         detail:
           "국가암정보센터 식욕부진 자료는 식사 시 수분섭취가 포만감을 줄 수 있어 한 모금씩 조금만 마시고, 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 안내합니다.",
-        examples: "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.",
+        examples:
+          "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다. 만약 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 합니다.",
         sourceIds: ["nccAppetiteLossDiet"],
       },
       {
@@ -2127,6 +2128,11 @@ const limitFoods: FoodRuleTerm[] = [
   [
     "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.",
     "국가암정보센터 식욕부진 시 식사 중 수분 조절 후보",
+    "nccAppetiteLossDiet",
+  ],
+  [
+    "만약 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 합니다.",
+    "국가암정보센터 식욕부진 시 많은 양의 물 섭취 시간 조절 후보",
     "nccAppetiteLossDiet",
   ],
   [
