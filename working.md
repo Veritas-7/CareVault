@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 05:59 KST - Post-Push NCC Mouth-Pain Thin-Rice-Gruel Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center mouth-pain thin-rice-gruel examples exact source line slice.
+- Result:
+  - Source commit pushed: `1c9b2df` (`Add NCC mouth-pain thin gruel examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `1c9b2dff62eca701cd6954611e73b5871db17f98`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 845 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`
+- Issues:
+  - No blocking issue remains for this source line slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 05:55 KST - PENDING NCC Mouth-Pain Thin-Rice-Gruel Examples Source Line
 
 - Current Goal:
