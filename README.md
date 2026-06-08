@@ -75,6 +75,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC weight-change weight-loss misutgaru milk/soy drink sentence matching for 미숫가루를 만들 때 물 대신 우유 또는 두유를 이용한다
 - NCC weight-change weight-loss egg salad sentence matching for 야채샐러드에 삶은 계란을 다져 넣는다
 - NCC weight-change weight-loss egg batter sentence matching for 부침 등에 물 대신 계란을 많이 사용한다
+- NCC weight-change weight-loss yogurt cracker/bread sentence matching for 크래커나 빵을 요플레와 함께 먹는다
 - NCC weight-change weight-loss protein snack sentence matching for 간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다
 - NCC weight-change weight-loss protein snack examples phrase matching for 만두, 피자, 샌드위치, 계란샐러드, 카스테라 등
 - NCC weight-change weight-gain cause consultation sentence matching for 그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다
