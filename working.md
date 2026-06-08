@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:56 KST - PENDING NCC Dry-Mouth Meal-Sip Straw Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center dry-mouth source guidance for: `식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `18894ae23a928c1ce04d24fbccd87b5ce6417e5f`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing dry-mouth matching includes the shorter `물 한 모금` support term, but does not preserve this exact NCC sentence that combines meal-time small sips with straw assistance.
+  - Using TDD and keeping this as source-backed supportive eating guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`; it includes `식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다.` in the dry-mouth guidance list.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다.`
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher before shorter dry-mouth fallback terms and exposed the source sentence in the dry-mouth balanced guide.
+  - `README.md`: documented the expanded NCC dry-mouth `meal-sip-straw` exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral` instead of `ok`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 239 tests.
+  - PASS source/diff checks: `rg -n "식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다|빨대를 이용하면 삼키는 것에 도움이 됩니다|meal-sip-straw|수분 한 모금과 빨대|NCC Dry-Mouth Meal-Sip" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `18894ae23a928c1ce04d24fbccd87b5ce6417e5f`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 804 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 75 insertions, 3 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 00:53 KST - Final NCC Dry-Mouth Broth-Soaking Log
 
 - Current Goal:
