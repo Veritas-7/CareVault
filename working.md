@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 21:17 KST - PENDING NCC Diarrhea High-Fiber Vegetable Source Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center diarrhea source guidance for: `브로콜리, 옥수수, 말린 콩 등과 같은 고섬유 채소 등`
+- Context:
+  - Continued from clean/synced CareVault state at `4be4d6a3feaf74aa9e96d27950cab433849754b1`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC diarrhea coverage has `설사 브로콜리`, `설사 옥수수`, and `설사 말린 콩` examples, while general treatment nutrition also has `옥수수`; the exact official high-fiber vegetable phrase is not represented as a source phrase or README bullet.
+  - Using TDD and keeping this as diarrhea symptom food limitation support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`; it lists broccoli, corn, and dried beans as high-fiber vegetables to avoid when diarrhea is present.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact diarrhea high-fiber vegetable source phrase is currently collapsed to the generic `옥수수` support match.
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher and exposed the exact phrase in the diarrhea limit guide examples.
+  - `README.md`: documented the expanded NCC diarrhea high-fiber vegetable exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase assessed as `ok` instead of diarrhea-specific `watch`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 210 tests.
+  - PASS source/diff checks: `rg -n "고섬유 채소|브로콜리, 옥수수, 말린 콩|high-fiber vegetable|설사 시 고섬유" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `4be4d6a3feaf74aa9e96d27950cab433849754b1`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 775 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 75 insertions, 1 deletion before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run diff/source checks and full pre-push gates, then stage the explicit four changed paths.
+
 ## 2026-06-08 21:14 KST - Final NCC Diarrhea Dairy Lactose Log
 
 - Current Goal:

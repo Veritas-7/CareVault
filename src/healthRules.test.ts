@@ -4913,6 +4913,43 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC diarrhea high-fiber vegetable source phrase", () => {
+    const sourcePhrase = "브로콜리, 옥수수, 말린 콩 등과 같은 고섬유 채소 등";
+    const assessment = assessCancerFood(sourcePhrase);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDiarrheaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 설사",
+    );
+    expect(foodGuidanceSources.nccDiarrheaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourcePhrase]);
+    expect(matchesByTerm[sourcePhrase]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 설사 시 고섬유 채소 제한 확인 후보",
+      sourceId: "nccDiarrheaDiet",
+    });
+    expect(terms).not.toContain("옥수수");
+    expect(terms).not.toContain("설사 브로콜리");
+    expect(terms).not.toContain("설사 옥수수");
+    expect(terms).not.toContain("설사 말린 콩");
+    expect(terms).not.toContain("설사 생야채");
+    expect(limitGuideText).toContain(sourcePhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourcePhrase])).toContain(
+      "국가암정보센터 증상별 식생활 - 설사 - https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC diarrhea hydration soft-food and trigger examples", () => {
     const assessment = assessCancerFood(
       "설사 육수, 설사 스포츠 음료, 설사 바나나, 설사 으깬 감자, 설사 복숭아, 설사 토마토, 설사 흰죽, 설사 쌀미음, 설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",
