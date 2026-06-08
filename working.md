@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:46 KST - Post-Push NCC Weight-Change Weight-Loss Vegetable Salad Dressing Calorie Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change weight-loss vegetable salad dressing calorie examples exact source phrase slice.
+- Result:
+  - Source commit pushed: `7465824` (`Add NCC weight-change salad dressing examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `7465824c42cfd58ae7c403c269065c28799b48f8`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 827 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - The pre-commit runtime doctor was blocked by an unrelated PromptVault Vite server on `127.0.0.1:1420`, but the blocker cleared before post-push verification; this CareVault session did not terminate that process.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 03:40 KST - PENDING NCC Weight-Change Weight-Loss Vegetable Salad Dressing Calorie Examples Phrase
 
 - Current Goal:
