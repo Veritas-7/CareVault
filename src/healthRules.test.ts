@@ -1412,6 +1412,36 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC treatment nutrient water role source sentence", () => {
+    const sourceSentence =
+      "물은 중요한 영양소로 생각되지 않는 게 보통이지만, 사실은 혈액과 신체 조직의 핵심적인 성분이면서 영양소와 노폐물을 운반하고 체온을 유지해 주는 등 생명 유지에 필수적인 요소입니다. 수분의 섭취가 부족하거나, 구토‧설사나 고열이 지속되거나, 땀을 과도하게 흘릴 경우에는 탈수가 일어날 수 있습니다. 일반적으로 성인은 하루에 6~8컵 정도의 물이 필요합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 중 영양소 수분 생명 유지·탈수 예방 후보",
+      sourceId: "nccTreatmentNutrients",
+    });
+    expect(terms).not.toContain("물 6~8컵");
+    expect(terms).not.toContain("하루 6~8컵 물");
+    expect(terms).not.toContain("변비 물 8~10컵");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 영양소 - https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC treatment nutrient carbohydrate energy source sentence", () => {
     const sourceSentence =
       "탄수화물(carbohydrate)은 우리 몸에 열량을 공급하는 주요 에너지원으로, 이것이 부족하면 기초 체력이 저하하고 피곤해지며 체중이 줄게 됩니다.";
