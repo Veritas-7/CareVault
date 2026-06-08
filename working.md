@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:48 KST - PENDING NCC Weight-Change Weight-Loss Milk Soy Drink Calorie Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `우유, 두유 등 음료 : 설탕, 꿀, 초콜릿, 미숫가루, 분유 등을 타서 먹는다.`
+- Context:
+  - Continued from clean/synced CareVault state at `8406ac18481960f292c9089ffffff5936b1cfecd`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the calorie/protein source sentence, rice/porridge/snack examples, bread/rice-cake, potato-butter, namul-oil, and vegetable-salad dressing calorie examples, carbohydrate-snack sentence, protein-snack sentence, and protein-snack examples phrase, but not yet the exact milk/soy drink calorie examples phrase.
+  - Existing supportive fallback terms include `체중감소 두유`, while general treatment-diet coverage includes `치료 중 우유와 유제품 하루 1컵` and `치료 중 요구르트 두유 치즈`; this slice should preserve the exact weight-change phrase without collapsing into those broader terms.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss calorie supplementation cooking-method changes it lists `우유, 두유 등 음료 : 설탕, 꿀, 초콜릿, 미숫가루, 분유 등을 타서 먹는다.`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss milk/soy drink calorie examples phrase, source evidence, balanced guide text, and guard checks against collapsing into `두유`, `체중감소 두유`, or broader treatment-diet milk/soy milk terms.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the examples phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss milk/soy drink calorie examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase collapsed into short `두유` instead of preserving the exact NCC weight-loss milk/soy drink calorie examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 263 tests.
+  - PASS source/diff checks: `rg -n "우유, 두유 등 음료|milk/soy drink|우유·두유 음료|NCC Weight-Change Weight-Loss Milk" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `8406ac18481960f292c9089ffffff5936b1cfecd`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.01 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 828 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 77 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Run full GitHub/private repo preflight, full tests, typecheck, build, staged secret scan, then commit and push.
+
 ## 2026-06-09 03:46 KST - Post-Push NCC Weight-Change Weight-Loss Vegetable Salad Dressing Calorie Examples Verification
 
 - Current Goal:
