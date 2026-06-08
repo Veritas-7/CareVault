@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 17:19 KST - NCC Weight-Maintenance Clinical Nutrition Consult Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-maintenance source guidance for: `단, 식사조절과 운동으로 적정 체중 유지가 어렵거나 고혈압, 당뇨병, 고지혈증 등 만성질환이 있는 경우 담당의사 및 임상영양사의 상담을 받도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `6fba35d7809fd30978adb9e3d9dff5e62007939e`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as source-backed clinical nutrition consult guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center PDF `적정 체중과 체지방을 유지합니다`, `https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf`; it states the consult sentence for difficult weight maintenance or chronic disease context.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-maintenance clinical nutrition consult source sentence, source evidence, guide-card text, and guard checks against collapsing into after-treatment consult terms.
+  - `src/healthRules.ts`: added a visible care-team guide item and exact source-backed `risk` matcher term using the existing `nccWeightMaintenanceDiet` source metadata.
+  - `README.md`: documented expanded NCC weight-maintenance clinical nutrition consult exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 180 tests.
+  - PASS full tests: `npm test` => 64 files / 745 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `6fba35d7809fd30978adb9e3d9dff5e62007939e`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 8.28 MB and found no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 17:17 KST - Final NCC Weight-Maintenance Slow Eating Log
 
 - Current Goal:
