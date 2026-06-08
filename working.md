@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 16:35 KST - NCC Weight-Maintenance Fatty Sweet Food Limit Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-maintenance source guidance for: `기름진 음식과 단 음식은 피하고, 가능한 싱겁게 먹는다.`
+- Context:
+  - Continued from clean/synced CareVault state after `70283a720d6c653fde3567d5cb1a2638230ce3c5`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as source-backed weight-maintenance food-limit guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center PDF `적정 체중과 체지방을 유지합니다`, `https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf`; it gives concrete weight-maintenance food-limit guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-maintenance fatty/sweet food limit source sentence, source metadata, source evidence, guide-card text, and guard checks against collapsing into shorter symptom terms.
+  - `src/healthRules.ts`: added `nccWeightMaintenanceDiet` source metadata, a limit-guide item, and the exact source-backed `watch` matcher term.
+  - `README.md`: documented expanded NCC weight-maintenance fatty/sweet food limit exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because `foodGuidanceSources.nccWeightMaintenanceDiet` did not exist.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 175 tests.
+  - PASS full tests: `npm test` => 64 files / 740 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `70283a720d6c653fde3567d5cb1a2638230ce3c5`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.14 GB and found no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 16:32 KST - Final NCC After-Treatment Fruit Vegetable Nutrient Benefit Log
 
 - Current Goal:

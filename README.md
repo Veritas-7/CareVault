@@ -28,6 +28,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating fatty meat part limit sentence matching for 지방 함량이 많은 부위의 육류 섭취는 제한합니다/지방 함량이 많은 육류 부위 섭취 제한
 - NCC healthy-eating red-meat portion sentence matching for 붉은색 육류 섭취 시 1회에 1인분씩, 주 3인분(익힌 상태로 350~500g)을 넘지 않도록 합니다/붉은색 육류 1회 1인분 주 3인분 350~500g 이하
 - NCC healthy-eating processed-meat avoid sentence matching for 햄, 소시지 등의 육가공품을 가급적 먹지 않습니다/햄 소시지 등의 육가공품 가급적 먹지 않기
+- NCC weight-maintenance fatty/sweet food limit sentence matching for 기름진 음식과 단 음식은 피하고, 가능한 싱겁게 먹는다
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히

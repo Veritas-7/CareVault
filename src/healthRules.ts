@@ -33,6 +33,7 @@ export type FoodGuidanceSourceId =
   | "nccTasteChangeDiet"
   | "nccDiarrheaDiet"
   | "nccConstipationDiet"
+  | "nccWeightMaintenanceDiet"
   | "nccWeightChangeDiet"
   | "nccFatigueDepressionDiet"
   | "nccMouthPainDiet"
@@ -155,6 +156,10 @@ export const foodGuidanceSources: Record<
   nccConstipationDiet: {
     label: "국가암정보센터 증상별 식생활 - 변비",
     url: "https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+  },
+  nccWeightMaintenanceDiet: {
+    label: "국가암정보센터 적정 체중과 체지방 유지",
+    url: "https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf",
   },
   nccWeightChangeDiet: {
     label: "국가암정보센터 증상별 식생활 - 체중변화",
@@ -499,6 +504,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "소고기, 돼지고기, 붉은 육류, 붉은색 육류, 붉은색 육류 섭취 시 1회에 1인분씩, 주 3인분(익힌 상태로 350~500g)을 넘지 않도록 합니다, 붉은색 육류 1회 1인분 주 3인분 350~500g 이하, 붉은색 육류 주 3인분, 붉은 육류 주 3인분, 붉은 육류 350~500g, 익힌 상태 350~500g",
         sourceIds: ["nccPreventionMealExamples", "nccPreventionDiet"],
+      },
+      {
+        label: "체중 유지 식사조절",
+        detail:
+          "국가암정보센터 적정 체중과 체지방 유지 자료는 과체중 또는 비만인 경우 적정 체중과 체지방을 유지하기 위한 노력의 일부로 기름진 음식과 단 음식은 피하고 가능한 싱겁게 먹도록 안내합니다.",
+        examples: "기름진 음식과 단 음식은 피하고, 가능한 싱겁게 먹는다.",
+        sourceIds: ["nccWeightMaintenanceDiet"],
       },
       {
         label: "실천지침 대체 식단 예시",
@@ -1909,6 +1921,11 @@ const limitFoods: FoodRuleTerm[] = [
     "매운 음식",
     "국가암정보센터 건강한 식생활 너무 뜨겁거나 매운 음식 피하기 후보",
     "nccPreventionDiet",
+  ],
+  [
+    "기름진 음식과 단 음식은 피하고, 가능한 싱겁게 먹는다.",
+    "국가암정보센터 적정 체중과 체지방 유지 식사조절 후보",
+    "nccWeightMaintenanceDiet",
   ],
   ["기름진 음식", "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보", "nccNauseaDiet"],
   ["매우 단 음식", "국가암정보센터 메스꺼움 유발 가능 음식 확인 후보", "nccNauseaDiet"],

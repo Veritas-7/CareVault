@@ -123,6 +123,40 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC weight-maintenance fatty and sweet food limit source sentence", () => {
+    const sourceSentence = "기름진 음식과 단 음식은 피하고, 가능한 싱겁게 먹는다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightMaintenanceDiet.label).toBe(
+      "국가암정보센터 적정 체중과 체지방 유지",
+    );
+    expect(foodGuidanceSources.nccWeightMaintenanceDiet.url).toBe(
+      "https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 적정 체중과 체지방 유지 식사조절 후보",
+      sourceId: "nccWeightMaintenanceDiet",
+    });
+    expect(terms).not.toContain("기름진 음식");
+    expect(terms).not.toContain("매우 단 음식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 적정 체중과 체지방 유지 - https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC healthy-eating daily vegetable guidance terms", () => {
     const assessment = assessCancerFood("채소류, 매끼니 채소, 매일 채소");
     const terms = assessment.matches.map((match) => match.term);
