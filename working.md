@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:38 KST - PENDING NCC Dry-Mouth Moist-Food Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center dry-mouth source guidance for: `삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `2334b6afe49190cbd5073fe8ce22fa152651c27c`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing dry-mouth matching recognizes the shorter `소스나 드레싱` support term, but does not preserve the exact NCC sentence about adding sauce or dressing so food is moist and easier to swallow.
+  - Using TDD and keeping this as source-backed hydration/supportive eating guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`; it includes `삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다.` in the dry-mouth guidance list.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다.`
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher before the shorter `소스나 드레싱` matcher and exposed the source sentence in the dry-mouth balanced guide.
+  - `README.md`: documented the expanded NCC dry-mouth `moist-food` exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence matched only the shorter `소스나 드레싱` term instead of preserving the exact source sentence.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 237 tests.
+  - PASS source/diff checks: `rg -n "삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다|moist-food|소스나 드레싱으로 촉촉한|NCC Dry-Mouth Moist-Food" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `2334b6afe49190cbd5073fe8ce22fa152651c27c`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 802 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 75 insertions, 3 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 00:35 KST - Final NCC Dry-Mouth Nearby-Water Log
 
 - Current Goal:
