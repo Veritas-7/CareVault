@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 17:00 KST - Post-Push NCC Weight-Maintenance Varied Timely Eating Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-maintenance varied/timely eating source sentence slice.
+- Result:
+  - Source commit pushed: `c0d7a77` (`Add NCC varied timely eating guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `c0d7a7766beeeeb2557456976e2c125cdf4b8d2c`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 742 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center PDF `적정 체중과 체지방을 유지합니다`, `https://www.cancer.go.kr/download.do?uuid=ccd2b0bb-1a1f-4ac8-a1d7-955d7ff81fcd.pdf`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 16:56 KST - NCC Weight-Maintenance Varied Timely Eating Source Sentence
 
 - Current Goal:
