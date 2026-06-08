@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 21:43 KST - Final NCC Diarrhea Hydration Loss Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center diarrhea hydration loss-replacement exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `1c642cc` (`Add NCC diarrhea hydration loss guidance`).
+  - Post-push verification log commit pushed: `c8d6016` (`Log NCC diarrhea hydration loss verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `c8d601641af032a94cd43f9748d1f5f702dfe9bb`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 21:42 KST - Post-Push NCC Diarrhea Hydration Loss Verification
 
 - Current Goal:
