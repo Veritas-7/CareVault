@@ -503,6 +503,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccAppetiteLossDiet"],
       },
       {
+        label: "식욕부진 시 보호자 식사 지원",
+        detail:
+          "국가암정보센터 식욕부진 자료는 주위 사람들이 환자가 먹기 싫어할 때 억지로 먹으라고 지나치게 강요하지 말고, 환자 스스로 먹을 수 있게 돕도록 안내합니다.",
+        examples:
+          "주위 분들도 환자가 먹기 싫어할 때 억지로 먹으라고 지나치게 강요하지 말고 환자 스스로 먹을 수 있게끔 도와줍니다.",
+        sourceIds: ["nccAppetiteLossDiet"],
+      },
+      {
         label: "식욕부진 시 가까이 두는 간식",
         detail:
           "국가암정보센터 식욕부진 자료는 조금씩 자주 먹고 간식을 가까이 두며, 간식으로 죽·미음·쥬스·스프·우유 및 유제품 등을 활용하고, 식사섭취가 계속 힘들면 특수영양 보충음료를 이용하도록 안내합니다.",
@@ -1628,6 +1636,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   [
     "입맛을 돋우기 위해서 식사전후에 입안을 청결하게 합니다.",
     "국가암정보센터 식욕부진 시 식사 전후 입안 청결 후보",
+    "nccAppetiteLossDiet",
+  ],
+  [
+    "주위 분들도 환자가 먹기 싫어할 때 억지로 먹으라고 지나치게 강요하지 말고 환자 스스로 먹을 수 있게끔 도와줍니다.",
+    "국가암정보센터 식욕부진 시 보호자 식사 지원 후보",
     "nccAppetiteLossDiet",
   ],
   [
