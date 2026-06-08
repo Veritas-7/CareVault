@@ -1,5 +1,37 @@
 # CareVault Working Notes
 
+## 2026-06-09 05:55 KST - PENDING NCC Mouth-Pain Thin-Rice-Gruel Examples Source Line
+
+- Current Goal:
+  - Add exact National Cancer Information Center mouth-pain source line for: `미음 : 쌀미음, 조미음, 잣미음, 깨미음, 녹두미음 등`
+- Context:
+  - Continued from clean/synced CareVault state at `fe699c681bbebcab5b2da8dec197bf79086a0f35`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccMouthPainDiet` coverage now preserves the neighboring porridge examples source line and includes individual soft foods such as `쌀미음`, but not yet this exact thin-rice-gruel examples line.
+  - This slice should preserve the NCC mouth-pain thin-gruel source-line context without collapsing into the individual `쌀미음` mouth-pain term or unrelated diarrhea soft-food terms.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`; under foods easy to chew and swallow it lists the thin-gruel examples line with rice gruel, millet/rice gruel, pine-nut gruel, sesame gruel, and mung-bean gruel. The page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage for the exact NCC mouth-pain thin-rice-gruel examples source line, source evidence, balanced guide text, and checks against collapsing into individual mouth-pain `쌀미음`, diarrhea `쌀미음`, or the neighboring porridge examples line.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher before individual mouth-pain soft-food terms and exposed the source line in the mouth-pain soft-food guide-card examples.
+  - `README.md`: documented expanded NCC mouth-pain thin-rice-gruel examples exact-source line coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source line split into `쌀미음` instead of preserving the exact NCC mouth-pain thin-gruel examples line.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 280 tests.
+  - PASS source/diff checks: `rg -n "미음 : 쌀미음|thin-rice-gruel|부드러운 미음 예시|PENDING NCC Mouth-Pain Thin-Rice-Gruel" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `git remote -v`; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `fe699c681bbebcab5b2da8dec197bf79086a0f35`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.17 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 845 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Confirm RED, implement minimal exact-source support, then run focused and full verification before commit/push.
+
 ## 2026-06-09 05:55 KST - Post-Push NCC Mouth-Pain Porridge Examples Verification
 
 - Current Goal:
