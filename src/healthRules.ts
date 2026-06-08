@@ -291,7 +291,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         label: "치료 중 건강식 회복 지원",
         detail:
           "국가암정보센터 치료 중 올바르게 식사하기 자료는 건강식이 좋은 영양 상태로 치료 참여를 돕고, 치료 부작용 극복과 감염 위험 감소에 좋은 영향을 줄 수 있다고 설명합니다.",
-        examples: "감염의 위험을 감소시켜 줍니다.",
+        examples:
+          "치료에 의한 부작용을 더 잘 극복하게 해줍니다., 감염의 위험을 감소시켜 줍니다.",
         sourceIds: ["nccTreatmentRightEating"],
       },
       {
@@ -962,6 +963,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   [
     "고칼로리, 고단백질의 식품을 비롯한 다양한 음식을 골고루 섭취하는 것이 도움이 됩니다",
     "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+    "nccTreatmentRightEating",
+  ],
+  [
+    "치료에 의한 부작용을 더 잘 극복하게 해줍니다.",
+    "국가암정보센터 치료 중 건강식 치료 참여·회복 지원 후보",
     "nccTreatmentRightEating",
   ],
   [
