@@ -2026,6 +2026,39 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/암을 낫게|특효|완치/);
   });
 
+  it("recognizes NCC seasoning moderation source sentence", () => {
+    const sourceSentence =
+      "양념과 조미료를 적당히 사용하되 너무 맵거나 짜지 않게 요리합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 중 건강식 실천 식품 후보",
+      sourceId: "nccTreatmentHealthyEatingTips",
+    });
+    expect(terms).not.toContain("음식을 짜지 않게 먹습니다");
+    expect(terms).not.toContain("음식을 짜지 않게 먹기");
+    expect(terms).not.toContain("인공조미료");
+    expect(terms).not.toContain("화학조미료");
+    expect(terms).not.toContain("너무 매운 음식");
+    expect(terms).not.toContain("매운 음식");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 건강식을 먹는 요령 - https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/암을 낫게|특효|완치/);
+  });
+
   it("recognizes NCC treatment healthy-eating practical meal examples", () => {
     const assessment = assessCancerFood(
       "치료 중 규칙적인 아침 점심 저녁, 치료 중 밥 반 그릇에서 한 그릇, 치료 중 죽 하루 4~5번 이상, 치료 중 단백질 반찬 충분히, 치료 중 채소 반찬 매끼 두 가지 이상, 치료 중 과일 하루 한두 번, 치료 중 우유와 유제품 하루 1컵, 치료 중 요구르트 두유 치즈",

@@ -1,5 +1,37 @@
 # CareVault Working Notes
 
+## 2026-06-08 11:48 KST - NCC Seasoning Moderation Source Sentence
+
+- Current Goal:
+  - Add the exact National Cancer Information Center treatment healthy-eating source sentence for using seasoning and condiments moderately and cooking without making food too spicy or salty to CareVault's built-in cancer food guidance.
+- Context:
+  - Continued from clean/synced CareVault state after `1291a366ce7d77c09e62d750c17eb31a5234c3ce`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept the sentence as supportive practical nutrition guidance, not diagnosis, treatment, or cure advice.
+- Research:
+  - Re-checked National Cancer Information Center `건강식을 먹는 요령`. The page says `양념과 조미료를 적당히 사용하되 너무 맵거나 짜지 않게 요리합니다.`
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact seasoning-moderation source sentence, including source evidence and guards against collapsing to general low-salt, artificial-seasoning, or spicy-food terms.
+  - `src/healthRules.ts`: added the exact NCC source sentence to the treatment healthy-eating practical guide card and supportive matching terms with `nccTreatmentHealthyEatingTips`.
+  - `README.md`: documented the expanded NCC treatment healthy-eating practical source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence was assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 137 tests.
+  - PASS full tests: `npm test` => 64 files / 702 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `1291a366ce7d77c09e62d750c17eb31a5234c3ce`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `건강식을 먹는 요령`, `https://www.cancer.go.kr/lay1/S1T471C475/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 11:44 KST - Final NCC Oil Seasoning Log
 
 - Current Goal:
