@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 22:26 KST - PENDING NCC Constipation Morning Cold-Water Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center constipation source guidance for: `특히 아침 기상 직후에 차가운 물을 마시면 장운동에 도움이 됩니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `49595b8596afb6f918d33beb48d8ca7665b338fb`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC constipation coverage recognizes shorthand `변비 아침 찬물`, but the exact official morning cold-water sentence is not represented as its own source sentence.
+  - Using TDD and keeping this as constipation symptom hydration support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 변비`, `https://www.cancer.go.kr/lay1/S1T479C487/contents.do`; it lists `특히 아침 기상 직후에 차가운 물을 마시면 장운동에 도움이 됩니다.` as constipation guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact morning cold-water source sentence is currently ignored as `neutral`.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the exact morning cold-water sentence in the constipation balanced guide examples.
+  - `README.md`: documented the expanded NCC constipation morning cold-water exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 219 tests.
+  - PASS source/diff checks: `rg -n "특히 아침 기상 직후에 차가운 물|morning cold-water|아침 기상 직후 차가운 물|변비 아침 찬물" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `49595b8596afb6f918d33beb48d8ca7665b338fb`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 784 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 74 insertions, 1 deletion before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Add RED coverage, implement the exact morning cold-water matcher and guide copy, then run focused and full command-based gates.
+
 ## 2026-06-08 22:24 KST - Final NCC Constipation Hydration Log
 
 - Current Goal:
