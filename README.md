@@ -152,6 +152,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC mouth-pain tooth/gum dental-care source-sentence clinical-check matching for 치아와 잇몸이 아프면 치과치료를 받도록 합니다.
 - NCC mouth-pain oxaliplatin cold-food caution source-sentence clinical-check matching for 그러나 옥살로플라틴(Oxaliplatin) 등과 같은 말초신경염을 유발할 수 있는 항암제 를 투여 받는 경우는 온도변화에 민감하여 통증을 유발할 수 있으므로 차가운 음식은 피하도록 합니다.
 - NCC dry-mouth nearby-water/broth-soaking/soft-blended-food/moist-food/meal-sip-straw/saliva-candy-gum/sweet-sour-caution/moisture and saliva-stimulation matching for 가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다./음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다./부드럽고 곱게 간 식품을 먹도록 합니다./삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다./식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다./딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다./아주 달거나 신음식을 먹으면 침분비가 많아집니다. 단, 입안이 헐거나 목구멍이 아플 경우에는 피하도록 합니다./물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기
+- NCC dry-mouth severe-problem clinician/dentist consultation source-sentence clinical-check matching for 그러나 문제가 심각하면 의사선생님이나 치과선생님과 상의합니다.
 - NCC nausea easier-food and trigger-food matching for 샤베트/복숭아통조림/맑은 유동식/얼음조각/기름진 음식/매우 단 음식/향이 강하거나 뜨거운 음식/이상한 냄새가 나는 음식
 - NCC nausea toast-cracker-yogurt-sherbet source-line matching for 토스트, 크래커, 요거트, 샤베트
 - NCC nausea soft fruit-vegetable source-sentence matching for 복숭아통조림이나 다른 부드러운 과일과 채소
