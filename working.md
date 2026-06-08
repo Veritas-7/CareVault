@@ -1,5 +1,37 @@
 # CareVault Working Notes
 
+## 2026-06-08 12:25 KST - NCC Healthy Eating Anticancer-Treatment Cell-Recovery Source Sentence
+
+- Current Goal:
+  - Add the exact National Cancer Information Center treatment right-eating source sentence for healthy eating supporting anticancer-treatment cell recovery to CareVault's built-in cancer food guidance.
+- Context:
+  - Continued from clean/synced CareVault state after `07901e2de3bb7e2bb2bb166c0a160b56bd2f6747`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept the sentence as supportive treatment-nutrition guidance, not diagnosis, treatment, cure, or individual treatment-effect advice.
+- Research:
+  - Re-checked National Cancer Information Center `올바르게 식사하기`, final update 2015-01-05. The page says `항암치료 로 손상된 세포의 재생을 도와줍니다.`
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `항암치료 로 손상된 세포의 재생을 도와줍니다.`, including source evidence and guards against collapsing to the active-treatment, side-effect recovery, or infection-risk source sentences.
+  - `src/healthRules.ts`: added the exact NCC source sentence to the treatment right-eating guide card and supportive matching terms with `nccTreatmentRightEating`.
+  - `README.md`: documented the expanded NCC treatment right-eating source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence was assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 142 tests.
+  - PASS full tests: `npm test` => 64 files / 707 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `07901e2de3bb7e2bb2bb166c0a160b56bd2f6747`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `올바르게 식사하기`, `https://www.cancer.go.kr/lay1/S1T471C474/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 12:21 KST - Final NCC Healthy Eating Active Treatment Participation Log
 
 - Current Goal:

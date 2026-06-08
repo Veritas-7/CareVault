@@ -1820,6 +1820,35 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy eating anticancer-treatment cell-recovery source sentence", () => {
+    const sourceSentence = "항암치료 로 손상된 세포의 재생을 도와줍니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 중 건강식 치료 참여·회복 지원 후보",
+      sourceId: "nccTreatmentRightEating",
+    });
+    expect(terms).not.toContain("환자가 좋은 영양 상태로 치료에 적극 참여할 수 있게 해줍니다.");
+    expect(terms).not.toContain("치료에 의한 부작용을 더 잘 극복하게 해줍니다.");
+    expect(terms).not.toContain("감염의 위험을 감소시켜 줍니다.");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 올바르게 식사하기 - https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC meal concern medical and dietitian consultation source sentence", () => {
     const sourceSentence =
       "암환자의 식사와 관련하여 고민이 있다면 의료진, 영양사와 상담하십시오. 적절한 영양 섭취에 관해 상담을 해드릴 것입니다.";
