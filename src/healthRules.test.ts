@@ -2062,6 +2062,35 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC eating difficulty immune-low nutrition counseling source sentence", () => {
+    const sourceSentence =
+      "음식을 들기가 전반적으로 힘들고 면역력까지 저하된 경우에는 개별적으로 영양 상담을 받아야 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 치료 중 의료진·영양사 식사 상담 필요",
+      sourceId: "nccTreatmentRightEating",
+    });
+    expect(terms).not.toContain("몸에 좋다고 소문난 식품");
+    expect(terms).not.toContain("백혈구 수치를 올리는 특별한 음식");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 올바르게 식사하기 - https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC regular meals and varied side dishes source sentence", () => {
     const sourceSentence = "규칙적으로 아침, 점심, 저녁 식사를 하며, 반찬을 골고루 먹습니다.";
     const assessment = assessCancerFood(sourceSentence);
