@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 18:30 KST - Post-Push NCC Appetite-Loss Frequent Snack Access Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center appetite-loss frequent-snack-access source sentence slice.
+- Result:
+  - Source commit pushed: `e46bd85` (`Add NCC appetite-loss frequent snack guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `e46bd85497cd091c64a0f001b92eae15ec1038de`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 754 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 식욕부진`, `https://www.cancer.go.kr/lay1/S1T479C480/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 18:26 KST - NCC Appetite-Loss Frequent Snack Access Source Sentence
 
 - Current Goal:
