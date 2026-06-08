@@ -291,6 +291,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccWeightMaintenanceDiet"],
       },
       {
+        label: "체중 유지 천천히 식사",
+        detail:
+          "국가암정보센터 적정 체중과 체지방 유지 자료는 과체중 또는 비만인 경우 적정 체중과 체지방을 유지하기 위한 노력의 일부로 과식을 피하기 위해 천천히 먹도록 안내합니다.",
+        examples: "과식을 피하기 위해 천천히 먹는다.",
+        sourceIds: ["nccWeightMaintenanceDiet"],
+      },
+      {
         label: "치료 중 균형식·충분한 영양",
         detail:
           "국가암정보센터 치료 중 일반적인 식생활 자료는 좋은 영양 상태 유지가 중요하므로 균형 잡힌 식사로 충분한 열량과 단백질, 비타민 및 무기질을 섭취하고 여러 가지 음식을 골고루 먹도록 안내합니다.",
@@ -802,6 +809,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   [
     "다양한 음식을 제때에, 골고루 먹는다",
     "국가암정보센터 적정 체중과 체지방 유지 규칙적 균형식 후보",
+    "nccWeightMaintenanceDiet",
+  ],
+  [
+    "과식을 피하기 위해 천천히 먹는다.",
+    "국가암정보센터 적정 체중과 체지방 유지 천천히 식사 후보",
     "nccWeightMaintenanceDiet",
   ],
   ["채소류", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
