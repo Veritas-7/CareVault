@@ -587,9 +587,10 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "특별한 항암 식품·영양소 주장",
         detail:
-          "국가암정보센터 치료 중 일반적인 식생활 자료는 특정 식품이나 영양소를 특효 항암 수단으로 보지 않고, 균형 잡힌 식사와 충분한 영양 상태 유지를 강조합니다.",
-        examples: "특별한 항암 식품, 특별한 항암 영양소, 특효 식품, 특효 영양소",
-        sourceIds: ["nccTreatmentEating"],
+          "국가암정보센터 치료 중 일반적인 식생활 및 올바르게 식사하기 자료는 특정 식품이나 영양소를 특효 항암 수단으로 보지 않고, 균형 잡힌 식사와 충분한 영양 상태 유지를 강조합니다.",
+        examples:
+          "특별한 항암 식품, 특별한 항암 영양소, 특효 식품, 특효 영양소, 암을 치유하는 특별한 음식이나 영양소는 없습니다.",
+        sourceIds: ["nccTreatmentEating", "nccTreatmentRightEating"],
       },
       {
         label: "소문난 식품·백혈구 특효 음식 주장",
@@ -1875,6 +1876,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "암을 낫게 해주는 특별한 영양소",
     "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
     "nccTreatmentEating",
+  ],
+  [
+    "암을 치유하는 특별한 음식이나 영양소는 없습니다.",
+    "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
+    "nccTreatmentRightEating",
   ],
   [
     "특별한 항암 식품",

@@ -1510,6 +1510,34 @@ describe("healthRules", () => {
     expect(careTeamGuideText).toContain("특별한 항암 영양소");
   });
 
+  it("recognizes NCC no special cancer-curing food or nutrient source sentence", () => {
+    const sourceSentence = "암을 치유하는 특별한 음식이나 영양소는 없습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 치료 중 특별식품·특별영양소 cure claim 확인 필요",
+      sourceId: "nccTreatmentRightEating",
+    });
+    expect(terms).not.toContain("특별한 항암 식품");
+    expect(terms).not.toContain("특별한 항암 영양소");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 올바르게 식사하기 - https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC treatment right-eating calorie nutrient and rumor-food guidance", () => {
     const assessment = assessCancerFood(
       "치료 중 적정 열량과 필수 영양소, 치료 중 충분한 열량 단백질 비타민 무기질, 치료 중 고칼로리 고단백질 음식, 치료 중 좋아하는 음식과 여러 식품, 치료 중 다양한 음식 골고루, 몸에 좋다고 소문난 식품, 특정 식품이나 영양소 편중, 백혈구 수치를 올리는 특별한 음식",
