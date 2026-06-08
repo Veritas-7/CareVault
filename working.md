@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 19:27 KST - Final NCC Nausea Meal-Environment Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center nausea meal-environment source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `c85e5e7` (`Add NCC nausea meal-environment guidance`).
+  - Post-push verification log commit pushed: `0aef6d3` (`Log NCC nausea meal-environment verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `0aef6d37edd2bf3852dcf9beac9e0873e6911827`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and verification log were pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Continue with the next narrow official-source cervical-cancer nutrition, safety, or record-prep slice after rechecking current source coverage.
+
 ## 2026-06-08 19:26 KST - Post-Push NCC Nausea Meal-Environment Verification
 
 - Current Goal:
