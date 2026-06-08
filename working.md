@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:44 KST - Final NCC Dry-Mouth Moist-Food Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center dry-mouth moist-food exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `39ee07f` (`Add NCC dry-mouth moist-food guidance`).
+  - Post-push verification log commit pushed: `9aad0e1` (`Log NCC dry-mouth moist-food verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `9aad0e100eec40008ede22a8cbea8994f7844780`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 237 tests.
+  - PASS final coverage grep: `rg -n "삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다|moist-food|소스나 드레싱으로 촉촉한|NCC Dry-Mouth Moist-Food" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 00:43 KST - Post-Push NCC Dry-Mouth Moist-Food Verification
 
 - Current Goal:
