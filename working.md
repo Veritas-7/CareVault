@@ -1,5 +1,23 @@
 # CareVault Working Notes
 
+## 2026-06-09 02:48 KST - Final Runtime Port Blocker After NCC Weight-Loss Carbohydrate Snack Log
+
+- Current Goal:
+  - Record the final runtime cleanup check outcome after pushing the National Cancer Information Center weight-loss carbohydrate snack verification log.
+- Result:
+  - Final log commit pushed: `4c38389` (`Log NCC weight-change carbohydrate snack verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `4c3838981aa34d476bb6de16f071a77350580758`.
+- Verification:
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 253 tests.
+  - PASS final coverage grep: `rg -n "탄수화물이 많이 포함된 간식|carbohydrate snack|탄수화물 간식 활용|NCC Weight-Change Weight-Loss Carbohydrate" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+  - BLOCKED final runtime cleanup: `npm run runtime:doctor` failed because `127.0.0.1:1420` is occupied by PID `93251`, `node /Users/wj/Ai/System/10_Projects/PromptVault/node_modules/.bin/vite --host 127.0.0.1`, whose cwd is `/Users/wj/Ai/System/10_Projects/PromptVault`. This CareVault session did not terminate that unrelated PromptVault dev server.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - CareVault source/test/build coverage is complete for this slice, but the final runtime-cleanliness check is blocked by an unrelated PromptVault server occupying CareVault's port `1420`.
+- Next Steps:
+  - Push this blocker log, then run final sync, coverage, and focused-test checks; do not stop PromptVault without explicit user approval.
+
 ## 2026-06-09 02:47 KST - Post-Push NCC Weight-Change Weight-Loss Carbohydrate Snack Verification
 
 - Current Goal:
