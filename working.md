@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 21:07 KST - Final NCC Diarrhea Caffeine Limit Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center diarrhea caffeine-limit exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `036ef59` (`Add NCC diarrhea caffeine limit guidance`).
+  - Post-push verification log commit pushed: `bbb4033` (`Log NCC diarrhea caffeine limit verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `bbb403344028369b93ea9e3625d0bdcd667288fe`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`
+- Issues:
+  - No blocking issue remains for this source sentence slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 21:06 KST - Post-Push NCC Diarrhea Caffeine Limit Verification
 
 - Current Goal:
