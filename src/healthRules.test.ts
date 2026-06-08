@@ -4068,6 +4068,39 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC dry-mouth soft-blended food source sentence", () => {
+    const sourceSentence = "부드럽고 곱게 간 식품을 먹도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDryMouthDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증",
+    );
+    expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
+      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 입안 건조증 시 부드럽고 곱게 간 식품 후보",
+      sourceId: "nccDryMouthDiet",
+    });
+    expect(terms).not.toContain("경우에 따라서는 믹서로 곱게 갈도록 합니다.");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC nausea easier foods and nausea-triggering food examples", () => {
     const assessment = assessCancerFood(
       "샤베트, 복숭아통조림, 맑은 유동식, 얼음조각, 기름진 음식, 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식",
