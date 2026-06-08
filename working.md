@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 08:59 KST - NCC Immune-Low Purchase Safety Source Wording
+
+- Current Goal:
+  - Add exact National Cancer Information Center immune-low purchase-safety source wording to CareVault's built-in cancer food-safety matching.
+- Context:
+  - Continued from clean/synced CareVault state after `320dca030a3d4cb820d98392d1199bb24fff68d9`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept freshness, small-quantity purchase, expiry-date, and direct-ground-meat purchase wording as immune-low food-safety support, while ground-meat contamination possibility remains a care-team `risk` check.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The food-purchase section says not to buy food in bulk for freshness, to buy small quantities, to check food expiration dates, to buy ground meat from a place that grinds it directly, and explains contamination risk from increased meat surface area during grinding.
+  - Applied the source only as immune-low food-purchase safety record support.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `신선도 유지를 위해 음식은 대량 구입하시지 마시고 소량씩 구입해서 드시기 바랍니다`, `식품의 유통기한을 꼭 확인합니다`, `갈은 고기를 살 경우에는 직접 갈아주는 곳에서 구입합니다`, and `가는 과정에서 고기의 표면적이 넓어져 세균 등에 오염될 가능성이 커지기 때문입니다`, including source evidence and guards against collapsing to shorter summary terms.
+  - `src/healthRules.ts`: added the longer NCC purchase-safety source wording to the visible balanced guide card, supportive purchase-safety matching terms, and the care-team ground-meat contamination possibility term.
+  - `README.md`: documented the expanded NCC immune-low purchase-safety source wording.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source wording collapsed to `신선도 유지`, `소량씩 구입`, `갈은 고기`, and `직접 갈아주는 곳에서 구입`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 116 tests.
+  - PASS full tests: `npm test` => 64 files / 681 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `320dca0118b27f57a2683ffa38ca42b4cd814fba`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 08:54 KST - Final NCC Immune-Low Cooking Doneness Log
 
 - Current Goal:

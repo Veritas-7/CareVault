@@ -3451,6 +3451,76 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low purchase-safety source wording", () => {
+    const assessment = assessCancerFood(
+      "신선도 유지를 위해 음식은 대량 구입하시지 마시고 소량씩 구입해서 드시기 바랍니다, 식품의 유통기한을 꼭 확인합니다, 갈은 고기를 살 경우에는 직접 갈아주는 곳에서 구입합니다, 가는 과정에서 고기의 표면적이 넓어져 세균 등에 오염될 가능성이 커지기 때문입니다",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "신선도 유지를 위해 음식은 대량 구입하시지 마시고 소량씩 구입해서 드시기 바랍니다",
+      "식품의 유통기한을 꼭 확인합니다",
+      "갈은 고기를 살 경우에는 직접 갈아주는 곳에서 구입합니다",
+      "가는 과정에서 고기의 표면적이 넓어져 세균 등에 오염될 가능성이 커지기 때문입니다",
+    ]);
+    for (const term of [
+      "신선도 유지를 위해 음식은 대량 구입하시지 마시고 소량씩 구입해서 드시기 바랍니다",
+      "식품의 유통기한을 꼭 확인합니다",
+      "갈은 고기를 살 경우에는 직접 갈아주는 곳에서 구입합니다",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 식품 구입 신선도·소량 구입 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    expect(
+      matchesByTerm["가는 과정에서 고기의 표면적이 넓어져 세균 등에 오염될 가능성이 커지기 때문입니다"],
+    ).toMatchObject({
+      level: "risk",
+      reason: "면역저하 시 갈아둔 고기 오염 가능성 확인",
+      sourceId: "nccImmuneLowDiet",
+    });
+    for (const genericTerm of [
+      "신선도 유지",
+      "유통기한 꼭 확인",
+      "직접 갈아주는 곳에서 구입",
+      "갈은 고기",
+      "가는 과정에서 오염 가능",
+    ]) {
+      expect(terms).not.toContain(genericTerm);
+    }
+    expect(balancedGuideText).toContain(
+      "신선도 유지를 위해 음식은 대량 구입하시지 마시고 소량씩 구입해서 드시기 바랍니다",
+    );
+    expect(balancedGuideText).toContain(
+      "갈은 고기를 살 경우에는 직접 갈아주는 곳에서 구입합니다",
+    );
+    expect(careTeamGuideText).toContain(
+      "가는 과정에서 고기의 표면적이 넓어져 세균 등에 오염될 가능성이 커지기 때문입니다",
+    );
+    expect(
+      formatFoodMatchEvidence(
+        matchesByTerm["식품의 유통기한을 꼭 확인합니다"],
+      ),
+    ).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low room-temperature transport and immediate refrigeration wording", () => {
     const assessment = assessCancerFood(
       "30분 이상 상온에서 운반, 곧바로 냉장고에 넣어 차갑게, 상온 운반 후 즉시 냉장",
