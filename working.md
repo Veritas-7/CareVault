@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 17:32 KST - Post-Push NCC Nausea Do-Not-Force Intake Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center nausea do-not-force intake source sentence slice.
+- Result:
+  - Source commit pushed: `45de122` (`Add NCC nausea intake guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `45de1226e94a484e3b4e25ce1d9f0dc935665ce9`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 746 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 17:28 KST - NCC Nausea Do-Not-Force Intake Source Sentence
 
 - Current Goal:
