@@ -1,6 +1,25 @@
 # CareVault Working Notes
 
-## 2026-06-08 19:22 KST - PENDING NCC Nausea Meal-Environment Source Sentence
+## 2026-06-08 19:26 KST - Post-Push NCC Nausea Meal-Environment Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center nausea meal-environment source sentence slice.
+- Result:
+  - Source commit pushed: `c85e5e7` (`Add NCC nausea meal-environment guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `c85e5e742105ba35726a36aeea0110417a81718b`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 761 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
+## 2026-06-08 19:22 KST - NCC Nausea Meal-Environment Source Sentence
 
 - Current Goal:
   - Add exact National Cancer Information Center nausea source guidance for: `음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다.`
@@ -34,7 +53,7 @@
 - Issues:
   - No new blocking issue found before edits.
 - Next Steps:
-  - Add RED test coverage, implement the exact source-backed matcher and guide item, then run focused and pre-push gates.
+  - Commit and push the source slice, then run post-push verification.
 
 ## 2026-06-08 19:18 KST - Final NCC Nausea Hunger-Before-Eating Log
 
