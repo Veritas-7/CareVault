@@ -138,6 +138,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC mouth-pain soft-moist/easy-chew/soft-cooking-small-size/blended-food/ice-chip/hot-food-temperature/irritating-food-drink source sentences and soft/irritating food matching for 부드럽고 촉촉한 음식을 준비합니다./씹고 삼키기 쉬운 음식을 먹습니다./요리를 할 때는 부드럽고 연해질 때까지 하도록 하며, 음식을 작은 크기로 자릅니다./경우에 따라서는 믹서로 곱게 갈도록 합니다./얼음조각을 먹는 것도 도움이 됩니다./뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다./입안을 자극하는 음식이나 음료는 피하도록 합니다./흰죽/닭죽/호박죽/쌀미음/바나나/수박/과일통조림/토마토주스/토스트/크래커/말린 음식
 - NCC mouth-pain porridge examples source-line matching for 죽류 : 흰죽, 닭죽, 고기죽, 전복죽, 호박죽, 야채죽, 계란죽 등
 - NCC mouth-pain thin-rice-gruel examples source-line matching for 미음 : 쌀미음, 조미음, 잣미음, 깨미음, 녹두미음 등
+- NCC mouth-pain soft meat-fish examples source-line matching for 고기나 생선 : 고기는 부드럽게 조리하고, 생선은 곱게 다지거나 갈아서
 - NCC mouth-pain soft vegetable examples source-line matching for 채소 : 부드러운 야채를 푹 익히거나 데쳐서
 - NCC mouth-pain non-sour fruit examples source-line matching for 과일 : 바나나, 배, 수박, 과일통조림 등과 같이 시지 않은 과일
 - NCC dry-mouth nearby-water/broth-soaking/soft-blended-food/moist-food/meal-sip-straw/saliva-candy-gum/sweet-sour-caution/moisture and saliva-stimulation matching for 가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다./음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다./부드럽고 곱게 간 식품을 먹도록 합니다./삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다./식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다./딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다./아주 달거나 신음식을 먹으면 침분비가 많아집니다. 단, 입안이 헐거나 목구멍이 아플 경우에는 피하도록 합니다./물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기

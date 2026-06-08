@@ -3704,6 +3704,43 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain soft meat-fish examples source line", () => {
+    const sourceLine = "고기나 생선 : 고기는 부드럽게 조리하고, 생선은 곱게 다지거나 갈아서";
+    const assessment = assessCancerFood(sourceLine);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceLine]);
+    expect(matchesByTerm[sourceLine]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 입과 목 통증 시 부드러운 고기·생선 예시 후보",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(terms).not.toContain("치료 중 단백질 반찬 충분히");
+    expect(terms).not.toContain("입맛 변화 생선");
+    expect(terms).not.toContain("고기나 생선요리에 향이 좋은 양념류(와인, 레몬즙 등)나 새콤달콤한 소스를 사용합니다.");
+    expect(terms).not.toContain("간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다.");
+    expect(terms).not.toContain("고기나 생선즙이 떨어지지 않도록 보관");
+    expect(balancedGuideText).toContain(sourceLine);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceLine])).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC mouth-pain soft-moist source sentence", () => {
     const sourceSentence = "부드럽고 촉촉한 음식을 준비합니다.";
     const assessment = assessCancerFood(sourceSentence);
