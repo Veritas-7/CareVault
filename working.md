@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 23:40 KST - Final NCC Vomiting Active-Intake Restriction Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center vomiting active-intake restriction exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `6438505` (`Add NCC vomiting intake restriction guidance`).
+  - Post-push verification log commit pushed: `5a64ae2` (`Log NCC vomiting intake restriction verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `5a64ae2fba97b40d4e7c010b2992b2f08c6554c0`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 구토`, `https://www.cancer.go.kr/lay1/S1T479C482/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 23:39 KST - Post-Push NCC Vomiting Active-Intake Restriction Verification
 
 - Current Goal:
