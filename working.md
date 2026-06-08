@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:35 KST - PENDING NCC Weight-Change Weight-Loss Namul Oil Calorie Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `나물요리 : 볶거나 무침을 할 때 식용유, 참기름, 들기름 등을 넉넉히 사용한다.`
+- Context:
+  - Continued from clean/synced CareVault state at `dfe347ae8f51f7e6802b04aa7664b09fdcc673db`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread goal still points to `/Users/wj/Ai/System/10_Projects/CareVault`.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the calorie/protein source sentence, rice/porridge/snack examples, bread/rice-cake and potato-butter calorie examples, carbohydrate-snack sentence, protein-snack sentence, and protein-snack examples phrase, but not yet the exact namul oil cooking-method phrase.
+  - Existing `nccTreatmentDiet` coverage includes a general treatment-diet sentence about using oils in stir-fry or namul seasoning; this slice should preserve the exact weight-change source phrase without collapsing into that general treatment-nutrient guidance.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss calorie supplementation cooking-method changes it lists `나물요리 : 볶거나 무침을 할 때 식용유, 참기름, 들기름 등을 넉넉히 사용한다.`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss namul oil calorie examples phrase, source evidence, balanced guide text, and guard checks against collapsing into `나물` or general `nccTreatmentDiet` oil-in-namul guidance.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the examples phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss namul oil calorie examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase collapsed into `나물` instead of preserving the exact NCC weight-loss namul oil calorie examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 261 tests.
+  - PASS source/diff checks: `rg -n "나물요리|namul oil|나물 열량 보충|NCC Weight-Change Weight-Loss Namul" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `dfe347ae8f51f7e6802b04aa7664b09fdcc673db`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 826 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 78 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current runtime blocker observed at the last check.
+- Next Steps:
+  - Run full GitHub/private repo preflight, full tests, typecheck, build, staged secret scan, then commit and push.
+
 ## 2026-06-09 03:34 KST - Post-Push NCC Weight-Change Weight-Loss Potato Butter Calorie Examples Verification
 
 - Current Goal:
