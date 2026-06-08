@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:56 KST - Final NCC Taste-Change Metallic Taste Citrus Caution Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center taste-change metallic taste citrus caution exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `90bdc31` (`Add NCC taste-change metallic taste guidance`).
+  - Post-push verification log commit pushed: `c2adff6` (`Log NCC taste-change metallic taste verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `c2adff6f1ec2ca5d495c27a8d45dddb9b9f5504e`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 246 tests.
+  - PASS final coverage grep: `rg -n "신맛이 금속성의 맛|metallic-taste-citrus-caution|금속성 맛 신맛 식품·입목 통증 주의 후보|NCC Taste-Change Metallic" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입맛의 변화`, `https://www.cancer.go.kr/lay1/S1T479C484/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 01:55 KST - Post-Push NCC Taste-Change Metallic Taste Citrus Caution Verification
 
 - Current Goal:
