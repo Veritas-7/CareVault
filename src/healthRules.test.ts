@@ -4033,6 +4033,41 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC dry-mouth sweet-sour caution source sentence", () => {
+    const sourceSentence =
+      "아주 달거나 신음식을 먹으면 침분비가 많아집니다. 단, 입안이 헐거나 목구멍이 아플 경우에는 피하도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDryMouthDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증",
+    );
+    expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
+      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 입안 건조증 시 단맛·신맛 침 분비와 구강·목 통증 시 회피 확인 후보",
+      sourceId: "nccDryMouthDiet",
+    });
+    expect(terms).not.toContain("매우 단 음식");
+    expect(terms).not.toContain("사탕, 쿠키 또는 케익 등과 같이 매우 단 음식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC nausea easier foods and nausea-triggering food examples", () => {
     const assessment = assessCancerFood(
       "샤베트, 복숭아통조림, 맑은 유동식, 얼음조각, 기름진 음식, 매우 단 음식, 향이 강하거나 뜨거운 음식, 이상한 냄새가 나는 음식",
