@@ -6627,6 +6627,46 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC weight-change weight-gain boil steam cooking source sentence", () => {
+    const sourceSentence = "끓이고 찌는 형태의 요리방법을 이용합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(foodGuidanceSources.nccWeightChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 체중증가 시 끓이고 찌는 조리방법 후보",
+      sourceId: "nccWeightChangeDiet",
+    });
+    expect(terms).not.toContain("체중증가 고열량 간식");
+    expect(terms).not.toContain("체중증가 청량 음료");
+    expect(terms).not.toContain("체중증가 과자류");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(limitGuideText).toContain("가능한 고열량의 간식은 먹지 않도록 합니다.");
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC weight-change weight-gain added butter mayo sweetener limit source sentence", () => {
     const sourceSentence = "버터, 마요네즈, 감미료 등을 추가로 사용하지 않도록 합니다.";
     const assessment = assessCancerFood(sourceSentence);

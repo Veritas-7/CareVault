@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 02:37 KST - PENDING NCC Weight-Change Weight-Gain Boil Steam Cooking Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source guidance for: `끓이고 찌는 형태의 요리방법을 이용합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `2b6be5006553ed437cd4bb0ecd72047dc82dfe34`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage includes weight-loss calorie/protein support, weight-gain cause consultation, balanced food choices, high-sodium/high-calorie limits, added butter/mayo/sweetener limits, and high-calorie snack limits, but does not yet preserve the exact source sentence recommending boiling/steaming style cooking methods.
+  - This is a recommended lower-fat cooking method, not a food limit by itself, so it should be preserved as `ok` and exposed in the existing weight-gain balanced food-choice guide item.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as weight-gain balanced cooking-method guidance, not diagnosis, treatment, or individual weight-control prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-gain management methods it lists using boiling and steaming style cooking methods and notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-gain boil/steam cooking method source sentence, source evidence, balanced guide text, and guard checks against collapsing into nearby weight-gain limit examples.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the source sentence in the existing weight-gain balanced food-choice guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-gain boil/steam cooking exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral` instead of preserving the exact NCC sentence as source-backed balanced cooking-method guidance.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 252 tests.
+  - PASS source/diff checks: `rg -n "끓이고 찌는 형태|boil/steam cooking|boil steam cooking|끓이고 찌는 조리방법|NCC Weight-Change Weight-Gain Boil" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `2b6be5006553ed437cd4bb0ecd72047dc82dfe34`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 817 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 81 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - Runtime cleanliness may still be blocked by an unrelated PromptVault Vite dev server on `127.0.0.1:1420`; do not stop it from this CareVault slice.
+- Next Steps:
+  - Add the RED test, implement the exact source-backed `ok` matcher and balanced guide text, then run focused/full verification before commit and push.
+
 ## 2026-06-09 02:35 KST - Post-Push NCC Weight-Change Weight-Gain High-Calorie Snack Limit Verification
 
 - Current Goal:
