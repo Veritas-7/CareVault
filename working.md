@@ -1,5 +1,42 @@
 # CareVault Working Notes
 
+## 2026-06-08 20:11 KST - PENDING NCC Nausea Toast-Cracker-Yogurt-Sherbet Source Line
+
+- Current Goal:
+  - Add exact National Cancer Information Center nausea source guidance for: `토스트, 크래커, 요거트, 샤베트`
+- Context:
+  - Continued from clean/synced CareVault state at `9704006465d3af5cd7f539807c6c3c67f0104940`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `토스트`, `크래커`, and `요거트` coverage is duplicated or conflicts with other source contexts; this slice preserves only the exact NCC nausea source line as `nccNauseaDiet` support without changing individual term behavior.
+  - Using TDD and keeping this as source-backed nausea low-burden food support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`; it lists `토스트, 크래커, 요거트, 샤베트` among comparatively low-burden foods for nausea.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact source line does not get downgraded by individual `토스트`/`크래커` watch matches or collapse to generic `요거트`/`샤베트`.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher before the individual terms and exposed the exact line in the balanced guide examples.
+  - `README.md`: documented expanded NCC nausea toast-cracker-yogurt-sherbet exact-source line coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source line assessed as `watch`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 202 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `9704006465d3af5cd7f539807c6c3c67f0104940`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 767 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS staged file list: `git diff --cached --name-only` returned only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage explicit source/log paths, run staged checks, then commit and push the source slice.
+
 ## 2026-06-08 20:08 KST - Final NCC Nausea Soft Fruit-Vegetable Log
 
 - Current Goal:
