@@ -5361,6 +5361,46 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC vomiting active intake restriction and clear-liquid source sentence", () => {
+    const sourceSentence =
+      "구토증상이 있는 경우 먹거나 마시지 않도록 합니다. 구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccVomitingDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 구토",
+    );
+    expect(foodGuidanceSources.nccVomitingDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 구토 중 섭취 중단 후 맑은 유동식 단계적 증량 확인 후보",
+      sourceId: "nccVomitingDiet",
+    });
+    expect(terms).not.toContain("구토증상이 있는 경우 먹거나 마시지 않도록 합니다.");
+    expect(terms).not.toContain(
+      "구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다.",
+    );
+    expect(terms).not.toContain("구토 조절 후 물");
+    expect(terms).not.toContain("구토 조절 후 육수");
+    expect(terms).not.toContain("구토 맑은 유동식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 구토 - https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC vomiting soft-food general-meal source sentence", () => {
     const sourceSentence =
       "맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다. 우유를 소화시키기 힘들면 우유가 들어있지 않은 제품을 이용하도록 합니다.";
