@@ -66,6 +66,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC weight-change weight-loss carbohydrate snack sentence matching for 지방보다는 탄수화물이 많이 포함된 간식을 드시면 포만감이 빨리 사라지므로 더 편안함을 느낄 수 있다
 - NCC weight-change weight-loss carbohydrate snack examples phrase matching for 사탕, 젤리, 크래커, 빵류, 과일, 주스 등
 - NCC weight-change weight-loss meat fruit juice cooking examples phrase matching for 고기를 과일 주스에 담그거나 과일 통조림과 함께 조리한다
+- NCC weight-change weight-loss meat bitter-taste seasoning examples phrase matching for 마늘, 양파, 고추장, 카레, 케찹 등을 사용하여 고기의 쓴맛을 제거한다
 - NCC weight-change weight-loss protein snack sentence matching for 간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다
 - NCC weight-change weight-loss protein snack examples phrase matching for 만두, 피자, 샌드위치, 계란샐러드, 카스테라 등
 - NCC weight-change weight-gain cause consultation sentence matching for 그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다

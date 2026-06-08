@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 04:15 KST - PENDING NCC Weight-Change Weight-Loss Meat Bitter Taste Seasoning Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `마늘, 양파, 고추장, 카레, 케찹 등을 사용하여 고기의 쓴맛을 제거한다.`
+- Context:
+  - Continued from clean/synced CareVault state at `24bf4dfa5c991b481a14cf89a339e5553d013da6`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the weight-loss meat fruit juice cooking example immediately above this phrase, but not yet the exact bitter-taste seasoning example.
+  - Existing taste-change coverage includes a separate source sentence for aromatic seasoning and sweet-sour sauce in meat/fish dishes plus terms such as `레몬즙 양념`, `새콤달콤한 소스`, and `고기 싫을 때 생선`; this slice should preserve the exact weight-change protein-supplement context without collapsing into that neighboring taste-change source.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss protein supplementation it lists `마늘, 양파, 고추장, 카레, 케찹 등을 사용하여 고기의 쓴맛을 제거한다.`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss meat bitter-taste seasoning examples phrase, source evidence, balanced guide text, and guard checks against collapsing into taste-change seasoning terms, `고기 싫을 때 생선`, or generic `매운 음식`.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss meat bitter-taste seasoning examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase was not matched and the assessment stayed `neutral` instead of preserving the exact NCC weight-loss meat bitter-taste seasoning examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 267 tests.
+  - PASS source/diff checks: `rg -n "마늘, 양파, 고추장|meat bitter|고기 쓴맛|NCC Weight-Change Weight-Loss Meat Bitter" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `24bf4dfa5c991b481a14cf89a339e5553d013da6`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.05 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 832 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 85 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Re-stage `working.md`, rerun staged checks, then commit and push.
+
 ## 2026-06-09 04:13 KST - Post-Push NCC Weight-Change Weight-Loss Meat Fruit Juice Cooking Examples Verification
 
 - Current Goal:
