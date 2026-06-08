@@ -53,6 +53,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC appetite-loss special-nutrition-drink sentence matching for 식사섭취가 계속적으로 힘들 경우에는 특수영양 보충음료를 이용합니다. (예) 그린비아, 뉴케어, 메디푸드, 엔슈어 등
 - NCC appetite-loss snack-liquid sentence matching for 간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 합니다
 - NCC appetite-loss frequent-snack-access sentence matching for 조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다. (예) 과자, 빵, 과일, 우유 및 유제품, 두유, 치즈 등
+- NCC weight-change weight-gain cause consultation sentence matching for 그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다
 - NCC diarrhea clear-liquid 12-24h sentence matching for 갑자기 설사할 경우 12~24시간 동안은 맑은 유동식만 먹도록 합니다. 이는 장을 쉬게 해 주며 설사로 손실된 수분을 보충해 줍니다
 - NCC diarrhea room-temperature drink sentence matching for 너무 뜨겁거나 차가운 식품이나 음료는 피하고, 대신 상온의 음료를 마시도록 합니다
 - NCC diarrhea caffeine-limit sentence matching for 커피와 초콜릿 등과 같은 카페인을 함유한 식품과 음료는 제한합니다

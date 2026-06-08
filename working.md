@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-09 02:05 KST - PENDING NCC Weight-Change Weight-Gain Cause Consultation Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source guidance for: `그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `aaff783ce7234fe98bcc64f10315710c69bfa184`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage includes weight-loss example foods and weight-gain high-sodium/high-calorie limit examples, but does not yet preserve the exact source boundary that weight gain should not trigger immediate weight control before clinician cause review.
+  - `DESIGN.md` was re-read; this is shared TypeScript medical-rule data and should remain source-backed, Korean, clinical, and non-diagnostic.
+  - Using TDD and keeping this as source-backed clinician consultation guidance, not diagnosis, treatment, or individual weight-control prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; it states `그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다.` in the weight-gain guidance paragraph.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-gain cause consultation source sentence, source evidence, care-team guide text, and guard checks against collapsing into nearby high-sodium/high-calorie weight-gain food examples.
+  - `src/healthRules.ts`: added the exact source-backed `risk` matcher and exposed the source sentence in the care-team guide examples.
+  - `README.md`: documented expanded NCC weight-change weight-gain cause consultation exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral` instead of preserving the exact NCC sentence as source-backed clinician consultation guidance.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 247 tests.
+  - PASS source/diff checks: `rg -n "체중이 증가하였다고 바로 체중조절|weight-gain cause consultation|체중증가 시 원인 확인 의료진 상담|NCC Weight-Change Weight-Gain" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `aaff783ce7234fe98bcc64f10315710c69bfa184`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 812 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 83 insertions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 01:56 KST - Final NCC Taste-Change Metallic Taste Citrus Caution Log
 
 - Current Goal:
