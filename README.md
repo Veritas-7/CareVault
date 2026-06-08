@@ -65,6 +65,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC diarrhea small frequent meal sentence matching for 장이 약해져 있으므로 식사는 조금씩 자주 먹습니다
 - NCC diarrhea soft digestible food sentence matching for 소화되기 쉽고 부드러운 음식을 먹습니다
 - NCC diarrhea clinician-consultation sentence matching for 설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 합니다
+- NCC constipation hydration source sentence matching for 수분을 충분히 섭취합니다.(하루에 8~10컵 이상) 이는 변을 부드럽게 합니다
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
