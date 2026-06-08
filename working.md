@@ -1,6 +1,25 @@
 # CareVault Working Notes
 
-## 2026-06-08 19:39 KST - PENDING NCC Nausea Trigger-Check Consultation Source Sentence
+## 2026-06-08 19:44 KST - Post-Push NCC Nausea Trigger-Check Consultation Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center nausea trigger-check consultation source sentence slice.
+- Result:
+  - Source commit pushed: `0b03e77` (`Add NCC nausea trigger-check consultation guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `0b03e77894646430c32d530bc5ddb1f3ee3af04e`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 763 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
+## 2026-06-08 19:39 KST - NCC Nausea Trigger-Check Consultation Source Sentence
 
 - Current Goal:
   - Add exact National Cancer Information Center nausea source guidance for: `메스꺼움이 언제, 무엇 때문에 나타나는지를 체크하고 의사선생님이나 간호사와 상의합니다.`
@@ -35,7 +54,7 @@
 - Issues:
   - No new blocking issue found before edits.
 - Next Steps:
-  - Add RED coverage first, confirm it fails because the source sentence is currently `neutral`, then add the minimal guide item and exact care-team matcher.
+  - Source slice committed and pushed as `0b03e77`; record post-push verification in the newer section.
 
 ## 2026-06-08 19:35 KST - Final NCC Nausea Water-And-Clothing Log
 
