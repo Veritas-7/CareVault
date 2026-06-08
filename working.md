@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 16:11 KST - NCC After-Treatment Fruit Vegetable Frequency Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center after-treatment source guidance for: `다양한 종류와 색깔을 선택하고 채소는 매끼 2~3가지 이상, 과일은 매일 1~2회 섭취합니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `0c9f821d9afd69ca4b133df674f5a8481965fdbe`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as after-treatment balanced-food guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center PDF `치료 후 건강한 식생활`, `https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf`; it gives concrete after-treatment fruit and vegetable frequency guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC after-treatment fruit and vegetable frequency source sentence, source evidence, and guard checks against collapsing into generic fruit/vegetable terms.
+  - `src/healthRules.ts`: added the exact NCC after-treatment fruit and vegetable frequency source sentence to the balanced guide text, examples, and source-backed `nccAfterTreatmentHealthyEating` matching terms.
+  - `README.md`: documented expanded NCC after-treatment fruit and vegetable frequency exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence was not matched and returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 172 tests.
+  - PASS full tests: `npm test` => 64 files / 737 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `0c9f821d9afd69ca4b133df674f5a8481965fdbe`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.14 GB and found no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 16:09 KST - Final NCC After-Treatment Diet Difficulty Consultation Log
 
 - Current Goal:
