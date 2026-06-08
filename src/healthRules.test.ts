@@ -1538,6 +1538,38 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC balanced healthy-eating source sentence", () => {
+    const sourceSentence =
+      "건강식이란 균형 잡힌 식사를 말합니다. 즉, 다양한 음식을 골고루 먹는 것입니다. 그래야 충분한 열량과 단백질, 비타민과 무기질을 섭취하여 좋은 영양 상태를 유지할 수 있습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+      sourceId: "nccTreatmentRightEating",
+    });
+    expect(terms).not.toContain("치료 중 균형 잡힌 식사");
+    expect(terms).not.toContain("여러 가지 음식을 골고루");
+    expect(terms).not.toContain("치료 중 충분한 열량과 단백질");
+    expect(terms).not.toContain("치료 중 비타민 및 무기질");
+    expect(terms).not.toContain("치료 중 충분한 열량 단백질 비타민 무기질");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 올바르게 식사하기 - https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC treatment right-eating calorie nutrient and rumor-food guidance", () => {
     const assessment = assessCancerFood(
       "치료 중 적정 열량과 필수 영양소, 치료 중 충분한 열량 단백질 비타민 무기질, 치료 중 고칼로리 고단백질 음식, 치료 중 좋아하는 음식과 여러 식품, 치료 중 다양한 음식 골고루, 몸에 좋다고 소문난 식품, 특정 식품이나 영양소 편중, 백혈구 수치를 올리는 특별한 음식",
