@@ -68,6 +68,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC weight-change weight-loss meat fruit juice cooking examples phrase matching for 고기를 과일 주스에 담그거나 과일 통조림과 함께 조리한다
 - NCC weight-change weight-loss meat bitter-taste seasoning examples phrase matching for 마늘, 양파, 고추장, 카레, 케찹 등을 사용하여 고기의 쓴맛을 제거한다
 - NCC weight-change weight-loss egg protein examples phrase matching for 계란 : 계란후라이, 계란찜, 수란, 오믈렛, 메추리알조림 등
+- NCC weight-change weight-loss bean/tofu protein examples phrase matching for 콩, 두부 : 콩밥, 두유, 연두부찜, 두부조림, 된장찌개, 콩자반 등
 - NCC weight-change weight-loss protein snack sentence matching for 간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다
 - NCC weight-change weight-loss protein snack examples phrase matching for 만두, 피자, 샌드위치, 계란샐러드, 카스테라 등
 - NCC weight-change weight-gain cause consultation sentence matching for 그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다

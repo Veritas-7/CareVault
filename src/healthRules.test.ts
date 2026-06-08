@@ -7088,6 +7088,46 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC weight-change weight-loss bean tofu protein examples source phrase", () => {
+    const sourcePhrase = "콩, 두부 : 콩밥, 두유, 연두부찜, 두부조림, 된장찌개, 콩자반 등";
+    const assessment = assessCancerFood(sourcePhrase);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(foodGuidanceSources.nccWeightChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourcePhrase]);
+    expect(matchesByTerm[sourcePhrase]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 체중감소 시 콩·두부 단백질 예시 후보",
+      sourceId: "nccWeightChangeDiet",
+    });
+    expect(terms).not.toContain("체중감소 두유");
+    expect(terms).not.toContain("체중감소 두부조림");
+    expect(terms).not.toContain("치료 중 달걀 두부 우유");
+    expect(terms).not.toContain("입맛 변화 두부");
+    expect(terms).not.toContain("입맛 변화 콩");
+    expect(terms).not.toContain(
+      "간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다.",
+    );
+    expect(balancedGuideText).toContain(sourcePhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourcePhrase])).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC weight-change weight-loss protein snack source sentence", () => {
     const sourceSentence =
       "간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다.";
