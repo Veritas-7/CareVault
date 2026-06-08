@@ -56,6 +56,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC diarrhea clear-liquid 12-24h sentence matching for 갑자기 설사할 경우 12~24시간 동안은 맑은 유동식만 먹도록 합니다. 이는 장을 쉬게 해 주며 설사로 손실된 수분을 보충해 줍니다
 - NCC diarrhea room-temperature drink sentence matching for 너무 뜨겁거나 차가운 식품이나 음료는 피하고, 대신 상온의 음료를 마시도록 합니다
 - NCC diarrhea caffeine-limit sentence matching for 커피와 초콜릿 등과 같은 카페인을 함유한 식품과 음료는 제한합니다
+- NCC diarrhea dairy-lactose caution sentence matching for 우유 및 유제품을 먹을 때에는 주의합니다. 이는 우유에 들어있는 유당이 설사를 악화시킬 수 있기 때문입니다. 그러나 일반적으로 적은 양의 우유나 유제품은 소화시킬 수 있습니다
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히

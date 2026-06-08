@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 21:09 KST - PENDING NCC Diarrhea Dairy Lactose Caution Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center diarrhea source guidance for: `우유 및 유제품을 먹을 때에는 주의합니다. 이는 우유에 들어있는 유당이 설사를 악화시킬 수 있기 때문입니다. 그러나 일반적으로 적은 양의 우유나 유제품은 소화시킬 수 있습니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `af6614de71742fbe1f55347b70fed81902bc2e65`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC diarrhea coverage has `설사 우유 및 유제품` as a summarized example, but the exact official dairy/lactose caution sentence is not represented as a source sentence or README bullet.
+  - Using TDD and keeping this as diarrhea symptom food/drink caution support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`; it says to use caution with milk and dairy because lactose can worsen diarrhea, while noting small amounts are generally digestible.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact diarrhea dairy/lactose caution source sentence is currently ignored as `neutral`.
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher and exposed the exact sentence in the diarrhea limit guide examples.
+  - `README.md`: documented the expanded NCC diarrhea dairy-lactose exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 209 tests.
+  - PASS source/diff checks: `rg -n "유당이 설사를 악화|적은 양의 우유|dairy-lactose|우유·유제품 유당|우유 및 유제품을 먹을 때" README.md src/healthRules.ts src/healthRules.test.ts working.md` found only the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `af6614de71742fbe1f55347b70fed81902bc2e65`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 774 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS staged path check: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run diff/source checks and full pre-push gates, then stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`.
+
 ## 2026-06-08 21:07 KST - Final NCC Diarrhea Caffeine Limit Log
 
 - Current Goal:

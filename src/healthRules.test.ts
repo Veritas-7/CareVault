@@ -4872,6 +4872,47 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC diarrhea dairy lactose caution source sentence", () => {
+    const sourceSentence =
+      "우유 및 유제품을 먹을 때에는 주의합니다. 이는 우유에 들어있는 유당이 설사를 악화시킬 수 있기 때문입니다. 그러나 일반적으로 적은 양의 우유나 유제품은 소화시킬 수 있습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDiarrheaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 설사",
+    );
+    expect(foodGuidanceSources.nccDiarrheaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 설사 시 우유·유제품 유당 주의 확인 후보",
+      sourceId: "nccDiarrheaDiet",
+    });
+    expect(terms).not.toContain("설사 우유 및 유제품");
+    expect(terms).not.toContain(
+      "간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 합니다.",
+    );
+    expect(terms).not.toContain(
+      "조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다. (예) 과자, 빵, 과일, 우유 및 유제품, 두유, 치즈 등",
+    );
+    expect(terms).not.toContain("커피와 초콜릿 등과 같은 카페인을 함유한 식품과 음료는 제한합니다.");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 설사 - https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC diarrhea hydration soft-food and trigger examples", () => {
     const assessment = assessCancerFood(
       "설사 육수, 설사 스포츠 음료, 설사 바나나, 설사 으깬 감자, 설사 복숭아, 설사 토마토, 설사 흰죽, 설사 쌀미음, 설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",
