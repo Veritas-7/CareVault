@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 14:23 KST - Post-Push NCC Nutrients Protein Food Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center treatment-nutrients protein food example source sentence slice.
+- Result:
+  - Source commit pushed: `7b10394` (`Add NCC protein food guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `7b10394232aaf2f1398895b5f56df822e4c2f54c`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 721 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `영양소의 이해`, `https://www.cancer.go.kr/lay1/S1T471C473/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 14:19 KST - NCC Nutrients Protein Food Source Sentence
 
 - Current Goal:
