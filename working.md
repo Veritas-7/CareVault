@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:53 KST - Final NCC Dry-Mouth Broth-Soaking Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center dry-mouth broth-soaking exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `f7af08a` (`Add NCC dry-mouth broth-soaking guidance`).
+  - Post-push verification log commit pushed: `d1fd819` (`Log NCC dry-mouth broth-soaking verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `d1fd819b26a8b9d17baa72b252202bbf9e10fc3a`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 238 tests.
+  - PASS final coverage grep: `rg -n "음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다|broth-soaking|육수나 국물에 적셔|NCC Dry-Mouth Broth-Soaking" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 00:51 KST - Post-Push NCC Dry-Mouth Broth-Soaking Verification
 
 - Current Goal:
