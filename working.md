@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 02:23 KST - PENDING NCC Weight-Change Weight-Gain Added Butter Mayo Sweetener Limit Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source guidance for: `버터, 마요네즈, 감미료 등을 추가로 사용하지 않도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `839e82c5b06a6635e5d2416e2f54031a5cb64e46`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage includes weight-loss calorie/protein support, weight-gain cause consultation, high-sodium/high-calorie limits, and balanced food choices, but does not yet preserve the exact source sentence limiting added butter, mayonnaise, and sweeteners.
+  - The exact sentence can otherwise collapse into the shorter existing `버터` support matcher, so this slice should preserve the longer NCC weight-gain limit sentence as `watch`.
+  - `DESIGN.md` was re-read; this remains source-backed, Korean, clinical, and non-diagnostic food guidance.
+  - Using TDD and keeping this as weight-gain limit guidance, not diagnosis, treatment, or individual weight-control prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-gain management methods it lists avoiding additional butter, mayonnaise, and sweeteners.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-gain added butter/mayonnaise/sweetener limit source sentence, source evidence, limit guide text, and guard checks against collapsing into unrelated weight-gain examples.
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher and exposed the source sentence in the existing weight-gain limit guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-gain added butter/mayo/sweetener limit exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral` instead of preserving the exact NCC sentence as source-backed weight-gain limit guidance.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 250 tests.
+  - PASS source/diff checks: `rg -n "버터, 마요네즈, 감미료|added butter/mayo/sweetener|버터·마요네즈·감미료 추가 사용 제한|NCC Weight-Change Weight-Gain Added" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `839e82c5b06a6635e5d2416e2f54031a5cb64e46`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 815 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 76 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - Runtime cleanliness may still be blocked by an unrelated PromptVault Vite dev server on `127.0.0.1:1420`; do not stop it from this CareVault slice.
+- Next Steps:
+  - Add the RED test, implement the exact source-backed `watch` matcher and limit guide text, then run focused/full verification before commit and push.
+
 ## 2026-06-09 02:22 KST - Post-Push NCC Weight-Change Weight-Gain Balanced Food Choice Verification
 
 - Current Goal:

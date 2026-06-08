@@ -6627,6 +6627,41 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC weight-change weight-gain added butter mayo sweetener limit source sentence", () => {
+    const sourceSentence = "버터, 마요네즈, 감미료 등을 추가로 사용하지 않도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(foodGuidanceSources.nccWeightChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 체중증가 시 버터·마요네즈·감미료 추가 사용 제한 후보",
+      sourceId: "nccWeightChangeDiet",
+    });
+    expect(terms).not.toContain("버터");
+    expect(terms).not.toContain("체중증가 청량 음료");
+    expect(terms).not.toContain("체중증가 고열량 간식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC fatigue and depression meal support examples", () => {
     const assessment = assessCancerFood(
       "피로감 영양이 풍부한 음식, 피로감 하루 중 가장 좋은 시간에 많이 먹기, 피로감 휴식 후 먹기, 피로감 적은 양의 식사와 간식, 피로감 음식배달서비스, 우울 좋아하는 음식",
