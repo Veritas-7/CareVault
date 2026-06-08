@@ -4755,6 +4755,44 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC diarrhea clear-liquid 12-24h source sentence", () => {
+    const sourceSentence =
+      "갑자기 설사할 경우 12~24시간 동안은 맑은 유동식만 먹도록 합니다. 이는 장을 쉬게 해 주며 설사로 손실된 수분을 보충해 줍니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDiarrheaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 설사",
+    );
+    expect(foodGuidanceSources.nccDiarrheaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 설사 시 12~24시간 맑은 유동식 후보",
+      sourceId: "nccDiarrheaDiet",
+    });
+    expect(terms).not.toContain("맑은 유동식");
+    expect(terms).not.toContain("구토 맑은 유동식");
+    expect(terms).not.toContain("설사 육수");
+    expect(terms).not.toContain("설사 스포츠 음료");
+    expect(terms).not.toContain("메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 설사 - https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC diarrhea hydration soft-food and trigger examples", () => {
     const assessment = assessCancerFood(
       "설사 육수, 설사 스포츠 음료, 설사 바나나, 설사 으깬 감자, 설사 복숭아, 설사 토마토, 설사 흰죽, 설사 쌀미음, 설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",

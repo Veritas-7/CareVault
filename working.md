@@ -1,5 +1,42 @@
 # CareVault Working Notes
 
+## 2026-06-08 20:45 KST - PENDING NCC Diarrhea Clear-Liquid 12-24h Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center diarrhea source guidance for: `갑자기 설사할 경우 12~24시간 동안은 맑은 유동식만 먹도록 합니다. 이는 장을 쉬게 해 주며 설사로 손실된 수분을 보충해 줍니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `b3e375552651dc7cccf0175e98bace8afa91e251`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC diarrhea coverage handles hydration/electrolyte examples and trigger foods, but the acute 12~24-hour clear-liquid source sentence is not yet represented as an exact source sentence.
+  - Using TDD and keeping this as short-term symptom-specific source guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`; it says that for sudden diarrhea, 12~24 hours of clear liquids can rest the bowel and replenish fluid lost through diarrhea.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact diarrhea 12~24-hour clear-liquid source sentence is currently collapsed to the existing generic `맑은 유동식` chip.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the exact sentence in the diarrhea guide examples.
+  - `README.md`: documented expanded NCC diarrhea clear-liquid 12~24h exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence matched only `맑은 유동식`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 206 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `b3e375552651dc7cccf0175e98bace8afa91e251`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 771 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS staged file list: `git diff --cached --name-only` returned only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage explicit source/log paths, run staged checks, then commit and push the source slice.
+
 ## 2026-06-08 20:41 KST - Final NCC Nausea Room Ventilation Log
 
 - Current Goal:
