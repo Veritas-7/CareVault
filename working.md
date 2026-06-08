@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 20:41 KST - Final NCC Nausea Room Ventilation Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center nausea room-ventilation source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `b11baa3` (`Add NCC nausea room ventilation guidance`).
+  - Post-push verification log commit pushed: `fcb11d4` (`Log NCC nausea room ventilation verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `fcb11d4743f3e84f6930e8aaee19cc3e62fbb2e6`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No blocking issue remains for this source sentence slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 20:39 KST - Post-Push NCC Nausea Room Ventilation Verification
 
 - Current Goal:
