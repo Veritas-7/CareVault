@@ -2304,6 +2304,35 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy eating support principle source paragraph", () => {
+    const sourceSentence =
+      "식사는 암 치료의 보조 요법이라고 할 수 있을 만큼 중요합니다. 암환자에게 제일가는 식사 원칙은 '잘 먹는 것' 입니다. 이를 위해서는 환자의 식욕과 선호에만 의존할 수 없습니다. 건강을 위해 올바른 식사를 하도록 적극 도와주려는 보호자들의 의지가 필요합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 중 건강식 보호자 지원 후보",
+      sourceId: "nccTreatmentHealthyEatingTips",
+    });
+    expect(terms).not.toContain("치료 중 규칙적인 아침 점심 저녁");
+    expect(terms).not.toContain("치료 중 다양한 음식 골고루");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 건강식을 먹는 요령 - https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC regular meals and varied side dishes source sentence", () => {
     const sourceSentence = "규칙적으로 아침, 점심, 저녁 식사를 하며, 반찬을 골고루 먹습니다.";
     const assessment = assessCancerFood(sourceSentence);
