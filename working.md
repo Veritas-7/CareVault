@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 21:24 KST - PENDING NCC Diarrhea Fruit Peel Seed Fiber Source Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center diarrhea source guidance for: `생과일의 껍질, 씨, 끈적한 섬유소 부분`
+- Context:
+  - Continued from clean/synced CareVault state at `0b8d5acd98727a1a23b10f3ee3f8a1eca1bb21e6`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC diarrhea coverage has the summarized `설사 생과일 껍질` matcher and a normalized guide detail mention, but the exact official comma-separated source phrase is not represented as a source phrase or README bullet.
+  - Using TDD and keeping this as diarrhea symptom food limitation support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`; it lists fruit peel, seeds, and stringy fiber portions among foods to avoid when diarrhea is present.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact diarrhea fruit peel/seed/stringy-fiber source phrase is currently ignored as `neutral`.
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher and exposed the exact phrase in the diarrhea limit guide examples.
+  - `README.md`: documented the expanded NCC diarrhea fruit peel/seed/stringy-fiber exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 211 tests.
+  - PASS source/diff checks: `rg -n "생과일의 껍질|끈적한 섬유소|fruit peel|seed/stringy|생과일 껍질·씨" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `0b8d5acd98727a1a23b10f3ee3f8a1eca1bb21e6`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 776 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 73 insertions, 1 deletion before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run diff/source checks and full pre-push gates, then stage the explicit four changed paths.
+
 ## 2026-06-08 21:22 KST - Final NCC Diarrhea High-Fiber Vegetable Log
 
 - Current Goal:
