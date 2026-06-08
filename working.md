@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:48 KST - Post-Push NCC Taste-Change Seasoning Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center taste-change seasoning exact source sentence slice.
+- Result:
+  - Source commit pushed: `b896f40` (`Add NCC taste-change seasoning guidance`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `b896f40bac33935cd1707c9d3aeb87f2c01e312f`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 810 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입맛의 변화`, `https://www.cancer.go.kr/lay1/S1T479C484/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync/runtime/focused-test checks and add a final log entry.
+
 ## 2026-06-09 01:43 KST - PENDING NCC Taste-Change Seasoning Source Sentence
 
 - Current Goal:
