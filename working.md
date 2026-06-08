@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 06:06 KST - Post-Push NCC Mouth-Pain Non-Sour Fruit Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center mouth-pain non-sour fruit examples exact source line slice.
+- Result:
+  - Source commit pushed: `7ea3529` (`Add NCC mouth-pain fruit examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `7ea3529fa8791867261aa40f1f68e28831ca4dab`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 846 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`
+- Issues:
+  - No blocking issue remains for this source line slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 06:03 KST - PENDING NCC Mouth-Pain Non-Sour Fruit Examples Source Line
 
 - Current Goal:
