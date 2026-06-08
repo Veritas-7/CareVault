@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 13:50 KST - NCC Nutrients Fat Energy Source Sentence
+
+- Current Goal:
+  - Add the exact National Cancer Information Center treatment-nutrients fat energy-source sentence: `지방(fat)은 탄수화물과 같이 우리 몸에 열량을 공급하는 주요 에너지원으로 참기름, 들기름, 콩기름, 버터 등에 함유되어 있습니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `6792a96199b598f84a776efb1dc9120d44478761`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as treatment nutrition energy-context guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center `영양소의 이해`, `https://www.cancer.go.kr/lay1/S1T471C473/contents.do`; the fat section states the target energy-source sentence and lists 참기름, 들기름, 콩기름, and 버터 as examples.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC fat energy-source sentence, source evidence, and guard checks against collapsing into existing treatment-fat food examples.
+  - `src/healthRules.ts`: added the exact NCC fat energy-source sentence to the treatment nutrient guide text and source-backed `nccTreatmentNutrients` food-support matching terms.
+  - `README.md`: documented expanded NCC treatment nutrient fat energy-source matching coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new fat energy-source sentence stayed `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 152 tests.
+  - PASS full tests: `npm test` => 64 files / 717 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `6792a96199b598f84a776efb1dc9120d44478761`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 13:48 KST - Final NCC Nutrients Protein Role Log
 
 - Current Goal:
