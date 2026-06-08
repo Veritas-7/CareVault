@@ -8807,6 +8807,40 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC fatigue and depression favorite-food source sentence", () => {
+    const sourceSentence = "치료를 받지 않을 때에는 좋아하는 음식을 먹도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccFatigueDepressionDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 피로감과 우울",
+    );
+    expect(foodGuidanceSources.nccFatigueDepressionDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 피로감·우울 시 치료를 받지 않을 때 좋아하는 음식 후보",
+      sourceId: "nccFatigueDepressionDiet",
+    });
+    expect(terms).not.toContain("우울 좋아하는 음식");
+    expect(terms).not.toContain("피로감 음식배달서비스");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC fatigue and depression cause clinician discussion source sentence", () => {
     const sourceSentence =
       "만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.";

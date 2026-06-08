@@ -178,6 +178,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC fatigue/depression small-meal source sentence matching for 적은 양의 식사와 간식을 자주 먹습니다
 - NCC fatigue/depression family-friend help source sentence matching for 가족이나 친구의 도움을 받도록 합니다
 - NCC fatigue/depression food-delivery source sentence matching for 주변의 이용 가능한 음식배달서비스를 알아두고 이용합니다
+- NCC fatigue/depression favorite-food source sentence matching for 치료를 받지 않을 때에는 좋아하는 음식을 먹도록 합니다
 - NCC fatigue/depression cause clinician-discussion source-sentence clinical-check matching for 만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.
 - NCC appetite-loss snack and liquid-food matching for 식욕부진 간식/식욕부진 죽/식욕부진 미음/식욕부진 쥬스/식욕부진 주스/식욕부진 스프/특수영양 보충음료
 - NCC healthy-eating hot/spicy-food avoid matching for 너무 뜨겁거나 매운 음식의 섭취는 피합니다/너무 뜨겁거나 매운 음식 섭취 피하기
