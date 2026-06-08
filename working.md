@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 05:55 KST - Post-Push NCC Mouth-Pain Porridge Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center mouth-pain porridge examples exact source line slice.
+- Result:
+  - Source commit pushed: `c82f510` (`Add NCC mouth-pain porridge examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `c82f510ba60067d475230b73fa8d5933af94f2e3`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 844 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`
+- Issues:
+  - No blocking issue remains for this source line slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 05:51 KST - PENDING NCC Mouth-Pain Porridge Examples Source Line
 
 - Current Goal:
