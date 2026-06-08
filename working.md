@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 22:45 KST - Final NCC Constipation Food-Intake Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center constipation food-intake exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `b21cf69` (`Add NCC constipation food-intake guidance`).
+  - Post-push verification log commit pushed: `bf0774f` (`Log NCC constipation food-intake verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `bf0774f972856789a6ad2f188c7922b134a0909f`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 변비`, `https://www.cancer.go.kr/lay1/S1T479C487/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 22:44 KST - Post-Push NCC Constipation Food-Intake Verification
 
 - Current Goal:
