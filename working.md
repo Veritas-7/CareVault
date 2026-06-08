@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:24 KST - PENDING NCC Weight-Change Weight-Loss Bread/Rice-Cake Calorie Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `빵이나 떡 : 설탕, 꿀, 쨈, 버터, 땅콩버터 등을 발라 먹는다.`
+- Context:
+  - Continued from clean/synced CareVault state at `72ed2fda1e050143ae6d854f3ca431e8e4d79848`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the calorie/protein source sentence, rice examples phrase, porridge examples phrase, snack examples phrase, carbohydrate-snack sentence, protein-snack sentence, and protein-snack examples phrase, but not yet the exact bread/rice-cake calorie supplementation phrase.
+  - Existing prefixed examples include `체중감소 떡` and `체중감소 땅콩버터`; this slice should preserve the exact source phrase without collapsing into shorter chips or unrelated treatment-nutrient butter guidance.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss calorie supplementation cooking-method changes it lists `빵이나 떡 : 설탕, 꿀, 쨈, 버터, 땅콩버터 등을 발라 먹는다.`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss bread/rice-cake calorie examples phrase, source evidence, balanced guide text, and guard checks against collapsing into prefixed `체중감소 떡`/`체중감소 땅콩버터` or treatment-nutrient butter guidance.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the examples phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss bread/rice-cake calorie examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase evaluated as `neutral` instead of preserving the exact NCC weight-loss bread/rice-cake calorie examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 259 tests.
+  - PASS source/diff checks: `rg -n "빵이나 떡|bread/rice-cake|빵·떡 열량 보충|NCC Weight-Change Weight-Loss Bread" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `72ed2fda1e050143ae6d854f3ca431e8e4d79848`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 824 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 76 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current runtime blocker observed at the last check.
+- Next Steps:
+  - Run full GitHub/private repo preflight, full tests, typecheck, build, staged secret scan, then commit and push.
+
 ## 2026-06-09 03:20 KST - Post-Push NCC Weight-Change Weight-Loss Snack Examples Verification
 
 - Current Goal:
