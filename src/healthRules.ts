@@ -504,6 +504,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccAppetiteLossDiet"],
       },
       {
+        label: "식욕부진 시 간식·유동식 활용",
+        detail:
+          "국가암정보센터 식욕부진 자료는 간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 안내합니다.",
+        examples: "간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 합니다.",
+        sourceIds: ["nccAppetiteLossDiet"],
+      },
+      {
         label: "식욕부진 시 특수영양 보충음료",
         detail:
           "국가암정보센터 식욕부진 자료는 식사섭취가 계속적으로 힘들 경우에는 특수영양 보충음료를 이용할 수 있다고 안내하며, 그린비아·뉴케어·메디푸드·엔슈어 등을 예시로 제시합니다.",
@@ -1606,6 +1613,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   [
     "식사섭취가 계속적으로 힘들 경우에는 특수영양 보충음료를 이용합니다. (예) 그린비아, 뉴케어, 메디푸드, 엔슈어 등",
     "국가암정보센터 식욕부진 시 특수영양 보충음료 후보",
+    "nccAppetiteLossDiet",
+  ],
+  [
+    "간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 합니다.",
+    "국가암정보센터 식욕부진 시 간식·유동식 활용 후보",
     "nccAppetiteLossDiet",
   ],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],

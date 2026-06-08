@@ -40,6 +40,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC appetite-loss best-time sentence matching for 몸의 상태가 가장 좋을 때 많이 먹도록 합니다. 일반적으로 충분한 휴식을 취한 아침이 가장 좋다고 합니다
 - NCC appetite-loss meal-environment sentence matching for 식사하는 시간, 장소, 분위기를 바꾸어 봅니다. 음악을 들으며 식사를 하거나 식탁보나 식기를 바꾸어 보는 것도 좋습니다
 - NCC appetite-loss special-nutrition-drink sentence matching for 식사섭취가 계속적으로 힘들 경우에는 특수영양 보충음료를 이용합니다. (예) 그린비아, 뉴케어, 메디푸드, 엔슈어 등
+- NCC appetite-loss snack-liquid sentence matching for 간식으로 죽, 미음, 쥬스, 스프, 우유 및 유제품 등을 활용하도록 합니다
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
