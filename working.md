@@ -1,6 +1,25 @@
 # CareVault Working Notes
 
-## 2026-06-08 19:12 KST - PENDING NCC Nausea Hunger-Before-Eating Source Sentence
+## 2026-06-08 19:17 KST - Post-Push NCC Nausea Hunger-Before-Eating Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center nausea hunger-before-eating source sentence slice.
+- Result:
+  - Source commit pushed: `29b7a1d` (`Add NCC nausea hunger-before-eating guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `29b7a1dadecb02dde1aeace47c4b70a4a2ef89ff`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 760 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
+## 2026-06-08 19:12 KST - NCC Nausea Hunger-Before-Eating Source Sentence
 
 - Current Goal:
   - Add exact National Cancer Information Center nausea source guidance for: `배가 고프면 더욱 메스꺼울 수 있으므로 배고프기 전에 먹도록 합니다.`
@@ -34,7 +53,7 @@
 - Issues:
   - No new blocking issue found before edits.
 - Next Steps:
-  - Add RED test coverage, implement the exact source-backed matcher and guide item, then run focused and pre-push gates.
+  - Commit and push the source slice, then run post-push verification.
 
 ## 2026-06-08 19:08 KST - Final NCC Nausea Treatment-Before-Eating Log
 
