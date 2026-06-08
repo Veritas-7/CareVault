@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 09:01 KST - Post-Push NCC Immune-Low Purchase Safety Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center immune-low purchase-safety source-wording slice.
+- Result:
+  - Source commit pushed: `7179b61` (`Add NCC immune-low purchase safety guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `7179b6109359c1b6a20c2e26e447dc3094643fdc`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 681 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 08:59 KST - NCC Immune-Low Purchase Safety Source Wording
 
 - Current Goal:
