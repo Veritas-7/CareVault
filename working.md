@@ -1,5 +1,42 @@
 # CareVault Working Notes
 
+## 2026-06-08 20:22 KST - PENDING NCC Nausea Clear-Liquid Ice Source Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center nausea source guidance for: `맑은 유동식, 얼음조각 등`
+- Context:
+  - Continued from clean/synced CareVault state at `6b8f8f7ee0c51e3489b2672f4af36aec647204a5`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing individual `맑은 유동식` and `얼음조각` coverage is present, but the exact NCC source phrase currently loses the trailing `등` and splits into separate chips.
+  - Using TDD and keeping this as source-backed nausea low-burden food support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`; it lists `맑은 유동식, 얼음조각 등` among comparatively low-burden foods for nausea.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact source phrase does not split into individual `맑은 유동식` and `얼음조각` chips or lose `등`.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher before the individual terms and exposed the exact phrase in the balanced guide examples.
+  - `README.md`: documented expanded NCC nausea clear-liquid-and-ice exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase split into `맑은 유동식` and `얼음조각`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 203 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `6b8f8f7ee0c51e3489b2672f4af36aec647204a5`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 768 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS staged file list: `git diff --cached --name-only` returned only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage explicit source/log paths, run staged checks, then commit and push the source slice.
+
 ## 2026-06-08 20:17 KST - Final NCC Nausea Toast-Cracker-Yogurt-Sherbet Log
 
 - Current Goal:

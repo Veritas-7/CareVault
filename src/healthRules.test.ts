@@ -3735,6 +3735,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC nausea clear liquid and ice source phrase", () => {
+    const sourceSentence = "맑은 유동식, 얼음조각 등";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 메스꺼움",
+    );
+    expect(foodGuidanceSources.nccNauseaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 메스꺼움 시 위 부담 적은 맑은 유동식·얼음조각 후보",
+      sourceId: "nccNauseaDiet",
+    });
+    expect(terms).not.toContain("맑은 유동식");
+    expect(terms).not.toContain("얼음조각");
+    expect(terms).not.toContain("샤베트");
+    expect(terms).not.toContain("토스트, 크래커, 요거트, 샤베트");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC nausea very-sweet-food source sentence", () => {
     const sourceSentence = "사탕, 쿠키 또는 케익 등과 같이 매우 단 음식";
     const assessment = assessCancerFood(sourceSentence);
