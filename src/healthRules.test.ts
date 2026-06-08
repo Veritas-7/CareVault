@@ -3641,6 +3641,57 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low separated raw meat storage source wording", () => {
+    const assessment = assessCancerFood(
+      "요리하기 전의 고기, 생선, 닭고기 등은 비닐팩이나 플라스틱통 등에 분리하여 보관합니다. 그리고 다른 식품에 고기나 생선즙이 떨어지지 않도록 보관합니다.",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "요리하기 전의 고기, 생선, 닭고기 등은 비닐팩이나 플라스틱통 등에 분리하여 보관합니다",
+      "다른 식품에 고기나 생선즙이 떨어지지 않도록 보관합니다",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "면역저하 시 식품 보관·해동 안전 확인 후보",
+        sourceId: "nccImmuneLowDiet",
+      });
+    }
+    for (const genericTerm of [
+      "요리하기 전의 고기 생선 닭고기 분리 보관",
+      "고기나 생선즙이 떨어지지 않도록 보관",
+      "생선",
+      "닭고기",
+    ]) {
+      expect(terms).not.toContain(genericTerm);
+    }
+    expect(balancedGuideText).toContain(
+      "요리하기 전의 고기, 생선, 닭고기 등은 비닐팩이나 플라스틱통 등에 분리하여 보관합니다",
+    );
+    expect(balancedGuideText).toContain(
+      "다른 식품에 고기나 생선즙이 떨어지지 않도록 보관합니다",
+    );
+    expect(
+      formatFoodMatchEvidence(
+        matchesByTerm[
+          "요리하기 전의 고기, 생선, 닭고기 등은 비닐팩이나 플라스틱통 등에 분리하여 보관합니다"
+        ],
+      ),
+    ).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low fruit and vegetable washing practices from official guidance", () => {
     const assessment = assessCancerFood(
       "채소와 과일 먹기 전 세척, 과일이나 채소 썰기 전 세척, 딸기 등 꼼꼼히 씻기 어려운 과일",
