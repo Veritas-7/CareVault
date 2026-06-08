@@ -1,5 +1,38 @@
 # CareVault Working Notes
 
+## 2026-06-08 09:36 KST - NCC Immune-Low WBC Decrease Cooked-Food Context
+
+- Current Goal:
+  - Add exact National Cancer Information Center immune-low WBC-decrease cooked-food source context to CareVault's built-in cancer food-safety matching.
+- Context:
+  - Continued from clean/synced CareVault state after `9ca79dc99de3616f6b87f451734ac7d533449566`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Used TDD and kept WBC-decrease wording as immune-low food-safety context, not a diagnosis or treatment claim.
+- Research:
+  - Re-checked National Cancer Information Center `면역기능의 저하`, final update 2013-02-01. The page says that when WBC count decreases after cancer treatment, infection requires special caution and cooked foods help prevent food-borne bacterial infection.
+  - Applied the source only as immune-low food-preparation safety record support.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for `백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다`, including source evidence and a guard against collapsing to `완전히 익힌 음식`.
+  - `src/healthRules.ts`: added a visible balanced guide card and supportive food-safety match for the WBC-decrease cooked-food source context.
+  - `README.md`: documented the expanded NCC immune-low WBC-decrease cooked-food source context.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source context was not matched and the assessment stayed `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 121 tests.
+  - PASS full tests: `npm test` => 64 files / 686 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: repo root resolved to `/Users/wj/Ai/System/10_Projects/CareVault`, `origin` is `https://github.com/Veritas-7/CareVault.git`, `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `9ca79dc99de3616f6b87f451734ac7d533449566`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 09:33 KST - Final NCC Immune-Low Validity-Period Log
 
 - Current Goal:

@@ -296,6 +296,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccTreatmentNutrients", "nccPreventionDiet", "nccImmuneLowDiet"],
       },
       {
+        label: "면역저하 백혈구 감소 익힌 음식 후보",
+        detail:
+          "국가암정보센터 면역기능 저하 자료는 백혈구수가 감소한 경우 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염 예방을 위해 익힌 음식을 먹도록 안내합니다.",
+        examples:
+          "백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다",
+        sourceIds: ["nccImmuneLowDiet"],
+      },
+      {
         label: "면역저하 식품 구입 후보",
         detail:
           "국가암정보센터 면역기능 저하 자료는 식품 구입 시 신선도 유지를 위해 대량 구입하지 않고 소량씩 구입하며, 식품 유통기한을 꼭 확인하도록 안내합니다. 갈은 고기는 가는 과정에서 오염 가능성이 커질 수 있으므로 직접 갈아주는 곳에서 구입하도록 설명합니다.",
@@ -1052,6 +1060,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["변비 생과일", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
   ["변비 생야채", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
   ["변비 섬유소 많은 식품", "국가암정보센터 변비 시 수분·섬유소 섭취 후보", "nccConstipationDiet"],
+  [
+    "백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다",
+    "면역저하 시 백혈구 감소·익힌 음식 확인 후보",
+    "nccImmuneLowDiet",
+  ],
   ["완전히 익힌 음식", "면역저하 시 익힌 음식·저온살균 제품 선택 후보", "nccImmuneLowDiet"],
   ["저온살균 우유", "면역저하 시 저온살균 우유·주스·요구르트 제품 선택 후보", "nccImmuneLowDiet"],
   ["저온살균 주스", "면역저하 시 저온살균 우유·주스·요구르트 제품 선택 후보", "nccImmuneLowDiet"],

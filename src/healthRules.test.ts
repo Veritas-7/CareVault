@@ -3839,6 +3839,48 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low WBC decrease cooked-food source context", () => {
+    const assessment = assessCancerFood(
+      "백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([
+      "백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다",
+    ]);
+    expect(
+      matchesByTerm[
+        "백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다"
+      ],
+    ).toMatchObject({
+      level: "ok",
+      reason: "면역저하 시 백혈구 감소·익힌 음식 확인 후보",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(terms).not.toContain("완전히 익힌 음식");
+    expect(balancedGuideText).toContain(
+      "백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다",
+    );
+    expect(
+      formatFoodMatchEvidence(
+        matchesByTerm[
+          "백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다"
+        ],
+      ),
+    ).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low validity-period checks and pasteurized juice spelling variants", () => {
     const assessment = assessCancerFood(
       "사용하기 전에 유효기간 확인, 유효기간 확인, 저온살균 쥬스, 쥬스 우유 요구르트 저온살균 제품, 비살균 쥬스, 비살균 요구르트",
