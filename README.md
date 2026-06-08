@@ -148,6 +148,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC mouth-pain sore-mouth straw source-sentence matching for 입안이 쓰린 경우 빨대를 이용합니다.
 - NCC mouth-pain small-spoon source-sentence matching for 아이들 스푼과 같이 작은 스푼을 이용합니다.
 - NCC mouth-pain after-eating oral-rinse source-sentence matching for 음식을 먹은 후 입안은 깨끗이 헹구어 청결하게 유지합니다.
+- NCC mouth-pain oral/gum inflammation clinician-visit source-sentence clinical-check matching for 만약 입안통증이나 잇몸에 염증이 있는 경우 의사선생님을 방문하여 항암치료 의 부작용 때문인지 치과질환인지 알아보도록 합니다.
 - NCC mouth-pain tooth/gum dental-care source-sentence clinical-check matching for 치아와 잇몸이 아프면 치과치료를 받도록 합니다.
 - NCC mouth-pain oxaliplatin cold-food caution source-sentence clinical-check matching for 그러나 옥살로플라틴(Oxaliplatin) 등과 같은 말초신경염을 유발할 수 있는 항암제 를 투여 받는 경우는 온도변화에 민감하여 통증을 유발할 수 있으므로 차가운 음식은 피하도록 합니다.
 - NCC dry-mouth nearby-water/broth-soaking/soft-blended-food/moist-food/meal-sip-straw/saliva-candy-gum/sweet-sour-caution/moisture and saliva-stimulation matching for 가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다./음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다./부드럽고 곱게 간 식품을 먹도록 합니다./삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다./식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다./딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다./아주 달거나 신음식을 먹으면 침분비가 많아집니다. 단, 입안이 헐거나 목구멍이 아플 경우에는 피하도록 합니다./물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기
