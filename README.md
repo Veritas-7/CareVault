@@ -59,6 +59,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC diarrhea dairy-lactose caution sentence matching for 우유 및 유제품을 먹을 때에는 주의합니다. 이는 우유에 들어있는 유당이 설사를 악화시킬 수 있기 때문입니다. 그러나 일반적으로 적은 양의 우유나 유제품은 소화시킬 수 있습니다
 - NCC diarrhea high-fiber vegetable phrase matching for 브로콜리, 옥수수, 말린 콩 등과 같은 고섬유 채소 등
 - NCC diarrhea fruit peel/seed/stringy-fiber phrase matching for 생과일의 껍질, 씨, 끈적한 섬유소 부분
+- NCC diarrhea fatty-food/raw-vegetable phrase matching for 기름진 음식, 생야채
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
