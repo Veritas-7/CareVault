@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 23:24 KST - Final NCC Vomiting Clear-Liquid Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center vomiting clear-liquid exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `bab5254` (`Add NCC vomiting clear-liquid guidance`).
+  - Post-push verification log commit pushed: `71f6115` (`Log NCC vomiting clear-liquid verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `71f61158a6fb44664b3865121958409d1eb18eed`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 구토`, `https://www.cancer.go.kr/lay1/S1T479C482/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 23:23 KST - Post-Push NCC Vomiting Clear-Liquid Verification
 
 - Current Goal:
