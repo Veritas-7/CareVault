@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:40 KST - PENDING NCC Weight-Change Weight-Loss Vegetable Salad Dressing Calorie Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `야채샐러드 : 마요네즈, 샐러드드레싱을 충분히 사용한다.`
+- Context:
+  - Continued from clean/synced CareVault state at `4143001c6f138df035de4c89ef5980a40b4438b5`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the calorie/protein source sentence, rice/porridge/snack examples, bread/rice-cake, potato-butter, and namul-oil calorie examples, carbohydrate-snack sentence, protein-snack sentence, and protein-snack examples phrase, but not yet the exact vegetable salad dressing calorie phrase.
+  - Existing `nccWeightChangeDiet` weight-gain guidance limits added butter, mayonnaise, and sweeteners, so this slice must preserve the exact weight-loss context without weakening the separate weight-gain limit rule.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss calorie supplementation cooking-method changes it lists `야채샐러드 : 마요네즈, 샐러드드레싱을 충분히 사용한다.`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss vegetable salad dressing calorie examples phrase, source evidence, balanced guide text, and guard checks against collapsing into short `샐러드` matches or the separate weight-gain mayonnaise limit sentence.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the examples phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss vegetable salad dressing calorie examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase collapsed into two short `샐러드` matches instead of preserving the exact NCC weight-loss vegetable salad dressing calorie examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 262 tests.
+  - PASS source/diff checks: `rg -n "야채샐러드|vegetable salad dressing|샐러드드레싱|야채샐러드 열량 보충|NCC Weight-Change Weight-Loss Vegetable" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `4143001c6f138df035de4c89ef5980a40b4438b5`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - BLOCKED runtime cleanup: `npm run runtime:doctor` failed because `127.0.0.1:1420` is occupied by PID `98795`, `node /Users/wj/Ai/System/10_Projects/PromptVault/node_modules/.bin/vite --host 127.0.0.1 --port 1420`, whose cwd is `/Users/wj/Ai/System/10_Projects/PromptVault`. This CareVault session did not terminate that unrelated PromptVault dev server.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 827 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 75 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - Current-source desktop/runtime cleanliness is blocked by an unrelated PromptVault dev server occupying CareVault's port `1420`; source/test/build coverage is complete for this slice.
+- Next Steps:
+  - Run full GitHub/private repo preflight, full tests, typecheck, build, staged secret scan, then commit and push.
+
 ## 2026-06-09 03:39 KST - Post-Push NCC Weight-Change Weight-Loss Namul Oil Calorie Examples Verification
 
 - Current Goal:

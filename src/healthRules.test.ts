@@ -6776,6 +6776,40 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC weight-change weight-loss vegetable salad dressing calorie examples source phrase", () => {
+    const sourcePhrase = "야채샐러드 : 마요네즈, 샐러드드레싱을 충분히 사용한다.";
+    const assessment = assessCancerFood(sourcePhrase);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccWeightChangeDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(foodGuidanceSources.nccWeightChangeDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourcePhrase]);
+    expect(matchesByTerm[sourcePhrase]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 체중감소 시 야채샐러드 열량 보충 예시 후보",
+      sourceId: "nccWeightChangeDiet",
+    });
+    expect(terms).not.toContain("버터, 마요네즈, 감미료 등을 추가로 사용하지 않도록 합니다.");
+    expect(terms).not.toContain("샐러드(채소)");
+    expect(balancedGuideText).toContain(sourcePhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourcePhrase])).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC weight-change weight-loss carbohydrate snack source sentence", () => {
     const sourceSentence =
       "지방보다는 탄수화물이 많이 포함된 간식을 드시면 포만감이 빨리 사라지므로 더 편안함을 느낄 수 있다.";
