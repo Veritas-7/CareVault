@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 18:11 KST - Post-Push NCC Appetite-Loss Meal-Environment Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center appetite-loss meal-time/place/atmosphere source sentence slice.
+- Result:
+  - Source commit pushed: `03996d0` (`Add NCC appetite-loss meal environment guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `03996d05ab3b32809b9ed079abcda2d58b0224b1`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 751 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 식욕부진`, `https://www.cancer.go.kr/lay1/S1T479C480/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 18:07 KST - NCC Appetite-Loss Meal-Environment Source Sentence
 
 - Current Goal:
