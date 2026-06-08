@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 22:52 KST - Final NCC Constipation Light-Activity Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center constipation light-activity exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `d239f3b` (`Add NCC constipation light-activity guidance`).
+  - Post-push verification log commit pushed: `c080cea` (`Log NCC constipation light-activity verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `c080ceac47698f81a453ae58a7b8673a5c24bb10`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 변비`, `https://www.cancer.go.kr/lay1/S1T479C487/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 22:51 KST - Post-Push NCC Constipation Light-Activity Verification
 
 - Current Goal:
