@@ -8602,6 +8602,41 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC fatigue and depression nutritious-food source sentence", () => {
+    const sourceSentence =
+      "영양이 풍부한 음식을 충분히 섭취합니다. 불충분한 열량과 영양소 섭취가 피로의 원인이 될 수 있기 때문입니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccFatigueDepressionDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 피로감과 우울",
+    );
+    expect(foodGuidanceSources.nccFatigueDepressionDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 피로감·우울 시 영양이 풍부한 음식과 충분한 섭취 후보",
+      sourceId: "nccFatigueDepressionDiet",
+    });
+    expect(terms).not.toContain("피로감 영양이 풍부한 음식");
+    expect(terms).not.toContain("피로감 적은 양의 식사와 간식");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC fatigue and depression cause clinician discussion source sentence", () => {
     const sourceSentence =
       "만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.";
