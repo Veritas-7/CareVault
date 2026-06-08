@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:06 KST - Post-Push NCC Weight-Change Weight-Loss Porridge Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change weight-loss porridge examples exact source phrase slice.
+- Result:
+  - Source commit pushed: `2f0ace0` (`Add NCC weight-change porridge examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `2f0ace06dea70330cf2dce505b930e1a604f7f67`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 821 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 03:01 KST - PENDING NCC Weight-Change Weight-Loss Porridge Examples Phrase
 
 - Current Goal:
