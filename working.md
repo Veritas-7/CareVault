@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 21:52 KST - PENDING NCC Diarrhea Small Frequent Meal Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center diarrhea source guidance for: `장이 약해져 있으므로 식사는 조금씩 자주 먹습니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `1de83c3819264dc57922cd017dc7f90b1d958929`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC diarrhea coverage summarizes small frequent eating in the guide detail, while exact `조금씩 자주` coverage currently belongs to an appetite-loss snack-access sentence and is not a diarrhea source sentence.
+  - Using TDD and keeping this as diarrhea symptom meal-pattern support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 설사`, `https://www.cancer.go.kr/lay1/S1T479C488/contents.do`; it lists `장이 약해져 있으므로 식사는 조금씩 자주 먹습니다.` as diarrhea guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact diarrhea small frequent meal source sentence is currently ignored as `neutral`.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the exact small frequent meal sentence in the diarrhea balanced guide examples.
+  - `README.md`: documented the expanded NCC diarrhea small frequent meal exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 215 tests.
+  - PASS source/diff checks: `rg -n "장이 약해져|조금씩 자주 먹습니다|small frequent meal|장 약화" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `1de83c3819264dc57922cd017dc7f90b1d958929`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 780 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 74 insertions, 1 deletion before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full pre-push gates, stage the explicit four changed paths, scan the staged diff, then commit and push.
+
 ## 2026-06-08 21:50 KST - Final NCC Diarrhea Electrolyte Loss Log
 
 - Current Goal:
