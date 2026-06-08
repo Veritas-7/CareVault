@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 13:42 KST - NCC Nutrients Protein Role Source Sentence
+
+- Current Goal:
+  - Add the exact National Cancer Information Center treatment-nutrients protein role source sentence: `단백질(protein)은 체세포의 주성분으로서 우리 몸을 구성하고 유지하는 역할을 하며, 각종 효소와 호르몬, 항체 등의 성분이 됩니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `d4cbb0d0f4e0c3ddb30a912c7b2df192b7103bfa`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as treatment nutrition role/context guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center `영양소의 이해`, `https://www.cancer.go.kr/lay1/S1T471C473/contents.do`; the protein section states the target role sentence and then lists protein-rich foods such as beef, pork, chicken, fish, shellfish, egg, tofu, and milk.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC protein role source sentence, source evidence, and guard checks against collapsing into existing treatment-protein food examples.
+  - `src/healthRules.ts`: added the exact NCC protein role sentence to the treatment nutrient guide text and source-backed `nccTreatmentNutrients` food-support matching terms.
+  - `README.md`: documented expanded NCC treatment nutrient protein role matching coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new protein role source sentence stayed `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 151 tests.
+  - PASS full tests: `npm test` => 64 files / 716 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `d4cbb0d0f4e0c3ddb30a912c7b2df192b7103bfa`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 1.13 GB and found no leaks.
+- Issues:
+  - No new blocking issue found in the focused TDD slice.
+- Next Steps:
+  - Stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 13:40 KST - Final NCC Nutrients Carbohydrate Energy Log
 
 - Current Goal:
