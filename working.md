@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:27 KST - Final NCC Mouth-Pain Ice-Chip Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center mouth-pain ice-chip exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `8365b7c` (`Add NCC mouth-pain ice-chip guidance`).
+  - Post-push verification log commit pushed: `7666015` (`Log NCC mouth-pain ice-chip verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `7666015a0114814086436b7f818e83bda58d6064`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 235 tests.
+  - PASS final coverage grep: `rg -n "얼음조각을 먹는 것도 도움이 됩니다|ice-chip|얼음조각 섭취|NCC Mouth-Pain Ice-Chip" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 00:26 KST - Post-Push NCC Mouth-Pain Ice-Chip Verification
 
 - Current Goal:
