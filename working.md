@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:55 KST - PENDING NCC Weight-Change Weight-Loss Fruit Canned Shake Calorie Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `과일 : 과일 대신 과일 통조림을 먹거나 우유, 아이스크림과 혼합하여 쉐이크를 만들어서 먹는다.`
+- Context:
+  - Continued from clean/synced CareVault state at `40439dc7330829bbd4925fb00ac4a2da01ee5951`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the calorie/protein source sentence, rice/porridge/snack examples, bread/rice-cake, potato-butter, namul-oil, vegetable-salad dressing, and milk/soy drink calorie examples, carbohydrate-snack sentence, protein-snack sentence, and protein-snack examples phrase, but not yet the exact fruit canned/shake calorie examples phrase.
+  - Existing supportive fallback terms include `체중감소 과일통조림`, and prior exact coverage includes the separate milk/soy drink calorie phrase; this slice should preserve the exact fruit/shake context without collapsing into those broader or neighboring terms.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss calorie supplementation cooking-method changes it lists `과일 : 과일 대신 과일 통조림을 먹거나 우유, 아이스크림과 혼합하여 쉐이크를 만들어서 먹는다.`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss fruit canned/shake calorie examples phrase, source evidence, balanced guide text, and guard checks against collapsing into `체중감소 과일통조림`, the neighboring milk/soy drink exact phrase, or broader treatment-diet milk terms.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the examples phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss fruit canned/shake calorie examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source phrase was not matched and the assessment stayed `neutral` instead of preserving the exact NCC weight-loss fruit canned/shake calorie examples phrase.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 264 tests.
+  - PASS source/diff checks: `rg -n "과일 : 과일 대신|fruit canned/shake|과일 열량 보충|NCC Weight-Change Weight-Loss Fruit" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `40439dc7330829bbd4925fb00ac4a2da01ee5951`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.02 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 829 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 79 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Run full GitHub/private repo preflight, full tests, typecheck, build, staged secret scan, then commit and push.
+
 ## 2026-06-09 03:53 KST - Post-Push NCC Weight-Change Weight-Loss Milk Soy Drink Calorie Examples Verification
 
 - Current Goal:

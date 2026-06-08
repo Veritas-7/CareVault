@@ -62,6 +62,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC weight-change weight-loss namul oil calorie examples phrase matching for 나물요리 : 볶거나 무침을 할 때 식용유, 참기름, 들기름 등을 넉넉히 사용한다
 - NCC weight-change weight-loss vegetable salad dressing calorie examples phrase matching for 야채샐러드 : 마요네즈, 샐러드드레싱을 충분히 사용한다
 - NCC weight-change weight-loss milk/soy drink calorie examples phrase matching for 우유, 두유 등 음료 : 설탕, 꿀, 초콜릿, 미숫가루, 분유 등을 타서 먹는다
+- NCC weight-change weight-loss fruit canned/shake calorie examples phrase matching for 과일 : 과일 대신 과일 통조림을 먹거나 우유, 아이스크림과 혼합하여 쉐이크를 만들어서 먹는다
 - NCC weight-change weight-loss carbohydrate snack sentence matching for 지방보다는 탄수화물이 많이 포함된 간식을 드시면 포만감이 빨리 사라지므로 더 편안함을 느낄 수 있다
 - NCC weight-change weight-loss protein snack sentence matching for 간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다
 - NCC weight-change weight-loss protein snack examples phrase matching for 만두, 피자, 샌드위치, 계란샐러드, 카스테라 등
