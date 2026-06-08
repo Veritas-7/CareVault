@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 10:52 KST - Post-Push NCC Rice And Porridge Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center rice, snack, and porridge source sentence slice.
+- Result:
+  - Source commit pushed: `eb0c928` (`Add NCC rice and porridge guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `eb0c928c2080064a5d3f7aace24dd2cf5b64e4e8`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 695 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `건강식을 먹는 요령`, `https://www.cancer.go.kr/lay1/S1T471C475/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 10:48 KST - NCC Rice And Porridge Source Sentence
 
 - Current Goal:
