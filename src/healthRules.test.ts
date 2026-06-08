@@ -1909,6 +1909,39 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC healthy eating high-calorie high-protein fast-recovery source sentence", () => {
+    const sourceSentence = "특히 고칼로리, 고단백질의 음식은 치료 효과를 높이고 빠른 회복을 돕습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 중 적정 열량·고단백 회복식 후보",
+      sourceId: "nccTreatmentRightEating",
+    });
+    expect(terms).not.toContain(
+      "충분한 열량과 다양한 영양소를 섭취해야 암과 그 치료를 감당하고 부작용도 극복할 수 있는 체력이 만들어집니다.",
+    );
+    expect(terms).not.toContain(
+      "고칼로리, 고단백질의 식품을 비롯한 다양한 음식을 골고루 섭취하는 것이 도움이 됩니다",
+    );
+    expect(terms).not.toContain("따라서 치료 효과에도, 삶의 질에도 좋은 영향을 줄 수 있습니다.");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 올바르게 식사하기 - https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC meal concern medical and dietitian consultation source sentence", () => {
     const sourceSentence =
       "암환자의 식사와 관련하여 고민이 있다면 의료진, 영양사와 상담하십시오. 적절한 영양 섭취에 관해 상담을 해드릴 것입니다.";
