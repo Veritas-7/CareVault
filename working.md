@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 09:09 KST - Final NCC Immune-Low Separated Storage Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center immune-low separated raw meat/fish/chicken storage source-wording slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `d3630de` (`Add NCC immune-low separated storage guidance`).
+  - Post-push verification log commit pushed: `f1ed593` (`Log NCC immune-low separated storage verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `f1ed5939efcc557ba93ee4190974d473f710c631`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `면역기능의 저하`, `https://cancer.go.kr/lay1/S1T479C489/contents.do`
+- Issues:
+  - No new blocking issue. Source commit and verification log were pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Continue with the next narrow official-source cervical-cancer nutrition, safety, or record-prep slice after rechecking current source coverage.
+
 ## 2026-06-08 09:08 KST - Post-Push NCC Immune-Low Separated Storage Verification
 
 - Current Goal:
