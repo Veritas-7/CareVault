@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 15:52 KST - Post-Push NCC After-Treatment Alcohol Avoidance Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center after-treatment alcohol avoidance source sentence slice.
+- Result:
+  - Source commit pushed: `9e05a90` (`Add NCC after-treatment alcohol guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `9e05a901c718199770edb670e8c90306e3fdb611`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 734 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center PDF `치료 후 건강한 식생활`, `https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 15:48 KST - NCC After-Treatment Alcohol Avoidance Source Sentence
 
 - Current Goal:
