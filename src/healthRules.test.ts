@@ -1965,6 +1965,37 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/암을 낫게|특효|완치/);
   });
 
+  it("recognizes NCC yogurt soy milk and cheese substitute source sentence", () => {
+    const sourceSentence =
+      "우유가 맞지 않을 경우엔 요구르트, 두유, 치즈 따위를 대신 먹습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 중 건강식 실천 식품 후보",
+      sourceId: "nccTreatmentHealthyEatingTips",
+    });
+    expect(terms).not.toContain("치료 중 요구르트 두유 치즈");
+    expect(terms).not.toContain("요구르트");
+    expect(terms).not.toContain("두유");
+    expect(terms).not.toContain("치즈");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 중 건강식을 먹는 요령 - https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/암을 낫게|특효|완치/);
+  });
+
   it("recognizes NCC treatment healthy-eating practical meal examples", () => {
     const assessment = assessCancerFood(
       "치료 중 규칙적인 아침 점심 저녁, 치료 중 밥 반 그릇에서 한 그릇, 치료 중 죽 하루 4~5번 이상, 치료 중 단백질 반찬 충분히, 치료 중 채소 반찬 매끼 두 가지 이상, 치료 중 과일 하루 한두 번, 치료 중 우유와 유제품 하루 1컵, 치료 중 요구르트 두유 치즈",
