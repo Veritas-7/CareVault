@@ -2963,6 +2963,37 @@ describe("healthRules", () => {
     expect(careTeamGuideText).toContain("치료 후 부작용으로 식사 섭취 힘듦");
   });
 
+  it("recognizes NCC after-treatment processed meat source sentence", () => {
+    const sourceSentence =
+      "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",
+      sourceId: "nccAfterTreatmentHealthyEating",
+    });
+    expect(terms).not.toContain("햄");
+    expect(terms).not.toContain("베이컨");
+    expect(terms).not.toContain("소시지");
+    expect(terms).not.toContain("가공육");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 후 건강한 식생활 - https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC mouth-pain soft and irritating food examples", () => {
     const assessment = assessCancerFood(
       "흰죽, 닭죽, 호박죽, 쌀미음, 바나나, 수박, 과일통조림, 토마토주스, 토스트, 크래커, 말린 음식",
