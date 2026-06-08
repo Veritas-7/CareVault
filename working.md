@@ -1,6 +1,25 @@
 # CareVault Working Notes
 
-## 2026-06-09 02:05 KST - PENDING NCC Weight-Change Weight-Gain Cause Consultation Source Sentence
+## 2026-06-09 02:03 KST - Post-Push NCC Weight-Change Weight-Gain Cause Consultation Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change weight-gain cause consultation exact source sentence slice.
+- Result:
+  - Source commit pushed: `0fd6e34` (`Add NCC weight-change cause consultation guidance`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `0fd6e3416e5d14f5263c8074d33329498f79919c`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 812 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync/runtime/focused-test checks and add a final log entry.
+
+## 2026-06-09 02:00 KST - PENDING NCC Weight-Change Weight-Gain Cause Consultation Source Sentence
 
 - Current Goal:
   - Add exact National Cancer Information Center weight-change source guidance for: `그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다.`
