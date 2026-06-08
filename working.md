@@ -1,5 +1,40 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:43 KST - PENDING NCC Taste-Change Seasoning Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center taste-change source guidance for: `고기나 생선요리에 향이 좋은 양념류(와인, 레몬즙 등)나 새콤달콤한 소스를 사용합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `346be49f54d580348af562065653374faba6f0e3`; `origin/main...HEAD` returned `0 0`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing taste-change coverage includes generic `레몬즙 양념` and `새콤달콤한 소스` terms, but does not yet preserve the exact NCC source sentence about using fragrant seasonings or sweet-sour sauce for meat or fish dishes.
+  - `DESIGN.md` was re-read; this is shared TypeScript medical-rule data and should remain source-backed, Korean, clinical, and non-diagnostic.
+  - Using TDD and keeping this as source-backed supportive eating guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입맛의 변화`, `https://www.cancer.go.kr/lay1/S1T479C484/contents.do`; it includes `고기나 생선요리에 향이 좋은 양념류(와인, 레몬즙 등)나 새콤달콤한 소스를 사용합니다.` in the taste-change guidance list.
+- Changes:
+  - `src/healthRules.test.ts`: added RED source, guide-card, food-match, source-evidence, generic-term suppression, and no-cure-claim coverage for `고기나 생선요리에 향이 좋은 양념류(와인, 레몬즙 등)나 새콤달콤한 소스를 사용합니다.`
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the source sentence in the balanced taste-change guide examples.
+  - `README.md`: documented the expanded NCC taste-change `seasoning-source` exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `watch`, triggered by the generic `와인` subterm, instead of preserving the exact NCC sentence as source-backed taste-change guidance.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 245 tests.
+  - PASS source/diff checks: `rg -n "고기나 생선요리에 향이 좋은 양념류|seasoning-source|향이 좋은 양념류·새콤달콤한 소스 후보|NCC Taste-Change Seasoning" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `346be49f54d580348af562065653374faba6f0e3`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 810 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 74 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 01:42 KST - Final NCC Taste-Change Protein Alternative Log
 
 - Current Goal:

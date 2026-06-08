@@ -115,7 +115,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC vomiting clear-liquid source sentence matching for 구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다
 - NCC vomiting soft-food/general-meal source sentence matching for 맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다
 - NCC vomiting clinician-consultation source sentence matching for 구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의합니다
-- NCC taste-change appealing-food/protein-alternative-source/protein alternative and seasoning matching for 보기가 좋고 냄새도 좋은 식품을 선택하고 준비합니다./만약 고기가 싫다면 생선이나 계란, 두부, 콩, 우유나 유제품을 이용합니다./입맛 변화 생선/입맛 변화 계란/입맛 변화 두부/입맛 변화 콩/입맛 변화 우유나 유제품/고기 싫을 때 생선/레몬즙 양념/새콤달콤한 소스/입맛 변화 오렌지/입맛 변화 레몬
+- NCC taste-change appealing-food/protein-alternative-source/seasoning-source/protein alternative and seasoning matching for 보기가 좋고 냄새도 좋은 식품을 선택하고 준비합니다./만약 고기가 싫다면 생선이나 계란, 두부, 콩, 우유나 유제품을 이용합니다./고기나 생선요리에 향이 좋은 양념류(와인, 레몬즙 등)나 새콤달콤한 소스를 사용합니다./입맛 변화 생선/입맛 변화 계란/입맛 변화 두부/입맛 변화 콩/입맛 변화 우유나 유제품/고기 싫을 때 생선/레몬즙 양념/새콤달콤한 소스/입맛 변화 오렌지/입맛 변화 레몬
 - NCC diarrhea hydration, soft-food, and trigger-food matching for 설사 육수/설사 스포츠 음료/설사 바나나/설사 으깬 감자/설사 복숭아/설사 토마토/설사 흰죽/설사 쌀미음/설사 생야채/설사 생과일 껍질/설사 브로콜리/설사 옥수수/설사 말린 콩/설사 커피/설사 초콜릿/설사 우유 및 유제품
 - NCC constipation hydration and fiber-food matching for 변비 물 8~10컵/변비 하루 8~10컵 물/변비 아침 찬물/변비 도정 덜 된 곡류/변비 생과일/변비 생야채/변비 섬유소 많은 식품
 - NCC fatigue/depression meal-support matching for 피로감 영양이 풍부한 음식/피로감 하루 중 가장 좋은 시간에 많이 먹기/피로감 휴식 후 먹기/피로감 적은 양의 식사와 간식/피로감 음식배달서비스/우울 좋아하는 음식
