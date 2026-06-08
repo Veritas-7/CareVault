@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 04:52 KST - PENDING NCC Weight-Change Weight-Loss Dairy Protein Examples Phrase
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source phrase for: `유제품 : 우유, 요구르트, 요플레, 아이스크림, 밀크쉐이크, 치즈 등`
+- Context:
+  - Continued from clean/synced CareVault state at `64022654c95305e44dab504701390183be6d4823`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the immediately preceding exact egg, bean/tofu, and fish protein examples phrases plus the later protein snack sentence/examples phrase, but not yet the exact dairy protein examples phrase.
+  - Existing broader terms include `체중감소 요구르트`, `치료 중 우유와 유제품 하루 1컵`, `치료 중 요구르트 두유 치즈`, `입맛 변화 우유나 유제품`, low-fat dairy prevention examples, pasteurized/unpasteurized immune-low rules, and diarrhea dairy-lactose cautions; this slice should preserve the exact NCC weight-change supportive context without weakening neighboring treatment, taste-change, immune-low, prevention, diarrhea, or fallback rules.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss protein supplementation snacks it lists `유제품 : 우유, 요구르트, 요플레, 아이스크림, 밀크쉐이크, 치즈 등`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss dairy protein examples phrase, source evidence, balanced guide text, and guard checks against collapsing into broader treatment, taste-change, immune-low, diarrhea, protein-snack, or fallback dairy terms.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the phrase in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss dairy protein examples exact-source phrase coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the exact NCC weight-loss dairy protein examples phrase was missed and the assessment stayed `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 271 tests.
+  - PASS source/diff checks: `rg -n "유제품 : 우유|dairy protein examples|체중감소 시 유제품 단백질|NCC Weight-Change Weight-Loss Dairy" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `64022654c95305e44dab504701390183be6d4823`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.08 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 836 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 83 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Run full preflight, explicit-path staging, staged checks, then commit and push.
+
 ## 2026-06-09 04:49 KST - Post-Push NCC Weight-Change Weight-Loss Fish Protein Examples Verification
 
 - Current Goal:
