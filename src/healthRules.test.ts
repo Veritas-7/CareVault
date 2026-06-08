@@ -4035,6 +4035,45 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC nausea room ventilation source sentence", () => {
+    const sourceSentence =
+      "이상한 냄새가 나거나 너무 후덥지근한 방은 피하도록 하며, 음식냄새가 나지 않도록 자주 환기시킵니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 메스꺼움",
+    );
+    expect(foodGuidanceSources.nccNauseaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 메스꺼움 시 냄새·후덥지근한 방 피하기 후보",
+      sourceId: "nccNauseaDiet",
+    });
+    expect(terms).not.toContain(
+      "음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다.",
+    );
+    expect(terms).not.toContain("이상한 냄새가 나는 음식 등");
+    expect(terms).not.toContain("이상한 냄새가 나는 음식");
+    expect(terms).not.toContain("향이 강하거나 뜨거운 음식");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC nausea water-and-clothing source sentence", () => {
     const sourceSentence =
       "물은 포만감을 줄 수 있기 때문에 천천히 조금씩 마시고, 식사 시에도 조금만 마시도록 합니다. 옷은 몸이 조이지 않도록 느슨하게 입습니다.";

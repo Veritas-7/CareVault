@@ -1,5 +1,42 @@
 # CareVault Working Notes
 
+## 2026-06-08 20:35 KST - PENDING NCC Nausea Room Ventilation Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center nausea source guidance for: `이상한 냄새가 나거나 너무 후덥지근한 방은 피하도록 하며, 음식냄새가 나지 않도록 자주 환기시킵니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `cf68e0a3e251282f963b783ff4f1937ec81e0a4f`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC nausea coverage handles the meal-environment sentence for a ventilated eating place, but not the separate official sentence about avoiding odd smells or a stuffy room and ventilating to remove food smells.
+  - Using TDD and keeping this as source-backed nausea environment support, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`; it says to avoid odd smells or a stuffy room and ventilate often so food smells do not linger.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact room-ventilation source sentence is not ignored or collapsed to odd-smell food triggers.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the exact sentence in the balanced guide examples.
+  - `README.md`: documented expanded NCC nausea room-ventilation exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 205 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `cf68e0a3e251282f963b783ff4f1937ec81e0a4f`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 770 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS staged file list: `git diff --cached --name-only` returned only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage explicit source/log paths, run staged checks, then commit and push the source slice.
+
 ## 2026-06-08 20:33 KST - Final NCC Nausea Antiemetic Consultation Log
 
 - Current Goal:

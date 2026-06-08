@@ -37,6 +37,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC nausea treatment-before-eating sentence matching for 항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다
 - NCC nausea hunger-before-eating sentence matching for 배가 고프면 더욱 메스꺼울 수 있으므로 배고프기 전에 먹도록 합니다
 - NCC nausea meal-environment sentence matching for 음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다
+- NCC nausea room-ventilation sentence matching for 이상한 냄새가 나거나 너무 후덥지근한 방은 피하도록 하며, 음식냄새가 나지 않도록 자주 환기시킵니다
 - NCC nausea water-and-clothing sentence matching for 물은 포만감을 줄 수 있기 때문에 천천히 조금씩 마시고, 식사 시에도 조금만 마시도록 합니다. 옷은 몸이 조이지 않도록 느슨하게 입습니다
 - NCC nausea trigger-check consultation sentence matching for 메스꺼움이 언제, 무엇 때문에 나타나는지를 체크하고 의사선생님이나 간호사와 상의합니다
 - NCC nausea very-sweet-food sentence matching for 사탕, 쿠키 또는 케익 등과 같이 매우 단 음식
