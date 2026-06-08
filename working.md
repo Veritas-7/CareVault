@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:02 KST - Final NCC Dry-Mouth Meal-Sip Straw Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center dry-mouth meal-sip straw exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `bacd814` (`Add NCC dry-mouth meal-sip straw guidance`).
+  - Post-push verification log commit pushed: `f5b4fde` (`Log NCC dry-mouth meal-sip straw verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `f5b4fdea84091720eb863f77295b596d846bd4aa`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 239 tests.
+  - PASS final coverage grep: `rg -n "식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다|빨대를 이용하면 삼키는 것에 도움이 됩니다|meal-sip-straw|수분 한 모금과 빨대|NCC Dry-Mouth Meal-Sip" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 01:00 KST - Post-Push NCC Dry-Mouth Meal-Sip Straw Verification
 
 - Current Goal:
