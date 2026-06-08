@@ -331,7 +331,7 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         detail:
           "국가암정보센터 면역기능 저하 자료는 모든 식품을 사용하기 전에 유효기간을 확인하고, 쥬스·우유·요구르트 등은 저온살균 제품을 선택하도록 안내합니다.",
         examples:
-          "사용하기 전에 유효기간 확인, 유효기간 확인, 저온살균 쥬스, 쥬스 우유 요구르트 저온살균 제품",
+          "사용하기 전에 유효기간 확인, 유효기간 확인, 저온살균 쥬스, 쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다, 쥬스 우유 요구르트 저온살균 제품",
         sourceIds: ["nccImmuneLowDiet"],
       },
       {
@@ -1058,6 +1058,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["저온살균 쥬스", "면역저하 시 유효기간·저온살균 제품 확인 후보", "nccImmuneLowDiet"],
   [
     "쥬스 우유 요구르트 저온살균 제품",
+    "면역저하 시 유효기간·저온살균 제품 확인 후보",
+    "nccImmuneLowDiet",
+  ],
+  [
+    "쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다",
     "면역저하 시 유효기간·저온살균 제품 확인 후보",
     "nccImmuneLowDiet",
   ],

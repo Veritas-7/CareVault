@@ -3894,6 +3894,39 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low pasteurized product source wording", () => {
+    const assessment = assessCancerFood(
+      "쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다"]);
+    expect(matchesByTerm["쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다"]).toMatchObject({
+      level: "ok",
+      reason: "면역저하 시 유효기간·저온살균 제품 확인 후보",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(terms).not.toContain("쥬스 우유 요구르트 저온살균 제품");
+    expect(terms).not.toContain("저온살균 제품");
+    expect(balancedGuideText).toContain("쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다");
+    expect(
+      formatFoodMatchEvidence(
+        matchesByTerm["쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다"],
+      ),
+    ).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low cooking hygiene safety practices from official guidance", () => {
     const assessment = assessCancerFood(
       "손톱 밑까지 깨끗이 씻기, 음식물에 머리카락 들어가지 않게, 조리 기구 식기 수저 소독, 식기 도마 칼 분리 사용, 생고기 닭고기 생선 즙이 다른 식품에 떨어지지 않게, 외식보다는 직접 요리",
