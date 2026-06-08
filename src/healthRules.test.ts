@@ -3024,6 +3024,34 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC after-treatment salty food source sentence", () => {
+    const sourceSentence = "짠 음식의 섭취를 피하고, 싱겁게 먹습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",
+      sourceId: "nccAfterTreatmentHealthyEating",
+    });
+    expect(terms).not.toContain("치료 후 짠 음식 피하기");
+    expect(terms).not.toContain("짠 음식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 후 건강한 식생활 - https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC mouth-pain soft and irritating food examples", () => {
     const assessment = assessCancerFood(
       "흰죽, 닭죽, 호박죽, 쌀미음, 바나나, 수박, 과일통조림, 토마토주스, 토스트, 크래커, 말린 음식",
