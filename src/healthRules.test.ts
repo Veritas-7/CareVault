@@ -3998,6 +3998,43 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain sore-mouth straw source sentence", () => {
+    const sourceSentence = "입안이 쓰린 경우 빨대를 이용합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 입과 목 통증 시 입안 쓰림 빨대 이용 후보",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(terms).not.toContain(
+      "식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다.",
+    );
+    expect(terms).not.toContain("물 한 모금");
+    expect(terms).not.toContain("물 조금씩 자주");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC mouth-pain soft-cooking small-size source sentence", () => {
     const sourceSentence =
       "요리를 할 때는 부드럽고 연해질 때까지 하도록 하며, 음식을 작은 크기로 자릅니다.";
