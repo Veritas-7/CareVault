@@ -572,6 +572,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccMouthPainDiet"],
       },
       {
+        label: "식욕부진 시 식사 중 수분 조금만",
+        detail:
+          "국가암정보센터 식욕부진 자료는 식사 시 수분섭취가 포만감을 줄 수 있어 한 모금씩 조금만 마시고, 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 안내합니다.",
+        examples: "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.",
+        sourceIds: ["nccAppetiteLossDiet"],
+      },
+      {
         label: "메스꺼움 심할 때 억지 섭취 피하기",
         detail:
           "국가암정보센터 메스꺼움 자료는 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 하며, 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 안내합니다.",
@@ -1989,6 +1996,11 @@ const limitFoods: FoodRuleTerm[] = [
     "기름진 음식과 단 음식은 피하고, 가능한 싱겁게 먹는다.",
     "국가암정보센터 적정 체중과 체지방 유지 식사조절 후보",
     "nccWeightMaintenanceDiet",
+  ],
+  [
+    "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.",
+    "국가암정보센터 식욕부진 시 식사 중 수분 조절 후보",
+    "nccAppetiteLossDiet",
   ],
   [
     "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.",

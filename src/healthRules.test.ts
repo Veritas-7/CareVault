@@ -3835,6 +3835,41 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC appetite-loss mealtime fluid source sentence", () => {
+    const sourceSentence = "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccAppetiteLossDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 식욕부진",
+    );
+    expect(foodGuidanceSources.nccAppetiteLossDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 식욕부진 시 식사 중 수분 조절 후보",
+      sourceId: "nccAppetiteLossDiet",
+    });
+    expect(terms).not.toContain("물 한 모금");
+    expect(terms).not.toContain("물 조금씩 자주");
+    expect(terms).not.toContain("특수영양 보충음료");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC diarrhea hydration soft-food and trigger examples", () => {
     const assessment = assessCancerFood(
       "설사 육수, 설사 스포츠 음료, 설사 바나나, 설사 으깬 감자, 설사 복숭아, 설사 토마토, 설사 흰죽, 설사 쌀미음, 설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",

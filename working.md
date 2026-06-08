@@ -1,5 +1,35 @@
 # CareVault Working Notes
 
+## 2026-06-08 17:36 KST - NCC Appetite-Loss Mealtime Fluid Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center appetite-loss source guidance for: `식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state after `e28d1051c37fa4d13d195a9ad8c785e7a10002d1`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Using TDD and keeping this as source-backed appetite-loss mealtime fluid guidance, not diagnosis, cure, treatment, or individual diet prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 식욕부진`, `https://www.cancer.go.kr/lay1/S1T479C480/contents.do`; it states the mealtime fluid sentence and separately advises larger water intake before or 30-60 minutes after meals.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC appetite-loss mealtime fluid source sentence, source evidence, guide-card text, and guard checks against collapsing into dry-mouth water or appetite-loss supplement examples.
+  - `src/healthRules.ts`: added a visible limit guide item and exact source-backed `watch` matcher term using the existing `nccAppetiteLossDiet` source metadata.
+  - `README.md`: documented expanded NCC appetite-loss mealtime fluid exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the new source sentence returned `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 182 tests.
+  - PASS full tests: `npm test` => 64 files / 747 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS build: `npm run build`.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS GitHub readiness: `gh auth status` is logged in as `Veritas-7`, `gitleaks version` is `8.30.1`, `git ls-remote origin HEAD` resolved to `e28d1051c37fa4d13d195a9ad8c785e7a10002d1`, and `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` returned a private repository.
+  - PASS whitespace check: `git diff --check`.
+  - PASS whole-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 8.30 MB and found no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full verification gates, stage only `README.md`, `src/healthRules.ts`, `src/healthRules.test.ts`, and `working.md`, run staged checks, then commit and push if all gates pass.
+
 ## 2026-06-08 17:33 KST - Final NCC Nausea Do-Not-Force Intake Log
 
 - Current Goal:
