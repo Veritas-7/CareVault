@@ -416,6 +416,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaDiet"],
       },
       {
+        label: "메스꺼움 시 배고프기 전 식사",
+        detail:
+          "국가암정보센터 메스꺼움 자료는 배가 고프면 메스꺼움이 더 심해질 수 있으므로 배고프기 전에 먹도록 안내합니다.",
+        examples: "배가 고프면 더욱 메스꺼울 수 있으므로 배고프기 전에 먹도록 합니다.",
+        sourceIds: ["nccNauseaDiet"],
+      },
+      {
         label: "구토 조절 후 단계적 유동식",
         detail:
           "국가암정보센터 구토 자료는 구토 증상이 있을 때는 먹거나 마시지 않고, 증상이 조절되면 물이나 육수 같은 맑은 유동식부터 조금씩 시작해 미음이나 부드러운 식사로 바꾸며, 우유 소화가 힘들면 우유가 들어있지 않은 제품을 이용하도록 안내합니다.",
@@ -1389,6 +1396,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["복숭아통조림", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["맑은 유동식", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
   ["얼음조각", "국가암정보센터 메스꺼움 시 위 부담 적은 음식 후보", "nccNauseaDiet"],
+  [
+    "배가 고프면 더욱 메스꺼울 수 있으므로 배고프기 전에 먹도록 합니다.",
+    "국가암정보센터 메스꺼움 시 배고프기 전 식사 후보",
+    "nccNauseaDiet",
+  ],
   ["구토 조절 후 물", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
   ["구토 조절 후 육수", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
   ["구토 맑은 유동식", "국가암정보센터 구토 조절 후 단계적 수분·유동식 후보", "nccVomitingDiet"],
