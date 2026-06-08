@@ -1,5 +1,25 @@
 # CareVault Working Notes
 
+## 2026-06-08 12:29 KST - Post-Push NCC Healthy Eating Anticancer-Treatment Cell-Recovery Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center healthy-eating anticancer-treatment cell-recovery source sentence slice.
+- Result:
+  - Source commit pushed: `171cce8` (`Add NCC cell-recovery guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `171cce8f3ec20934e0405b06ec7aaff91b798823`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS log-only full tests: `npm test` => 64 files / 707 tests.
+  - PASS log-only typecheck: `npm run typecheck`.
+  - PASS log-only build: `npm run build`.
+  - PASS log-only runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `올바르게 식사하기`, `https://www.cancer.go.kr/lay1/S1T471C474/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 12:25 KST - NCC Healthy Eating Anticancer-Treatment Cell-Recovery Source Sentence
 
 - Current Goal:
