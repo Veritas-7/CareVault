@@ -1,5 +1,41 @@
 # CareVault Working Notes
 
+## 2026-06-09 05:15 KST - PENDING NCC Weight-Change Weight-Loss Egg Salad Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center weight-change source sentence for: `야채샐러드에 삶은 계란을 다져 넣는다.`
+- Context:
+  - Continued from clean/synced CareVault state at `0d9c174110ea5d102747a6ee5ba74402b41a690c`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccWeightChangeDiet` coverage preserves the immediately preceding exact misutgaru milk/soy drink sentence and the later protein snack sentence/examples phrase, but not yet this exact boiled-egg vegetable-salad sentence.
+  - Existing broader terms include the weight-loss vegetable-salad dressing calorie phrase, egg protein examples phrase, `체중감소 계란찜`, treatment-diet egg/tofu/dairy terms, taste-change egg terms, and the later protein-snack sentence; this slice should preserve the exact NCC weight-change supportive context without weakening neighboring calorie, protein-example, treatment, taste-change, or protein-snack rules.
+  - `DESIGN.md` remains the design/source-backed guidance baseline for Korean, clinical, non-diagnostic food guidance.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`; under weight-loss protein supplementation cooking changes it lists `야채샐러드에 삶은 계란을 다져 넣는다.`, and the page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN coverage for the exact NCC weight-loss boiled-egg vegetable-salad sentence, source evidence, balanced guide text, and guard checks against collapsing into broader salad, vegetable-salad calorie, egg protein, treatment-diet, taste-change, or protein-snack terms.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the sentence in the existing weight-loss calorie/protein guide-card item.
+  - `README.md`: documented expanded NCC weight-change weight-loss egg salad exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence collapsed to the generic `샐러드` matcher instead of preserving the exact NCC weight-loss boiled-egg vegetable-salad sentence.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 274 tests.
+  - PASS source/diff checks: `rg -n "야채샐러드에 삶은 계란|egg salad|야채샐러드 삶은 계란|NCC Weight-Change Weight-Loss Egg Salad|Egg Salad" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `0d9c174110ea5d102747a6ee5ba74402b41a690c`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.11 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 839 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 81 insertions, 2 deletions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Confirm RED, implement minimal exact-source support, then run focused and full verification before commit/push.
+
 ## 2026-06-09 05:11 KST - Post-Push NCC Weight-Change Weight-Loss Misutgaru Milk Soy Drink Verification
 
 - Current Goal:
