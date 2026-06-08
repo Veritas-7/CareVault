@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:35 KST - Final NCC Dry-Mouth Nearby-Water Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center dry-mouth nearby-water exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `2224530` (`Add NCC dry-mouth nearby-water guidance`).
+  - Post-push verification log commit pushed: `027487b` (`Log NCC dry-mouth nearby-water verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `027487bf04c37d406d19cf29806aa3cdcf459a2a`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 236 tests.
+  - PASS final coverage grep: `rg -n "가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다|nearby-water|가까운 물과 잦은 소량|NCC Dry-Mouth Nearby-Water" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 00:34 KST - Post-Push NCC Dry-Mouth Nearby-Water Verification
 
 - Current Goal:
