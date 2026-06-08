@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 23:59 KST - Final NCC Mouth-Pain Irritant Warning Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center mouth-pain irritating food/drink exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `49b3588` (`Add NCC mouth-pain irritant warning guidance`).
+  - Post-push verification log commit pushed: `90c4ed8` (`Log NCC mouth-pain irritant warning verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `90c4ed8d66253584296e263d09c6bc9f6cce6a82`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-08 23:59 KST - Post-Push NCC Mouth-Pain Irritant Warning Verification
 
 - Current Goal:
