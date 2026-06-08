@@ -80,6 +80,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC weight-change weight-loss protein snack examples phrase matching for 만두, 피자, 샌드위치, 계란샐러드, 카스테라 등
 - NCC weight-change weight-gain cause consultation sentence matching for 그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다
 - NCC weight-change weight-gain high-salt food limit sentence matching for 소금이 우리 몸에서 수분을 축적시키는 작용을 하므로 염분 함량이 높은 식품(예: 가공식품, 김치, 젓갈, 장아찌류 등)은 제한하고 가능한 싱겁게 먹는 것이 좋습니다
+- NCC weight-change weight-gain appetite high-calorie low-nutrition sentence matching for 반면, 식욕이 증가된 경우에는 열량이 높고 영양가가 없는 식품들(예: 청량 음료, 초콜릿, 사탕, 과자류 등)은 제한하도록 합니다
 - NCC weight-change weight-gain balanced food-choice sentence matching for 과일과 야채 그리고 곡류의 섭취를 증가시킵니다. 가능한 한 지방이 없는 부위의 육류제품과 저지방 우유 및 유제품을 이용합니다
 - NCC weight-change weight-gain boil/steam cooking sentence matching for 끓이고 찌는 형태의 요리방법을 이용합니다
 - NCC weight-change weight-gain added butter/mayo/sweetener limit sentence matching for 버터, 마요네즈, 감미료 등을 추가로 사용하지 않도록 합니다
