@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 03:53 KST - Post-Push NCC Weight-Change Weight-Loss Milk Soy Drink Calorie Examples Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center weight-change weight-loss milk/soy drink calorie examples exact source phrase slice.
+- Result:
+  - Source commit pushed: `ff2ebdf` (`Add NCC weight-change milk soy examples`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `ff2ebdfe8262fd18e7de874e10d0e1b31e4972dd`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 828 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 체중변화`, `https://www.cancer.go.kr/lay1/S1T479C486/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync, coverage, runtime, and focused-test checks before continuing with another official-source slice.
+
 ## 2026-06-09 03:48 KST - PENDING NCC Weight-Change Weight-Loss Milk Soy Drink Calorie Examples Phrase
 
 - Current Goal:
