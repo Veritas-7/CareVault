@@ -1,5 +1,22 @@
 # CareVault Working Notes
 
+## 2026-06-08 16:24 KST - Final NCC After-Treatment Whole-Grain Selection Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center after-treatment whole-grain selection source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `0aff5bd` (`Add NCC after-treatment whole grain guidance`).
+  - Post-push verification log commit pushed: `7ac6c5c` (`Log NCC after-treatment whole grain verification`).
+  - Post-log sync check returned `0 0`; local HEAD and `origin/main` both resolved to `7ac6c5c62dd204d752fe7bd282f4bda218c02d8a`.
+- Verification:
+  - PASS post-log runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+- Sources:
+  - National Cancer Information Center PDF `치료 후 건강한 식생활`, `https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf`
+- Issues:
+  - No new blocking issue. Source commit and verification log were pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Continue with the next narrow official-source cervical-cancer nutrition, safety, or record-prep slice after rechecking current source coverage.
+
 ## 2026-06-08 16:21 KST - Post-Push NCC After-Treatment Whole-Grain Selection Verification
 
 - Current Goal:
