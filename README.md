@@ -38,6 +38,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC nausea hunger-before-eating sentence matching for 배가 고프면 더욱 메스꺼울 수 있으므로 배고프기 전에 먹도록 합니다
 - NCC nausea meal-environment sentence matching for 음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다
 - NCC nausea water-and-clothing sentence matching for 물은 포만감을 줄 수 있기 때문에 천천히 조금씩 마시고, 식사 시에도 조금만 마시도록 합니다. 옷은 몸이 조이지 않도록 느슨하게 입습니다
+- NCC nausea trigger-check consultation sentence matching for 메스꺼움이 언제, 무엇 때문에 나타나는지를 체크하고 의사선생님이나 간호사와 상의합니다
 - NCC appetite-loss mealtime fluid sentence matching for 식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다
 - NCC appetite-loss water-timing sentence matching for 만약 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 합니다
 - NCC appetite-loss eat-when-able sentence matching for 식사 시간에 얽매이지 말고 먹고 싶을 때, 먹을 수 있을 때, 또는 몸 상태가 좋을 때 먹도록 합니다
