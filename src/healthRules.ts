@@ -480,6 +480,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccAppetiteLossDiet"],
       },
       {
+        label: "식욕부진 시 몸 상태 좋은 때 식사",
+        detail:
+          "국가암정보센터 식욕부진 자료는 몸의 상태가 가장 좋을 때 많이 먹도록 하며, 일반적으로 충분한 휴식을 취한 아침이 가장 좋다고 안내합니다.",
+        examples:
+          "몸의 상태가 가장 좋을 때 많이 먹도록 합니다. 일반적으로 충분한 휴식을 취한 아침이 가장 좋다고 합니다.",
+        sourceIds: ["nccAppetiteLossDiet"],
+      },
+      {
         label: "식욕부진 시 가까이 두는 간식",
         detail:
           "국가암정보센터 식욕부진 자료는 조금씩 자주 먹고 간식을 가까이 두며, 간식으로 죽·미음·쥬스·스프·우유 및 유제품 등을 활용하고, 식사섭취가 계속 힘들면 특수영양 보충음료를 이용하도록 안내합니다.",
@@ -1567,6 +1575,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   [
     "평소에 좋아하던 음식을 먹거나, 음식 형태에 변화를 주어 메뉴를 다양하게 해서 먹습니다.",
     "국가암정보센터 식욕부진 시 좋아하는 음식·메뉴 다양화 후보",
+    "nccAppetiteLossDiet",
+  ],
+  [
+    "몸의 상태가 가장 좋을 때 많이 먹도록 합니다. 일반적으로 충분한 휴식을 취한 아침이 가장 좋다고 합니다.",
+    "국가암정보센터 식욕부진 시 몸 상태가 좋은 때 식사 후보",
     "nccAppetiteLossDiet",
   ],
   ["식욕부진 간식", "국가암정보센터 식욕부진 시 가까이 두는 간식·유동식 후보", "nccAppetiteLossDiet"],
