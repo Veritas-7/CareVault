@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 22:35 KST - Post-Push NCC Constipation Fiber-Food Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center constipation fiber-food exact source sentence slice.
+- Result:
+  - Source commit pushed: `4fd3496` (`Add NCC constipation fiber-food guidance`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `4fd3496251993615b1ebb7474fcb22972efc4cfd`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 785 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 변비`, `https://www.cancer.go.kr/lay1/S1T479C487/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Push this verification log, then run final sync/runtime/focused-test checks and add a final log entry.
+
 ## 2026-06-08 22:32 KST - PENDING NCC Constipation Fiber-Food Source Sentence
 
 - Current Goal:
