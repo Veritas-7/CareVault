@@ -3628,6 +3628,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain irritating food-drink source sentence", () => {
+    const sourceSentence = "입안을 자극하는 음식이나 음료는 피하도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 입과 목 통증 시 입안 자극 음식·음료 확인 후보",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(terms).not.toContain("토마토주스");
+    expect(terms).not.toContain("토스트");
+    expect(terms).not.toContain("크래커");
+    expect(terms).not.toContain("말린 음식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC dry-mouth moisture and saliva-stimulation food examples", () => {
     const assessment = assessCancerFood(
       "물 조금씩 자주, 물 한 모금, 소스나 드레싱, 딱딱한 사탕, 껌, 껌 씹기",
