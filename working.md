@@ -1,5 +1,36 @@
 # CareVault Working Notes
 
+## 2026-06-09 00:11 KST - PENDING NCC Mouth-Pain Blended-Food Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center mouth-pain source guidance for: `경우에 따라서는 믹서로 곱게 갈도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `cd7b297ac2b213960fd2ba406aa52d1c28b2c5e5`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC mouth-pain coverage recognizes soft/moist, easy-chew/swallow, irritating-food warning, and soft-cooking/small-size source sentences, but not this exact blended-food sentence.
+  - Using TDD and keeping this as source-backed supportive food-preparation guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`; it includes `경우에 따라서는 믹서로 곱게 갈도록 합니다.` in the mouth/throat pain guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED/GREEN source, guide-card, food-match, source-evidence, and no-cure-claim coverage for `경우에 따라서는 믹서로 곱게 갈도록 합니다.`
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher and exposed the blended-food preparation sentence in the balanced guide detail/examples.
+  - `README.md`: documented the expanded NCC mouth-pain blended-food exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral` instead of `ok`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 233 tests.
+  - PASS source/diff checks: `rg -n "경우에 따라서는 믹서로 곱게 갈|blended-food|믹서로 곱게 간 음식|Blended-Food" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `cd7b297ac2b213960fd2ba406aa52d1c28b2c5e5`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 798 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-09 00:08 KST - Final NCC Mouth-Pain Soft-Cooking Log
 
 - Current Goal:

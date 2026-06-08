@@ -103,7 +103,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC immune-low leftover-discard and abnormal-food-condition matching for 냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다 and 식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다, preserving longer storage/discard wording as care-team `risk`
 - NCC immune-low uncooked-food source-sentence matching for 육회, 생선회, 생조개, 초밥 등 익히지 않은 음식은 드시지 않습니다, preserving the longer official raw-food warning instead of collapsing it to individual food chips
 - NCC treatment eating balance and no-special-food guidance matching for 치료 중 균형 잡힌 식사/치료 중 충분한 열량과 단백질/치료 중 비타민 및 무기질/여러 가지 음식을 골고루 plus special-food/special-nutrient cure-claim confirmation
-- NCC mouth-pain soft-moist/easy-chew/soft-cooking-small-size/irritating-food-drink source sentences and soft/irritating food matching for 부드럽고 촉촉한 음식을 준비합니다./씹고 삼키기 쉬운 음식을 먹습니다./요리를 할 때는 부드럽고 연해질 때까지 하도록 하며, 음식을 작은 크기로 자릅니다./입안을 자극하는 음식이나 음료는 피하도록 합니다./흰죽/닭죽/호박죽/쌀미음/바나나/수박/과일통조림/토마토주스/토스트/크래커/말린 음식
+- NCC mouth-pain soft-moist/easy-chew/soft-cooking-small-size/blended-food/irritating-food-drink source sentences and soft/irritating food matching for 부드럽고 촉촉한 음식을 준비합니다./씹고 삼키기 쉬운 음식을 먹습니다./요리를 할 때는 부드럽고 연해질 때까지 하도록 하며, 음식을 작은 크기로 자릅니다./경우에 따라서는 믹서로 곱게 갈도록 합니다./입안을 자극하는 음식이나 음료는 피하도록 합니다./흰죽/닭죽/호박죽/쌀미음/바나나/수박/과일통조림/토마토주스/토스트/크래커/말린 음식
 - NCC dry-mouth moisture and saliva-stimulation matching for 물 조금씩 자주/물 한 모금/소스나 드레싱/딱딱한 사탕/껌/껌 씹기
 - NCC nausea easier-food and trigger-food matching for 샤베트/복숭아통조림/맑은 유동식/얼음조각/기름진 음식/매우 단 음식/향이 강하거나 뜨거운 음식/이상한 냄새가 나는 음식
 - NCC nausea toast-cracker-yogurt-sherbet source-line matching for 토스트, 크래커, 요거트, 샤베트
