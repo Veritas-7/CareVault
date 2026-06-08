@@ -4101,6 +4101,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC appetite-loss mouth-cleaning source sentence", () => {
+    const sourceSentence = "입맛을 돋우기 위해서 식사전후에 입안을 청결하게 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccAppetiteLossDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 식욕부진",
+    );
+    expect(foodGuidanceSources.nccAppetiteLossDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 식욕부진 시 식사 전후 입안 청결 후보",
+      sourceId: "nccAppetiteLossDiet",
+    });
+    expect(terms).not.toContain("물 조금씩 자주");
+    expect(terms).not.toContain("물 한 모금");
+    expect(terms).not.toContain("껌 씹기");
+    expect(terms).not.toContain("입맛 변화 오렌지");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC appetite-loss mealtime fluid source sentence", () => {
     const sourceSentence = "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.";
     const assessment = assessCancerFood(sourceSentence);
