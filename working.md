@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:11 KST - Final NCC Dry-Mouth Saliva Candy-Gum Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center dry-mouth saliva candy-gum exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `47f6753` (`Add NCC dry-mouth candy-gum saliva guidance`).
+  - Post-push verification log commit pushed: `5f45a92` (`Log NCC dry-mouth candy-gum verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `5f45a923b23fcb125a0c84f68501decda25b1492`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 240 tests.
+  - PASS final coverage grep: `rg -n "딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다|saliva-candy-gum|딱딱한 사탕과 껌을 통한|NCC Dry-Mouth Saliva" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입안의 건조증`, `https://cancer.go.kr/lay1/S1T479C485/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 01:10 KST - Post-Push NCC Dry-Mouth Saliva Candy-Gum Verification
 
 - Current Goal:
