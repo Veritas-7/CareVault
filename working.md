@@ -1,5 +1,42 @@
 # CareVault Working Notes
 
+## 2026-06-08 20:28 KST - PENDING NCC Nausea Antiemetic Consultation Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center nausea source guidance for: `미리 메스꺼움과 구토증상을 완화시키는 항구토제의 사용에 대해 의사선생님과 상의합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `894ab49959aa6941a5c828857004f2cb89ef0d45`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC nausea coverage handles multiple food/environment source sentences, but the antiemetic consultation sentence is not yet represented in `README.md`, `src/healthRules.ts`, or `src/healthRules.test.ts`.
+  - Using TDD and keeping this as care-team consultation support, not antiemetic-use instruction, medication advice, diagnosis, cure, or individualized treatment advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`; it says to discuss antiemetic use with a doctor in advance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact antiemetic consultation source sentence is treated as care-team confirmation rather than ignored.
+  - `src/healthRules.ts`: added the exact source-backed `risk` matcher and care-team guide copy without adding a broad `항구토제` keyword.
+  - `README.md`: documented expanded NCC nausea antiemetic consultation exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 204 tests.
+  - PASS pre-push diff whitespace check: `git diff --check`.
+  - PASS GitHub auth check: `gh auth status` authenticated as `Veritas-7`.
+  - PASS secret tooling check: `gitleaks version` => `8.30.1`.
+  - PASS remote HEAD check: `git ls-remote origin HEAD` => `894ab49959aa6941a5c828857004f2cb89ef0d45`.
+  - PASS repository visibility check: `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` confirmed private GitHub repository.
+  - PASS runtime cleanup check: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full tests: `npm test` => 64 files / 769 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS full secret scan: `gitleaks dir . --no-banner --redact`.
+  - PASS staged file list: `git diff --cached --name-only` returned only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff whitespace check: `git diff --cached --check`.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact`.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Stage explicit source/log paths, run staged checks, then commit and push the source slice.
+
 ## 2026-06-08 20:26 KST - Final NCC Nausea Clear-Liquid Ice Log
 
 - Current Goal:

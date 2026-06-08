@@ -103,6 +103,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating soup broth limit sentence matching for 국이나 찌개의 국물 섭취는 제한합니다/국이나 찌개 국물 섭취 제한
 - NCC healthy-eating low-salt food heading matching for 음식을 짜지 않게 먹습니다/음식을 짜지 않게 먹기
 - NCC healthy-eating low-salt kimchi preparation matching for 김치류는 짜지 않게 만들어 먹습니다/김치류 짜지 않게 만들기
+- NCC nausea antiemetic consultation source-sentence matching for 미리 메스꺼움과 구토증상을 완화시키는 항구토제의 사용에 대해 의사선생님과 상의합니다
 - dated medical document notes such as labs, imaging, pathology, prescriptions, and visit notes with text/category/status filtering
 - saved-document panel summary chips for review-status mix, open next actions, attachment recovery needs, and deleted-document archive count
 - document search/category/status filters with an explicit no-match empty state and one-click filter reset
