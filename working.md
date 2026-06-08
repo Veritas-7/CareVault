@@ -1,5 +1,37 @@
 # CareVault Working Notes
 
+## 2026-06-09 06:03 KST - PENDING NCC Mouth-Pain Non-Sour Fruit Examples Source Line
+
+- Current Goal:
+  - Add exact National Cancer Information Center mouth-pain source line for: `과일 : 바나나, 배, 수박, 과일통조림 등과 같이 시지 않은 과일`
+- Context:
+  - Continued from clean/synced CareVault state at `ce26b72344fd1b667b2edfa578d22492cb521e38`; `git status --short --branch` returned `## main...origin/main`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing `nccMouthPainDiet` guide-card examples list individual fruit terms such as `바나나`, `배`, `수박`, and `과일통조림`, while the matcher currently includes only some individual fruit terms and does not preserve the exact NCC non-sour fruit examples line.
+  - This slice should preserve the NCC mouth-pain non-sour fruit source-line context without collapsing into individual mouth-pain fruit terms, diarrhea potassium-recovery banana context, or taste-change citrus contexts.
+  - Using TDD and keeping this as supportive food guidance, not diagnosis, treatment, cure, or individual nutrition prescription.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 입과 목의 통증`, `https://www.cancer.go.kr/lay1/S1T479C483/contents.do`; under foods easy to chew and swallow it lists the non-sour fruit examples line with banana, pear, watermelon, and canned fruit. The page notes the information does not replace professional medical advice.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage for the exact NCC mouth-pain non-sour fruit examples source line, source evidence, balanced guide text, and checks against collapsing into individual mouth-pain fruit terms, diarrhea banana context, or taste-change citrus context.
+  - `src/healthRules.ts`: added the exact source-backed `ok` matcher before individual mouth-pain fruit terms and exposed the source line in the mouth-pain soft-food guide-card examples.
+  - `README.md`: documented expanded NCC mouth-pain non-sour fruit examples exact-source line coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source line split into `바나나`, `수박`, and `과일통조림` instead of preserving the exact NCC mouth-pain non-sour fruit examples line.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 281 tests.
+  - PASS source/diff checks: `rg -n "과일 : 바나나|non-sour fruit|시지 않은 과일 예시|PENDING NCC Mouth-Pain Non-Sour Fruit" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `pwd` and `git rev-parse --show-toplevel` both resolved to `/Users/wj/Ai/System/10_Projects/CareVault`; `git status --short --branch` showed only `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md` modified; `git remote -v`; `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `ce26b72344fd1b667b2edfa578d22492cb521e38`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no CareVault dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` scanned about 9.17 MB and reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 846 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+- Issues:
+  - No current blocker observed so far.
+- Next Steps:
+  - Stage only the intended source/log files, run staged diff and secret checks, then commit/push.
+
 ## 2026-06-09 05:59 KST - Post-Push NCC Mouth-Pain Thin-Rice-Gruel Examples Verification
 
 - Current Goal:

@@ -3630,6 +3630,44 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain non-sour fruit examples source line", () => {
+    const sourceLine = "과일 : 바나나, 배, 수박, 과일통조림 등과 같이 시지 않은 과일";
+    const assessment = assessCancerFood(sourceLine);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceLine]);
+    expect(matchesByTerm[sourceLine]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 입과 목 통증 시 시지 않은 과일 예시 후보",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(terms).not.toContain("바나나");
+    expect(terms).not.toContain("수박");
+    expect(terms).not.toContain("과일통조림");
+    expect(terms).not.toContain("설사 바나나");
+    expect(terms).not.toContain("입맛 변화 오렌지");
+    expect(terms).not.toContain("입맛 변화 레몬");
+    expect(balancedGuideText).toContain(sourceLine);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceLine])).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC mouth-pain soft-moist source sentence", () => {
     const sourceSentence = "부드럽고 촉촉한 음식을 준비합니다.";
     const assessment = assessCancerFood(sourceSentence);
