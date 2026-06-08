@@ -1,6 +1,25 @@
 # CareVault Working Notes
 
-## 2026-06-08 19:47 KST - PENDING NCC Nausea Very-Sweet-Food Source Sentence
+## 2026-06-08 19:50 KST - Post-Push NCC Nausea Very-Sweet-Food Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center nausea very-sweet-food source sentence slice.
+- Result:
+  - Source commit pushed: `220e281` (`Add NCC nausea very-sweet-food guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `220e281180f206dbd2bc9d3c6d6dae6f01ad1477`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 764 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center page `증상별 식생활 - 메스꺼움`, `https://www.cancer.go.kr/lay1/S1T479C481/contents.do`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
+## 2026-06-08 19:47 KST - NCC Nausea Very-Sweet-Food Source Sentence
 
 - Current Goal:
   - Add exact National Cancer Information Center nausea source guidance for: `사탕, 쿠키 또는 케익 등과 같이 매우 단 음식`
@@ -35,7 +54,7 @@
 - Issues:
   - No new blocking issue found before edits.
 - Next Steps:
-  - Add RED coverage first, confirm the exact source sentence currently collapses to the generic `매우 단 음식` match, then add the minimal exact watch matcher and guide example.
+  - Source slice committed and pushed as `220e281`; record post-push verification in the newer section.
 
 ## 2026-06-08 19:45 KST - Final NCC Nausea Trigger-Check Consultation Log
 
