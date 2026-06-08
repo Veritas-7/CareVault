@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-09 01:42 KST - Final NCC Taste-Change Protein Alternative Log
+
+- Current Goal:
+  - Finalize the National Cancer Information Center taste-change protein alternative exact source sentence slice after source and verification log commits.
+- Result:
+  - Source commit pushed: `5847d5c` (`Add NCC taste-change protein alternative guidance`).
+  - Post-push verification log commit pushed: `078b6ec` (`Log NCC taste-change protein alternative verification`).
+  - After fetching `origin main`, `origin/main...HEAD` returned `0 0`; local HEAD and `origin/main` both resolved to `078b6ec0d08d3919297abefb17a2e40677d96014`.
+- Verification:
+  - PASS final runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS final focused test: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 244 tests.
+  - PASS final coverage grep: `rg -n "만약 고기가 싫다면 생선이나 계란|protein-alternative-source|고기 대체 단백질 식품 후보|NCC Taste-Change Protein" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage.
+- Sources:
+  - National Cancer Information Center `증상별 식생활 - 입맛의 변화`, `https://www.cancer.go.kr/lay1/S1T479C484/contents.do`
+- Issues:
+  - No blocking issue remains for this source phrase slice.
+- Next Steps:
+  - Continue the broader CareVault official-source improvement loop with another narrow, source-backed cancer-care guidance slice.
+
 ## 2026-06-09 01:41 KST - Post-Push NCC Taste-Change Protein Alternative Verification
 
 - Current Goal:
