@@ -1,5 +1,24 @@
 # CareVault Working Notes
 
+## 2026-06-08 16:08 KST - Post-Push NCC After-Treatment Diet Difficulty Consultation Verification
+
+- Current Goal:
+  - Record post-push verification for the National Cancer Information Center after-treatment diet difficulty and chronic-disease diet-control consultation source sentence slice.
+- Result:
+  - Source commit pushed: `1b47bd6` (`Add NCC after-treatment diet consultation guidance`).
+  - `origin/main...HEAD` sync check returned `0 0`; local HEAD and `origin/main` both resolved to `1b47bd60e4c036be1973717f254bee917b1d1b92`.
+- Verification:
+  - PASS post-push runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS post-push full tests: `npm test` => 64 files / 736 tests.
+  - PASS post-push typecheck: `npm run typecheck`.
+  - PASS post-push build: `npm run build`.
+- Sources:
+  - National Cancer Information Center PDF `치료 후 건강한 식생활`, `https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf`
+- Issues:
+  - No new blocking issue. Source commit was pushed; repository sync/runtime status is verified above.
+- Next Steps:
+  - Commit and push this verification log, then confirm post-log sync/runtime status.
+
 ## 2026-06-08 16:05 KST - NCC After-Treatment Diet Difficulty Consultation Source Sentence
 
 - Current Goal:
