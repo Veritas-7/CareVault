@@ -156,6 +156,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC dry-mouth severe-problem clinician/dentist consultation source-sentence clinical-check matching for 그러나 문제가 심각하면 의사선생님이나 치과선생님과 상의합니다.
 - NCC taste-change dental-problem check and frequent oral-rinse source-sentence clinical-check matching for 음식의 맛이나 냄새에 영향을 미치는 치과적인 문제가 없는지 확인해보고, 입안을 자주 헹구도록 합니다.
 - NCC nausea easier-food and trigger-food matching for 샤베트/복숭아통조림/맑은 유동식/얼음조각/기름진 음식/매우 단 음식/향이 강하거나 뜨거운 음식/이상한 냄새가 나는 음식
+- NCC nausea low-stomach-burden parent source sentence matching for 비교적 위에 부담이 적은 식품들을 섭취합니다.
 - NCC nausea toast-cracker-yogurt-sherbet source-line matching for 토스트, 크래커, 요거트, 샤베트
 - NCC nausea soft fruit-vegetable source-sentence matching for 복숭아통조림이나 다른 부드러운 과일과 채소
 - NCC nausea clear-liquid-and-ice source-phrase matching for 맑은 유동식, 얼음조각 등
