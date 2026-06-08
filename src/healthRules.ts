@@ -688,6 +688,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaDiet"],
       },
       {
+        label: "구토 중 먹거나 마시지 않기",
+        detail:
+          "국가암정보센터 구토 자료는 구토증상이 있는 경우 먹거나 마시지 않도록 하고, 증상이 조절된 뒤 맑은 유동식부터 단계적으로 식사를 늘리도록 안내합니다.",
+        examples: "구토증상이 있는 경우 먹거나 마시지 않도록 합니다.",
+        sourceIds: ["nccVomitingDiet"],
+      },
+      {
         label: "메스꺼움 시 치료 전 식사 피하기",
         detail:
           "국가암정보센터 메스꺼움 자료는 항암화학요법이나 방사선치료를 받는 동안 오심 증세가 나타난다면 치료하기 1~2시간 전에는 먹지 않도록 안내합니다.",
@@ -2307,6 +2314,11 @@ const limitFoods: FoodRuleTerm[] = [
     "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.",
     "국가암정보센터 메스꺼움 시 억지 섭취 피하기 후보",
     "nccNauseaDiet",
+  ],
+  [
+    "구토증상이 있는 경우 먹거나 마시지 않도록 합니다.",
+    "국가암정보센터 구토 중 먹거나 마시지 않기 확인 후보",
+    "nccVomitingDiet",
   ],
   [
     "항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다.",

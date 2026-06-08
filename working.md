@@ -1,5 +1,39 @@
 # CareVault Working Notes
 
+## 2026-06-08 23:35 KST - PENDING NCC Vomiting Active-Intake Restriction Source Sentence
+
+- Current Goal:
+  - Add exact National Cancer Information Center vomiting source guidance for: `구토증상이 있는 경우 먹거나 마시지 않도록 합니다.`
+- Context:
+  - Continued from clean/synced CareVault state at `d7a9ef05d5dfb9fc3371123d391ab60d2623854b`.
+  - Active thread identity still points to `/Users/wj/Ai/System/10_Projects/CareVault`; `goal-warning` was not present in the current handoff check.
+  - This session excludes cmux/in-app browser testing per current objective text; verification is command-based.
+  - Existing NCC vomiting coverage recognizes post-control staged intake and clinician consultation sentences, but not this exact active-vomiting intake restriction sentence.
+  - Using TDD and keeping this as source-backed `watch` intake restriction guidance, not diagnosis, cure, treatment, or individualized medical advice.
+- Research:
+  - Re-checked National Cancer Information Center page `증상별 식생활 - 구토`, `https://www.cancer.go.kr/lay1/S1T479C482/contents.do`; it includes `구토증상이 있는 경우 먹거나 마시지 않도록 합니다.` in the vomiting guidance.
+- Changes:
+  - `src/healthRules.test.ts`: added RED coverage proving the exact vomiting active-intake restriction source sentence is currently ignored as `neutral`.
+  - `src/healthRules.ts`: added the exact source-backed `watch` matcher and exposed the active-intake restriction sentence in the limit guide detail/examples.
+  - `README.md`: documented the expanded NCC vomiting active-intake restriction exact-source sentence coverage.
+- Tests:
+  - RED confirmed: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` failed before implementation because the source sentence assessed as `neutral` instead of `watch`.
+  - PASS focused test after implementation: `npm test -- src/healthRules.test.ts src/foodMetric.test.ts` => 2 files / 228 tests.
+  - PASS source/diff checks: `rg -n "구토증상이 있는 경우 먹거나 마시지|active-intake|구토 중 먹거나 마시지|active-vomiting" README.md src/healthRules.ts src/healthRules.test.ts working.md` found the intended coverage; `git diff --check` returned clean.
+  - PASS GitHub/private repo preflight: `gh auth status`; `gitleaks version` => `8.30.1`; `git ls-remote origin HEAD` => `d7a9ef05d5dfb9fc3371123d391ab60d2623854b`; `gh repo view Veritas-7/CareVault --json visibility,isPrivate,url` => private.
+  - PASS runtime cleanup: `npm run runtime:doctor` reported port `1420` free, no installed/release CareVault app process, and no dev processes.
+  - PASS full-tree secret scan: `gitleaks dir . --no-banner --redact` reported no leaks.
+  - PASS full tests: `npm test` => 64 files / 793 tests.
+  - PASS typecheck: `npm run typecheck`.
+  - PASS production build: `npm run build`.
+  - PASS staged file scope: `git diff --cached --name-only` listed exactly `README.md`, `src/healthRules.test.ts`, `src/healthRules.ts`, and `working.md`.
+  - PASS staged diff checks: `git diff --cached --check` returned clean; `git diff --cached --stat` showed 4 files changed, 85 insertions before this log update.
+  - PASS staged secret scan: `gitleaks protect --staged --no-banner --redact` reported no leaks.
+- Issues:
+  - No new blocking issue found before edits.
+- Next Steps:
+  - Run full command-based preflight, staged diff/secret checks, then commit and push this source-backed slice.
+
 ## 2026-06-08 23:32 KST - Final NCC Vomiting Soft-Food General-Meal Log
 
 - Current Goal:

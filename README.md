@@ -110,6 +110,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC nausea soft fruit-vegetable source-sentence matching for 복숭아통조림이나 다른 부드러운 과일과 채소
 - NCC nausea clear-liquid-and-ice source-phrase matching for 맑은 유동식, 얼음조각 등
 - NCC nausea odd-smell-food source-sentence matching for 이상한 냄새가 나는 음식 등
+- NCC vomiting active-intake restriction source sentence matching for 구토증상이 있는 경우 먹거나 마시지 않도록 합니다
 - NCC vomiting staged liquid and soft-food matching for 구토 조절 후 물/구토 조절 후 육수/구토 맑은 유동식/구토 후 미음/구토 후 부드러운 식사/우유가 들어있지 않은 제품
 - NCC vomiting clear-liquid source sentence matching for 구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다
 - NCC vomiting soft-food/general-meal source sentence matching for 맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다
