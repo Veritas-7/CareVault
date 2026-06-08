@@ -3698,6 +3698,43 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC nausea treatment-before-eating source sentence", () => {
+    const sourceSentence =
+      "항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 메스꺼움",
+    );
+    expect(foodGuidanceSources.nccNauseaDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 메스꺼움 시 치료 전 식사 피하기 후보",
+      sourceId: "nccNauseaDiet",
+    });
+    expect(terms).not.toContain("메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.");
+    expect(terms).not.toContain("기름진 음식");
+    expect(terms).not.toContain("매우 단 음식");
+    expect(terms).not.toContain("식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다.");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC vomiting staged liquid and soft-food examples", () => {
     const assessment = assessCancerFood(
       "구토 조절 후 물, 구토 조절 후 육수, 구토 맑은 유동식, 구토 후 미음, 구토 후 부드러운 식사, 우유가 들어있지 않은 제품",

@@ -34,6 +34,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC weight-maintenance slow eating sentence matching for 과식을 피하기 위해 천천히 먹는다
 - NCC weight-maintenance clinical nutrition consult sentence matching for 단, 식사조절과 운동으로 적정 체중 유지가 어렵거나 고혈압, 당뇨병, 고지혈증 등 만성질환이 있는 경우 담당의사 및 임상영양사의 상담을 받도록 합니다
 - NCC nausea do-not-force intake sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다
+- NCC nausea treatment-before-eating sentence matching for 항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다
 - NCC appetite-loss mealtime fluid sentence matching for 식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다
 - NCC appetite-loss water-timing sentence matching for 만약 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 합니다
 - NCC appetite-loss eat-when-able sentence matching for 식사 시간에 얽매이지 말고 먹고 싶을 때, 먹을 수 있을 때, 또는 몸 상태가 좋을 때 먹도록 합니다
