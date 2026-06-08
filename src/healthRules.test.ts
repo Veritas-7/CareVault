@@ -4245,6 +4245,41 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mouth-pain oxaliplatin cold-food caution source sentence", () => {
+    const sourceSentence =
+      "그러나 옥살로플라틴(Oxaliplatin) 등과 같은 말초신경염을 유발할 수 있는 항암제 를 투여 받는 경우는 온도변화에 민감하여 통증을 유발할 수 있으므로 차가운 음식은 피하도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMouthPainDiet.label).toBe(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(foodGuidanceSources.nccMouthPainDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 입과 목 통증 시 옥살로플라틴 온도 민감성 차가운 음식 회피 확인 필요",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(terms).not.toContain("뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다.");
+    expect(terms).not.toContain("얼음조각을 먹는 것도 도움이 됩니다.");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|항암제 복용 권장/);
+  });
+
   it("recognizes NCC mouth-pain ice-chip source sentence", () => {
     const sourceSentence = "얼음조각을 먹는 것도 도움이 됩니다.";
     const assessment = assessCancerFood(sourceSentence);
