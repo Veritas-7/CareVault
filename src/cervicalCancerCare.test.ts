@@ -63,6 +63,7 @@ describe("cervicalCancerCare", () => {
       "nccVomitingDiet",
       "nccAppetiteLossDiet",
       "nccMouthPainDiet",
+      "nccMucositisCare",
       "nccDryMouthDiet",
       "nccTasteChangeDiet",
       "nccDiarrheaDiet",
@@ -136,6 +137,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccVomitingDiet.url).toContain("S1T479C482");
     expect(cervicalCancerCareSources.nccAppetiteLossDiet.url).toContain("S1T479C480");
     expect(cervicalCancerCareSources.nccMouthPainDiet.url).toContain("S1T479C483");
+    expect(cervicalCancerCareSources.nccMucositisCare.url).toContain("S1T390C393");
     expect(cervicalCancerCareSources.nccDryMouthDiet.url).toContain("S1T479C485");
     expect(cervicalCancerCareSources.nccTasteChangeDiet.url).toContain("S1T479C484");
     expect(cervicalCancerCareSources.nccDiarrheaDiet.url).toContain("S1T479C488");
@@ -231,7 +233,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(45);
+    expect(cervicalCancerCarePrompts).toHaveLength(46);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -253,6 +255,7 @@ describe("cervicalCancerCare", () => {
       "구토 후 수분·식사 단계 기록 준비",
       "식욕부진 식사·간식 기록 준비",
       "입과 목 통증 식사·구강상태 기록 준비",
+      "구내염 구강관리 확인",
       "입안 건조 식사·수분 기록 준비",
       "입맛 변화 단백질·향 기록 준비",
       "설사 수분·전해질 음식 기록 준비",
@@ -564,6 +567,37 @@ describe("cervicalCancerCare", () => {
     expect(mouthPainDietPrompt.question).toContain("입안은 깨끗이 헹구어");
     expect(buildCervicalCancerCarePromptQuestion(mouthPainDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    const mucositisCarePrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "구내염 구강관리 확인",
+    )!;
+    expect(mucositisCarePrompt.sourceId).toBe("nccMucositisCare");
+    expect(mucositisCarePrompt.question).toContain("입안의 염증");
+    expect(mucositisCarePrompt.question).toContain("구강을 깨끗하고 촉촉하게");
+    expect(mucositisCarePrompt.question).toContain("칫솔모가 부드러운");
+    expect(mucositisCarePrompt.question).toContain("틀니");
+    expect(mucositisCarePrompt.question).toContain("발포성 틀니용 세정제");
+    expect(mucositisCarePrompt.question).toContain("1.5%과산화수소");
+    expect(mucositisCarePrompt.question).toContain("6-7분");
+    expect(mucositisCarePrompt.question).toContain("치실 또는 양치질 후");
+    expect(mucositisCarePrompt.question).toContain("구강함수액");
+    expect(mucositisCarePrompt.question).toContain("생리식염수 500cc");
+    expect(mucositisCarePrompt.question).toContain("베이킹 소다 10g");
+    expect(mucositisCarePrompt.question).toContain("6%이하의 알코올");
+    expect(mucositisCarePrompt.question).toContain("항암화학요법 시작 전");
+    expect(mucositisCarePrompt.question).toContain("잇몸 상태");
+    expect(mucositisCarePrompt.question).toContain("의료진과 미리 상의");
+    expect(mucositisCarePrompt.question).toContain("구강을 자주 헹궈");
+    expect(mucositisCarePrompt.question).toContain("알코올 성분 구강세정제");
+    expect(mucositisCarePrompt.question).toContain("의치는 꼭 필요한 경우");
+    expect(mucositisCarePrompt.question).toContain("입안 통증");
+    expect(mucositisCarePrompt.question).toContain("붉어짐");
+    expect(mucositisCarePrompt.question).toContain("궤양");
+    expect(mucositisCarePrompt.question).toContain("출혈");
+    expect(mucositisCarePrompt.question).toContain("삼킴 어려움");
+    expect(mucositisCarePrompt.question).toContain("24시간 이상");
+    expect(buildCervicalCancerCarePromptQuestion(mucositisCarePrompt)).toContain(
+      "출처: 국가암정보센터 입안의 염증(구내염) 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T390C393/contents.do",
     );
     const dryMouthDietPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "입안 건조 식사·수분 기록 준비",
@@ -1565,6 +1599,11 @@ describe("cervicalCancerCare", () => {
       "입안을 자극하는 음식이나 음료는 피하도록 합니다.";
     const mouthPainTemperatureSentence =
       "뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다. 얼음조각을 먹는 것도 도움이 됩니다.";
+    const mucositisCleanMoistSentence = "구강을 깨끗하고 촉촉하게 유지하는 방법";
+    const mucositisDentureSentence =
+      "틀니는 발포성 틀니용 세정제나 1.5%과산화수소 용액에 6-7분 동안 담가둡니다.";
+    const mucositisRinseCandidateSentence =
+      "구강함수액은 생리식염수 500cc 와 베이킹 소다 10g을 섞은 물, 6%이하의 알코올 이 섞인 구강청정제, 1.5%과산화수소 수용액 또는 물과 과산화수소의 비가 3:1 이 되도록 만들어 사용합니다.";
     const dryMouthCauseSentence =
       "머리와 목 주위에 대한 항암화학요법 이나 방사선치료 는 침분비를 감소시켜 입안을 마르게 할 수 있습니다.";
     const dryMouthChewSwallowSentence =
@@ -1656,6 +1695,9 @@ describe("cervicalCancerCare", () => {
     const mouthPainDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "입과 목 통증 부드러운 식사 메모",
     );
+    const mucositisCareGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "구내염 구강청결·틀니·헹굼 메모",
+    );
     const dryMouthDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "입안 건조 수분·촉촉한 식사 메모",
     );
@@ -1699,7 +1741,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(29);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(30);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1954,6 +1996,41 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(mouthPainDietGuide!)).join(" ")).not.toMatch(
       /진통제를 복용하세요|구강치료하세요|치과치료를 받으세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(mucositisCareGuide).toMatchObject({
+      label: "구내염 구강청결·틀니·헹굼 메모",
+      sourceId: "nccMucositisCare",
+    });
+    expect(mucositisCareGuide?.detail).toContain("입안의 염증(구내염)");
+    expect(mucositisCareGuide?.detail).toContain(mucositisCleanMoistSentence);
+    expect(mucositisCareGuide?.detail).toContain("칫솔모가 부드러운");
+    expect(mucositisCareGuide?.detail).toContain(mucositisDentureSentence);
+    expect(mucositisCareGuide?.detail).toContain("잘 헹구어");
+    expect(mucositisCareGuide?.detail).toContain("치실 또는 양치질 후");
+    expect(mucositisCareGuide?.detail).toContain(mucositisRinseCandidateSentence);
+    expect(mucositisCareGuide?.detail).toContain("항암화학요법 시작 전");
+    expect(mucositisCareGuide?.detail).toContain("잇몸 상태");
+    expect(mucositisCareGuide?.detail).toContain("의료진과 미리 상의");
+    expect(mucositisCareGuide?.detail).toContain("구강을 자주 헹궈");
+    expect(mucositisCareGuide?.detail).toContain("알코올 성분 구강세정제");
+    expect(mucositisCareGuide?.detail).toContain("의치를 꼭 필요한 경우만 착용");
+    expect(mucositisCareGuide?.detail).toContain("입안 통증");
+    expect(mucositisCareGuide?.detail).toContain("붉어짐");
+    expect(mucositisCareGuide?.detail).toContain("궤양");
+    expect(mucositisCareGuide?.detail).toContain("출혈");
+    expect(mucositisCareGuide?.detail).toContain("삼킴 어려움");
+    expect(mucositisCareGuide?.detail).toContain("24시간 이상 먹거나 마실 수 없는 경우");
+    expect(formatCervicalCancerCareItemEvidence(mucositisCareGuide!)).toContain(
+      "국가암정보센터 입안의 염증(구내염) 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T390C393/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(mucositisCareGuide!).body).toContain(
+      "입안 통증",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(mucositisCareGuide!)).toContain(
+      "국가암정보센터 입안의 염증(구내염) 도움이 되는 방법",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(mucositisCareGuide!)).join(" ")).not.toMatch(
+      /항생제를 복용하세요|마취제를 사용하세요|진통제를 사용하세요|구강함수액을 사용하세요|과산화수소를 사용하세요|구강치료하세요|치과치료를 받으세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|항암을 중단하세요|방사선을 중단하세요|암을 낫게|특효/,
     );
     expect(dryMouthDietGuide).toMatchObject({
       label: "입안 건조 수분·촉촉한 식사 메모",
