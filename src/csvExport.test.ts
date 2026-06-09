@@ -583,6 +583,17 @@ describe("csvExport", () => {
     expect(csv).toContain("경질초음파, 골반 MRI");
     expect(csv).toContain("치료 선택 기준");
     expect(csv).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
+    expect(csv).toContain("재발·추적검사");
+    expect(csv).toContain("첫 2년");
+    expect(csv).toContain("3개월마다");
+    expect(csv).toContain("이후 5년까지");
+    expect(csv).toContain("체중감소");
+    expect(csv).toContain("하지 부종");
+    expect(csv).toContain("기침·객혈·흉통");
+    expect(csv).toContain("문진");
+    expect(csv).toContain("골반내진");
+    expect(csv).toContain("세포검사");
+    expect(csv).toContain("CT·MRI·PET");
     expect(csv).toContain("골반 방사선 후 폐경");
     expect(csv).toContain("난소부전, 홍조·무월경 같은 폐경 증상");
     expect(csv).toContain("질협착, 성욕 변화, 골다공증 위험");

@@ -535,6 +535,17 @@ describe("visit packet", () => {
     expect(markdown).toContain("경질초음파, 골반 MRI");
     expect(markdown).toContain("치료 선택 기준");
     expect(markdown).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
+    expect(markdown).toContain("재발·추적검사");
+    expect(markdown).toContain("첫 2년");
+    expect(markdown).toContain("3개월마다");
+    expect(markdown).toContain("이후 5년까지");
+    expect(markdown).toContain("체중감소");
+    expect(markdown).toContain("하지 부종");
+    expect(markdown).toContain("기침·객혈·흉통");
+    expect(markdown).toContain("문진");
+    expect(markdown).toContain("골반내진");
+    expect(markdown).toContain("세포검사");
+    expect(markdown).toContain("CT·MRI·PET");
     expect(markdown).toContain("골반 방사선 후 폐경");
     expect(markdown).toContain("난소부전, 홍조·무월경 같은 폐경 증상");
     expect(markdown).toContain("질협착, 성욕 변화, 골다공증 위험");

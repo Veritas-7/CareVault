@@ -290,6 +290,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccTreatmentMethods",
   },
   {
+    topic: "재발·추적검사",
+    question:
+      "국가암정보센터의 재발 및 전이 설명처럼 첫 2년 3개월마다, 이후 5년까지 6개월마다 같은 추적검사 일정과 체중감소, 하지 부종, 골반/허벅지 통증, 질출혈·질분비물 증가, 기침·객혈·흉통 같은 재발 의심 증상을 제 병원 계획 기준으로 어떻게 기록하고, 문진·골반내진·세포검사·가슴사진·종양 표지자·CT·MRI·PET 필요 여부를 어떤 순서로 확인하면 좋을까요?",
+    sourceId: "nccRecurrenceFollowUp",
+  },
+  {
     topic: "골반 방사선 후 폐경",
     question:
       "골반 방사선치료 후 난소부전, 홍조·무월경 같은 폐경 증상, 질협착, 성욕 변화, 골다공증 위험을 제 치료 범위와 나이 기준으로 어떻게 기록하고 상담해야 하나요?",

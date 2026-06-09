@@ -1936,6 +1936,17 @@ describe("caregiverExport", () => {
     expect(html).toContain("국가암검진사업 2년");
     expect(html).toContain("치료 선택 기준");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
+    expect(html).toContain("재발·추적검사");
+    expect(html).toContain("첫 2년");
+    expect(html).toContain("3개월마다");
+    expect(html).toContain("이후 5년까지");
+    expect(html).toContain("체중감소");
+    expect(html).toContain("하지 부종");
+    expect(html).toContain("기침·객혈·흉통");
+    expect(html).toContain("문진");
+    expect(html).toContain("골반내진");
+    expect(html).toContain("세포검사");
+    expect(html).toContain("CT·MRI·PET");
     expect(html).toContain("HPV 감염·파트너 상담");
     expect(html).toContain("주로 성접촉으로 전파");
     expect(html).toContain("혈액·체액·장기이식");
