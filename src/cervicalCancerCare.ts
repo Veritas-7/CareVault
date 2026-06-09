@@ -194,6 +194,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "질병관리청 예방접종도우미 HPV 국가예방접종 사업",
     url: "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=132&menuLv=1",
   },
+  nccHpvInfection: {
+    label: "국가암정보센터 사람유두종바이러스 감염",
+    url: "https://www.cancer.go.kr/lay1/S1T250C254/contents.do",
+  },
   nccHpvVaccine: {
     label: "국가암정보센터 자궁경부암 HPV 예방백신",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
@@ -314,6 +318,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     question:
       "HPV 백신은 예방용이고 접종 후에도 자궁경부암 선별검사를 계속 받아야 한다는 점을 제 나이와 치료 이력 기준으로 가족에게 어떻게 설명하면 좋을까요?",
     sourceId: "kdcaHpv",
+  },
+  {
+    topic: "HPV 감염·파트너 상담",
+    question:
+      "사람유두종바이러스가 주로 성접촉으로 전파되지만 혈액·체액·장기이식으로 전파되지 않고, 대부분 증상 없이 자연소멸될 수 있다는 점을 저와 배우자/파트너의 검사·백신·콘돔·정기검진 상담에서 어떤 순서로 확인하면 좋을까요?",
+    sourceId: "nccHpvInfection",
   },
   {
     topic: "임신·출산 계획",
@@ -542,6 +552,12 @@ export const cervicalCancerCarePreventionGuides: CervicalCancerCarePreventionGui
     detail:
       "질병관리청 예방접종도우미는 HPV 국가예방접종 사업대상으로 2026년 5월 6일부터 시행되는 12세 남성 청소년(2014.1.1.~2014.12.31. 출생자), 12~17세 여성 청소년, 18~26세 저소득층 여성을 안내합니다. HPV 백신은 자궁경부암의 70%를 일으키는 고위험 유전형(16형,18형) 감염 예방 목적이고, 성경험 전에 접종을 완료할 경우 자궁경부 상피내 종양 등 전암병변에 70~90%의 예방효과가 보고된다고 설명합니다. 가족이나 보호자와 대상 여부와 접종일정, 지원 백신, 위탁의료기관 확인, 접종 후 20~30분 관찰 안내를 접종기관과 진료팀 질문으로 남깁니다.",
     sourceId: "kdcaHpvNationalImmunization",
+  },
+  {
+    label: "HPV 감염·전파 상담 메모",
+    detail:
+      "국가암정보센터는 사람유두종바이러스가 주로 성접촉으로 감염되고 혈액, 체액, 장기이식으로는 전파되지 않는다고 설명합니다. 대부분의 감염은 아무 증상 없이 자연소멸될 수 있지만 고위험군 바이러스가 지속 감염되면 자궁경부암 발생 위험이 높아질 수 있으며, 첫 성경험 나이, 성상대자 수, 본인 또는 배우자의 성 상대자 수가 위험과 관련될 수 있다고 설명합니다. 이 항목은 감염을 비난이나 개인 원인으로 단정하지 말고, 배우자/파트너와 백신, 콘돔, 정기검진, HPV 검사 필요성을 진료팀 질문으로 정리합니다.",
+    sourceId: "nccHpvInfection",
   },
   {
     label: "흡연·성생활 위험요인 메모",

@@ -589,6 +589,11 @@ describe("csvExport", () => {
     expect(csv).toContain("장·방광 후기 변화");
     expect(csv).toContain("6개월 이상 지난 뒤 장폐색, 혈변, 혈뇨 가능성");
     expect(csv).toContain("배변/가스 변화");
+    expect(csv).toContain("HPV 감염·파트너 상담");
+    expect(csv).toContain("주로 성접촉으로 전파");
+    expect(csv).toContain("혈액·체액·장기이식");
+    expect(csv).toContain("증상 없이 자연소멸");
+    expect(csv).toContain("국가암정보센터 사람유두종바이러스 감염");
     expect(csv).toContain("식생활·보조식품");
     expect(csv).toContain("민간요법·건강보조식품");
     expect(csv).toContain("림프부종");
@@ -716,6 +721,10 @@ describe("csvExport", () => {
     expect(csv).toContain("고위험 유전형(16형,18형)");
     expect(csv).toContain("70~90%의 예방효과");
     expect(csv).toContain("질병관리청 예방접종도우미 HPV 국가예방접종 사업");
+    expect(csv).toContain("HPV 감염·전파 상담 메모");
+    expect(csv).toContain("혈액, 체액, 장기이식");
+    expect(csv).toContain("배우자의 성 상대자 수");
+    expect(csv).toContain("감염을 비난이나 개인 원인으로 단정하지 말고");
     expect(csv).toContain("흡연·성생활 위험요인 메모");
     expect(csv).toContain("대부분 성접촉");
     expect(csv).toContain("성상대자수");

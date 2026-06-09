@@ -69,6 +69,7 @@ describe("cervicalCancerCare", () => {
       "nccLymphedemaCare",
       "kdcaHpv",
       "kdcaHpvNationalImmunization",
+      "nccHpvInfection",
       "nccHpvVaccine",
       "nccCervicalPrevention",
       "nccCervicalRiskFactors",
@@ -82,6 +83,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.kdcaHpvNationalImmunization.url).toContain(
       "nip.kdca.go.kr",
     );
+    expect(cervicalCancerCareSources.nccHpvInfection.url).toContain("S1T250C254");
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
@@ -181,7 +183,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(11);
+    expect(cervicalCancerCarePrompts).toHaveLength(12);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -192,6 +194,7 @@ describe("cervicalCancerCare", () => {
       "림프부종",
       "식생활·보조식품",
       "HPV·검진",
+      "HPV 감염·파트너 상담",
       "임신·출산 계획",
       "요약·진료 흐름",
     ]);
@@ -239,7 +242,19 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[8])).toContain(
       "출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/",
     );
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[9])).toContain(
+    const hpvInfectionPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "HPV 감염·파트너 상담",
+    )!;
+    expect(hpvInfectionPrompt.sourceId).toBe("nccHpvInfection");
+    expect(hpvInfectionPrompt.question).toContain("주로 성접촉");
+    expect(hpvInfectionPrompt.question).toContain("혈액·체액·장기이식");
+    expect(hpvInfectionPrompt.question).toContain("증상 없이 자연소멸");
+    expect(hpvInfectionPrompt.question).toContain("배우자/파트너");
+    expect(hpvInfectionPrompt.question).toContain("검사·백신·콘돔·정기검진");
+    expect(buildCervicalCancerCarePromptQuestion(hpvInfectionPrompt)).toContain(
+      "출처: 국가암정보센터 사람유두종바이러스 감염 - https://www.cancer.go.kr/lay1/S1T250C254/contents.do",
+    );
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[10])).toContain(
       "출처: 국가암정보센터 자궁경부암 임신과 출산 - https://www.cancer.go.kr/",
     );
     const overviewPrompt = cervicalCancerCarePrompts.find(
@@ -583,6 +598,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("kdcaHpvNationalImmunization")).toContain(
       "질병관리청 예방접종도우미 HPV 국가예방접종 사업 - https://nip.kdca.go.kr/",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccHpvInfection")).toContain(
+      "국가암정보센터 사람유두종바이러스 감염 - https://www.cancer.go.kr/lay1/S1T250C254/contents.do",
+    );
   });
 
   it("builds context-specific accessible labels for official source links", () => {
@@ -806,6 +824,9 @@ describe("cervicalCancerCare", () => {
     const hpvNationalProgramGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 국가예방접종 대상 메모",
     );
+    const hpvInfectionGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 감염·전파 상담 메모",
+    );
     const preventionRiskGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "흡연·성생활 위험요인 메모",
     );
@@ -822,7 +843,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "실천지침 일상 예방 체크 메모",
     );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(14);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(15);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -874,6 +895,18 @@ describe("cervicalCancerCare", () => {
     expect(hpvNationalProgramGuide?.detail).toContain("70~90%의 예방효과");
     expect(hpvNationalProgramGuide?.detail).toContain("대상 여부와 접종일정");
     expect(hpvNationalProgramGuide?.detail).not.toContain("접종하세요");
+    expect(hpvInfectionGuide).toMatchObject({
+      label: "HPV 감염·전파 상담 메모",
+      sourceId: "nccHpvInfection",
+    });
+    expect(hpvInfectionGuide?.detail).toContain("주로 성접촉");
+    expect(hpvInfectionGuide?.detail).toContain("혈액, 체액, 장기이식");
+    expect(hpvInfectionGuide?.detail).toContain("증상 없이 자연소멸");
+    expect(hpvInfectionGuide?.detail).toContain("고위험군 바이러스가 지속 감염");
+    expect(hpvInfectionGuide?.detail).toContain("배우자의 성 상대자 수");
+    expect(hpvInfectionGuide?.detail).toContain("감염을 비난이나 개인 원인으로 단정하지 말고");
+    expect(hpvInfectionGuide?.detail).toContain("백신, 콘돔, 정기검진, HPV 검사 필요성");
+    expect(hpvInfectionGuide?.detail).not.toContain("검사하세요");
     expect(preventionRiskGuide).toMatchObject({
       label: "흡연·성생활 위험요인 메모",
       sourceId: "nccCervicalPrevention",

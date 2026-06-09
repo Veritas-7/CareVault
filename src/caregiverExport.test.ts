@@ -1936,6 +1936,11 @@ describe("caregiverExport", () => {
     expect(html).toContain("국가암검진사업 2년");
     expect(html).toContain("치료 선택 기준");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
+    expect(html).toContain("HPV 감염·파트너 상담");
+    expect(html).toContain("주로 성접촉으로 전파");
+    expect(html).toContain("혈액·체액·장기이식");
+    expect(html).toContain("증상 없이 자연소멸");
+    expect(html).toContain(">국가암정보센터 사람유두종바이러스 감염</a>");
     expect(html).toContain("피부 붉어짐");
     expect(html).toContain("의료진에게 바로 연락");
     expect(html).toContain(">국가암정보센터 림프부종 치료 전후관리</a>");
@@ -1990,6 +1995,10 @@ describe("caregiverExport", () => {
     expect(html).toContain("고위험 유전형(16형,18형)");
     expect(html).toContain("70~90%의 예방효과");
     expect(html).toContain(">질병관리청 예방접종도우미 HPV 국가예방접종 사업</a>");
+    expect(html).toContain("HPV 감염·전파 상담 메모");
+    expect(html).toContain("혈액, 체액, 장기이식");
+    expect(html).toContain("배우자의 성 상대자 수");
+    expect(html).toContain("감염을 비난이나 개인 원인으로 단정하지 말고");
     expect(html).toContain("흡연·성생활 위험요인 메모");
     expect(html).toContain("대부분 성접촉");
     expect(html).toContain("성상대자수");

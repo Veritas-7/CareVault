@@ -554,6 +554,11 @@ describe("visit packet", () => {
     expect(markdown).toContain(
       "출처: 국가암정보센터 자궁경부암 요약설명 - https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877",
     );
+    expect(markdown).toContain("HPV 감염·파트너 상담");
+    expect(markdown).toContain("주로 성접촉으로 전파");
+    expect(markdown).toContain("혈액·체액·장기이식");
+    expect(markdown).toContain("증상 없이 자연소멸");
+    expect(markdown).toContain("국가암정보센터 사람유두종바이러스 감염");
     expect(markdown).toContain("병기 설명 메모");
     expect(markdown).toContain("병리조직 확인 메모");
     expect(markdown).toContain("자궁경부 상피내이형성증");
@@ -668,6 +673,10 @@ describe("visit packet", () => {
     expect(markdown).toContain("고위험 유전형(16형,18형)");
     expect(markdown).toContain("70~90%의 예방효과");
     expect(markdown).toContain("질병관리청 예방접종도우미 HPV 국가예방접종 사업");
+    expect(markdown).toContain("HPV 감염·전파 상담 메모");
+    expect(markdown).toContain("혈액, 체액, 장기이식");
+    expect(markdown).toContain("배우자의 성 상대자 수");
+    expect(markdown).toContain("감염을 비난이나 개인 원인으로 단정하지 말고");
     expect(markdown).toContain("흡연·성생활 위험요인 메모");
     expect(markdown).toContain("대부분 성접촉");
     expect(markdown).toContain("성상대자수");
