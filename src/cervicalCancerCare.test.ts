@@ -183,7 +183,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(17);
+    expect(cervicalCancerCarePrompts).toHaveLength(18);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -200,6 +200,7 @@ describe("cervicalCancerCare", () => {
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
+      "성생활 재개 상담",
       "치료현황 통계 해석",
       "요약·진료 흐름",
     ]);
@@ -336,6 +337,23 @@ describe("cervicalCancerCare", () => {
     );
     expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[14])).toContain(
       "출처: 국가암정보센터 자궁경부암 임신과 출산 - https://www.cancer.go.kr/",
+    );
+    const sexLifePrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "성생활 재개 상담",
+    )!;
+    expect(sexLifePrompt.sourceId).toBe("nccSexLife");
+    expect(sexLifePrompt.question).toContain("수술 후 6주");
+    expect(sexLifePrompt.question).toContain("담당의 진찰");
+    expect(sexLifePrompt.question).toContain("광범위자궁절제술");
+    expect(sexLifePrompt.question).toContain("질의 길이");
+    expect(sexLifePrompt.question).toContain("방사선 치료 중");
+    expect(sexLifePrompt.question).toContain("방사선치료 후 약 2주-1개월");
+    expect(sexLifePrompt.question).toContain("질 협착");
+    expect(sexLifePrompt.question).toContain("건조함");
+    expect(sexLifePrompt.question).toContain("국소 호르몬 연고");
+    expect(sexLifePrompt.question).toContain("콘돔");
+    expect(buildCervicalCancerCarePromptQuestion(sexLifePrompt)).toContain(
+      "출처: 국가암정보센터 자궁경부암 성생활 - https://www.cancer.go.kr/",
     );
     const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료현황 통계 해석",

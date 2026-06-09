@@ -746,6 +746,11 @@ describe("csvExport", () => {
     expect(csv).toContain("성생활 재개·통증 상담");
     expect(csv).toContain("질건조·질협착");
     expect(csv).toContain("국가암정보센터 자궁경부암 성생활");
+    expect(csv).toContain("성생활 재개 상담");
+    expect(csv).toContain("수술 후 6주");
+    expect(csv).toContain("방사선치료 후 약 2주-1개월");
+    expect(csv).toContain("국소 호르몬 연고");
+    expect(csv).toContain("콘돔");
     expect(csv).toContain("임신·출산 계획 상담");
     expect(csv).toContain("광범위자궁경부절제수술");
     expect(csv).toContain("국가암정보센터 자궁경부암 임신과 출산");

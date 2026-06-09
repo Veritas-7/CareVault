@@ -681,6 +681,11 @@ describe("visit packet", () => {
     expect(markdown).toContain("성생활 재개·통증 상담");
     expect(markdown).toContain("질건조·질협착");
     expect(markdown).toContain("국가암정보센터 자궁경부암 성생활");
+    expect(markdown).toContain("성생활 재개 상담");
+    expect(markdown).toContain("수술 후 6주");
+    expect(markdown).toContain("방사선치료 후 약 2주-1개월");
+    expect(markdown).toContain("국소 호르몬 연고");
+    expect(markdown).toContain("콘돔");
     expect(markdown).toContain("임신·출산 계획 상담");
     expect(markdown).toContain("광범위자궁경부절제수술");
     expect(markdown).toContain("국가암정보센터 자궁경부암 임신과 출산");

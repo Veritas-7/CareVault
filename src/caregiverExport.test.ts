@@ -2024,6 +2024,11 @@ describe("caregiverExport", () => {
     expect(html).toContain("성생활 재개·통증 상담");
     expect(html).toContain("질건조·질협착");
     expect(html).toContain(">국가암정보센터 자궁경부암 성생활</a>");
+    expect(html).toContain("성생활 재개 상담");
+    expect(html).toContain("수술 후 6주");
+    expect(html).toContain("방사선치료 후 약 2주-1개월");
+    expect(html).toContain("국소 호르몬 연고");
+    expect(html).toContain("콘돔");
     expect(html).toContain("임신·출산 계획 상담");
     expect(html).toContain("광범위자궁경부절제수술");
     expect(html).toContain(">국가암정보센터 자궁경부암 임신과 출산</a>");
