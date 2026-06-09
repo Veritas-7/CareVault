@@ -43,6 +43,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("잇몸출혈과 코피가 멈추지 않음")?.id).toBe(
       "bleeding-warning",
     );
+    expect(findSymptomSupportTemplate("탈모와 두피 민감함")?.id).toBe(
+      "hair-loss-care",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -386,6 +389,46 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "잇몸출혈")).not.toMatch(
       /지혈제를 처방하세요|수혈을 하세요|진단하세요|치료하세요|응급처치를 하세요|약을 중단하세요/,
+    );
+  });
+
+  it("builds a hair-loss scalp-care question from official care guidance", () => {
+    const gentleWashSentence =
+      "머리를 거칠게 감지 않도록 하며 말릴 때는 살살 두들겨서 말립니다.";
+    const cleanScalpSentence = "두피를 청결하게 관리합니다.";
+    const shampooSentence =
+      "머리카락이 빠지는 동안은 머리빗질이 쉽도록 부드러운 샴푸와 크림린스를 사용합니다.";
+    const heatSentence =
+      "헤어 드라이기와 같은 열기구의 사용은 되도록 줄입니다. 꼭 필요한 경우에는 가장 약한 열로 하도록 합니다. 가장 좋은 방법은 공기 중에서 자연스럽게 마르도록 하는 것입니다.";
+    const combSentence =
+      "심한 빗질은 삼가시고 간격이 넓고 부드러운 빗으로 살살 빗도록 합니다.";
+    const emotionSentence =
+      "탈모로 인한 불안감을 의료진 및 가족들에게 표현하고 탈모를 경험하는 다른 환자들과의 대화를 통하여 감정을 나누는 것도 좋습니다.";
+    const scalpProtectionSentence =
+      "외출 시에는 모자, 스카프 등을 사용하며, 완전 탈모 시에는 두피를 보호하기 위하여 선크림(햇빛 차단제)을 사용합니다.";
+    const discussSentence =
+      "탈모는 당신 자신에 대한 느낌을 변화시킬 수 있습니다. 이런 감정변화로 인하여 다른 중요한 일을 할 수 없게 된다면, 의사나 간호사와 이런 느낌을 함께 논의하십시오.";
+    const template = findSymptomSupportTemplate("탈모와 두피 민감함");
+
+    expect(template?.id).toBe("hair-loss-care");
+    expect(template?.mealNote).toContain(gentleWashSentence);
+    expect(template?.mealNote).toContain(cleanScalpSentence);
+    expect(template?.mealNote).toContain(shampooSentence);
+    expect(template?.clinicianQuestion).toContain(heatSentence);
+    expect(template?.clinicianQuestion).toContain(combSentence);
+    expect(template?.clinicianQuestion).toContain(emotionSentence);
+    expect(template?.clinicianQuestion).toContain(scalpProtectionSentence);
+    expect(template?.clinicianQuestion).toContain(discussSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "탈모")).toContain(discussSentence);
+    expect(buildSymptomSupportQuestion(template!, "탈모")).toContain(
+      "출처: 국가암정보센터 탈모 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T451C453/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "탈모")).not.toMatch(
+      /미녹시딜을 처방하세요|가발을 처방하세요|진단하세요|치료하세요|항암제를 중단하세요|방사선치료를 중단하세요/,
     );
   });
 
@@ -868,7 +911,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(24);
+    expect(symptomSupportTemplates).toHaveLength(25);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -914,6 +957,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("잇몸출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T445C448/contents.do",
+    );
+    expect(findSymptomSupportTemplate("탈모")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T451C453/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
