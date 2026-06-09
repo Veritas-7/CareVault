@@ -41,7 +41,7 @@ describe("cervicalCancerCare", () => {
   ];
 
   it("keeps official Korean cervical-cancer sources attached", () => {
-    expect(Object.keys(cervicalCancerCareSources)).toEqual([
+	    expect(Object.keys(cervicalCancerCareSources)).toEqual([
       "nccSymptoms",
       "nccOverview",
       "nccAnatomySite",
@@ -71,9 +71,10 @@ describe("cervicalCancerCare", () => {
       "nccWeightChangeDiet",
       "nccImmuneLowDiet",
       "nccFatigueDepressionDiet",
-      "nccNeuropathyCare",
-      "nccSkinChangeCare",
-      "nccCancerLifeChildrenCommunication",
+	      "nccNeuropathyCare",
+	      "nccSkinChangeCare",
+	      "nccAnemiaCare",
+	      "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
@@ -146,10 +147,11 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccConstipationDiet.url).toContain("S1T479C487");
     expect(cervicalCancerCareSources.nccWeightChangeDiet.url).toContain("S1T479C486");
     expect(cervicalCancerCareSources.nccImmuneLowDiet.url).toContain("S1T479C489");
-    expect(cervicalCancerCareSources.nccFatigueDepressionDiet.url).toContain("S1T479C490");
-    expect(cervicalCancerCareSources.nccNeuropathyCare.url).toContain("S1T458C460");
-    expect(cervicalCancerCareSources.nccSkinChangeCare.url).toContain("S1T454C456");
-  });
+	    expect(cervicalCancerCareSources.nccFatigueDepressionDiet.url).toContain("S1T479C490");
+	    expect(cervicalCancerCareSources.nccNeuropathyCare.url).toContain("S1T458C460");
+	    expect(cervicalCancerCareSources.nccSkinChangeCare.url).toContain("S1T454C456");
+	    expect(cervicalCancerCareSources.nccAnemiaCare.url).toContain("S1T440C444");
+	  });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
     expect(careItems.every((item) => cervicalCancerCareSources[item.sourceId])).toBe(true);
@@ -237,7 +239,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(48);
+	    expect(cervicalCancerCarePrompts).toHaveLength(49);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -267,9 +269,10 @@ describe("cervicalCancerCare", () => {
       "체중변화 열량·단백질·원인 기록 준비",
       "면역기능 저하 식품안전 기록 준비",
       "피로감·우울 식사·활동 기록 준비",
-      "손발저림·감각이상 안전 확인",
-      "피부변화·손발홍반·손발톱 확인",
-      "HPV·검진",
+	      "손발저림·감각이상 안전 확인",
+	      "피부변화·손발홍반·손발톱 확인",
+	      "빈혈·혈색소·어지럼 기록 확인",
+	      "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
       "성생활 재개 상담",
@@ -867,12 +870,41 @@ describe("cervicalCancerCare", () => {
     expect(skinChangeCarePrompt.question).toContain("비비거나 긁거나 마사지");
     expect(skinChangeCarePrompt.question).toContain("검은색으로 변하거나 흰색 줄");
     expect(skinChangeCarePrompt.question).toContain("손발톱 뿌리부분");
-    expect(buildCervicalCancerCarePromptQuestion(skinChangeCarePrompt)).toContain(
-      "출처: 국가암정보센터 피부변화 증상별 대처방법 - https://www.cancer.go.kr/lay1/S1T454C456/contents.do",
-    );
-    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
-      (item) => item.topic === "HPV·검진",
-    )!;
+	    expect(buildCervicalCancerCarePromptQuestion(skinChangeCarePrompt)).toContain(
+	      "출처: 국가암정보센터 피부변화 증상별 대처방법 - https://www.cancer.go.kr/lay1/S1T454C456/contents.do",
+	    );
+	    const anemiaCarePrompt = cervicalCancerCarePrompts.find(
+	      (item) => item.topic === "빈혈·혈색소·어지럼 기록 확인",
+	    )!;
+	    expect(anemiaCarePrompt.sourceId).toBe("nccAnemiaCare");
+	    expect(anemiaCarePrompt.question).toContain("항암 치료가 적혈구에 영향을");
+	    expect(anemiaCarePrompt.question).toContain("담당 의사에게 묻고");
+	    expect(anemiaCarePrompt.question).toContain("빈혈 관련 증상");
+	    expect(anemiaCarePrompt.question).toContain("심각한 피로나 허약함");
+	    expect(anemiaCarePrompt.question).toContain("숨 가쁨");
+	    expect(anemiaCarePrompt.question).toContain("혼동이나 집중하기 힘들어짐");
+	    expect(anemiaCarePrompt.question).toContain("핏기 없는 입술, 잇몸, 눈꺼풀, 손톱 뿌리, 손바닥");
+	    expect(anemiaCarePrompt.question).toContain("빠른 심박동수");
+	    expect(anemiaCarePrompt.question).toContain("춥게 느껴지는 것");
+	    expect(anemiaCarePrompt.question).toContain("슬퍼지거나 우울");
+	    expect(anemiaCarePrompt.question).toContain("적혈구 수와 헤모글로빈");
+	    expect(anemiaCarePrompt.question).toContain("에너지 수준");
+	    expect(anemiaCarePrompt.question).toContain("하루 일과를 조정");
+	    expect(anemiaCarePrompt.question).toContain("가족 또는 친구들에게 일을 분배");
+	    expect(anemiaCarePrompt.question).toContain("과도한 운동");
+	    expect(anemiaCarePrompt.question).toContain("충분한 휴식");
+	    expect(anemiaCarePrompt.question).toContain("균형 잡힌 음식");
+	    expect(anemiaCarePrompt.question).toContain("하루 6--8잔의 물");
+	    expect(anemiaCarePrompt.question).toContain("운전, 아이 돌보기, 외출");
+	    expect(anemiaCarePrompt.question).toContain("천천히 일어나");
+	    expect(anemiaCarePrompt.question).toContain("충분한 수면");
+	    expect(anemiaCarePrompt.question).toContain("짧은 낮잠");
+	    expect(buildCervicalCancerCarePromptQuestion(anemiaCarePrompt)).toContain(
+	      "출처: 국가암정보센터 빈혈 관리 - https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
+	    );
+	    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
+	      (item) => item.topic === "HPV·검진",
+	    )!;
     expect(hpvScreeningPrompt.question).toContain("접종 후에도 자궁경부암 선별검사");
     expect(buildCervicalCancerCarePromptQuestion(hpvScreeningPrompt)).toContain(
       "출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/",
@@ -1722,10 +1754,16 @@ describe("cervicalCancerCare", () => {
       "뜨거운 것은 화상을 입을 위험이 있으므로, 주의하여 사용하셔야 합니다.";
     const neuropathySymptomSentence =
       "손가락, 손, 발가락, 발의 감각이 떨어질 수 있습니다. 손끝, 발끝이 저리고 무감각해지고 약해지고 통증 까지 수반할 수 있습니다.";
-    const skinObservationSentence =
-      "피부와 눈의 공막에 노란빛, 진한 오렌지색의 소변, 희거나 회색빛의 소변, 파랗거나 보랏빛 피부 또는 타박상, 호흡곤란, 피부의 발적 이나 붉게 된 것, 부종 이 있으면서 변색된 것, 가려움증을 관찰합니다.";
-    const coughDefinitionSentence =
-      "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
+	    const skinObservationSentence =
+	      "피부와 눈의 공막에 노란빛, 진한 오렌지색의 소변, 희거나 회색빛의 소변, 파랗거나 보랏빛 피부 또는 타박상, 호흡곤란, 피부의 발적 이나 붉게 된 것, 부종 이 있으면서 변색된 것, 가려움증을 관찰합니다.";
+	    const anemiaTreatmentEffectSentence =
+	      "받고 있는 항암 치료가 적혈구에 영향을 미칠 수 있는지 확인해 둡니다.";
+	    const anemiaSymptomDiarySentence =
+	      "빈혈 관련 증상을 숙지하고 일지에 정리하여 진료 시 담당 의사에게 모든 관련증상을 이야기합니다.";
+	    const anemiaActivityCautionSentence =
+	      "어지럼증이 있을 시에는 운전, 아이 돌보기, 외출과 같은 활동은 주의를 요합니다.";
+	    const coughDefinitionSentence =
+	      "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
       "병적인 기침은 환자가 불편을 느끼는 증상으로 지속되거나 발작적인 것을 말합니다.";
     const severeCoughBurdenSentence =
@@ -1788,11 +1826,14 @@ describe("cervicalCancerCare", () => {
     const neuropathyCareGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "손발저림·감각·화상예방 메모",
     );
-    const skinChangeCareGuide = cervicalCancerCareRecoveryGuides.find(
-      (item) => item.label === "피부변화·손발홍반·손발톱 메모",
-    );
-    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
-      (item) => item.label === "자녀·가족 설명 메모",
+	    const skinChangeCareGuide = cervicalCancerCareRecoveryGuides.find(
+	      (item) => item.label === "피부변화·손발홍반·손발톱 메모",
+	    );
+	    const anemiaCareGuide = cervicalCancerCareRecoveryGuides.find(
+	      (item) => item.label === "빈혈·혈색소·어지럼 메모",
+	    );
+	    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
+	      (item) => item.label === "자녀·가족 설명 메모",
     );
     const psychologicalStabilityGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "정서 안정·전문상담 메모",
@@ -1813,7 +1854,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(32);
+	    expect(cervicalCancerCareRecoveryGuides).toHaveLength(33);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2406,11 +2447,49 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareListItemAriaLabel(skinChangeCareGuide!)).toContain(
       "국가암정보센터 피부변화 증상별 대처방법",
     );
-    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(skinChangeCareGuide!)).join(" ")).not.toMatch(
-      /피부질환으로 진단하세요|약을 먹습니다|처방한 약을 바르세요|얼음찜질을 하세요|햇빛을 쬐세요|방사선을 중단하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
-    );
-    expect(coughCauseGuide).toMatchObject({
-      label: "기침·가래·수면방해 메모",
+	    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(skinChangeCareGuide!)).join(" ")).not.toMatch(
+	      /피부질환으로 진단하세요|약을 먹습니다|처방한 약을 바르세요|얼음찜질을 하세요|햇빛을 쬐세요|방사선을 중단하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+	    );
+	    expect(anemiaCareGuide).toMatchObject({
+	      label: "빈혈·혈색소·어지럼 메모",
+	      sourceId: "nccAnemiaCare",
+	    });
+	    expect(anemiaCareGuide?.detail).toContain(anemiaTreatmentEffectSentence);
+	    expect(anemiaCareGuide?.detail).toContain("담당 의사에게 묻고");
+	    expect(anemiaCareGuide?.detail).toContain(anemiaSymptomDiarySentence);
+	    expect(anemiaCareGuide?.detail).toContain("심각한 피로나 허약함");
+	    expect(anemiaCareGuide?.detail).toContain("숨 가쁨");
+	    expect(anemiaCareGuide?.detail).toContain("혼동이나 집중하기 힘들어짐");
+	    expect(anemiaCareGuide?.detail).toContain("핏기 없는 입술, 잇몸, 눈꺼풀, 손톱 뿌리, 손바닥");
+	    expect(anemiaCareGuide?.detail).toContain("빠른 심박동수");
+	    expect(anemiaCareGuide?.detail).toContain("춥게 느껴지는 것");
+	    expect(anemiaCareGuide?.detail).toContain("슬퍼지거나 우울");
+	    expect(anemiaCareGuide?.detail).toContain("적혈구 수와 헤모글로빈 수치");
+	    expect(anemiaCareGuide?.detail).toContain("에너지 수준");
+	    expect(anemiaCareGuide?.detail).toContain("하루 일과를 조정");
+	    expect(anemiaCareGuide?.detail).toContain("가족 또는 친구들에게 일을 분배");
+	    expect(anemiaCareGuide?.detail).toContain("과도한 운동");
+	    expect(anemiaCareGuide?.detail).toContain("충분한 휴식");
+	    expect(anemiaCareGuide?.detail).toContain("균형 잡힌 음식");
+	    expect(anemiaCareGuide?.detail).toContain("하루 6--8잔의 물");
+	    expect(anemiaCareGuide?.detail).toContain(anemiaActivityCautionSentence);
+	    expect(anemiaCareGuide?.detail).toContain("천천히 일어나");
+	    expect(anemiaCareGuide?.detail).toContain("충분한 수면");
+	    expect(anemiaCareGuide?.detail).toContain("짧은 낮잠");
+	    expect(formatCervicalCancerCareItemEvidence(anemiaCareGuide!)).toContain(
+	      "국가암정보센터 빈혈 관리 - https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
+	    );
+	    expect(buildCervicalCancerCareItemSymptomDraft(anemiaCareGuide!).body).toContain(
+	      "빈혈 관련 증상",
+	    );
+	    expect(formatCervicalCancerCareListItemAriaLabel(anemiaCareGuide!)).toContain(
+	      "국가암정보센터 빈혈 관리",
+	    );
+	    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(anemiaCareGuide!)).join(" ")).not.toMatch(
+	      /빈혈로 진단하세요|수혈하세요|철분제를 복용하세요|조혈제를 맞으세요|운전해도 됩니다|운동하세요|물을 억지로 마시세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+	    );
+	    expect(coughCauseGuide).toMatchObject({
+	      label: "기침·가래·수면방해 메모",
       sourceId: "nccCoughCause",
     });
     expect(coughCauseGuide?.detail).toContain(coughDefinitionSentence);
