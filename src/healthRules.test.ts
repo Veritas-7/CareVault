@@ -288,6 +288,45 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
 
+  it("recognizes NCC diet-practice snack replacement source sentence", () => {
+    const sourceSentence =
+      "간식으로 과자나 탄산음료 대신 고구마(중간 크기 1개 정도), 채소(예: 당근1/5개, 오이1/4개 정도) 및 과일 (예: 사과1/2개, 딸기 10개 정도)을 먹습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccDietPracticeFiber.label).toBe(
+      "국가암정보센터 국민 암예방 수칙 실천지침 식이",
+    );
+    expect(foodGuidanceSources.nccDietPracticeFiber.url).toBe(
+      "https://cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 식이 실천지침 과자·탄산음료 대체 간식 후보",
+      sourceId: "nccDietPracticeFiber",
+    });
+    for (const shorterTerm of ["탄산음료", "고구마", "당근", "오이", "사과", "딸기"]) {
+      expect(terms).not.toContain(shorterTerm);
+    }
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(balancedGuideText).toContain(
+      "매일 5가지 색(빨강, 초록, 노랑, 보라, 하양)의 채소와 과일을 먹습니다.",
+    );
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 국민 암예방 수칙 실천지침 식이 - https://cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC weight-maintenance clinical nutrition consult source sentence", () => {
     const sourceSentence =
       "단, 식사조절과 운동으로 적정 체중 유지가 어렵거나 고혈압, 당뇨병, 고지혈증 등 만성질환이 있는 경우 담당의사 및 임상영양사의 상담을 받도록 합니다.";

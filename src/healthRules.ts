@@ -25,6 +25,7 @@ export type WaistAssessment = HealthAssessment & {
 
 export type FoodGuidanceSourceId =
   | "nccPreventionDiet"
+  | "nccDietPracticeFiber"
   | "nccPreventionMealExamples"
   | "nccSideEffectDiet"
   | "nccAppetiteLossDiet"
@@ -125,6 +126,10 @@ export const foodGuidanceSources: Record<
   nccPreventionDiet: {
     label: "국가암정보센터 건강한 식생활",
     url: "https://www.cancer.go.kr/lay1/S1T226C229/contents.do",
+  },
+  nccDietPracticeFiber: {
+    label: "국가암정보센터 국민 암예방 수칙 실천지침 식이",
+    url: "https://cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
   },
   nccPreventionMealExamples: {
     label: "국가암정보센터 암예방 식단 예시",
@@ -274,6 +279,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "채소와 과일을 충분히 먹습니다, 채소와 과일 충분히 먹기, 다채로운 식단으로 균형 잡힌 식사를 합니다, 다채로운 식단 균형 잡힌 식사, 채소류(생채소, 나물, 샐러드, 쌈류 등)를 매일, 매끼니 충분히 먹습니다, 채소류 생채소 나물 샐러드 쌈류 매일 매끼니 충분히, 채소류, 생채소, 나물, 샐러드, 쌈류, 매끼니 채소, 매일 채소, 매일 매끼니 충분히, 채소 반찬, 과일류는 매일 1회 이상 간식으로 섭취합니다, 과일류 매일 1회 이상 간식 섭취, 매일 1회 이상 과일, 과일 매일 1회 이상, 과일 간식, 매일 과일 간식, 다양한 종류의 잡곡과 도정하지 않은 곡류를 섭취합니다, 잡곡 도정하지 않은 곡류 섭취, 두류와 두류 가공품 (두유, 두부 등)을 매일 섭취합니다, 두류 두류 가공품 두유 두부 매일 섭취, 저염 김치, 음식을 짜지 않게 먹습니다, 음식을 짜지 않게 먹기, 김치류는 짜지 않게 만들어 먹습니다, 김치류 짜지 않게 만들기, 짜지 않은 김치, 싱겁게 만든 김치, 짜지 않은 김치류, 제철 과일, 잡곡밥, 도정하지 않은 곡류, 현미, 귀리, 통밀빵, 두류 매일 섭취, 두류 가공품 매일 섭취, 두유 두부 매일 섭취, 두류, 두류 가공품, 두유, 두부, 저지방 우유를 하루 1잔 정도 마십니다, 저지방 우유 하루 1잔 정도 마시기, 저지방 우유 하루 1잔 정도, 하루 1잔 정도 저지방 우유, 하루 1잔 저지방 우유, 저지방 우유",
         sourceIds: ["nccPreventionDiet"],
+      },
+      {
+        label: "식이섬유 간식 대체 예시",
+        detail:
+          "국민 암예방 수칙 식이 실천지침은 매일 5가지 색의 채소와 과일을 먹고, 과자나 탄산음료 대신 고구마·채소·과일 같은 간식 대체 예시를 선택하도록 안내합니다.",
+        examples:
+          "매일 5가지 색(빨강, 초록, 노랑, 보라, 하양)의 채소와 과일을 먹습니다., 간식으로 과자나 탄산음료 대신 고구마(중간 크기 1개 정도), 채소(예: 당근1/5개, 오이1/4개 정도) 및 과일 (예: 사과1/2개, 딸기 10개 정도)을 먹습니다., 고구마(중간 크기 1개 정도), 당근1/5개, 오이1/4개, 사과1/2개, 딸기 10개",
+        sourceIds: ["nccDietPracticeFiber"],
       },
       {
         label: "암예방 식단 예시",
@@ -1113,6 +1126,33 @@ const supportiveFoods: FoodRuleTerm[] = [
     "국가암정보센터 적정 체중과 체지방 유지 천천히 식사 후보",
     "nccWeightMaintenanceDiet",
   ],
+  [
+    "매일 5가지 색(빨강, 초록, 노랑, 보라, 하양)의 채소와 과일을 먹습니다.",
+    "국가암정보센터 식이 실천지침 5가지 색 채소·과일 후보",
+    "nccDietPracticeFiber",
+  ],
+  [
+    "간식으로 과자나 탄산음료 대신 고구마(중간 크기 1개 정도), 채소(예: 당근1/5개, 오이1/4개 정도) 및 과일 (예: 사과1/2개, 딸기 10개 정도)을 먹습니다.",
+    "국가암정보센터 식이 실천지침 과자·탄산음료 대체 간식 후보",
+    "nccDietPracticeFiber",
+  ],
+  [
+    "고구마(중간 크기 1개 정도)",
+    "국가암정보센터 식이 실천지침 간식 대체 고구마 예시 후보",
+    "nccDietPracticeFiber",
+  ],
+  [
+    "고구마 중간 크기 1개",
+    "국가암정보센터 식이 실천지침 간식 대체 고구마 예시 후보",
+    "nccDietPracticeFiber",
+  ],
+  ["당근1/5개", "국가암정보센터 식이 실천지침 간식 대체 채소 예시 후보", "nccDietPracticeFiber"],
+  ["당근 1/5개", "국가암정보센터 식이 실천지침 간식 대체 채소 예시 후보", "nccDietPracticeFiber"],
+  ["오이1/4개", "국가암정보센터 식이 실천지침 간식 대체 채소 예시 후보", "nccDietPracticeFiber"],
+  ["오이 1/4개", "국가암정보센터 식이 실천지침 간식 대체 채소 예시 후보", "nccDietPracticeFiber"],
+  ["사과1/2개", "국가암정보센터 식이 실천지침 간식 대체 과일 예시 후보", "nccDietPracticeFiber"],
+  ["사과 1/2개", "국가암정보센터 식이 실천지침 간식 대체 과일 예시 후보", "nccDietPracticeFiber"],
+  ["딸기 10개", "국가암정보센터 식이 실천지침 간식 대체 과일 예시 후보", "nccDietPracticeFiber"],
   ["채소류", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
   ["생채소", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
   ["샐러드", "국가암정보센터 건강한 식생활 매일·매끼니 채소 충분히 섭취 후보", "nccPreventionDiet"],
@@ -2709,6 +2749,11 @@ const limitFoods: FoodRuleTerm[] = [
   ["숯불", "직화·튀김 조리법 피하기", "nccPreventionDiet"],
   ["탄 고기", "직화·탄 음식 조리법 피하기", "nccPreventionDiet"],
   ["탄 음식", "직화·탄 음식 조리법 피하기", "nccPreventionDiet"],
+  [
+    "과자나 탄산음료",
+    "국가암정보센터 식이 실천지침 대체 대상 간식 확인 후보",
+    "nccDietPracticeFiber",
+  ],
   ["탄산음료", "당음료", "kdcaNutrition"],
   ["설탕음료", "당음료", "kdcaNutrition"],
   ["가당음료", "당음료", "kdcaNutrition"],
