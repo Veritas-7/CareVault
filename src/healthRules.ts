@@ -59,6 +59,7 @@ export type FoodGuidanceSourceId =
   | "kdcaVibrioSepsis"
   | "kdcaNorovirusFoodSafety"
   | "kdcaFoodPoisoningNaturalToxins"
+  | "foodSafetyKoreaStaphylococcusAureusFoodPoisoning"
   | "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"
   | "foodSafetyKoreaListeriaFoodPoisoning"
   | "foodSafetyKoreaCampylobacterFoodPoisoning"
@@ -273,6 +274,10 @@ export const foodGuidanceSources: Record<
   kdcaFoodPoisoningNaturalToxins: {
     label: "질병관리청 국가건강정보포털 식중독",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5239",
+  },
+  foodSafetyKoreaStaphylococcusAureusFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 황색포도상구균",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 장출혈성 대장균",
@@ -1059,6 +1064,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다, 복어요리 전문가가 조리하지 않은 복어, 유독화된 조개, 적조에 노출된 섭조개나 홍합, 야생 독버섯을 식용버섯으로 오인, 녹색을 띠는 감자, 감자의 독이 포함된 부위(싹이 난 부위나 녹색을 띠는 부위)를 잘라내야 합니다, 솔라닌, 곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
         sourceIds: ["kdcaFoodPoisoningNaturalToxins"],
+      },
+      {
+        label: "식품안전나라 황색포도상구균 식중독 주의",
+        detail:
+          "식품안전나라는 황색포도상구균을 식품 중에서 증식해 생산한 장독소(enterotoxin)를 함유한 식품 섭취로 일어나는 독소형 식중독균으로 설명합니다. 균은 78℃에서 1분 또는 64℃에서 10분 가열로 거의 사멸되지만, 원인 물질인 장독소는 내열성이 강해 100℃에서 60분간 가열해야 파괴된다고 설명하므로 식품 안전 질문으로 분리합니다. 예방대책으로 식품 취급자의 손 청결, 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있을 때 식품 취급 금지, 기구와 기기 청결 유지, 남은 식품은 실온 방치 대신 5℃ 이하에 냉장 보관을 안내합니다.",
+        examples:
+          "황색포도상구균, 장독소(enterotoxin), 코 안이나 피부에 상재, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 밥, 김밥, 도시락, 두부, 식품 취급자는 손을 청결히 하며 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있으면 식품을 취급해서는 안된다, 식품제조에 필요한 모든 기구와 기기 등을 청결히 유지하여 2차 오염을 방지한다, 식품은 적당량을 조속히 조리한 후 모두 섭취하고, 식품이 남았을 경우에는 실온에 방치하지 말고 5℃ 이하에 냉장 보관한다",
+        sourceIds: ["foodSafetyKoreaStaphylococcusAureusFoodPoisoning"],
       },
       {
         label: "식품안전나라 장출혈성 대장균 식중독 주의",
@@ -2607,6 +2620,21 @@ const supportiveFoods: FoodRuleTerm[] = [
     "작업대·용기·조리 기구는 사용 후 즉시 세척·소독",
     "식약처 살모넬라 작업대·용기·조리기구 즉시 세척·소독 후보",
     "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "식품 취급자는 손을 청결히 하며 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있으면 식품을 취급해서는 안된다",
+    "식품안전나라 황색포도상구균 식품취급자 손 청결·창상 화농 취급 제한 후보",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "식품제조에 필요한 모든 기구와 기기 등을 청결히 유지하여 2차 오염을 방지한다",
+    "식품안전나라 황색포도상구균 기구·기기 청결 2차 오염 방지 후보",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "식품은 적당량을 조속히 조리한 후 모두 섭취하고, 식품이 남았을 경우에는 실온에 방치하지 말고 5℃ 이하에 냉장 보관한다",
+    "식품안전나라 황색포도상구균 남은 음식 실온방치 금지·5℃ 이하 냉장 후보",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
   ],
   [
     "조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다",
@@ -4309,6 +4337,41 @@ const careTeamFoods: FoodRuleTerm[] = [
     "조리 후 작업공간 세척·소독 미실시",
     "식약처 살모넬라 조리 후 작업공간 세척·소독 누락 확인 필요",
     "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "황색포도상구균",
+    "식품안전나라 황색포도상구균 식중독 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "장독소(enterotoxin)",
+    "식품안전나라 황색포도상구균 장독소 독소형 식중독 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "코 안이나 피부에 상재",
+    "식품안전나라 황색포도상구균 피부·비강 보균 오염 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "손에 창상 또는 화농",
+    "식품안전나라 황색포도상구균 식품취급자 손 창상·화농 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "신체 다른 부위에 화농",
+    "식품안전나라 황색포도상구균 식품취급자 신체 화농 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "육류 및 그 가공품과 우유, 크림, 버터, 치즈",
+    "식품안전나라 황색포도상구균 육류·유제품 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "밥, 김밥, 도시락, 두부",
+    "식품안전나라 황색포도상구균 밥·김밥·도시락·두부 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
   ],
   [
     "장출혈성 대장균",

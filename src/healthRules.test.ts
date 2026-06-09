@@ -12510,6 +12510,78 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea staphylococcus aureus toxin and food-handler wound guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 황색포도상구균 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "식품 취급자는 손을 청결히 하며 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있으면 식품을 취급해서는 안된다, 식품제조에 필요한 모든 기구와 기기 등을 청결히 유지하여 2차 오염을 방지한다, 식품은 적당량을 조속히 조리한 후 모두 섭취하고, 식품이 남았을 경우에는 실온에 방치하지 말고 5℃ 이하에 냉장 보관한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "황색포도상구균은 장독소(enterotoxin)를 함유한 식품을 섭취할 때 일어나는 독소형 식중독균이고, 코 안이나 피부에 상재한 균이 식품에 혼입될 수 있으며, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 밥, 김밥, 도시락, 두부를 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaStaphylococcusAureusFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 황색포도상구균",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 황색포도상구균 식중독 주의",
+      sourceIds: ["foodSafetyKoreaStaphylococcusAureusFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("장독소(enterotoxin)");
+    expect(foodSafetyGuide?.detail).toContain("100℃에서 60분간");
+    expect(foodSafetyGuide?.detail).toContain("손에 창상 또는 화농");
+    expect(foodSafetyGuide?.detail).toContain("5℃ 이하에 냉장 보관");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "식품 취급자는 손을 청결히 하며 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있으면 식품을 취급해서는 안된다",
+      "식품제조에 필요한 모든 기구와 기기 등을 청결히 유지하여 2차 오염을 방지한다",
+      "식품은 적당량을 조속히 조리한 후 모두 섭취하고, 식품이 남았을 경우에는 실온에 방치하지 말고 5℃ 이하에 냉장 보관한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 황색포도상구균 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "황색포도상구균",
+      "장독소(enterotoxin)",
+      "코 안이나 피부에 상재",
+      "손에 창상 또는 화농",
+      "신체 다른 부위에 화농",
+      "육류 및 그 가공품과 우유, 크림, 버터, 치즈",
+      "밥, 김밥, 도시락, 두부",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",
