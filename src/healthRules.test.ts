@@ -2524,6 +2524,66 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide replacement reason phrases before shorter food terms", () => {
+    const processedMeatToFruitPhrase =
+      "햄구이 → 과일샐러드 : 육가공식품(훈제식품) 섭취량 감소, 과일 섭취량 증가";
+    const sweetSnackToFruitPhrase = "초코칩쿠키 → 귤 : 과일 섭취량 증가";
+    const pickledRadishToVegetablePhrase =
+      "단무지 → 채소샐러드, 브로콜리회 : 채소 섭취량 증가(채소샐러드는 요플레드레싱 사용)";
+    const assessment = assessCancerFood(
+      `${processedMeatToFruitPhrase}, ${sweetSnackToFruitPhrase}, ${pickledRadishToVegetablePhrase}`,
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      processedMeatToFruitPhrase,
+      sweetSnackToFruitPhrase,
+      pickledRadishToVegetablePhrase,
+    ]);
+    expect(matchesByTerm[processedMeatToFruitPhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 햄구이 대체로 육가공식품 감소·과일 증가 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[sweetSnackToFruitPhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 초코칩쿠키 대체로 과일 증가 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[pickledRadishToVegetablePhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 단무지 대체로 채소 증가 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    for (const shorterTerm of [
+      "햄구이",
+      "과일샐러드",
+      "초코칩쿠키",
+      "귤",
+      "단무지",
+      "채소샐러드",
+      "브로콜리회",
+      "채소 섭취량 증가(채소샐러드는 요플레드레싱 사용)",
+    ]) {
+      expect(terms).not.toContain(shorterTerm);
+    }
+    expect(limitGuideText).toContain(processedMeatToFruitPhrase);
+    expect(limitGuideText).toContain(sweetSnackToFruitPhrase);
+    expect(limitGuideText).toContain(pickledRadishToVegetablePhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[processedMeatToFruitPhrase])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes concrete official-source food examples across support, limit, and care-team checks", () => {
     const assessment = assessCancerFood(
       "잡곡밥, 닭고기, 플레인 요구르트, 탄 고기, 젓갈, 초밥, 덜 익힌 계란, 약초",
