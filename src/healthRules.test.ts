@@ -6798,6 +6798,51 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC nausea-vomiting care projectile vomiting clinician-consultation source sentence", () => {
+    const sourceSentence = "참지 못하는 구토가 멀리까지 분출되는 경우";
+    const persistentNauseaDailyActivitySentence =
+      "오심이 며칠이상 지속되거나 오심 때문에 당신이 중요한 일을 하지 못할 때";
+    const hourlyVomitingSentence = "구토를 12시간 이상 지속적으로 하거나 한 시간 동안 3번 이상 한 경우";
+    const vomitingDietConsultSentence = "구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의합니다.";
+    const activeVomitingRestrictionSentence = "구토가 멈출 때까지는 음료나 음식을 먹지 않도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 참기 어려운 구토가 멀리까지 분출되는 경우 의료진 상담 필요",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(persistentNauseaDailyActivitySentence);
+    expect(terms).not.toContain(hourlyVomitingSentence);
+    expect(terms).not.toContain(vomitingDietConsultSentence);
+    expect(terms).not.toContain(activeVomitingRestrictionSentence);
+    expect(terms).not.toContain("구토");
+    expect(terms).not.toContain("분출");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|특효|보조식품 권장|응급치료|응급처치|진토제 처방|구토 치료|분출 치료/,
+    );
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";

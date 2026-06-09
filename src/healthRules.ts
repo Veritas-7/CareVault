@@ -1096,6 +1096,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaVomitingCare"],
       },
       {
+        label: "메스꺼움·구토 시 참기 어려운 분출성 구토 상담",
+        detail:
+          "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 자료는 참지 못하는 구토가 멀리까지 분출되는 경우 의료진과 상의하도록 안내합니다. 식단 기록에서는 참기 어려운 분출성 구토의 진료팀 상담 신호로 분리하고, 일반 구토 키워드나 진토제 처방, 응급치료, 분출성 구토 치료 지시로 과장하지 않습니다.",
+        examples: "참지 못하는 구토가 멀리까지 분출되는 경우",
+        sourceIds: ["nccNauseaVomitingCare"],
+      },
+      {
         label: "설사 심함·혈변·2일 이상 지속 상담",
         detail:
           "국가암정보센터 설사 자료는 설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 안내합니다.",
@@ -3707,6 +3714,11 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "오심이 며칠이상 지속되거나 오심 때문에 당신이 중요한 일을 하지 못할 때",
     "국가암정보센터 오심 며칠 이상 지속 또는 중요한 일 수행 어려움 의료진 상담 필요",
+    "nccNauseaVomitingCare",
+  ],
+  [
+    "참지 못하는 구토가 멀리까지 분출되는 경우",
+    "국가암정보센터 참기 어려운 구토가 멀리까지 분출되는 경우 의료진 상담 필요",
     "nccNauseaVomitingCare",
   ],
   [
