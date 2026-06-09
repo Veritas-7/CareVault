@@ -12091,6 +12091,76 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes KDCA norovirus food-safety and high-risk dehydration guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const kdcaGuide = careTeamGuideItems?.find(
+      (item) => item.label === "질병관리청 노로바이러스 식중독 예방",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "음식물은 충분히 익혀 먹기(85℃ 이상에서 1분 이상 가열), 식재료를 흐르는 물에 세척하여 85℃ 이상에서 충분히 익혀 먹기, 조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "노로바이러스 식중독 때문에 면역저하자 노로바이러스 탈수 관찰이 필요하고 오염된 식재료를 조리하지 않고 섭취했을 때 또는 환자 구토물 접촉환경을 걱정",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.kdcaNorovirusFoodSafety).toMatchObject({
+      label: "질병관리청 국가건강정보포털 노로바이러스 식중독 예방",
+      url: "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=80",
+    });
+    expect(kdcaGuide).toMatchObject({
+      label: "질병관리청 노로바이러스 식중독 예방",
+      sourceIds: ["kdcaNorovirusFoodSafety"],
+    });
+    expect(kdcaGuide?.detail).toContain("면역저하자");
+    expect(kdcaGuide?.detail).toContain("구토와 설사로 인한 탈수");
+    expect(kdcaGuide?.detail).toContain("85℃ 이상에서 1분 이상");
+    expect(kdcaGuide?.detail).toContain("10℃ 이하의 냉장고");
+    expect(kdcaGuide?.detail).toContain("염소 소독");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "음식물은 충분히 익혀 먹기(85℃ 이상에서 1분 이상 가열)",
+      "식재료를 흐르는 물에 세척하여 85℃ 이상에서 충분히 익혀 먹기",
+      "조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "kdcaNorovirusFoodSafety",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "질병관리청 국가건강정보포털 노로바이러스 식중독 예방 - https://health.kdca.go.kr/healthinfo/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "노로바이러스 식중독",
+      "면역저하자 노로바이러스 탈수",
+      "오염된 식재료를 조리하지 않고 섭취",
+      "환자 구토물 접촉환경",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "kdcaNorovirusFoodSafety",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

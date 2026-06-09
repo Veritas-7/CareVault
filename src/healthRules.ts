@@ -57,6 +57,7 @@ export type FoodGuidanceSourceId =
   | "kdcaNutrition"
   | "kdcaAlcohol"
   | "kdcaVibrioSepsis"
+  | "kdcaNorovirusFoodSafety"
   | "mfdsFoodPoisoningPrevention";
 
 export type FoodMatch = {
@@ -259,6 +260,10 @@ export const foodGuidanceSources: Record<
   kdcaVibrioSepsis: {
     label: "질병관리청 국가건강정보포털 비브리오 패혈증",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5372",
+  },
+  kdcaNorovirusFoodSafety: {
+    label: "질병관리청 국가건강정보포털 노로바이러스 식중독 예방",
+    url: "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=80",
   },
   mfdsFoodPoisoningPrevention: {
     label: "식품의약품안전처 식중독 예방 6대요령",
@@ -1005,6 +1010,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "흐르는 물에 비누로 30초 이상 씻기, 날음식과 조리음식 구분, 칼·도마 구분 사용, 육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기, 식재료·조리기구는 깨끗이 세척·소독 하기, 물은 끓여서 먹기, 냉장식품은 5˚C 이하, 냉동식품은 -18˚C 이하, 따뜻한 음식은 60˚C 이상, 찬 음식은 5˚C 이하, 조리후 2시간 이내 섭취",
         sourceIds: ["mfdsFoodPoisoningPrevention"],
+      },
+      {
+        label: "질병관리청 노로바이러스 식중독 예방",
+        detail:
+          "질병관리청 국가건강정보포털은 노로바이러스 감염 시 구토와 설사로 인한 탈수에 주의해야 하며, 특히 면역저하자 등에서는 탈수 증상 관찰과 늦지 않은 치료가 중요하다고 설명합니다. 오염된 식재료를 조리하지 않고 섭취했을 때도 발생할 수 있으므로, 흐르는 물에 비누로 30초 이상 손 씻기, 채소·과일 세척, 음식물은 85℃ 이상에서 1분 이상 가열, 끓인 물 마시기, 칼·도마 소독과 조리도구 구분을 안내합니다. 음식 조리 시에는 식재료를 흐르는 물에 세척하여 85℃ 이상에서 충분히 익히고, 조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관하며, 환자가 발생한 경우 구토물·접촉환경·사용 물건에 대한 염소 소독을 확인하도록 안내합니다.",
+        examples:
+          "노로바이러스 식중독, 면역저하자 노로바이러스 탈수, 오염된 식재료를 조리하지 않고 섭취, 음식물은 충분히 익혀 먹기(85℃ 이상에서 1분 이상 가열), 식재료를 흐르는 물에 세척하여 85℃ 이상에서 충분히 익혀 먹기, 조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관, 칼·도마는 소독하여 사용, 환자 구토물 접촉환경, 염소 소독",
+        sourceIds: ["kdcaNorovirusFoodSafety"],
       },
       {
         label: "질병관리청 비브리오 어패류 안전",
@@ -2504,6 +2517,21 @@ const supportiveFoods: FoodRuleTerm[] = [
     "식재료·조리기구는 깨끗이 세척·소독 하기",
     "식약처 식중독 예방 식재료·조리기구 세척·소독 후보",
     "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "음식물은 충분히 익혀 먹기(85℃ 이상에서 1분 이상 가열)",
+    "질병관리청 노로바이러스 식중독 예방 음식물 85℃ 1분 이상 가열 후보",
+    "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "식재료를 흐르는 물에 세척하여 85℃ 이상에서 충분히 익혀 먹기",
+    "질병관리청 노로바이러스 식중독 예방 식재료 세척·85℃ 이상 가열 후보",
+    "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관",
+    "질병관리청 노로바이러스 식중독 예방 조리식품 10℃ 이하 냉장 보관 후보",
+    "kdcaNorovirusFoodSafety",
   ],
   [
     "어패류는 충분히 익혀 먹습니다",
@@ -4111,6 +4139,26 @@ const careTeamFoods: FoodRuleTerm[] = [
     "상온에 오래 방치",
     "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",
     "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "노로바이러스 식중독",
+    "질병관리청 노로바이러스 식중독 예방·탈수·오염 식재료 확인 필요",
+    "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "면역저하자 노로바이러스 탈수",
+    "질병관리청 노로바이러스 면역저하자 탈수 관찰·진료 확인 필요",
+    "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "오염된 식재료를 조리하지 않고 섭취",
+    "질병관리청 노로바이러스 오염 식재료 비조리 섭취 확인 필요",
+    "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "환자 구토물 접촉환경",
+    "질병관리청 노로바이러스 환자 구토물·접촉환경 염소 소독 확인 필요",
+    "kdcaNorovirusFoodSafety",
   ],
   ["씻지 않은 딸기", "면역저하 시 씻기 어려운 과일 주의", "nccImmuneLowDiet"],
   [
