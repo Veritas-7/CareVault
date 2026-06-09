@@ -150,6 +150,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 식생활",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
   },
+  nccTreatmentEating: {
+    label: "국가암정보센터 치료 중 일반적인 식생활",
+    url: "https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
+  },
   nccCancerLifeChildrenCommunication: {
     label: "국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법",
     url: "https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
@@ -386,6 +390,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     question:
       "방사선치료나 항암화학요법 중 장 기능 변화, 자극적인 음식, 민간요법·건강보조식품 복용 여부를 제 치료 일정 기준으로 어떻게 기록하고 상담해야 하나요?",
     sourceId: "nccDiet",
+  },
+  {
+    topic: "치료 중 균형식 확인",
+    question:
+      "국가암정보센터 치료 중 일반적인 식생활 안내처럼 암 자체와 암 치료가 영양 상태에 영향을 미치고, 영양 상태는 질병의 이환율과 사망률, 치료 효과, 삶의 질에 영향을 주며, 치료 중 잘 먹는 것은 영양 상태 유지, 부작용 극복, 감염의 위험 감소, 항암치료로 손상된 세포 재생에 도움이 될 수 있다고 설명됩니다. 암을 낫게 해주는 특별한 식품이나 영양소는 없고 균형 잡힌 식사, 충분한 열량과 단백질, 비타민 및 무기질, 여러 가지 음식을 골고루 먹는 것이 중요하다는 점을 제 치료 일정, 장 기능 변화, 식사량, 단백질 반찬, 보조식품 고민과 함께 어떻게 기록해 진료팀에 확인하면 좋을까요?",
+    sourceId: "nccTreatmentEating",
   },
   {
     topic: "HPV·검진",
@@ -689,6 +699,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다. 충분한 영양을 섭취하고 휴식을 취하는 것이 몸의 면역 기능 강화와 투병 생활에 도움이 될 수 있습니다. 방사선 치료나 항암화학요법 중에는 장기능이 약해질 가능성이 있으므로 되도록 자극적인 음식은 피합니다. 또한 항암화학요법을 받는 중에는 민간요법이나 건강보조식품은 삼갑니다. 내 치료 일정, 장 기능 변화, 자극적인 음식, 민간요법·건강보조식품 복용 여부를 약제 기준에 맞춰 진료팀에 확인합니다.",
     sourceId: "nccDiet",
+  },
+  {
+    label: "치료 중 열량·단백질·영양소 메모",
+    detail:
+      "국가암정보센터는 암 자체뿐 아니라 암을 치료하기 위한 방법들도 환자의 영양 상태에 영향을 미치고, 영양 상태는 질병의 이환율과 사망률, 치료 효과, 삶의 질에도 영향을 미친다고 설명합니다. 치료 중 잘 먹으면 영양 상태 유지, 치료에 따르는 부작용을 잘 극복, 감염의 위험 감소, 항암치료로 손상된 세포 재생에 도움이 될 수 있다고 안내합니다. 암을 낫게 해주는 특별한 식품이나 영양소는 없으며, 균형 잡힌 식사로 좋은 영양 상태를 유지하는 것이 매우 중요합니다. 그러기 위해서는 충분한 열량과 단백질, 비타민 및 무기질을 섭취해야 하며, 이는 여러 가지 음식을 골고루 먹음으로써 가능합니다. 이 항목은 식사량, 단백질 반찬, 다양한 식품군, 식사 어려움, 보조식품 고민을 치료 일정과 증상 기준으로 기록하고 진료팀에 확인하는 메모로 남깁니다.",
+    sourceId: "nccTreatmentEating",
   },
 ];
 

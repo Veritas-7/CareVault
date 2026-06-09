@@ -58,6 +58,7 @@ describe("cervicalCancerCare", () => {
       "nccSexLife",
       "nccPregnancyBirth",
       "nccDiet",
+      "nccTreatmentEating",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -117,6 +118,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccPainAssessment.url).toContain("S1T378C380");
     expect(cervicalCancerCareSources.nccCancerFatigueCoping.url).toContain("S1T420C421");
     expect(cervicalCancerCareSources.nccDyspneaCause.url).toContain("S1T411C414");
+    expect(cervicalCancerCareSources.nccTreatmentEating.url).toContain("S1T471C472");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -205,7 +207,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(32);
+    expect(cervicalCancerCarePrompts).toHaveLength(33);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -222,6 +224,7 @@ describe("cervicalCancerCare", () => {
       "장·방광 후기 변화",
       "림프부종",
       "식생활·보조식품",
+      "치료 중 균형식 확인",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -420,8 +423,25 @@ describe("cervicalCancerCare", () => {
       "출처: 국가암정보센터 자궁경부암 식생활 - https://www.cancer.go.kr/",
     );
     expect(cervicalCancerCarePrompts[14].question).toContain("민간요법·건강보조식품");
-    expect(cervicalCancerCarePrompts[15].question).toContain("접종 후에도 자궁경부암 선별검사");
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[15])).toContain(
+    const treatmentEatingPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "치료 중 균형식 확인",
+    )!;
+    expect(treatmentEatingPrompt.sourceId).toBe("nccTreatmentEating");
+    expect(treatmentEatingPrompt.question).toContain("영양 상태");
+    expect(treatmentEatingPrompt.question).toContain("치료 효과");
+    expect(treatmentEatingPrompt.question).toContain("삶의 질");
+    expect(treatmentEatingPrompt.question).toContain("부작용");
+    expect(treatmentEatingPrompt.question).toContain("감염의 위험");
+    expect(treatmentEatingPrompt.question).toContain("손상된 세포");
+    expect(treatmentEatingPrompt.question).toContain("암을 낫게 해주는 특별한 식품이나 영양소는 없");
+    expect(treatmentEatingPrompt.question).toContain("충분한 열량과 단백질");
+    expect(treatmentEatingPrompt.question).toContain("비타민 및 무기질");
+    expect(treatmentEatingPrompt.question).toContain("여러 가지 음식을 골고루");
+    expect(buildCervicalCancerCarePromptQuestion(treatmentEatingPrompt)).toContain(
+      "출처: 국가암정보센터 치료 중 일반적인 식생활 - https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
+    );
+    expect(cervicalCancerCarePrompts[16].question).toContain("접종 후에도 자궁경부암 선별검사");
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[16])).toContain(
       "출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/",
     );
     const hpvInfectionPrompt = cervicalCancerCarePrompts.find(
@@ -436,7 +456,7 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(hpvInfectionPrompt)).toContain(
       "출처: 국가암정보센터 사람유두종바이러스 감염 - https://www.cancer.go.kr/lay1/S1T250C254/contents.do",
     );
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[17])).toContain(
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[18])).toContain(
       "출처: 국가암정보센터 자궁경부암 임신과 출산 - https://www.cancer.go.kr/",
     );
     const sexLifePrompt = cervicalCancerCarePrompts.find(
@@ -1158,6 +1178,10 @@ describe("cervicalCancerCare", () => {
       "자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다. 충분한 영양을 섭취하고 휴식을 취하는 것이 몸의 면역 기능 강화와 투병 생활에 도움이 될 수 있습니다.";
     const cervicalDietTreatmentCautionSentence =
       "방사선 치료나 항암화학요법 중에는 장기능이 약해질 가능성이 있으므로 되도록 자극적인 음식은 피합니다. 또한 항암화학요법을 받는 중에는 민간요법이나 건강보조식품은 삼갑니다.";
+    const treatmentEatingSpecialFoodSentence =
+      "암을 낫게 해주는 특별한 식품이나 영양소는 없으며, 균형 잡힌 식사로 좋은 영양 상태를 유지하는 것이 매우 중요합니다.";
+    const treatmentEatingNutrientSentence =
+      "그러기 위해서는 충분한 열량과 단백질, 비타민 및 무기질을 섭취해야 하며, 이는 여러 가지 음식을 골고루 먹음으로써 가능합니다.";
     const text = cervicalCancerCareRecoveryGuides
       .map((item) => `${item.label} ${item.detail}`)
       .join(" ");
@@ -1173,6 +1197,9 @@ describe("cervicalCancerCare", () => {
     );
     const cervicalDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "식생활·보조식품 확인",
+    );
+    const treatmentEatingGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "치료 중 열량·단백질·영양소 메모",
     );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
@@ -1193,7 +1220,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "호흡곤란·흉통 변화 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(16);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(17);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1292,6 +1319,30 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(cervicalDietGuide!)).join(" ")).not.toMatch(
       /암을 낫게|치료 음식|특효|보조식품 권장/,
+    );
+    expect(treatmentEatingGuide).toMatchObject({
+      label: "치료 중 열량·단백질·영양소 메모",
+      sourceId: "nccTreatmentEating",
+    });
+    expect(treatmentEatingGuide?.detail).toContain("영양 상태는 질병의 이환율과 사망률");
+    expect(treatmentEatingGuide?.detail).toContain("치료 효과");
+    expect(treatmentEatingGuide?.detail).toContain("삶의 질");
+    expect(treatmentEatingGuide?.detail).toContain("부작용을 잘 극복");
+    expect(treatmentEatingGuide?.detail).toContain("감염의 위험");
+    expect(treatmentEatingGuide?.detail).toContain("손상된 세포");
+    expect(treatmentEatingGuide?.detail).toContain(treatmentEatingSpecialFoodSentence);
+    expect(treatmentEatingGuide?.detail).toContain(treatmentEatingNutrientSentence);
+    expect(formatCervicalCancerCareItemEvidence(treatmentEatingGuide!)).toContain(
+      "국가암정보센터 치료 중 일반적인 식생활 - https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(treatmentEatingGuide!).body).toContain(
+      treatmentEatingNutrientSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(treatmentEatingGuide!)).toContain(
+      "국가암정보센터 치료 중 일반적인 식생활",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(treatmentEatingGuide!)).join(" ")).not.toMatch(
+      /암을 낫게 해주는 특별한 식품이 있습니다|치료 음식|특효|보조식품 권장|치료하세요/,
     );
     expect(childFamilyCommunicationGuide).toMatchObject({
       label: "자녀·가족 설명 메모",
