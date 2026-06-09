@@ -48,6 +48,7 @@ describe("cervicalCancerCare", () => {
       "nccScreeningResultCost",
       "nccDefinitionTypes",
       "nccEarlyScreening",
+      "nccRelatedStatistics",
       "nccEarlyDiagnosisPrevention",
       "nccRecovery",
       "nccRecurrenceFollowUp",
@@ -83,6 +84,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccStage.url).toContain("menu_seq=4890");
     expect(cervicalCancerCareSources.nccDifferentialDiagnosis.url).toContain("menu_seq=4891");
     expect(cervicalCancerCareSources.nccEarlyScreening.url).toContain("menu_seq=4886");
+    expect(cervicalCancerCareSources.nccRelatedStatistics.url).toContain("menu_seq=4882");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -274,6 +276,9 @@ describe("cervicalCancerCare", () => {
     const earlyScreeningGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "조기검진 준비·한계 메모",
     );
+    const relatedStatisticsGuide = cervicalCancerCareChecks.find(
+      (item) => item.label === "발생통계 해석 메모",
+    );
     const treatmentStatusGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "치료현황 통계 상담 메모",
     );
@@ -287,7 +292,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "감별진단 확인 메모",
     );
 
-    expect(cervicalCancerCareChecks).toHaveLength(15);
+    expect(cervicalCancerCareChecks).toHaveLength(16);
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("출혈·분비물 기록");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("추적검사 일정·결과");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
@@ -395,6 +400,28 @@ describe("cervicalCancerCare", () => {
     expect(earlyScreeningGuide?.detail).toContain("진료팀에 확인");
     expect(earlyScreeningGuide?.detail).not.toContain("정상입니다");
     expect(earlyScreeningGuide?.detail).not.toContain("검사를 건너뛰세요");
+    expect(relatedStatisticsGuide).toMatchObject({
+      label: "발생통계 해석 메모",
+      sourceId: "nccRelatedStatistics",
+    });
+    expect(relatedStatisticsGuide?.detail).toContain("2026년에 발표된 중앙암등록본부");
+    expect(relatedStatisticsGuide?.detail).toContain("2023년");
+    expect(relatedStatisticsGuide?.detail).toContain("상피내암을 제외시킨 자궁경부암(C53)");
+    expect(relatedStatisticsGuide?.detail).toContain("3,144건");
+    expect(relatedStatisticsGuide?.detail).toContain("전체 암 발생의 1.1%");
+    expect(relatedStatisticsGuide?.detail).toContain("여자의 암 중에서는 11위");
+    expect(relatedStatisticsGuide?.detail).toContain("조발생률 6.1건");
+    expect(relatedStatisticsGuide?.detail).toContain("40대가 22.8%");
+    expect(relatedStatisticsGuide?.detail).toContain("50대가 22.6%");
+    expect(relatedStatisticsGuide?.detail).toContain("60대가 19.1%");
+    expect(relatedStatisticsGuide?.detail).toContain("암종이 96.6%");
+    expect(relatedStatisticsGuide?.detail).toContain("편평세포암이 40.1%");
+    expect(relatedStatisticsGuide?.detail).toContain("선암이 22.7%");
+    expect(relatedStatisticsGuide?.detail).toContain("인구 통계");
+    expect(relatedStatisticsGuide?.detail).toContain("개인 위험으로 단정하지 말고");
+    expect(relatedStatisticsGuide?.detail).toContain("진료팀에 확인");
+    expect(relatedStatisticsGuide?.detail).not.toContain("개인 위험입니다");
+    expect(relatedStatisticsGuide?.detail).not.toContain("암에 걸립니다");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "배뇨·배변·출혈 변화 메모")?.detail,
     ).toContain("혈변·혈뇨");

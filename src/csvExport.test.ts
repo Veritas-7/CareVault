@@ -633,6 +633,15 @@ describe("csvExport", () => {
     expect(csv).toContain("액상세포도말검사");
     expect(csv).toContain("생리 시작일로부터 10~20일");
     expect(csv).toContain("성관계, 탐폰 사용, 질 세척");
+    expect(csv).toContain("발생통계 해석 메모");
+    expect(csv).toContain("상피내암을 제외시킨 자궁경부암(C53)");
+    expect(csv).toContain("3,144건");
+    expect(csv).toContain("전체 암 발생의 1.1%");
+    expect(csv).toContain("여자의 암 중에서는 11위");
+    expect(csv).toContain("40대가 22.8%");
+    expect(csv).toContain("암종이 96.6%");
+    expect(csv).toContain("편평세포암이 40.1%");
+    expect(csv).toContain("개인 위험으로 단정하지 말고");
     expect(csv).toContain("전암 단계인 상피내암");
     expect(csv).toContain("요관침윤");
     expect(csv).toContain("대동맥주위 림프절");
@@ -640,6 +649,7 @@ describe("csvExport", () => {
     expect(csv).toContain("국가암정보센터 자궁경부암 진행단계");
     expect(csv).toContain("국가암정보센터 자궁경부암 정의 및 종류");
     expect(csv).toContain("국가암정보센터 자궁경부암 조기검진");
+    expect(csv).toContain("국가암정보센터 자궁경부암 관련통계");
     expect(csv).toContain("배뇨·배변·출혈 변화 메모");
     expect(csv).toContain("혈변·혈뇨");
     expect(csv).toContain("장폐색·혈변·혈뇨 연락 메모");

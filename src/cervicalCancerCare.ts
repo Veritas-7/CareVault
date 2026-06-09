@@ -110,6 +110,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 조기검진",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4886",
   },
+  nccRelatedStatistics: {
+    label: "국가암정보센터 자궁경부암 관련통계",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4882",
+  },
   nccEarlyDiagnosisPrevention: {
     label: "국립암센터 자궁경부암 조기 진단과 예방법",
     url: "https://www.cancer.go.kr/download.do?uuid=adf8879c-4343-445e-b67d-0c60e5ac9b58.pdf",
@@ -346,6 +350,12 @@ export const cervicalCancerCareChecks: CervicalCancerCareCheck[] = [
     detail:
       "국가암정보센터는 조기검진 목적이 전구 질환인 자궁경부이형성증과 상피내암 단계에서 발견하는 것이라고 설명합니다. 자궁경부세포검사는 많이 이용되지만 병변이 있어도 정상으로 판정되는 위음성률이 50%에 달할 수 있고, 액상세포도말검사는 기존 방법보다 위음성률이 낮아졌다고 설명합니다. 검진 시기는 생리기간을 되도록 피하고 생리 시작일로부터 10~20일 사이가 좋으며, 최소 48시간 전부터 성관계, 탐폰 사용, 질 세척, 질 내 약물 및 윤활제, 질 내 피임약을 피하는 안내가 내 검사에 적용되는지 확인합니다. 생리기간이 아니어도 출혈이나 악취 나는 질 분비물 같은 증상이 있다면 출혈에 관계없이 검사 기준을 진료팀에 확인합니다.",
     sourceId: "nccEarlyScreening",
+  },
+  {
+    label: "발생통계 해석 메모",
+    detail:
+      "국가암정보센터는 2026년에 발표된 중앙암등록본부 자료 기준 2023년 우리나라 전체 신규 암 288,613건 중 상피내암을 제외시킨 자궁경부암(C53)이 3,144건, 전체 암 발생의 1.1%였고 여자의 암 중에서는 11위, 인구 10만 명당 조발생률 6.1건이라고 설명합니다. 연령대는 40대가 22.8%, 50대가 22.6%, 60대가 19.1% 순이었고, 조직학적으로 암종이 96.6%, 편평세포암이 40.1%, 선암이 22.7%였습니다. 이 수치는 발생 현황을 설명하는 인구 통계이므로 개인 위험으로 단정하지 말고, 내 나이, 검진 이력, 병리결과, 치료 이력에서 어떤 의미가 있는지 진료팀에 확인합니다.",
+    sourceId: "nccRelatedStatistics",
   },
   {
     label: "진단·병기검사 목적 메모",

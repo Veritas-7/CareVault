@@ -1858,6 +1858,15 @@ describe("caregiverExport", () => {
     expect(html).toContain("액상세포도말검사");
     expect(html).toContain("생리 시작일로부터 10~20일");
     expect(html).toContain("성관계, 탐폰 사용, 질 세척");
+    expect(html).toContain("발생통계 해석 메모");
+    expect(html).toContain("상피내암을 제외시킨 자궁경부암(C53)");
+    expect(html).toContain("3,144건");
+    expect(html).toContain("전체 암 발생의 1.1%");
+    expect(html).toContain("여자의 암 중에서는 11위");
+    expect(html).toContain("40대가 22.8%");
+    expect(html).toContain("암종이 96.6%");
+    expect(html).toContain("편평세포암이 40.1%");
+    expect(html).toContain("개인 위험으로 단정하지 말고");
     expect(html).toContain("전암 단계인 상피내암");
     expect(html).toContain("요관침윤");
     expect(html).toContain("대동맥주위 림프절");
@@ -1865,6 +1874,7 @@ describe("caregiverExport", () => {
     expect(html).toContain(">국가암정보센터 자궁경부암 진행단계</a>");
     expect(html).toContain(">국가암정보센터 자궁경부암 정의 및 종류</a>");
     expect(html).toContain(">국가암정보센터 자궁경부암 조기검진</a>");
+    expect(html).toContain(">국가암정보센터 자궁경부암 관련통계</a>");
     expect(html).toContain("배뇨·배변·출혈 변화 메모");
     expect(html).toContain("혈변·혈뇨");
     expect(html).toContain(">국가암정보센터 자궁경부암 치료의 부작용</a>");
