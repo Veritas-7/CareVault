@@ -1089,6 +1089,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaVomitingCare"],
       },
       {
+        label: "메스꺼움·구토 시 오심 지속·중요 활동 어려움 상담",
+        detail:
+          "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 자료는 오심이 며칠 이상 지속되거나 오심 때문에 중요한 일을 하지 못할 때 의료진과 상의하도록 안내합니다. 식단 기록에서는 오심 지속과 일상·중요 활동 저하의 진료팀 상담 신호로 분리하고, 활동 처방이나 진토제 처방, 오심·구토 치료 지시로 과장하지 않습니다.",
+        examples: "오심이 며칠이상 지속되거나 오심 때문에 당신이 중요한 일을 하지 못할 때",
+        sourceIds: ["nccNauseaVomitingCare"],
+      },
+      {
         label: "설사 심함·혈변·2일 이상 지속 상담",
         detail:
           "국가암정보센터 설사 자료는 설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 안내합니다.",
@@ -3695,6 +3702,11 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "구토를 12시간 이상 지속적으로 하거나 한 시간 동안 3번 이상 한 경우",
     "국가암정보센터 메스꺼움·구토 12시간 이상 지속 또는 한 시간 3번 이상 구토 의료진 상담 필요",
+    "nccNauseaVomitingCare",
+  ],
+  [
+    "오심이 며칠이상 지속되거나 오심 때문에 당신이 중요한 일을 하지 못할 때",
+    "국가암정보센터 오심 며칠 이상 지속 또는 중요한 일 수행 어려움 의료진 상담 필요",
     "nccNauseaVomitingCare",
   ],
   [
