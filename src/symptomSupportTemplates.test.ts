@@ -145,6 +145,46 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
   });
 
+  it("builds a fatigue symptom-support question from official rest and nutrition guidance", () => {
+    const causeSentence =
+      "치료기간 동안 피로감은 제대로 먹지 못한 것, 운동 저하, 혈구수 부족, 우울, 불면 그리고 약물 부작용 등과 관련이 있습니다.";
+    const clinicianCauseSentence =
+      "만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.";
+    const shortRestSentence =
+      "오랜 수면보다는 낮에 잠깐씩 낮잠이나 휴식을 취합니다.";
+    const shortActivitySentence = "일상적인 활동보다 짧고 간단한 활동을 하도록 합니다.";
+    const nutritionSentence =
+      "영양이 풍부한 음식을 충분히 섭취합니다. 불충분한 열량과 영양소 섭취가 피로의 원인이 될 수 있기 때문입니다.";
+    const bestTimeSentence = "하루 중 가장 좋은 시간에 가능한 많이 먹습니다.";
+    const frequentSnackSentence = "적은 양의 식사와 간식을 자주 먹습니다.";
+    const walkSentence =
+      "가능하다면 산책이나 규칙적인 운동을 하도록 합니다. 이는 피로감을 덜어주고 정신을 맑게 하는데 도움이 될 것입니다.";
+    const limitActivitySentence =
+      "피로를 악화시키는 행위는 제한하도록 합니다. 아이보기, 밥하기, 집안일 등은 주변 사람들에게 도움을 청하도록 합니다.";
+    const template = findSymptomSupportTemplate("피로와 기운 없음");
+
+    expect(template?.id).toBe("fatigue");
+    expect(template?.mealNote).toContain(causeSentence);
+    expect(template?.mealNote).toContain(shortRestSentence);
+    expect(template?.mealNote).toContain(shortActivitySentence);
+    expect(template?.mealNote).toContain(nutritionSentence);
+    expect(template?.mealNote).toContain(bestTimeSentence);
+    expect(template?.mealNote).toContain(frequentSnackSentence);
+    expect(template?.mealNote).toContain(walkSentence);
+    expect(template?.clinicianQuestion).toContain(clinicianCauseSentence);
+    expect(template?.clinicianQuestion).toContain(limitActivitySentence);
+    expect(buildSymptomSupportQuestion(template!, "피로")).toContain(
+      clinicianCauseSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "피로")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "피로")).not.toMatch(
+      /항우울제를 처방하세요|수면제를 처방하세요|진단하세요|치료하세요|운동을 강제하세요/,
+    );
+  });
+
   it("builds a nausea symptom-support question from official diet guidance", () => {
     const mealEnvironmentSentence =
       "음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다.";
