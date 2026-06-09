@@ -183,7 +183,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(22);
+    expect(cervicalCancerCarePrompts).toHaveLength(23);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -206,6 +206,7 @@ describe("cervicalCancerCare", () => {
       "방사선 급성 부작용 확인",
       "방사선 질 변화 상담",
       "전암성 병변 치료 확인",
+      "침윤성 초기 치료 확인",
       "요약·진료 흐름",
     ]);
     expect(cervicalCancerCarePrompts.every((item) => item.question.endsWith("?"))).toBe(true);
@@ -449,6 +450,26 @@ describe("cervicalCancerCare", () => {
     expect(precancerTreatmentPrompt.question).toContain("조직경계");
     expect(precancerTreatmentPrompt.question).toContain("더 진행된 암");
     expect(buildCervicalCancerCarePromptQuestion(precancerTreatmentPrompt)).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
+    );
+    const earlyInvasiveTreatmentPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "침윤성 초기 치료 확인",
+    )!;
+    expect(earlyInvasiveTreatmentPrompt.sourceId).toBe("nccTreatmentMethods");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("침윤성 자궁경부암");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("환자의 연령과 건강상태");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("암의 파급정도");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("동반된 합병증");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("임신을 원한다면");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("광범위 자궁경부절제술");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("복강경을 이용한 림프절 절제술");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("자궁을 보존");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("1기와 2기 초기");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("광범위 자궁절제술");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("자궁주위 조직");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("질 상부");
+    expect(earlyInvasiveTreatmentPrompt.question).toContain("골반림프절");
+    expect(buildCervicalCancerCarePromptQuestion(earlyInvasiveTreatmentPrompt)).toContain(
       "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
     );
     const overviewPrompt = cervicalCancerCarePrompts.find(

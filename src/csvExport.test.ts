@@ -662,6 +662,17 @@ describe("csvExport", () => {
     expect(csv).toContain("레이저요법");
     expect(csv).toContain("단순자궁절제술");
     expect(csv).toContain("조직경계");
+    expect(csv).toContain("침윤성 초기 치료 확인");
+    expect(csv).toContain("침윤성 자궁경부암");
+    expect(csv).toContain("환자의 연령과 건강상태");
+    expect(csv).toContain("암의 파급정도");
+    expect(csv).toContain("동반된 합병증");
+    expect(csv).toContain("광범위 자궁경부절제술");
+    expect(csv).toContain("복강경을 이용한 림프절 절제술");
+    expect(csv).toContain("자궁을 보존");
+    expect(csv).toContain("광범위 자궁절제술");
+    expect(csv).toContain("자궁주위 조직");
+    expect(csv).toContain("골반림프절");
     expect(csv).toContain("재발·추적검사");
     expect(csv).toContain("첫 2년");
     expect(csv).toContain("3개월마다");

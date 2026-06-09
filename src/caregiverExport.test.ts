@@ -2018,6 +2018,17 @@ describe("caregiverExport", () => {
     expect(html).toContain("레이저요법");
     expect(html).toContain("단순자궁절제술");
     expect(html).toContain("조직경계");
+    expect(html).toContain("침윤성 초기 치료 확인");
+    expect(html).toContain("침윤성 자궁경부암");
+    expect(html).toContain("환자의 연령과 건강상태");
+    expect(html).toContain("암의 파급정도");
+    expect(html).toContain("동반된 합병증");
+    expect(html).toContain("광범위 자궁경부절제술");
+    expect(html).toContain("복강경을 이용한 림프절 절제술");
+    expect(html).toContain("자궁을 보존");
+    expect(html).toContain("광범위 자궁절제술");
+    expect(html).toContain("자궁주위 조직");
+    expect(html).toContain("골반림프절");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");
     expect(html).toContain("첫 2년");

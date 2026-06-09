@@ -614,6 +614,17 @@ describe("visit packet", () => {
     expect(markdown).toContain("레이저요법");
     expect(markdown).toContain("단순자궁절제술");
     expect(markdown).toContain("조직경계");
+    expect(markdown).toContain("침윤성 초기 치료 확인");
+    expect(markdown).toContain("침윤성 자궁경부암");
+    expect(markdown).toContain("환자의 연령과 건강상태");
+    expect(markdown).toContain("암의 파급정도");
+    expect(markdown).toContain("동반된 합병증");
+    expect(markdown).toContain("광범위 자궁경부절제술");
+    expect(markdown).toContain("복강경을 이용한 림프절 절제술");
+    expect(markdown).toContain("자궁을 보존");
+    expect(markdown).toContain("광범위 자궁절제술");
+    expect(markdown).toContain("자궁주위 조직");
+    expect(markdown).toContain("골반림프절");
     expect(markdown).toContain("재발·추적검사");
     expect(markdown).toContain("첫 2년");
     expect(markdown).toContain("3개월마다");
