@@ -41,6 +41,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC cervical practice-guide color-variety produce matching for 파프리카, 피망, 시금치, 토마토, 당근, 양배추 등 식품이 지닌 색상 guidance, preserving 파프리카/피망/토마토 as balanced practice-guide produce examples rather than treatment-food claims
 - NCC cervical practice-guide fresh-produce and fat/salt reduction planning phrase matching for 가능한 지방 함량이 높은 식품이나 짠 음식 섭취를 줄이겠다는 생각... and 가능한 제철 과일, 채소를 구입하십시오. 곰팡이 핀 음식은 피하시기 바랍니다, preserving them as watch-level practice-planning notes rather than treatment-food claims
 - NCC cervical practice-guide gradual diet-change planning phrase matching for 한꺼번에 식생활 습관을 바꾸는 것은 위험합니다, 단계적 계획표 작성, 식단 작성 시 다양한 종류의 식품 섭취, and 규칙적인 식생활 guidance
+- NCC cervical practice-guide meal-example intro and core-principle phrase matching for 암예방을 위한 식단의 예입니다 and 기본원칙 : 다채로운 식단으로 균형 잡힌 식사 / 채소, 과일을 충분히 섭취 / 짠 음식 및 탄 음식 섭취 제한, preserving the mixed principle as watch because it includes limits
 - NCC nausea do-not-force intake sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다
 - NCC nausea do-not-force specific-food alternative-food source sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다. 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 합니다. 대신 먹기 좋은 다른 음식을 많이 먹도록 합니다.
 - NCC nausea treatment-before-eating sentence matching for 항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다
