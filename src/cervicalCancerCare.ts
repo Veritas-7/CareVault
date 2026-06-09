@@ -150,6 +150,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 식생활",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
   },
+  nccCancerLifeChildrenCommunication: {
+    label: "국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법",
+    url: "https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
+  },
   nccDiagnosisMethods: {
     label: "국가암정보센터 자궁경부암 진단방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
@@ -388,6 +392,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccSexLife",
   },
   {
+    topic: "자녀·가족 설명 준비",
+    question:
+      "자궁경부암 진단과 치료로 생긴 외모·일상 변화, 검사·치료 일정, 자녀가 질문하거나 감정을 표현해도 괜찮다는 안내, 암이 누구의 잘못도 아니며 아이의 잘못도 아니라는 설명을 자녀의 나이와 이해 정도에 맞춰 어떤 말로 준비하면 좋을지 진료팀과 보호자에게 어떻게 확인하면 좋을까요?",
+    sourceId: "nccCancerLifeChildrenCommunication",
+  },
+  {
     topic: "치료현황 통계 해석",
     question:
       "국가암정보센터 치료현황 통계처럼 2019-2023년 자궁경부암 5년 상대생존율 79.0%, 요약병기별 국한 94.5%·국소 73.8%·원격 29.1%·모름 69.5%와 5년 이상 생존 확률 설명이 제 병기, 검사 근거, 치료 반응, 재발·전이 여부와 어떤 차이가 있는지 개인 예후로 단정하지 않고 진료팀에 어떻게 해석 질문을 하면 좋을까요?",
@@ -587,6 +597,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 초기 자궁경부암에서 환상투열요법이나 광범위자궁경부절제수술 후 임신·출산이 가능한 경우를 설명하면서 산전 진찰, 자궁경관 길이, 임신초기 유산 및 조산 위험 확인이 필요하다고 설명합니다. 임신 계획이 있으면 내 치료명과 병기를 기준으로 산부인과·종양팀 상담 시점을 기록합니다.",
     sourceId: "nccPregnancyBirth",
+  },
+  {
+    label: "자녀·가족 설명 메모",
+    detail:
+      "국가암정보센터는 부모의 암 진단과 가족 생활 변화가 숨겨지면 자녀가 혼란을 겪지 않도록 변화와 느낌을 표현할 기회를 주는 것이 중요하다고 설명합니다. 암 설명은 자녀의 나이에 걸맞은 수준으로 준비하고, 치료 계획과 가족 생활의 변화, 탈모·극심한 피로감·체중 저하 같은 외모와 일상 변화, 자녀가 암이나 죽음 같은 말을 꺼내 질문을 할 수 있게 하는 답변, 자신의 정서를 표현할 방법을 진료팀과 보호자에게 확인합니다. 가족이 대신 말할 때는 검사와 치료가 힘들어 감정 변화가 있을 수 있지만 네 잘못 때문이 아니고 환자가 자녀에게 화가 난 것이 아니라는 문구를 기록해 둡니다.",
+    sourceId: "nccCancerLifeChildrenCommunication",
   },
   {
     label: "식생활·보조식품 확인",

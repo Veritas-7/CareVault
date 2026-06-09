@@ -58,6 +58,7 @@ describe("cervicalCancerCare", () => {
       "nccSexLife",
       "nccPregnancyBirth",
       "nccDiet",
+      "nccCancerLifeChildrenCommunication",
       "nccDiagnosisMethods",
       "nccStage",
       "nccTreatmentMethods",
@@ -99,6 +100,9 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccDifferentialDiagnosis.url).toContain("menu_seq=4891");
     expect(cervicalCancerCareSources.nccEarlyScreening.url).toContain("menu_seq=4886");
     expect(cervicalCancerCareSources.nccRelatedStatistics.url).toContain("menu_seq=4882");
+    expect(cervicalCancerCareSources.nccCancerLifeChildrenCommunication.url).toContain(
+      "S1T327C330",
+    );
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -187,7 +191,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(26);
+    expect(cervicalCancerCarePrompts).toHaveLength(27);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -208,6 +212,7 @@ describe("cervicalCancerCare", () => {
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
       "성생활 재개 상담",
+      "자녀·가족 설명 준비",
       "치료현황 통계 해석",
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
@@ -431,6 +436,20 @@ describe("cervicalCancerCare", () => {
     expect(sexLifePrompt.question).toContain("콘돔");
     expect(buildCervicalCancerCarePromptQuestion(sexLifePrompt)).toContain(
       "출처: 국가암정보센터 자궁경부암 성생활 - https://www.cancer.go.kr/",
+    );
+    const childFamilyPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "자녀·가족 설명 준비",
+    )!;
+    expect(childFamilyPrompt.sourceId).toBe("nccCancerLifeChildrenCommunication");
+    expect(childFamilyPrompt.question).toContain("외모·일상 변화");
+    expect(childFamilyPrompt.question).toContain("검사·치료 일정");
+    expect(childFamilyPrompt.question).toContain("자녀가 질문하거나 감정을 표현");
+    expect(childFamilyPrompt.question).toContain("암이 누구의 잘못도 아니며");
+    expect(childFamilyPrompt.question).toContain("아이의 잘못");
+    expect(childFamilyPrompt.question).toContain("자녀의 나이와 이해 정도");
+    expect(childFamilyPrompt.question).toContain("진료팀과 보호자");
+    expect(buildCervicalCancerCarePromptQuestion(childFamilyPrompt)).toContain(
+      "출처: 국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법 - https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
     );
     const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료현황 통계 해석",
@@ -1045,8 +1064,11 @@ describe("cervicalCancerCare", () => {
     const cervicalDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "식생활·보조식품 확인",
     );
+    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "자녀·가족 설명 메모",
+    );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(10);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(11);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1145,6 +1167,34 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(cervicalDietGuide!)).join(" ")).not.toMatch(
       /암을 낫게|치료 음식|특효|보조식품 권장/,
+    );
+    expect(childFamilyCommunicationGuide).toMatchObject({
+      label: "자녀·가족 설명 메모",
+      sourceId: "nccCancerLifeChildrenCommunication",
+    });
+    expect(childFamilyCommunicationGuide?.detail).toContain("혼란을 겪지 않도록");
+    expect(childFamilyCommunicationGuide?.detail).toContain("나이에 걸맞은 수준");
+    expect(childFamilyCommunicationGuide?.detail).toContain("가족 생활의 변화");
+    expect(childFamilyCommunicationGuide?.detail).toContain("탈모");
+    expect(childFamilyCommunicationGuide?.detail).toContain("극심한 피로감");
+    expect(childFamilyCommunicationGuide?.detail).toContain("질문을 할 수 있게");
+    expect(childFamilyCommunicationGuide?.detail).toContain("자신의 정서를 표현");
+    expect(childFamilyCommunicationGuide?.detail).toContain("네 잘못 때문이 아니고");
+    expect(childFamilyCommunicationGuide?.detail).toContain("진료팀과 보호자");
+    expect(formatCervicalCancerCareItemEvidence(childFamilyCommunicationGuide!)).toContain(
+      "국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법 - https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(childFamilyCommunicationGuide!).body).toContain(
+      "자녀·가족 설명 메모",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(childFamilyCommunicationGuide!).body).toContain(
+      "네 잘못 때문이 아니고",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(childFamilyCommunicationGuide!)).toContain(
+      "국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(childFamilyCommunicationGuide!)).join(" ")).not.toMatch(
+      /진단하세요|치료하세요|완치/,
     );
     expect(text).toContain("골반 방사선치료 난소기능·폐경 증상 상담");
     expect(text).toContain("홍조");
