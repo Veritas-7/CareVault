@@ -68,6 +68,7 @@ describe("cervicalCancerCare", () => {
       "nccDiarrheaDiet",
       "nccConstipationDiet",
       "nccWeightChangeDiet",
+      "nccImmuneLowDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -139,6 +140,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccDiarrheaDiet.url).toContain("S1T479C488");
     expect(cervicalCancerCareSources.nccConstipationDiet.url).toContain("S1T479C487");
     expect(cervicalCancerCareSources.nccWeightChangeDiet.url).toContain("S1T479C486");
+    expect(cervicalCancerCareSources.nccImmuneLowDiet.url).toContain("S1T479C489");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -227,7 +229,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(43);
+    expect(cervicalCancerCarePrompts).toHaveLength(44);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -254,6 +256,7 @@ describe("cervicalCancerCare", () => {
       "설사 수분·전해질 음식 기록 준비",
       "변비 수분·섬유소·활동 기록 준비",
       "체중변화 열량·단백질·원인 기록 준비",
+      "면역기능 저하 식품안전 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -707,6 +710,37 @@ describe("cervicalCancerCare", () => {
     expect(weightChangeDietPrompt.question).toContain("많이 먹었다고 생각되면 운동");
     expect(buildCervicalCancerCarePromptQuestion(weightChangeDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    const immuneLowDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "면역기능 저하 식품안전 기록 준비",
+    )!;
+    expect(immuneLowDietPrompt.sourceId).toBe("nccImmuneLowDiet");
+    expect(immuneLowDietPrompt.question).toContain("백혈구수가 감소");
+    expect(immuneLowDietPrompt.question).toContain("감염에 대해 특별히 주의");
+    expect(immuneLowDietPrompt.question).toContain("익힌 음식");
+    expect(immuneLowDietPrompt.question).toContain("WBC/ANC");
+    expect(immuneLowDietPrompt.question).toContain("완전히 익힌 음식");
+    expect(immuneLowDietPrompt.question).toContain("유효기간");
+    expect(immuneLowDietPrompt.question).toContain("저온살균 제품");
+    expect(immuneLowDietPrompt.question).toContain("냉장·냉동 보관");
+    expect(immuneLowDietPrompt.question).toContain("고기·생선·닭고기 분리 보관");
+    expect(immuneLowDietPrompt.question).toContain("냉장고에서 녹이고");
+    expect(immuneLowDietPrompt.question).toContain("남은 음식");
+    expect(immuneLowDietPrompt.question).toContain("채소와 과일");
+    expect(immuneLowDietPrompt.question).toContain("손톱 밑");
+    expect(immuneLowDietPrompt.question).toContain("조리 기구·식기·수저 소독");
+    expect(immuneLowDietPrompt.question).toContain("식기·도마·칼 분리");
+    expect(immuneLowDietPrompt.question).toContain("외식보다 직접 요리");
+    expect(immuneLowDietPrompt.question).toContain("날계란");
+    expect(immuneLowDietPrompt.question).toContain("덜 익힌 계란");
+    expect(immuneLowDietPrompt.question).toContain("생굴, 회, 육회, 생선회, 생조개, 초밥");
+    expect(immuneLowDietPrompt.question).toContain("3~4일 지난 남은 음식");
+    expect(immuneLowDietPrompt.question).toContain("곰팡이가 핀 음식");
+    expect(immuneLowDietPrompt.question).toContain("녹슨 캔");
+    expect(immuneLowDietPrompt.question).toContain("녹은 냉동제품");
+    expect(immuneLowDietPrompt.question).toContain("비살균 우유·주스·요구르트");
+    expect(buildCervicalCancerCarePromptQuestion(immuneLowDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1603,6 +1637,9 @@ describe("cervicalCancerCare", () => {
     const weightChangeDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "체중변화 열량·단백질·원인 메모",
     );
+    const immuneLowDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "면역저하 익힌음식·위생·보관 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1625,7 +1662,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(27);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(28);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2029,6 +2066,53 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(weightChangeDietGuide!)).join(" ")).not.toMatch(
       /체중조절을 바로 시작하세요|감량식을 처방하세요|증량식을 처방하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(immuneLowDietGuide).toMatchObject({
+      label: "면역저하 익힌음식·위생·보관 메모",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(immuneLowDietGuide?.detail).toContain("백혈구수가 감소");
+    expect(immuneLowDietGuide?.detail).toContain("감염에 대해 특별히 주의");
+    expect(immuneLowDietGuide?.detail).toContain("익힌 음식을");
+    expect(immuneLowDietGuide?.detail).toContain("완전히 익힌 음식");
+    expect(immuneLowDietGuide?.detail).toContain("유효기간 확인");
+    expect(immuneLowDietGuide?.detail).toContain("쥬스, 우유, 요구르트");
+    expect(immuneLowDietGuide?.detail).toContain("저온살균 제품");
+    expect(immuneLowDietGuide?.detail).toContain("상하기 쉬운 음식");
+    expect(immuneLowDietGuide?.detail).toContain("고기, 생선, 닭고기");
+    expect(immuneLowDietGuide?.detail).toContain("고기나 생선즙");
+    expect(immuneLowDietGuide?.detail).toContain("냉장고에서 녹이고");
+    expect(immuneLowDietGuide?.detail).toContain("해동한 후 즉시 요리");
+    expect(immuneLowDietGuide?.detail).toContain("남은 음식");
+    expect(immuneLowDietGuide?.detail).toContain("채소와 과일");
+    expect(immuneLowDietGuide?.detail).toContain("손톱 밑부분");
+    expect(immuneLowDietGuide?.detail).toContain("머리카락");
+    expect(immuneLowDietGuide?.detail).toContain("조리에 사용되는 기구, 식기, 수저");
+    expect(immuneLowDietGuide?.detail).toContain("식기, 도마, 칼");
+    expect(immuneLowDietGuide?.detail).toContain("생고기, 닭고기, 생선");
+    expect(immuneLowDietGuide?.detail).toContain("외식보다는 직접 요리");
+    expect(immuneLowDietGuide?.detail).toContain("날계란이나 덜 익힌 계란");
+    expect(immuneLowDietGuide?.detail).toContain("생굴, 회, 육회, 생선회, 생조개, 초밥");
+    expect(immuneLowDietGuide?.detail).toContain("다진 고기");
+    expect(immuneLowDietGuide?.detail).toContain("딸기 등 꼼꼼히 씻기 어려운 과일");
+    expect(immuneLowDietGuide?.detail).toContain("3~4일이 지나면 버리기");
+    expect(immuneLowDietGuide?.detail).toContain("곰팡이가 핀 음식");
+    expect(immuneLowDietGuide?.detail).toContain("상한 음식");
+    expect(immuneLowDietGuide?.detail).toContain("상온 30분 이상 운반");
+    expect(immuneLowDietGuide?.detail).toContain("녹슨 캔이나 움푹해진 캔");
+    expect(immuneLowDietGuide?.detail).toContain("녹은 냉동제품");
+    expect(immuneLowDietGuide?.detail).toContain("비살균 우유·주스·요구르트");
+    expect(formatCervicalCancerCareItemEvidence(immuneLowDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(immuneLowDietGuide!).body).toContain(
+      "제 WBC/ANC",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(immuneLowDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(immuneLowDietGuide!)).join(" ")).not.toMatch(
+      /항생제를 복용하세요|격리하세요|백혈구.*올리는|면역.*치료|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
