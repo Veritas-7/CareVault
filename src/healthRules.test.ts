@@ -12582,6 +12582,77 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea bacillus cereus room-temperature storage and rice-food guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 바실러스 세레우스균 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "곡류, 채소류는 세척하여 사용하여야 한다, 조리된 음식은 장기간 실온방치를 금지하고, 5℃이하에서 냉장보관 한다, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "바실러스 세레우스균은 설사형 독소(Diarrhetic toxin)와 구토형 독소(Emetic toxin)를 생산하며, 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균 오염을 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaBacillusCereusFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 바실러스 세레우스균",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 바실러스 세레우스균 식중독 주의",
+      sourceIds: ["foodSafetyKoreaBacillusCereusFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("135℃에서 4시간");
+    expect(foodSafetyGuide?.detail).toContain("구토형 독소(Emetic toxin)");
+    expect(foodSafetyGuide?.detail).toContain("조리된 음식은 장기간 실온방치를 금지");
+    expect(foodSafetyGuide?.detail).toContain("저온보존이 부적절한 김밥 같은 식품");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "곡류, 채소류는 세척하여 사용하여야 한다",
+      "조리된 음식은 장기간 실온방치를 금지하고, 5℃이하에서 냉장보관 한다",
+      "저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaBacillusCereusFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 바실러스 세레우스균 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "바실러스 세레우스균",
+      "설사형 독소(Diarrhetic toxin)",
+      "구토형 독소(Emetic toxin)",
+      "향신료 사용 요리, 육류 및 채소의 스프, 푸딩",
+      "볶음밥",
+      "토양 상재균",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaBacillusCereusFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

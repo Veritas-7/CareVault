@@ -60,6 +60,7 @@ export type FoodGuidanceSourceId =
   | "kdcaNorovirusFoodSafety"
   | "kdcaFoodPoisoningNaturalToxins"
   | "foodSafetyKoreaStaphylococcusAureusFoodPoisoning"
+  | "foodSafetyKoreaBacillusCereusFoodPoisoning"
   | "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"
   | "foodSafetyKoreaListeriaFoodPoisoning"
   | "foodSafetyKoreaCampylobacterFoodPoisoning"
@@ -277,6 +278,10 @@ export const foodGuidanceSources: Record<
   },
   foodSafetyKoreaStaphylococcusAureusFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 황색포도상구균",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+  },
+  foodSafetyKoreaBacillusCereusFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 바실러스 세레우스균",
     url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning: {
@@ -1072,6 +1077,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "황색포도상구균, 장독소(enterotoxin), 코 안이나 피부에 상재, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 밥, 김밥, 도시락, 두부, 식품 취급자는 손을 청결히 하며 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있으면 식품을 취급해서는 안된다, 식품제조에 필요한 모든 기구와 기기 등을 청결히 유지하여 2차 오염을 방지한다, 식품은 적당량을 조속히 조리한 후 모두 섭취하고, 식품이 남았을 경우에는 실온에 방치하지 말고 5℃ 이하에 냉장 보관한다",
         sourceIds: ["foodSafetyKoreaStaphylococcusAureusFoodPoisoning"],
+      },
+      {
+        label: "식품안전나라 바실러스 세레우스균 식중독 주의",
+        detail:
+          "식품안전나라는 바실러스 세레우스균을 135℃에서 4시간의 가열에도 견디는 내열성 포자 형성균으로 설명합니다. 설사형 독소(Diarrhetic toxin)는 장내에서 생성되는 열, 산, 알칼리, 단백질 가수분해 효소에 민감하지만, 구토형 독소(Emetic toxin)는 열과 산 등에 저항력을 갖는다고 설명하므로 식품 안전 질문으로 분리합니다. 예방대책으로 곡류, 채소류는 세척하여 사용, 조리된 음식은 장기간 실온방치를 금지하고 5℃이하에서 냉장보관, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취를 안내합니다.",
+        examples:
+          "바실러스 세레우스균, 설사형 독소(Diarrhetic toxin), 구토형 독소(Emetic toxin), 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균, 곡류, 채소류는 세척하여 사용하여야 한다, 조리된 음식은 장기간 실온방치를 금지하고, 5℃이하에서 냉장보관 한다, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
+        sourceIds: ["foodSafetyKoreaBacillusCereusFoodPoisoning"],
       },
       {
         label: "식품안전나라 장출혈성 대장균 식중독 주의",
@@ -2635,6 +2648,21 @@ const supportiveFoods: FoodRuleTerm[] = [
     "식품은 적당량을 조속히 조리한 후 모두 섭취하고, 식품이 남았을 경우에는 실온에 방치하지 말고 5℃ 이하에 냉장 보관한다",
     "식품안전나라 황색포도상구균 남은 음식 실온방치 금지·5℃ 이하 냉장 후보",
     "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "곡류, 채소류는 세척하여 사용하여야 한다",
+    "식품안전나라 바실러스 세레우스균 곡류·채소류 세척 후보",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "조리된 음식은 장기간 실온방치를 금지하고, 5℃이하에서 냉장보관 한다",
+    "식품안전나라 바실러스 세레우스균 조리음식 장기 실온방치 금지·5℃ 이하 냉장 후보",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
+    "식품안전나라 바실러스 세레우스균 김밥 같은 식품 조리 후 즉시 섭취 후보",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
   ],
   [
     "조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다",
@@ -4372,6 +4400,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "밥, 김밥, 도시락, 두부",
     "식품안전나라 황색포도상구균 밥·김밥·도시락·두부 원인식품 확인 필요",
     "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "바실러스 세레우스균",
+    "식품안전나라 바실러스 세레우스균 식중독 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "설사형 독소(Diarrhetic toxin)",
+    "식품안전나라 바실러스 세레우스균 설사형 독소 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "구토형 독소(Emetic toxin)",
+    "식품안전나라 바실러스 세레우스균 구토형 독소 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "향신료 사용 요리, 육류 및 채소의 스프, 푸딩",
+    "식품안전나라 바실러스 세레우스균 설사형 원인식품 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "볶음밥",
+    "식품안전나라 바실러스 세레우스균 구토형 원인식품 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "토양 상재균",
+    "식품안전나라 바실러스 세레우스균 토양 상재균 오염 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
   ],
   [
     "장출혈성 대장균",
