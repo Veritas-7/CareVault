@@ -289,6 +289,40 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a constipation symptom-support question from official hydration and activity guidance", () => {
+    const hydrationSentence =
+      "수분을 충분히 섭취합니다.(하루에 8~10컵 이상) 이는 변을 부드럽게 합니다.";
+    const morningWaterSentence =
+      "특히 아침 기상 직후에 차가운 물을 마시면 장운동에 도움이 됩니다.";
+    const foodAmountSentence = "음식 섭취량이 너무 적지 않도록 합니다.";
+    const fiberFoodSentence =
+      "도정이 덜 된 곡류, 생과일, 생야채 등 섬유소가 많은 식품을 충분히 섭취합니다.";
+    const activitySentence =
+      "가벼운 산책이나 걷기 등의 자신에게 맞는 운동을 규칙적으로 하는 것이 도움이 됩니다.";
+    const massageSentence =
+      "누워만 있는 경우라도 배를 부드럽게 문질러 주면 장운동에 도움이 됩니다.";
+    const consultationSentence =
+      "계속적으로 변비가 조절되지 않는다면 의사선생님과 상의하도록 합니다.";
+    const template = findSymptomSupportTemplate("변비만 있음");
+
+    expect(template?.id).toBe("constipation");
+    expect(template?.mealNote).toContain(hydrationSentence);
+    expect(template?.mealNote).toContain(morningWaterSentence);
+    expect(template?.mealNote).toContain(foodAmountSentence);
+    expect(template?.mealNote).toContain(fiberFoodSentence);
+    expect(template?.mealNote).toContain(activitySentence);
+    expect(template?.mealNote).toContain(massageSentence);
+    expect(template?.clinicianQuestion).toContain(consultationSentence);
+    expect(buildSymptomSupportQuestion(template!, "변비")).toContain(consultationSentence);
+    expect(buildSymptomSupportQuestion(template!, "변비")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 변비 - https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "변비")).not.toMatch(
+      /완하제를 처방하세요|진단하세요|치료하세요|관장을 하세요/,
+    );
+  });
+
   it("builds a cervical urinary or bowel change question from bleeding keywords", () => {
     const template = findSymptomSupportTemplate("혈뇨와 혈변");
 
