@@ -162,6 +162,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 보완대체요법 상담",
     url: "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
   },
+  nccPainAssessment: {
+    label: "국가암정보센터 암성 통증평가 항목",
+    url: "https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
+  },
   nccDiagnosisMethods: {
     label: "국가암정보센터 자궁경부암 진단방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
@@ -418,6 +422,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccComplementaryTherapyConsultation",
   },
   {
+    topic: "암성 통증 평가 준비",
+    question:
+      "국가암정보센터 통증평가 항목처럼 암 환자의 통증은 제5의 활력 징후로 정기적인 평가가 필요하고, 통증 병력은 악화 또는 완화 요인, 통증의 성격, 위치와 방사통, 숫자통증등급 0~10 강도, 시작 시간·경과·지속 시간, 돌발성 통증 여부를 의료진에게 자세히 말해야 한다고 설명되는데, 제 골반통·허벅지 통증·수술 또는 방사선 후 통증을 어떤 기록 형식으로 정리해 진료팀에 확인하면 좋을까요?",
+    sourceId: "nccPainAssessment",
+  },
+  {
     topic: "치료현황 통계 해석",
     question:
       "국가암정보센터 치료현황 통계처럼 2019-2023년 자궁경부암 5년 상대생존율 79.0%, 요약병기별 국한 94.5%·국소 73.8%·원격 29.1%·모름 69.5%와 5년 이상 생존 확률 설명이 제 병기, 검사 근거, 치료 반응, 재발·전이 여부와 어떤 차이가 있는지 개인 예후로 단정하지 않고 진료팀에 어떻게 해석 질문을 하면 좋을까요?",
@@ -635,6 +645,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 보완대체요법을 고려하고 있다면 주치의와 먼저 상의할 것을 안내하고, 상담을 통해 환자의 안전과 안녕을 고려하며 계획한 요법과 다른 치료의 장/단점을 비교할 수 있다고 설명합니다. 주치의가 특정 크림이나 약물 사용 또는 침을 맞는 것 같은 특정 부위·시술을 제한할 수 있고, 약초나 영양제 복용 사실을 의료진에게 알리는 것은 부작용 위험을 최소화하는 방법이라고 설명합니다. 요법가들의 직접적인 설명에는 현재 상태와 앞으로 진행될 의학적 치료 이해 여부, 직접적인 치료 경험, 부작용 가능성을 포함해야 하므로, 보완대체요법 이름, 약초나 영양제 목록, 사용 시점, 기대 효과 문구, 부작용 우려, 설명서를 기록하고 진료팀과 보호자에게 확인합니다.",
     sourceId: "nccComplementaryTherapyConsultation",
+  },
+  {
+    label: "암성 통증 평가 메모",
+    detail:
+      "국가암정보센터는 암 환자에게 통증은 제5의 활력 징후라고 할 수 있어 정기적인 평가가 필요하고, 극심한 통증에는 응급 상황에 준하는 신속하고 적절한 통증 관리가 필요하다고 설명합니다. 통증 병력은 악화 또는 완화 요인, 통증의 성격, 위치와 방사통, 숫자통증등급 0~10 강도, 시작 시간·경과·지속 시간, 급성·만성·돌발성 통증 구분을 의료진에게 자세히 말하도록 안내하므로, 통증 부위, 가장 심한 부위, 강도 숫자, 느낌, 악화/완화 상황, 배뇨·기침·움직임·배변 관련성, 진통제 사용 여부와 효과, 진료팀 연락 기준을 기록합니다.",
+    sourceId: "nccPainAssessment",
   },
   {
     label: "식생활·보조식품 확인",

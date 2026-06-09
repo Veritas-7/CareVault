@@ -61,6 +61,7 @@ describe("cervicalCancerCare", () => {
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
+      "nccPainAssessment",
       "nccDiagnosisMethods",
       "nccStage",
       "nccTreatmentMethods",
@@ -111,6 +112,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccComplementaryTherapyConsultation.url).toContain(
       "S1T365C368",
     );
+    expect(cervicalCancerCareSources.nccPainAssessment.url).toContain("S1T378C380");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -199,7 +201,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(29);
+    expect(cervicalCancerCarePrompts).toHaveLength(30);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -223,6 +225,7 @@ describe("cervicalCancerCare", () => {
       "자녀·가족 설명 준비",
       "정서 안정·전문상담 준비",
       "보완대체요법 상담 준비",
+      "암성 통증 평가 준비",
       "치료현황 통계 해석",
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
@@ -498,6 +501,24 @@ describe("cervicalCancerCare", () => {
     expect(complementaryTherapyPrompt.question).toContain("진료팀");
     expect(buildCervicalCancerCarePromptQuestion(complementaryTherapyPrompt)).toContain(
       "출처: 국가암정보센터 보완대체요법 상담 - https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
+    );
+    const painAssessmentPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "암성 통증 평가 준비",
+    )!;
+    expect(painAssessmentPrompt.sourceId).toBe("nccPainAssessment");
+    expect(painAssessmentPrompt.question).toContain("제5의 활력 징후");
+    expect(painAssessmentPrompt.question).toContain("정기적인 평가");
+    expect(painAssessmentPrompt.question).toContain("악화 또는 완화");
+    expect(painAssessmentPrompt.question).toContain("통증의 성격");
+    expect(painAssessmentPrompt.question).toContain("위치와 방사통");
+    expect(painAssessmentPrompt.question).toContain("0~10");
+    expect(painAssessmentPrompt.question).toContain("시작 시간");
+    expect(painAssessmentPrompt.question).toContain("지속 시간");
+    expect(painAssessmentPrompt.question).toContain("돌발성 통증");
+    expect(painAssessmentPrompt.question).toContain("골반통");
+    expect(painAssessmentPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(painAssessmentPrompt)).toContain(
+      "출처: 국가암정보센터 암성 통증평가 항목 - https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
     );
     const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료현황 통계 해석",
@@ -1121,8 +1142,11 @@ describe("cervicalCancerCare", () => {
     const complementaryTherapyGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "보완대체요법·약초 공유 메모",
     );
+    const painAssessmentGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암성 통증 평가 메모",
+    );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(13);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(14);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1311,6 +1335,37 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(complementaryTherapyGuide!)).join(" ")).not.toMatch(
       /진단하세요|치료하세요|복용하세요|중단하세요|시술하세요/,
+    );
+    expect(painAssessmentGuide).toMatchObject({
+      label: "암성 통증 평가 메모",
+      sourceId: "nccPainAssessment",
+    });
+    expect(painAssessmentGuide?.detail).toContain("제5의 활력 징후");
+    expect(painAssessmentGuide?.detail).toContain("정기적인 평가");
+    expect(painAssessmentGuide?.detail).toContain("응급 상황에 준하는");
+    expect(painAssessmentGuide?.detail).toContain("악화 또는 완화 요인");
+    expect(painAssessmentGuide?.detail).toContain("통증의 성격");
+    expect(painAssessmentGuide?.detail).toContain("위치와 방사통");
+    expect(painAssessmentGuide?.detail).toContain("숫자통증등급 0~10");
+    expect(painAssessmentGuide?.detail).toContain("시작 시간");
+    expect(painAssessmentGuide?.detail).toContain("지속 시간");
+    expect(painAssessmentGuide?.detail).toContain("돌발성 통증");
+    expect(painAssessmentGuide?.detail).toContain("배뇨·기침·움직임·배변");
+    expect(painAssessmentGuide?.detail).toContain("진통제 사용 여부와 효과");
+    expect(formatCervicalCancerCareItemEvidence(painAssessmentGuide!)).toContain(
+      "국가암정보센터 암성 통증평가 항목 - https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(painAssessmentGuide!).body).toContain(
+      "암성 통증 평가 메모",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(painAssessmentGuide!).body).toContain(
+      "숫자통증등급 0~10",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(painAssessmentGuide!)).toContain(
+      "국가암정보센터 암성 통증평가 항목",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(painAssessmentGuide!)).join(" ")).not.toMatch(
+      /진단하세요|치료하세요|복용하세요|처방하세요|투약하세요/,
     );
     expect(text).toContain("골반 방사선치료 난소기능·폐경 증상 상담");
     expect(text).toContain("홍조");
