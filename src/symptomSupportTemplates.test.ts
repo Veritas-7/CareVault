@@ -37,6 +37,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("피부 발진과 가려움")?.id).toBe(
       "skin-change-care",
     );
+    expect(findSymptomSupportTemplate("빈혈과 어지럼증")?.id).toBe(
+      "anemia-management",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -298,6 +301,53 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "피부 발진")).not.toMatch(
       /스테로이드를 처방하세요|항생제를 처방하세요|진단하세요|치료하세요|방사선치료를 중단하세요|햇빛을 금지하세요/,
+    );
+  });
+
+  it("builds an anemia management question from official symptom and activity guidance", () => {
+    const treatmentEffectSentence =
+      "받고 있는 항암 치료가 적혈구에 영향을 미칠 수 있는지 확인해 둡니다. 현재 적극적인 항암 치료를 받고 있다면, 치료가 적혈구에 영향을 미치는 것인지의 여부에 대하여 담당 의사에게 묻고 대처 방법에 대하여 알아둡니다.";
+    const symptomDiarySentence =
+      "빈혈 관련 증상을 숙지하고 일지에 정리하여 진료 시 담당 의사에게 모든 관련증상을 이야기합니다.";
+    const labCompareSentence =
+      "정기적인 혈액 검사 시에 적혈구 수와 헤모글로빈 수치를 점검하고 에너지 수준과 비교해 둡니다. 참고로, 남성의 정상 헤모글로빈 수치는 14-18 g/dL, 여자는 12-16 g/dL 입니다.";
+    const energyConserveSentence =
+      "하루 일과를 조정하거나 가족 또는 친구들에게 일을 분배함으로써 에너지를 보존합니다.";
+    const avoidOverexerciseSentence = "과도한 운동은 삼가도록 합니다.";
+    const balancedFoodSentence = "균형 잡힌 음식을 섭취합니다.";
+    const hydrationSentence =
+      "탈수되지 않도록 유의하고 하루 6--8잔의 물을 마시도록 노력합니다.";
+    const dizzinessSentence =
+      "어지럼증이 있을 시에는 운전, 아이 돌보기, 외출과 같은 활동은 주의를 요합니다.";
+    const standSlowlySentence =
+      "누워있거나 앉은 자세에서는 천천히 일어나야 합니다.";
+    const sleepSentence =
+      "충분한 수면을 취합니다. 침실에서 충분한 수면을 취하고, 낮 시간 동안에도 의자나 소파에서 짧은 낮잠을 즐기도록 합니다.";
+    const template = findSymptomSupportTemplate("빈혈과 어지럼증");
+
+    expect(template?.id).toBe("anemia-management");
+    expect(template?.mealNote).toContain(treatmentEffectSentence);
+    expect(template?.mealNote).toContain(symptomDiarySentence);
+    expect(template?.mealNote).toContain("심각한 피로나 허약함");
+    expect(template?.mealNote).toContain("숨 가쁨");
+    expect(template?.mealNote).toContain("혼동이나 집중하기 힘들어짐");
+    expect(template?.mealNote).toContain(labCompareSentence);
+    expect(template?.clinicianQuestion).toContain(energyConserveSentence);
+    expect(template?.clinicianQuestion).toContain(avoidOverexerciseSentence);
+    expect(template?.clinicianQuestion).toContain(balancedFoodSentence);
+    expect(template?.clinicianQuestion).toContain(hydrationSentence);
+    expect(template?.clinicianQuestion).toContain(dizzinessSentence);
+    expect(template?.clinicianQuestion).toContain(standSlowlySentence);
+    expect(template?.clinicianQuestion).toContain(sleepSentence);
+    expect(buildSymptomSupportQuestion(template!, "빈혈")).toContain(
+      symptomDiarySentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "빈혈")).toContain(
+      "출처: 국가암정보센터 빈혈 관리 - https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "빈혈")).not.toMatch(
+      /수혈을 하세요|철분제를 처방하세요|적혈구 생성인자를 처방하세요|진단하세요|치료하세요|운전을 금지하세요|운동을 금지하세요/,
     );
   });
 
@@ -772,7 +822,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(22);
+    expect(symptomSupportTemplates).toHaveLength(23);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -812,6 +862,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("피부 발진")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T454C456/contents.do",
+    );
+    expect(findSymptomSupportTemplate("빈혈")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
