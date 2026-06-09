@@ -61,6 +61,7 @@ describe("cervicalCancerCare", () => {
       "nccTreatmentEating",
       "nccNauseaDiet",
       "nccVomitingDiet",
+      "nccAppetiteLossDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -125,6 +126,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccTreatmentEating.url).toContain("S1T471C472");
     expect(cervicalCancerCareSources.nccNauseaDiet.url).toContain("S1T479C481");
     expect(cervicalCancerCareSources.nccVomitingDiet.url).toContain("S1T479C482");
+    expect(cervicalCancerCareSources.nccAppetiteLossDiet.url).toContain("S1T479C480");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -213,7 +215,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(36);
+    expect(cervicalCancerCarePrompts).toHaveLength(37);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -233,6 +235,7 @@ describe("cervicalCancerCare", () => {
       "치료 중 균형식 확인",
       "메스꺼움·구토 식사 기록 준비",
       "구토 후 수분·식사 단계 기록 준비",
+      "식욕부진 식사·간식 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -486,6 +489,29 @@ describe("cervicalCancerCare", () => {
     expect(vomitingDietPrompt.question).toContain("의사선생님과 상의");
     expect(buildCervicalCancerCarePromptQuestion(vomitingDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 구토 - https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    const appetiteLossDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "식욕부진 식사·간식 기록 준비",
+    )!;
+    expect(appetiteLossDietPrompt.sourceId).toBe("nccAppetiteLossDiet");
+    expect(appetiteLossDietPrompt.question).toContain("암 자체와 항암치료");
+    expect(appetiteLossDietPrompt.question).toContain("공포나 우울감");
+    expect(appetiteLossDietPrompt.question).toContain("조금씩 자주");
+    expect(appetiteLossDietPrompt.question).toContain("간식을 가까이");
+    expect(appetiteLossDietPrompt.question).toContain("먹고 싶을 때");
+    expect(appetiteLossDietPrompt.question).toContain("몸 상태가 좋을 때");
+    expect(appetiteLossDietPrompt.question).toContain("평소에 좋아하던 음식");
+    expect(appetiteLossDietPrompt.question).toContain("충분한 휴식을 취한 아침");
+    expect(appetiteLossDietPrompt.question).toContain("죽, 미음, 쥬스, 스프");
+    expect(appetiteLossDietPrompt.question).toContain("식사 시 수분섭취");
+    expect(appetiteLossDietPrompt.question).toContain("식전이나 식후 30~60분");
+    expect(appetiteLossDietPrompt.question).toContain("식사하는 시간, 장소, 분위기");
+    expect(appetiteLossDietPrompt.question).toContain("가벼운 산책");
+    expect(appetiteLossDietPrompt.question).toContain("식사전후에 입안을 청결");
+    expect(appetiteLossDietPrompt.question).toContain("특수영양 보충음료");
+    expect(appetiteLossDietPrompt.question).toContain("억지로 먹으라고 지나치게 강요하지");
+    expect(buildCervicalCancerCarePromptQuestion(appetiteLossDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1266,6 +1292,10 @@ describe("cervicalCancerCare", () => {
       "구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다.";
     const vomitingDietSoftMealSentence =
       "맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다.";
+    const appetiteLossSnackSentence =
+      "조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다.";
+    const appetiteLossFluidTimingSentence =
+      "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다. 만약 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 합니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1297,6 +1327,9 @@ describe("cervicalCancerCare", () => {
     const vomitingDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "구토 후 유동식·부드러운 식사 메모",
     );
+    const appetiteLossDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "식욕부진 간식·수분 타이밍 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1319,7 +1352,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(20);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(21);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1499,6 +1532,37 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(vomitingDietGuide!)).join(" ")).not.toMatch(
       /구토약을 복용하세요|진토제를 복용하세요|억지로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(appetiteLossDietGuide).toMatchObject({
+      label: "식욕부진 간식·수분 타이밍 메모",
+      sourceId: "nccAppetiteLossDiet",
+    });
+    expect(appetiteLossDietGuide?.detail).toContain("암 자체와 항암치료");
+    expect(appetiteLossDietGuide?.detail).toContain("공포나 우울감");
+    expect(appetiteLossDietGuide?.detail).toContain(appetiteLossSnackSentence);
+    expect(appetiteLossDietGuide?.detail).toContain("먹고 싶을 때, 먹을 수 있을 때");
+    expect(appetiteLossDietGuide?.detail).toContain("몸 상태가 좋을 때");
+    expect(appetiteLossDietGuide?.detail).toContain("평소에 좋아하던 음식");
+    expect(appetiteLossDietGuide?.detail).toContain("메뉴를 다양하게");
+    expect(appetiteLossDietGuide?.detail).toContain("충분한 휴식을 취한 아침");
+    expect(appetiteLossDietGuide?.detail).toContain("죽, 미음, 쥬스, 스프, 우유 및 유제품");
+    expect(appetiteLossDietGuide?.detail).toContain(appetiteLossFluidTimingSentence);
+    expect(appetiteLossDietGuide?.detail).toContain("식사하는 시간, 장소, 분위기");
+    expect(appetiteLossDietGuide?.detail).toContain("가벼운 산책");
+    expect(appetiteLossDietGuide?.detail).toContain("식사전후에 입안을 청결");
+    expect(appetiteLossDietGuide?.detail).toContain("특수영양 보충음료");
+    expect(appetiteLossDietGuide?.detail).toContain("억지로 먹으라고 지나치게 강요하지");
+    expect(formatCervicalCancerCareItemEvidence(appetiteLossDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(appetiteLossDietGuide!).body).toContain(
+      appetiteLossFluidTimingSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(appetiteLossDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 식욕부진",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(appetiteLossDietGuide!)).join(" ")).not.toMatch(
+      /식욕촉진제를 복용하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
