@@ -2238,6 +2238,67 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide gradual diet-change planning phrases", () => {
+    const abruptChangePhrase =
+      "한꺼번에 식생활 습관을 바꾸는 것은 위험합니다. 다음의 내용을 숙지하면서 식생활 개선을 시작하세요.";
+    const stepwisePlanPhrase =
+      "식생활을 한꺼번에 바꾸려고 하지 말고 내가 할 수 있는 것들을 확인하여 서서히 단계적으로 변화시킬 수 있는 계획표를 작성해 보십시오.";
+    const varietyPlanPhrase = "식단 작성 시 다양한 종류의 식품을 섭취할 수 있도록 계획해 보십시오.";
+    const regularMealPhrase =
+      "건강을 생각해서 규칙적인 식생활과 더불어 즐거운 마음으로 식사를 하시기 바랍니다.";
+    const assessment = assessCancerFood(
+      `${abruptChangePhrase}, ${stepwisePlanPhrase}, ${varietyPlanPhrase}, ${regularMealPhrase}`,
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([
+      abruptChangePhrase,
+      stepwisePlanPhrase,
+      varietyPlanPhrase,
+      regularMealPhrase,
+    ]);
+    expect(matchesByTerm[abruptChangePhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 급격한 식생활 변경 주의 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[stepwisePlanPhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 단계적 식생활 개선 계획 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[varietyPlanPhrase]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 다양한 식품 섭취 계획 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[regularMealPhrase]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 규칙적 식생활 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(limitGuideText).toContain(abruptChangePhrase);
+    expect(limitGuideText).toContain(stepwisePlanPhrase);
+    expect(balancedGuideText).toContain(varietyPlanPhrase);
+    expect(balancedGuideText).toContain(regularMealPhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[stepwisePlanPhrase])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide limit examples without contradicting replacements", () => {
     const assessment = assessCancerFood(
       "햄구이, 초코칩쿠키, 단무지, 국물, 과일샐러드, 채소샐러드",
