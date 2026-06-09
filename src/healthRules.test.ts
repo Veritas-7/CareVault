@@ -6312,6 +6312,44 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|냉찜질 치료/);
   });
 
+  it("recognizes NCC nausea-vomiting care morning toast and cracker source sentence", () => {
+    const sourceSentence = "아침에 메스꺼움을 느낀다면, 일어나기 전에 토스트나 크래커를 먹도록 합니다.";
+    const broaderNauseaDietSentence = "토스트, 크래커, 요거트, 샤베트";
+    const mouthPainSourceLine = "토스트, 크래커 또는 말린 음식 등";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 메스꺼움·구토 시 아침 메스꺼움에 일어나기 전 토스트·크래커 후보",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(broaderNauseaDietSentence);
+    expect(terms).not.toContain(mouthPainSourceLine);
+    expect(terms).not.toContain("토스트");
+    expect(terms).not.toContain("크래커");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|강제 섭취/);
+  });
+
   it("recognizes NCC nausea-vomiting care fatty fried spicy sweet food limit source sentence", () => {
     const sourceSentence = "기름진 음식, 튀긴 음식, 짜고 매운 음식, 지나치게 단 음식은 피합니다.";
     const broaderNauseaDietSentence = "다음 음식들은 메스꺼움을 더욱 유발할 수 있으므로 피하도록 합니다.";
