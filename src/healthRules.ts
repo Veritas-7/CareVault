@@ -58,6 +58,7 @@ export type FoodGuidanceSourceId =
   | "kdcaAlcohol"
   | "kdcaVibrioSepsis"
   | "kdcaNorovirusFoodSafety"
+  | "kdcaFoodPoisoningNaturalToxins"
   | "mfdsFoodPoisoningPrevention";
 
 export type FoodMatch = {
@@ -264,6 +265,10 @@ export const foodGuidanceSources: Record<
   kdcaNorovirusFoodSafety: {
     label: "질병관리청 국가건강정보포털 노로바이러스 식중독 예방",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=80",
+  },
+  kdcaFoodPoisoningNaturalToxins: {
+    label: "질병관리청 국가건강정보포털 식중독",
+    url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5239",
   },
   mfdsFoodPoisoningPrevention: {
     label: "식품의약품안전처 식중독 예방 6대요령",
@@ -1018,6 +1023,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "노로바이러스 식중독, 면역저하자 노로바이러스 탈수, 오염된 식재료를 조리하지 않고 섭취, 음식물은 충분히 익혀 먹기(85℃ 이상에서 1분 이상 가열), 식재료를 흐르는 물에 세척하여 85℃ 이상에서 충분히 익혀 먹기, 조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관, 칼·도마는 소독하여 사용, 환자 구토물 접촉환경, 염소 소독",
         sourceIds: ["kdcaNorovirusFoodSafety"],
+      },
+      {
+        label: "질병관리청 자연독 식중독 주의",
+        detail:
+          "질병관리청 국가건강정보포털은 식중독 원인에 동물성·식물성·진균성 자연독이 포함된다고 설명합니다. 복어의 알·난소·간·껍질에는 치명적인 테트로도톡신이 있고 복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않으므로 복어는 복어요리 전문가가 조리한 것을 확인해야 합니다. 조개류는 유독성 플랑크톤 축적, 섭조개·홍합의 마비성 조개독, 야생 독버섯의 식용버섯 오인, 녹색 감자·싹 부위의 솔라닌, 세척하거나 열을 가해도 없어지지 않는 곰팡이독을 식품 안전 질문으로 분리합니다.",
+        examples:
+          "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다, 복어요리 전문가가 조리하지 않은 복어, 유독화된 조개, 적조에 노출된 섭조개나 홍합, 야생 독버섯을 식용버섯으로 오인, 녹색을 띠는 감자, 감자의 독이 포함된 부위(싹이 난 부위나 녹색을 띠는 부위)를 잘라내야 합니다, 솔라닌, 곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
+        sourceIds: ["kdcaFoodPoisoningNaturalToxins"],
       },
       {
         label: "질병관리청 비브리오 어패류 안전",
@@ -2532,6 +2545,11 @@ const supportiveFoods: FoodRuleTerm[] = [
     "조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관",
     "질병관리청 노로바이러스 식중독 예방 조리식품 10℃ 이하 냉장 보관 후보",
     "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "감자의 독이 포함된 부위(싹이 난 부위나 녹색을 띠는 부위)를 잘라내야 합니다",
+    "질병관리청 식중독 자연독 감자 솔라닌 부위 제거 후보",
+    "kdcaFoodPoisoningNaturalToxins",
   ],
   [
     "어패류는 충분히 익혀 먹습니다",
@@ -4159,6 +4177,31 @@ const careTeamFoods: FoodRuleTerm[] = [
     "환자 구토물 접촉환경",
     "질병관리청 노로바이러스 환자 구토물·접촉환경 염소 소독 확인 필요",
     "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다",
+    "질병관리청 자연독 식중독 복어독 열저항성 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "복어요리 전문가가 조리하지 않은 복어",
+    "질병관리청 자연독 식중독 복어요리 전문가 조리 여부 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "야생 독버섯을 식용버섯으로 오인",
+    "질병관리청 자연독 식중독 야생 독버섯 오인 섭취 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "녹색을 띠는 감자",
+    "질병관리청 자연독 식중독 감자 솔라닌 부위 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
+    "질병관리청 자연독 식중독 곰팡이독 세척·가열 불충분 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
   ],
   ["씻지 않은 딸기", "면역저하 시 씻기 어려운 과일 주의", "nccImmuneLowDiet"],
   [
