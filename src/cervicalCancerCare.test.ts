@@ -74,9 +74,10 @@ describe("cervicalCancerCare", () => {
 	      "nccNeuropathyCare",
 	      "nccSkinChangeCare",
 		      "nccAnemiaCare",
-		      "nccBleedingSymptoms",
-		      "nccHairLossCare",
-		      "nccCancerLifeChildrenCommunication",
+			      "nccBleedingSymptoms",
+			      "nccHairLossCare",
+			      "nccHiccupConsult",
+			      "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
@@ -153,9 +154,10 @@ describe("cervicalCancerCare", () => {
 	    expect(cervicalCancerCareSources.nccNeuropathyCare.url).toContain("S1T458C460");
 		    expect(cervicalCancerCareSources.nccSkinChangeCare.url).toContain("S1T454C456");
 		    expect(cervicalCancerCareSources.nccAnemiaCare.url).toContain("S1T440C444");
-		    expect(cervicalCancerCareSources.nccBleedingSymptoms.url).toContain("S1T445C448");
-		    expect(cervicalCancerCareSources.nccHairLossCare.url).toContain("S1T451C453");
-		  });
+			    expect(cervicalCancerCareSources.nccBleedingSymptoms.url).toContain("S1T445C448");
+			    expect(cervicalCancerCareSources.nccHairLossCare.url).toContain("S1T451C453");
+			    expect(cervicalCancerCareSources.nccHiccupConsult.url).toContain("S1T466C468");
+			  });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
     expect(careItems.every((item) => cervicalCancerCareSources[item.sourceId])).toBe(true);
@@ -243,7 +245,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-			    expect(cervicalCancerCarePrompts).toHaveLength(51);
+				    expect(cervicalCancerCarePrompts).toHaveLength(52);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -276,9 +278,10 @@ describe("cervicalCancerCare", () => {
 	      "손발저림·감각이상 안전 확인",
 	      "피부변화·손발홍반·손발톱 확인",
 		      "빈혈·혈색소·어지럼 기록 확인",
-		      "출혈·멍·코피·혈변 기록 확인",
-		      "탈모·두피 보호 기록 확인",
-		      "HPV·검진",
+			      "출혈·멍·코피·혈변 기록 확인",
+			      "탈모·두피 보호 기록 확인",
+			      "딸꾹질 지속 상담 기준 확인",
+			      "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
       "성생활 재개 상담",
@@ -957,11 +960,28 @@ describe("cervicalCancerCare", () => {
 			    expect(buildCervicalCancerCarePromptQuestion(hairLossCarePrompt)).toContain(
 			      "출처: 국가암정보센터 탈모 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T451C453/contents.do",
 			    );
-			    expect(Object.values(buildCervicalCancerCarePromptQuestionDraft(hairLossCarePrompt, "2026-06-15")).join(" ")).not.toMatch(
-			      /탈모를 치료하세요|두피약을 바르세요|선크림을 처방하세요|가발을 처방하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
-			    );
-			    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
-		      (item) => item.topic === "HPV·검진",
+				    expect(Object.values(buildCervicalCancerCarePromptQuestionDraft(hairLossCarePrompt, "2026-06-15")).join(" ")).not.toMatch(
+				      /탈모를 치료하세요|두피약을 바르세요|선크림을 처방하세요|가발을 처방하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+				    );
+				    const hiccupConsultPrompt = cervicalCancerCarePrompts.find(
+				      (item) => item.topic === "딸꾹질 지속 상담 기준 확인",
+				    )!;
+				    expect(hiccupConsultPrompt.sourceId).toBe("nccHiccupConsult");
+				    expect(hiccupConsultPrompt.question).toContain("하루이상 딸꾹질이 지속");
+				    expect(hiccupConsultPrompt.question).toContain("호흡곤란");
+				    expect(hiccupConsultPrompt.question).toContain("위장이 커져있거나 팽만");
+				    expect(hiccupConsultPrompt.question).toContain("잠을 이룰수 없을 정도");
+				    expect(hiccupConsultPrompt.question).toContain("딸꾹질로 인해 고통");
+				    expect(hiccupConsultPrompt.question).toContain("지속 시간");
+				    expect(hiccupConsultPrompt.question).toContain("진료팀에 알려야 하는지");
+				    expect(buildCervicalCancerCarePromptQuestion(hiccupConsultPrompt)).toContain(
+				      "출처: 국가암정보센터 딸꾹질 의료진 상담 상황 - https://www.cancer.go.kr/lay1/S1T466C468/contents.do",
+				    );
+				    expect(Object.values(buildCervicalCancerCarePromptQuestionDraft(hiccupConsultPrompt, "2026-06-15")).join(" ")).not.toMatch(
+				      /딸꾹질을 치료하세요|약을 복용하세요|물을 마시세요|숨을 참으세요|종이봉투|눈을 누르세요|설탕을 먹으세요|레몬을 먹으세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+				    );
+				    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
+			      (item) => item.topic === "HPV·검진",
 		    )!;
     expect(hpvScreeningPrompt.question).toContain("접종 후에도 자궁경부암 선별검사");
     expect(buildCervicalCancerCarePromptQuestion(hpvScreeningPrompt)).toContain(
@@ -1834,9 +1854,14 @@ describe("cervicalCancerCare", () => {
 		      "헤어 드라이기와 같은 열기구의 사용은 되도록 줄입니다. 꼭 필요한 경우에는 가장 약한 열로 하도록 합니다.";
 		    const hairLossEmotionSentence =
 		      "탈모로 인한 불안감을 의료진 및 가족들에게 표현하고 탈모를 경험하는 다른 환자들과의 대화를 통하여 감정을 나누는 것도 좋습니다.";
-		    const hairLossScalpProtectionSentence =
-		      "외출 시에는 모자, 스카프 등을 사용하며, 완전 탈모 시에는 두피를 보호하기 위하여 선크림(햇빛 차단제)을 사용합니다.";
-		    const coughDefinitionSentence =
+			    const hairLossScalpProtectionSentence =
+			      "외출 시에는 모자, 스카프 등을 사용하며, 완전 탈모 시에는 두피를 보호하기 위하여 선크림(햇빛 차단제)을 사용합니다.";
+			    const hiccupPersistentSentence = "하루이상 딸꾹질이 지속될 경우";
+			    const hiccupDyspneaSentence = "호흡곤란이 일어날 경우";
+			    const hiccupBloatingSentence = "위장이 커져있거나 팽만되어 있는 것으로 보이는 경우";
+			    const hiccupSleepSentence = "잠을 이룰수 없을 정도로 딸꾹질이 나올 때";
+			    const hiccupPainSentence = "딸꾹질로 인해 고통을 느낄 때";
+			    const coughDefinitionSentence =
 	      "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
       "병적인 기침은 환자가 불편을 느끼는 증상으로 지속되거나 발작적인 것을 말합니다.";
@@ -1909,10 +1934,13 @@ describe("cervicalCancerCare", () => {
 		    const bleedingSymptomsGuide = cervicalCancerCareRecoveryGuides.find(
 		      (item) => item.label === "출혈·멍·코피·혈변 메모",
 		    );
-		    const hairLossCareGuide = cervicalCancerCareRecoveryGuides.find(
-		      (item) => item.label === "탈모·두피 보호·가발 준비 메모",
-		    );
-			    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
+			    const hairLossCareGuide = cervicalCancerCareRecoveryGuides.find(
+			      (item) => item.label === "탈모·두피 보호·가발 준비 메모",
+			    );
+			    const hiccupConsultGuide = cervicalCancerCareRecoveryGuides.find(
+			      (item) => item.label === "딸꾹질 지속·호흡곤란 상담 메모",
+			    );
+				    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
 	      (item) => item.label === "자녀·가족 설명 메모",
 	    );
     const psychologicalStabilityGuide = cervicalCancerCareRecoveryGuides.find(
@@ -1934,7 +1962,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-			    expect(cervicalCancerCareRecoveryGuides).toHaveLength(35);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(36);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2621,10 +2649,34 @@ describe("cervicalCancerCare", () => {
 			    expect(formatCervicalCancerCareListItemAriaLabel(hairLossCareGuide!)).toContain(
 			      "국가암정보센터 탈모 도움이 되는 방법",
 			    );
-			    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(hairLossCareGuide!)).join(" ")).not.toMatch(
-			      /탈모를 치료하세요|두피약을 바르세요|선크림을 처방하세요|가발을 처방하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
-			    );
-			    expect(coughCauseGuide).toMatchObject({
+				    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(hairLossCareGuide!)).join(" ")).not.toMatch(
+				      /탈모를 치료하세요|두피약을 바르세요|선크림을 처방하세요|가발을 처방하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+				    );
+				    expect(hiccupConsultGuide).toMatchObject({
+				      label: "딸꾹질 지속·호흡곤란 상담 메모",
+				      sourceId: "nccHiccupConsult",
+				    });
+				    expect(hiccupConsultGuide?.detail).toContain(hiccupPersistentSentence);
+				    expect(hiccupConsultGuide?.detail).toContain(hiccupDyspneaSentence);
+				    expect(hiccupConsultGuide?.detail).toContain(hiccupBloatingSentence);
+				    expect(hiccupConsultGuide?.detail).toContain(hiccupSleepSentence);
+				    expect(hiccupConsultGuide?.detail).toContain(hiccupPainSentence);
+				    expect(hiccupConsultGuide?.detail).toContain("딸꾹질 시작 시점");
+				    expect(hiccupConsultGuide?.detail).toContain("수면 방해");
+				    expect(hiccupConsultGuide?.detail).toContain("진료팀 확인 메모");
+				    expect(formatCervicalCancerCareItemEvidence(hiccupConsultGuide!)).toContain(
+				      "국가암정보센터 딸꾹질 의료진 상담 상황 - https://www.cancer.go.kr/lay1/S1T466C468/contents.do",
+				    );
+				    expect(buildCervicalCancerCareItemSymptomDraft(hiccupConsultGuide!).body).toContain(
+				      "딸꾹질 지속·호흡곤란 상담 메모",
+				    );
+				    expect(formatCervicalCancerCareListItemAriaLabel(hiccupConsultGuide!)).toContain(
+				      "국가암정보센터 딸꾹질 의료진 상담 상황",
+				    );
+				    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(hiccupConsultGuide!)).join(" ")).not.toMatch(
+				      /딸꾹질을 치료하세요|약을 복용하세요|물을 마시세요|숨을 참으세요|종이봉투|눈을 누르세요|설탕을 먹으세요|레몬을 먹으세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+				    );
+				    expect(coughCauseGuide).toMatchObject({
 		      label: "기침·가래·수면방해 메모",
       sourceId: "nccCoughCause",
     });
