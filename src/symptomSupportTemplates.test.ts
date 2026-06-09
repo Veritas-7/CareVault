@@ -25,6 +25,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("구토가 계속됨")?.id).toBe("vomiting");
     expect(findSymptomSupportTemplate("diarrhea after medication")?.id).toBe("diarrhea");
     expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
+    expect(findSymptomSupportTemplate("체중감소와 단백질 보충 걱정")?.id).toBe(
+      "weight-change-nutrition",
+    );
     expect(findSymptomSupportTemplate("백혈구 감소와 날음식 식사 걱정")?.id).toBe(
       "immune-low-food-safety",
     );
@@ -166,6 +169,43 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "백혈구 감소")).not.toMatch(
       /항생제를 처방하세요|진단하세요|치료하세요|모든 음식을 금지하세요|격리하세요/,
+    );
+  });
+
+  it("builds a weight-change nutrition question from official calorie and cause guidance", () => {
+    const weightLossSentence =
+      "암환자는 치료과정에서 체중의 감소를 흔하게 경험할 수 있습니다. 체중감소는 환자를 허약하게 만들고 암에 대한 저항력과 치료효과 등을 떨어뜨립니다. 그러므로 체중감소를 예방하기 위해서 열량과 단백질 등을 충분히 섭취해야 합니다.";
+    const calorieSnackSentence =
+      "지방보다는 탄수화물이 많이 포함된 간식을 드시면 포만감이 빨리 사라지므로 더 편안함을 느낄 수 있다.";
+    const proteinSnackSentence =
+      "간식으로 고기나 생선, 치즈, 계란, 우유 등이 많이 포함된 음식을 선택한다.";
+    const weightGainCauseSentence =
+      "그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다.";
+    const highSaltSentence =
+      "소금이 우리 몸에서 수분을 축적시키는 작용을 하므로 염분 함량이 높은 식품(예: 가공식품, 김치, 젓갈, 장아찌류 등)은 제한하고 가능한 싱겁게 먹는 것이 좋습니다.";
+    const highCalorieLowNutritionSentence =
+      "반면, 식욕이 증가된 경우에는 열량이 높고 영양가가 없는 식품들(예: 청량 음료, 초콜릿, 사탕, 과자류 등)은 제한하도록 합니다.";
+    const balancedChoiceSentence =
+      "과일과 야채 그리고 곡류의 섭취를 증가시킵니다. 가능한 한 지방이 없는 부위의 육류제품과 저지방 우유 및 유제품을 이용합니다.";
+    const template = findSymptomSupportTemplate("체중감소와 단백질 보충 걱정");
+
+    expect(template?.id).toBe("weight-change-nutrition");
+    expect(template?.mealNote).toContain(weightLossSentence);
+    expect(template?.mealNote).toContain(calorieSnackSentence);
+    expect(template?.mealNote).toContain(proteinSnackSentence);
+    expect(template?.clinicianQuestion).toContain(weightGainCauseSentence);
+    expect(template?.clinicianQuestion).toContain(highSaltSentence);
+    expect(template?.clinicianQuestion).toContain(highCalorieLowNutritionSentence);
+    expect(template?.clinicianQuestion).toContain(balancedChoiceSentence);
+    expect(buildSymptomSupportQuestion(template!, "체중감소")).toContain(
+      weightGainCauseSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "체중감소")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "체중감소")).not.toMatch(
+      /식단을 처방하세요|진단하세요|치료하세요|운동을 강제하세요|체중조절을 지시하세요|고열량 간식을 금지하세요/,
     );
   });
 
@@ -640,7 +680,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(19);
+    expect(symptomSupportTemplates).toHaveLength(20);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -671,6 +711,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("백혈구 감소")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(findSymptomSupportTemplate("체중감소")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
