@@ -256,6 +256,39 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a diarrhea symptom-support question from official hydration guidance", () => {
+    const hydrationSentence =
+      "수분을 충분히 섭취하여 설사로 손실된 부분을 보충합니다.";
+    const smallMealSentence = "장이 약해져 있으므로 식사는 조금씩 자주 먹습니다.";
+    const electrolyteFoodSentence =
+      "염분과 칼륨이 많이 들어있는 식품을 섭취하여 설사로 인한 손실을 보충합니다. 염분과 칼륨이 들어있는 식품으로는 육수, 스포츠 음료, 바나나, 삶거나 으깬 감자, 복숭아, 토마토 등입니다.";
+    const avoidFoodSentence = "다음 식품들은 가능한 피하도록 합니다.";
+    const roomTemperatureSentence =
+      "너무 뜨겁거나 차가운 식품이나 음료는 피하고, 대신 상온의 음료를 마시도록 합니다.";
+    const clearLiquidSentence =
+      "갑자기 설사할 경우 12~24시간 동안은 맑은 유동식만 먹도록 합니다. 이는 장을 쉬게 해 주며 설사로 손실된 수분을 보충해 줍니다.";
+    const consultationSentence =
+      "설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 합니다.";
+    const template = findSymptomSupportTemplate("diarrhea after medication");
+
+    expect(template?.id).toBe("diarrhea");
+    expect(template?.mealNote).toContain(hydrationSentence);
+    expect(template?.mealNote).toContain(smallMealSentence);
+    expect(template?.mealNote).toContain(electrolyteFoodSentence);
+    expect(template?.mealNote).toContain(avoidFoodSentence);
+    expect(template?.mealNote).toContain(roomTemperatureSentence);
+    expect(template?.clinicianQuestion).toContain(clearLiquidSentence);
+    expect(template?.clinicianQuestion).toContain(consultationSentence);
+    expect(buildSymptomSupportQuestion(template!, "설사")).toContain(consultationSentence);
+    expect(buildSymptomSupportQuestion(template!, "설사")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 설사 - https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "설사")).not.toMatch(
+      /지사제를 처방하세요|진단하세요|치료하세요|수액을 맞으세요/,
+    );
+  });
+
   it("builds a cervical urinary or bowel change question from bleeding keywords", () => {
     const template = findSymptomSupportTemplate("혈뇨와 혈변");
 
