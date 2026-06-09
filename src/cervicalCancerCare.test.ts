@@ -43,6 +43,7 @@ describe("cervicalCancerCare", () => {
   it("keeps official Korean cervical-cancer sources attached", () => {
     expect(Object.keys(cervicalCancerCareSources)).toEqual([
       "nccSymptoms",
+      "nccAnatomySite",
       "nccScreeningSchedule",
       "nccScreeningEligibility",
       "nccScreeningResultCost",
@@ -72,6 +73,7 @@ describe("cervicalCancerCare", () => {
       "nccCervicalPracticeGuideline",
     ]);
     expect(cervicalCancerCareSources.nccSymptoms.url).toContain("cancer.go.kr");
+    expect(cervicalCancerCareSources.nccAnatomySite.url).toContain("menu_seq=4880");
     expect(cervicalCancerCareSources.nccLymphedemaCare.url).toContain("S1T429C431");
     expect(cervicalCancerCareSources.kdcaHpv.url).toContain("health.kdca.go.kr");
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
@@ -270,6 +272,9 @@ describe("cervicalCancerCare", () => {
   });
 
   it("keeps self-check copy as observation guidance", () => {
+    const anatomySiteGuide = cervicalCancerCareChecks.find(
+      (item) => item.label === "발생부위·구조 메모",
+    );
     const pathologyTypeGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "병리조직 확인 메모",
     );
@@ -292,9 +297,10 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "감별진단 확인 메모",
     );
 
-    expect(cervicalCancerCareChecks).toHaveLength(16);
+    expect(cervicalCancerCareChecks).toHaveLength(17);
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("출혈·분비물 기록");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("추적검사 일정·결과");
+    expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("발생부위·구조 메모");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
       "림프부종 감염·악화 신호",
     );
@@ -366,6 +372,26 @@ describe("cervicalCancerCare", () => {
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
     ).toContain("진료팀에 확인");
+    expect(anatomySiteGuide).toMatchObject({
+      label: "발생부위·구조 메모",
+      sourceId: "nccAnatomySite",
+    });
+    expect(anatomySiteGuide?.detail).toContain("골반 안");
+    expect(anatomySiteGuide?.detail).toContain("방광");
+    expect(anatomySiteGuide?.detail).toContain("직장");
+    expect(anatomySiteGuide?.detail).toContain("상하 약 7cm");
+    expect(anatomySiteGuide?.detail).toContain("좌우 약 4cm");
+    expect(anatomySiteGuide?.detail).toContain("자궁 상부 2/3");
+    expect(anatomySiteGuide?.detail).toContain("자궁체부");
+    expect(anatomySiteGuide?.detail).toContain("하부 1/3");
+    expect(anatomySiteGuide?.detail).toContain("자궁경부");
+    expect(anatomySiteGuide?.detail).toContain("질과 연결");
+    expect(anatomySiteGuide?.detail).toContain("신축성 있는 조직");
+    expect(anatomySiteGuide?.detail).toContain("요관");
+    expect(anatomySiteGuide?.detail).toContain("림프관 및 림프절");
+    expect(anatomySiteGuide?.detail).toContain("진료팀에 확인");
+    expect(anatomySiteGuide?.detail).not.toContain("진단됩니다");
+    expect(anatomySiteGuide?.detail).not.toContain("치료하세요");
     expect(pathologyTypeGuide).toMatchObject({
       label: "병리조직 확인 메모",
       sourceId: "nccDefinitionTypes",

@@ -90,6 +90,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 일반적 증상",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
   },
+  nccAnatomySite: {
+    label: "국가암정보센터 자궁경부암 발생부위",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4880",
+  },
   nccScreeningSchedule: {
     label: "국가암정보센터 국가암검진 검진주기 및 검진방법",
     url: "https://www.cancer.go.kr/lay1/S1T553C555/contents.do",
@@ -356,6 +360,12 @@ export const cervicalCancerCareChecks: CervicalCancerCareCheck[] = [
     detail:
       "국가암정보센터는 2026년에 발표된 중앙암등록본부 자료 기준 2023년 우리나라 전체 신규 암 288,613건 중 상피내암을 제외시킨 자궁경부암(C53)이 3,144건, 전체 암 발생의 1.1%였고 여자의 암 중에서는 11위, 인구 10만 명당 조발생률 6.1건이라고 설명합니다. 연령대는 40대가 22.8%, 50대가 22.6%, 60대가 19.1% 순이었고, 조직학적으로 암종이 96.6%, 편평세포암이 40.1%, 선암이 22.7%였습니다. 이 수치는 발생 현황을 설명하는 인구 통계이므로 개인 위험으로 단정하지 말고, 내 나이, 검진 이력, 병리결과, 치료 이력에서 어떤 의미가 있는지 진료팀에 확인합니다.",
     sourceId: "nccRelatedStatistics",
+  },
+  {
+    label: "발생부위·구조 메모",
+    detail:
+      "국가암정보센터는 자궁이 골반 안에 있으며 앞쪽에는 방광, 뒤쪽에는 직장이 있고 임신하지 않은 상태에서는 상하 약 7cm, 좌우 약 4cm 정도의 계란 크기라고 설명합니다. 자궁 상부 2/3는 자궁체부, 하부 1/3은 자궁경부이며 자궁경부는 자궁 입구 부분으로 제일 아래에 있어 질과 연결되고 자궁체부보다 신축성 있는 조직이라고 설명합니다. 검사·수술·방사선치료 설명을 들을 때 자궁경부, 자궁체부, 질, 방광, 직장, 요관, 림프관 및 림프절 위치 용어가 내 검사결과와 치료범위에서 어떤 의미인지 진료팀에 확인합니다.",
+    sourceId: "nccAnatomySite",
   },
   {
     label: "진단·병기검사 목적 메모",

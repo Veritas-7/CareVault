@@ -240,6 +240,10 @@ function isStructuredCervicalWarningDraft(symptom: CareActionQueueState["symptom
   return `${symptom.body}\n${symptom.action}`.includes("자궁경부암 경고 신호 기록 초안");
 }
 
+function isStructuredCervicalRecordMemoDraft(symptom: CareActionQueueState["symptoms"][number]) {
+  return `${symptom.body}\n${symptom.action}`.includes("자궁경부암 기록 메모 초안");
+}
+
 const contactThresholdSymptomLabels = {
   "cervical-bowel-obstruction": "장폐색 확인 기록",
   "cervical-general-warning": "자궁경부암 증상 변화 기록",
@@ -297,12 +301,28 @@ function extractCervicalRecordMemoBasis(text: string | undefined) {
     .trim();
 }
 
+function extractSourceEvidenceLine(text: string | undefined) {
+  return text
+    ?.split("\n")
+    .map((line) => line.trim())
+    .find((line) => line.startsWith("출처:"));
+}
+
 function formatSymptomActionDetail(
   symptom: CareActionQueueState["symptoms"][number],
   template: SymptomSupportTemplate | undefined,
 ) {
   if (!template) {
-    return formatTextWithSourceEvidence(firstText(symptom.action, symptom.body, symptom.medication));
+    const memoBasis = extractCervicalRecordMemoBasis(symptom.body);
+    const sourceEvidenceLine = extractSourceEvidenceLine(symptom.body);
+    const sourceEvidence = sourceEvidenceLine
+      ? formatTextWithSourceEvidence(sourceEvidenceLine)
+      : undefined;
+    return joinText(
+      formatTextWithSourceEvidence(firstText(symptom.action, symptom.body, symptom.medication)),
+      memoBasis,
+      sourceEvidence,
+    );
   }
 
   const actionText = formatSymptomTextWithoutTemplateCitation(symptom.action, template);
@@ -486,6 +506,7 @@ export function buildCareActionQueue(
 
     const isCervicalWarning = isCervicalWarningSymptom(symptom);
     const isStructuredCervicalWarning = isStructuredCervicalWarningDraft(symptom);
+    const isStructuredCervicalRecordMemo = isStructuredCervicalRecordMemoDraft(symptom);
     const contactThresholdTemplate = getContactThresholdSymptomTemplate(symptom);
     const isHighSeverity = Number(symptom.severity) >= 7;
     if (!isCervicalWarning && !isHighSeverity && !contactThresholdTemplate) return [];
@@ -496,9 +517,11 @@ export function buildCareActionQueue(
       && (!isCervicalWarning || contactThresholdTemplate.id !== "cervical-general-warning");
     const label = shouldUseContactThresholdLabel
       ? contactThresholdSymptomLabels[contactThresholdTemplate.id as ContactThresholdSymptomId]
-      : isCervicalWarning
-        ? "자궁경부암 경고 기록"
-        : "고위험 증상";
+      : isStructuredCervicalRecordMemo
+        ? "자궁경부암 기록 메모"
+        : isCervicalWarning
+          ? "자궁경부암 경고 기록"
+          : "고위험 증상";
 
     return [
       {

@@ -835,6 +835,9 @@ describe("careActionQueue", () => {
     const lateBowelBladderDraft = buildCervicalCancerCareItemSymptomDraft(
       cervicalCancerCareChecks.find((item) => item.label === "장폐색·혈변·혈뇨 연락 메모")!,
     );
+    const anatomySiteDraft = buildCervicalCancerCareItemSymptomDraft(
+      cervicalCancerCareChecks.find((item) => item.label === "발생부위·구조 메모")!,
+    );
     const actions = buildCareActionQueue(
       {
         ...state,
@@ -860,6 +863,15 @@ describe("careActionQueue", () => {
             body: lateBowelBladderDraft.body,
             action: lateBowelBladderDraft.action,
           },
+          {
+            id: "symptom-cervical-anatomy-site-draft",
+            date: "2026-06-04",
+            symptom: anatomySiteDraft.symptom,
+            severity: 3,
+            medication: "",
+            body: anatomySiteDraft.body,
+            action: anatomySiteDraft.action,
+          },
         ],
         visits: [],
         vitals: [],
@@ -884,6 +896,13 @@ describe("careActionQueue", () => {
           "장폐색·혈변·혈뇨 연락 메모 내용을 다음 진료 때 진료팀에 확인",
         ),
       }),
+      expect.objectContaining({
+        id: "symptom:symptom-cervical-anatomy-site-draft",
+        label: "자궁경부암 기록 메모",
+        source: "symptom",
+        title: "발생부위·구조 메모 3/10",
+        detail: expect.stringContaining("발생부위·구조 메모 내용을 다음 진료 때 진료팀에 확인"),
+      }),
     ]);
     expect(actions[0].detail).toContain(
       "근거: 국가암정보센터 림프부종 치료 전후관리 (https://www.cancer.go.kr/lay1/S1T429C431/contents.do)",
@@ -894,9 +913,19 @@ describe("careActionQueue", () => {
       "근거: 국가암정보센터 자궁경부암 치료의 부작용 (https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894)",
     );
     expect(actions[1].detail).not.toContain("출처: 국가암정보센터 자궁경부암 치료의 부작용");
+    expect(actions[2].detail).toContain("자궁 상부 2/3");
+    expect(actions[2].detail).toContain("하부 1/3");
+    expect(actions[2].detail).toContain("질과 연결");
+    expect(actions[2].detail).toContain("요관");
+    expect(actions[2].detail).toContain("림프관 및 림프절");
+    expect(actions[2].detail).toContain(
+      "근거: 국가암정보센터 자궁경부암 발생부위 (https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4880)",
+    );
+    expect(actions[2].detail).not.toContain("출처: 국가암정보센터 자궁경부암 발생부위");
 
     const clipboardText = formatCareActionQueueClipboardText(actions, "2026-06-04");
     expect(clipboardText).toContain("증상 · 장폐색 확인 기록");
+    expect(clipboardText).toContain("증상 · 자궁경부암 기록 메모");
     expect(clipboardText).toContain("   메모: 장폐색·혈변·혈뇨 연락 메모 내용을 다음 진료 때 진료팀에 확인");
     expect(clipboardText).toContain(
       "   기록 기준: 국가암정보센터는 수술 직후 급성 합병증으로 장폐색을, 방사선치료가 끝난 6개월 이상 뒤 만성 합병증으로 장폐색과 혈변·혈뇨 가능성을 설명합니다. 복부팽만, 구토, 배변/가스 변화, 혈변, 혈뇨, 방광·직장 통증이 있으면 발생 시점과 치료 종료 시점을 함께 기록하고 연락 기준을 진료팀에 확인합니다.",
@@ -905,6 +934,10 @@ describe("careActionQueue", () => {
       "   근거: 국가암정보센터 자궁경부암 치료의 부작용 (https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894)",
     );
     expect(clipboardText).not.toContain("출처: 국가암정보센터 자궁경부암 치료의 부작용");
+    expect(clipboardText).toContain(
+      "   근거: 국가암정보센터 자궁경부암 발생부위 (https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4880)",
+    );
+    expect(clipboardText).not.toContain("출처: 국가암정보센터 자궁경부암 발생부위");
   });
 
   it("surfaces source-backed cervical bleeding or discharge warnings even below high severity", () => {

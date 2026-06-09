@@ -933,6 +933,9 @@ describe("visit packet", () => {
     const lateBowelBladderDraft = buildCervicalCancerCareItemSymptomDraft(
       cervicalCancerCareChecks.find((item) => item.label === "장폐색·혈변·혈뇨 연락 메모")!,
     );
+    const anatomySiteDraft = buildCervicalCancerCareItemSymptomDraft(
+      cervicalCancerCareChecks.find((item) => item.label === "발생부위·구조 메모")!,
+    );
     const markdown = buildVisitPacketMarkdown(
       {
         ...sampleState,
@@ -956,6 +959,14 @@ describe("visit packet", () => {
             medication: "",
             body: lateBowelBladderDraft.body,
             action: lateBowelBladderDraft.action,
+          },
+          {
+            date: "2026-06-03",
+            symptom: anatomySiteDraft.symptom,
+            severity: 3,
+            medication: "",
+            body: anatomySiteDraft.body,
+            action: anatomySiteDraft.action,
           },
         ],
         visits: [],
@@ -981,6 +992,16 @@ describe("visit packet", () => {
       "근거: 국가암정보센터 자궁경부암 치료의 부작용 (https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894)",
     );
     expect(markdown).not.toContain("출처: 국가암정보센터 자궁경부암 치료의 부작용");
+    expect(markdown).toContain("[증상 · 자궁경부암 기록 메모] 발생부위·구조 메모 3/10");
+    expect(markdown).toContain("자궁 상부 2/3");
+    expect(markdown).toContain("하부 1/3");
+    expect(markdown).toContain("질과 연결");
+    expect(markdown).toContain("요관");
+    expect(markdown).toContain("림프관 및 림프절");
+    expect(markdown).toContain(
+      "근거: 국가암정보센터 자궁경부암 발생부위 (https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4880)",
+    );
+    expect(markdown).not.toContain("출처: 국가암정보센터 자궁경부암 발생부위");
   });
 
   it("labels generated cervical memo drafts in direct visit packet symptoms", () => {
