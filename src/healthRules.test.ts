@@ -4024,6 +4024,34 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/암을 낫게|완치|재발을 막/);
   });
 
+  it("recognizes NCC after-treatment body weight and body fat maintenance source sentence", () => {
+    const sourceSentence = "적정 체중과 체지방량을 유지합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 치료 후 건강한 식생활 체중·체지방 유지 후보",
+      sourceId: "nccAfterTreatmentHealthyEating",
+    });
+    expect(terms).not.toContain("적정 체중");
+    expect(terms).not.toContain("체지방량");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 치료 후 건강한 식생활 - https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
+  });
+
   it("recognizes NCC after-treatment recurrence food myth source sentence", () => {
     const sourceSentence =
       "어떤 특정 식품이나 음식에 의해 암의 재발을 막는다는 연구보고는 없습니다.";
