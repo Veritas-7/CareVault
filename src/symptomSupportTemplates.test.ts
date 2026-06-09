@@ -40,6 +40,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("빈혈과 어지럼증")?.id).toBe(
       "anemia-management",
     );
+    expect(findSymptomSupportTemplate("잇몸출혈과 코피가 멈추지 않음")?.id).toBe(
+      "bleeding-warning",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -348,6 +351,41 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "빈혈")).not.toMatch(
       /수혈을 하세요|철분제를 처방하세요|적혈구 생성인자를 처방하세요|진단하세요|치료하세요|운전을 금지하세요|운동을 금지하세요/,
+    );
+  });
+
+  it("builds a bleeding warning question from official symptom-report guidance", () => {
+    const reportSentence =
+      "출혈의 증상과 의료진에게 보고해야 되는 증상에 대해 알아야합니다. 출혈의 증상에는 코피와 같이 금방 알 수 있는 증상 외에도, 출혈이 되고 있는지의 여부를 알 수 없는 증상도 있습니다. 아래와 같은 출혈의 증상은 의료진에게 알려야 합니다.";
+    const skinSentence =
+      "핀으로 찌른 것처럼 작고 붉은 발진 이 피부에 퍼져 있으며 팔과 다리에 주로 나타납니다. 멍이 쉽게 생깁니다.";
+    const mouthNoseSentence =
+      "코피, 입안의 혈액성 수포, 잇몸출혈, 구강 궤양 의 출혈이 있을 수 있고 침에 피가 섞여 나오기도 합니다.";
+    const sputumSentence =
+      "가래에 피 섞여 나오거나 호흡곤란, 빈호흡 및 부족상태이 있는 경우";
+    const digestionSentence =
+      "구토 물에 피가 섞여 나오거나 혈변, 검은 색의 묽은 변을 볼 수 있습니다.";
+    const urinarySentence =
+      "혈뇨, 소변을 볼 때 통증이나 타는 듯한 느낌, 빈뇨(소변을 자주 봄), 비정상적인 다량의 질출혈(또는 폐경기 이후의 질출혈) 등이 있습니다.";
+    const template = findSymptomSupportTemplate("잇몸출혈과 코피가 멈추지 않음");
+
+    expect(template?.id).toBe("bleeding-warning");
+    expect(template?.mealNote).toContain(reportSentence);
+    expect(template?.mealNote).toContain(skinSentence);
+    expect(template?.mealNote).toContain(mouthNoseSentence);
+    expect(template?.clinicianQuestion).toContain(sputumSentence);
+    expect(template?.clinicianQuestion).toContain(digestionSentence);
+    expect(template?.clinicianQuestion).toContain(urinarySentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "잇몸출혈")).toContain(reportSentence);
+    expect(buildSymptomSupportQuestion(template!, "잇몸출혈")).toContain(
+      "출처: 국가암정보센터 출혈 증상 - https://www.cancer.go.kr/lay1/S1T445C448/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "잇몸출혈")).not.toMatch(
+      /지혈제를 처방하세요|수혈을 하세요|진단하세요|치료하세요|응급처치를 하세요|약을 중단하세요/,
     );
   });
 
@@ -719,6 +757,11 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("혈변과 변비")?.id).toBe(
       "cervical-urinary-bowel-bleeding",
     );
+    expect(findSymptomSupportTemplate("성교 후 출혈과 악취 분비물")?.id).toBe(
+      "cervical-general-warning",
+    );
+    expect(findSymptomSupportTemplate("잇몸출혈과 코피")?.id).toBe("bleeding-warning");
+    expect(findSymptomSupportTemplate("검은 대변과 코피")?.id).toBe("bleeding-warning");
     expect(findSymptomSupportTemplate("변비만 있음")?.id).toBe("constipation");
   });
 
@@ -730,6 +773,9 @@ describe("symptomSupportTemplates", () => {
       "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
     );
     expect(buildSymptomSupportQueueHint(findSymptomSupportTemplate("비정상 질출혈")!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(buildSymptomSupportQueueHint(findSymptomSupportTemplate("잇몸출혈")!)).toBe(
       "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
     );
     expect(buildSymptomSupportQueueHint(findSymptomSupportTemplate("질건조")!)).toBe(
@@ -822,7 +868,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(23);
+    expect(symptomSupportTemplates).toHaveLength(24);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -865,6 +911,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("빈혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
+    );
+    expect(findSymptomSupportTemplate("잇몸출혈")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T445C448/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
