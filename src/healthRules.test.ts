@@ -7198,6 +7198,38 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC chemo side-effect constipation fiber-food source sentence", () => {
+    const sourceSentence = "섬유질이 많은 음식(야채, 채소, 현미, 견과류 등)을 먹습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccChemoSideEffectGuide.label).toBe(
+      "국가암정보센터 항암 부작용 증상 관리 지침",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 항암 부작용 변비 시 섬유질 많은 음식 후보",
+      sourceId: "nccChemoSideEffectGuide",
+    });
+    expect(terms).not.toContain("변비 도정 덜 된 곡류");
+    expect(terms).not.toContain("변비 생야채");
+    expect(terms).not.toContain("호두");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 항암 부작용 증상 관리 지침 - https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC constipation hydration source sentence", () => {
     const sourceSentence =
       "수분을 충분히 섭취합니다.(하루에 8~10컵 이상) 이는 변을 부드럽게 합니다.";
