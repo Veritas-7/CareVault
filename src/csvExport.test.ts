@@ -602,6 +602,18 @@ describe("csvExport", () => {
     expect(csv).toContain("혼합 암종");
     expect(csv).toContain("병리결과지 용어");
     expect(csv).toContain("병기·치료 설명");
+    expect(csv).toContain("병기 설명 확인");
+    expect(csv).toContain("상피내암");
+    expect(csv).toContain("암의 분류");
+    expect(csv).toContain("자궁경부에만 국한");
+    expect(csv).toContain("질벽 상부 2/3");
+    expect(csv).toContain("자궁 옆 결합조직");
+    expect(csv).toContain("질의 하부 1/3");
+    expect(csv).toContain("요관침윤");
+    expect(csv).toContain("골반·대동맥주위 림프절");
+    expect(csv).toContain("방광이나 직장 점막");
+    expect(csv).toContain("원격전이");
+    expect(csv).toContain("진단서 병기");
     expect(csv).toContain("치료 선택 기준");
     expect(csv).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
     expect(csv).toContain("치료현황 통계 해석");

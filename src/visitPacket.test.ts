@@ -554,6 +554,18 @@ describe("visit packet", () => {
     expect(markdown).toContain("혼합 암종");
     expect(markdown).toContain("병리결과지 용어");
     expect(markdown).toContain("병기·치료 설명");
+    expect(markdown).toContain("병기 설명 확인");
+    expect(markdown).toContain("상피내암");
+    expect(markdown).toContain("암의 분류");
+    expect(markdown).toContain("자궁경부에만 국한");
+    expect(markdown).toContain("질벽 상부 2/3");
+    expect(markdown).toContain("자궁 옆 결합조직");
+    expect(markdown).toContain("질의 하부 1/3");
+    expect(markdown).toContain("요관침윤");
+    expect(markdown).toContain("골반·대동맥주위 림프절");
+    expect(markdown).toContain("방광이나 직장 점막");
+    expect(markdown).toContain("원격전이");
+    expect(markdown).toContain("진단서 병기");
     expect(markdown).toContain("치료 선택 기준");
     expect(markdown).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
     expect(markdown).toContain("치료현황 통계 해석");

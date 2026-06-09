@@ -291,6 +291,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccDefinitionTypes",
   },
   {
+    topic: "병기 설명 확인",
+    question:
+      "국가암정보센터 진행단계 설명처럼 상피내암은 암의 분류에 속하지 않는지, 1기는 자궁경부에만 국한, 2기는 질벽 상부 2/3 또는 자궁 옆 결합조직 침윤, 3기는 질의 하부 1/3·요관침윤·골반·대동맥주위 림프절 전이, 4기는 방광이나 직장 점막 침범 또는 원격전이라는 설명이 제 진단서 병기와 검사 근거에서 각각 어떻게 확인됐는지 진료팀에 어떤 순서로 질문하면 좋을까요?",
+    sourceId: "nccStage",
+  },
+  {
     topic: "치료 후 회복",
     question: "수술·방사선·항암 치료 후 피해야 할 활동, 부부관계 재개 시점, 운전/운동 제한을 제 상태 기준으로 어떻게 확인하면 좋을까요?",
     sourceId: "nccRecovery",
