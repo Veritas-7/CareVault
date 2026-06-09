@@ -525,6 +525,9 @@ describe("cervicalCancerCare", () => {
     const preventionRiskGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "흡연·성생활 위험요인 메모",
     );
+    const preventionBundleGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "예방법 종합 체크 메모",
+    );
     const immuneInfectionRiskGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "면역·감염·출산력 위험요인 메모",
     );
@@ -532,7 +535,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "생활요인 근거 경계 메모",
     );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(11);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(12);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -585,6 +588,18 @@ describe("cervicalCancerCare", () => {
     expect(preventionRiskGuide?.detail).toContain("5년 이상");
     expect(preventionRiskGuide?.detail).toContain("진료팀");
     expect(preventionRiskGuide?.detail).not.toContain("끊으세요");
+    expect(preventionBundleGuide).toMatchObject({
+      label: "예방법 종합 체크 메모",
+      sourceId: "nccCervicalPrevention",
+    });
+    expect(preventionBundleGuide?.detail).toContain("정기적으로 자궁경부 세포검진");
+    expect(preventionBundleGuide?.detail).toContain("성상대자");
+    expect(preventionBundleGuide?.detail).toContain("사람유두종바이러스 예방 백신접종");
+    expect(preventionBundleGuide?.detail).toContain("금연");
+    expect(preventionBundleGuide?.detail).toContain("채소와 과일을 충분하게");
+    expect(preventionBundleGuide?.detail).toContain("5년 이상의 장기적인 경구피임약");
+    expect(preventionBundleGuide?.detail).toContain("진료팀 질문");
+    expect(preventionBundleGuide?.detail).not.toContain("복용을 중단");
     expect(immuneInfectionRiskGuide).toMatchObject({
       label: "면역·감염·출산력 위험요인 메모",
       sourceId: "nccCervicalRiskFactors",
