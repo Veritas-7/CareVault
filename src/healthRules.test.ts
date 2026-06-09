@@ -1954,6 +1954,45 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide color-variety produce planning examples", () => {
+    const colorVarietyPhrase =
+      "파프리카, 피망, 시금치, 토마토, 당근, 양배추 등 식품이 지닌 색상을 고려하여 다양한 종류의 색상이 포함되도록 식품을 선택해 보십시오.";
+    const assessment = assessCancerFood(`${colorVarietyPhrase}, 파프리카, 피망, 토마토`);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([colorVarietyPhrase, "파프리카", "피망", "토마토"]);
+    expect(matchesByTerm[colorVarietyPhrase]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 색상 다양성 식품 선택 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    for (const term of ["파프리카", "피망", "토마토"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "자궁경부암 실천지침 색상 다양성 채소 예시 후보",
+        sourceId: "nccCervicalPracticeDiet",
+      });
+    }
+    expect(terms).not.toContain("당근");
+    expect(terms).not.toContain("시금치");
+    expect(terms).not.toContain("양배추");
+    expect(balancedGuideText).toContain("파프리카");
+    expect(balancedGuideText).toContain("피망");
+    expect(balancedGuideText).toContain("토마토");
+    expect(formatFoodMatchEvidence(matchesByTerm[colorVarietyPhrase])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide yogurt dressing and strawberry yogurt examples", () => {
     const yogurtDressingPhrase = "채소 섭취량 증가(채소샐러드는 요플레드레싱 사용)";
     const assessment = assessCancerFood(`${yogurtDressingPhrase}, 딸기 요플레`);
