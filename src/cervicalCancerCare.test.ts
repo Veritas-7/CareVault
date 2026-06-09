@@ -83,6 +83,7 @@ describe("cervicalCancerCare", () => {
       "nccPainAssessment",
       "nccCancerFatigueCoping",
       "nccDyspneaCause",
+      "nccDyspneaConsult",
       "nccCoughCause",
       "nccDiagnosisMethods",
       "nccStage",
@@ -137,6 +138,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccPainAssessment.url).toContain("S1T378C380");
     expect(cervicalCancerCareSources.nccCancerFatigueCoping.url).toContain("S1T420C421");
     expect(cervicalCancerCareSources.nccDyspneaCause.url).toContain("S1T411C414");
+    expect(cervicalCancerCareSources.nccDyspneaConsult.url).toContain("S1T411C415");
     expect(cervicalCancerCareSources.nccCoughCause.url).toContain("S1T410C412");
     expect(cervicalCancerCareSources.nccTreatmentEating.url).toContain("S1T471C472");
     expect(cervicalCancerCareSources.nccNauseaDiet.url).toContain("S1T479C481");
@@ -245,7 +247,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(52);
+				    expect(cervicalCancerCarePrompts).toHaveLength(53);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -291,6 +293,7 @@ describe("cervicalCancerCare", () => {
       "암성 통증 평가 준비",
       "암관련 피로 대처 준비",
       "호흡곤란 변화 기록 준비",
+      "호흡곤란·흉통 상담 기준 확인",
       "기침·객혈 변화 기록 준비",
       "치료현황 통계 해석",
       "수술 합병증 확인",
@@ -1127,6 +1130,23 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(dyspneaCausePrompt)).toContain(
       "출처: 국가암정보센터 호흡곤란 원인 - https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
     );
+    const dyspneaConsultPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "호흡곤란·흉통 상담 기준 확인",
+    )!;
+    expect(dyspneaConsultPrompt.sourceId).toBe("nccDyspneaConsult");
+    expect(dyspneaConsultPrompt.question).toContain("기침이나 구토");
+    expect(dyspneaConsultPrompt.question).toContain("가래의 양과 양상 및 냄새");
+    expect(dyspneaConsultPrompt.question).toContain("호흡곤란이나 흉통");
+    expect(dyspneaConsultPrompt.question).toContain("노랗거나 녹색이며 걸쭉");
+    expect(dyspneaConsultPrompt.question).toContain("혈액이 섞인 가래");
+    expect(dyspneaConsultPrompt.question).toContain("피부가 창백하거나 파랗거나");
+    expect(dyspneaConsultPrompt.question).toContain("열");
+    expect(dyspneaConsultPrompt.question).toContain("콧구멍이 넓게 벌어질 때");
+    expect(dyspneaConsultPrompt.question).toContain("그르렁소리");
+    expect(dyspneaConsultPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(dyspneaConsultPrompt)).toContain(
+      "출처: 국가암정보센터 호흡곤란 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T411C415/contents.do",
+    );
     const coughCausePrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "기침·객혈 변화 기록 준비",
     )!;
@@ -1861,6 +1881,16 @@ describe("cervicalCancerCare", () => {
 			    const hiccupBloatingSentence = "위장이 커져있거나 팽만되어 있는 것으로 보이는 경우";
 			    const hiccupSleepSentence = "잠을 이룰수 없을 정도로 딸꾹질이 나올 때";
 			    const hiccupPainSentence = "딸꾹질로 인해 고통을 느낄 때";
+			    const dyspneaSputumObservationSentence =
+			      "기침이나 구토 가 있으면 가래의 양과 양상 및 냄새를 관찰합니다. (투명하거나 하얗고 거품이 있는 것이 정상입니다. )";
+			    const dyspneaConsultHeaderSentence = "이런 경우에는 의사와 상의하십시오.";
+			    const dyspneaChestPainSentence = "호흡곤란이나 흉통이 있을 때";
+			    const coloredSputumSentence = "노랗거나 녹색이며 걸쭉하고 혈액이 섞인 가래가 있을 때";
+			    const paleBlueClammySkinSentence =
+			      "피부가 창백하거나 파랗거나 혹은 차가우며 축축할 때";
+			    const feverSentence = "열이 있을 때";
+			    const nostrilFlaringSentence = "호흡하는 동안 콧구멍이 넓게 벌어질 때";
+			    const noisyBreathingSentence = "호흡시 그르렁소리가 날 때";
 			    const coughDefinitionSentence =
 	      "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1958,11 +1988,14 @@ describe("cervicalCancerCare", () => {
     const dyspneaCauseGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "호흡곤란·흉통 변화 메모",
     );
+    const dyspneaConsultGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "호흡곤란·흉통·가래 상담 메모",
+    );
     const coughCauseGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(36);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(37);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2675,6 +2708,35 @@ describe("cervicalCancerCare", () => {
 				    );
 				    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(hiccupConsultGuide!)).join(" ")).not.toMatch(
 				      /딸꾹질을 치료하세요|약을 복용하세요|물을 마시세요|숨을 참으세요|종이봉투|눈을 누르세요|설탕을 먹으세요|레몬을 먹으세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+				    );
+				    expect(dyspneaConsultGuide).toMatchObject({
+				      label: "호흡곤란·흉통·가래 상담 메모",
+				      sourceId: "nccDyspneaConsult",
+				    });
+				    expect(dyspneaConsultGuide?.detail).toContain(dyspneaSputumObservationSentence);
+				    expect(dyspneaConsultGuide?.detail).toContain(dyspneaConsultHeaderSentence);
+				    expect(dyspneaConsultGuide?.detail).toContain(dyspneaChestPainSentence);
+				    expect(dyspneaConsultGuide?.detail).toContain(coloredSputumSentence);
+				    expect(dyspneaConsultGuide?.detail).toContain(paleBlueClammySkinSentence);
+				    expect(dyspneaConsultGuide?.detail).toContain(feverSentence);
+				    expect(dyspneaConsultGuide?.detail).toContain(nostrilFlaringSentence);
+				    expect(dyspneaConsultGuide?.detail).toContain(noisyBreathingSentence);
+				    expect(dyspneaConsultGuide?.detail).toContain("시작 시점");
+				    expect(dyspneaConsultGuide?.detail).toContain("가래 색·점도·혈액");
+				    expect(formatCervicalCancerCareItemEvidence(dyspneaConsultGuide!)).toContain(
+				      "국가암정보센터 호흡곤란 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T411C415/contents.do",
+				    );
+				    expect(buildCervicalCancerCareItemSymptomDraft(dyspneaConsultGuide!).body).toContain(
+				      "호흡곤란·흉통·가래 상담 메모",
+				    );
+				    expect(buildCervicalCancerCareItemSymptomDraft(dyspneaConsultGuide!).body).toContain(
+				      dyspneaChestPainSentence,
+				    );
+				    expect(formatCervicalCancerCareListItemAriaLabel(dyspneaConsultGuide!)).toContain(
+				      "국가암정보센터 호흡곤란 도움이 되는 방법",
+				    );
+				    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(dyspneaConsultGuide!)).join(" ")).not.toMatch(
+				      /산소를 줍니다|처방된 약|항생제 치료를 받게 됩니다|진단하세요|치료하세요|약을 처방하세요|처방하세요/,
 				    );
 				    expect(coughCauseGuide).toMatchObject({
 		      label: "기침·가래·수면방해 메모",
