@@ -6319,6 +6319,46 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|냄새 치료/);
   });
 
+  it("recognizes NCC nausea-vomiting care favorite food aversion source sentence", () => {
+    const sourceSentence =
+      "메스꺼움을 느낄 때는 좋아하는 음식도 먹지 않게 되며, 그 음식을 영원히 싫어하게 될 수도 있습니다.";
+    const fatigueFavoriteFoodSentence = "치료를 받지 않을 때에는 좋아하는 음식을 먹도록 합니다.";
+    const treatmentFavoriteFoodSentence =
+      "따라서 암환자의 건강식이란 좋아하는 음식에다 다른 여러 식품을 고루 곁들여 먹는 것이라 하겠습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 메스꺼움·구토 시 메스꺼움 중 좋아하는 음식 혐오화 주의 후보",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(fatigueFavoriteFoodSentence);
+    expect(terms).not.toContain(treatmentFavoriteFoodSentence);
+    expect(terms).not.toContain("우울 좋아하는 음식");
+    expect(terms).not.toContain("좋아하는 음식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|좋아하는 음식 치료/);
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";
