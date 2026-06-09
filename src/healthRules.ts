@@ -38,6 +38,7 @@ export type FoodGuidanceSourceId =
   | "nccWeightChangeDiet"
   | "nccFatigueDepressionDiet"
   | "nccMouthPainDiet"
+  | "nccMucositisCare"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
   | "nccComplementaryTherapy"
@@ -178,6 +179,10 @@ export const foodGuidanceSources: Record<
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
     url: "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+  },
+  nccMucositisCare: {
+    label: "국가암정보센터 구강증상 - 입안의 염증(구내염)",
+    url: "https://www.cancer.go.kr/lay1/S1T390C393/contents.do",
   },
   nccDryMouthDiet: {
     label: "국가암정보센터 증상별 식생활 - 입안의 건조증",
@@ -726,6 +731,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "입안을 자극하는 음식이나 음료는 피하도록 합니다. 오렌지, 포도, 레몬, 토마토주스. 향신료를 많이 사용하거나 소금에 절인 음식. 토스트, 크래커 또는 말린 음식 등. 뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다. 토마토주스, 토스트, 크래커, 말린 음식, 오렌지, 포도, 레몬, 향신료를 많이 사용한 음식, 소금에 절인 음식",
         sourceIds: ["nccMouthPainDiet"],
+      },
+      {
+        label: "구내염 시 자극 음식",
+        detail:
+          "국가암정보센터 입안의 염증(구내염) 자료는 자극성 있는 양념이나 딱딱하고 거친 음식 제한, 부드러운 음식 섭취, 맵거나 거친 자극적인 음식 회피를 안내합니다. 입안에 상처나 궤양, 민감한 부위가 있으면 거칠거나 날 음식, 짠 음식, 산성 및 양념이 강한 음식물처럼 자극되는 음식물은 피하고 견딜만한 양만 먹도록 설명합니다.",
+        examples:
+          "자극성 있는 양념이나 딱딱하고 거친 음식은 제한하는 것이 좋습니다., 부드러운 음식을 섭취하고 맵거나 거친 자극적인 음식을 피합니다., 거칠거나 날 음식, 짠 음식, 산성 및 양념이 강한 음식물과 같이 자극되는 음식물은 피하고 견딜만한 양만 먹도록 한다., 뜨겁거나 거친 음식, 양념이 많거나 신 음식, 먹기 힘든 음식의 섭취를 피합니다.",
+        sourceIds: ["nccMucositisCare"],
       },
       {
         label: "입안 건조증 시 단맛·신맛 조건부 주의",
@@ -3044,6 +3057,26 @@ const limitFoods: FoodRuleTerm[] = [
     "뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다.",
     "국가암정보센터 입과 목 통증 시 뜨거운 음식 자극과 상온 음식 확인 후보",
     "nccMouthPainDiet",
+  ],
+  [
+    "거칠거나 날 음식, 짠 음식, 산성 및 양념이 강한 음식물과 같이 자극되는 음식물은 피하고 견딜만한 양만 먹도록 한다.",
+    "국가암정보센터 구내염 시 거칠거나 날 음식·짠 음식·산성 및 강한 양념 음식 제한 후보",
+    "nccMucositisCare",
+  ],
+  [
+    "부드러운 음식을 섭취하고 맵거나 거친 자극적인 음식을 피합니다.",
+    "국가암정보센터 구내염 시 부드러운 음식 섭취와 맵거나 거친 자극 음식 제한 후보",
+    "nccMucositisCare",
+  ],
+  [
+    "뜨겁거나 거친 음식, 양념이 많거나 신 음식, 먹기 힘든 음식의 섭취를 피합니다.",
+    "국가암정보센터 구내염 시 뜨겁거나 거친 음식·강한 양념·신 음식 제한 후보",
+    "nccMucositisCare",
+  ],
+  [
+    "자극성 있는 양념이나 딱딱하고 거친 음식은 제한하는 것이 좋습니다.",
+    "국가암정보센터 구내염 예방관리 시 자극성 양념·딱딱하고 거친 음식 제한 후보",
+    "nccMucositisCare",
   ],
   ["토스트", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],
   ["크래커", "국가암정보센터 입과 목 통증 시 입안 자극 음식 확인 후보", "nccMouthPainDiet"],

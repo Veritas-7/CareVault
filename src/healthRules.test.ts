@@ -12019,6 +12019,43 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC mucositis oral-irritant food source wording", () => {
+    const sourcePhrase =
+      "거칠거나 날 음식, 짠 음식, 산성 및 양념이 강한 음식물과 같이 자극되는 음식물은 피하고 견딜만한 양만 먹도록 한다.";
+    const assessment = assessCancerFood(sourcePhrase);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccMucositisCare.label).toBe(
+      "국가암정보센터 구강증상 - 입안의 염증(구내염)",
+    );
+    expect(foodGuidanceSources.nccMucositisCare.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T390C393/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourcePhrase]);
+    expect(matchesByTerm[sourcePhrase]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 구내염 시 거칠거나 날 음식·짠 음식·산성 및 강한 양념 음식 제한 후보",
+      sourceId: "nccMucositisCare",
+    });
+    expect(terms).not.toContain("뜨거운 음식");
+    expect(terms).not.toContain("매운 음식");
+    expect(terms).not.toContain("입안을 자극하는 음식이나 음료는 피하도록 합니다.");
+    expect(limitGuideText).toContain(sourcePhrase);
+    expect(limitGuideText).toContain("부드러운 음식을 섭취하고 맵거나 거친 자극적인 음식을 피합니다.");
+    expect(formatFoodMatchEvidence(matchesByTerm[sourcePhrase])).toContain(
+      "국가암정보센터 구강증상 - 입안의 염증(구내염) - https://www.cancer.go.kr/lay1/S1T390C393/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("classifies lab values against user-entered reference ranges", () => {
     expect(assessLabValue(4.2, 4, 10).flag).toBe("normal");
     expect(assessLabValue(3.1, 4, 10).label).toBe("기준보다 낮음");
