@@ -11950,6 +11950,75 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes MFDS food poisoning six-rule time and temperature food-safety guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const mfdsGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식약처 식중독 예방 6대수칙",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "흐르는 물에 비누로 30초 이상 씻기, 육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기, 물은 끓여서 먹기, 냉장식품은 5˚C 이하, 냉동식품은 -18˚C 이하",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "조리한 음식이 상온에 오랜시간 방치되고, 조리후 2시간 초과 김밥을 먹을지 고민",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.mfdsFoodPoisoningPrevention).toMatchObject({
+      label: "식품의약품안전처 식중독 예방 6대요령",
+      url: "https://www.mfds.go.kr/brd/m_827/view.do?seq=3609",
+    });
+    expect(mfdsGuide).toMatchObject({
+      label: "식약처 식중독 예방 6대수칙",
+      sourceIds: ["mfdsFoodPoisoningPrevention"],
+    });
+    expect(mfdsGuide?.detail).toContain("흐르는 물에 비누로 30초 이상");
+    expect(mfdsGuide?.detail).toContain("육류 중심온도 75˚C");
+    expect(mfdsGuide?.detail).toContain("어패류는 85˚C");
+    expect(mfdsGuide?.detail).toContain("냉장식품은 5˚C 이하");
+    expect(mfdsGuide?.detail).toContain("냉동식품은 -18˚C 이하");
+    expect(mfdsGuide?.detail).toContain("조리후 2시간 이내 섭취");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "흐르는 물에 비누로 30초 이상 씻기",
+      "육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기",
+      "물은 끓여서 먹기",
+      "냉장식품은 5˚C 이하",
+      "냉동식품은 -18˚C 이하",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "mfdsFoodPoisoningPrevention",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품의약품안전처 식중독 예방 6대요령 - https://www.mfds.go.kr/brd/m_827/view.do?seq=3609",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual(["상온에 오랜시간 방치", "조리후 2시간 초과"]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",
+        sourceId: "mfdsFoodPoisoningPrevention",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

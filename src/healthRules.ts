@@ -55,7 +55,8 @@ export type FoodGuidanceSourceId =
   | "nccAfterTreatmentHealthyEating"
   | "nccChemoSideEffectGuide"
   | "kdcaNutrition"
-  | "kdcaAlcohol";
+  | "kdcaAlcohol"
+  | "mfdsFoodPoisoningPrevention";
 
 export type FoodMatch = {
   term: string;
@@ -253,6 +254,10 @@ export const foodGuidanceSources: Record<
   kdcaAlcohol: {
     label: "질병관리청 국가건강정보포털 위험음주",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5355",
+  },
+  mfdsFoodPoisoningPrevention: {
+    label: "식품의약품안전처 식중독 예방 6대요령",
+    url: "https://www.mfds.go.kr/brd/m_827/view.do?seq=3609",
   },
 };
 
@@ -987,6 +992,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "약 복용 중 특정 식품 상호작용이 의심되면 처방약, 항암제, 보조제를 함께 적어 진료팀 기준으로 확인합니다.",
         examples: "자몽, 자몽 주스, 복용 약과 같이 먹는 보충제",
         sourceIds: ["kdcaNutrition", "nccComplementaryTherapy"],
+      },
+      {
+        label: "식약처 식중독 예방 6대수칙",
+        detail:
+          "식품의약품안전처는 식중독 예방 6가지 방법으로 흐르는 물에 비누로 30초 이상 손 씻기, 날음식과 조리음식 및 칼·도마 구분 사용, 육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기, 식재료·조리기구 세척·소독, 물 끓여 먹기, 냉장식품은 5˚C 이하·냉동식품은 -18˚C 이하 보관온도 지키기를 안내합니다. 음식점 안전조리 요령에서는 따뜻한 음식은 60˚C 이상, 찬 음식은 5˚C 이하로 보관하고, 조리한 음식은 상온에 오래 방치하지 않으며 가급적 조리후 2시간 이내 섭취하도록 안내합니다.",
+        examples:
+          "흐르는 물에 비누로 30초 이상 씻기, 날음식과 조리음식 구분, 칼·도마 구분 사용, 육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기, 식재료·조리기구는 깨끗이 세척·소독 하기, 물은 끓여서 먹기, 냉장식품은 5˚C 이하, 냉동식품은 -18˚C 이하, 따뜻한 음식은 60˚C 이상, 찬 음식은 5˚C 이하, 조리후 2시간 이내 섭취",
+        sourceIds: ["mfdsFoodPoisoningPrevention"],
       },
       {
         label: "특별한 항암 식품·영양소 주장",
@@ -2408,6 +2421,77 @@ const supportiveFoods: FoodRuleTerm[] = [
     "nccImmuneLowDiet",
   ],
   ["외식보다는 직접 요리", "면역저하 시 조리 위생·교차오염 예방 확인 후보", "nccImmuneLowDiet"],
+  [
+    "흐르는 물에 비누로 30초 이상 씻기",
+    "식약처 식중독 예방 30초 손 씻기 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기",
+    "식약처 식중독 예방 육류·어패류 중심온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "육류 중심온도 75℃",
+    "식약처 식중독 예방 육류 중심온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "어패류 중심온도 85℃",
+    "식약처 식중독 예방 어패류 중심온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  ["물은 끓여서 먹기", "식약처 식중독 예방 끓인 물 후보", "mfdsFoodPoisoningPrevention"],
+  [
+    "냉장식품은 5˚C 이하",
+    "식약처 식중독 예방 냉장 보관온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "냉동식품은 -18˚C 이하",
+    "식약처 식중독 예방 냉동 보관온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "냉장식품 5℃ 이하",
+    "식약처 식중독 예방 냉장 보관온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "냉동식품 -18℃ 이하",
+    "식약처 식중독 예방 냉동 보관온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "따뜻한 음식은 60˚C 이상",
+    "식약처 식중독 예방 따뜻한 음식 보관온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "찬 음식은 5˚C 이하",
+    "식약처 식중독 예방 찬 음식 보관온도 확인 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "조리후 2시간 이내 섭취",
+    "식약처 식중독 예방 조리 후 2시간 이내 섭취 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "날음식과 조리음식 구분",
+    "식약처 식중독 예방 날음식·조리음식 구분 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "칼·도마 구분 사용",
+    "식약처 식중독 예방 칼·도마 구분 사용 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "식재료·조리기구는 깨끗이 세척·소독 하기",
+    "식약처 식중독 예방 식재료·조리기구 세척·소독 후보",
+    "mfdsFoodPoisoningPrevention",
+  ],
   [
     "암환자는 치료과정에서 체중의 감소를 흔하게 경험할 수 있습니다. 체중감소는 환자를 허약하게 만들고 암에 대한 저항력과 치료효과 등을 떨어뜨립니다. 그러므로 체중감소를 예방하기 위해서 열량과 단백질 등을 충분히 섭취해야 합니다.",
     "국가암정보센터 체중감소 시 열량·단백질 충분 섭취 후보",
@@ -3950,6 +4034,26 @@ const careTeamFoods: FoodRuleTerm[] = [
   ["덜 익힌 고기", "면역저하 시 고기·생선은 완전히 익힘 확인", "nccImmuneLowDiet"],
   ["덜익힌 고기", "면역저하 시 고기·생선은 완전히 익힘 확인", "nccImmuneLowDiet"],
   ["생고기", "면역저하 시 고기·생선은 완전히 익힘 확인", "nccImmuneLowDiet"],
+  [
+    "상온에 오랜시간 방치",
+    "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "조리후 2시간 초과",
+    "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "조리 후 2시간 초과",
+    "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",
+    "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "상온에 오래 방치",
+    "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",
+    "mfdsFoodPoisoningPrevention",
+  ],
   ["씻지 않은 딸기", "면역저하 시 씻기 어려운 과일 주의", "nccImmuneLowDiet"],
   [
     "딸기 등 꼼꼼히 씻기 어려운 과일은 주의해서 드시고",
