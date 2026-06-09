@@ -145,6 +145,43 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
   });
 
+  it("builds a nausea symptom-support question from official diet guidance", () => {
+    const mealEnvironmentSentence =
+      "음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다.";
+    const hungerSentence =
+      "배가 고프면 더욱 메스꺼울 수 있으므로 배고프기 전에 먹도록 합니다.";
+    const doNotForceSentence =
+      "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다. 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 합니다. 대신 먹기 좋은 다른 음식을 많이 먹도록 합니다.";
+    const easyFoodSentence = "비교적 위에 부담이 적은 식품들을 섭취합니다.";
+    const avoidFoodSentence =
+      "다음 음식들은 메스꺼움을 더욱 유발할 수 있으므로 피하도록 합니다.";
+    const waterClothingSentence =
+      "물은 포만감을 줄 수 있기 때문에 천천히 조금씩 마시고, 식사 시에도 조금만 마시도록 합니다. 옷은 몸이 조이지 않도록 느슨하게 입습니다.";
+    const antiemeticConsultSentence =
+      "미리 메스꺼움과 구토증상을 완화시키는 항구토제의 사용에 대해 의사선생님과 상의합니다.";
+    const triggerConsultSentence =
+      "메스꺼움이 언제, 무엇 때문에 나타나는지를 체크하고 의사선생님이나 간호사와 상의합니다.";
+    const template = findSymptomSupportTemplate("식사 후 오심이 심함");
+
+    expect(template?.id).toBe("nausea");
+    expect(template?.mealNote).toContain(mealEnvironmentSentence);
+    expect(template?.mealNote).toContain(hungerSentence);
+    expect(template?.mealNote).toContain(doNotForceSentence);
+    expect(template?.mealNote).toContain(easyFoodSentence);
+    expect(template?.mealNote).toContain(avoidFoodSentence);
+    expect(template?.mealNote).toContain(waterClothingSentence);
+    expect(template?.clinicianQuestion).toContain(antiemeticConsultSentence);
+    expect(template?.clinicianQuestion).toContain(triggerConsultSentence);
+    expect(buildSymptomSupportQuestion(template!, "오심")).toContain(triggerConsultSentence);
+    expect(buildSymptomSupportQuestion(template!, "오심")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "오심")).not.toMatch(
+      /항구토제를 처방하세요|진단하세요|치료하세요|약을 조정하세요|억지로 먹이세요/,
+    );
+  });
+
   it("builds a vomiting symptom-support question from staged official diet guidance", () => {
     const activeVomitingSentence =
       "구토증상이 있는 경우 먹거나 마시지 않도록 합니다. 구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다.";
