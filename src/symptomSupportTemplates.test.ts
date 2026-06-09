@@ -52,6 +52,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
       "dyspnea-consult",
     );
+    expect(findSymptomSupportTemplate("기침이 오래 지속되고 밤잠 방해")?.id).toBe(
+      "cough-care",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -514,6 +517,43 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "호흡곤란")).not.toMatch(
       /산소를 줍니다|처방된 약|항생제 치료를 받게 됩니다|진단하세요|치료하세요|약을 처방하세요/,
+    );
+  });
+
+  it("builds a cough symptom-support question from official respiratory guidance", () => {
+    const pathologicCoughSentence =
+      "병적인 기침은 환자가 불편을 느끼는 증상으로 지속되거나 발작적인 것을 말합니다.";
+    const sleepDisruptionSentence =
+      "밤에 잠을 방해하거나, 피곤, 통증, 기절, 구토, 흉통, 복통, 두통을 일으키거나 가끔씩 늑골골절 등을 일으키는 괴로운 증상입니다.";
+    const severeCoughSentence =
+      "오래 지속되는 심한 기침은 통증을 증가시킬 뿐만 아니라 환자를 지치게 하며 환자의 수면을 방해하고 환자와 가족들에게 근심을 가져올 수 있습니다.";
+    const causeSentence =
+      "말기 암 환자의 기침은 흉막 삼출(흉막에 물이 찬 경우), 이물질 흡인(음식물이 기관지를 통해 폐로 넘어간 경우), 호흡기 감염(기관지염, 폐렴) 좌심실 부전, 천식, 알러지, 폐암 등에 의해 발생할 수 있습니다.";
+    const template = findSymptomSupportTemplate("기침이 오래 지속되고 밤잠 방해");
+
+    expect(template?.id).toBe("cough-care");
+    expect(template?.mealNote).toContain(pathologicCoughSentence);
+    expect(template?.mealNote).toContain(sleepDisruptionSentence);
+    expect(template?.mealNote).toContain(severeCoughSentence);
+    expect(template?.clinicianQuestion).toContain(causeSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "기침")).toContain(
+      "출처: 국가암정보센터 기침 원인 - https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
+    );
+    expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
+      "dyspnea-consult",
+    );
+    expect(findSymptomSupportTemplate("38도 발열과 기침")?.id).toBe(
+      "infection-fever",
+    );
+    expect(findSymptomSupportTemplate("가래에 피 섞인 기침")?.id).toBe(
+      "bleeding-warning",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "기침")).not.toMatch(
+      /처방된 알레르기 약을 복용합니다|흡입기를 처방받아 흡입합니다|항생제 치료를 받게 됩니다|진단하세요|치료하세요|약을 처방하세요/,
     );
   });
 
@@ -996,7 +1036,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(27);
+    expect(symptomSupportTemplates).toHaveLength(28);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1051,6 +1091,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("호흡곤란")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T411C415/contents.do",
+    );
+    expect(findSymptomSupportTemplate("기침")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
