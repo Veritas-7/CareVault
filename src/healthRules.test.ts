@@ -12363,6 +12363,77 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea salmonella animal-protein and reheating guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 살모넬라균 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "조리 후 식품을 가능한 한 신속히 섭취하도록 하며 남은 음식은 5℃ 이하 저온 보관한다, 식품을 75℃에서 1분 이상 가열 조리한 후 섭취한다, 조리에 사용된 기구 등은 세척·소독하여 2차 오염을 방지한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "살모넬라균은 2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균이고 60℃에서 20분 동안 가열 하면 사멸하나, 균이 생체 내로 침입되면 장내에서 분열·증식되어 독소가 생산되며, 부적절하게 가열한 동물성 단백질식품(우유, 유제품, 고기와 그 가공품, 가금류의 알과 그 가공품, 어패류와 그 가공품)과 보균자의 손, 발 등 2차 오염에 의한 오염식품을 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaSalmonellaFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 살모넬라균",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 살모넬라균 식중독 주의",
+      sourceIds: ["foodSafetyKoreaSalmonellaFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균");
+    expect(foodSafetyGuide?.detail).toContain("60℃에서 20분");
+    expect(foodSafetyGuide?.detail).toContain("부적절하게 가열한 동물성 단백질식품");
+    expect(foodSafetyGuide?.detail).toContain("75℃에서 1분 이상");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "조리 후 식품을 가능한 한 신속히 섭취하도록 하며 남은 음식은 5℃ 이하 저온 보관한다",
+      "식품을 75℃에서 1분 이상 가열 조리한 후 섭취한다",
+      "조리에 사용된 기구 등은 세척·소독하여 2차 오염을 방지한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaSalmonellaFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 살모넬라균 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "살모넬라균",
+      "2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균",
+      "60℃에서 20분 동안 가열 하면 사멸",
+      "균이 생체 내로 침입되면 장내에서 분열·증식되어 독소가 생산",
+      "부적절하게 가열한 동물성 단백질식품(우유, 유제품, 고기와 그 가공품, 가금류의 알과 그 가공품, 어패류와 그 가공품)",
+      "보균자의 손, 발 등 2차 오염에 의한 오염식품",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaSalmonellaFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes MFDS salmonella egg cooking and cross-contamination guidance", () => {
     const careTeamGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "care-team",

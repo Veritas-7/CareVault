@@ -60,6 +60,7 @@ export type FoodGuidanceSourceId =
   | "kdcaNorovirusFoodSafety"
   | "kdcaFoodPoisoningNaturalToxins"
   | "foodSafetyKoreaStaphylococcusAureusFoodPoisoning"
+  | "foodSafetyKoreaSalmonellaFoodPoisoning"
   | "foodSafetyKoreaBacillusCereusFoodPoisoning"
   | "foodSafetyKoreaClostridiumPerfringensFoodPoisoning"
   | "foodSafetyKoreaClostridiumBotulinumFoodPoisoning"
@@ -282,6 +283,10 @@ export const foodGuidanceSources: Record<
   },
   foodSafetyKoreaStaphylococcusAureusFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 황색포도상구균",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+  },
+  foodSafetyKoreaSalmonellaFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 살모넬라균",
     url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   foodSafetyKoreaBacillusCereusFoodPoisoning: {
@@ -1097,6 +1102,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "황색포도상구균, 장독소(enterotoxin), 코 안이나 피부에 상재, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 밥, 김밥, 도시락, 두부, 식품 취급자는 손을 청결히 하며 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있으면 식품을 취급해서는 안된다, 식품제조에 필요한 모든 기구와 기기 등을 청결히 유지하여 2차 오염을 방지한다, 식품은 적당량을 조속히 조리한 후 모두 섭취하고, 식품이 남았을 경우에는 실온에 방치하지 말고 5℃ 이하에 냉장 보관한다",
         sourceIds: ["foodSafetyKoreaStaphylococcusAureusFoodPoisoning"],
+      },
+      {
+        label: "식품안전나라 살모넬라균 식중독 주의",
+        detail:
+          "식품안전나라는 살모넬라균을 2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균으로 운동성이 있다고 설명합니다. 60℃에서 20분 동안 가열 하면 사멸하나 토양 및 수중에서는 비교적 오래 생존하고, 생체 내로 침입되면 장내에서 분열·증식되어 독소가 생산된다고 설명하므로 식품 안전 질문으로 분리합니다. 원인식품으로 부적절하게 가열한 동물성 단백질식품(우유, 유제품, 고기와 그 가공품, 가금류의 알과 그 가공품, 어패류와 그 가공품)을 제시하고, 보균자의 손, 발 등 2차 오염에 의한 오염식품도 감염 가능하다고 설명합니다. 예방대책으로 조리 후 식품을 가능한 한 신속히 섭취하고 남은 음식은 5℃ 이하 저온 보관, 식품은 75℃에서 1분 이상 가열 조리, 조리에 사용된 기구 등은 세척·소독하도록 안내합니다.",
+        examples:
+          "살모넬라균, 2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균, 60℃에서 20분 동안 가열 하면 사멸, 균이 생체 내로 침입되면 장내에서 분열·증식되어 독소가 생산, 부적절하게 가열한 동물성 단백질식품(우유, 유제품, 고기와 그 가공품, 가금류의 알과 그 가공품, 어패류와 그 가공품), 보균자의 손, 발 등 2차 오염에 의한 오염식품, 조리 후 식품을 가능한 한 신속히 섭취하도록 하며 남은 음식은 5℃ 이하 저온 보관한다, 식품을 75℃에서 1분 이상 가열 조리한 후 섭취한다, 조리에 사용된 기구 등은 세척·소독하여 2차 오염을 방지한다",
+        sourceIds: ["foodSafetyKoreaSalmonellaFoodPoisoning"],
       },
       {
         label: "식품안전나라 바실러스 세레우스균 식중독 주의",
@@ -2685,6 +2698,21 @@ const supportiveFoods: FoodRuleTerm[] = [
     "작업대·용기·조리 기구는 사용 후 즉시 세척·소독",
     "식약처 살모넬라 작업대·용기·조리기구 즉시 세척·소독 후보",
     "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "조리 후 식품을 가능한 한 신속히 섭취하도록 하며 남은 음식은 5℃ 이하 저온 보관한다",
+    "식품안전나라 살모넬라균 조리 후 신속 섭취·남은 음식 5℃ 저온 보관 후보",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "식품을 75℃에서 1분 이상 가열 조리한 후 섭취한다",
+    "식품안전나라 살모넬라균 75℃ 1분 이상 가열 후보",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "조리에 사용된 기구 등은 세척·소독하여 2차 오염을 방지한다",
+    "식품안전나라 살모넬라균 조리기구 세척·소독 2차 오염 방지 후보",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
   ],
   [
     "식품 취급자는 손을 청결히 하며 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있으면 식품을 취급해서는 안된다",
@@ -4467,6 +4495,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "조리 후 작업공간 세척·소독 미실시",
     "식약처 살모넬라 조리 후 작업공간 세척·소독 누락 확인 필요",
     "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "살모넬라균",
+    "식품안전나라 살모넬라균 식중독 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균",
+    "식품안전나라 살모넬라균 무아포성 그람음성 간균 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "60℃에서 20분 동안 가열 하면 사멸",
+    "식품안전나라 살모넬라균 60℃ 20분 가열 사멸 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "균이 생체 내로 침입되면 장내에서 분열·증식되어 독소가 생산",
+    "식품안전나라 살모넬라균 장내 증식·독소 생산 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "부적절하게 가열한 동물성 단백질식품(우유, 유제품, 고기와 그 가공품, 가금류의 알과 그 가공품, 어패류와 그 가공품)",
+    "식품안전나라 살모넬라균 부적절 가열 동물성 단백질식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "보균자의 손, 발 등 2차 오염에 의한 오염식품",
+    "식품안전나라 살모넬라균 보균자 손발 2차 오염 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
   ],
   [
     "황색포도상구균",
