@@ -492,6 +492,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaVomitingCare"],
       },
       {
+        label: "메스꺼움·구토 시 물종류만 가능할 때 음료",
+        detail:
+          "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 자료는 물종류만 먹을 수 있을때는 꿀물, 설탕물, 이온음료를 먹도록 안내합니다. 식단 기록에서는 메스꺼움·구토 상황에서 물종류만 가능할 때의 음료 후보로 분리하고, 일반 당분 음료 권장이나 탈수 치료로 과장하지 않습니다.",
+        examples: "물종류만 먹을 수 있을때는 꿀물, 설탕물, 이온음료를 먹습니다.",
+        sourceIds: ["nccNauseaVomitingCare"],
+      },
+      {
         label: "메스꺼움 시 배고프기 전 식사",
         detail:
           "국가암정보센터 메스꺼움 자료는 배가 고프면 메스꺼움이 더 심해질 수 있으므로 배고프기 전에 먹도록 안내합니다.",
@@ -1872,6 +1879,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   [
     "뜨거운 음식은 메스꺼움을 느끼게 할 수 있으므로, 음료나 음식은 차게 섭취하도록 하고, 좋아하는 음료수를 얼려서 마시는 것도 좋은 방법입니다.",
     "국가암정보센터 메스꺼움·구토 시 차가운 음식·음료와 얼린 음료 후보",
+    "nccNauseaVomitingCare",
+  ],
+  [
+    "물종류만 먹을 수 있을때는 꿀물, 설탕물, 이온음료를 먹습니다.",
+    "국가암정보센터 메스꺼움·구토 시 물종류만 가능할 때 꿀물·설탕물·이온음료 후보",
     "nccNauseaVomitingCare",
   ],
   [
