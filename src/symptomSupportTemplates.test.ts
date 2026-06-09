@@ -46,6 +46,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("탈모와 두피 민감함")?.id).toBe(
       "hair-loss-care",
     );
+    expect(findSymptomSupportTemplate("하루 이상 딸꾹질과 호흡곤란")?.id).toBe(
+      "hiccup-consult",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -429,6 +432,38 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "탈모")).not.toMatch(
       /미녹시딜을 처방하세요|가발을 처방하세요|진단하세요|치료하세요|항암제를 중단하세요|방사선치료를 중단하세요/,
+    );
+  });
+
+  it("builds a hiccup consult-threshold question from official consult guidance", () => {
+    const consultIntroSentence = "이런 때에는 의료진과 상의하십시오.";
+    const persistentSentence = "하루이상 딸꾹질이 지속될 경우";
+    const dyspneaSentence = "호흡곤란이 일어날 경우";
+    const distensionSentence = "위장이 커져있거나 팽만되어 있는 것으로 보이는 경우";
+    const sleepSentence = "잠을 이룰수 없을 정도로 딸꾹질이 나올 때";
+    const painSentence = "딸꾹질로 인해 고통을 느낄 때";
+    const template = findSymptomSupportTemplate("하루 이상 딸꾹질과 호흡곤란");
+
+    expect(template?.id).toBe("hiccup-consult");
+    expect(template?.mealNote).toContain(persistentSentence);
+    expect(template?.mealNote).toContain(dyspneaSentence);
+    expect(template?.mealNote).toContain(distensionSentence);
+    expect(template?.clinicianQuestion).toContain(consultIntroSentence);
+    expect(template?.clinicianQuestion).toContain(sleepSentence);
+    expect(template?.clinicianQuestion).toContain(painSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "딸꾹질")).toContain(
+      consultIntroSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "딸꾹질")).toContain(
+      "출처: 국가암정보센터 딸꾹질 의료진 상담 상황 - https://www.cancer.go.kr/lay1/S1T466C468/contents.do",
+    );
+    expect(findSymptomSupportTemplate("구토와 딸꾹질")?.id).toBe("vomiting");
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "딸꾹질")).not.toMatch(
+      /약을 처방하세요|진단하세요|치료하세요|종이백을 사용하세요|눈을 지압하세요|설탕을 삼키세요/,
     );
   });
 
@@ -911,7 +946,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(25);
+    expect(symptomSupportTemplates).toHaveLength(26);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -960,6 +995,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("탈모")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T451C453/contents.do",
+    );
+    expect(findSymptomSupportTemplate("딸꾹질")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T466C468/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",

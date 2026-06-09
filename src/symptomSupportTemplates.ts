@@ -22,6 +22,7 @@ const careQueueSymptomTemplateIds = new Set([
   "cervical-bowel-obstruction",
   "cervical-general-warning",
   "cervical-urinary-bowel-bleeding",
+  "hiccup-consult",
   "infection-fever",
   "lymphedema",
 ]);
@@ -578,6 +579,27 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     safetyNote,
     sourceLabel: "국가암정보센터 탈모 도움이 되는 방법",
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T451C453/contents.do",
+  },
+  {
+    id: "hiccup-consult",
+    label: "딸꾹질 지속 상담 기준",
+    keywords: [
+      "딸꾹질",
+      "hiccup",
+      "hiccups",
+      "하루 이상 딸꾹질",
+      "잠을 이룰수 없을 정도",
+      "잠을 이룰 수 없을 정도",
+      "위장 팽만",
+      "위장이 커",
+    ],
+    mealNote:
+      "하루이상 딸꾹질이 지속될 경우 호흡곤란이 일어날 경우 위장이 커져있거나 팽만되어 있는 것으로 보이는 경우 딸꾹질 시작 시점, 지속 시간, 호흡곤란, 위장 팽만, 수면 방해, 고통 정도를 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "이런 때에는 의료진과 상의하십시오. 하루이상 딸꾹질이 지속될 경우 호흡곤란이 일어날 경우 위장이 커져있거나 팽만되어 있는 것으로 보이는 경우 잠을 이룰수 없을 정도로 딸꾹질이 나올 때 딸꾹질로 인해 고통을 느낄 때 딸꾹질이 지속 시간·호흡·위장 팽만·수면·고통 정도와 관련해 언제 의료진에게 알려야 하는지 확인하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 딸꾹질 의료진 상담 상황",
+    sourceUrl: "https://www.cancer.go.kr/lay1/S1T466C468/contents.do",
   },
   {
     id: "cervical-radiation-menopause",
