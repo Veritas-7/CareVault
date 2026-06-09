@@ -1999,6 +1999,37 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide barley rice and grilled seaweed table dishes", () => {
+    const assessment = assessCancerFood("보리밥, 김구이");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["보리밥", "김구이"]);
+    for (const term of ["보리밥", "김구이"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "자궁경부암 실천지침 식단 예시 후보",
+        sourceId: "nccCervicalPracticeDiet",
+      });
+    }
+    expect(terms).not.toContain("밥");
+    expect(terms).not.toContain("김");
+    expect(terms).not.toContain("구이");
+    expect(balancedGuideText).toContain("보리밥");
+    expect(balancedGuideText).toContain("김구이");
+    expect(formatFoodMatchEvidence(matchesByTerm.보리밥)).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide color-variety produce planning examples", () => {
     const colorVarietyPhrase =
       "파프리카, 피망, 시금치, 토마토, 당근, 양배추 등 식품이 지닌 색상을 고려하여 다양한 종류의 색상이 포함되도록 식품을 선택해 보십시오.";
