@@ -268,8 +268,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "실천지침 식단 예시",
         detail:
-          "국민 암예방 수칙 자궁경부암 실천지침은 채소·과일을 충분히 섭취하고 짠 음식과 탄 음식을 제한하는 식단 예시를 제시합니다.",
-        examples: "잡곡밥, 과일샐러드, 채소샐러드, 브로콜리회, 귤, 시금치나물, 우엉볶음",
+          "국민 암예방 수칙 자궁경부암 실천지침은 채소·과일을 충분히 섭취하고 짠 음식과 탄 음식을 제한하는 식단 예시를 제시합니다. 예시 식단은 쇠고기뭇국에 소금 대신 간장을 사용해 나트륨 섭취량을 줄이는 조리 예시도 함께 보여줍니다.",
+        examples:
+          "잡곡밥, 과일샐러드, 채소샐러드, 브로콜리회, 귤, 시금치나물, 우엉볶음, 쇠고기뭇국, 소금 대신 간장 사용으로 나트륨 섭취량 감소",
         sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
@@ -673,8 +674,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "실천지침 대체 식단 예시",
         detail:
-          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 식이섬유를 늘리는 잡곡밥 대체 예시와 함께 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여줍니다.",
-        examples: "쌀밥, 흰쌀밥, 햄구이, 초코칩쿠키, 단무지, 우엉조림, 국·찌개 국물, 국물 과다",
+          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 식이섬유를 늘리는 잡곡밥 대체 예시와 함께 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여주며, 국 또는 찌개의 국물은 다 먹지 않도록 안내합니다.",
+        examples:
+          "쌀밥, 흰쌀밥, 햄구이, 초코칩쿠키, 단무지, 우엉조림, 국·찌개 국물, 국물 과다, 국 또는 찌개의 국물은 다 드시지 마십시오.",
         sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
@@ -1077,6 +1079,12 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["브로콜리회", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["시금치나물", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["우엉볶음", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  ["쇠고기뭇국", "자궁경부암 실천지침 나트륨 감소 식단 예시 후보", "nccCervicalPracticeDiet"],
+  [
+    "소금 대신 간장 사용으로 나트륨 섭취량 감소",
+    "자궁경부암 실천지침 나트륨 감소 조리 예시 후보",
+    "nccCervicalPracticeDiet",
+  ],
   ["귤", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["브로콜리", "채소 중심 식단에 적합", "nccPreventionDiet"],
   ["양배추", "십자화과 채소", "nccPreventionDiet"],
@@ -3087,6 +3095,11 @@ const limitFoods: FoodRuleTerm[] = [
     "국물 섭취",
     "국가암정보센터 건강한 식생활 젓갈류·염 저장식품·국/찌개 국물 제한 후보",
     "nccPreventionDiet",
+  ],
+  [
+    "국 또는 찌개의 국물은 다 드시지 마십시오.",
+    "자궁경부암 실천지침 국·찌개 국물 남기기 예시",
+    "nccCervicalPracticeDiet",
   ],
   ["국물", "국·찌개 국물 제한 예시", "nccCervicalPracticeDiet"],
   [
