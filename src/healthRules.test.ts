@@ -2120,6 +2120,46 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide smoking-cessation diet phrases", () => {
+    const irritantFoodPhrase =
+      "맵고 짠 자극적인 음식이나 지방이 많은 느끼한 음식, 육식은 가급적 피하기";
+    const snackPrepPhrase =
+      "과식은 피하고 평소 섭취하는 열량의 80% 정도만 섭취하고, 금연을 위한 간식으로 당근, 오이, 다시마, 무가당 껌, 은단 등을 준비하기";
+    const assessment = assessCancerFood(`${irritantFoodPhrase}, ${snackPrepPhrase}`);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([irritantFoodPhrase, snackPrepPhrase]);
+    expect(matchesByTerm[irritantFoodPhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 금연 식이요법 자극적·지방 많은 음식 제한 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[snackPrepPhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 금연 간식·과식 제한 준비 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(terms).not.toContain("당근");
+    expect(terms).not.toContain("오이");
+    expect(terms).not.toContain("다시마");
+    expect(terms).not.toContain("껌");
+    expect(terms).not.toContain("매운 음식");
+    expect(limitGuideText).toContain(irritantFoodPhrase);
+    expect(limitGuideText).toContain(snackPrepPhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[irritantFoodPhrase])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide limit examples without contradicting replacements", () => {
     const assessment = assessCancerFood(
       "햄구이, 초코칩쿠키, 단무지, 국물, 과일샐러드, 채소샐러드",
