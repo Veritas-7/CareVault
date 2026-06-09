@@ -29,9 +29,15 @@ describe("immuneFoodContext", () => {
     });
     expect(context?.summary).toContain("입력 기준 하한 4.0 10^3/uL보다 낮게 기록");
     expect(context?.summary).toContain("날음식·비살균 식품");
+    expect(context?.summary).toContain("30분 이상 상온 운반");
+    expect(context?.summary).toContain("남은 음식 3~4일");
+    expect(context?.summary).toContain("조리 위생");
     expect(context?.ariaLabel).toContain("공식 출처 2개");
     expect(formatImmuneFoodSafetyContextText(context)).toContain(
       "WBC 3.4 10^3/uL",
+    );
+    expect(formatImmuneFoodSafetyContextText(context)).toContain(
+      "30분 이상 상온 운반",
     );
     expect(formatImmuneFoodSafetyContextText(context)).toContain(
       "국가암정보센터 증상별 식생활 - 면역기능의 저하",

@@ -118,7 +118,7 @@ export function buildFoodQuestionDraft({
   const questionParts = immuneContext
     ? [
         `${immuneContext.labValueLabel}가 입력 기준 하한 ${immuneContext.lowerLimitLabel}보다 낮게 기록되어 있습니다.`,
-        `현재 음식/식단${query ? `(${query})` : ""}에서 날음식·비살균 식품, 외식, 자몽/보충제/약물 상호작용을 어떻게 확인하면 좋을까요?`,
+        `현재 음식/식단${query ? `(${query})` : ""}에서 날음식·비살균 식품, 30분 이상 상온 운반·냉장 보관, 남은 음식 3~4일 보관 한계, 조리 위생, 외식보다 직접 조리, 자몽/보충제/약물 상호작용을 어떻게 확인하면 좋을까요?`,
         matchedSummary ? `음식 판단 근거: ${matchedSummary}` : "",
         immuneContext.labSourceLabel
           ? `검사 근거: ${immuneContext.labSourceLabel}${

@@ -760,6 +760,9 @@ describe("caregiverExport", () => {
     expect(html).toContain("이번 진료 우선");
     expect(html).toContain("면역저하 검사 연결");
     expect(html).toContain("2026-06-01 WBC 3.4 10^3/uL");
+    expect(html).toContain("30분 이상 상온 운반");
+    expect(html).toContain("남은 음식 3~4일");
+    expect(html).toContain("조리 위생");
     expect(html).toContain("국가암정보센터 증상별 식생활 - 면역기능의 저하");
     expect(html).toContain("첨부 파일명만 포함");
     expect(html).toContain("result.pdf");

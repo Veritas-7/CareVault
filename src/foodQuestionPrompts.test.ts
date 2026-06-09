@@ -36,6 +36,11 @@ describe("foodQuestionPrompts", () => {
     expect(draft?.question).toContain("2026-06-01 WBC 3.4 10^3/uL");
     expect(draft?.question).toContain("브로콜리, 생굴, 자몽 주스");
     expect(draft?.question).toContain("날음식·비살균 식품");
+    expect(draft?.question).toContain("30분 이상 상온 운반");
+    expect(draft?.question).toContain("냉장 보관");
+    expect(draft?.question).toContain("남은 음식 3~4일");
+    expect(draft?.question).toContain("조리 위생");
+    expect(draft?.question).toContain("외식보다 직접 조리");
     expect(draft?.question).toContain("생굴: 면역저하 시 익히지 않은 음식 주의");
     expect(draft?.question).toContain("자몽: 약물 상호작용 확인 필요");
     expect(draft?.question).toContain("검사 근거: 서울아산병원 전혈구검사 참고치");

@@ -311,6 +311,9 @@ describe("csvExport", () => {
     );
     expect(csv).toContain("면역저하 검사 연결: 2026-06-01 WBC 3.4 10^3/uL");
     expect(csv).toContain("입력 기준 하한 4.0 10^3/uL보다 낮게 기록");
+    expect(csv).toContain("30분 이상 상온 운반");
+    expect(csv).toContain("남은 음식 3~4일");
+    expect(csv).toContain("조리 위생");
     expect(csv).toContain("국가암정보센터 증상별 식생활 - 면역기능의 저하");
     expect(csv).toContain('"question","2026-06-10","부작용","오심 조절을 어떻게 볼까요?","open","이번 진료 우선"');
     expect(csv).toContain(

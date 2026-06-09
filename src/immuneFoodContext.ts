@@ -93,7 +93,7 @@ export function buildImmuneFoodSafetyContext(
     new Set([labSourceEvidence.sourceLabel, foodSafetySource.label].filter(Boolean)),
   );
   const sourceCount = sourceLabels.length;
-  const summary = `${labValueLabel}가 입력 기준 하한 ${lowerLimitLabel}보다 낮게 기록되었습니다. 면역저하 시 날음식·비살균 식품은 진료팀 기준으로 확인하세요.`;
+  const summary = `${labValueLabel}가 입력 기준 하한 ${lowerLimitLabel}보다 낮게 기록되었습니다. 면역저하 시 날음식·비살균 식품, 30분 이상 상온 운반 후 냉장 보관, 남은 음식 3~4일 보관 한계, 조리 위생은 진료팀 기준으로 확인하세요.`;
 
   return {
     ariaLabel: `면역저하 검사 연결 ${labValueLabel} · 공식 출처 ${sourceCount}개`,
