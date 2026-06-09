@@ -268,9 +268,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "실천지침 식단 예시",
         detail:
-          "국민 암예방 수칙 자궁경부암 실천지침은 채소·과일을 충분히 섭취하고 짠 음식과 탄 음식을 제한하는 식단 예시를 제시합니다. 예시 식단은 쇠고기뭇국에 소금 대신 간장을 사용해 나트륨 섭취량을 줄이는 조리 예시도 함께 보여줍니다.",
+          "국민 암예방 수칙 자궁경부암 실천지침은 채소·과일을 충분히 섭취하고 짠 음식과 탄 음식을 제한하는 식단 예시를 제시합니다. 예시 식단은 채소샐러드에 요플레드레싱을 사용해 채소 섭취량을 늘리는 예시와 쇠고기뭇국에 소금 대신 간장을 사용해 나트륨 섭취량을 줄이는 조리 예시도 함께 보여줍니다.",
         examples:
-          "잡곡밥, 과일샐러드, 채소샐러드, 브로콜리회, 귤, 시금치나물, 우엉볶음, 쇠고기뭇국, 소금 대신 간장 사용으로 나트륨 섭취량 감소",
+          "잡곡밥, 과일샐러드, 채소샐러드, 채소 섭취량 증가(채소샐러드는 요플레드레싱 사용), 브로콜리회, 귤, 딸기 요플레, 시금치나물, 우엉볶음, 쇠고기뭇국, 소금 대신 간장 사용으로 나트륨 섭취량 감소",
         sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
@@ -1075,8 +1075,14 @@ const supportiveFoods: FoodRuleTerm[] = [
     "nccCervicalFoodPrevention",
   ],
   ["과일샐러드", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  [
+    "채소 섭취량 증가(채소샐러드는 요플레드레싱 사용)",
+    "자궁경부암 실천지침 채소샐러드 요플레드레싱 예시 후보",
+    "nccCervicalPracticeDiet",
+  ],
   ["채소샐러드", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["브로콜리회", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
+  ["딸기 요플레", "자궁경부암 실천지침 딸기 요플레 간식 예시 후보", "nccCervicalPracticeDiet"],
   ["시금치나물", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["우엉볶음", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["쇠고기뭇국", "자궁경부암 실천지침 나트륨 감소 식단 예시 후보", "nccCervicalPracticeDiet"],

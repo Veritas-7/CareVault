@@ -1954,6 +1954,44 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide yogurt dressing and strawberry yogurt examples", () => {
+    const yogurtDressingPhrase = "채소 섭취량 증가(채소샐러드는 요플레드레싱 사용)";
+    const assessment = assessCancerFood(`${yogurtDressingPhrase}, 딸기 요플레`);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([yogurtDressingPhrase, "딸기 요플레"]);
+    expect(matchesByTerm[yogurtDressingPhrase]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 채소샐러드 요플레드레싱 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm["딸기 요플레"]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 딸기 요플레 간식 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(terms).not.toContain("채소샐러드");
+    expect(terms).not.toContain("요플레");
+    expect(terms).not.toContain("요거트");
+    expect(terms).not.toContain("요구르트");
+    expect(terms).not.toContain("드레싱");
+    expect(terms).not.toContain("딸기");
+    expect(balancedGuideText).toContain(yogurtDressingPhrase);
+    expect(balancedGuideText).toContain("딸기 요플레");
+    expect(formatFoodMatchEvidence(matchesByTerm["딸기 요플레"])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide grain and sodium-reduction replacements", () => {
     const assessment = assessCancerFood("쌀밥, 흰쌀밥, 잡곡밥, 우엉조림, 우엉볶음");
     const matchesByTerm = Object.fromEntries(
