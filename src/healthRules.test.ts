@@ -6941,6 +6941,54 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC nausea-vomiting care persistent vomiting head-fog dizziness confusion clinician-consultation source sentence", () => {
+    const sourceSentence = "구토가 지속되고 머리가 띵하거나 어지럽거나, 혼란한 느낌이 들 때";
+    const repeatedVomitingReducedUrinationSentence =
+      "수차례 구토를 하고, 소변의 색이 진한 노란색이고 평상시의 소변 횟수만큼 화장실에 가지 못할 때";
+    const severeWeaknessDizzinessSentence = "심하게 힘이 없거나 현기증이 있을 경우";
+    const vomitingHourlySentence = "구토를 12시간 이상 지속적으로 하거나 한 시간 동안 3번 이상 한 경우";
+    const persistentVomitingFluidSentence =
+      "환자들은 섭취할 수 있을 만큼만 음료를 마셔야 합니다. 대부분의 경우, 음료는 마실 수 있을 만큼 정상으로 돌아오게 되는데, 지속적으로 구토를 하는 환자들은 수분공급과 전해질의 균형을 유지하기 위해서 정맥 또는 피하 체액 주사를 맞을 수 도 있습니다. 이 때는 의료진의 도움이 필요합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 구토 지속과 머리 띵함·어지러움·혼란감 시 의료진 상담 필요",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(repeatedVomitingReducedUrinationSentence);
+    expect(terms).not.toContain(severeWeaknessDizzinessSentence);
+    expect(terms).not.toContain(vomitingHourlySentence);
+    expect(terms).not.toContain(persistentVomitingFluidSentence);
+    expect(terms).not.toContain("구토");
+    expect(terms).not.toContain("어지럽");
+    expect(terms).not.toContain("혼란");
+    expect(terms).not.toContain("머리가 띵");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|특효|보조식품 권장|탈수 치료|수액 처방|자가 수분 치료|전해질 처방|응급치료|응급처치|진토제 처방|구토 치료|어지럼 치료|혼란 치료|두통 치료/,
+    );
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";
