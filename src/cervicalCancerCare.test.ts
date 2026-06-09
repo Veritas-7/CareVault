@@ -66,6 +66,7 @@ describe("cervicalCancerCare", () => {
       "nccDryMouthDiet",
       "nccTasteChangeDiet",
       "nccDiarrheaDiet",
+      "nccConstipationDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -135,6 +136,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccDryMouthDiet.url).toContain("S1T479C485");
     expect(cervicalCancerCareSources.nccTasteChangeDiet.url).toContain("S1T479C484");
     expect(cervicalCancerCareSources.nccDiarrheaDiet.url).toContain("S1T479C488");
+    expect(cervicalCancerCareSources.nccConstipationDiet.url).toContain("S1T479C487");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -223,7 +225,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(41);
+    expect(cervicalCancerCarePrompts).toHaveLength(42);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -248,6 +250,7 @@ describe("cervicalCancerCare", () => {
       "입안 건조 식사·수분 기록 준비",
       "입맛 변화 단백질·향 기록 준비",
       "설사 수분·전해질 음식 기록 준비",
+      "변비 수분·섬유소·활동 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -638,6 +641,34 @@ describe("cervicalCancerCare", () => {
     expect(diarrheaDietPrompt.question).toContain("의사선생님과 상의");
     expect(buildCervicalCancerCarePromptQuestion(diarrheaDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 설사 - https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    const constipationDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "변비 수분·섬유소·활동 기록 준비",
+    )!;
+    expect(constipationDietPrompt.sourceId).toBe("nccConstipationDiet");
+    expect(constipationDietPrompt.question).toContain("수분 및 음식섭취가 불충분");
+    expect(constipationDietPrompt.question).toContain("오랫동안 누워있는 경우");
+    expect(constipationDietPrompt.question).toContain("항암제");
+    expect(constipationDietPrompt.question).toContain("진통제");
+    expect(constipationDietPrompt.question).toContain("수분을 충분히");
+    expect(constipationDietPrompt.question).toContain("하루에 8~10컵 이상");
+    expect(constipationDietPrompt.question).toContain("변을 부드럽게");
+    expect(constipationDietPrompt.question).toContain("아침 기상 직후");
+    expect(constipationDietPrompt.question).toContain("차가운 물");
+    expect(constipationDietPrompt.question).toContain("장운동");
+    expect(constipationDietPrompt.question).toContain("음식 섭취량이 너무 적지 않도록");
+    expect(constipationDietPrompt.question).toContain("도정이 덜 된 곡류");
+    expect(constipationDietPrompt.question).toContain("생과일");
+    expect(constipationDietPrompt.question).toContain("생야채");
+    expect(constipationDietPrompt.question).toContain("섬유소가 많은 식품");
+    expect(constipationDietPrompt.question).toContain("가벼운 산책이나 걷기");
+    expect(constipationDietPrompt.question).toContain("자신에게 맞는 운동");
+    expect(constipationDietPrompt.question).toContain("누워만 있는 경우");
+    expect(constipationDietPrompt.question).toContain("배를 부드럽게 문질러");
+    expect(constipationDietPrompt.question).toContain("계속적으로 변비가 조절되지");
+    expect(constipationDietPrompt.question).toContain("의사선생님과 상의");
+    expect(buildCervicalCancerCarePromptQuestion(constipationDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 변비 - https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1464,6 +1495,16 @@ describe("cervicalCancerCare", () => {
       "우유 및 유제품을 먹을 때에는 주의합니다. 이는 우유에 들어있는 유당이 설사를 악화시킬 수 있기 때문입니다. 그러나 일반적으로 적은 양의 우유나 유제품은 소화시킬 수 있습니다.";
     const diarrheaClinicianSentence =
       "설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 합니다.";
+    const constipationCauseSentence =
+      "변비는 수분 및 음식섭취가 불충분하거나 오랫동안 누워있는 경우에 생길 수 있습니다. 그리고 항암제 나 진통제 등의 부작용 으로 생기기도 합니다.";
+    const constipationFluidSentence =
+      "수분을 충분히 섭취합니다.(하루에 8~10컵 이상) 이는 변을 부드럽게 합니다. 특히 아침 기상 직후에 차가운 물을 마시면 장운동에 도움이 됩니다.";
+    const constipationFiberSentence =
+      "도정이 덜 된 곡류, 생과일, 생야채 등 섬유소가 많은 식품을 충분히 섭취합니다.";
+    const constipationMovementSentence =
+      "가벼운 산책이나 걷기 등의 자신에게 맞는 운동을 규칙적으로 하는 것이 도움이 됩니다. 누워만 있는 경우라도 배를 부드럽게 문질러 주면 장운동에 도움이 됩니다.";
+    const constipationClinicianSentence =
+      "계속적으로 변비가 조절되지 않는다면 의사선생님과 상의하도록 합니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1510,6 +1551,9 @@ describe("cervicalCancerCare", () => {
     const diarrheaDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "설사 수분·전해질·자극음식 메모",
     );
+    const constipationDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "변비 수분·섬유소·활동 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1532,7 +1576,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(25);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(26);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1876,6 +1920,28 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(diarrheaDietGuide!)).join(" ")).not.toMatch(
       /지사제를 복용하세요|설사약을 복용하세요|탈수를 치료하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(constipationDietGuide).toMatchObject({
+      label: "변비 수분·섬유소·활동 메모",
+      sourceId: "nccConstipationDiet",
+    });
+    expect(constipationDietGuide?.detail).toContain(constipationCauseSentence);
+    expect(constipationDietGuide?.detail).toContain(constipationFluidSentence);
+    expect(constipationDietGuide?.detail).toContain("음식 섭취량이 너무 적지 않도록");
+    expect(constipationDietGuide?.detail).toContain(constipationFiberSentence);
+    expect(constipationDietGuide?.detail).toContain(constipationMovementSentence);
+    expect(constipationDietGuide?.detail).toContain(constipationClinicianSentence);
+    expect(formatCervicalCancerCareItemEvidence(constipationDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 변비 - https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(constipationDietGuide!).body).toContain(
+      constipationFiberSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(constipationDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 변비",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(constipationDietGuide!)).join(" ")).not.toMatch(
+      /변비약을 복용하세요|하제를 복용하세요|관장을 하세요|수분부족을 치료하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
