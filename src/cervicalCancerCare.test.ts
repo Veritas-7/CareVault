@@ -465,7 +465,11 @@ describe("cervicalCancerCare", () => {
       .map((item) => `${item.label} ${item.detail}`)
       .join(" ");
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(9);
+    const recurrenceSymptomGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "재발 의심 증상·기본 추적검사 메모",
+    );
+
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(10);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(text).toContain("광범위 자궁절제술");
@@ -478,6 +482,30 @@ describe("cervicalCancerCare", () => {
     expect(text).toContain("첫 2년 3개월마다");
     expect(text).toContain("이후 5년까지 6개월마다");
     expect(text).toContain("그 이후 매년");
+    expect(recurrenceSymptomGuide).toMatchObject({
+      label: "재발 의심 증상·기본 추적검사 메모",
+      sourceId: "nccRecurrenceFollowUp",
+    });
+    expect(recurrenceSymptomGuide?.detail).toContain("체중감소");
+    expect(recurrenceSymptomGuide?.detail).toContain("하지 부종");
+    expect(recurrenceSymptomGuide?.detail).toContain("골반 혹은 허벅지 통증");
+    expect(recurrenceSymptomGuide?.detail).toContain("질출혈 혹은 질분비물의 증가");
+    expect(recurrenceSymptomGuide?.detail).toContain("진행성 요관 폐색");
+    expect(recurrenceSymptomGuide?.detail).toContain("쇄골위 림프절 비대");
+    expect(recurrenceSymptomGuide?.detail).toContain("기침·객혈·흉통");
+    expect(recurrenceSymptomGuide?.detail).toContain("특징적인 증상이 없는 경우");
+    expect(recurrenceSymptomGuide?.detail).toContain("문진");
+    expect(recurrenceSymptomGuide?.detail).toContain("골반내진");
+    expect(recurrenceSymptomGuide?.detail).toContain("신체검사");
+    expect(recurrenceSymptomGuide?.detail).toContain("세포검사");
+    expect(recurrenceSymptomGuide?.detail).toContain("가슴사진");
+    expect(recurrenceSymptomGuide?.detail).toContain("종양 표지자");
+    expect(recurrenceSymptomGuide?.detail).toContain("CT");
+    expect(recurrenceSymptomGuide?.detail).toContain("MRI");
+    expect(recurrenceSymptomGuide?.detail).toContain("PET");
+    expect(recurrenceSymptomGuide?.detail).toContain("진료팀");
+    expect(recurrenceSymptomGuide?.detail).not.toContain("검사하세요");
+    expect(recurrenceSymptomGuide?.detail).not.toContain("치료하세요");
     expect(text).toContain("성생활 재개·통증 상담");
     expect(text).toContain("방사선 치료 중과 치료 후 약 2주~1개월");
     expect(text).toContain("질건조·질협착");
