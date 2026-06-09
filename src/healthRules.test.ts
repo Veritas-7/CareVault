@@ -12724,6 +12724,76 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea yersinia cold-growth and pork-handling guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 여시니아 엔테로콜리티카균 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "돈육 취급 시 조리기구와 손을 깨끗이 세척·소독한다, 저온에서 생육이 억제되지 않으며 균이 0℃에서도 증식이 가능한 점을 고려할 때 냉장 및 냉동육과 그 제품의 유통과정에서도 주의하여야 한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "여시니아 엔테로콜리티카균은 0~5℃의 냉장고에서도 발육이 가능한 저온세균이고 진공포장에서도 증식할 수 있는 특성이 있으며, 오물, 오염된 물, 돼지고기, 양고기, 쇠고기, 생우유, 아이스크림 같은 주요 원인식품과 동물의 분변과 함께 배출되어 음료수나 식품에 오염되는 경로, 저온보관 상태에서도 균이 증식하는 상황을 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 여시니아 엔테로콜리티카균",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 여시니아 엔테로콜리티카균 식중독 주의",
+      sourceIds: ["foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("0~5℃의 냉장고에서도 발육");
+    expect(foodSafetyGuide?.detail).toContain("진공포장에서도 증식");
+    expect(foodSafetyGuide?.detail).toContain("저온보관 상태에서도 균이 증식");
+    expect(foodSafetyGuide?.detail).toContain("돈육 취급 시 조리기구와 손");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "돈육 취급 시 조리기구와 손을 깨끗이 세척·소독한다",
+      "저온에서 생육이 억제되지 않으며 균이 0℃에서도 증식이 가능한 점을 고려할 때 냉장 및 냉동육과 그 제품의 유통과정에서도 주의하여야 한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 여시니아 엔테로콜리티카균 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "여시니아 엔테로콜리티카균",
+      "0~5℃의 냉장고에서도 발육이 가능한",
+      "진공포장에서도 증식할 수 있는 특성",
+      "오물, 오염된 물, 돼지고기, 양고기, 쇠고기, 생우유, 아이스크림",
+      "동물의 분변과 함께 배출되어 음료수나 식품에 오염",
+      "저온보관 상태에서도 균이 증식",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

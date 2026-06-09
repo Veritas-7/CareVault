@@ -65,6 +65,7 @@ export type FoodGuidanceSourceId =
   | "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"
   | "foodSafetyKoreaListeriaFoodPoisoning"
   | "foodSafetyKoreaCampylobacterFoodPoisoning"
+  | "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning"
   | "mfdsSalmonellaEggSafety"
   | "mfdsFoodPoisoningPrevention";
 
@@ -299,6 +300,10 @@ export const foodGuidanceSources: Record<
   },
   foodSafetyKoreaCampylobacterFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 캠필로박터",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+  },
+  foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 여시니아 엔테로콜리티카균",
     url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   mfdsSalmonellaEggSafety: {
@@ -1114,6 +1119,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "리스테리아균, 냉장온도에서도 생존하여 증식, 살균처리하지 아니한 우유, 살균 안 된 우유를 섭취하지 말아야 한다, 핫도그, 치즈(특히 소프트치즈), 소시지 및 건조 소시지, 냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
         sourceIds: ["foodSafetyKoreaListeriaFoodPoisoning"],
+      },
+      {
+        label: "식품안전나라 여시니아 엔테로콜리티카균 식중독 주의",
+        detail:
+          "식품안전나라는 여시니아 엔테로콜리티카균을 운동성이 있는 그람음성 단간균이며 다른 장내세균은 증식할 수 없는 0~5℃의 냉장고에서도 발육이 가능한 전형적인 저온세균으로 설명합니다. 진공포장에서도 증식할 수 있는 특성과 저온발육 특성 때문에 가을과 초겨울철 식품 취급·보존에 방심할 수 있다고 설명하고, 오물, 오염된 물, 돼지고기, 양고기, 쇠고기, 생우유, 아이스크림을 주요 원인식품으로 제시하므로 식품 안전 질문으로 분리합니다. 예방대책으로 돈육 취급 시 조리기구와 손을 깨끗이 세척·소독하고, 저온보관 상태에서도 균이 증식하며 0℃에서도 증식이 가능한 점을 고려해 냉장 및 냉동육과 그 제품의 유통과정에서도 주의하도록 안내합니다.",
+        examples:
+          "여시니아 엔테로콜리티카균, 0~5℃의 냉장고에서도 발육이 가능한, 진공포장에서도 증식할 수 있는 특성, 오물, 오염된 물, 돼지고기, 양고기, 쇠고기, 생우유, 아이스크림, 동물의 분변과 함께 배출되어 음료수나 식품에 오염, 저온보관 상태에서도 균이 증식, 돈육 취급 시 조리기구와 손을 깨끗이 세척·소독한다, 저온에서 생육이 억제되지 않으며 균이 0℃에서도 증식이 가능한 점을 고려할 때 냉장 및 냉동육과 그 제품의 유통과정에서도 주의하여야 한다",
+        sourceIds: ["foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning"],
       },
       {
         label: "식품안전나라 캠필로박터 식중독 주의",
@@ -2736,6 +2749,16 @@ const supportiveFoods: FoodRuleTerm[] = [
     "냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
     "식품안전나라 리스테리아 식중독 5℃ 이하 냉장 보관 후보",
     "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "돈육 취급 시 조리기구와 손을 깨끗이 세척·소독한다",
+    "식품안전나라 여시니아 엔테로콜리티카균 돈육 취급 조리기구·손 세척 소독 후보",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "저온에서 생육이 억제되지 않으며 균이 0℃에서도 증식이 가능한 점을 고려할 때 냉장 및 냉동육과 그 제품의 유통과정에서도 주의하여야 한다",
+    "식품안전나라 여시니아 엔테로콜리티카균 냉장·냉동육 유통과정 주의 후보",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
   ],
   [
     "생육을 만진 경우 손을 깨끗하게 씻고 소독하여 2차 오염 방지하여야 한다",
@@ -4583,6 +4606,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "소시지 및 건조 소시지",
     "식품안전나라 리스테리아 식중독 소시지·건조 소시지 원인식품 확인 필요",
     "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "여시니아 엔테로콜리티카균",
+    "식품안전나라 여시니아 엔테로콜리티카균 식중독 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "0~5℃의 냉장고에서도 발육이 가능한",
+    "식품안전나라 여시니아 엔테로콜리티카균 0~5℃ 냉장 발육 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "진공포장에서도 증식할 수 있는 특성",
+    "식품안전나라 여시니아 엔테로콜리티카균 진공포장 증식 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "오물, 오염된 물, 돼지고기, 양고기, 쇠고기, 생우유, 아이스크림",
+    "식품안전나라 여시니아 엔테로콜리티카균 오염수·육류·생우유 원인식품 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "동물의 분변과 함께 배출되어 음료수나 식품에 오염",
+    "식품안전나라 여시니아 엔테로콜리티카균 동물 분변 유래 오염 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "저온보관 상태에서도 균이 증식",
+    "식품안전나라 여시니아 엔테로콜리티카균 저온보관 중 증식 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
   ],
   [
     "캠필로박터균",
