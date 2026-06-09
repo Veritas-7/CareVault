@@ -183,7 +183,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(18);
+    expect(cervicalCancerCarePrompts).toHaveLength(19);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -202,6 +202,7 @@ describe("cervicalCancerCare", () => {
       "임신·출산 계획",
       "성생활 재개 상담",
       "치료현황 통계 해석",
+      "수술 합병증 확인",
       "요약·진료 흐름",
     ]);
     expect(cervicalCancerCarePrompts.every((item) => item.question.endsWith("?"))).toBe(true);
@@ -371,6 +372,27 @@ describe("cervicalCancerCare", () => {
     expect(treatmentStatusPrompt.question).toContain("재발·전이 여부");
     expect(buildCervicalCancerCarePromptQuestion(treatmentStatusPrompt)).toContain(
       "출처: 국가암정보센터 자궁경부암 치료현황 - https://www.cancer.go.kr/",
+    );
+    const surgicalComplicationPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "수술 합병증 확인",
+    )!;
+    expect(surgicalComplicationPrompt.sourceId).toBe("nccTreatmentSideEffects");
+    expect(surgicalComplicationPrompt.question).toContain("수술 직후 급성 합병증");
+    expect(surgicalComplicationPrompt.question).toContain("출혈");
+    expect(surgicalComplicationPrompt.question).toContain("장폐색");
+    expect(surgicalComplicationPrompt.question).toContain("혈관손상");
+    expect(surgicalComplicationPrompt.question).toContain("요관손상");
+    expect(surgicalComplicationPrompt.question).toContain("직장 파열");
+    expect(surgicalComplicationPrompt.question).toContain("폐렴");
+    expect(surgicalComplicationPrompt.question).toContain("폐색전 증");
+    expect(surgicalComplicationPrompt.question).toContain("방광이나 직장의 기능부전");
+    expect(surgicalComplicationPrompt.question).toContain("배뇨나 배변 장애");
+    expect(surgicalComplicationPrompt.question).toContain("림프 낭종");
+    expect(surgicalComplicationPrompt.question).toContain("다리나 회음부 림프 부종");
+    expect(surgicalComplicationPrompt.question).toContain("흡입도관 배액");
+    expect(surgicalComplicationPrompt.question).toContain("제 수술명");
+    expect(buildCervicalCancerCarePromptQuestion(surgicalComplicationPrompt)).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
     );
     const overviewPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "요약·진료 흐름",

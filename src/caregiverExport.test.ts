@@ -1983,6 +1983,16 @@ describe("caregiverExport", () => {
     expect(html).toContain("치료 반응");
     expect(html).toContain("재발·전이 여부");
     expect(html).toContain(">국가암정보센터 자궁경부암 치료현황</a>");
+    expect(html).toContain("수술 합병증 확인");
+    expect(html).toContain("수술 직후 급성 합병증");
+    expect(html).toContain("혈관손상");
+    expect(html).toContain("요관손상");
+    expect(html).toContain("직장 파열");
+    expect(html).toContain("폐색전 증");
+    expect(html).toContain("방광이나 직장의 기능부전");
+    expect(html).toContain("림프 낭종");
+    expect(html).toContain("다리나 회음부 림프 부종");
+    expect(html).toContain("흡입도관 배액");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");
     expect(html).toContain("첫 2년");

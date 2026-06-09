@@ -627,6 +627,16 @@ describe("csvExport", () => {
     expect(csv).toContain("개인 예후");
     expect(csv).toContain("치료 반응");
     expect(csv).toContain("재발·전이 여부");
+    expect(csv).toContain("수술 합병증 확인");
+    expect(csv).toContain("수술 직후 급성 합병증");
+    expect(csv).toContain("혈관손상");
+    expect(csv).toContain("요관손상");
+    expect(csv).toContain("직장 파열");
+    expect(csv).toContain("폐색전 증");
+    expect(csv).toContain("방광이나 직장의 기능부전");
+    expect(csv).toContain("림프 낭종");
+    expect(csv).toContain("다리나 회음부 림프 부종");
+    expect(csv).toContain("흡입도관 배액");
     expect(csv).toContain("재발·추적검사");
     expect(csv).toContain("첫 2년");
     expect(csv).toContain("3개월마다");

@@ -579,6 +579,16 @@ describe("visit packet", () => {
     expect(markdown).toContain("개인 예후");
     expect(markdown).toContain("치료 반응");
     expect(markdown).toContain("재발·전이 여부");
+    expect(markdown).toContain("수술 합병증 확인");
+    expect(markdown).toContain("수술 직후 급성 합병증");
+    expect(markdown).toContain("혈관손상");
+    expect(markdown).toContain("요관손상");
+    expect(markdown).toContain("직장 파열");
+    expect(markdown).toContain("폐색전 증");
+    expect(markdown).toContain("방광이나 직장의 기능부전");
+    expect(markdown).toContain("림프 낭종");
+    expect(markdown).toContain("다리나 회음부 림프 부종");
+    expect(markdown).toContain("흡입도관 배액");
     expect(markdown).toContain("재발·추적검사");
     expect(markdown).toContain("첫 2년");
     expect(markdown).toContain("3개월마다");
