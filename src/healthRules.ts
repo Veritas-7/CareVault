@@ -59,6 +59,7 @@ export type FoodGuidanceSourceId =
   | "kdcaVibrioSepsis"
   | "kdcaNorovirusFoodSafety"
   | "kdcaFoodPoisoningNaturalToxins"
+  | "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"
   | "foodSafetyKoreaListeriaFoodPoisoning"
   | "foodSafetyKoreaCampylobacterFoodPoisoning"
   | "mfdsSalmonellaEggSafety"
@@ -272,6 +273,10 @@ export const foodGuidanceSources: Record<
   kdcaFoodPoisoningNaturalToxins: {
     label: "질병관리청 국가건강정보포털 식중독",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5239",
+  },
+  foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 장출혈성 대장균",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   foodSafetyKoreaListeriaFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 리스테리아",
@@ -1054,6 +1059,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다, 복어요리 전문가가 조리하지 않은 복어, 유독화된 조개, 적조에 노출된 섭조개나 홍합, 야생 독버섯을 식용버섯으로 오인, 녹색을 띠는 감자, 감자의 독이 포함된 부위(싹이 난 부위나 녹색을 띠는 부위)를 잘라내야 합니다, 솔라닌, 곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
         sourceIds: ["kdcaFoodPoisoningNaturalToxins"],
+      },
+      {
+        label: "식품안전나라 장출혈성 대장균 식중독 주의",
+        detail:
+          "식품안전나라는 병원성 대장균 중 베로독소를 생성해 대장점막에 궤양과 출혈을 유발하는 대장균을 장관출혈성대장균이라고 설명하며, O26, O103, O104, O146, O157 등 혈청형과 대표 균인 대장균 O157:H7을 제시합니다. 주요 증상은 설사, 복통, 발열, 구토이고 심하면 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증 등이 나타날 수 있으므로 식품 안전 질문으로 분리합니다. 예방대책으로 조리기구(칼, 도마 등) 구분 사용, 생육과 조리된 음식을 구분하여 보관, 다진 고기는 중심부 온도가 75℃ 1분 이상 가열을 안내합니다.",
+        examples:
+          "장출혈성 대장균, 장관출혈성대장균, 대장균 O157:H7, 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증, 환자나 보균자의 분변, 보균자가 화장실을 비위생적으로 사용할 때, 하천수와 어패류 등에서 분리 검출, 조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다, 생육과 조리된 음식을 구분하여 보관하여야 한다, 다진 고기는 중심부 온도가 75℃ 1분 이상 가열하여야 한다",
+        sourceIds: ["foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"],
       },
       {
         label: "식품안전나라 리스테리아 식중독 주의",
@@ -2594,6 +2607,21 @@ const supportiveFoods: FoodRuleTerm[] = [
     "작업대·용기·조리 기구는 사용 후 즉시 세척·소독",
     "식약처 살모넬라 작업대·용기·조리기구 즉시 세척·소독 후보",
     "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다",
+    "식품안전나라 장출혈성 대장균 조리기구 구분 사용 후보",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "생육과 조리된 음식을 구분하여 보관하여야 한다",
+    "식품안전나라 장출혈성 대장균 생육·조리음식 구분 보관 후보",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "다진 고기는 중심부 온도가 75℃ 1분 이상 가열하여야 한다",
+    "식품안전나라 장출혈성 대장균 다진 고기 중심부 75℃ 1분 이상 가열 후보",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
   ],
   [
     "음식물은 충분히 익혀 먹기(85℃ 이상에서 1분 이상 가열)",
@@ -4281,6 +4309,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "조리 후 작업공간 세척·소독 미실시",
     "식약처 살모넬라 조리 후 작업공간 세척·소독 누락 확인 필요",
     "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "장출혈성 대장균",
+    "식품안전나라 장출혈성 대장균 식중독 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "대장균 O157:H7",
+    "식품안전나라 장출혈성 대장균 O157:H7 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증",
+    "식품안전나라 장출혈성 대장균 중증 합병증 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "환자나 보균자의 분변",
+    "식품안전나라 장출혈성 대장균 분변 오염 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "보균자가 화장실을 비위생적으로 사용할 때",
+    "식품안전나라 장출혈성 대장균 비위생적 화장실 사용 오염 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "하천수와 어패류 등에서 분리 검출",
+    "식품안전나라 장출혈성 대장균 환경·어패류 오염 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
   ],
   [
     "노로바이러스 식중독",

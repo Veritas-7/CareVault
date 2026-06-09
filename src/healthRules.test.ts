@@ -12438,6 +12438,78 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea enterohemorrhagic E. coli cooking and cross-contamination guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 장출혈성 대장균 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다, 생육과 조리된 음식을 구분하여 보관하여야 한다, 다진 고기는 중심부 온도가 75℃ 1분 이상 가열하여야 한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "장출혈성 대장균은 대장균 O157:H7이 대표적이고, 심하면 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증이 나타날 수 있으며, 환자나 보균자의 분변, 보균자가 화장실을 비위생적으로 사용할 때, 하천수와 어패류 등에서 분리 검출되는 오염 경로를 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 장출혈성 대장균",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 장출혈성 대장균 식중독 주의",
+      sourceIds: ["foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("장관출혈성대장균");
+    expect(foodSafetyGuide?.detail).toContain("대장균 O157:H7");
+    expect(foodSafetyGuide?.detail).toContain("출혈성 대장염");
+    expect(foodSafetyGuide?.detail).toContain("생육과 조리된 음식을 구분");
+    expect(foodSafetyGuide?.detail).toContain("다진 고기는 중심부 온도가 75℃ 1분 이상");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다",
+      "생육과 조리된 음식을 구분하여 보관하여야 한다",
+      "다진 고기는 중심부 온도가 75℃ 1분 이상 가열하여야 한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 장출혈성 대장균 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "장출혈성 대장균",
+      "대장균 O157:H7",
+      "출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증",
+      "환자나 보균자의 분변",
+      "보균자가 화장실을 비위생적으로 사용할 때",
+      "하천수와 어패류 등에서 분리 검출",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",
