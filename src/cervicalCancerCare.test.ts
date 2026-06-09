@@ -183,7 +183,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(15);
+    expect(cervicalCancerCarePrompts).toHaveLength(16);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -199,6 +199,7 @@ describe("cervicalCancerCare", () => {
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
+      "치료현황 통계 해석",
       "요약·진료 흐름",
     ]);
     expect(cervicalCancerCarePrompts.every((item) => item.question.endsWith("?"))).toBe(true);
@@ -311,6 +312,23 @@ describe("cervicalCancerCare", () => {
     );
     expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[13])).toContain(
       "출처: 국가암정보센터 자궁경부암 임신과 출산 - https://www.cancer.go.kr/",
+    );
+    const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "치료현황 통계 해석",
+    )!;
+    expect(treatmentStatusPrompt.sourceId).toBe("nccTreatmentStatus");
+    expect(treatmentStatusPrompt.question).toContain("2019-2023년");
+    expect(treatmentStatusPrompt.question).toContain("5년 상대생존율 79.0%");
+    expect(treatmentStatusPrompt.question).toContain("국한 94.5%");
+    expect(treatmentStatusPrompt.question).toContain("국소 73.8%");
+    expect(treatmentStatusPrompt.question).toContain("원격 29.1%");
+    expect(treatmentStatusPrompt.question).toContain("모름 69.5%");
+    expect(treatmentStatusPrompt.question).toContain("5년 이상 생존 확률");
+    expect(treatmentStatusPrompt.question).toContain("개인 예후");
+    expect(treatmentStatusPrompt.question).toContain("치료 반응");
+    expect(treatmentStatusPrompt.question).toContain("재발·전이 여부");
+    expect(buildCervicalCancerCarePromptQuestion(treatmentStatusPrompt)).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료현황 - https://www.cancer.go.kr/",
     );
     const overviewPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "요약·진료 흐름",

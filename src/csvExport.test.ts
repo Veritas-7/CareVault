@@ -604,6 +604,17 @@ describe("csvExport", () => {
     expect(csv).toContain("병기·치료 설명");
     expect(csv).toContain("치료 선택 기준");
     expect(csv).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
+    expect(csv).toContain("치료현황 통계 해석");
+    expect(csv).toContain("2019-2023년");
+    expect(csv).toContain("5년 상대생존율 79.0%");
+    expect(csv).toContain("국한 94.5%");
+    expect(csv).toContain("국소 73.8%");
+    expect(csv).toContain("원격 29.1%");
+    expect(csv).toContain("모름 69.5%");
+    expect(csv).toContain("5년 이상 생존 확률");
+    expect(csv).toContain("개인 예후");
+    expect(csv).toContain("치료 반응");
+    expect(csv).toContain("재발·전이 여부");
     expect(csv).toContain("재발·추적검사");
     expect(csv).toContain("첫 2년");
     expect(csv).toContain("3개월마다");

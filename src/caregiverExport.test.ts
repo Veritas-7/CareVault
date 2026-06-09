@@ -1958,6 +1958,18 @@ describe("caregiverExport", () => {
     expect(html).toContain("병기·치료 설명");
     expect(html).toContain(">국가암정보센터 자궁경부암 정의 및 종류</a>");
     expect(html).toContain("치료 선택 기준");
+    expect(html).toContain("치료현황 통계 해석");
+    expect(html).toContain("2019-2023년");
+    expect(html).toContain("5년 상대생존율 79.0%");
+    expect(html).toContain("국한 94.5%");
+    expect(html).toContain("국소 73.8%");
+    expect(html).toContain("원격 29.1%");
+    expect(html).toContain("모름 69.5%");
+    expect(html).toContain("5년 이상 생존 확률");
+    expect(html).toContain("개인 예후");
+    expect(html).toContain("치료 반응");
+    expect(html).toContain("재발·전이 여부");
+    expect(html).toContain(">국가암정보센터 자궁경부암 치료현황</a>");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");
     expect(html).toContain("첫 2년");

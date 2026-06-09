@@ -556,6 +556,17 @@ describe("visit packet", () => {
     expect(markdown).toContain("병기·치료 설명");
     expect(markdown).toContain("치료 선택 기준");
     expect(markdown).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
+    expect(markdown).toContain("치료현황 통계 해석");
+    expect(markdown).toContain("2019-2023년");
+    expect(markdown).toContain("5년 상대생존율 79.0%");
+    expect(markdown).toContain("국한 94.5%");
+    expect(markdown).toContain("국소 73.8%");
+    expect(markdown).toContain("원격 29.1%");
+    expect(markdown).toContain("모름 69.5%");
+    expect(markdown).toContain("5년 이상 생존 확률");
+    expect(markdown).toContain("개인 예후");
+    expect(markdown).toContain("치료 반응");
+    expect(markdown).toContain("재발·전이 여부");
     expect(markdown).toContain("재발·추적검사");
     expect(markdown).toContain("첫 2년");
     expect(markdown).toContain("3개월마다");

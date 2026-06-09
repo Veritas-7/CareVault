@@ -204,6 +204,17 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("혼합 암종");
     expect(text).toContain("병리결과지 용어");
     expect(text).toContain("병기·치료 설명");
+    expect(text).toContain("치료현황 통계 해석");
+    expect(text).toContain("2019-2023년");
+    expect(text).toContain("5년 상대생존율 79.0%");
+    expect(text).toContain("국한 94.5%");
+    expect(text).toContain("국소 73.8%");
+    expect(text).toContain("원격 29.1%");
+    expect(text).toContain("모름 69.5%");
+    expect(text).toContain("5년 이상 생존 확률");
+    expect(text).toContain("개인 예후");
+    expect(text).toContain("치료 반응");
+    expect(text).toContain("재발·전이 여부");
     expect(text).toContain("재발·추적검사");
     expect(text).toContain("첫 2년");
     expect(text).toContain("3개월마다");
@@ -337,30 +348,30 @@ describe("cervicalCancerCareClipboard", () => {
       alertRecordFieldCount: 4,
       preventionCount: 15,
       priorityCount: 3,
-      promptCount: 15,
+      promptCount: 16,
       recordRecoveryPreventionCount: 42,
       recoveryCount: 10,
       screeningSummaryCount: 1,
       sourceCount: 32,
-      totalItemCount: 69,
+      totalItemCount: 70,
     });
     expect(formatCervicalCancerCareClipboardCompactSummary(profileSummary)).toBe(
-      "총 69개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 15개 · 기록/회복/예방 42개 · 출처 32개",
+      "총 70개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 16개 · 기록/회복/예방 42개 · 출처 32개",
     );
     expect(formatCervicalCancerCareClipboardDescription(profileSummary)).toBe(
-      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 69개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 15개 · 기록/회복/예방 42개 · 출처 32개",
+      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 70개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 16개 · 기록/회복/예방 42개 · 출처 32개",
     );
     expect(formatCervicalCancerCareClipboardStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사됨 · 총 69개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 15개 · 기록/회복/예방 42개 · 출처 32개",
+      "자궁경부암 케어 노트 복사됨 · 총 70개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 16개 · 기록/회복/예방 42개 · 출처 32개",
     );
     expect(formatCervicalCancerCareClipboardUnsupportedStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 69개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 15개 · 기록/회복/예방 42개 · 출처 32개",
+      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 70개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 16개 · 기록/회복/예방 42개 · 출처 32개",
     );
     expect(formatCervicalCancerCareClipboardFailedStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사 실패 · 총 69개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 15개 · 기록/회복/예방 42개 · 출처 32개",
+      "자궁경부암 케어 노트 복사 실패 · 총 70개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 16개 · 기록/회복/예방 42개 · 출처 32개",
     );
     expect(formatCervicalCancerCareClipboardCompactSummary(genericSummary)).toBe(
-      "총 68개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 15개 · 기록/회복/예방 42개 · 출처 32개",
+      "총 69개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 16개 · 기록/회복/예방 42개 · 출처 32개",
     );
   });
 });
