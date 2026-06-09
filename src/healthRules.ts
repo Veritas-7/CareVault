@@ -61,6 +61,7 @@ export type FoodGuidanceSourceId =
   | "kdcaFoodPoisoningNaturalToxins"
   | "foodSafetyKoreaStaphylococcusAureusFoodPoisoning"
   | "foodSafetyKoreaBacillusCereusFoodPoisoning"
+  | "foodSafetyKoreaClostridiumPerfringensFoodPoisoning"
   | "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"
   | "foodSafetyKoreaListeriaFoodPoisoning"
   | "foodSafetyKoreaCampylobacterFoodPoisoning"
@@ -282,6 +283,10 @@ export const foodGuidanceSources: Record<
   },
   foodSafetyKoreaBacillusCereusFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 바실러스 세레우스균",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+  },
+  foodSafetyKoreaClostridiumPerfringensFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 클로스트리디움 퍼프린젠스균",
     url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning: {
@@ -1085,6 +1090,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "바실러스 세레우스균, 설사형 독소(Diarrhetic toxin), 구토형 독소(Emetic toxin), 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균, 곡류, 채소류는 세척하여 사용하여야 한다, 조리된 음식은 장기간 실온방치를 금지하고, 5℃이하에서 냉장보관 한다, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
         sourceIds: ["foodSafetyKoreaBacillusCereusFoodPoisoning"],
+      },
+      {
+        label: "식품안전나라 클로스트리디움 퍼프린젠스균 식중독 주의",
+        detail:
+          "식품안전나라는 클로스트리디움 퍼프린젠스균을 아포를 형성하는 그람양성 편성혐기성 간균으로 설명하고, 아포의 발아 시 독소를 생성하며 사람의 식중독에는 주로 A형과 C형이 관여한다고 설명합니다. 원인식품으로 돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품과 미리 가열 조리된 후 실온에서 5시간이상 방치된 식품을 제시하므로 식품 안전 질문으로 분리합니다. 예방대책으로 대량 큰 용기 보관은 혐기조건이 될 수 있어 소량씩 용기에 넣어 보관, 부득이하게 남은 음식은 먹기 전에 충분히 가열, 따뜻하게 배식하는 음식은 조리 후 배식까지 60℃ 이상 유지, 차갑게 배식하는 음식은 조리 후 재빨리 식혀 5℃ 이하에서 보관을 안내합니다.",
+        examples:
+          "클로스트리디움 퍼프린젠스균, 아포의 발아 시 독소를 생성, A형과 C형, 돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품, 미리 가열 조리된 후 실온에서 5시간이상 방치된 식품, 식품을 대량으로 큰 용기에 보관하면 혐기조건이 될 수 있으므로 소량씩 용기에 넣어 보관한다, 부득이하게 남은 음식은 먹기 전에 충분히 가열한 후 섭취하여야 한다, 따뜻하게 배식하는 음식은 조리 후 배식까지 60℃ 이상을 유지해야 하며, 차갑게 배식하는 음식은 조리 후 재빨리 식혀 5℃ 이하에서 보관한다",
+        sourceIds: ["foodSafetyKoreaClostridiumPerfringensFoodPoisoning"],
       },
       {
         label: "식품안전나라 장출혈성 대장균 식중독 주의",
@@ -2663,6 +2676,21 @@ const supportiveFoods: FoodRuleTerm[] = [
     "저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
     "식품안전나라 바실러스 세레우스균 김밥 같은 식품 조리 후 즉시 섭취 후보",
     "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "식품을 대량으로 큰 용기에 보관하면 혐기조건이 될 수 있으므로 소량씩 용기에 넣어 보관한다",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 대량 용기 혐기조건 회피·소량 보관 후보",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
+    "부득이하게 남은 음식은 먹기 전에 충분히 가열한 후 섭취하여야 한다",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 남은 음식 충분 재가열 후보",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
+    "따뜻하게 배식하는 음식은 조리 후 배식까지 60℃ 이상을 유지해야 하며, 차갑게 배식하는 음식은 조리 후 재빨리 식혀 5℃ 이하에서 보관한다",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 배식 온도 60℃ 이상·냉각 5℃ 이하 후보",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
   ],
   [
     "조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다",
@@ -4430,6 +4458,31 @@ const careTeamFoods: FoodRuleTerm[] = [
     "토양 상재균",
     "식품안전나라 바실러스 세레우스균 토양 상재균 오염 확인 필요",
     "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "클로스트리디움 퍼프린젠스균",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 식중독 확인 필요",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
+    "아포의 발아 시 독소를 생성",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 아포 발아 독소 생성 확인 필요",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
+    "A형과 C형",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 A형·C형 식중독 관여 확인 필요",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
+    "돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 동물성 단백질 조리식품 확인 필요",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
+    "미리 가열 조리된 후 실온에서 5시간이상 방치된 식품",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 가열 후 5시간 이상 실온방치 확인 필요",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
   ],
   [
     "장출혈성 대장균",

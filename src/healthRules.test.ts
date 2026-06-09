@@ -12653,6 +12653,77 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea clostridium perfringens bulk-storage and reheating guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 클로스트리디움 퍼프린젠스균 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "식품을 대량으로 큰 용기에 보관하면 혐기조건이 될 수 있으므로 소량씩 용기에 넣어 보관한다, 부득이하게 남은 음식은 먹기 전에 충분히 가열한 후 섭취하여야 한다, 따뜻하게 배식하는 음식은 조리 후 배식까지 60℃ 이상을 유지해야 하며, 차갑게 배식하는 음식은 조리 후 재빨리 식혀 5℃ 이하에서 보관한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "클로스트리디움 퍼프린젠스균은 아포의 발아 시 독소를 생성하고 A형과 C형이 사람의 식중독에 관여하며, 돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품과 미리 가열 조리된 후 실온에서 5시간이상 방치된 식품을 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaClostridiumPerfringensFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 클로스트리디움 퍼프린젠스균",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 클로스트리디움 퍼프린젠스균 식중독 주의",
+      sourceIds: ["foodSafetyKoreaClostridiumPerfringensFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("아포의 발아 시 독소를 생성");
+    expect(foodSafetyGuide?.detail).toContain("실온에서 5시간이상 방치");
+    expect(foodSafetyGuide?.detail).toContain("소량씩 용기에 넣어 보관");
+    expect(foodSafetyGuide?.detail).toContain("배식까지 60℃ 이상");
+    expect(foodSafetyGuide?.detail).toContain("5℃ 이하에서 보관");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "식품을 대량으로 큰 용기에 보관하면 혐기조건이 될 수 있으므로 소량씩 용기에 넣어 보관한다",
+      "부득이하게 남은 음식은 먹기 전에 충분히 가열한 후 섭취하여야 한다",
+      "따뜻하게 배식하는 음식은 조리 후 배식까지 60℃ 이상을 유지해야 하며, 차갑게 배식하는 음식은 조리 후 재빨리 식혀 5℃ 이하에서 보관한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 클로스트리디움 퍼프린젠스균 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "클로스트리디움 퍼프린젠스균",
+      "아포의 발아 시 독소를 생성",
+      "A형과 C형",
+      "돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품",
+      "미리 가열 조리된 후 실온에서 5시간이상 방치된 식품",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",
