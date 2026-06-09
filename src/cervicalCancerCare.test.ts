@@ -261,8 +261,11 @@ describe("cervicalCancerCare", () => {
     const treatmentStatusGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "치료현황 통계 상담 메모",
     );
+    const treatmentMethodBasisGuide = cervicalCancerCareChecks.find(
+      (item) => item.label === "치료방법 선택 근거 메모",
+    );
 
-    expect(cervicalCancerCareChecks).toHaveLength(10);
+    expect(cervicalCancerCareChecks).toHaveLength(11);
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("출혈·분비물 기록");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("추적검사 일정·결과");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
@@ -325,6 +328,27 @@ describe("cervicalCancerCare", () => {
     expect(treatmentStatusGuide?.detail).toContain("진료팀에 확인");
     expect(treatmentStatusGuide?.detail).not.toContain("완치됩니다");
     expect(treatmentStatusGuide?.detail).not.toContain("치료하세요");
+    expect(treatmentMethodBasisGuide).toMatchObject({
+      label: "치료방법 선택 근거 메모",
+      sourceId: "nccTreatmentMethods",
+    });
+    expect(treatmentMethodBasisGuide?.detail).toContain("수술");
+    expect(treatmentMethodBasisGuide?.detail).toContain("방사선치료");
+    expect(treatmentMethodBasisGuide?.detail).toContain("항암화학요법");
+    expect(treatmentMethodBasisGuide?.detail).toContain("표적치료");
+    expect(treatmentMethodBasisGuide?.detail).toContain("면역치료");
+    expect(treatmentMethodBasisGuide?.detail).toContain("병기");
+    expect(treatmentMethodBasisGuide?.detail).toContain("암 크기");
+    expect(treatmentMethodBasisGuide?.detail).toContain("연령");
+    expect(treatmentMethodBasisGuide?.detail).toContain("전신상태");
+    expect(treatmentMethodBasisGuide?.detail).toContain("향후 출산 희망 여부");
+    expect(treatmentMethodBasisGuide?.detail).toContain("전암성 병변");
+    expect(treatmentMethodBasisGuide?.detail).toContain("초기 침윤성 자궁경부암");
+    expect(treatmentMethodBasisGuide?.detail).toContain("많이 진행된 병변");
+    expect(treatmentMethodBasisGuide?.detail).toContain("재발 부위");
+    expect(treatmentMethodBasisGuide?.detail).toContain("림프절");
+    expect(treatmentMethodBasisGuide?.detail).toContain("진료팀에 확인");
+    expect(treatmentMethodBasisGuide?.detail).not.toContain("치료하세요");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "장폐색·혈변·혈뇨 연락 메모")
         ?.detail,
