@@ -190,6 +190,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "질병관리청 국가건강정보포털 자궁경부암 백신",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=3987",
   },
+  kdcaHpvNationalImmunization: {
+    label: "질병관리청 예방접종도우미 HPV 국가예방접종 사업",
+    url: "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=132&menuLv=1",
+  },
   nccHpvVaccine: {
     label: "국가암정보센터 자궁경부암 HPV 예방백신",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
@@ -532,6 +536,12 @@ export const cervicalCancerCarePreventionGuides: CervicalCancerCarePreventionGui
     detail:
       "국가암정보센터는 HPV 접종시기를 놓친 경우 '남은 주사를 가능한 빨리 맞으며 처음부터 다시 시작하지는 않습니다'라고 설명합니다. 1차 후 일정 지연 시 2차와 3차 접종 간격은 적어도 12주인지 확인하고, 추가접종은 권고된 바가 없으므로 내 백신 종류·접종일·치료 일정 기준으로 접종기관과 진료팀에 질문으로 남깁니다.",
     sourceId: "nccHpvVaccine",
+  },
+  {
+    label: "HPV 국가예방접종 대상 메모",
+    detail:
+      "질병관리청 예방접종도우미는 HPV 국가예방접종 사업대상으로 2026년 5월 6일부터 시행되는 12세 남성 청소년(2014.1.1.~2014.12.31. 출생자), 12~17세 여성 청소년, 18~26세 저소득층 여성을 안내합니다. HPV 백신은 자궁경부암의 70%를 일으키는 고위험 유전형(16형,18형) 감염 예방 목적이고, 성경험 전에 접종을 완료할 경우 자궁경부 상피내 종양 등 전암병변에 70~90%의 예방효과가 보고된다고 설명합니다. 가족이나 보호자와 대상 여부와 접종일정, 지원 백신, 위탁의료기관 확인, 접종 후 20~30분 관찰 안내를 접종기관과 진료팀 질문으로 남깁니다.",
+    sourceId: "kdcaHpvNationalImmunization",
   },
   {
     label: "흡연·성생활 위험요인 메모",

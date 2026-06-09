@@ -172,6 +172,16 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("접종시기를 놓친 경우");
     expect(text).toContain("처음부터 다시 시작하지는 않습니다");
     expect(text).toContain("추가접종");
+    expect(text).toContain("HPV 국가예방접종 대상 메모");
+    expect(text).toContain("2026년 5월 6일");
+    expect(text).toContain("12세 남성 청소년");
+    expect(text).toContain("2014.1.1.~2014.12.31.");
+    expect(text).toContain("12~17세 여성 청소년");
+    expect(text).toContain("18~26세 저소득층 여성");
+    expect(text).toContain("고위험 유전형(16형,18형)");
+    expect(text).toContain("성경험 전에 접종을 완료");
+    expect(text).toContain("70~90%의 예방효과");
+    expect(text).toContain("대상 여부와 접종일정");
     expect(text).toContain("흡연·성생활 위험요인 메모");
     expect(text).toContain("대부분 성접촉");
     expect(text).toContain("성상대자수");
@@ -226,7 +236,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("신축성 있는 조직");
     expect(text).toContain("요관");
     expect(text).toContain("림프관 및 림프절");
-    expect(text).toContain("출처 목록 (30개)");
+    expect(text).toContain("출처 목록 (31개)");
     expect(text).toContain("국가암정보센터 자궁경부암 일반적 증상");
     expect(text).toContain("국가암정보센터 자궁경부암 요약설명");
     expect(text).toContain(
@@ -246,6 +256,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("국가암정보센터 자궁경부암 치료현황");
     expect(text).toContain("국립암센터 자궁경부암 조기 진단과 예방법");
     expect(text).toContain("질병관리청 국가건강정보포털 자궁경부암 백신");
+    expect(text).toContain("질병관리청 예방접종도우미 HPV 국가예방접종 사업");
     expect(text).toContain("국가암정보센터 자궁경부암 예방법");
     expect(text).toContain("국가암정보센터 국민 암예방 수칙 실천지침 자궁경부암");
   });
@@ -269,7 +280,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).not.toContain("검진 기준 빠른 확인");
     expect(text).toContain("우선 확인 체크리스트");
     expect(text).toContain("검진·예방 메모");
-    expect(text).toContain("출처 목록 (30개)");
+    expect(text).toContain("출처 목록 (31개)");
   });
 
   it("summarizes the copied care note scope for labels and post-copy feedback", () => {
@@ -282,32 +293,32 @@ describe("cervicalCancerCareClipboard", () => {
     expect(profileSummary).toMatchObject({
       alertCount: 4,
       alertRecordFieldCount: 4,
-      preventionCount: 13,
+      preventionCount: 14,
       priorityCount: 3,
       promptCount: 11,
-      recordRecoveryPreventionCount: 40,
+      recordRecoveryPreventionCount: 41,
       recoveryCount: 10,
       screeningSummaryCount: 1,
-      sourceCount: 30,
-      totalItemCount: 63,
+      sourceCount: 31,
+      totalItemCount: 64,
     });
     expect(formatCervicalCancerCareClipboardCompactSummary(profileSummary)).toBe(
-      "총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
+      "총 64개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 41개 · 출처 31개",
     );
     expect(formatCervicalCancerCareClipboardDescription(profileSummary)).toBe(
-      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
+      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 64개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 41개 · 출처 31개",
     );
     expect(formatCervicalCancerCareClipboardStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사됨 · 총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
+      "자궁경부암 케어 노트 복사됨 · 총 64개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 41개 · 출처 31개",
     );
     expect(formatCervicalCancerCareClipboardUnsupportedStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
+      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 64개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 41개 · 출처 31개",
     );
     expect(formatCervicalCancerCareClipboardFailedStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사 실패 · 총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
+      "자궁경부암 케어 노트 복사 실패 · 총 64개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 41개 · 출처 31개",
     );
     expect(formatCervicalCancerCareClipboardCompactSummary(genericSummary)).toBe(
-      "총 62개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
+      "총 63개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 41개 · 출처 31개",
     );
   });
 });

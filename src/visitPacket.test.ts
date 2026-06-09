@@ -660,6 +660,14 @@ describe("visit packet", () => {
     expect(markdown).toContain("접종시기를 놓친 경우");
     expect(markdown).toContain("처음부터 다시 시작하지는 않습니다");
     expect(markdown).toContain("국가암정보센터 자궁경부암 HPV 예방백신");
+    expect(markdown).toContain("HPV 국가예방접종 대상 메모");
+    expect(markdown).toContain("2026년 5월 6일");
+    expect(markdown).toContain("12세 남성 청소년");
+    expect(markdown).toContain("12~17세 여성 청소년");
+    expect(markdown).toContain("18~26세 저소득층 여성");
+    expect(markdown).toContain("고위험 유전형(16형,18형)");
+    expect(markdown).toContain("70~90%의 예방효과");
+    expect(markdown).toContain("질병관리청 예방접종도우미 HPV 국가예방접종 사업");
     expect(markdown).toContain("흡연·성생활 위험요인 메모");
     expect(markdown).toContain("대부분 성접촉");
     expect(markdown).toContain("성상대자수");

@@ -68,6 +68,7 @@ describe("cervicalCancerCare", () => {
       "nccLymphedemaSymptoms",
       "nccLymphedemaCare",
       "kdcaHpv",
+      "kdcaHpvNationalImmunization",
       "nccHpvVaccine",
       "nccCervicalPrevention",
       "nccCervicalRiskFactors",
@@ -78,6 +79,9 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccAnatomySite.url).toContain("menu_seq=4880");
     expect(cervicalCancerCareSources.nccLymphedemaCare.url).toContain("S1T429C431");
     expect(cervicalCancerCareSources.kdcaHpv.url).toContain("health.kdca.go.kr");
+    expect(cervicalCancerCareSources.kdcaHpvNationalImmunization.url).toContain(
+      "nip.kdca.go.kr",
+    );
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
@@ -576,6 +580,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("kdcaHpv")).toContain(
       "질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/",
     );
+    expect(formatCervicalCancerCareSourceEvidence("kdcaHpvNationalImmunization")).toContain(
+      "질병관리청 예방접종도우미 HPV 국가예방접종 사업 - https://nip.kdca.go.kr/",
+    );
   });
 
   it("builds context-specific accessible labels for official source links", () => {
@@ -796,6 +803,9 @@ describe("cervicalCancerCare", () => {
     const hpvDelayedDoseGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 지연·추가접종 메모",
     );
+    const hpvNationalProgramGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 국가예방접종 대상 메모",
+    );
     const preventionRiskGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "흡연·성생활 위험요인 메모",
     );
@@ -812,7 +822,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "실천지침 일상 예방 체크 메모",
     );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(13);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(14);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -850,6 +860,20 @@ describe("cervicalCancerCare", () => {
     expect(hpvDelayedDoseGuide?.detail).toContain("추가접종");
     expect(hpvDelayedDoseGuide?.detail).toContain("권고된 바가 없으므로");
     expect(hpvDelayedDoseGuide?.detail).not.toContain("맞으세요");
+    expect(hpvNationalProgramGuide).toMatchObject({
+      label: "HPV 국가예방접종 대상 메모",
+      sourceId: "kdcaHpvNationalImmunization",
+    });
+    expect(hpvNationalProgramGuide?.detail).toContain("2026년 5월 6일");
+    expect(hpvNationalProgramGuide?.detail).toContain("12세 남성 청소년");
+    expect(hpvNationalProgramGuide?.detail).toContain("2014.1.1.~2014.12.31.");
+    expect(hpvNationalProgramGuide?.detail).toContain("12~17세 여성 청소년");
+    expect(hpvNationalProgramGuide?.detail).toContain("18~26세 저소득층 여성");
+    expect(hpvNationalProgramGuide?.detail).toContain("고위험 유전형(16형,18형)");
+    expect(hpvNationalProgramGuide?.detail).toContain("성경험 전에 접종을 완료");
+    expect(hpvNationalProgramGuide?.detail).toContain("70~90%의 예방효과");
+    expect(hpvNationalProgramGuide?.detail).toContain("대상 여부와 접종일정");
+    expect(hpvNationalProgramGuide?.detail).not.toContain("접종하세요");
     expect(preventionRiskGuide).toMatchObject({
       label: "흡연·성생활 위험요인 메모",
       sourceId: "nccCervicalPrevention",
