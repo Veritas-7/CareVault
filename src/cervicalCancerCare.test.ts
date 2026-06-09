@@ -63,6 +63,7 @@ describe("cervicalCancerCare", () => {
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
       "nccCancerFatigueCoping",
+      "nccDyspneaCause",
       "nccDiagnosisMethods",
       "nccStage",
       "nccTreatmentMethods",
@@ -115,6 +116,7 @@ describe("cervicalCancerCare", () => {
     );
     expect(cervicalCancerCareSources.nccPainAssessment.url).toContain("S1T378C380");
     expect(cervicalCancerCareSources.nccCancerFatigueCoping.url).toContain("S1T420C421");
+    expect(cervicalCancerCareSources.nccDyspneaCause.url).toContain("S1T411C414");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -203,7 +205,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(31);
+    expect(cervicalCancerCarePrompts).toHaveLength(32);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -229,6 +231,7 @@ describe("cervicalCancerCare", () => {
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
       "암관련 피로 대처 준비",
+      "호흡곤란 변화 기록 준비",
       "치료현황 통계 해석",
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
@@ -539,6 +542,24 @@ describe("cervicalCancerCare", () => {
     expect(fatigueCopingPrompt.question).toContain("우울");
     expect(buildCervicalCancerCarePromptQuestion(fatigueCopingPrompt)).toContain(
       "출처: 국가암정보센터 암관련 피로대처 - https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
+    );
+    const dyspneaCausePrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "호흡곤란 변화 기록 준비",
+    )!;
+    expect(dyspneaCausePrompt.sourceId).toBe("nccDyspneaCause");
+    expect(dyspneaCausePrompt.question).toContain("숨이 가쁜");
+    expect(dyspneaCausePrompt.question).toContain("충분한 공기");
+    expect(dyspneaCausePrompt.question).toContain("호흡은 노력을 요구");
+    expect(dyspneaCausePrompt.question).toContain("가슴은 단단해지는");
+    expect(dyspneaCausePrompt.question).toContain("쉬고 있거나 움직일 때");
+    expect(dyspneaCausePrompt.question).toContain("가슴에 통증");
+    expect(dyspneaCausePrompt.question).toContain("맥박수");
+    expect(dyspneaCausePrompt.question).toContain("피부가 차고 축축");
+    expect(dyspneaCausePrompt.question).toContain("콧구멍");
+    expect(dyspneaCausePrompt.question).toContain("청색증");
+    expect(dyspneaCausePrompt.question).toContain("갑자기 악화");
+    expect(buildCervicalCancerCarePromptQuestion(dyspneaCausePrompt)).toContain(
+      "출처: 국가암정보센터 호흡곤란 원인 - https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
     );
     const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료현황 통계 해석",
@@ -1168,8 +1189,11 @@ describe("cervicalCancerCare", () => {
     const fatigueCopingGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암관련 피로·수면·도움요청 메모",
     );
+    const dyspneaCauseGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "호흡곤란·흉통 변화 메모",
+    );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(15);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(16);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1421,6 +1445,39 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(fatigueCopingGuide!)).join(" ")).not.toMatch(
       /진단하세요|치료하세요|운동하세요|상담받으세요/,
+    );
+    expect(dyspneaCauseGuide).toMatchObject({
+      label: "호흡곤란·흉통 변화 메모",
+      sourceId: "nccDyspneaCause",
+    });
+    expect(dyspneaCauseGuide?.detail).toContain("숨이 가쁜");
+    expect(dyspneaCauseGuide?.detail).toContain("충분한 공기");
+    expect(dyspneaCauseGuide?.detail).toContain("호흡은 노력을 요구");
+    expect(dyspneaCauseGuide?.detail).toContain("가슴은 단단해지는");
+    expect(dyspneaCauseGuide?.detail).toContain("쉬고 있거나 움직일 때");
+    expect(dyspneaCauseGuide?.detail).toContain("가슴에 통증");
+    expect(dyspneaCauseGuide?.detail).toContain("맥박수");
+    expect(dyspneaCauseGuide?.detail).toContain("피부가 차고 축축");
+    expect(dyspneaCauseGuide?.detail).toContain("콧구멍");
+    expect(dyspneaCauseGuide?.detail).toContain("입술");
+    expect(dyspneaCauseGuide?.detail).toContain("손톱");
+    expect(dyspneaCauseGuide?.detail).toContain("청색증");
+    expect(dyspneaCauseGuide?.detail).toContain("전에 없었던 호흡곤란");
+    expect(dyspneaCauseGuide?.detail).toContain("갑자기 악화");
+    expect(formatCervicalCancerCareItemEvidence(dyspneaCauseGuide!)).toContain(
+      "국가암정보센터 호흡곤란 원인 - https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(dyspneaCauseGuide!).body).toContain(
+      "호흡곤란·흉통 변화 메모",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(dyspneaCauseGuide!).body).toContain(
+      "쉬고 있거나 움직일 때",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(dyspneaCauseGuide!)).toContain(
+      "국가암정보센터 호흡곤란 원인",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(dyspneaCauseGuide!)).join(" ")).not.toMatch(
+      /진단하세요|치료하세요|산소를 줍니다|약을 줍니다|심호흡을 하게|처방하세요/,
     );
     expect(text).toContain("골반 방사선치료 난소기능·폐경 증상 상담");
     expect(text).toContain("홍조");

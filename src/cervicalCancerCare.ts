@@ -170,6 +170,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 암관련 피로대처",
     url: "https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
   },
+  nccDyspneaCause: {
+    label: "국가암정보센터 호흡곤란 원인",
+    url: "https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
+  },
   nccDiagnosisMethods: {
     label: "국가암정보센터 자궁경부암 진단방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
@@ -438,6 +442,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccCancerFatigueCoping",
   },
   {
+    topic: "호흡곤란 변화 기록 준비",
+    question:
+      "국가암정보센터 호흡곤란 원인 안내처럼 암환자와 관련된 호흡곤란은 숨이 가쁜 느낌, 충분한 공기를 얻기 어려운 느낌, 호흡은 노력을 요구하는 느낌, 가슴은 단단해지는 느낌으로 표현될 수 있고, 쉬고 있거나 움직일 때 숨이 가쁘거나 가슴에 통증이 있거나 맥박수가 빨라지거나 피부가 차고 축축해지는 증상, 호흡이 빨라짐, 콧구멍 벌어짐, 입술·손톱의 청색증, 전에 없던 호흡곤란이나 갑자기 악화되는 경우를 의사에게 알려야 한다고 설명되는데, 제 기침·객혈·흉통·숨참 기록과 재발/폐 전이 걱정을 어떤 항목으로 정리해 진료팀에 확인하면 좋을까요?",
+    sourceId: "nccDyspneaCause",
+  },
+  {
     topic: "치료현황 통계 해석",
     question:
       "국가암정보센터 치료현황 통계처럼 2019-2023년 자궁경부암 5년 상대생존율 79.0%, 요약병기별 국한 94.5%·국소 73.8%·원격 29.1%·모름 69.5%와 5년 이상 생존 확률 설명이 제 병기, 검사 근거, 치료 반응, 재발·전이 여부와 어떤 차이가 있는지 개인 예후로 단정하지 않고 진료팀에 어떻게 해석 질문을 하면 좋을까요?",
@@ -667,6 +677,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 피로의 정도를 반드시 정확하게 평가하고 피로 조절을 위해서는 환자 본인과 가족의 노력, 의료진의 적절한 조언이 필요하다고 설명합니다. 해야 할 일은 우선순위를 정하고 중요하지 않은 활동은 줄이며, 피로를 느낄 때의 상황을 기록하면 하루 일과를 계획하는 데 도움이 된다고 안내합니다. 주위 사람들의 도움을 받아 에너지 낭비를 줄이고, 자주 쓰는 물건은 손이 닿기 쉬운 곳에 두며, 피로를 참지 말고 주치의와 간호사에게 알리도록 설명하므로 피로 시작 시점, 강도, 수면, 식사, 활동, 도움 요청할 일, 에너지 보존 방법을 기록합니다. 심한 현기증, 자꾸 몽롱해지는 경우, 숨이 차고 가슴이 두근거리는 경우, 귀가 윙윙거리거나 두통이 심한 경우, 삶의 의욕이 없어지거나 우울하다고 느끼는 경우에는 진료팀 연락 기준을 확인합니다.",
     sourceId: "nccCancerFatigueCoping",
+  },
+  {
+    label: "호흡곤란·흉통 변화 메모",
+    detail:
+      "국가암정보센터는 암환자와 관련된 호흡곤란을 숨이 가쁜 느낌, 충분한 공기를 얻기 어려운 느낌, 호흡은 노력을 요구하는 느낌, 가슴은 단단해지는 느낌으로 설명합니다. 쉬고 있거나 움직일 때 숨이 가쁘거나 호흡하기 힘든지, 가슴에 통증이 있는지, 맥박수가 빨라지는지, 피부가 차고 축축하게 느껴지는지, 호흡이 빨라지거나 그르렁소리가 나는지, 콧구멍이 벌어지는지, 입으로 호흡하거나 입술을 오므리고 숨 쉬는지, 입술·손톱에 청색증이 보이는지를 날짜와 상황별로 기록합니다. 전에 없었던 호흡곤란이 나타나거나 갑자기 악화되는 경우에는 진료팀에 알릴 기준을 확인합니다.",
+    sourceId: "nccDyspneaCause",
   },
   {
     label: "식생활·보조식품 확인",
