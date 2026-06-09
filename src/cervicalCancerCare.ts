@@ -166,6 +166,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 항암화학요법의 이해",
     url: "https://www.cancer.go.kr/lay1/S1T289C290/contents.do",
   },
+  nccChemotherapySideEffects: {
+    label: "국가암정보센터 항암화학요법의 부작용",
+    url: "https://www.cancer.go.kr/lay1/S1T289C291/contents.do",
+  },
   nccDifferentialDiagnosis: {
     label: "국가암정보센터 자궁경부암 감별진단",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4891",
@@ -316,6 +320,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     question:
       "국가암정보센터 항암화학요법의 이해 설명처럼 항암화학요법은 전신에 퍼져있는 암세포에 작용하는 전신적 치료이고, 목적은 암의 치료(완치), 암의 조절, 증상 완화로 달라질 수 있으며 수술이나 방사선치료와 함께 쓰일 수 있다고 설명되는데, 제 치료에서 보조화학요법·선행화학요법·동시화학요법 중 어느 목적과 순서인지, 세포독성 항암제·표적항암제·면역항암제 중 어떤 약제군인지, 치료 간격과 진찰 및 혈액 검사로 회복을 확인하는 기준을 어떤 순서로 진료팀에 질문하면 좋을까요?",
     sourceId: "nccChemotherapyUnderstanding",
+  },
+  {
+    topic: "항암 부작용 개인차·효과 오해 확인",
+    question:
+      "국가암정보센터 항암화학요법의 부작용 설명처럼 부작용 유무와 치료 효과는 전혀 별개의 문제이고, 같은 항암제와 같은 용량이어도 환자마다 부작용 정도가 다를 수 있으며, 대부분 치료가 끝나면 점차 사라지지만 일부는 몇 개월 또는 몇 년이 걸리거나 폐·신장·심장·생식기관 손상처럼 영구 지속될 수 있다고 설명되는데, 제 약제와 회차에서 오심·구토, 구강 궤양, 설사·변비, 골수기능 저하, 탈모, 피부·손톱 변화, 말초신경병증 증상을 어떻게 기록하고, 부작용이 치료 효과보다 크게 느껴질 때 투여 용량 조절, 약물 종류 변경, 중단 여부를 임의 판단하지 않고 어떤 기준으로 진료팀에 확인하면 좋을까요?",
+    sourceId: "nccChemotherapySideEffects",
   },
   {
     topic: "재발·추적검사",
