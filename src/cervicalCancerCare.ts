@@ -166,6 +166,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 암성 통증평가 항목",
     url: "https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
   },
+  nccCancerFatigueCoping: {
+    label: "국가암정보센터 암관련 피로대처",
+    url: "https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
+  },
   nccDiagnosisMethods: {
     label: "국가암정보센터 자궁경부암 진단방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
@@ -428,6 +432,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccPainAssessment",
   },
   {
+    topic: "암관련 피로 대처 준비",
+    question:
+      "국가암정보센터 암관련 피로대처 안내처럼 피로의 정도를 정확하게 평가하고, 피로를 느낄 때의 상황을 기록해 하루 일과를 계획하며, 해야 할 일의 우선순위를 정하고 중요하지 않은 활동을 줄이고, 주위 사람들의 도움을 받아 에너지를 보존할 수 있다고 설명되는데, 제 치료 일정, 수면, 식사, 활동, 현기증, 자꾸 몽롱함, 숨이 차고 가슴이 두근거림, 귀가 윙윙거리거나 두통, 삶의 의욕이 없어지는 우울감을 주치의와 간호사에게 어떤 순서로 확인하면 좋을까요?",
+    sourceId: "nccCancerFatigueCoping",
+  },
+  {
     topic: "치료현황 통계 해석",
     question:
       "국가암정보센터 치료현황 통계처럼 2019-2023년 자궁경부암 5년 상대생존율 79.0%, 요약병기별 국한 94.5%·국소 73.8%·원격 29.1%·모름 69.5%와 5년 이상 생존 확률 설명이 제 병기, 검사 근거, 치료 반응, 재발·전이 여부와 어떤 차이가 있는지 개인 예후로 단정하지 않고 진료팀에 어떻게 해석 질문을 하면 좋을까요?",
@@ -651,6 +661,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 암 환자에게 통증은 제5의 활력 징후라고 할 수 있어 정기적인 평가가 필요하고, 극심한 통증에는 응급 상황에 준하는 신속하고 적절한 통증 관리가 필요하다고 설명합니다. 통증 병력은 악화 또는 완화 요인, 통증의 성격, 위치와 방사통, 숫자통증등급 0~10 강도, 시작 시간·경과·지속 시간, 급성·만성·돌발성 통증 구분을 의료진에게 자세히 말하도록 안내하므로, 통증 부위, 가장 심한 부위, 강도 숫자, 느낌, 악화/완화 상황, 배뇨·기침·움직임·배변 관련성, 진통제 사용 여부와 효과, 진료팀 연락 기준을 기록합니다.",
     sourceId: "nccPainAssessment",
+  },
+  {
+    label: "암관련 피로·수면·도움요청 메모",
+    detail:
+      "국가암정보센터는 피로의 정도를 반드시 정확하게 평가하고 피로 조절을 위해서는 환자 본인과 가족의 노력, 의료진의 적절한 조언이 필요하다고 설명합니다. 해야 할 일은 우선순위를 정하고 중요하지 않은 활동은 줄이며, 피로를 느낄 때의 상황을 기록하면 하루 일과를 계획하는 데 도움이 된다고 안내합니다. 주위 사람들의 도움을 받아 에너지 낭비를 줄이고, 자주 쓰는 물건은 손이 닿기 쉬운 곳에 두며, 피로를 참지 말고 주치의와 간호사에게 알리도록 설명하므로 피로 시작 시점, 강도, 수면, 식사, 활동, 도움 요청할 일, 에너지 보존 방법을 기록합니다. 심한 현기증, 자꾸 몽롱해지는 경우, 숨이 차고 가슴이 두근거리는 경우, 귀가 윙윙거리거나 두통이 심한 경우, 삶의 의욕이 없어지거나 우울하다고 느끼는 경우에는 진료팀 연락 기준을 확인합니다.",
+    sourceId: "nccCancerFatigueCoping",
   },
   {
     label: "식생활·보조식품 확인",

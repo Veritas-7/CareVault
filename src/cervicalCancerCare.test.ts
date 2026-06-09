@@ -62,6 +62,7 @@ describe("cervicalCancerCare", () => {
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
+      "nccCancerFatigueCoping",
       "nccDiagnosisMethods",
       "nccStage",
       "nccTreatmentMethods",
@@ -113,6 +114,7 @@ describe("cervicalCancerCare", () => {
       "S1T365C368",
     );
     expect(cervicalCancerCareSources.nccPainAssessment.url).toContain("S1T378C380");
+    expect(cervicalCancerCareSources.nccCancerFatigueCoping.url).toContain("S1T420C421");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -201,7 +203,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(30);
+    expect(cervicalCancerCarePrompts).toHaveLength(31);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -226,6 +228,7 @@ describe("cervicalCancerCare", () => {
       "정서 안정·전문상담 준비",
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
+      "암관련 피로 대처 준비",
       "치료현황 통계 해석",
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
@@ -519,6 +522,23 @@ describe("cervicalCancerCare", () => {
     expect(painAssessmentPrompt.question).toContain("진료팀");
     expect(buildCervicalCancerCarePromptQuestion(painAssessmentPrompt)).toContain(
       "출처: 국가암정보센터 암성 통증평가 항목 - https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
+    );
+    const fatigueCopingPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "암관련 피로 대처 준비",
+    )!;
+    expect(fatigueCopingPrompt.sourceId).toBe("nccCancerFatigueCoping");
+    expect(fatigueCopingPrompt.question).toContain("피로의 정도");
+    expect(fatigueCopingPrompt.question).toContain("정확하게 평가");
+    expect(fatigueCopingPrompt.question).toContain("피로를 느낄 때의 상황");
+    expect(fatigueCopingPrompt.question).toContain("우선순위");
+    expect(fatigueCopingPrompt.question).toContain("중요하지 않은 활동");
+    expect(fatigueCopingPrompt.question).toContain("주위 사람들의 도움");
+    expect(fatigueCopingPrompt.question).toContain("주치의와 간호사");
+    expect(fatigueCopingPrompt.question).toContain("현기증");
+    expect(fatigueCopingPrompt.question).toContain("숨이 차고");
+    expect(fatigueCopingPrompt.question).toContain("우울");
+    expect(buildCervicalCancerCarePromptQuestion(fatigueCopingPrompt)).toContain(
+      "출처: 국가암정보센터 암관련 피로대처 - https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
     );
     const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료현황 통계 해석",
@@ -1145,8 +1165,11 @@ describe("cervicalCancerCare", () => {
     const painAssessmentGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암성 통증 평가 메모",
     );
+    const fatigueCopingGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암관련 피로·수면·도움요청 메모",
+    );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(14);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(15);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1366,6 +1389,38 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(painAssessmentGuide!)).join(" ")).not.toMatch(
       /진단하세요|치료하세요|복용하세요|처방하세요|투약하세요/,
+    );
+    expect(fatigueCopingGuide).toMatchObject({
+      label: "암관련 피로·수면·도움요청 메모",
+      sourceId: "nccCancerFatigueCoping",
+    });
+    expect(fatigueCopingGuide?.detail).toContain("피로의 정도를 반드시 정확하게 평가");
+    expect(fatigueCopingGuide?.detail).toContain("환자 본인과 가족의 노력");
+    expect(fatigueCopingGuide?.detail).toContain("우선순위");
+    expect(fatigueCopingGuide?.detail).toContain("중요하지 않은 활동");
+    expect(fatigueCopingGuide?.detail).toContain("피로를 느낄 때의 상황");
+    expect(fatigueCopingGuide?.detail).toContain("주위 사람들의 도움");
+    expect(fatigueCopingGuide?.detail).toContain("손이 닿기 쉬운 곳");
+    expect(fatigueCopingGuide?.detail).toContain("주치의와 간호사");
+    expect(fatigueCopingGuide?.detail).toContain("현기증");
+    expect(fatigueCopingGuide?.detail).toContain("자꾸 몽롱");
+    expect(fatigueCopingGuide?.detail).toContain("숨이 차고");
+    expect(fatigueCopingGuide?.detail).toContain("귀가 윙윙거리거나 두통");
+    expect(fatigueCopingGuide?.detail).toContain("삶의 의욕");
+    expect(formatCervicalCancerCareItemEvidence(fatigueCopingGuide!)).toContain(
+      "국가암정보센터 암관련 피로대처 - https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(fatigueCopingGuide!).body).toContain(
+      "암관련 피로·수면·도움요청 메모",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(fatigueCopingGuide!).body).toContain(
+      "피로를 느낄 때의 상황",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(fatigueCopingGuide!)).toContain(
+      "국가암정보센터 암관련 피로대처",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(fatigueCopingGuide!)).join(" ")).not.toMatch(
+      /진단하세요|치료하세요|운동하세요|상담받으세요/,
     );
     expect(text).toContain("골반 방사선치료 난소기능·폐경 증상 상담");
     expect(text).toContain("홍조");
