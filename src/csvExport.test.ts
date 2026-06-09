@@ -653,6 +653,15 @@ describe("csvExport", () => {
     expect(csv).toContain("국소치료");
     expect(csv).toContain("성생활 변화");
     expect(csv).toContain("호르몬 금기");
+    expect(csv).toContain("전암성 병변 치료 확인");
+    expect(csv).toContain("자궁경부이형성증");
+    expect(csv).toContain("자궁경부상피내암");
+    expect(csv).toContain("국소파괴요법");
+    expect(csv).toContain("동결요법");
+    expect(csv).toContain("고주파요법");
+    expect(csv).toContain("레이저요법");
+    expect(csv).toContain("단순자궁절제술");
+    expect(csv).toContain("조직경계");
     expect(csv).toContain("재발·추적검사");
     expect(csv).toContain("첫 2년");
     expect(csv).toContain("3개월마다");

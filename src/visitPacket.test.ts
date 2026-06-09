@@ -605,6 +605,15 @@ describe("visit packet", () => {
     expect(markdown).toContain("국소치료");
     expect(markdown).toContain("성생활 변화");
     expect(markdown).toContain("호르몬 금기");
+    expect(markdown).toContain("전암성 병변 치료 확인");
+    expect(markdown).toContain("자궁경부이형성증");
+    expect(markdown).toContain("자궁경부상피내암");
+    expect(markdown).toContain("국소파괴요법");
+    expect(markdown).toContain("동결요법");
+    expect(markdown).toContain("고주파요법");
+    expect(markdown).toContain("레이저요법");
+    expect(markdown).toContain("단순자궁절제술");
+    expect(markdown).toContain("조직경계");
     expect(markdown).toContain("재발·추적검사");
     expect(markdown).toContain("첫 2년");
     expect(markdown).toContain("3개월마다");

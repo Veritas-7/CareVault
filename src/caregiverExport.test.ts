@@ -2009,6 +2009,15 @@ describe("caregiverExport", () => {
     expect(html).toContain("국소치료");
     expect(html).toContain("성생활 변화");
     expect(html).toContain("호르몬 금기");
+    expect(html).toContain("전암성 병변 치료 확인");
+    expect(html).toContain("자궁경부이형성증");
+    expect(html).toContain("자궁경부상피내암");
+    expect(html).toContain("국소파괴요법");
+    expect(html).toContain("동결요법");
+    expect(html).toContain("고주파요법");
+    expect(html).toContain("레이저요법");
+    expect(html).toContain("단순자궁절제술");
+    expect(html).toContain("조직경계");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");
     expect(html).toContain("첫 2년");

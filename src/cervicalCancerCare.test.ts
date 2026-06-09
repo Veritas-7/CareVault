@@ -183,7 +183,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(21);
+    expect(cervicalCancerCarePrompts).toHaveLength(22);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -205,6 +205,7 @@ describe("cervicalCancerCare", () => {
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
       "방사선 질 변화 상담",
+      "전암성 병변 치료 확인",
       "요약·진료 흐름",
     ]);
     expect(cervicalCancerCarePrompts.every((item) => item.question.endsWith("?"))).toBe(true);
@@ -430,6 +431,25 @@ describe("cervicalCancerCare", () => {
     expect(radiationVaginalPrompt.question).toContain("호르몬 금기");
     expect(buildCervicalCancerCarePromptQuestion(radiationVaginalPrompt)).toContain(
       "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    const precancerTreatmentPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "전암성 병변 치료 확인",
+    )!;
+    expect(precancerTreatmentPrompt.sourceId).toBe("nccTreatmentMethods");
+    expect(precancerTreatmentPrompt.question).toContain("전암성 병변");
+    expect(precancerTreatmentPrompt.question).toContain("자궁경부이형성증");
+    expect(precancerTreatmentPrompt.question).toContain("자궁경부상피내암");
+    expect(precancerTreatmentPrompt.question).toContain("원추절제술");
+    expect(precancerTreatmentPrompt.question).toContain("국소파괴요법");
+    expect(precancerTreatmentPrompt.question).toContain("동결요법");
+    expect(precancerTreatmentPrompt.question).toContain("고주파요법");
+    expect(precancerTreatmentPrompt.question).toContain("레이저요법");
+    expect(precancerTreatmentPrompt.question).toContain("단순자궁절제술");
+    expect(precancerTreatmentPrompt.question).toContain("자궁 보존");
+    expect(precancerTreatmentPrompt.question).toContain("조직경계");
+    expect(precancerTreatmentPrompt.question).toContain("더 진행된 암");
+    expect(buildCervicalCancerCarePromptQuestion(precancerTreatmentPrompt)).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
     );
     const overviewPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "요약·진료 흐름",
