@@ -108,6 +108,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
 - NCC cervical-cancer food-boundary source sentence matching for 자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다, keeping the no-special-forbidden-or-recommended-food guidance as one source-backed support phrase
+- NCC cervical-cancer nutrition/rest source sentence matching for 충분한 영양을 섭취하고 휴식을 취하는 것이 몸의 면역 기능 강화와 투병 생활에 도움이 될 수 있습니다, keeping the nutrition-and-rest guidance as one source-backed support phrase
 - NCC cervical-cancer radiation/chemotherapy irritating-food source sentence matching for 방사선 치료나 항암화학요법 중에는 장기능이 약해질 가능성이 있으므로 되도록 자극적인 음식은 피합니다, keeping the treatment-period bowel-function food limit as one source-backed watch phrase
 - NCC cervical-cancer chemotherapy folk-remedy/supplement avoid source sentence matching for 또한 항암화학요법을 받는 중에는 민간요법이나 건강보조식품은 삼갑니다, keeping the treatment-period supplement boundary as one source-backed care-team phrase
 - NCC cervical-cancer supplement interaction source sentence matching for 민간요법이나 건강보조식품은 과학적으로 효능이 확인되지 않았으며 병원에서 투여하는 약제와 예상할 수 없는 상호작용으로 치료효과가 떨어지거나 부작용이 커질 수도 있기 때문입니다, keeping the treatment-interaction explanation as one source-backed care-team phrase
