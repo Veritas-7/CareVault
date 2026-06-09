@@ -6612,6 +6612,49 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|탈수 치료|자가 주사|정맥 주사 지시|전해질 치료/);
   });
 
+  it("recognizes NCC nausea-vomiting care low-intake repeated-vomiting clinician-consultation source sentence", () => {
+    const sourceSentence =
+      "식사를 거의 못하여 하루에 4컵 이하의 음식을 먹거나 2일 이상 식사를 제대로 하지 못하는 경우와 2일동안 1-2회 이상의 구토가 있을 때";
+    const persistentVomitingFluidSentence =
+      "환자들은 섭취할 수 있을 만큼만 음료를 마셔야 합니다. 대부분의 경우, 음료는 마실 수 있을 만큼 정상으로 돌아오게 되는데, 지속적으로 구토를 하는 환자들은 수분공급과 전해질의 균형을 유지하기 위해서 정맥 또는 피하 체액 주사를 맞을 수 도 있습니다. 이 때는 의료진의 도움이 필요합니다.";
+    const vomitingDietConsultSentence = "구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의합니다.";
+    const activeVomitingRestrictionSentence = "구토가 멈출 때까지는 음료나 음식을 먹지 않도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 메스꺼움·구토 시 하루 4컵 이하 섭취·2일 이상 식사 어려움·반복 구토 의료진 상담 필요",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(persistentVomitingFluidSentence);
+    expect(terms).not.toContain(vomitingDietConsultSentence);
+    expect(terms).not.toContain(activeVomitingRestrictionSentence);
+    expect(terms).not.toContain("음식");
+    expect(terms).not.toContain("식사");
+    expect(terms).not.toContain("구토");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|음식량 목표|강제 섭취|칼로리 처방|탈수 치료/);
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";
