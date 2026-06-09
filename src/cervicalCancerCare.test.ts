@@ -60,6 +60,7 @@ describe("cervicalCancerCare", () => {
       "nccDiet",
       "nccTreatmentEating",
       "nccNauseaDiet",
+      "nccVomitingDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -123,6 +124,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccCoughCause.url).toContain("S1T410C412");
     expect(cervicalCancerCareSources.nccTreatmentEating.url).toContain("S1T471C472");
     expect(cervicalCancerCareSources.nccNauseaDiet.url).toContain("S1T479C481");
+    expect(cervicalCancerCareSources.nccVomitingDiet.url).toContain("S1T479C482");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -211,7 +213,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(35);
+    expect(cervicalCancerCarePrompts).toHaveLength(36);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -230,6 +232,7 @@ describe("cervicalCancerCare", () => {
       "식생활·보조식품",
       "치료 중 균형식 확인",
       "메스꺼움·구토 식사 기록 준비",
+      "구토 후 수분·식사 단계 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -465,8 +468,30 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(nauseaDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
     );
-    expect(cervicalCancerCarePrompts[17].question).toContain("접종 후에도 자궁경부암 선별검사");
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[17])).toContain(
+    const vomitingDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "구토 후 수분·식사 단계 기록 준비",
+    )!;
+    expect(vomitingDietPrompt.sourceId).toBe("nccVomitingDiet");
+    expect(vomitingDietPrompt.question).toContain("구토증상이 있는 경우");
+    expect(vomitingDietPrompt.question).toContain("먹거나 마시지");
+    expect(vomitingDietPrompt.question).toContain("구토증상이 조절");
+    expect(vomitingDietPrompt.question).toContain("물이나 육수");
+    expect(vomitingDietPrompt.question).toContain("맑은 유동식");
+    expect(vomitingDietPrompt.question).toContain("차츰 양을 증가");
+    expect(vomitingDietPrompt.question).toContain("미음");
+    expect(vomitingDietPrompt.question).toContain("부드러운 식사");
+    expect(vomitingDietPrompt.question).toContain("조금씩 자주");
+    expect(vomitingDietPrompt.question).toContain("우유가 들어있지 않은 제품");
+    expect(vomitingDietPrompt.question).toContain("1~2일 이상");
+    expect(vomitingDietPrompt.question).toContain("의사선생님과 상의");
+    expect(buildCervicalCancerCarePromptQuestion(vomitingDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 구토 - https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "HPV·검진",
+    )!;
+    expect(hpvScreeningPrompt.question).toContain("접종 후에도 자궁경부암 선별검사");
+    expect(buildCervicalCancerCarePromptQuestion(hpvScreeningPrompt)).toContain(
       "출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/",
     );
     const hpvInfectionPrompt = cervicalCancerCarePrompts.find(
@@ -1237,6 +1262,10 @@ describe("cervicalCancerCare", () => {
       "원인이 무엇이든 간에 메스꺼움으로 인해 음식을 충분히 섭취할 수 없으면 우리 몸에 필요한 영양소를 충족시킬 수 없게 되므로 메스꺼움 증상을 잘 조절하는 것이 중요합니다.";
     const nauseaDietMealSettingSentence =
       "음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다.";
+    const vomitingDietClearLiquidSentence =
+      "구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다.";
+    const vomitingDietSoftMealSentence =
+      "맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1265,6 +1294,9 @@ describe("cervicalCancerCare", () => {
     const nauseaDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "메스꺼움·구토 식사환경 메모",
     );
+    const vomitingDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "구토 후 유동식·부드러운 식사 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1287,7 +1319,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(19);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(20);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1444,6 +1476,29 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(nauseaDietGuide!)).join(" ")).not.toMatch(
       /항구토제를 복용하세요|진토제를 복용하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(vomitingDietGuide).toMatchObject({
+      label: "구토 후 유동식·부드러운 식사 메모",
+      sourceId: "nccVomitingDiet",
+    });
+    expect(vomitingDietGuide?.detail).toContain("구토증상이 있는 경우 먹거나 마시지 않도록");
+    expect(vomitingDietGuide?.detail).toContain(vomitingDietClearLiquidSentence);
+    expect(vomitingDietGuide?.detail).toContain(vomitingDietSoftMealSentence);
+    expect(vomitingDietGuide?.detail).toContain("우유를 소화시키기 힘들면");
+    expect(vomitingDietGuide?.detail).toContain("우유가 들어있지 않은 제품");
+    expect(vomitingDietGuide?.detail).toContain("1~2일 이상 심하게 계속");
+    expect(vomitingDietGuide?.detail).toContain("의사선생님과 상의");
+    expect(formatCervicalCancerCareItemEvidence(vomitingDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 구토 - https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(vomitingDietGuide!).body).toContain(
+      vomitingDietSoftMealSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(vomitingDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 구토",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(vomitingDietGuide!)).join(" ")).not.toMatch(
+      /구토약을 복용하세요|진토제를 복용하세요|억지로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
