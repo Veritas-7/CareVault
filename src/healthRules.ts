@@ -1082,6 +1082,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaVomitingCare"],
       },
       {
+        label: "메스꺼움·구토 12시간 이상·한 시간 3회 이상 상담",
+        detail:
+          "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 자료는 구토를 12시간 이상 지속적으로 하거나 한 시간 동안 3번 이상 한 경우 의료진과 상의하도록 안내합니다. 식단 기록에서는 지속·반복 구토의 진료팀 상담 신호로 분리하고, 구토 치료법이나 진토제 처방, 수액 치료 또는 응급처치 지시로 과장하지 않습니다.",
+        examples: "구토를 12시간 이상 지속적으로 하거나 한 시간 동안 3번 이상 한 경우",
+        sourceIds: ["nccNauseaVomitingCare"],
+      },
+      {
         label: "설사 심함·혈변·2일 이상 지속 상담",
         detail:
           "국가암정보센터 설사 자료는 설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 안내합니다.",
@@ -3683,6 +3690,11 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "구토 후 목에 음식물이 걸린 느낌과 기침이 계속되는 경우",
     "국가암정보센터 메스꺼움·구토 후 목 음식물 걸림 느낌·기침 지속 의료진 상담 필요",
+    "nccNauseaVomitingCare",
+  ],
+  [
+    "구토를 12시간 이상 지속적으로 하거나 한 시간 동안 3번 이상 한 경우",
+    "국가암정보센터 메스꺼움·구토 12시간 이상 지속 또는 한 시간 3번 이상 구토 의료진 상담 필요",
     "nccNauseaVomitingCare",
   ],
   [
