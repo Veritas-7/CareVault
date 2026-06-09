@@ -842,7 +842,8 @@ describe("csvExport", () => {
     expect(csv).toContain("광범위자궁경부절제수술");
     expect(csv).toContain("국가암정보센터 자궁경부암 임신과 출산");
     expect(csv).toContain("식생활·보조식품 확인");
-    expect(csv).toContain("특별히 피하거나 추천하는 음식은 없고");
+    expect(csv).toContain("특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다");
+    expect(csv).toContain("민간요법이나 건강보조식품은 삼갑니다");
     expect(csv).toContain("국가암정보센터 자궁경부암 식생활");
     expect(csv).toContain('"cervical_care_reference","","자궁경부암 케어 참고","검진·예방 메모"');
     expect(csv).toContain("20세 이상 여성");

@@ -1025,6 +1025,10 @@ describe("cervicalCancerCare", () => {
       "광범위 자궁절제술 후에는 수술 후 최소한 6주 동안에는 무거운 것을 들면 안되고, 부부관계를 피해야 하며, 갑작스러운 통증 이 올 수 있으므로 완전히 회복될 때까지는 운전을 하지 않는 것이 좋습니다.";
     const recurrenceSymptomsSentence =
       "재발 성 자궁경부암 의 증상은 매우 다양합니다. 체중감소, 하지 부종, 골반 혹은 허벅지 통증, 질출혈 혹은 질분비물의 증가, 진행 성 요관 폐색, 쇄골위 림프절 비대 등이 나타나며, 폐로 전이 하면 기침, 객혈, 때로는 흉통을 호소할 수 있습니다. 그러나 특징적인 증상이 없는 경우가 더 많습니다.";
+    const cervicalDietBoundarySentence =
+      "자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다. 충분한 영양을 섭취하고 휴식을 취하는 것이 몸의 면역 기능 강화와 투병 생활에 도움이 될 수 있습니다.";
+    const cervicalDietTreatmentCautionSentence =
+      "방사선 치료나 항암화학요법 중에는 장기능이 약해질 가능성이 있으므로 되도록 자극적인 음식은 피합니다. 또한 항암화학요법을 받는 중에는 민간요법이나 건강보조식품은 삼갑니다.";
     const text = cervicalCancerCareRecoveryGuides
       .map((item) => `${item.label} ${item.detail}`)
       .join(" ");
@@ -1037,6 +1041,9 @@ describe("cervicalCancerCare", () => {
     );
     const recurrenceSymptomGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "재발 의심 증상·기본 추적검사 메모",
+    );
+    const cervicalDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "식생활·보조식품 확인",
     );
 
     expect(cervicalCancerCareRecoveryGuides).toHaveLength(10);
@@ -1119,8 +1126,26 @@ describe("cervicalCancerCare", () => {
     expect(text).toContain("광범위자궁경부절제수술");
     expect(text).toContain("유산 및 조산 위험");
     expect(text).toContain("식생활·보조식품 확인");
-    expect(text).toContain("특별히 피하거나 추천하는 음식은 없고");
+    expect(text).toContain("특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다");
     expect(text).toContain("민간요법·건강보조식품");
+    expect(cervicalDietGuide).toMatchObject({
+      label: "식생활·보조식품 확인",
+      sourceId: "nccDiet",
+    });
+    expect(cervicalDietGuide?.detail).toContain(cervicalDietBoundarySentence);
+    expect(cervicalDietGuide?.detail).toContain(cervicalDietTreatmentCautionSentence);
+    expect(formatCervicalCancerCareItemEvidence(cervicalDietGuide!)).toContain(
+      cervicalDietBoundarySentence,
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(cervicalDietGuide!).body).toContain(
+      cervicalDietTreatmentCautionSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(cervicalDietGuide!)).toContain(
+      cervicalDietBoundarySentence,
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(cervicalDietGuide!)).join(" ")).not.toMatch(
+      /암을 낫게|치료 음식|특효|보조식품 권장/,
+    );
     expect(text).toContain("골반 방사선치료 난소기능·폐경 증상 상담");
     expect(text).toContain("홍조");
     expect(text).toContain("무월경");

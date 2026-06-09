@@ -181,7 +181,8 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("치료 선택 기준");
     expect(text).toContain("국가암정보센터 자궁경부암 요약설명");
     expect(text).toContain("식생활·보조식품 확인");
-    expect(text).toContain("특별히 피하거나 추천하는 음식은 없고");
+    expect(text).toContain("특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다");
+    expect(text).toContain("민간요법이나 건강보조식품은 삼갑니다");
     expect(text).toContain("국가암정보센터 자궁경부암 식생활");
     expect(text).toContain("검진·예방 메모");
     expect(text).toContain("자궁경부세포검사 전 확인");

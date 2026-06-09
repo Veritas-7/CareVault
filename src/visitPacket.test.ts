@@ -777,7 +777,8 @@ describe("visit packet", () => {
     expect(markdown).toContain("광범위자궁경부절제수술");
     expect(markdown).toContain("국가암정보센터 자궁경부암 임신과 출산");
     expect(markdown).toContain("식생활·보조식품 확인");
-    expect(markdown).toContain("특별히 피하거나 추천하는 음식은 없고");
+    expect(markdown).toContain("특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다");
+    expect(markdown).toContain("민간요법이나 건강보조식품은 삼갑니다");
     expect(markdown).toContain("국가암정보센터 자궁경부암 식생활");
     expect(markdown).toContain("검진 기준 빠른 확인");
     expect(markdown).toContain("국가암검진 대상 기준 해당");

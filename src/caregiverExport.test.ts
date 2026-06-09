@@ -2120,7 +2120,8 @@ describe("caregiverExport", () => {
     expect(html).toContain("광범위자궁경부절제수술");
     expect(html).toContain(">국가암정보센터 자궁경부암 임신과 출산</a>");
     expect(html).toContain("식생활·보조식품 확인");
-    expect(html).toContain("특별히 피하거나 추천하는 음식은 없고");
+    expect(html).toContain("특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다");
+    expect(html).toContain("민간요법이나 건강보조식품은 삼갑니다");
     expect(html).toContain("검진·예방 메모");
     expect(html).toContain("20세 이상 여성");
     expect(html).toContain("2년 간격");
