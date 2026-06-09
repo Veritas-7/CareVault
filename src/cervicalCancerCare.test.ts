@@ -1176,6 +1176,9 @@ describe("cervicalCancerCare", () => {
     const hpvScheduleGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 일정·관찰 확인",
     );
+    const hpvSafetyGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 접종 전 임신·급성질환 확인",
+    );
     const hpvDelayedDoseGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 지연·추가접종 메모",
     );
@@ -1201,7 +1204,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "실천지침 일상 예방 체크 메모",
     );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(15);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(16);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -1227,6 +1230,19 @@ describe("cervicalCancerCare", () => {
     expect(hpvScheduleGuide?.detail).toContain("접종 후 20~30분 관찰");
     expect(hpvScheduleGuide?.detail).toContain("선별검사 유지");
     expect(hpvScheduleGuide?.detail).not.toContain("치료하세요");
+    expect(hpvSafetyGuide).toMatchObject({
+      label: "HPV 접종 전 임신·급성질환 확인",
+      sourceId: "kdcaHpv",
+    });
+    expect(hpvSafetyGuide?.detail).toContain("임신 중의 백신 접종은 권장되지");
+    expect(hpvSafetyGuide?.detail).toContain("나머지 접종은 출산 뒤로");
+    expect(hpvSafetyGuide?.detail).toContain("중등도 또는 심한 급성기 질환");
+    expect(hpvSafetyGuide?.detail).toContain("고열을 동반한 감염질환");
+    expect(hpvSafetyGuide?.detail).toContain("증상이 호전될 때까지");
+    expect(hpvSafetyGuide?.detail).toContain("접종기관과 진료팀");
+    expect(hpvSafetyGuide?.detail).not.toContain("접종하세요");
+    expect(hpvSafetyGuide?.detail).not.toContain("맞으세요");
+    expect(hpvSafetyGuide?.detail).not.toContain("치료하세요");
     expect(hpvDelayedDoseGuide).toMatchObject({
       label: "HPV 접종 지연·추가접종 메모",
       sourceId: "nccHpvVaccine",
