@@ -17,6 +17,7 @@ describe("symptomSupportTemplates", () => {
   it("matches common cancer-treatment side-effect keywords", () => {
     expect(findSymptomSupportTemplate("식사 후 오심이 심함")?.id).toBe("nausea");
     expect(findSymptomSupportTemplate("입안 상처와 구내염")?.id).toBe("mouth-sore");
+    expect(findSymptomSupportTemplate("구토가 계속됨")?.id).toBe("vomiting");
     expect(findSymptomSupportTemplate("diarrhea after medication")?.id).toBe("diarrhea");
     expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
@@ -137,6 +138,27 @@ describe("symptomSupportTemplates", () => {
       "출처: 국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
     );
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
+  });
+
+  it("builds a vomiting symptom-support question from staged official diet guidance", () => {
+    const activeVomitingSentence =
+      "구토증상이 있는 경우 먹거나 마시지 않도록 합니다. 구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다.";
+    const softFoodSentence =
+      "맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다.";
+    const consultationSentence =
+      "구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의합니다.";
+    const template = findSymptomSupportTemplate("구토가 계속됨");
+
+    expect(template?.id).toBe("vomiting");
+    expect(template?.mealNote).toContain(activeVomitingSentence);
+    expect(template?.mealNote).toContain(softFoodSentence);
+    expect(template?.clinicianQuestion).toContain(consultationSentence);
+    expect(buildSymptomSupportQuestion(template!, "구토")).toContain(consultationSentence);
+    expect(buildSymptomSupportQuestion(template!, "구토")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 구토 - https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "구토")).not.toMatch(/수액을 맞으세요|처방하세요|진단하세요/);
   });
 
   it("builds a cervical urinary or bowel change question from bleeding keywords", () => {
@@ -306,7 +328,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(14);
+    expect(symptomSupportTemplates).toHaveLength(15);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -316,6 +338,9 @@ describe("symptomSupportTemplates", () => {
     ).toBe(true);
     expect(findSymptomSupportTemplate("오심")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(findSymptomSupportTemplate("구토")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
     );
     expect(findSymptomSupportTemplate("림프부종")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T429C431/contents.do",

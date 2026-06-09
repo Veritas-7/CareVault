@@ -38,6 +38,18 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
   },
   {
+    id: "vomiting",
+    label: "구토",
+    keywords: ["구토", "토함", "토하는", "vomiting", "emesis"],
+    mealNote:
+      "구토증상이 있는 경우 먹거나 마시지 않도록 합니다. 구토증상이 조절되면, 물이나 육수 등과 같은 맑은 유동식부터 조금씩 먹어보고 차츰 양을 증가시키도록 합니다. 맑은 유동식으로 구토증상이 조절되면, 미음이나 부드러운 식사로 바꾸어 조금씩 자주 먹도록 하고, 적응되면 일반 식사를 섭취하도록 합니다. 구토 시작 시점, 횟수, 마지막 구토 뒤 수분·식사 재개 여부를 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "구토가 1~2일 이상 심하게 계속된다면 의사선생님과 상의합니다. 구토 횟수, 수분 섭취 가능 여부, 맑은 유동식·미음·부드러운 식사 전환 시점, 탈수나 약 복용 어려움 기준을 의료진에게 어떻게 확인할지 물어보세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 증상별 식생활 - 구토",
+    sourceUrl: "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+  },
+  {
     id: "mouth-sore",
     label: "구내염/입안 통증",
     keywords: ["구내염", "입안", "입 통증", "mouth sore", "mucositis"],
