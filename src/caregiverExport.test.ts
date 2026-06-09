@@ -1853,12 +1853,18 @@ describe("caregiverExport", () => {
     expect(html).toContain("자궁경부 상피내이형성증");
     expect(html).toContain("편평상피세포암");
     expect(html).toContain("혼합 암종");
+    expect(html).toContain("조기검진 준비·한계 메모");
+    expect(html).toContain("위음성률이 50%");
+    expect(html).toContain("액상세포도말검사");
+    expect(html).toContain("생리 시작일로부터 10~20일");
+    expect(html).toContain("성관계, 탐폰 사용, 질 세척");
     expect(html).toContain("전암 단계인 상피내암");
     expect(html).toContain("요관침윤");
     expect(html).toContain("대동맥주위 림프절");
     expect(html).toContain("방광이나 직장 점막");
     expect(html).toContain(">국가암정보센터 자궁경부암 진행단계</a>");
     expect(html).toContain(">국가암정보센터 자궁경부암 정의 및 종류</a>");
+    expect(html).toContain(">국가암정보센터 자궁경부암 조기검진</a>");
     expect(html).toContain("배뇨·배변·출혈 변화 메모");
     expect(html).toContain("혈변·혈뇨");
     expect(html).toContain(">국가암정보센터 자궁경부암 치료의 부작용</a>");

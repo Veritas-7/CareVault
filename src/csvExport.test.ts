@@ -628,12 +628,18 @@ describe("csvExport", () => {
     expect(csv).toContain("자궁경부 상피내이형성증");
     expect(csv).toContain("편평상피세포암");
     expect(csv).toContain("혼합 암종");
+    expect(csv).toContain("조기검진 준비·한계 메모");
+    expect(csv).toContain("위음성률이 50%");
+    expect(csv).toContain("액상세포도말검사");
+    expect(csv).toContain("생리 시작일로부터 10~20일");
+    expect(csv).toContain("성관계, 탐폰 사용, 질 세척");
     expect(csv).toContain("전암 단계인 상피내암");
     expect(csv).toContain("요관침윤");
     expect(csv).toContain("대동맥주위 림프절");
     expect(csv).toContain("방광이나 직장 점막");
     expect(csv).toContain("국가암정보센터 자궁경부암 진행단계");
     expect(csv).toContain("국가암정보센터 자궁경부암 정의 및 종류");
+    expect(csv).toContain("국가암정보센터 자궁경부암 조기검진");
     expect(csv).toContain("배뇨·배변·출혈 변화 메모");
     expect(csv).toContain("혈변·혈뇨");
     expect(csv).toContain("장폐색·혈변·혈뇨 연락 메모");

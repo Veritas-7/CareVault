@@ -47,6 +47,7 @@ describe("cervicalCancerCare", () => {
       "nccScreeningEligibility",
       "nccScreeningResultCost",
       "nccDefinitionTypes",
+      "nccEarlyScreening",
       "nccEarlyDiagnosisPrevention",
       "nccRecovery",
       "nccRecurrenceFollowUp",
@@ -81,6 +82,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccDiagnosisMethods.url).toContain("menu_seq=4889");
     expect(cervicalCancerCareSources.nccStage.url).toContain("menu_seq=4890");
     expect(cervicalCancerCareSources.nccDifferentialDiagnosis.url).toContain("menu_seq=4891");
+    expect(cervicalCancerCareSources.nccEarlyScreening.url).toContain("menu_seq=4886");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -269,6 +271,9 @@ describe("cervicalCancerCare", () => {
     const pathologyTypeGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "병리조직 확인 메모",
     );
+    const earlyScreeningGuide = cervicalCancerCareChecks.find(
+      (item) => item.label === "조기검진 준비·한계 메모",
+    );
     const treatmentStatusGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "치료현황 통계 상담 메모",
     );
@@ -282,7 +287,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "감별진단 확인 메모",
     );
 
-    expect(cervicalCancerCareChecks).toHaveLength(14);
+    expect(cervicalCancerCareChecks).toHaveLength(15);
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("출혈·분비물 기록");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("추적검사 일정·결과");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
@@ -373,6 +378,23 @@ describe("cervicalCancerCare", () => {
     expect(pathologyTypeGuide?.detail).toContain("진료팀에 확인");
     expect(pathologyTypeGuide?.detail).not.toContain("진단됩니다");
     expect(pathologyTypeGuide?.detail).not.toContain("치료하세요");
+    expect(earlyScreeningGuide).toMatchObject({
+      label: "조기검진 준비·한계 메모",
+      sourceId: "nccEarlyScreening",
+    });
+    expect(earlyScreeningGuide?.detail).toContain("전구 질환인 자궁경부이형성증");
+    expect(earlyScreeningGuide?.detail).toContain("상피내암 단계");
+    expect(earlyScreeningGuide?.detail).toContain("자궁경부세포검사");
+    expect(earlyScreeningGuide?.detail).toContain("위음성률이 50%");
+    expect(earlyScreeningGuide?.detail).toContain("액상세포도말검사");
+    expect(earlyScreeningGuide?.detail).toContain("생리 시작일로부터 10~20일");
+    expect(earlyScreeningGuide?.detail).toContain("48시간 전");
+    expect(earlyScreeningGuide?.detail).toContain("성관계, 탐폰 사용, 질 세척");
+    expect(earlyScreeningGuide?.detail).toContain("질 내 약물 및 윤활제");
+    expect(earlyScreeningGuide?.detail).toContain("증상이 있다면 출혈에 관계없이 검사");
+    expect(earlyScreeningGuide?.detail).toContain("진료팀에 확인");
+    expect(earlyScreeningGuide?.detail).not.toContain("정상입니다");
+    expect(earlyScreeningGuide?.detail).not.toContain("검사를 건너뛰세요");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "배뇨·배변·출혈 변화 메모")?.detail,
     ).toContain("혈변·혈뇨");

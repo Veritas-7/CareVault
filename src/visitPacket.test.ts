@@ -551,6 +551,11 @@ describe("visit packet", () => {
     expect(markdown).toContain("자궁경부 상피내이형성증");
     expect(markdown).toContain("편평상피세포암");
     expect(markdown).toContain("혼합 암종");
+    expect(markdown).toContain("조기검진 준비·한계 메모");
+    expect(markdown).toContain("위음성률이 50%");
+    expect(markdown).toContain("액상세포도말검사");
+    expect(markdown).toContain("생리 시작일로부터 10~20일");
+    expect(markdown).toContain("성관계, 탐폰 사용, 질 세척");
     expect(markdown).toContain("전암 단계인 상피내암");
     expect(markdown).toContain("요관침윤");
     expect(markdown).toContain("대동맥주위 림프절");
@@ -560,6 +565,9 @@ describe("visit packet", () => {
     );
     expect(markdown).toContain(
       "출처: 국가암정보센터 자궁경부암 정의 및 종류 - https://www.cancer.go.kr/",
+    );
+    expect(markdown).toContain(
+      "출처: 국가암정보센터 자궁경부암 조기검진 - https://www.cancer.go.kr/",
     );
     expect(markdown).toContain(
       "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/",

@@ -106,6 +106,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 정의 및 종류",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4881",
   },
+  nccEarlyScreening: {
+    label: "국가암정보센터 자궁경부암 조기검진",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4886",
+  },
   nccEarlyDiagnosisPrevention: {
     label: "국립암센터 자궁경부암 조기 진단과 예방법",
     url: "https://www.cancer.go.kr/download.do?uuid=adf8879c-4343-445e-b67d-0c60e5ac9b58.pdf",
@@ -336,6 +340,12 @@ export const cervicalCancerCareChecks: CervicalCancerCareCheck[] = [
     detail:
       "증상이 없는 검진과 의심 증상 진단검사를 구분하고, 골반내진·자궁경부세포검사·HPV 검사·질확대경·조직검사·경질초음파·골반 MRI 중 내 증상과 결과에 필요한 항목을 진료팀에 확인합니다.",
     sourceId: "nccEarlyDiagnosisPrevention",
+  },
+  {
+    label: "조기검진 준비·한계 메모",
+    detail:
+      "국가암정보센터는 조기검진 목적이 전구 질환인 자궁경부이형성증과 상피내암 단계에서 발견하는 것이라고 설명합니다. 자궁경부세포검사는 많이 이용되지만 병변이 있어도 정상으로 판정되는 위음성률이 50%에 달할 수 있고, 액상세포도말검사는 기존 방법보다 위음성률이 낮아졌다고 설명합니다. 검진 시기는 생리기간을 되도록 피하고 생리 시작일로부터 10~20일 사이가 좋으며, 최소 48시간 전부터 성관계, 탐폰 사용, 질 세척, 질 내 약물 및 윤활제, 질 내 피임약을 피하는 안내가 내 검사에 적용되는지 확인합니다. 생리기간이 아니어도 출혈이나 악취 나는 질 분비물 같은 증상이 있다면 출혈에 관계없이 검사 기준을 진료팀에 확인합니다.",
+    sourceId: "nccEarlyScreening",
   },
   {
     label: "진단·병기검사 목적 메모",
