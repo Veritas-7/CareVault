@@ -65,6 +65,7 @@ describe("cervicalCancerCare", () => {
       "nccMouthPainDiet",
       "nccDryMouthDiet",
       "nccTasteChangeDiet",
+      "nccDiarrheaDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -133,6 +134,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccMouthPainDiet.url).toContain("S1T479C483");
     expect(cervicalCancerCareSources.nccDryMouthDiet.url).toContain("S1T479C485");
     expect(cervicalCancerCareSources.nccTasteChangeDiet.url).toContain("S1T479C484");
+    expect(cervicalCancerCareSources.nccDiarrheaDiet.url).toContain("S1T479C488");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -221,7 +223,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(40);
+    expect(cervicalCancerCarePrompts).toHaveLength(41);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -245,6 +247,7 @@ describe("cervicalCancerCare", () => {
       "입과 목 통증 식사·구강상태 기록 준비",
       "입안 건조 식사·수분 기록 준비",
       "입맛 변화 단백질·향 기록 준비",
+      "설사 수분·전해질 음식 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -596,6 +599,45 @@ describe("cervicalCancerCare", () => {
     expect(tasteChangeDietPrompt.question).toContain("입안을 자주 헹구");
     expect(buildCervicalCancerCarePromptQuestion(tasteChangeDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 입맛의 변화 - https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+    );
+    const diarrheaDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "설사 수분·전해질 음식 기록 준비",
+    )!;
+    expect(diarrheaDietPrompt.sourceId).toBe("nccDiarrheaDiet");
+    expect(diarrheaDietPrompt.question).toContain("항암치료");
+    expect(diarrheaDietPrompt.question).toContain("복부와 골반 부위의 방사선치료");
+    expect(diarrheaDietPrompt.question).toContain("감염, 음식에 대한 민감성, 불안 및 스트레스");
+    expect(diarrheaDietPrompt.question).toContain("음식이 장을 빨리 통과");
+    expect(diarrheaDietPrompt.question).toContain("비타민, 무기질, 수분");
+    expect(diarrheaDietPrompt.question).toContain("탈수");
+    expect(diarrheaDietPrompt.question).toContain("맑은 유동식");
+    expect(diarrheaDietPrompt.question).toContain("1~2일 이상");
+    expect(diarrheaDietPrompt.question).toContain("12~24시간");
+    expect(diarrheaDietPrompt.question).toContain("수분을 충분히");
+    expect(diarrheaDietPrompt.question).toContain("염분과 칼륨");
+    expect(diarrheaDietPrompt.question).toContain("육수");
+    expect(diarrheaDietPrompt.question).toContain("스포츠 음료");
+    expect(diarrheaDietPrompt.question).toContain("바나나");
+    expect(diarrheaDietPrompt.question).toContain("복숭아");
+    expect(diarrheaDietPrompt.question).toContain("토마토");
+    expect(diarrheaDietPrompt.question).toContain("으깬 감자");
+    expect(diarrheaDietPrompt.question).toContain("조금씩 자주");
+    expect(diarrheaDietPrompt.question).toContain("섬유소가 적은 식품");
+    expect(diarrheaDietPrompt.question).toContain("흰밥, 흰죽, 미음, 흰빵");
+    expect(diarrheaDietPrompt.question).toContain("삶거나 으깬 감자");
+    expect(diarrheaDietPrompt.question).toContain("맑은 고깃국, 생선, 닭고기, 두부, 계란");
+    expect(diarrheaDietPrompt.question).toContain("너무 뜨겁거나 찬 음식");
+    expect(diarrheaDietPrompt.question).toContain("생야채, 생과일의 껍질, 씨");
+    expect(diarrheaDietPrompt.question).toContain("브로콜리, 옥수수, 말린 콩");
+    expect(diarrheaDietPrompt.question).toContain("카페인과 알코올");
+    expect(diarrheaDietPrompt.question).toContain("커피, 홍차, 초콜릿, 탄산음료");
+    expect(diarrheaDietPrompt.question).toContain("콩, 양배추, 탄산음료, 껌");
+    expect(diarrheaDietPrompt.question).toContain("우유 및 유제품");
+    expect(diarrheaDietPrompt.question).toContain("유당이 설사를 악화");
+    expect(diarrheaDietPrompt.question).toContain("너무 심하거나 피가 섞이거나 2일 이상");
+    expect(diarrheaDietPrompt.question).toContain("의사선생님과 상의");
+    expect(buildCervicalCancerCarePromptQuestion(diarrheaDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 설사 - https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1408,6 +1450,20 @@ describe("cervicalCancerCare", () => {
       "신맛이 금속성의 맛을 제거하는 데 도움이 될 수 있으므로 오렌지나 레몬같이 시큼한 식품을 사용합니다. 그러나 입과 목에 통증 이 있다면, 이런 식품들이 염증을 자극하거나 불편하게 하므로 주의합니다.";
     const tasteChangeDentalSentence =
       "음식의 맛이나 냄새에 영향을 미치는 치과적인 문제가 없는지 확인해보고, 입안을 자주 헹구도록 합니다.";
+    const diarrheaCauseSentence =
+      "설사는 항암치료, 복부와 골반 부위의 방사선치료, 감염, 음식에 대한 민감성, 불안 및 스트레스 등에 의해 발생할 수 있습니다.";
+    const diarrheaAbsorptionSentence =
+      "설사가 있을 경우에는 음식이 장을 빨리 통과하기 때문에 비타민, 무기질, 수분이 충분히 흡수되지 못합니다.";
+    const diarrheaClearLiquidSentence =
+      "갑자기 설사할 경우 12~24시간 동안은 맑은 유동식만 먹도록 합니다. 이는 장을 쉬게 해 주며 설사로 손실된 수분을 보충해 줍니다.";
+    const diarrheaFluidElectrolyteSentence =
+      "수분을 충분히 섭취하여 설사로 손실된 부분을 보충합니다. 염분과 칼륨이 많이 들어있는 식품을 섭취하여 설사로 인한 손실을 보충합니다.";
+    const diarrheaLowFiberSentence =
+      "섬유소가 적은 식품을 먹습니다. (예) 흰밥, 흰죽, 미음, 흰빵, 삶거나 으깬 감자, 맑은 고깃국, 생선, 닭고기, 두부, 계란 등";
+    const diarrheaDairySentence =
+      "우유 및 유제품을 먹을 때에는 주의합니다. 이는 우유에 들어있는 유당이 설사를 악화시킬 수 있기 때문입니다. 그러나 일반적으로 적은 양의 우유나 유제품은 소화시킬 수 있습니다.";
+    const diarrheaClinicianSentence =
+      "설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 합니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1451,6 +1507,9 @@ describe("cervicalCancerCare", () => {
     const tasteChangeDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "입맛 변화 단백질·향 메모",
     );
+    const diarrheaDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "설사 수분·전해질·자극음식 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1473,7 +1532,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(24);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(25);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1779,6 +1838,44 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(tasteChangeDietGuide!)).join(" ")).not.toMatch(
       /와인을 마시세요|레몬을 먹어 치료|치과치료를 받으세요|입맛약을 복용하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(diarrheaDietGuide).toMatchObject({
+      label: "설사 수분·전해질·자극음식 메모",
+      sourceId: "nccDiarrheaDiet",
+    });
+    expect(diarrheaDietGuide?.detail).toContain(diarrheaCauseSentence);
+    expect(diarrheaDietGuide?.detail).toContain(diarrheaAbsorptionSentence);
+    expect(diarrheaDietGuide?.detail).toContain("탈수의 원인이 될 수");
+    expect(diarrheaDietGuide?.detail).toContain(
+      "맑은 유동식은 적절한 영양소를 공급할 수 없으므로 1~2일 이상 먹이지 않도록",
+    );
+    expect(diarrheaDietGuide?.detail).toContain(diarrheaClearLiquidSentence);
+    expect(diarrheaDietGuide?.detail).toContain(diarrheaFluidElectrolyteSentence);
+    expect(diarrheaDietGuide?.detail).toContain("육수나 스포츠 음료");
+    expect(diarrheaDietGuide?.detail).toContain("바나나, 복숭아, 토마토, 으깬 감자");
+    expect(diarrheaDietGuide?.detail).toContain("조금씩 자주");
+    expect(diarrheaDietGuide?.detail).toContain(diarrheaLowFiberSentence);
+    expect(diarrheaDietGuide?.detail).toContain(
+      "너무 뜨겁거나 찬 음식은 피하고 실온의 음식을",
+    );
+    expect(diarrheaDietGuide?.detail).toContain("생야채, 생과일의 껍질, 씨");
+    expect(diarrheaDietGuide?.detail).toContain("브로콜리, 옥수수, 말린 콩");
+    expect(diarrheaDietGuide?.detail).toContain("카페인과 알코올");
+    expect(diarrheaDietGuide?.detail).toContain("커피, 홍차, 초콜릿, 탄산음료");
+    expect(diarrheaDietGuide?.detail).toContain("콩, 양배추, 탄산음료, 껌");
+    expect(diarrheaDietGuide?.detail).toContain(diarrheaDairySentence);
+    expect(diarrheaDietGuide?.detail).toContain(diarrheaClinicianSentence);
+    expect(formatCervicalCancerCareItemEvidence(diarrheaDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 설사 - https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(diarrheaDietGuide!).body).toContain(
+      diarrheaFluidElectrolyteSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(diarrheaDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 설사",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(diarrheaDietGuide!)).join(" ")).not.toMatch(
+      /지사제를 복용하세요|설사약을 복용하세요|탈수를 치료하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
