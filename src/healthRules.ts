@@ -674,9 +674,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "실천지침 대체 식단 예시",
         detail:
-          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 식이섬유를 늘리는 잡곡밥 대체 예시와 함께 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여주며, 총각김치 같은 김치 반찬은 저염 여부와 양을 확인하는 후보로 기록합니다. 기본원칙으로 다채로운 식단·채소와 과일 충분 섭취·짠 음식 및 탄 음식 섭취 제한을 함께 제시하고, 국 또는 찌개의 국물은 다 먹지 않도록 안내합니다. 식생활 습관 개선은 한꺼번에 바꾸지 않고 가능한 것부터 확인해 서서히 단계적으로 계획하며, 지방 함량이 높은 식품이나 짠 음식 섭취를 줄이고 신선한 채소·과일·곡류를 자주 먹으며, 가능한 제철 과일·채소를 구입하고 곰팡이 핀 음식은 피하라고 안내합니다.",
+          "국민 암예방 수칙 자궁경부암 실천지침의 예시 식단은 식이섬유를 늘리는 잡곡밥 대체 예시와 함께 가공육·달콤한 간식·짠 반찬·국물 과다와 나트륨이 많은 조림을 줄이고 과일·채소·저염 조리 예시로 바꾸는 방향을 보여주며, 총각김치·열무김치·배추김치 같은 김치 반찬은 저염 여부와 양을 확인하는 후보로 기록합니다. 기본원칙으로 다채로운 식단·채소와 과일 충분 섭취·짠 음식 및 탄 음식 섭취 제한을 함께 제시하고, 국 또는 찌개의 국물은 다 먹지 않도록 안내합니다. 식생활 습관 개선은 한꺼번에 바꾸지 않고 가능한 것부터 확인해 서서히 단계적으로 계획하며, 지방 함량이 높은 식품이나 짠 음식 섭취를 줄이고 신선한 채소·과일·곡류를 자주 먹으며, 가능한 제철 과일·채소를 구입하고 곰팡이 핀 음식은 피하라고 안내합니다.",
         examples:
-          "쌀밥, 흰쌀밥, 총각김치, 햄구이, 초코칩쿠키, 단무지, 우엉조림, 국·찌개 국물, 국물 과다, 국 또는 찌개의 국물은 다 드시지 마십시오., 기본원칙 : 다채로운 식단으로 균형 잡힌 식사 / 채소, 과일을 충분히 섭취 / 짠 음식 및 탄 음식 섭취 제한, 한꺼번에 식생활 습관을 바꾸는 것은 위험합니다. 다음의 내용을 숙지하면서 식생활 개선을 시작하세요., 식생활을 한꺼번에 바꾸려고 하지 말고 내가 할 수 있는 것들을 확인하여 서서히 단계적으로 변화시킬 수 있는 계획표를 작성해 보십시오., 가능한 지방 함량이 높은 식품이나 짠 음식 섭취를 줄이겠다는 생각을 가지며, 신선한 채소와 과일, 곡류 등을 자주 드시기 바랍니다., 가능한 제철 과일, 채소를 구입하십시오. 곰팡이 핀 음식은 피하시기 바랍니다.",
+          "쌀밥, 흰쌀밥, 총각김치, 열무김치, 배추김치, 햄구이, 초코칩쿠키, 단무지, 우엉조림, 국·찌개 국물, 국물 과다, 국 또는 찌개의 국물은 다 드시지 마십시오., 기본원칙 : 다채로운 식단으로 균형 잡힌 식사 / 채소, 과일을 충분히 섭취 / 짠 음식 및 탄 음식 섭취 제한, 한꺼번에 식생활 습관을 바꾸는 것은 위험합니다. 다음의 내용을 숙지하면서 식생활 개선을 시작하세요., 식생활을 한꺼번에 바꾸려고 하지 말고 내가 할 수 있는 것들을 확인하여 서서히 단계적으로 변화시킬 수 있는 계획표를 작성해 보십시오., 가능한 지방 함량이 높은 식품이나 짠 음식 섭취를 줄이겠다는 생각을 가지며, 신선한 채소와 과일, 곡류 등을 자주 드시기 바랍니다., 가능한 제철 과일, 채소를 구입하십시오. 곰팡이 핀 음식은 피하시기 바랍니다.",
         sourceIds: ["nccCervicalPracticeDiet"],
       },
       {
@@ -981,6 +981,7 @@ export const koreanHealthStandardSummary = {
 type FoodRuleTermOptions = {
   allowedKoreanSuffixes?: readonly string[];
   matchMode?: "standalone";
+  requiredInputIncludes?: readonly string[];
 };
 type FoodRuleTerm = [
   term: string,
@@ -1022,6 +1023,10 @@ const commonKoreanFoodTermSuffixes = [
 const standaloneFoodTermOptions: FoodRuleTermOptions = {
   allowedKoreanSuffixes: commonKoreanFoodTermSuffixes,
   matchMode: "standalone",
+};
+
+const cervicalPracticeContextTermOptions: FoodRuleTermOptions = {
+  requiredInputIncludes: ["자궁경부암", "실천지침"],
 };
 
 const supportiveFoods: FoodRuleTerm[] = [
@@ -2642,6 +2647,18 @@ const limitFoods: FoodRuleTerm[] = [
   ["흰쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet"],
   ["쌀밥", "자궁경부암 실천지침 식이섬유 증가 대체 전 예시", "nccCervicalPracticeDiet", standaloneFoodTermOptions],
   ["총각김치", "자궁경부암 실천지침 식단 김치 저염 확인 후보", "nccCervicalPracticeDiet"],
+  [
+    "열무김치",
+    "자궁경부암 실천지침 식단 김치 저염 확인 후보",
+    "nccCervicalPracticeDiet",
+    cervicalPracticeContextTermOptions,
+  ],
+  [
+    "배추김치",
+    "자궁경부암 실천지침 식단 김치 저염 확인 후보",
+    "nccCervicalPracticeDiet",
+    cervicalPracticeContextTermOptions,
+  ],
   ["햄구이", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   [
     "과일과 채소의 섭취가 적은 식이",
@@ -3539,6 +3556,14 @@ function isFoodTermCandidateAllowed(
   end: number,
   options: FoodRuleTermOptions | undefined,
 ) {
+  if (
+    options?.requiredInputIncludes
+    && !options.requiredInputIncludes.every((value) =>
+      normalizedInput.includes(value.toLowerCase()),
+    )
+  ) {
+    return false;
+  }
   if (options?.matchMode !== "standalone") return true;
   return (
     isFoodTermBoundaryChar(normalizedInput[start - 1])

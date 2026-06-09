@@ -1999,6 +1999,37 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide kimchi table examples with the cervical source", () => {
+    const assessment = assessCancerFood("자궁경부암 실천지침 식단: 열무김치, 배추김치");
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const cervicalPracticeLimitItem = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.find((item) => item.label === "실천지침 대체 식단 예시");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual(["열무김치", "배추김치"]);
+    for (const term of ["열무김치", "배추김치"]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "자궁경부암 실천지침 식단 김치 저염 확인 후보",
+        sourceId: "nccCervicalPracticeDiet",
+      });
+    }
+    expect(terms).not.toContain("저염 김치");
+    expect(terms).not.toContain("짠 김치");
+    expect(terms).not.toContain("김치 또는 장아찌류");
+    expect(terms).not.toContain("염장식품");
+    expect(cervicalPracticeLimitItem?.examples).toContain("열무김치");
+    expect(cervicalPracticeLimitItem?.examples).toContain("배추김치");
+    expect(formatFoodMatchEvidence(matchesByTerm.열무김치)).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide barley rice and grilled seaweed table dishes", () => {
     const assessment = assessCancerFood("보리밥, 김구이");
     const terms = assessment.matches.map((match) => match.term);
