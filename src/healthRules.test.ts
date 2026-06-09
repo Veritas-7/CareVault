@@ -12292,6 +12292,77 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea campylobacter raw-meat and poultry food-safety guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 캠필로박터 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "생육을 만진 경우 손을 깨끗하게 씻고 소독하여 2차 오염 방지하여야 한다, 마시는 물도 끓여 마셔야 한다, 조리 기구는 물로 끓이거나 소독하여 건조시켜야 한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "캠필로박터균은 소, 돼지, 개, 고양이, 닭, 우유, 물이 원인이 될 수 있고 육류의 생식이나 불충분한 가열, 동물(조류 등)의 분변에 의한 오염, 식육(특히 닭고기)의 생식을 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaCampylobacterFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 캠필로박터",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 캠필로박터 식중독 주의",
+      sourceIds: ["foodSafetyKoreaCampylobacterFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("소, 돼지, 개, 고양이, 닭, 우유, 물");
+    expect(foodSafetyGuide?.detail).toContain("육류의 생식이나 불충분한 가열");
+    expect(foodSafetyGuide?.detail).toContain("동물(조류 등)의 분변");
+    expect(foodSafetyGuide?.detail).toContain("식육(특히 닭고기)의 생식");
+    expect(foodSafetyGuide?.detail).toContain("조리 기구는 물로 끓이거나 소독하여 건조");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "생육을 만진 경우 손을 깨끗하게 씻고 소독하여 2차 오염 방지하여야 한다",
+      "마시는 물도 끓여 마셔야 한다",
+      "조리 기구는 물로 끓이거나 소독하여 건조시켜야 한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaCampylobacterFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 캠필로박터 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "캠필로박터균",
+      "소, 돼지, 개, 고양이, 닭, 우유, 물",
+      "육류의 생식이나 불충분한 가열",
+      "동물(조류 등)의 분변에 의한 오염",
+      "식육(특히 닭고기)의 생식",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaCampylobacterFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

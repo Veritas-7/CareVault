@@ -60,6 +60,7 @@ export type FoodGuidanceSourceId =
   | "kdcaNorovirusFoodSafety"
   | "kdcaFoodPoisoningNaturalToxins"
   | "foodSafetyKoreaListeriaFoodPoisoning"
+  | "foodSafetyKoreaCampylobacterFoodPoisoning"
   | "mfdsFoodPoisoningPrevention";
 
 export type FoodMatch = {
@@ -273,6 +274,10 @@ export const foodGuidanceSources: Record<
   },
   foodSafetyKoreaListeriaFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 리스테리아",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+  },
+  foodSafetyKoreaCampylobacterFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 캠필로박터",
     url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   mfdsFoodPoisoningPrevention: {
@@ -1044,6 +1049,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "리스테리아균, 냉장온도에서도 생존하여 증식, 살균처리하지 아니한 우유, 살균 안 된 우유를 섭취하지 말아야 한다, 핫도그, 치즈(특히 소프트치즈), 소시지 및 건조 소시지, 냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
         sourceIds: ["foodSafetyKoreaListeriaFoodPoisoning"],
+      },
+      {
+        label: "식품안전나라 캠필로박터 식중독 주의",
+        detail:
+          "식품안전나라는 캠필로박터균의 원인식품으로 소, 돼지, 개, 고양이, 닭, 우유, 물을 제시하고, 육류의 생식이나 불충분한 가열, 동물(조류 등)의 분변에 의한 오염을 감염 경로로 설명합니다. 생육을 만진 경우 손을 깨끗하게 씻고 소독해 2차 오염을 막고, 식품은 충분히 가열하며, 마시는 물도 끓여 마시고, 식육(특히 닭고기)의 생식을 피하며, 열이나 건조에 약하므로 조리 기구는 물로 끓이거나 소독하여 건조하도록 안내합니다.",
+        examples:
+          "캠필로박터균, 소, 돼지, 개, 고양이, 닭, 우유, 물, 육류의 생식이나 불충분한 가열, 동물(조류 등)의 분변에 의한 오염, 생육을 만진 경우 손을 깨끗하게 씻고 소독하여 2차 오염 방지하여야 한다, 마시는 물도 끓여 마셔야 한다, 식육(특히 닭고기)의 생식, 조리 기구는 물로 끓이거나 소독하여 건조시켜야 한다",
+        sourceIds: ["foodSafetyKoreaCampylobacterFoodPoisoning"],
       },
       {
         label: "질병관리청 비브리오 어패류 안전",
@@ -2573,6 +2586,21 @@ const supportiveFoods: FoodRuleTerm[] = [
     "냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
     "식품안전나라 리스테리아 식중독 5℃ 이하 냉장 보관 후보",
     "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "생육을 만진 경우 손을 깨끗하게 씻고 소독하여 2차 오염 방지하여야 한다",
+    "식품안전나라 캠필로박터 식중독 생육 취급 후 손 씻기·소독 후보",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "마시는 물도 끓여 마셔야 한다",
+    "식품안전나라 캠필로박터 식중독 끓인 물 후보",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "조리 기구는 물로 끓이거나 소독하여 건조시켜야 한다",
+    "식품안전나라 캠필로박터 식중독 조리기구 끓임·소독·건조 후보",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
   ],
   [
     "어패류는 충분히 익혀 먹습니다",
@@ -4250,6 +4278,31 @@ const careTeamFoods: FoodRuleTerm[] = [
     "소시지 및 건조 소시지",
     "식품안전나라 리스테리아 식중독 소시지·건조 소시지 원인식품 확인 필요",
     "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "캠필로박터균",
+    "식품안전나라 캠필로박터 식중독 원인식품·오염경로 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "소, 돼지, 개, 고양이, 닭, 우유, 물",
+    "식품안전나라 캠필로박터 식중독 원인식품 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "육류의 생식이나 불충분한 가열",
+    "식품안전나라 캠필로박터 식중독 육류 생식·불충분 가열 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "동물(조류 등)의 분변에 의한 오염",
+    "식품안전나라 캠필로박터 식중독 조류 분변 오염 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "식육(특히 닭고기)의 생식",
+    "식품안전나라 캠필로박터 식중독 닭고기 생식 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
   ],
   ["씻지 않은 딸기", "면역저하 시 씻기 어려운 과일 주의", "nccImmuneLowDiet"],
   [
