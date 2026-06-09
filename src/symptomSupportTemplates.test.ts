@@ -55,6 +55,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("충분한 공기를 얻을 수 없어요")?.id).toBe(
       "dyspnea-experience",
     );
+    expect(findSymptomSupportTemplate("구강함수액과 틀니 세정 확인")?.id).toBe(
+      "oral-mucositis-care",
+    );
     expect(findSymptomSupportTemplate("기침이 오래 지속되고 밤잠 방해")?.id).toBe(
       "cough-care",
     );
@@ -745,6 +748,41 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds an oral mucositis care question from official oral-hygiene guidance", () => {
+    const cleanMoistSentence = "구강을 깨끗하고 촉촉하게 유지하는 방법";
+    const softBrushSentence = "칫솔모가 부드러운 것을 사용하십시오.";
+    const dentureCleaningSentence =
+      "틀니는 발포성 틀니용 세정제나 1.5%과산화수소 용액에 6-7분 동안 담가둡니다.";
+    const rinseSolutionSentence =
+      "구강함수액은 생리식염수 500cc 와 베이킹 소다 10g을 섞은 물, 6%이하의 알코올 이 섞인 구강청정제, 1.5%과산화수소 수용액 또는 물과 과산화수소의 비가 3:1 이 되도록 만들어 사용합니다.";
+    const duringTreatmentSentence =
+      "구강을 자주 헹궈 수분을 충분하게 유지합니다. 단, 알코올 성분 구강세정제는 삼가합니다.";
+    const dentureWearSentence = "의치는 꼭 필요한 경우만 착용합니다.";
+    const gumConsultSentence =
+      "항암화학요법 시작 전에 잇몸 상태 등에 대하여 의료진과 미리 상의하시면 도움이 됩니다.";
+    const template = findSymptomSupportTemplate("구강함수액과 틀니 세정 확인");
+
+    expect(template?.id).toBe("oral-mucositis-care");
+    expect(template?.mealNote).toContain(cleanMoistSentence);
+    expect(template?.mealNote).toContain(softBrushSentence);
+    expect(template?.mealNote).toContain(dentureCleaningSentence);
+    expect(template?.mealNote).toContain(rinseSolutionSentence);
+    expect(template?.clinicianQuestion).toContain(duringTreatmentSentence);
+    expect(template?.clinicianQuestion).toContain(dentureWearSentence);
+    expect(template?.clinicianQuestion).toContain(gumConsultSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "구강함수액")).toContain(
+      "출처: 국가암정보센터 입안의 염증(구내염) 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T390C393/contents.do",
+    );
+    expect(findSymptomSupportTemplate("입안 상처와 구내염")?.id).toBe("mouth-sore");
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "구강함수액")).not.toMatch(
+      /구강치료를 지시하세요|항생제를 사용하세요|마취제를 사용하세요|진통제를 복용하세요|처방하세요|진단하세요|치료하세요|약을 처방하세요/,
+    );
+  });
+
   it("builds a dry-mouth symptom-support question from official moisture guidance", () => {
     const nearbyWaterSentence = "가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다.";
     const brothSoakingSentence =
@@ -1100,7 +1138,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(29);
+    expect(symptomSupportTemplates).toHaveLength(30);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1158,6 +1196,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("충분한 공기")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
+    );
+    expect(findSymptomSupportTemplate("구강함수액")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T390C393/contents.do",
     );
     expect(findSymptomSupportTemplate("기침")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
