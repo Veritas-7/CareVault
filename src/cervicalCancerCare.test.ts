@@ -1185,6 +1185,9 @@ describe("cervicalCancerCare", () => {
     const hpvTreatmentBoundaryGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 치료효과·재발연구 확인",
     );
+    const hpvAgeEffectGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 허가연령·노출전 효과 확인",
+    );
     const hpvScheduleGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 일정·관찰 확인",
     );
@@ -1216,7 +1219,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "실천지침 일상 예방 체크 메모",
     );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(20);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(21);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -1299,6 +1302,25 @@ describe("cervicalCancerCare", () => {
     expect(hpvTreatmentBoundaryGuide?.detail).not.toContain("재발 방지합니다");
     expect(hpvTreatmentBoundaryGuide?.detail).not.toContain("완치");
     expect(hpvTreatmentBoundaryGuide?.detail).not.toContain("접종하세요");
+    expect(hpvAgeEffectGuide).toMatchObject({
+      label: "HPV 허가연령·노출전 효과 확인",
+      sourceId: "kdcaHpv",
+    });
+    expect(hpvAgeEffectGuide?.detail).toContain("사람유두종바이러스에 노출되기 전");
+    expect(hpvAgeEffectGuide?.detail).toContain("성접촉을 시작하기 전에");
+    expect(hpvAgeEffectGuide?.detail).toContain("가장 유리");
+    expect(hpvAgeEffectGuide?.detail).toContain("9세부터 25~26세까지 접종 허가");
+    expect(hpvAgeEffectGuide?.detail).toContain("허가 연령 이후");
+    expect(hpvAgeEffectGuide?.detail).toContain("암 예방 효과는 입증되지");
+    expect(hpvAgeEffectGuide?.detail).toContain("26세 이상");
+    expect(hpvAgeEffectGuide?.detail).toContain("성생활을 시작하지 않았거나");
+    expect(hpvAgeEffectGuide?.detail).toContain("HPV에 노출 기회가 적은");
+    expect(hpvAgeEffectGuide?.detail).toContain("이론적으로 암예방 효과");
+    expect(hpvAgeEffectGuide?.detail).toContain("진료팀 질문");
+    expect(hpvAgeEffectGuide?.detail).not.toContain("반드시 접종");
+    expect(hpvAgeEffectGuide?.detail).not.toContain("접종하세요");
+    expect(hpvAgeEffectGuide?.detail).not.toContain("효과가 입증됐습니다");
+    expect(hpvAgeEffectGuide?.detail).not.toContain("치료하세요");
     expect(hpvScheduleGuide).toMatchObject({
       label: "HPV 접종 일정·관찰 확인",
       sourceId: "kdcaHpv",

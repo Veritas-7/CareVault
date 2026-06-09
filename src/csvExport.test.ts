@@ -879,6 +879,14 @@ describe("csvExport", () => {
     expect(csv).toContain("치료 효과는 없는");
     expect(csv).toContain("치료 후 재발 방지");
     expect(csv).toContain("연구는 현재 진행 중");
+    expect(csv).toContain("HPV 허가연령·노출전 효과 확인");
+    expect(csv).toContain("사람유두종바이러스에 노출되기 전");
+    expect(csv).toContain("성접촉을 시작하기 전에");
+    expect(csv).toContain("9세부터 25~26세까지 접종 허가");
+    expect(csv).toContain("허가 연령 이후");
+    expect(csv).toContain("암 예방 효과는 입증되지");
+    expect(csv).toContain("26세 이상");
+    expect(csv).toContain("HPV에 노출 기회가 적은");
     expect(csv).toContain("HPV 접종 일정·관찰 확인");
     expect(csv).toContain("9세 이상");
     expect(csv).toContain("만 12세");
