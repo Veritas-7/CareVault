@@ -1173,6 +1173,9 @@ describe("cervicalCancerCare", () => {
     const hpvFamilyGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 백신 가족 안내",
     );
+    const hpvTypeScopeGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 백신 종류·예방범위 확인",
+    );
     const hpvScheduleGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 일정·관찰 확인",
     );
@@ -1204,7 +1207,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "실천지침 일상 예방 체크 메모",
     );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(16);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(17);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -1220,6 +1223,27 @@ describe("cervicalCancerCare", () => {
     expect(text).toContain("정기검진 유지");
     expect(hpvFamilyGuide?.detail).toContain("정기검진 유지");
     expect(hpvFamilyGuide?.detail).not.toContain("20~30분 관찰");
+    expect(hpvTypeScopeGuide).toMatchObject({
+      label: "HPV 백신 종류·예방범위 확인",
+      sourceId: "kdcaHpv",
+    });
+    expect(hpvTypeScopeGuide?.detail).toContain("2가 백신");
+    expect(hpvTypeScopeGuide?.detail).toContain("HPV 16, 18형");
+    expect(hpvTypeScopeGuide?.detail).toContain("4가 백신");
+    expect(hpvTypeScopeGuide?.detail).toContain("HPV 6, 11형");
+    expect(hpvTypeScopeGuide?.detail).toContain("9가 백신");
+    expect(hpvTypeScopeGuide?.detail).toContain("HPV 6, 11, 16, 18, 31, 33, 45, 52, 58형");
+    expect(hpvTypeScopeGuide?.detail).toContain("전체 자궁경부암의 약 70%");
+    expect(hpvTypeScopeGuide?.detail).toContain("방어효과");
+    expect(hpvTypeScopeGuide?.detail).toContain("교차반응");
+    expect(hpvTypeScopeGuide?.detail).toContain("유전자재조합 백신");
+    expect(hpvTypeScopeGuide?.detail).toContain("병을 일으키는 DNA");
+    expect(hpvTypeScopeGuide?.detail).toContain("감염의 위험");
+    expect(hpvTypeScopeGuide?.detail).toContain("접종기관과 진료팀");
+    expect(hpvTypeScopeGuide?.detail).not.toContain("100% 예방");
+    expect(hpvTypeScopeGuide?.detail).not.toContain("접종하세요");
+    expect(hpvTypeScopeGuide?.detail).not.toContain("맞으세요");
+    expect(hpvTypeScopeGuide?.detail).not.toContain("치료하세요");
     expect(hpvScheduleGuide).toMatchObject({
       label: "HPV 접종 일정·관찰 확인",
       sourceId: "kdcaHpv",

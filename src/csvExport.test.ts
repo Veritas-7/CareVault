@@ -853,6 +853,16 @@ describe("csvExport", () => {
     expect(csv).toContain("HPV 백신은 예방용");
     expect(csv).toContain("접종 후에도 자궁경부암 선별검사");
     expect(csv).toContain("선별검사는 변경 없이");
+    expect(csv).toContain("HPV 백신 종류·예방범위 확인");
+    expect(csv).toContain("2가 백신");
+    expect(csv).toContain("HPV 16, 18형");
+    expect(csv).toContain("4가 백신");
+    expect(csv).toContain("HPV 6, 11형");
+    expect(csv).toContain("9가 백신");
+    expect(csv).toContain("전체 자궁경부암의 약 70%");
+    expect(csv).toContain("유전자재조합 백신");
+    expect(csv).toContain("병을 일으키는 DNA");
+    expect(csv).toContain("감염의 위험");
     expect(csv).toContain("HPV 접종 일정·관찰 확인");
     expect(csv).toContain("9세 이상");
     expect(csv).toContain("만 12세");

@@ -194,6 +194,16 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("HPV 백신은 예방용");
     expect(text).toContain("접종 후에도 자궁경부암 선별검사");
     expect(text).toContain("선별검사는 변경 없이");
+    expect(text).toContain("HPV 백신 종류·예방범위 확인");
+    expect(text).toContain("2가 백신");
+    expect(text).toContain("HPV 16, 18형");
+    expect(text).toContain("4가 백신");
+    expect(text).toContain("HPV 6, 11형");
+    expect(text).toContain("9가 백신");
+    expect(text).toContain("전체 자궁경부암의 약 70%");
+    expect(text).toContain("유전자재조합 백신");
+    expect(text).toContain("병을 일으키는 DNA");
+    expect(text).toContain("감염의 위험");
     expect(text).toContain("HPV 접종 일정·관찰 확인");
     expect(text).toContain("9세 이상");
     expect(text).toContain("만 12세");
@@ -450,32 +460,32 @@ describe("cervicalCancerCareClipboard", () => {
     expect(profileSummary).toMatchObject({
       alertCount: 4,
       alertRecordFieldCount: 4,
-      preventionCount: 16,
+      preventionCount: 17,
       priorityCount: 3,
       promptCount: 26,
-      recordRecoveryPreventionCount: 43,
+      recordRecoveryPreventionCount: 44,
       recoveryCount: 10,
       screeningSummaryCount: 1,
       sourceCount: 34,
-      totalItemCount: 81,
+      totalItemCount: 82,
     });
     expect(formatCervicalCancerCareClipboardCompactSummary(profileSummary)).toBe(
-      "총 81개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 43개 · 출처 34개",
+      "총 82개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 44개 · 출처 34개",
     );
     expect(formatCervicalCancerCareClipboardDescription(profileSummary)).toBe(
-      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 81개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 43개 · 출처 34개",
+      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 82개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 44개 · 출처 34개",
     );
     expect(formatCervicalCancerCareClipboardStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사됨 · 총 81개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 43개 · 출처 34개",
+      "자궁경부암 케어 노트 복사됨 · 총 82개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 44개 · 출처 34개",
     );
     expect(formatCervicalCancerCareClipboardUnsupportedStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 81개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 43개 · 출처 34개",
+      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 82개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 44개 · 출처 34개",
     );
     expect(formatCervicalCancerCareClipboardFailedStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사 실패 · 총 81개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 43개 · 출처 34개",
+      "자궁경부암 케어 노트 복사 실패 · 총 82개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 44개 · 출처 34개",
     );
     expect(formatCervicalCancerCareClipboardCompactSummary(genericSummary)).toBe(
-      "총 80개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 43개 · 출처 34개",
+      "총 81개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 26개 · 기록/회복/예방 44개 · 출처 34개",
     );
   });
 });
