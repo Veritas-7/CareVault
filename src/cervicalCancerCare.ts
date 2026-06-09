@@ -134,6 +134,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 치료방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
   },
+  nccDifferentialDiagnosis: {
+    label: "국가암정보센터 자궁경부암 감별진단",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4891",
+  },
   nccTreatmentSideEffects: {
     label: "국가암정보센터 자궁경부암 치료의 부작용",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
@@ -338,6 +342,12 @@ export const cervicalCancerCareChecks: CervicalCancerCareCheck[] = [
     detail:
       "국가암정보센터는 자궁경부암 치료방법을 수술, 방사선치료, 항암화학요법(표적치료와 면역치료 포함)으로 설명하며, 병기와 암 크기, 연령, 전신상태, 향후 출산 희망 여부를 함께 고려해 결정한다고 설명합니다. 전암성 병변, 초기 침윤성 자궁경부암, 많이 진행된 병변, 재발 부위별로 선택지가 달라질 수 있으므로 내 병기, 병변 범위, 림프절 여부, 출산 계획, 수술·방사선·항암화학요법 병행 이유를 진료팀에 확인합니다.",
     sourceId: "nccTreatmentMethods",
+  },
+  {
+    label: "감별진단 확인 메모",
+    detail:
+      "국가암정보센터는 자궁경부암이 자궁경부염, 질암, 자궁내막암, 자궁체부암, 골반 염증성질환 등과 감별되어야 한다고 설명합니다. 자궁경부세포검사, 질확대경검사 및 펀치 생검, 자궁경관 내 소파술, CT나 MRI 같은 영상검사 중 어떤 근거로 내 진단과 감별진단이 정리됐는지 진료팀에 확인합니다.",
+    sourceId: "nccDifferentialDiagnosis",
   },
   {
     label: "배뇨·배변·출혈 변화 메모",

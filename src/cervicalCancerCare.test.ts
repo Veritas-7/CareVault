@@ -54,6 +54,7 @@ describe("cervicalCancerCare", () => {
       "nccPregnancyBirth",
       "nccDiet",
       "nccTreatmentMethods",
+      "nccDifferentialDiagnosis",
       "nccTreatmentSideEffects",
       "nccRadiationSideEffects",
       "nccLymphedema",
@@ -73,6 +74,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
     expect(cervicalCancerCareSources.nccCervicalPracticeGuideline.url).toContain("6fb06571");
     expect(cervicalCancerCareSources.nccTreatmentStatus.url).toContain("menu_seq=4896");
+    expect(cervicalCancerCareSources.nccDifferentialDiagnosis.url).toContain("menu_seq=4891");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -264,8 +266,11 @@ describe("cervicalCancerCare", () => {
     const treatmentMethodBasisGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "치료방법 선택 근거 메모",
     );
+    const differentialDiagnosisGuide = cervicalCancerCareChecks.find(
+      (item) => item.label === "감별진단 확인 메모",
+    );
 
-    expect(cervicalCancerCareChecks).toHaveLength(11);
+    expect(cervicalCancerCareChecks).toHaveLength(12);
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("출혈·분비물 기록");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("추적검사 일정·결과");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
@@ -349,6 +354,24 @@ describe("cervicalCancerCare", () => {
     expect(treatmentMethodBasisGuide?.detail).toContain("림프절");
     expect(treatmentMethodBasisGuide?.detail).toContain("진료팀에 확인");
     expect(treatmentMethodBasisGuide?.detail).not.toContain("치료하세요");
+    expect(differentialDiagnosisGuide).toMatchObject({
+      label: "감별진단 확인 메모",
+      sourceId: "nccDifferentialDiagnosis",
+    });
+    expect(differentialDiagnosisGuide?.detail).toContain("자궁경부염");
+    expect(differentialDiagnosisGuide?.detail).toContain("질암");
+    expect(differentialDiagnosisGuide?.detail).toContain("자궁내막암");
+    expect(differentialDiagnosisGuide?.detail).toContain("자궁체부암");
+    expect(differentialDiagnosisGuide?.detail).toContain("골반 염증성질환");
+    expect(differentialDiagnosisGuide?.detail).toContain("자궁경부세포검사");
+    expect(differentialDiagnosisGuide?.detail).toContain("질확대경검사");
+    expect(differentialDiagnosisGuide?.detail).toContain("펀치 생검");
+    expect(differentialDiagnosisGuide?.detail).toContain("자궁경관 내 소파술");
+    expect(differentialDiagnosisGuide?.detail).toContain("CT");
+    expect(differentialDiagnosisGuide?.detail).toContain("MRI");
+    expect(differentialDiagnosisGuide?.detail).toContain("진료팀에 확인");
+    expect(differentialDiagnosisGuide?.detail).not.toContain("진단됩니다");
+    expect(differentialDiagnosisGuide?.detail).not.toContain("치료하세요");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "장폐색·혈변·혈뇨 연락 메모")
         ?.detail,
