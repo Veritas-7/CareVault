@@ -1500,6 +1500,38 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical-cancer carotenoid and vitamin uncertainty sentence", () => {
+    const sourceSentence =
+      "자궁경부암의 예방 가능성이 있는 음식으로 카로테노이드(carotenoid), 비타민 A, 비타민 C, 비타민 E 등이 거론되나 아직 그 효과에 대해서는 명확하지 않은 상태입니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalFoodPrevention.label).toBe(
+      "국가암정보센터 자궁경부암 예방과 음식",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 카로테노이드·비타민 예방 효과 불명확성 확인 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
+    expect(terms).not.toContain("당근");
+    expect(terms).not.toContain("비타민");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 예방과 음식 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical risk-factor low fruit and vegetable intake wording", () => {
     const assessment = assessCancerFood(
       "과일과 채소의 섭취가 적은 식이, 과일 채소 섭취 부족, 채소와 과일을 거의 안 먹음",

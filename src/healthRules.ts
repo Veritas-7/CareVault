@@ -668,6 +668,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccCervicalRiskFactors"],
       },
       {
+        label: "자궁경부암 예방 음식 효과 불명확성",
+        detail:
+          "국가암정보센터 자궁경부암 예방과 음식 자료는 카로테노이드와 비타민 A·C·E 등이 예방 가능성이 있는 음식으로 거론되지만 아직 효과가 명확하지 않다고 설명합니다. 식단 기록에서는 특정 영양소나 식품을 예방·치료 효과로 단정하지 않도록 확인합니다.",
+        examples:
+          "자궁경부암의 예방 가능성이 있는 음식으로 카로테노이드(carotenoid), 비타민 A, 비타민 C, 비타민 E 등이 거론되나 아직 그 효과에 대해서는 명확하지 않은 상태입니다.",
+        sourceIds: ["nccCervicalFoodPrevention"],
+      },
+      {
         label: "자극적·너무 뜨겁거나 매운 음식",
         detail:
           "자궁경부암 식생활 자료는 방사선치료나 항암화학요법 중 장 기능이 약해질 수 있어 자극적인 음식은 피하도록 설명하고, 국가암정보센터 건강한 식생활 자료도 너무 뜨겁거나 매운 음식의 섭취는 피하도록 안내합니다.",
@@ -2483,6 +2491,11 @@ const limitFoods: FoodRuleTerm[] = [
     "채소와 과일을 거의 안 먹음",
     "국가암정보센터 자궁경부암 위험요인 채소·과일 섭취 부족 확인 후보",
     "nccCervicalRiskFactors",
+  ],
+  [
+    "자궁경부암의 예방 가능성이 있는 음식으로 카로테노이드(carotenoid), 비타민 A, 비타민 C, 비타민 E 등이 거론되나 아직 그 효과에 대해서는 명확하지 않은 상태입니다.",
+    "자궁경부암 카로테노이드·비타민 예방 효과 불명확성 확인 후보",
+    "nccCervicalFoodPrevention",
   ],
   [
     "소시지",
