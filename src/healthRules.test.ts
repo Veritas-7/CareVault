@@ -12510,6 +12510,77 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea vibrio parahaemolyticus seafood and sashimi-tool guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 장염비브리오균 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "어패류는 수돗물로 잘 씻고, 횟감용 칼, 도마는 구분하여 사용하여야 한다, 오염된 조리 기구는 세정, 열탕 처리하여 2차 오염을 방지하여야 한다, 가능한 한 생식을 피하고, 이 균은 60℃에서 5분, 55℃에서 10분의 가열로 쉽게 사멸하므로 반드시 식품을 가열한 후 섭취한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "장염비브리오균은 2~4%의 소금물에서 잘 생육하며 해수온도가 15℃ 이상이 되면 급격히 증식하고, 짧은 쉼표 모양을 나타내며, 어패류, 생선회, 수산식품(게장, 생선회, 오징어무침, 꼬막무침 등) 원인식품과 어패류의 체표와 내장 및 아가미 등에 부착되는 경로를 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 장염비브리오균",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 장염비브리오균 식중독 주의",
+      sourceIds: ["foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("2~4%의 소금물");
+    expect(foodSafetyGuide?.detail).toContain("해수온도가 15℃ 이상");
+    expect(foodSafetyGuide?.detail).toContain("횟감용 칼, 도마는 구분");
+    expect(foodSafetyGuide?.detail).toContain("60℃에서 5분, 55℃에서 10분");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "어패류는 수돗물로 잘 씻고, 횟감용 칼, 도마는 구분하여 사용하여야 한다",
+      "오염된 조리 기구는 세정, 열탕 처리하여 2차 오염을 방지하여야 한다",
+      "가능한 한 생식을 피하고, 이 균은 60℃에서 5분, 55℃에서 10분의 가열로 쉽게 사멸하므로 반드시 식품을 가열한 후 섭취한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 장염비브리오균 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "장염비브리오균",
+      "2~4%의 소금물에서 잘 생육",
+      "해수온도가 15℃ 이상이 되면 급격히 증식",
+      "짧은 쉼표 모양",
+      "어패류, 생선회, 수산식품(게장, 생선회, 오징어무침, 꼬막무침 등)",
+      "어패류의 체표와 내장 및 아가미 등에 부착",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes FoodSafetyKorea staphylococcus aureus toxin and food-handler wound guidance", () => {
     const careTeamGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "care-team",
