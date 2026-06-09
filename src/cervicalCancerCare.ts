@@ -444,6 +444,12 @@ export const cervicalCancerCarePreventionGuides: CervicalCancerCarePreventionGui
     sourceId: "nccCervicalPrevention",
   },
   {
+    label: "경구피임약 장기복용 상담 메모",
+    detail:
+      "국가암정보센터는 '경구피임약을 5년 이상 장기 복용하면 자궁경부암 발생 위험이 높아지므로 경구피임약을 장기적으로 복용해야 한다면 의사와 상의하는 것이 필요합니다.'라고 설명합니다. 복용 기간, 처방 이유, 대체 선택지나 추적검진 필요 여부를 임의 중단 없이 진료팀 질문으로 남깁니다.",
+    sourceId: "nccCervicalPrevention",
+  },
+  {
     label: "면역·감염·출산력 위험요인 메모",
     detail:
       "국가암정보센터는 HIV 감염처럼 면역체계가 약해지는 경우, 클라미디아 감염, 과일·채소 섭취가 적은 식이, 장기간 경구피임약 사용, 출산 횟수가 많은 경우, 낮은 사회경제수준도 자궁경부암 위험요인으로 알려져 있다고 설명합니다. 면역저하 이력, 성매개감염 치료·재검 기록, 출산 횟수, 검진 접근 어려움과 지원 필요 여부를 진료팀 질문으로 남깁니다.",
