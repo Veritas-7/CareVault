@@ -12794,6 +12794,78 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea clostridium botulinum toxin and stored-food guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 클로스트리디움 보툴리늄균 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "채소와 곡물을 반드시 깨끗이 세척하고 생선 등 어류는 신선한 것으로 조리해야 한다, 통조림·병조림 및 기타 저장식품도 반드시 가열 후 섭취하여야 한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "클로스트리디움 보툴리늄균은 그람양성의 편성혐기성 간균이며 세포 한쪽 끝에 난 원형의 아포를 형성하고, A형, B형, E형, 및 F형균이 사람에게 식중독을 일으키며, 독소는 80℃, 20분과 100℃, 1~2분 가열로 파괴되고, 통조림, 병조림, 레토르트 식품, 식육, 소시지 생선 같은 원인식품과 환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산하는 상황을 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaClostridiumBotulinumFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 클로스트리디움 보툴리늄균",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 클로스트리디움 보툴리늄균 식중독 주의",
+      sourceIds: ["foodSafetyKoreaClostridiumBotulinumFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("세포 한쪽 끝에 난 원형의 아포");
+    expect(foodSafetyGuide?.detail).toContain("80℃, 20분과 100℃, 1~2분");
+    expect(foodSafetyGuide?.detail).toContain("통조림, 병조림, 레토르트 식품");
+    expect(foodSafetyGuide?.detail).toContain("환경조건이 혐기적일 때 아포가 발아");
+    expect(foodSafetyGuide?.detail).toContain("기타 저장식품도 반드시 가열 후 섭취");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "채소와 곡물을 반드시 깨끗이 세척하고 생선 등 어류는 신선한 것으로 조리해야 한다",
+      "통조림·병조림 및 기타 저장식품도 반드시 가열 후 섭취하여야 한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 클로스트리디움 보툴리늄균 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "클로스트리디움 보툴리늄균",
+      "그람양성의 편성혐기성 간균",
+      "세포 한쪽 끝에 난 원형의 아포",
+      "A형, B형, E형, 및 F형균",
+      "80℃, 20분과 100℃, 1~2분 가열로 파괴",
+      "통조림, 병조림, 레토르트 식품, 식육, 소시지 생선",
+      "환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

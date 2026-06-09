@@ -62,6 +62,7 @@ export type FoodGuidanceSourceId =
   | "foodSafetyKoreaStaphylococcusAureusFoodPoisoning"
   | "foodSafetyKoreaBacillusCereusFoodPoisoning"
   | "foodSafetyKoreaClostridiumPerfringensFoodPoisoning"
+  | "foodSafetyKoreaClostridiumBotulinumFoodPoisoning"
   | "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"
   | "foodSafetyKoreaListeriaFoodPoisoning"
   | "foodSafetyKoreaCampylobacterFoodPoisoning"
@@ -288,6 +289,10 @@ export const foodGuidanceSources: Record<
   },
   foodSafetyKoreaClostridiumPerfringensFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 클로스트리디움 퍼프린젠스균",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+  },
+  foodSafetyKoreaClostridiumBotulinumFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 클로스트리디움 보툴리늄균",
     url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning: {
@@ -1103,6 +1108,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "클로스트리디움 퍼프린젠스균, 아포의 발아 시 독소를 생성, A형과 C형, 돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품, 미리 가열 조리된 후 실온에서 5시간이상 방치된 식품, 식품을 대량으로 큰 용기에 보관하면 혐기조건이 될 수 있으므로 소량씩 용기에 넣어 보관한다, 부득이하게 남은 음식은 먹기 전에 충분히 가열한 후 섭취하여야 한다, 따뜻하게 배식하는 음식은 조리 후 배식까지 60℃ 이상을 유지해야 하며, 차갑게 배식하는 음식은 조리 후 재빨리 식혀 5℃ 이하에서 보관한다",
         sourceIds: ["foodSafetyKoreaClostridiumPerfringensFoodPoisoning"],
+      },
+      {
+        label: "식품안전나라 클로스트리디움 보툴리늄균 식중독 주의",
+        detail:
+          "식품안전나라는 클로스트리디움 보툴리늄균을 그람양성의 편성혐기성 간균이며 세포 한쪽 끝에 난 원형의 아포를 형성하는 균으로 설명합니다. A형, B형, E형, 및 F형균이 사람에게 식중독을 일으키고, 독소는 매우 독성이 강하지만 열에 불안정하여 80℃, 20분과 100℃, 1~2분 가열로 파괴된다고 설명하므로 식품 안전 질문으로 분리합니다. 원인식품으로 통조림, 병조림, 레토르트 식품, 식육, 소시지 생선을 제시하고, 환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산할 수 있다고 설명합니다. 예방대책으로 채소와 곡물 세척, 신선한 어류 조리, 통조림·병조림 및 기타 저장식품도 반드시 가열 후 섭취하도록 안내합니다.",
+        examples:
+          "클로스트리디움 보툴리늄균, 그람양성의 편성혐기성 간균, 세포 한쪽 끝에 난 원형의 아포, A형, B형, E형, 및 F형균, 80℃, 20분과 100℃, 1~2분 가열로 파괴, 통조림, 병조림, 레토르트 식품, 식육, 소시지 생선, 환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산, 채소와 곡물을 반드시 깨끗이 세척하고 생선 등 어류는 신선한 것으로 조리해야 한다, 통조림·병조림 및 기타 저장식품도 반드시 가열 후 섭취하여야 한다",
+        sourceIds: ["foodSafetyKoreaClostridiumBotulinumFoodPoisoning"],
       },
       {
         label: "식품안전나라 장출혈성 대장균 식중독 주의",
@@ -2704,6 +2717,16 @@ const supportiveFoods: FoodRuleTerm[] = [
     "따뜻하게 배식하는 음식은 조리 후 배식까지 60℃ 이상을 유지해야 하며, 차갑게 배식하는 음식은 조리 후 재빨리 식혀 5℃ 이하에서 보관한다",
     "식품안전나라 클로스트리디움 퍼프린젠스균 배식 온도 60℃ 이상·냉각 5℃ 이하 후보",
     "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
+    "채소와 곡물을 반드시 깨끗이 세척하고 생선 등 어류는 신선한 것으로 조리해야 한다",
+    "식품안전나라 클로스트리디움 보툴리늄균 채소·곡물 세척 및 신선 어류 조리 후보",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "통조림·병조림 및 기타 저장식품도 반드시 가열 후 섭취하여야 한다",
+    "식품안전나라 클로스트리디움 보툴리늄균 통조림·병조림·저장식품 가열 섭취 후보",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
   ],
   [
     "조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다",
@@ -4506,6 +4529,41 @@ const careTeamFoods: FoodRuleTerm[] = [
     "미리 가열 조리된 후 실온에서 5시간이상 방치된 식품",
     "식품안전나라 클로스트리디움 퍼프린젠스균 가열 후 5시간 이상 실온방치 확인 필요",
     "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
+    "클로스트리디움 보툴리늄균",
+    "식품안전나라 클로스트리디움 보툴리늄균 식중독 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "그람양성의 편성혐기성 간균",
+    "식품안전나라 클로스트리디움 보툴리늄균 편성혐기성 간균 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "세포 한쪽 끝에 난 원형의 아포",
+    "식품안전나라 클로스트리디움 보툴리늄균 말단 원형 아포 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "A형, B형, E형, 및 F형균",
+    "식품안전나라 클로스트리디움 보툴리늄균 A/B/E/F형 식중독 관여 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "80℃, 20분과 100℃, 1~2분 가열로 파괴",
+    "식품안전나라 클로스트리디움 보툴리늄균 독소 열 불활성화 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "통조림, 병조림, 레토르트 식품, 식육, 소시지 생선",
+    "식품안전나라 클로스트리디움 보툴리늄균 저장식품·식육·소시지·생선 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산",
+    "식품안전나라 클로스트리디움 보툴리늄균 혐기조건 아포 발아·독소 생산 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
   ],
   [
     "장출혈성 대장균",
