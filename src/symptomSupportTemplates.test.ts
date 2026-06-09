@@ -34,6 +34,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("손발저림과 감각이상")?.id).toBe(
       "neuropathy-safety",
     );
+    expect(findSymptomSupportTemplate("피부 발진과 가려움")?.id).toBe(
+      "skin-change-care",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -249,6 +252,52 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "손발저림")).not.toMatch(
       /신경차단을 하세요|진단하세요|치료하세요|진통제를 처방하세요|운전을 금지하세요/,
+    );
+  });
+
+  it("builds a skin-change care question from official skin-symptom guidance", () => {
+    const acneSentence =
+      "여드름이 생겼을 경우 손으로 만지거나 임의로 관리하지 마시고, 의사에게 치료를 받으시기 바랍니다.";
+    const drySkinSentence =
+      "샤워를 하거나 목욕을 할 때 오랜시간 동안 뜨거운 물에서 하는 것보다 짧은 시간에 끝내는 것이 좋고 크림이나 로션을 바르면 됩니다.";
+    const rashItchSentence =
+      "순한 비누로 목욕을 하면 진정 효과가 있습니다. 목욕 후 피부를 부드럽게 하는 로션을 바르면 도움이 됩니다.";
+    const sunSentence =
+      "태양에 노출되는 것을 가급적 피하고, 자외선의 활동이 가장 강한 오전 10시부터 오후 3시까지는 특히 주의하도록 합니다.";
+    const handFootSentence =
+      "손바닥과 발바닥에 통증 이 심하게 나타나고 부으면서 붉게 변할 수 있습니다. 이후 심해지면 물집이 형성되고, 피부가 벗겨지며 다시 피부가 재생됩니다.";
+    const handFootConsultSentence =
+      "통증이 심하거나 물집 형성, 표피박리 등이 있으면 의료진에게 즉시 알려서 적절한 치료를 받으시기 바랍니다.";
+    const radiationSkinSentence =
+      "방사선치료 후 피부가 건조하면 자극이 없는 수용성 크림이나 로션을 1일 2회 정도 피부에 가볍게 바르십시오. 그리고 치료부위의 피부를 비비거나 긁거나 마사지하는 것은 피합니다.";
+    const radiationConsultSentence =
+      "가능하면 환부를 공기에 노출하고 빨갛게 붓거나 물집이 생기면 의사와 상의합니다.";
+    const nailChangeSentence =
+      "치료과정에서 손톱이나 발톱이 검은색으로 변하거나 흰색 줄이 생길 수 있으며, 깨지거나, 건조해지고, 갈라지고, 들릴 수도 있습니다.";
+    const nailConsultSentence =
+      "손발톱 뿌리부분의 피부 붉어짐, 통증, 진물이 나면 즉시 의료진에게 알리도록 합니다.";
+    const template = findSymptomSupportTemplate("피부 발진과 가려움");
+
+    expect(template?.id).toBe("skin-change-care");
+    expect(template?.mealNote).toContain(acneSentence);
+    expect(template?.mealNote).toContain(drySkinSentence);
+    expect(template?.mealNote).toContain(rashItchSentence);
+    expect(template?.mealNote).toContain(sunSentence);
+    expect(template?.clinicianQuestion).toContain(handFootSentence);
+    expect(template?.clinicianQuestion).toContain(handFootConsultSentence);
+    expect(template?.clinicianQuestion).toContain(radiationSkinSentence);
+    expect(template?.clinicianQuestion).toContain(radiationConsultSentence);
+    expect(template?.clinicianQuestion).toContain(nailChangeSentence);
+    expect(template?.clinicianQuestion).toContain(nailConsultSentence);
+    expect(buildSymptomSupportQuestion(template!, "피부 발진")).toContain(
+      handFootConsultSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "피부 발진")).toContain(
+      "출처: 국가암정보센터 피부변화 증상별 대처방법 - https://www.cancer.go.kr/lay1/S1T454C456/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "피부 발진")).not.toMatch(
+      /스테로이드를 처방하세요|항생제를 처방하세요|진단하세요|치료하세요|방사선치료를 중단하세요|햇빛을 금지하세요/,
     );
   });
 
@@ -723,7 +772,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(21);
+    expect(symptomSupportTemplates).toHaveLength(22);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -760,6 +809,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("손발저림")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T458C460/contents.do",
+    );
+    expect(findSymptomSupportTemplate("피부 발진")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T454C456/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
