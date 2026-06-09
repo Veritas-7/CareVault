@@ -456,6 +456,12 @@ export const cervicalCancerCarePreventionGuides: CervicalCancerCarePreventionGui
     sourceId: "nccCervicalPrevention",
   },
   {
+    label: "실천지침 일상 예방 체크 메모",
+    detail:
+      "국가암정보센터 국민 암예방 수칙 실천지침 자궁경부암 자료의 '자궁경부암 예방, 일상 생활' 체크는 안전한 성생활(성 상대자수 최소화 등), 식이 섬유가 풍부한 신선한 채소·과일 섭취, 금연을 함께 제시합니다. 이 항목은 현재 검진·치료 이력에서 성생활 상담, 식단 기록, 금연 지원 필요 여부를 한 번에 정리하는 진료팀 질문으로 남깁니다.",
+    sourceId: "nccCervicalPracticeGuideline",
+  },
+  {
     label: "면역·감염·출산력 위험요인 메모",
     detail:
       "국가암정보센터는 HIV 감염처럼 면역체계가 약해지는 경우, 클라미디아 감염, 과일·채소 섭취가 적은 식이, 장기간 경구피임약 사용, 출산 횟수가 많은 경우, 낮은 사회경제수준도 자궁경부암 위험요인으로 알려져 있다고 설명합니다. 면역저하 이력, 성매개감염 치료·재검 기록, 출산 횟수, 검진 접근 어려움과 지원 필요 여부를 진료팀 질문으로 남깁니다.",

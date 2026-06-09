@@ -534,8 +534,11 @@ describe("cervicalCancerCare", () => {
     const lifestyleEvidenceBoundaryGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "생활요인 근거 경계 메모",
     );
+    const practiceDailyPreventionGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "실천지침 일상 예방 체크 메모",
+    );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(12);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(13);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -626,6 +629,18 @@ describe("cervicalCancerCare", () => {
     expect(lifestyleEvidenceBoundaryGuide?.detail).not.toContain("음주가 자궁경부암 위험");
     expect(lifestyleEvidenceBoundaryGuide?.detail).not.toContain("비만이 자궁경부암 위험");
     expect(lifestyleEvidenceBoundaryGuide?.detail).not.toContain("운동하세요");
+    expect(practiceDailyPreventionGuide).toMatchObject({
+      label: "실천지침 일상 예방 체크 메모",
+      sourceId: "nccCervicalPracticeGuideline",
+    });
+    expect(practiceDailyPreventionGuide?.detail).toContain("자궁경부암 예방, 일상 생활");
+    expect(practiceDailyPreventionGuide?.detail).toContain("안전한 성생활");
+    expect(practiceDailyPreventionGuide?.detail).toContain("성 상대자수 최소화");
+    expect(practiceDailyPreventionGuide?.detail).toContain("식이 섬유가 풍부한 신선한 채소·과일");
+    expect(practiceDailyPreventionGuide?.detail).toContain("금연");
+    expect(practiceDailyPreventionGuide?.detail).toContain("진료팀 질문");
+    expect(practiceDailyPreventionGuide?.detail).not.toContain("실천하세요");
+    expect(practiceDailyPreventionGuide?.detail).not.toContain("치료하세요");
     expect(cervicalCancerCarePreventionGuides.every((item) => item.sourceId)).toBe(true);
   });
 
