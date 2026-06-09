@@ -25,6 +25,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("구토가 계속됨")?.id).toBe("vomiting");
     expect(findSymptomSupportTemplate("diarrhea after medication")?.id).toBe("diarrhea");
     expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
+    expect(findSymptomSupportTemplate("백혈구 감소와 날음식 식사 걱정")?.id).toBe(
+      "immune-low-food-safety",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -127,6 +130,43 @@ describe("symptomSupportTemplates", () => {
       "출처: 국가암정보센터 감염 의료진 상담 기준 - https://www.cancer.go.kr/lay1/S1T435C439/contents.do",
     );
     expect(template!.safetyNote).toContain("진료 전 확인용");
+  });
+
+  it("builds an immune-low food-safety question from official cooked-food guidance", () => {
+    const cookedFoodSentence =
+      "항암화학요법 나 방사선 치료 후 백혈구수가 감소한 경우에는 감염에 대해 특별히 주의해야 하므로 음식을 통한 세균 감염을 예방하기 위해 익힌 음식을 먹도록 합니다.";
+    const handWashSentence = "음식을 만지거나 요리를 하려면 손을 깨끗이 씻도록 합니다.";
+    const expirationSentence = "식품의 유통기한을 꼭 확인합니다.";
+    const separateStorageSentence =
+      "요리하기 전의 고기, 생선, 닭고기 등은 비닐팩이나 플라스틱통 등에 분리하여 보관합니다.";
+    const fullyCookSentence = "고기, 닭고기, 생선 등은 완전히 익히도록 합니다.";
+    const rawEggSentence =
+      "날계란이나 덜 익힌 계란과 이들이 들어간 음식은 먹지 않습니다.";
+    const rawFoodSentence =
+      "육회, 생선회, 생조개, 초밥 등 익히지 않은 음식은 드시지 않습니다.";
+    const pasteurizedSentence =
+      "쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다.";
+    const template = findSymptomSupportTemplate("백혈구 감소와 날음식 식사 걱정");
+
+    expect(template?.id).toBe("immune-low-food-safety");
+    expect(template?.mealNote).toContain(cookedFoodSentence);
+    expect(template?.mealNote).toContain(handWashSentence);
+    expect(template?.mealNote).toContain(expirationSentence);
+    expect(template?.mealNote).toContain(separateStorageSentence);
+    expect(template?.mealNote).toContain(fullyCookSentence);
+    expect(template?.clinicianQuestion).toContain(rawEggSentence);
+    expect(template?.clinicianQuestion).toContain(rawFoodSentence);
+    expect(template?.clinicianQuestion).toContain(pasteurizedSentence);
+    expect(buildSymptomSupportQuestion(template!, "백혈구 감소")).toContain(
+      rawFoodSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "백혈구 감소")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "백혈구 감소")).not.toMatch(
+      /항생제를 처방하세요|진단하세요|치료하세요|모든 음식을 금지하세요|격리하세요/,
+    );
   });
 
   it("builds a fatigue and mood-change question from depression or insomnia keywords", () => {
@@ -600,7 +640,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(18);
+    expect(symptomSupportTemplates).toHaveLength(19);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -628,6 +668,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("오한")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T435C439/contents.do",
+    );
+    expect(findSymptomSupportTemplate("백혈구 감소")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
