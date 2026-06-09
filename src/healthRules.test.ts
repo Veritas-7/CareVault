@@ -1369,6 +1369,38 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical-cancer treatment-period eating support source sentence", () => {
+    const sourceSentence =
+      "영양은 암치료에 있어서 중요한 부분입니다. 치료 전, 치료기간 동안, 그리고 치료 후 올바른 음식섭취는 기분을 좋게 하고 강하게 만들어 줄 것입니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalDiet.label).toBe(
+      "국가암정보센터 자궁경부암 식생활",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 치료 전·중·후 올바른 음식섭취 확인 후보",
+      sourceId: "nccCervicalDiet",
+    });
+    expect(terms).not.toContain("암을 낫게 해주는 특별한 영양소");
+    expect(terms).not.toContain("충분한 영양 섭취를 위해서는 잘 먹는 것이 중요한데");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 식생활 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical-cancer appetite and pain-linked meal support source sentence", () => {
     const sourceSentence =
       "충분한 영양 섭취를 위해서는 잘 먹는 것이 중요한데, 우선 환자가 평소에 좋아했던 음식이나 먹고 싶어하던 음식을 제공하고, 통증 으로 식욕을 잃었다면 식사 전에 먼저 진통제 를 복용합니다. 음식은 항상 손이 쉽게 갈 수 있는 곳에 두고 식욕을 느낄 때마다 먹습니다.";
