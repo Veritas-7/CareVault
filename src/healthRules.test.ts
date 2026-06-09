@@ -2074,6 +2074,52 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide salt and soy-sauce reduction phrases", () => {
+    const soupReductionPhrase = "소금 및 간장 사용량 감소(소금 섭취량 감소)";
+    const burdockReductionPhrase =
+      "우엉조림 → 우엉볶음 : 간장 사용량 감소(소금 섭취량 감소)";
+    const assessment = assessCancerFood(
+      `북어콩나물국, ${soupReductionPhrase}, ${burdockReductionPhrase}`,
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual(["북어콩나물국", soupReductionPhrase, burdockReductionPhrase]);
+    expect(matchesByTerm.북어콩나물국).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 나트륨 감소 식단 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[soupReductionPhrase]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 소금·간장 사용량 감소 조리 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[burdockReductionPhrase]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 실천지침 우엉볶음 나트륨 감소 대체 예시 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(terms).not.toContain("우엉조림");
+    expect(terms).not.toContain("우엉볶음");
+    expect(terms).not.toContain("소금 추가");
+    expect(terms).not.toContain("추가 간장");
+    expect(balancedGuideText).toContain("북어콩나물국");
+    expect(balancedGuideText).toContain(soupReductionPhrase);
+    expect(balancedGuideText).toContain(burdockReductionPhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[burdockReductionPhrase])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide limit examples without contradicting replacements", () => {
     const assessment = assessCancerFood(
       "햄구이, 초코칩쿠키, 단무지, 국물, 과일샐러드, 채소샐러드",

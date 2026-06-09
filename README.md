@@ -36,6 +36,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC diet-practice fiber snack replacement sentence matching for 간식으로 과자나 탄산음료 대신 고구마(중간 크기 1개 정도), 채소(예: 당근1/5개, 오이1/4개 정도) 및 과일 (예: 사과1/2개, 딸기 10개 정도)을 먹습니다 plus 매일 5가지 색 채소·과일 guidance, keeping the source-backed replacement as a balanced snack candidate while retaining 과자나 탄산음료 as a limit candidate
 - NCC cervical practice-guide sodium-reduction soup wording matching for 쇠고기뭇국, 소금 대신 간장 사용으로 나트륨 섭취량 감소, and 국 또는 찌개의 국물은 다 드시지 마십시오, preserving the sodium-reduction example as balanced and soup broth as watch
 - NCC cervical practice-guide yogurt-dressing and strawberry-yogurt example matching for 채소 섭취량 증가(채소샐러드는 요플레드레싱 사용) and 딸기 요플레, preserving them as cervical practice-guide balanced examples without generic yogurt treatment claims
+- NCC cervical practice-guide salt and soy-sauce reduction phrase matching for 북어콩나물국, 소금 및 간장 사용량 감소(소금 섭취량 감소), and 우엉조림 → 우엉볶음 : 간장 사용량 감소(소금 섭취량 감소), preserving the exact source replacement as a balanced sodium-reduction example
 - NCC nausea do-not-force intake sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다
 - NCC nausea do-not-force specific-food alternative-food source sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다. 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 합니다. 대신 먹기 좋은 다른 음식을 많이 먹도록 합니다.
 - NCC nausea treatment-before-eating sentence matching for 항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다
