@@ -130,7 +130,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("콘돔");
     expect(text).toContain("경구피임약");
     expect(text).toContain("경구피임약 장기복용 상담 메모");
-    expect(text).toContain("경구피임약을 5년 이상 장기 복용하면");
+    expect(text).toContain("5년 이상의 장기적인 경구피임약 복용은 가능한 하지 않습니다.");
     expect(text).toContain("면역·감염·출산력 위험요인 메모");
     expect(text).toContain("HIV");
     expect(text).toContain("클라미디아");

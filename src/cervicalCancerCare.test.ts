@@ -614,7 +614,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCarePreventionGuides.every((item) => item.sourceId)).toBe(true);
   });
 
-  it("keeps the NCC oral-contraceptive long-term-use consultation sentence as a separate prevention memo", () => {
+  it("keeps the current NCC oral-contraceptive long-term-use phrase as a separate prevention memo", () => {
     const oralContraceptiveGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "경구피임약 장기복용 상담 메모",
     );
@@ -624,8 +624,9 @@ describe("cervicalCancerCare", () => {
       sourceId: "nccCervicalPrevention",
     });
     expect(oralContraceptiveGuide?.detail).toContain(
-      "경구피임약을 5년 이상 장기 복용하면 자궁경부암 발생 위험이 높아지므로 경구피임약을 장기적으로 복용해야 한다면 의사와 상의하는 것이 필요합니다.",
+      "5년 이상의 장기적인 경구피임약 복용은 가능한 하지 않습니다.",
     );
+    expect(oralContraceptiveGuide?.detail).toContain("이미 복용 중");
     expect(oralContraceptiveGuide?.detail).toContain("복용 기간");
     expect(oralContraceptiveGuide?.detail).toContain("처방 이유");
     expect(oralContraceptiveGuide?.detail).toContain("진료팀");
