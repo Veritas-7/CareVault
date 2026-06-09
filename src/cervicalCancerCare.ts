@@ -543,7 +543,7 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
   {
     label: "광범위 자궁절제술 후 회복",
     detail:
-      "최소 6주 무거운 물건, 부부관계, 운전 제한과 해제 시점을 내 수술 범위 기준으로 진료팀에 확인합니다.",
+      "국가암정보센터는 광범위 자궁절제술 후에는 수술 후 최소한 6주 동안에는 무거운 것을 들면 안되고, 부부관계를 피해야 하며, 갑작스러운 통증 이 올 수 있으므로 완전히 회복될 때까지는 운전을 하지 않는 것이 좋습니다. 이 회복 제한과 해제 시점을 내 수술 범위, 퇴원 안내서, 진료팀 지시에 맞춰 확인합니다.",
     sourceId: "nccRecovery",
   },
   {

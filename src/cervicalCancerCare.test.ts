@@ -1021,12 +1021,17 @@ describe("cervicalCancerCare", () => {
   it("keeps recovery timing notes source-backed and clinician-confirmation oriented", () => {
     const sourceSentence =
       "원추 절제술 시술 후에는 수술 후 약 6~8주간 질 분비물이 많이 나올 수 있고, 간헐적 으로 질출혈이 생길 수 있습니다. 이 기간 동안 성관계, 수영이나 탕목욕, 무리한 운동을 피하고, 변비가 생기지 않도록 주의해야 합니다.";
+    const radicalHysterectomySentence =
+      "광범위 자궁절제술 후에는 수술 후 최소한 6주 동안에는 무거운 것을 들면 안되고, 부부관계를 피해야 하며, 갑작스러운 통증 이 올 수 있으므로 완전히 회복될 때까지는 운전을 하지 않는 것이 좋습니다.";
     const text = cervicalCancerCareRecoveryGuides
       .map((item) => `${item.label} ${item.detail}`)
       .join(" ");
 
     const coneRecoveryGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "원추절제술 후 생활 제한",
+    );
+    const radicalRecoveryGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "광범위 자궁절제술 후 회복",
     );
     const recurrenceSymptomGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "재발 의심 증상·기본 추적검사 메모",
@@ -1044,7 +1049,20 @@ describe("cervicalCancerCare", () => {
       sourceSentence,
     );
     expect(text).toContain("광범위 자궁절제술");
-    expect(text).toContain("최소 6주");
+    expect(text).toContain("최소한 6주");
+    expect(radicalRecoveryGuide?.detail).toContain(radicalHysterectomySentence);
+    expect(formatCervicalCancerCareItemEvidence(radicalRecoveryGuide!)).toContain(
+      radicalHysterectomySentence,
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(radicalRecoveryGuide!).body).toContain(
+      radicalHysterectomySentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(radicalRecoveryGuide!)).toContain(
+      radicalHysterectomySentence,
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(radicalRecoveryGuide!)).join(" ")).not.toContain(
+      "운전하세요",
+    );
     expect(text).toContain("다리·발 운동");
     expect(text).toContain("림프부종 피부·감염 관리");
     expect(text).toContain("열감·통증");
