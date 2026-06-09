@@ -869,6 +869,10 @@ describe("csvExport", () => {
     expect(csv).toContain("성기암");
     expect(csv).toContain("두경부 종양");
     expect(csv).toContain("여성의 자궁경부암 예방 효과만큼 높지 않습니다");
+    expect(csv).toContain("HPV 관련질환 범위 확인");
+    expect(csv).toContain("자궁경부 전암병변");
+    expect(csv).toContain("항문 생식기의 사마귀");
+    expect(csv).toContain("호흡기에 생기는 유두종 병변");
     expect(csv).toContain("HPV 접종 일정·관찰 확인");
     expect(csv).toContain("9세 이상");
     expect(csv).toContain("만 12세");
