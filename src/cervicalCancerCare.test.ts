@@ -73,9 +73,10 @@ describe("cervicalCancerCare", () => {
       "nccFatigueDepressionDiet",
 	      "nccNeuropathyCare",
 	      "nccSkinChangeCare",
-	      "nccAnemiaCare",
-	      "nccBleedingSymptoms",
-	      "nccCancerLifeChildrenCommunication",
+		      "nccAnemiaCare",
+		      "nccBleedingSymptoms",
+		      "nccHairLossCare",
+		      "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
@@ -150,10 +151,11 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccImmuneLowDiet.url).toContain("S1T479C489");
 	    expect(cervicalCancerCareSources.nccFatigueDepressionDiet.url).toContain("S1T479C490");
 	    expect(cervicalCancerCareSources.nccNeuropathyCare.url).toContain("S1T458C460");
-	    expect(cervicalCancerCareSources.nccSkinChangeCare.url).toContain("S1T454C456");
-	    expect(cervicalCancerCareSources.nccAnemiaCare.url).toContain("S1T440C444");
-	    expect(cervicalCancerCareSources.nccBleedingSymptoms.url).toContain("S1T445C448");
-	  });
+		    expect(cervicalCancerCareSources.nccSkinChangeCare.url).toContain("S1T454C456");
+		    expect(cervicalCancerCareSources.nccAnemiaCare.url).toContain("S1T440C444");
+		    expect(cervicalCancerCareSources.nccBleedingSymptoms.url).toContain("S1T445C448");
+		    expect(cervicalCancerCareSources.nccHairLossCare.url).toContain("S1T451C453");
+		  });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
     expect(careItems.every((item) => cervicalCancerCareSources[item.sourceId])).toBe(true);
@@ -241,7 +243,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-		    expect(cervicalCancerCarePrompts).toHaveLength(50);
+			    expect(cervicalCancerCarePrompts).toHaveLength(51);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -273,9 +275,10 @@ describe("cervicalCancerCare", () => {
       "피로감·우울 식사·활동 기록 준비",
 	      "손발저림·감각이상 안전 확인",
 	      "피부변화·손발홍반·손발톱 확인",
-	      "빈혈·혈색소·어지럼 기록 확인",
-	      "출혈·멍·코피·혈변 기록 확인",
-	      "HPV·검진",
+		      "빈혈·혈색소·어지럼 기록 확인",
+		      "출혈·멍·코피·혈변 기록 확인",
+		      "탈모·두피 보호 기록 확인",
+		      "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
       "성생활 재개 상담",
@@ -932,10 +935,32 @@ describe("cervicalCancerCare", () => {
 		    expect(buildCervicalCancerCarePromptQuestion(bleedingSymptomsPrompt)).toContain(
 		      "출처: 국가암정보센터 출혈 증상 - https://www.cancer.go.kr/lay1/S1T445C448/contents.do",
 		    );
-		    expect(Object.values(buildCervicalCancerCarePromptQuestionDraft(bleedingSymptomsPrompt, "2026-06-15")).join(" ")).not.toMatch(
-		      /출혈로 진단하세요|수혈하세요|지혈제를 복용하세요|응고검사를 지시하세요|항암을 중단하세요|방사선을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
-		    );
-		    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
+			    expect(Object.values(buildCervicalCancerCarePromptQuestionDraft(bleedingSymptomsPrompt, "2026-06-15")).join(" ")).not.toMatch(
+			      /출혈로 진단하세요|수혈하세요|지혈제를 복용하세요|응고검사를 지시하세요|항암을 중단하세요|방사선을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+			    );
+			    const hairLossCarePrompt = cervicalCancerCarePrompts.find(
+			      (item) => item.topic === "탈모·두피 보호 기록 확인",
+			    )!;
+			    expect(hairLossCarePrompt.sourceId).toBe("nccHairLossCare");
+			    expect(hairLossCarePrompt.question).toContain("머리를 거칠게 감지");
+			    expect(hairLossCarePrompt.question).toContain("두피를 청결하게");
+			    expect(hairLossCarePrompt.question).toContain("부드러운 샴푸와 크림린스");
+			    expect(hairLossCarePrompt.question).toContain("헤어 드라이기");
+			    expect(hairLossCarePrompt.question).toContain("가장 약한 열");
+			    expect(hairLossCarePrompt.question).toContain("간격이 넓고 부드러운 빗");
+			    expect(hairLossCarePrompt.question).toContain("불안감");
+			    expect(hairLossCarePrompt.question).toContain("모자, 스카프");
+			    expect(hairLossCarePrompt.question).toContain("선크림");
+			    expect(hairLossCarePrompt.question).toContain("가발");
+			    expect(hairLossCarePrompt.question).toContain("갑자기 두피 피부가 노출");
+			    expect(hairLossCarePrompt.question).toContain("감정변화");
+			    expect(buildCervicalCancerCarePromptQuestion(hairLossCarePrompt)).toContain(
+			      "출처: 국가암정보센터 탈모 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T451C453/contents.do",
+			    );
+			    expect(Object.values(buildCervicalCancerCarePromptQuestionDraft(hairLossCarePrompt, "2026-06-15")).join(" ")).not.toMatch(
+			      /탈모를 치료하세요|두피약을 바르세요|선크림을 처방하세요|가발을 처방하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+			    );
+			    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
 		      (item) => item.topic === "HPV·검진",
 		    )!;
     expect(hpvScreeningPrompt.question).toContain("접종 후에도 자궁경부암 선별검사");
@@ -1801,9 +1826,17 @@ describe("cervicalCancerCare", () => {
 	      "코피, 입안의 혈액성 수포, 잇몸출혈, 구강 궤양 의 출혈이 있을 수 있고 침에 피가 섞여 나오기도 합니다.";
 	    const bleedingDigestiveSentence =
 	      "구토 물에 피가 섞여 나오거나 혈변, 검은 색의 묽은 변을 볼 수 있습니다.";
-	    const bleedingUrinaryReproductiveSentence =
-	      "혈뇨, 소변을 볼 때 통증이나 타는 듯한 느낌, 빈뇨(소변을 자주 봄), 비정상적인 다량의 질출혈(또는 폐경기 이후의 질출혈) 등이 있습니다.";
-	    const coughDefinitionSentence =
+		    const bleedingUrinaryReproductiveSentence =
+		      "혈뇨, 소변을 볼 때 통증이나 타는 듯한 느낌, 빈뇨(소변을 자주 봄), 비정상적인 다량의 질출혈(또는 폐경기 이후의 질출혈) 등이 있습니다.";
+		    const hairLossGentleCareSentence =
+		      "머리를 거칠게 감지 않도록 하며 말릴 때는 살살 두들겨서 말립니다.";
+		    const hairLossHeatCombSentence =
+		      "헤어 드라이기와 같은 열기구의 사용은 되도록 줄입니다. 꼭 필요한 경우에는 가장 약한 열로 하도록 합니다.";
+		    const hairLossEmotionSentence =
+		      "탈모로 인한 불안감을 의료진 및 가족들에게 표현하고 탈모를 경험하는 다른 환자들과의 대화를 통하여 감정을 나누는 것도 좋습니다.";
+		    const hairLossScalpProtectionSentence =
+		      "외출 시에는 모자, 스카프 등을 사용하며, 완전 탈모 시에는 두피를 보호하기 위하여 선크림(햇빛 차단제)을 사용합니다.";
+		    const coughDefinitionSentence =
 	      "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
       "병적인 기침은 환자가 불편을 느끼는 증상으로 지속되거나 발작적인 것을 말합니다.";
@@ -1873,10 +1906,13 @@ describe("cervicalCancerCare", () => {
 	    const anemiaCareGuide = cervicalCancerCareRecoveryGuides.find(
 	      (item) => item.label === "빈혈·혈색소·어지럼 메모",
 	    );
-	    const bleedingSymptomsGuide = cervicalCancerCareRecoveryGuides.find(
-	      (item) => item.label === "출혈·멍·코피·혈변 메모",
-	    );
-		    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
+		    const bleedingSymptomsGuide = cervicalCancerCareRecoveryGuides.find(
+		      (item) => item.label === "출혈·멍·코피·혈변 메모",
+		    );
+		    const hairLossCareGuide = cervicalCancerCareRecoveryGuides.find(
+		      (item) => item.label === "탈모·두피 보호·가발 준비 메모",
+		    );
+			    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
 	      (item) => item.label === "자녀·가족 설명 메모",
 	    );
     const psychologicalStabilityGuide = cervicalCancerCareRecoveryGuides.find(
@@ -1898,7 +1934,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-		    expect(cervicalCancerCareRecoveryGuides).toHaveLength(34);
+			    expect(cervicalCancerCareRecoveryGuides).toHaveLength(35);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2557,10 +2593,38 @@ describe("cervicalCancerCare", () => {
 		    expect(formatCervicalCancerCareListItemAriaLabel(bleedingSymptomsGuide!)).toContain(
 		      "국가암정보센터 출혈 증상",
 		    );
-		    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(bleedingSymptomsGuide!)).join(" ")).not.toMatch(
-		      /출혈로 진단하세요|수혈하세요|지혈제를 복용하세요|응고검사를 지시하세요|항암을 중단하세요|방사선을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
-		    );
-		    expect(coughCauseGuide).toMatchObject({
+			    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(bleedingSymptomsGuide!)).join(" ")).not.toMatch(
+			      /출혈로 진단하세요|수혈하세요|지혈제를 복용하세요|응고검사를 지시하세요|항암을 중단하세요|방사선을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+			    );
+			    expect(hairLossCareGuide).toMatchObject({
+			      label: "탈모·두피 보호·가발 준비 메모",
+			      sourceId: "nccHairLossCare",
+			    });
+			    expect(hairLossCareGuide?.detail).toContain(hairLossGentleCareSentence);
+			    expect(hairLossCareGuide?.detail).toContain("두피를 청결하게 관리");
+			    expect(hairLossCareGuide?.detail).toContain("부드러운 샴푸와 크림린스");
+			    expect(hairLossCareGuide?.detail).toContain(hairLossHeatCombSentence);
+			    expect(hairLossCareGuide?.detail).toContain("공기 중에서 자연스럽게");
+			    expect(hairLossCareGuide?.detail).toContain("간격이 넓고 부드러운 빗");
+			    expect(hairLossCareGuide?.detail).toContain(hairLossEmotionSentence);
+			    expect(hairLossCareGuide?.detail).toContain(hairLossScalpProtectionSentence);
+			    expect(hairLossCareGuide?.detail).toContain("자신에게 잘 맞는 가발");
+			    expect(hairLossCareGuide?.detail).toContain("아직 머리카락이 빠지기 전에");
+			    expect(hairLossCareGuide?.detail).toContain("갑자기 두피 피부가 노출");
+			    expect(hairLossCareGuide?.detail).toContain("감정변화");
+			    expect(formatCervicalCancerCareItemEvidence(hairLossCareGuide!)).toContain(
+			      "국가암정보센터 탈모 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T451C453/contents.do",
+			    );
+			    expect(buildCervicalCancerCareItemSymptomDraft(hairLossCareGuide!).body).toContain(
+			      "탈모·두피 보호·가발 준비 메모",
+			    );
+			    expect(formatCervicalCancerCareListItemAriaLabel(hairLossCareGuide!)).toContain(
+			      "국가암정보센터 탈모 도움이 되는 방법",
+			    );
+			    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(hairLossCareGuide!)).join(" ")).not.toMatch(
+			      /탈모를 치료하세요|두피약을 바르세요|선크림을 처방하세요|가발을 처방하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+			    );
+			    expect(coughCauseGuide).toMatchObject({
 		      label: "기침·가래·수면방해 메모",
       sourceId: "nccCoughCause",
     });
