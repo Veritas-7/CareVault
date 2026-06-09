@@ -46,6 +46,7 @@ describe("cervicalCancerCare", () => {
       "nccScreeningSchedule",
       "nccScreeningEligibility",
       "nccScreeningResultCost",
+      "nccDefinitionTypes",
       "nccEarlyDiagnosisPrevention",
       "nccRecovery",
       "nccRecurrenceFollowUp",
@@ -75,6 +76,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("S1T211C213");
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
     expect(cervicalCancerCareSources.nccCervicalPracticeGuideline.url).toContain("6fb06571");
+    expect(cervicalCancerCareSources.nccDefinitionTypes.url).toContain("menu_seq=4881");
     expect(cervicalCancerCareSources.nccTreatmentStatus.url).toContain("menu_seq=4896");
     expect(cervicalCancerCareSources.nccDiagnosisMethods.url).toContain("menu_seq=4889");
     expect(cervicalCancerCareSources.nccStage.url).toContain("menu_seq=4890");
@@ -264,6 +266,9 @@ describe("cervicalCancerCare", () => {
   });
 
   it("keeps self-check copy as observation guidance", () => {
+    const pathologyTypeGuide = cervicalCancerCareChecks.find(
+      (item) => item.label === "병리조직 확인 메모",
+    );
     const treatmentStatusGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "치료현황 통계 상담 메모",
     );
@@ -277,7 +282,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "감별진단 확인 메모",
     );
 
-    expect(cervicalCancerCareChecks).toHaveLength(13);
+    expect(cervicalCancerCareChecks).toHaveLength(14);
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("출혈·분비물 기록");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("추적검사 일정·결과");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
@@ -351,6 +356,23 @@ describe("cervicalCancerCare", () => {
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
     ).toContain("진료팀에 확인");
+    expect(pathologyTypeGuide).toMatchObject({
+      label: "병리조직 확인 메모",
+      sourceId: "nccDefinitionTypes",
+    });
+    expect(pathologyTypeGuide?.detail).toContain("자궁경부 상피내이형성증");
+    expect(pathologyTypeGuide?.detail).toContain("자궁경부상피내암");
+    expect(pathologyTypeGuide?.detail).toContain("기저막");
+    expect(pathologyTypeGuide?.detail).toContain("침윤성 암");
+    expect(pathologyTypeGuide?.detail).toContain("편평상피세포암");
+    expect(pathologyTypeGuide?.detail).toContain("약 80%");
+    expect(pathologyTypeGuide?.detail).toContain("선암");
+    expect(pathologyTypeGuide?.detail).toContain("10-20%");
+    expect(pathologyTypeGuide?.detail).toContain("혼합 암종");
+    expect(pathologyTypeGuide?.detail).toContain("2-5%");
+    expect(pathologyTypeGuide?.detail).toContain("진료팀에 확인");
+    expect(pathologyTypeGuide?.detail).not.toContain("진단됩니다");
+    expect(pathologyTypeGuide?.detail).not.toContain("치료하세요");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "배뇨·배변·출혈 변화 메모")?.detail,
     ).toContain("혈변·혈뇨");

@@ -102,6 +102,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 국가암검진 결과통보 및 비용",
     url: "https://www.cancer.go.kr/lay1/S1T553C556/contents.do",
   },
+  nccDefinitionTypes: {
+    label: "국가암정보센터 자궁경부암 정의 및 종류",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4881",
+  },
   nccEarlyDiagnosisPrevention: {
     label: "국립암센터 자궁경부암 조기 진단과 예방법",
     url: "https://www.cancer.go.kr/download.do?uuid=adf8879c-4343-445e-b67d-0c60e5ac9b58.pdf",
@@ -338,6 +342,12 @@ export const cervicalCancerCareChecks: CervicalCancerCareCheck[] = [
     detail:
       "국가암정보센터는 자궁경부암 검사를 암이 맞는지 확인하는 조직검사와 병기 설정 검사로 나누어 설명합니다. 의사의 진찰, 자궁경부세포검사, 질확대경검사, 조직검사, 원추절제술, 방광경 및 에스결장경검사, 경정맥 신우조영술, CT, MRI, PET 중 어떤 검사가 내 결과에서 암 확인, 자궁경부 주위조직 침윤, 림프절 전이, 원격전이와 재발 확인 목적인지 진료팀에 확인합니다.",
     sourceId: "nccDiagnosisMethods",
+  },
+  {
+    label: "병리조직 확인 메모",
+    detail:
+      "국가암정보센터는 자궁경부암이 전암단계를 상당 기간 거치며 자궁경부 상피내이형성증을 거쳐 상피 내에만 암세포가 있는 자궁경부상피내암으로 진행하고, 기저막을 침범하면 침윤성 암으로 분류한다고 설명합니다. 병리결과지의 편평상피세포암(약 80%), 선암(10-20%), 혼합 암종(2-5%) 같은 조직형과 상피내암/침윤성 암 구분이 내 병기·치료 설명에 어떻게 반영되는지 진료팀에 확인합니다.",
+    sourceId: "nccDefinitionTypes",
   },
   {
     label: "병기 설명 메모",
