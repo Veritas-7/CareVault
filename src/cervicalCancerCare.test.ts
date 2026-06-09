@@ -64,6 +64,7 @@ describe("cervicalCancerCare", () => {
       "nccAppetiteLossDiet",
       "nccMouthPainDiet",
       "nccDryMouthDiet",
+      "nccTasteChangeDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -131,6 +132,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccAppetiteLossDiet.url).toContain("S1T479C480");
     expect(cervicalCancerCareSources.nccMouthPainDiet.url).toContain("S1T479C483");
     expect(cervicalCancerCareSources.nccDryMouthDiet.url).toContain("S1T479C485");
+    expect(cervicalCancerCareSources.nccTasteChangeDiet.url).toContain("S1T479C484");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -219,7 +221,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(39);
+    expect(cervicalCancerCarePrompts).toHaveLength(40);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -242,6 +244,7 @@ describe("cervicalCancerCare", () => {
       "식욕부진 식사·간식 기록 준비",
       "입과 목 통증 식사·구강상태 기록 준비",
       "입안 건조 식사·수분 기록 준비",
+      "입맛 변화 단백질·향 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -568,6 +571,31 @@ describe("cervicalCancerCare", () => {
     expect(dryMouthDietPrompt.question).toContain("의사선생님이나 치과선생님과 상의");
     expect(buildCervicalCancerCarePromptQuestion(dryMouthDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    const tasteChangeDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "입맛 변화 단백질·향 기록 준비",
+    )!;
+    expect(tasteChangeDietPrompt.sourceId).toBe("nccTasteChangeDiet");
+    expect(tasteChangeDietPrompt.question).toContain("암이나 항암치료");
+    expect(tasteChangeDietPrompt.question).toContain("치과적인 문제");
+    expect(tasteChangeDietPrompt.question).toContain("음식의 맛이나 냄새");
+    expect(tasteChangeDietPrompt.question).toContain("고기나 생선 등의 고단백식품");
+    expect(tasteChangeDietPrompt.question).toContain("쓴맛이나 금속성 맛");
+    expect(tasteChangeDietPrompt.question).toContain("음식의 맛이 없어질 수");
+    expect(tasteChangeDietPrompt.question).toContain("치료가 끝나면 사라질");
+    expect(tasteChangeDietPrompt.question).toContain("보기가 좋고 냄새도 좋은 식품");
+    expect(tasteChangeDietPrompt.question).toContain("고기가 싫다면 생선이나 계란, 두부, 콩, 우유나 유제품");
+    expect(tasteChangeDietPrompt.question).toContain("향이 좋은 양념류");
+    expect(tasteChangeDietPrompt.question).toContain("와인, 레몬즙");
+    expect(tasteChangeDietPrompt.question).toContain("새콤달콤한 소스");
+    expect(tasteChangeDietPrompt.question).toContain("신맛이 금속성의 맛");
+    expect(tasteChangeDietPrompt.question).toContain("오렌지나 레몬");
+    expect(tasteChangeDietPrompt.question).toContain("입과 목에 통증");
+    expect(tasteChangeDietPrompt.question).toContain("염증을 자극하거나 불편");
+    expect(tasteChangeDietPrompt.question).toContain("치과적인 문제가 없는지");
+    expect(tasteChangeDietPrompt.question).toContain("입안을 자주 헹구");
+    expect(buildCervicalCancerCarePromptQuestion(tasteChangeDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 입맛의 변화 - https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1368,6 +1396,18 @@ describe("cervicalCancerCare", () => {
       "아주 달거나 신음식을 먹으면 침분비가 많아집니다. 단, 입안이 헐거나 목구멍이 아플 경우에는 피하도록 합니다.";
     const dryMouthSipStrawSentence =
       "식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다.";
+    const tasteChangeCauseSentence =
+      "암이나 항암치료, 혹은 치과적인 문제 때문에 음식의 맛이나 냄새에 민감해 질 수 있습니다.";
+    const tasteChangeProteinSentence =
+      "특히, 고기나 생선 등의 고단백식품들에 대해서는 쓴맛이나 금속성 맛을 느끼게 되고 음식의 맛이 없어질 수 있습니다.";
+    const tasteChangeAlternativeSentence =
+      "만약 고기가 싫다면 생선이나 계란, 두부, 콩, 우유나 유제품을 이용합니다.";
+    const tasteChangeSeasoningSentence =
+      "고기나 생선요리에 향이 좋은 양념류(와인, 레몬즙 등)나 새콤달콤한 소스를 사용합니다.";
+    const tasteChangeMetallicSentence =
+      "신맛이 금속성의 맛을 제거하는 데 도움이 될 수 있으므로 오렌지나 레몬같이 시큼한 식품을 사용합니다. 그러나 입과 목에 통증 이 있다면, 이런 식품들이 염증을 자극하거나 불편하게 하므로 주의합니다.";
+    const tasteChangeDentalSentence =
+      "음식의 맛이나 냄새에 영향을 미치는 치과적인 문제가 없는지 확인해보고, 입안을 자주 헹구도록 합니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1408,6 +1448,9 @@ describe("cervicalCancerCare", () => {
     const dryMouthDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "입안 건조 수분·촉촉한 식사 메모",
     );
+    const tasteChangeDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "입맛 변화 단백질·향 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1430,7 +1473,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(23);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(24);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1712,6 +1755,30 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(dryMouthDietGuide!)).join(" ")).not.toMatch(
       /침분비제를 복용하세요|구강치료하세요|치과치료를 받으세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(tasteChangeDietGuide).toMatchObject({
+      label: "입맛 변화 단백질·향 메모",
+      sourceId: "nccTasteChangeDiet",
+    });
+    expect(tasteChangeDietGuide?.detail).toContain(tasteChangeCauseSentence);
+    expect(tasteChangeDietGuide?.detail).toContain(tasteChangeProteinSentence);
+    expect(tasteChangeDietGuide?.detail).toContain("치료가 끝나면 사라질");
+    expect(tasteChangeDietGuide?.detail).toContain("보기가 좋고 냄새도 좋은 식품");
+    expect(tasteChangeDietGuide?.detail).toContain(tasteChangeAlternativeSentence);
+    expect(tasteChangeDietGuide?.detail).toContain(tasteChangeSeasoningSentence);
+    expect(tasteChangeDietGuide?.detail).toContain(tasteChangeMetallicSentence);
+    expect(tasteChangeDietGuide?.detail).toContain(tasteChangeDentalSentence);
+    expect(formatCervicalCancerCareItemEvidence(tasteChangeDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 입맛의 변화 - https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(tasteChangeDietGuide!).body).toContain(
+      tasteChangeMetallicSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(tasteChangeDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 입맛의 변화",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(tasteChangeDietGuide!)).join(" ")).not.toMatch(
+      /와인을 마시세요|레몬을 먹어 치료|치과치료를 받으세요|입맛약을 복용하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
