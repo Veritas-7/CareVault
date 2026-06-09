@@ -49,6 +49,7 @@ export type FoodGuidanceSourceId =
   | "nccTreatmentRightEating"
   | "nccTreatmentHealthyEatingTips"
   | "nccAfterTreatmentHealthyEating"
+  | "nccChemoSideEffectGuide"
   | "kdcaNutrition"
   | "kdcaAlcohol";
 
@@ -220,6 +221,10 @@ export const foodGuidanceSources: Record<
   nccAfterTreatmentHealthyEating: {
     label: "국가암정보센터 치료 후 건강한 식생활",
     url: "https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+  },
+  nccChemoSideEffectGuide: {
+    label: "국가암정보센터 항암 부작용 증상 관리 지침",
+    url: "https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
   },
   kdcaNutrition: {
     label: "질병관리청 국가건강정보포털 식이영양",
@@ -750,10 +755,10 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "설사 시 장 자극·고섬유·유당·카페인 확인",
         detail:
-          "국가암정보센터 설사 자료는 설사 중에는 기름진 음식, 생야채, 생과일의 껍질·씨·끈적한 섬유소 부분, 브로콜리·옥수수·말린 콩 같은 고섬유 채소, 너무 뜨겁거나 차가운 식품·음료, 커피·초콜릿 등 카페인 식품과 음료, 우유 및 유제품을 주의하도록 안내합니다.",
+          "국가암정보센터 설사 자료는 설사 중에는 기름진 음식, 생야채, 생과일의 껍질·씨·끈적한 섬유소 부분, 브로콜리·옥수수·말린 콩 같은 고섬유 채소, 너무 뜨겁거나 차가운 식품·음료, 커피·초콜릿 등 카페인 식품과 음료, 우유 및 유제품을 주의하도록 안내합니다. 항암 부작용 증상 관리 지침도 설사 시 알코올, 카페인 함유 제품, 우유 및 유제품, 고지방식, 고섬유식, 과일 주스, 매운 음식 등을 피해야 할 음식으로 제시합니다.",
         examples:
-          "너무 뜨겁거나 차가운 식품이나 음료는 피하고, 대신 상온의 음료를 마시도록 합니다.; 커피와 초콜릿 등과 같은 카페인을 함유한 식품과 음료는 제한합니다.; 우유 및 유제품을 먹을 때에는 주의합니다. 이는 우유에 들어있는 유당이 설사를 악화시킬 수 있기 때문입니다. 그러나 일반적으로 적은 양의 우유나 유제품은 소화시킬 수 있습니다.; 기름진 음식, 생야채; 브로콜리, 옥수수, 말린 콩 등과 같은 고섬유 채소 등; 생과일의 껍질, 씨, 끈적한 섬유소 부분; 설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",
-        sourceIds: ["nccDiarrheaDiet"],
+          "너무 뜨겁거나 차가운 식품이나 음료는 피하고, 대신 상온의 음료를 마시도록 합니다.; 커피와 초콜릿 등과 같은 카페인을 함유한 식품과 음료는 제한합니다.; 우유 및 유제품을 먹을 때에는 주의합니다. 이는 우유에 들어있는 유당이 설사를 악화시킬 수 있기 때문입니다. 그러나 일반적으로 적은 양의 우유나 유제품은 소화시킬 수 있습니다.; 기름진 음식, 생야채; 브로콜리, 옥수수, 말린 콩 등과 같은 고섬유 채소 등; 생과일의 껍질, 씨, 끈적한 섬유소 부분; 피해야 할 음식: 알코올, 카페인 함유 제품, 우유 및 유제품, 고지방식, 고섬유식, 과일 주스, 매운 음식 등 입니다.; 설사 생야채, 설사 생과일 껍질, 설사 브로콜리, 설사 옥수수, 설사 말린 콩, 설사 커피, 설사 초콜릿, 설사 우유 및 유제품",
+        sourceIds: ["nccDiarrheaDiet", "nccChemoSideEffectGuide"],
       },
       {
         label: "체중증가 시 고염분·고열량 저영양 식품 확인",
@@ -2672,6 +2677,11 @@ const limitFoods: FoodRuleTerm[] = [
   ["탄산음료", "당음료", "kdcaNutrition"],
   ["설탕음료", "당음료", "kdcaNutrition"],
   ["가당음료", "당음료", "kdcaNutrition"],
+  [
+    "피해야 할 음식: 알코올, 카페인 함유 제품, 우유 및 유제품, 고지방식, 고섬유식, 과일 주스, 매운 음식 등 입니다.",
+    "국가암정보센터 항암 부작용 설사 시 알코올·카페인·고지방·고섬유 식품 피하기 후보",
+    "nccChemoSideEffectGuide",
+  ],
   ["초코칩쿠키", "자궁경부암 실천지침 식단 제한 예시", "nccCervicalPracticeDiet"],
   ["가당 제품", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],
   ["가당 유제품", "국가암정보센터 암예방 샐러드 가당 유제품 제한 예시", "nccPreventionMealExamples"],

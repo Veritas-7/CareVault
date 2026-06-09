@@ -6856,6 +6856,36 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC chemo side-effect diarrhea avoid-food source sentence", () => {
+    const sourceSentence =
+      "피해야 할 음식: 알코올, 카페인 함유 제품, 우유 및 유제품, 고지방식, 고섬유식, 과일 주스, 매운 음식 등 입니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 항암 부작용 설사 시 알코올·카페인·고지방·고섬유 식품 피하기 후보",
+      sourceId: "nccChemoSideEffectGuide",
+    });
+    expect(terms).not.toContain("알코올");
+    expect(terms).not.toContain("우유 및 유제품");
+    expect(terms).not.toContain("매운 음식");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 항암 부작용 증상 관리 지침 - https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes NCC diarrhea hydration loss replacement source sentence", () => {
     const sourceSentence = "수분을 충분히 섭취하여 설사로 손실된 부분을 보충합니다.";
     const assessment = assessCancerFood(sourceSentence);

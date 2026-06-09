@@ -93,6 +93,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC diarrhea high-fiber vegetable phrase matching for 브로콜리, 옥수수, 말린 콩 등과 같은 고섬유 채소 등
 - NCC diarrhea fruit peel/seed/stringy-fiber phrase matching for 생과일의 껍질, 씨, 끈적한 섬유소 부분
 - NCC diarrhea fatty-food/raw-vegetable phrase matching for 기름진 음식, 생야채
+- NCC chemo side-effect diarrhea avoid-food sentence matching for 피해야 할 음식: 알코올, 카페인 함유 제품, 우유 및 유제품, 고지방식, 고섬유식, 과일 주스, 매운 음식 등 입니다, keeping the treatment-side-effect diarrhea food limit as one current official patient-guide phrase rather than generic alcohol or spicy-food fragments
 - NCC diarrhea hydration loss-replacement sentence matching for 수분을 충분히 섭취하여 설사로 손실된 부분을 보충합니다
 - NCC diarrhea electrolyte loss-replacement sentence matching for 염분과 칼륨이 많이 들어있는 식품을 섭취하여 설사로 인한 손실을 보충합니다
 - NCC diarrhea small frequent meal sentence matching for 장이 약해져 있으므로 식사는 조금씩 자주 먹습니다
