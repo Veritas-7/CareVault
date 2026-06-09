@@ -1465,6 +1465,41 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC cervical-cancer regular-screening and fresh-produce boundary sentence", () => {
+    const sourceSentence =
+      "그러므로 자궁경부암의 예방을 위해서는 조기 검진과 정기 검진이 가장 효과적인 방법이며, 일반적으로 건강한 생활을 위해서는 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalFoodPrevention.label).toBe(
+      "국가암정보센터 자궁경부암 예방과 음식",
+    );
+    expect(foodGuidanceSources.nccCervicalFoodPrevention.url).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 정기검진 우선·신선 채소과일 섭취 확인 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
+    expect(terms).not.toContain("신선한 채소");
+    expect(terms).not.toContain("과일");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 예방과 음식 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical risk-factor low fruit and vegetable intake wording", () => {
     const assessment = assessCancerFood(
       "과일과 채소의 섭취가 적은 식이, 과일 채소 섭취 부족, 채소와 과일을 거의 안 먹음",

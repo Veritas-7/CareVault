@@ -250,8 +250,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "카로테노이드·신선식품 메모",
         detail:
-          "자궁경부암 예방과 음식 자료는 카로테노이드·비타민 식품의 예방 효과가 아직 명확하지 않다고 설명하므로 치료식으로 보지 않고 신선한 채소·과일·해조류 섭취 질문으로 남깁니다.",
-        examples: "당근, 시금치, 차, 미역, 신선한 채소, 과일, 해조류",
+          "자궁경부암 예방과 음식 자료는 카로테노이드·비타민 식품의 예방 효과가 아직 명확하지 않다고 설명하고, 조기 검진과 정기 검진이 가장 효과적인 예방 방법이며 일반적인 건강 생활로 신선한 채소·과일 섭취가 좋다고 안내하므로 치료식으로 보지 않고 신선한 채소·과일·해조류 섭취 질문으로 남깁니다.",
+        examples:
+          "그러므로 자궁경부암의 예방을 위해서는 조기 검진과 정기 검진이 가장 효과적인 방법이며, 일반적으로 건강한 생활을 위해서는 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다., 당근, 시금치, 차, 미역, 신선한 채소, 과일, 해조류",
         sourceIds: ["nccCervicalFoodPrevention"],
       },
       {
@@ -1022,6 +1023,11 @@ const supportiveFoods: FoodRuleTerm[] = [
   ["시금치", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
   ["미역", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention"],
   ["차", "자궁경부암 예방 관련 신선식품 후보", "nccCervicalFoodPrevention", standaloneFoodTermOptions],
+  [
+    "그러므로 자궁경부암의 예방을 위해서는 조기 검진과 정기 검진이 가장 효과적인 방법이며, 일반적으로 건강한 생활을 위해서는 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다.",
+    "자궁경부암 정기검진 우선·신선 채소과일 섭취 확인 후보",
+    "nccCervicalFoodPrevention",
+  ],
   ["과일샐러드", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["채소샐러드", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["브로콜리회", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
