@@ -59,6 +59,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC nausea do-not-force intake sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다
 - NCC nausea do-not-force specific-food alternative-food source sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다. 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 합니다. 대신 먹기 좋은 다른 음식을 많이 먹도록 합니다.
 - NCC nausea-vomiting care meal beverage limit sentence matching for 물을 마시는 것은 포만감을 느끼게 할 수 있기 때문에 식사를 할 때는 너무 많은 국물이나 음료는 피하도록 합니다, preserving the symptom-management source separately from appetite-loss water timing and general soup-broth limit matches
+- NCC nausea-vomiting care post-meal upright rest sentence matching for 식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다, preserving the symptom-management source separately from broader nausea meal-environment guidance
 - NCC nausea treatment-before-eating sentence matching for 항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다
 - NCC nausea hunger-before-eating sentence matching for 배가 고프면 더욱 메스꺼울 수 있으므로 배고프기 전에 먹도록 합니다
 - NCC nausea meal-environment sentence matching for 음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다
