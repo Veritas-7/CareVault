@@ -72,6 +72,7 @@ describe("cervicalCancerCare", () => {
       "nccImmuneLowDiet",
       "nccFatigueDepressionDiet",
       "nccNeuropathyCare",
+      "nccSkinChangeCare",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -147,6 +148,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccImmuneLowDiet.url).toContain("S1T479C489");
     expect(cervicalCancerCareSources.nccFatigueDepressionDiet.url).toContain("S1T479C490");
     expect(cervicalCancerCareSources.nccNeuropathyCare.url).toContain("S1T458C460");
+    expect(cervicalCancerCareSources.nccSkinChangeCare.url).toContain("S1T454C456");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -235,7 +237,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(47);
+    expect(cervicalCancerCarePrompts).toHaveLength(48);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -266,6 +268,7 @@ describe("cervicalCancerCare", () => {
       "면역기능 저하 식품안전 기록 준비",
       "피로감·우울 식사·활동 기록 준비",
       "손발저림·감각이상 안전 확인",
+      "피부변화·손발홍반·손발톱 확인",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -841,6 +844,31 @@ describe("cervicalCancerCare", () => {
     expect(neuropathyCarePrompt.question).toContain("복통, 구토, 변비");
     expect(buildCervicalCancerCarePromptQuestion(neuropathyCarePrompt)).toContain(
       "출처: 국가암정보센터 신경계이상 증상 및 주의사항 - https://www.cancer.go.kr/lay1/S1T458C460/contents.do",
+    );
+    const skinChangeCarePrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "피부변화·손발홍반·손발톱 확인",
+    )!;
+    expect(skinChangeCarePrompt.sourceId).toBe("nccSkinChangeCare");
+    expect(skinChangeCarePrompt.question).toContain("피부와 눈의 공막");
+    expect(skinChangeCarePrompt.question).toContain("진한 오렌지색의 소변");
+    expect(skinChangeCarePrompt.question).toContain("파랗거나 보랏빛 피부 또는 타박상");
+    expect(skinChangeCarePrompt.question).toContain("피부의 발적");
+    expect(skinChangeCarePrompt.question).toContain("가려움증");
+    expect(skinChangeCarePrompt.question).toContain("여드름");
+    expect(skinChangeCarePrompt.question).toContain("미지근한 물");
+    expect(skinChangeCarePrompt.question).toContain("순한 비누");
+    expect(skinChangeCarePrompt.question).toContain("오랜시간 동안 뜨거운 물");
+    expect(skinChangeCarePrompt.question).toContain("알코올");
+    expect(skinChangeCarePrompt.question).toContain("오전 10시부터 오후 3시");
+    expect(skinChangeCarePrompt.question).toContain("손바닥과 발바닥");
+    expect(skinChangeCarePrompt.question).toContain("물집");
+    expect(skinChangeCarePrompt.question).toContain("표피박리");
+    expect(skinChangeCarePrompt.question).toContain("수용성 크림이나 로션");
+    expect(skinChangeCarePrompt.question).toContain("비비거나 긁거나 마사지");
+    expect(skinChangeCarePrompt.question).toContain("검은색으로 변하거나 흰색 줄");
+    expect(skinChangeCarePrompt.question).toContain("손발톱 뿌리부분");
+    expect(buildCervicalCancerCarePromptQuestion(skinChangeCarePrompt)).toContain(
+      "출처: 국가암정보센터 피부변화 증상별 대처방법 - https://www.cancer.go.kr/lay1/S1T454C456/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1694,6 +1722,8 @@ describe("cervicalCancerCare", () => {
       "뜨거운 것은 화상을 입을 위험이 있으므로, 주의하여 사용하셔야 합니다.";
     const neuropathySymptomSentence =
       "손가락, 손, 발가락, 발의 감각이 떨어질 수 있습니다. 손끝, 발끝이 저리고 무감각해지고 약해지고 통증 까지 수반할 수 있습니다.";
+    const skinObservationSentence =
+      "피부와 눈의 공막에 노란빛, 진한 오렌지색의 소변, 희거나 회색빛의 소변, 파랗거나 보랏빛 피부 또는 타박상, 호흡곤란, 피부의 발적 이나 붉게 된 것, 부종 이 있으면서 변색된 것, 가려움증을 관찰합니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1758,6 +1788,9 @@ describe("cervicalCancerCare", () => {
     const neuropathyCareGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "손발저림·감각·화상예방 메모",
     );
+    const skinChangeCareGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "피부변화·손발홍반·손발톱 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1780,7 +1813,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(31);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(32);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2339,6 +2372,42 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(neuropathyCareGuide!)).join(" ")).not.toMatch(
       /신경병증으로 진단하세요|뜨겁게 찜질하세요|운전해도 됩니다|전기면도기를 꼭 사용하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(skinChangeCareGuide).toMatchObject({
+      label: "피부변화·손발홍반·손발톱 메모",
+      sourceId: "nccSkinChangeCare",
+    });
+    expect(skinChangeCareGuide?.detail).toContain(skinObservationSentence);
+    expect(skinChangeCareGuide?.detail).toContain("여드름");
+    expect(skinChangeCareGuide?.detail).toContain("미지근한 물");
+    expect(skinChangeCareGuide?.detail).toContain("순한 비누");
+    expect(skinChangeCareGuide?.detail).toContain("오랜시간 동안 뜨거운 물");
+    expect(skinChangeCareGuide?.detail).toContain("알코올");
+    expect(skinChangeCareGuide?.detail).toContain("긁는 것");
+    expect(skinChangeCareGuide?.detail).toContain("피부를 문지르지");
+    expect(skinChangeCareGuide?.detail).toContain("면 같은 부드러운 섬유");
+    expect(skinChangeCareGuide?.detail).toContain("가능하면 피부를 공기에 노출");
+    expect(skinChangeCareGuide?.detail).toContain("오전 10시부터 오후 3시");
+    expect(skinChangeCareGuide?.detail).toContain("손바닥과 발바닥");
+    expect(skinChangeCareGuide?.detail).toContain("물집");
+    expect(skinChangeCareGuide?.detail).toContain("표피박리");
+    expect(skinChangeCareGuide?.detail).toContain("수용성 크림이나 로션");
+    expect(skinChangeCareGuide?.detail).toContain("비비거나 긁거나 마사지");
+    expect(skinChangeCareGuide?.detail).toContain("빨갛게 붓거나 물집");
+    expect(skinChangeCareGuide?.detail).toContain("검은색으로 변하거나 흰색 줄");
+    expect(skinChangeCareGuide?.detail).toContain("깨지거나, 건조해지고, 갈라지고, 들릴");
+    expect(skinChangeCareGuide?.detail).toContain("손발톱 뿌리부분");
+    expect(formatCervicalCancerCareItemEvidence(skinChangeCareGuide!)).toContain(
+      "국가암정보센터 피부변화 증상별 대처방법 - https://www.cancer.go.kr/lay1/S1T454C456/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(skinChangeCareGuide!).body).toContain(
+      "피부 발진",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(skinChangeCareGuide!)).toContain(
+      "국가암정보센터 피부변화 증상별 대처방법",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(skinChangeCareGuide!)).join(" ")).not.toMatch(
+      /피부질환으로 진단하세요|약을 먹습니다|처방한 약을 바르세요|얼음찜질을 하세요|햇빛을 쬐세요|방사선을 중단하세요|항암을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
