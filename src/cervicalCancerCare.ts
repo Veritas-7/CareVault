@@ -90,6 +90,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 일반적 증상",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
   },
+  nccOverview: {
+    label: "국가암정보센터 자궁경부암 요약설명",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877",
+  },
   nccAnatomySite: {
     label: "국가암정보센터 자궁경부암 발생부위",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4880",
@@ -192,7 +196,7 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
   },
   nccCervicalPrevention: {
     label: "국가암정보센터 자궁경부암 예방법",
-    url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
   },
   nccCervicalRiskFactors: {
     label: "국가암정보센터 자궁경부암 위험요인",
@@ -312,6 +316,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     question:
       "원추절제술, 환상투열요법, 광범위자궁경부절제술 이력에 따라 임신 가능성, 산전관리, 유산·조산 위험을 어떤 진료과와 언제 상담해야 하나요?",
     sourceId: "nccPregnancyBirth",
+  },
+  {
+    topic: "요약·진료 흐름",
+    question:
+      "국가암정보센터 요약설명 기준으로 발생부위와 조직형, HPV·위험요인, 권고안 3년 간격과 국가암검진사업 2년 주기, 증상, 진단검사, 치료 선택 기준, 부작용과 재발 추적 중 제 기록에서 빠진 항목을 어떤 순서로 진료팀에 확인하면 좋을까요?",
+    sourceId: "nccOverview",
   },
 ];
 

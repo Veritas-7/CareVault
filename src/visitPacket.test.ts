@@ -546,6 +546,14 @@ describe("visit packet", () => {
     expect(markdown).toContain("림프부종");
     expect(markdown).toContain("피부 붉어짐");
     expect(markdown).toContain("의료진에게 바로 연락");
+    expect(markdown).toContain("요약·진료 흐름");
+    expect(markdown).toContain("발생부위와 조직형");
+    expect(markdown).toContain("HPV·위험요인");
+    expect(markdown).toContain("국가암검진사업 2년");
+    expect(markdown).toContain("치료 선택 기준");
+    expect(markdown).toContain(
+      "출처: 국가암정보센터 자궁경부암 요약설명 - https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877",
+    );
     expect(markdown).toContain("병기 설명 메모");
     expect(markdown).toContain("병리조직 확인 메모");
     expect(markdown).toContain("자궁경부 상피내이형성증");

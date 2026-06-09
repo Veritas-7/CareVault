@@ -144,6 +144,13 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("임신·출산 계획 상담");
     expect(text).toContain("유산 및 조산 위험");
     expect(text).toContain("국가암정보센터 자궁경부암 임신과 출산");
+    expect(text).toContain("- 요약·진료 흐름:");
+    expect(text).toContain("발생부위와 조직형");
+    expect(text).toContain("HPV·위험요인");
+    expect(text).toContain("권고안 3년");
+    expect(text).toContain("국가암검진사업 2년");
+    expect(text).toContain("치료 선택 기준");
+    expect(text).toContain("국가암정보센터 자궁경부암 요약설명");
     expect(text).toContain("식생활·보조식품 확인");
     expect(text).toContain("특별히 피하거나 추천하는 음식은 없고");
     expect(text).toContain("국가암정보센터 자궁경부암 식생활");
@@ -219,8 +226,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("신축성 있는 조직");
     expect(text).toContain("요관");
     expect(text).toContain("림프관 및 림프절");
-    expect(text).toContain("출처 목록 (29개)");
+    expect(text).toContain("출처 목록 (30개)");
     expect(text).toContain("국가암정보센터 자궁경부암 일반적 증상");
+    expect(text).toContain("국가암정보센터 자궁경부암 요약설명");
     expect(text).toContain(
       "출처: 국가암정보센터 자궁경부암 일반적 증상 - https://www.cancer.go.kr/",
     );
@@ -261,7 +269,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).not.toContain("검진 기준 빠른 확인");
     expect(text).toContain("우선 확인 체크리스트");
     expect(text).toContain("검진·예방 메모");
-    expect(text).toContain("출처 목록 (29개)");
+    expect(text).toContain("출처 목록 (30개)");
   });
 
   it("summarizes the copied care note scope for labels and post-copy feedback", () => {
@@ -276,30 +284,30 @@ describe("cervicalCancerCareClipboard", () => {
       alertRecordFieldCount: 4,
       preventionCount: 13,
       priorityCount: 3,
-      promptCount: 10,
+      promptCount: 11,
       recordRecoveryPreventionCount: 40,
       recoveryCount: 10,
       screeningSummaryCount: 1,
-      sourceCount: 29,
-      totalItemCount: 62,
+      sourceCount: 30,
+      totalItemCount: 63,
     });
     expect(formatCervicalCancerCareClipboardCompactSummary(profileSummary)).toBe(
-      "총 62개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 40개 · 출처 29개",
+      "총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
     );
     expect(formatCervicalCancerCareClipboardDescription(profileSummary)).toBe(
-      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 62개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 40개 · 출처 29개",
+      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
     );
     expect(formatCervicalCancerCareClipboardStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사됨 · 총 62개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 40개 · 출처 29개",
+      "자궁경부암 케어 노트 복사됨 · 총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
     );
     expect(formatCervicalCancerCareClipboardUnsupportedStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 62개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 40개 · 출처 29개",
+      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
     );
     expect(formatCervicalCancerCareClipboardFailedStatus(profileSummary)).toBe(
-      "자궁경부암 케어 노트 복사 실패 · 총 62개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 40개 · 출처 29개",
+      "자궁경부암 케어 노트 복사 실패 · 총 63개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
     );
     expect(formatCervicalCancerCareClipboardCompactSummary(genericSummary)).toBe(
-      "총 61개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 40개 · 출처 29개",
+      "총 62개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 11개 · 기록/회복/예방 40개 · 출처 30개",
     );
   });
 });

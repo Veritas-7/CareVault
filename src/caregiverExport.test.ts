@@ -1930,6 +1930,12 @@ describe("caregiverExport", () => {
     );
     expect(html).toContain("식생활·보조식품");
     expect(html).toContain("민간요법·건강보조식품");
+    expect(html).toContain("요약·진료 흐름");
+    expect(html).toContain("발생부위와 조직형");
+    expect(html).toContain("HPV·위험요인");
+    expect(html).toContain("국가암검진사업 2년");
+    expect(html).toContain("치료 선택 기준");
+    expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("피부 붉어짐");
     expect(html).toContain("의료진에게 바로 연락");
     expect(html).toContain(">국가암정보센터 림프부종 치료 전후관리</a>");

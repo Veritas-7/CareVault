@@ -43,6 +43,7 @@ describe("cervicalCancerCare", () => {
   it("keeps official Korean cervical-cancer sources attached", () => {
     expect(Object.keys(cervicalCancerCareSources)).toEqual([
       "nccSymptoms",
+      "nccOverview",
       "nccAnatomySite",
       "nccScreeningSchedule",
       "nccScreeningEligibility",
@@ -73,11 +74,12 @@ describe("cervicalCancerCare", () => {
       "nccCervicalPracticeGuideline",
     ]);
     expect(cervicalCancerCareSources.nccSymptoms.url).toContain("cancer.go.kr");
+    expect(cervicalCancerCareSources.nccOverview.url).toContain("S1T211C213");
     expect(cervicalCancerCareSources.nccAnatomySite.url).toContain("menu_seq=4880");
     expect(cervicalCancerCareSources.nccLymphedemaCare.url).toContain("S1T429C431");
     expect(cervicalCancerCareSources.kdcaHpv.url).toContain("health.kdca.go.kr");
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
-    expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("S1T211C213");
+    expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
     expect(cervicalCancerCareSources.nccCervicalPracticeGuideline.url).toContain("6fb06571");
     expect(cervicalCancerCareSources.nccDefinitionTypes.url).toContain("menu_seq=4881");
@@ -175,7 +177,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(10);
+    expect(cervicalCancerCarePrompts).toHaveLength(11);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -187,6 +189,7 @@ describe("cervicalCancerCare", () => {
       "식생활·보조식품",
       "HPV·검진",
       "임신·출산 계획",
+      "요약·진료 흐름",
     ]);
     expect(cervicalCancerCarePrompts.every((item) => item.question.endsWith("?"))).toBe(true);
     expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[1])).toContain(
@@ -234,6 +237,19 @@ describe("cervicalCancerCare", () => {
     );
     expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[9])).toContain(
       "출처: 국가암정보센터 자궁경부암 임신과 출산 - https://www.cancer.go.kr/",
+    );
+    const overviewPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "요약·진료 흐름",
+    )!;
+    expect(overviewPrompt.sourceId).toBe("nccOverview");
+    expect(overviewPrompt.question).toContain("발생부위와 조직형");
+    expect(overviewPrompt.question).toContain("HPV·위험요인");
+    expect(overviewPrompt.question).toContain("권고안 3년");
+    expect(overviewPrompt.question).toContain("국가암검진사업 2년");
+    expect(overviewPrompt.question).toContain("진단검사");
+    expect(overviewPrompt.question).toContain("치료 선택 기준");
+    expect(buildCervicalCancerCarePromptQuestion(overviewPrompt)).toContain(
+      "출처: 국가암정보센터 자궁경부암 요약설명 - https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877",
     );
   });
 

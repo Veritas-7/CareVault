@@ -594,6 +594,14 @@ describe("csvExport", () => {
     expect(csv).toContain("림프부종");
     expect(csv).toContain("피부 붉어짐");
     expect(csv).toContain("의료진에게 바로 연락");
+    expect(csv).toContain("요약·진료 흐름");
+    expect(csv).toContain("발생부위와 조직형");
+    expect(csv).toContain("HPV·위험요인");
+    expect(csv).toContain("국가암검진사업 2년");
+    expect(csv).toContain("치료 선택 기준");
+    expect(csv).toContain(
+      "출처: 국가암정보센터 자궁경부암 요약설명 - https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877",
+    );
     expect(csv).toContain(
       "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/",
     );
