@@ -72,6 +72,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC nausea-vomiting care morning toast/cracker sentence matching for 아침에 메스꺼움을 느낀다면, 일어나기 전에 토스트나 크래커를 먹도록 합니다, preserving the symptom-management source as one exact balanced sentence instead of splitting into generic toast/cracker matches
 - NCC nausea-vomiting care cold-foods/frozen-drink sentence matching for 뜨거운 음식은 메스꺼움을 느끼게 할 수 있으므로, 음료나 음식은 차게 섭취하도록 하고, 좋아하는 음료수를 얼려서 마시는 것도 좋은 방법입니다, preserving the symptom-management source as one exact balanced sentence instead of splitting into generic hot-food trigger matches
 - NCC nausea-vomiting care liquid-only drink sentence matching for 물종류만 먹을 수 있을때는 꿀물, 설탕물, 이온음료를 먹습니다, preserving the water-type-liquid-only symptom context separately from diarrhea sports-drink and vomiting clear-liquid guidance
+- NCC nausea-vomiting care staged post-vomiting intake sentence matching for 적응이 되면 우유, 요구르트, 주스, 고단백 음료 등을 조금씩 추가하고, 죽에서 밥으로 서서히 바꾸어 갑니다, preserving the post-vomiting staged progression source separately from generic dairy, juice, protein-drink, porridge, and rice terms
 - NCC nausea-vomiting care fatty/fried/spicy/sweet food limit sentence matching for 기름진 음식, 튀긴 음식, 짜고 매운 음식, 지나치게 단 음식은 피합니다, preserving the symptom-management source as one exact limit sentence instead of splitting into generic fatty/fried/spicy-food matches
 - NCC nausea treatment-before-eating sentence matching for 항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다
 - NCC nausea hunger-before-eating sentence matching for 배가 고프면 더욱 메스꺼울 수 있으므로 배고프기 전에 먹도록 합니다

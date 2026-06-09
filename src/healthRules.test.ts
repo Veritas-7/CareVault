@@ -6524,6 +6524,50 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|탈수 치료|수분 제한 치료|무제한 수분/);
   });
 
+  it("recognizes NCC nausea-vomiting care staged post-vomiting intake source sentence", () => {
+    const sourceSentence =
+      "적응이 되면 우유, 요구르트, 주스, 고단백 음료 등을 조금씩 추가하고, 죽에서 밥으로 서서히 바꾸어 갑니다.";
+    const gentleFoodsSentence =
+      "일반적으로 메스꺼움과 구토에는 비스킷, 토스트, 요구르트, 튀기지 않은 껍질이 있는 닭, 부드럽고 자극적이지 않은 복숭아 통조림과 같은 과일과 야채, 얼음 조각 등이 좋습니다.";
+    const lowMicrobialSentence = "쥬스 우유 요구르트 저온살균 제품";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 메스꺼움·구토 후 적응 시 우유·요구르트·주스·고단백 음료와 죽-밥 단계 후보",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(gentleFoodsSentence);
+    expect(terms).not.toContain(lowMicrobialSentence);
+    expect(terms).not.toContain("우유");
+    expect(terms).not.toContain("요구르트");
+    expect(terms).not.toContain("주스");
+    expect(terms).not.toContain("고단백 음료");
+    expect(terms).not.toContain("죽");
+    expect(terms).not.toContain("밥");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|체중증가 치료|감염 예방 치료|저온살균 지시/);
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";
