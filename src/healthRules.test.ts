@@ -6520,6 +6520,46 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|강제 섭취/);
   });
 
+  it("recognizes NCC nausea-vomiting care mild soft digestible food source sentence", () => {
+    const sourceSentence = "자극이 적고 부드럽고 소화가 잘 되는 음식을 먹습니다.";
+    const gentleFoodsSentence =
+      "일반적으로 메스꺼움과 구토에는 비스킷, 토스트, 요구르트, 튀기지 않은 껍질이 있는 닭, 부드럽고 자극적이지 않은 복숭아 통조림과 같은 과일과 야채, 얼음 조각 등이 좋습니다.";
+    const mouthPainSoftFoodSentence = "부드러운 음식을 섭취하고 맵거나 거친 자극적인 음식을 피합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국가암정보센터 메스꺼움·구토 시 자극 적고 부드럽고 소화 잘 되는 음식 후보",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(gentleFoodsSentence);
+    expect(terms).not.toContain(mouthPainSoftFoodSentence);
+    expect(terms).not.toContain("부드러운 음식");
+    expect(terms).not.toContain("흰죽");
+    expect(terms).not.toContain("소화가 잘 되는 음식");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|구내염 치료|소화 치료/);
+  });
+
   it("recognizes NCC nausea-vomiting care cold foods and frozen drink source sentence", () => {
     const sourceSentence =
       "뜨거운 음식은 메스꺼움을 느끼게 할 수 있으므로, 음료나 음식은 차게 섭취하도록 하고, 좋아하는 음료수를 얼려서 마시는 것도 좋은 방법입니다.";
