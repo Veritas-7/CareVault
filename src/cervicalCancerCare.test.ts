@@ -49,6 +49,7 @@ describe("cervicalCancerCare", () => {
       "nccEarlyDiagnosisPrevention",
       "nccRecovery",
       "nccRecurrenceFollowUp",
+      "nccTreatmentStatus",
       "nccSexLife",
       "nccPregnancyBirth",
       "nccDiet",
@@ -71,6 +72,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("S1T211C213");
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
     expect(cervicalCancerCareSources.nccCervicalPracticeGuideline.url).toContain("6fb06571");
+    expect(cervicalCancerCareSources.nccTreatmentStatus.url).toContain("menu_seq=4896");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -256,7 +258,11 @@ describe("cervicalCancerCare", () => {
   });
 
   it("keeps self-check copy as observation guidance", () => {
-    expect(cervicalCancerCareChecks).toHaveLength(9);
+    const treatmentStatusGuide = cervicalCancerCareChecks.find(
+      (item) => item.label === "치료현황 통계 상담 메모",
+    );
+
+    expect(cervicalCancerCareChecks).toHaveLength(10);
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("출혈·분비물 기록");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("추적검사 일정·결과");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
@@ -303,6 +309,22 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
       "장폐색·혈변·혈뇨 연락 메모",
     );
+    expect(treatmentStatusGuide).toMatchObject({
+      label: "치료현황 통계 상담 메모",
+      sourceId: "nccTreatmentStatus",
+    });
+    expect(treatmentStatusGuide?.detail).toContain("2019-2023년");
+    expect(treatmentStatusGuide?.detail).toContain("5년 상대생존율 79.0%");
+    expect(treatmentStatusGuide?.detail).toContain("국한 94.5%");
+    expect(treatmentStatusGuide?.detail).toContain("국소 73.8%");
+    expect(treatmentStatusGuide?.detail).toContain("원격 29.1%");
+    expect(treatmentStatusGuide?.detail).toContain("모름 69.5%");
+    expect(treatmentStatusGuide?.detail).toContain("인구 통계");
+    expect(treatmentStatusGuide?.detail).toContain("내 병기");
+    expect(treatmentStatusGuide?.detail).toContain("치료 반응");
+    expect(treatmentStatusGuide?.detail).toContain("진료팀에 확인");
+    expect(treatmentStatusGuide?.detail).not.toContain("완치됩니다");
+    expect(treatmentStatusGuide?.detail).not.toContain("치료하세요");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "장폐색·혈변·혈뇨 연락 메모")
         ?.detail,

@@ -114,6 +114,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 재발 및 전이",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4895",
   },
+  nccTreatmentStatus: {
+    label: "국가암정보센터 자궁경부암 치료현황",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4896",
+  },
   nccSexLife: {
     label: "국가암정보센터 자궁경부암 성생활",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5373",
@@ -322,6 +326,12 @@ export const cervicalCancerCareChecks: CervicalCancerCareCheck[] = [
     detail:
       "0기는 자궁경부 상피내암, 1기는 자궁경부에 국한, 2기는 질 상부 2/3 또는 주위 조직 침윤, 3기는 골반벽 또는 질 하부 1/3 침범, 4기는 방광·직장점막 침범 또는 원격전이처럼 설명될 수 있으므로 내 진단서 병기와 검사 근거를 진료팀에 확인합니다.",
     sourceId: "nccEarlyDiagnosisPrevention",
+  },
+  {
+    label: "치료현황 통계 상담 메모",
+    detail:
+      "국가암정보센터는 2026년 중앙암등록본부 발표 자료 기준 2019-2023년 자궁경부암 5년 상대생존율 79.0%와 요약병기별 5년 상대생존율 국한 94.5%, 국소 73.8%, 원격 29.1%, 모름 69.5%를 제시합니다. 이 수치는 5년 이상 생존 확률을 추정한 인구 통계이므로 개인 예후로 단정하지 말고, 내 병기, 검사 근거, 치료 반응, 재발·전이 여부에 맞춰 해석 기준을 진료팀에 확인합니다.",
+    sourceId: "nccTreatmentStatus",
   },
   {
     label: "배뇨·배변·출혈 변화 메모",
