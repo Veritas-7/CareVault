@@ -41,6 +41,7 @@ export type FoodGuidanceSourceId =
   | "nccMucositisCare"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
+  | "nccNauseaVomitingCare"
   | "nccComplementaryTherapy"
   | "nccCervicalDiet"
   | "nccCervicalFoodPrevention"
@@ -191,6 +192,10 @@ export const foodGuidanceSources: Record<
   nccImmuneLowDiet: {
     label: "국가암정보센터 증상별 식생활 - 면역기능의 저하",
     url: "https://cancer.go.kr/lay1/S1T479C489/contents.do",
+  },
+  nccNauseaVomitingCare: {
+    label: "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    url: "https://cancer.go.kr/lay1/S1T398C404/contents.do",
   },
   nccComplementaryTherapy: {
     label: "국가암정보센터 보완대체요법 상담",
@@ -763,6 +768,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다. 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 합니다. 대신 먹기 좋은 다른 음식을 많이 먹도록 합니다.",
         sourceIds: ["nccNauseaDiet"],
+      },
+      {
+        label: "메스꺼움·구토 시 식사 중 국물·음료 조절",
+        detail:
+          "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 자료는 물을 마시는 것이 포만감을 느끼게 할 수 있으므로 식사 때 너무 많은 국물이나 음료는 피하도록 안내합니다. 식단 기록에서는 구토·메스꺼움 상황의 식사 중 과다 국물·음료 회피 후보로 분리하고, 탈수 치료나 수분 제한 지시로 과장하지 않습니다.",
+        examples:
+          "물을 마시는 것은 포만감을 느끼게 할 수 있기 때문에 식사를 할 때는 너무 많은 국물이나 음료는 피하도록 합니다.",
+        sourceIds: ["nccNauseaVomitingCare"],
       },
       {
         label: "구토 중 먹거나 마시지 않기",
@@ -2979,6 +2992,11 @@ const limitFoods: FoodRuleTerm[] = [
     "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다. 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 합니다. 대신 먹기 좋은 다른 음식을 많이 먹도록 합니다.",
     "국가암정보센터 메스꺼움 시 특정 음식 억지 섭취 피하고 대체 음식 선택 후보",
     "nccNauseaDiet",
+  ],
+  [
+    "물을 마시는 것은 포만감을 느끼게 할 수 있기 때문에 식사를 할 때는 너무 많은 국물이나 음료는 피하도록 합니다.",
+    "국가암정보센터 메스꺼움·구토 시 식사 중 과다 국물·음료 회피 후보",
+    "nccNauseaVomitingCare",
   ],
   [
     "메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다.",
