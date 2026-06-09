@@ -49,6 +49,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("하루 이상 딸꾹질과 호흡곤란")?.id).toBe(
       "hiccup-consult",
     );
+    expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
+      "dyspnea-consult",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -464,6 +467,53 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "딸꾹질")).not.toMatch(
       /약을 처방하세요|진단하세요|치료하세요|종이백을 사용하세요|눈을 지압하세요|설탕을 삼키세요/,
+    );
+  });
+
+  it("builds a dyspnea consult-threshold question from official respiratory guidance", () => {
+    const sputumObservationSentence =
+      "기침이나 구토 가 있으면 가래의 양과 양상 및 냄새를 관찰합니다. (투명하거나 하얗고 거품이 있는 것이 정상입니다. )";
+    const consultHeaderSentence = "이런 경우에는 의사와 상의하십시오.";
+    const dyspneaChestPainSentence = "호흡곤란이나 흉통이 있을 때";
+    const coloredSputumSentence =
+      "노랗거나 녹색이며 걸쭉하고 혈액이 섞인 가래가 있을 때";
+    const paleBlueClammySkinSentence =
+      "피부가 창백하거나 파랗거나 혹은 차가우며 축축할 때";
+    const feverSentence = "열이 있을 때";
+    const nostrilFlaringSentence = "호흡하는 동안 콧구멍이 넓게 벌어질 때";
+    const noisyBreathingSentence = "호흡시 그르렁소리가 날 때";
+    const template = findSymptomSupportTemplate("기침과 호흡곤란, 흉통");
+
+    expect(template?.id).toBe("dyspnea-consult");
+    expect(template?.mealNote).toContain(sputumObservationSentence);
+    expect(template?.mealNote).toContain(paleBlueClammySkinSentence);
+    expect(template?.mealNote).toContain(nostrilFlaringSentence);
+    expect(template?.clinicianQuestion).toContain(consultHeaderSentence);
+    expect(template?.clinicianQuestion).toContain(dyspneaChestPainSentence);
+    expect(template?.clinicianQuestion).toContain(coloredSputumSentence);
+    expect(template?.clinicianQuestion).toContain(feverSentence);
+    expect(template?.clinicianQuestion).toContain(noisyBreathingSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "호흡곤란")).toContain(
+      consultHeaderSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "호흡곤란")).toContain(
+      "출처: 국가암정보센터 호흡곤란 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T411C415/contents.do",
+    );
+    expect(findSymptomSupportTemplate("38도 발열과 호흡곤란")?.id).toBe(
+      "infection-fever",
+    );
+    expect(findSymptomSupportTemplate("가래에 피 섞인 호흡곤란")?.id).toBe(
+      "bleeding-warning",
+    );
+    expect(findSymptomSupportTemplate("하루 이상 딸꾹질과 호흡곤란")?.id).toBe(
+      "hiccup-consult",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "호흡곤란")).not.toMatch(
+      /산소를 줍니다|처방된 약|항생제 치료를 받게 됩니다|진단하세요|치료하세요|약을 처방하세요/,
     );
   });
 
@@ -946,7 +996,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(26);
+    expect(symptomSupportTemplates).toHaveLength(27);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -998,6 +1048,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("딸꾹질")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T466C468/contents.do",
+    );
+    expect(findSymptomSupportTemplate("호흡곤란")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T411C415/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
