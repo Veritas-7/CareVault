@@ -61,6 +61,7 @@ describe("cervicalCancerCare", () => {
       "nccDiagnosisMethods",
       "nccStage",
       "nccTreatmentMethods",
+      "nccChemotherapyUnderstanding",
       "nccDifferentialDiagnosis",
       "nccTreatmentSideEffects",
       "nccRadiationSideEffects",
@@ -84,6 +85,7 @@ describe("cervicalCancerCare", () => {
       "nip.kdca.go.kr",
     );
     expect(cervicalCancerCareSources.nccHpvInfection.url).toContain("S1T250C254");
+    expect(cervicalCancerCareSources.nccChemotherapyUnderstanding.url).toContain("S1T289C290");
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("menu_seq=4885");
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
@@ -183,7 +185,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(23);
+    expect(cervicalCancerCarePrompts).toHaveLength(24);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -192,6 +194,7 @@ describe("cervicalCancerCare", () => {
       "병기 설명 확인",
       "치료 후 회복",
       "치료 선택 기준",
+      "항암화학요법 목적·일정 확인",
       "재발·추적검사",
       "골반 방사선 후 폐경",
       "장·방광 후기 변화",
@@ -283,6 +286,25 @@ describe("cervicalCancerCare", () => {
     );
     expect(cervicalCancerCarePrompts[6].question).toContain("병기");
     expect(cervicalCancerCarePrompts[6].question).toContain("출산 희망");
+    const chemotherapyUnderstandingPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "항암화학요법 목적·일정 확인",
+    )!;
+    expect(chemotherapyUnderstandingPrompt.sourceId).toBe("nccChemotherapyUnderstanding");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("전신에 퍼져있는 암세포");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("암의 치료(완치)");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("암의 조절");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("완화");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("수술이나 방사선치료");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("보조화학요법");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("선행화학요법");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("동시화학요법");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("세포독성");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("표적항암제");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("면역항암제");
+    expect(chemotherapyUnderstandingPrompt.question).toContain("진찰 및 혈액 검사");
+    expect(buildCervicalCancerCarePromptQuestion(chemotherapyUnderstandingPrompt)).toContain(
+      "출처: 국가암정보센터 항암화학요법의 이해 - https://www.cancer.go.kr/lay1/S1T289C290/contents.do",
+    );
     const recurrencePrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "재발·추적검사",
     )!;
@@ -301,31 +323,31 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(recurrencePrompt)).toContain(
       "출처: 국가암정보센터 자궁경부암 재발 및 전이 - https://www.cancer.go.kr/",
     );
-    expect(cervicalCancerCarePrompts[8].question).toContain("난소부전");
-    expect(cervicalCancerCarePrompts[8].question).toContain("폐경 증상");
-    expect(cervicalCancerCarePrompts[8].question).toContain("질협착");
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[8])).toContain(
+    expect(cervicalCancerCarePrompts[9].question).toContain("난소부전");
+    expect(cervicalCancerCarePrompts[9].question).toContain("폐경 증상");
+    expect(cervicalCancerCarePrompts[9].question).toContain("질협착");
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[9])).toContain(
       "출처: 국가암정보센터 방사선치료의 부작용 - https://www.cancer.go.kr/",
     );
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[9])).toContain(
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[10])).toContain(
       "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/",
     );
-    expect(cervicalCancerCarePrompts[9].question).toContain("6개월 이상");
-    expect(cervicalCancerCarePrompts[9].question).toContain("장폐색");
-    expect(cervicalCancerCarePrompts[9].question).toContain("혈변");
-    expect(cervicalCancerCarePrompts[9].question).toContain("혈뇨");
-    expect(cervicalCancerCarePrompts[9].question).toContain("배변/가스 변화");
-    expect(cervicalCancerCarePrompts[10].question).toContain("피부 붉어짐");
-    expect(cervicalCancerCarePrompts[10].question).toContain("의료진에게 바로 연락");
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[10])).toContain(
+    expect(cervicalCancerCarePrompts[10].question).toContain("6개월 이상");
+    expect(cervicalCancerCarePrompts[10].question).toContain("장폐색");
+    expect(cervicalCancerCarePrompts[10].question).toContain("혈변");
+    expect(cervicalCancerCarePrompts[10].question).toContain("혈뇨");
+    expect(cervicalCancerCarePrompts[10].question).toContain("배변/가스 변화");
+    expect(cervicalCancerCarePrompts[11].question).toContain("피부 붉어짐");
+    expect(cervicalCancerCarePrompts[11].question).toContain("의료진에게 바로 연락");
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[11])).toContain(
       "출처: 국가암정보센터 림프부종 치료 전후관리 - https://www.cancer.go.kr/",
     );
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[11])).toContain(
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[12])).toContain(
       "출처: 국가암정보센터 자궁경부암 식생활 - https://www.cancer.go.kr/",
     );
-    expect(cervicalCancerCarePrompts[11].question).toContain("민간요법·건강보조식품");
-    expect(cervicalCancerCarePrompts[12].question).toContain("접종 후에도 자궁경부암 선별검사");
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[12])).toContain(
+    expect(cervicalCancerCarePrompts[12].question).toContain("민간요법·건강보조식품");
+    expect(cervicalCancerCarePrompts[13].question).toContain("접종 후에도 자궁경부암 선별검사");
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[13])).toContain(
       "출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/",
     );
     const hpvInfectionPrompt = cervicalCancerCarePrompts.find(
@@ -340,7 +362,7 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(hpvInfectionPrompt)).toContain(
       "출처: 국가암정보센터 사람유두종바이러스 감염 - https://www.cancer.go.kr/lay1/S1T250C254/contents.do",
     );
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[14])).toContain(
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[15])).toContain(
       "출처: 국가암정보센터 자궁경부암 임신과 출산 - https://www.cancer.go.kr/",
     );
     const sexLifePrompt = cervicalCancerCarePrompts.find(

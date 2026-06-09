@@ -162,6 +162,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 치료방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
   },
+  nccChemotherapyUnderstanding: {
+    label: "국가암정보센터 항암화학요법의 이해",
+    url: "https://www.cancer.go.kr/lay1/S1T289C290/contents.do",
+  },
   nccDifferentialDiagnosis: {
     label: "국가암정보센터 자궁경부암 감별진단",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4891",
@@ -306,6 +310,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     question:
       "제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부를 기준으로 수술·방사선치료·항암화학요법 선택 이유와 장단점을 어떻게 설명받으면 좋을까요?",
     sourceId: "nccTreatmentMethods",
+  },
+  {
+    topic: "항암화학요법 목적·일정 확인",
+    question:
+      "국가암정보센터 항암화학요법의 이해 설명처럼 항암화학요법은 전신에 퍼져있는 암세포에 작용하는 전신적 치료이고, 목적은 암의 치료(완치), 암의 조절, 증상 완화로 달라질 수 있으며 수술이나 방사선치료와 함께 쓰일 수 있다고 설명되는데, 제 치료에서 보조화학요법·선행화학요법·동시화학요법 중 어느 목적과 순서인지, 세포독성 항암제·표적항암제·면역항암제 중 어떤 약제군인지, 치료 간격과 진찰 및 혈액 검사로 회복을 확인하는 기준을 어떤 순서로 진료팀에 질문하면 좋을까요?",
+    sourceId: "nccChemotherapyUnderstanding",
   },
   {
     topic: "재발·추적검사",

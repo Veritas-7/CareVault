@@ -2029,6 +2029,18 @@ describe("caregiverExport", () => {
     expect(html).toContain("광범위 자궁절제술");
     expect(html).toContain("자궁주위 조직");
     expect(html).toContain("골반림프절");
+    expect(html).toContain("항암화학요법 목적·일정 확인");
+    expect(html).toContain("전신에 퍼져있는 암세포");
+    expect(html).toContain("암의 치료(완치)");
+    expect(html).toContain("암의 조절");
+    expect(html).toContain("완화");
+    expect(html).toContain("보조화학요법");
+    expect(html).toContain("선행화학요법");
+    expect(html).toContain("동시화학요법");
+    expect(html).toContain("세포독성");
+    expect(html).toContain("표적항암제");
+    expect(html).toContain("면역항암제");
+    expect(html).toContain("진찰 및 혈액 검사");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");
     expect(html).toContain("첫 2년");

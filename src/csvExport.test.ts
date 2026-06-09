@@ -673,6 +673,18 @@ describe("csvExport", () => {
     expect(csv).toContain("광범위 자궁절제술");
     expect(csv).toContain("자궁주위 조직");
     expect(csv).toContain("골반림프절");
+    expect(csv).toContain("항암화학요법 목적·일정 확인");
+    expect(csv).toContain("전신에 퍼져있는 암세포");
+    expect(csv).toContain("암의 치료(완치)");
+    expect(csv).toContain("암의 조절");
+    expect(csv).toContain("완화");
+    expect(csv).toContain("보조화학요법");
+    expect(csv).toContain("선행화학요법");
+    expect(csv).toContain("동시화학요법");
+    expect(csv).toContain("세포독성");
+    expect(csv).toContain("표적항암제");
+    expect(csv).toContain("면역항암제");
+    expect(csv).toContain("진찰 및 혈액 검사");
     expect(csv).toContain("재발·추적검사");
     expect(csv).toContain("첫 2년");
     expect(csv).toContain("3개월마다");

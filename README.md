@@ -19,6 +19,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC cervical-cancer radiotherapy vaginal-change clinician-question drafts for source-backed 질의 위축 또는 경화, 호르몬치료, 국소치료, and prevention/treatment consultation framing by radiation field, 질건조·통증·출혈, 성생활 변화, and hormone contraindication context
 - NCC cervical-cancer precancerous-lesion treatment clinician-question drafts for source-backed 자궁경부이형성증/자궁경부상피내암 wording, 원추절제술, 국소파괴요법(동결요법·고주파요법·레이저요법), 단순자궁절제술, 자궁 보존, 조직경계, and more-advanced-cancer confirmation framing
 - NCC cervical-cancer early invasive treatment clinician-question drafts for source-backed 침윤성 자궁경부암 wording, age/health/spread/complication treatment-selection factors, fertility-preserving 광범위 자궁경부절제술 plus laparoscopic lymph-node dissection, and 광범위 자궁절제술 extent checks for 자궁주위 조직, 질 상부, and 골반림프절
+- NCC chemotherapy-understanding clinician-question drafts for source-backed 항암화학요법 purpose and schedule checks, including whole-body cancer-cell framing, cure/control/palliation goals, surgery/radiation sequencing, adjuvant/neoadjuvant/concomitant timing, 세포독성·표적항암제·면역항암제 type confirmation, and visit/blood-test recovery checks
 - diabetes and hypertension follow-up context
 - hospital visits and next appointments with visit-panel summary chips for upcoming appointments, 14-day reminder window, and planned notes
 - 14-day next-appointment reminders derived from visit records
