@@ -69,6 +69,7 @@ describe("cervicalCancerCare", () => {
       "nccConstipationDiet",
       "nccWeightChangeDiet",
       "nccImmuneLowDiet",
+      "nccFatigueDepressionDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -141,6 +142,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccConstipationDiet.url).toContain("S1T479C487");
     expect(cervicalCancerCareSources.nccWeightChangeDiet.url).toContain("S1T479C486");
     expect(cervicalCancerCareSources.nccImmuneLowDiet.url).toContain("S1T479C489");
+    expect(cervicalCancerCareSources.nccFatigueDepressionDiet.url).toContain("S1T479C490");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -229,7 +231,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(44);
+    expect(cervicalCancerCarePrompts).toHaveLength(45);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -257,6 +259,7 @@ describe("cervicalCancerCare", () => {
       "변비 수분·섬유소·활동 기록 준비",
       "체중변화 열량·단백질·원인 기록 준비",
       "면역기능 저하 식품안전 기록 준비",
+      "피로감·우울 식사·활동 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -741,6 +744,37 @@ describe("cervicalCancerCare", () => {
     expect(immuneLowDietPrompt.question).toContain("비살균 우유·주스·요구르트");
     expect(buildCervicalCancerCarePromptQuestion(immuneLowDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    const fatigueDepressionDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "피로감·우울 식사·활동 기록 준비",
+    )!;
+    expect(fatigueDepressionDietPrompt.sourceId).toBe("nccFatigueDepressionDiet");
+    expect(fatigueDepressionDietPrompt.question).toContain("치료기간 동안 피로감");
+    expect(fatigueDepressionDietPrompt.question).toContain("제대로 먹지 못한 것");
+    expect(fatigueDepressionDietPrompt.question).toContain("운동 저하");
+    expect(fatigueDepressionDietPrompt.question).toContain("혈구수 부족");
+    expect(fatigueDepressionDietPrompt.question).toContain("우울");
+    expect(fatigueDepressionDietPrompt.question).toContain("불면");
+    expect(fatigueDepressionDietPrompt.question).toContain("약물 부작용");
+    expect(fatigueDepressionDietPrompt.question).toContain("의사선생님과 원인");
+    expect(fatigueDepressionDietPrompt.question).toContain("감정과 공포");
+    expect(fatigueDepressionDietPrompt.question).toContain("치료방법, 부작용");
+    expect(fatigueDepressionDietPrompt.question).toContain("충분한 휴식");
+    expect(fatigueDepressionDietPrompt.question).toContain("낮에 잠깐씩 낮잠");
+    expect(fatigueDepressionDietPrompt.question).toContain("짧고 간단한 활동");
+    expect(fatigueDepressionDietPrompt.question).toContain("영양이 풍부한 음식");
+    expect(fatigueDepressionDietPrompt.question).toContain("불충분한 열량과 영양소");
+    expect(fatigueDepressionDietPrompt.question).toContain("하루 중 가장 좋은 시간");
+    expect(fatigueDepressionDietPrompt.question).toContain("낮잠이나 휴식 후");
+    expect(fatigueDepressionDietPrompt.question).toContain("적은 양의 식사와 간식");
+    expect(fatigueDepressionDietPrompt.question).toContain("가족이나 친구의 도움");
+    expect(fatigueDepressionDietPrompt.question).toContain("음식배달서비스");
+    expect(fatigueDepressionDietPrompt.question).toContain("좋아하는 음식");
+    expect(fatigueDepressionDietPrompt.question).toContain("산책이나 규칙적인 운동");
+    expect(fatigueDepressionDietPrompt.question).toContain("피로를 악화시키는 행위");
+    expect(fatigueDepressionDietPrompt.question).toContain("아이보기, 밥하기, 집안일");
+    expect(buildCervicalCancerCarePromptQuestion(fatigueDepressionDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1640,6 +1674,9 @@ describe("cervicalCancerCare", () => {
     const immuneLowDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "면역저하 익힌음식·위생·보관 메모",
     );
+    const fatigueDepressionDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "피로감·우울 영양·휴식·도움요청 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1662,7 +1699,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(28);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(29);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2113,6 +2150,46 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(immuneLowDietGuide!)).join(" ")).not.toMatch(
       /항생제를 복용하세요|격리하세요|백혈구.*올리는|면역.*치료|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(fatigueDepressionDietGuide).toMatchObject({
+      label: "피로감·우울 영양·휴식·도움요청 메모",
+      sourceId: "nccFatigueDepressionDiet",
+    });
+    expect(fatigueDepressionDietGuide?.detail).toContain("치료기간 동안 피로감");
+    expect(fatigueDepressionDietGuide?.detail).toContain("제대로 먹지 못한 것");
+    expect(fatigueDepressionDietGuide?.detail).toContain("운동 저하");
+    expect(fatigueDepressionDietGuide?.detail).toContain("혈구수 부족");
+    expect(fatigueDepressionDietGuide?.detail).toContain("우울");
+    expect(fatigueDepressionDietGuide?.detail).toContain("불면");
+    expect(fatigueDepressionDietGuide?.detail).toContain("약물 부작용");
+    expect(fatigueDepressionDietGuide?.detail).toContain("의사선생님과 원인");
+    expect(fatigueDepressionDietGuide?.detail).toContain("감정과 공포");
+    expect(fatigueDepressionDietGuide?.detail).toContain("치료방법, 부작용");
+    expect(fatigueDepressionDietGuide?.detail).toContain("충분한 휴식");
+    expect(fatigueDepressionDietGuide?.detail).toContain("낮에 잠깐씩 낮잠");
+    expect(fatigueDepressionDietGuide?.detail).toContain("짧고 간단한 활동");
+    expect(fatigueDepressionDietGuide?.detail).toContain("영양이 풍부한 음식");
+    expect(fatigueDepressionDietGuide?.detail).toContain("불충분한 열량과 영양소");
+    expect(fatigueDepressionDietGuide?.detail).toContain("하루 중 가장 좋은 시간");
+    expect(fatigueDepressionDietGuide?.detail).toContain("낮잠이나 휴식 후");
+    expect(fatigueDepressionDietGuide?.detail).toContain("적은 양의 식사와 간식");
+    expect(fatigueDepressionDietGuide?.detail).toContain("가족이나 친구의 도움");
+    expect(fatigueDepressionDietGuide?.detail).toContain("음식배달서비스");
+    expect(fatigueDepressionDietGuide?.detail).toContain("좋아하는 음식");
+    expect(fatigueDepressionDietGuide?.detail).toContain("산책이나 규칙적인 운동");
+    expect(fatigueDepressionDietGuide?.detail).toContain("피로를 악화시키는 행위");
+    expect(fatigueDepressionDietGuide?.detail).toContain("아이보기, 밥하기, 집안일");
+    expect(formatCervicalCancerCareItemEvidence(fatigueDepressionDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(fatigueDepressionDietGuide!).body).toContain(
+      "피로 시작 시점",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(fatigueDepressionDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 피로감과 우울",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(fatigueDepressionDietGuide!)).join(" ")).not.toMatch(
+      /항우울제를 복용하세요|수면제를 복용하세요|운동하세요|억지로 먹이세요|강제로 먹이세요|우울증으로 진단하세요|빈혈로 진단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
