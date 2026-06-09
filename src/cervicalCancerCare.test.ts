@@ -53,6 +53,7 @@ describe("cervicalCancerCare", () => {
       "nccSexLife",
       "nccPregnancyBirth",
       "nccDiet",
+      "nccDiagnosisMethods",
       "nccTreatmentMethods",
       "nccDifferentialDiagnosis",
       "nccTreatmentSideEffects",
@@ -74,6 +75,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
     expect(cervicalCancerCareSources.nccCervicalPracticeGuideline.url).toContain("6fb06571");
     expect(cervicalCancerCareSources.nccTreatmentStatus.url).toContain("menu_seq=4896");
+    expect(cervicalCancerCareSources.nccDiagnosisMethods.url).toContain("menu_seq=4889");
     expect(cervicalCancerCareSources.nccDifferentialDiagnosis.url).toContain("menu_seq=4891");
   });
 
@@ -266,11 +268,14 @@ describe("cervicalCancerCare", () => {
     const treatmentMethodBasisGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "치료방법 선택 근거 메모",
     );
+    const diagnosisMethodPurposeGuide = cervicalCancerCareChecks.find(
+      (item) => item.label === "진단·병기검사 목적 메모",
+    );
     const differentialDiagnosisGuide = cervicalCancerCareChecks.find(
       (item) => item.label === "감별진단 확인 메모",
     );
 
-    expect(cervicalCancerCareChecks).toHaveLength(12);
+    expect(cervicalCancerCareChecks).toHaveLength(13);
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("출혈·분비물 기록");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain("추적검사 일정·결과");
     expect(cervicalCancerCareChecks.map((item) => item.label)).toContain(
@@ -354,6 +359,30 @@ describe("cervicalCancerCare", () => {
     expect(treatmentMethodBasisGuide?.detail).toContain("림프절");
     expect(treatmentMethodBasisGuide?.detail).toContain("진료팀에 확인");
     expect(treatmentMethodBasisGuide?.detail).not.toContain("치료하세요");
+    expect(diagnosisMethodPurposeGuide).toMatchObject({
+      label: "진단·병기검사 목적 메모",
+      sourceId: "nccDiagnosisMethods",
+    });
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("암이 맞는지 확인");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("병기 설정 검사");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("의사의 진찰");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("자궁경부세포검사");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("질확대경검사");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("조직검사");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("원추절제술");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("방광경");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("에스결장경검사");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("경정맥 신우조영술");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("CT");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("MRI");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("PET");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("자궁경부 주위조직");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("림프절 전이");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("원격전이");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("재발");
+    expect(diagnosisMethodPurposeGuide?.detail).toContain("진료팀에 확인");
+    expect(diagnosisMethodPurposeGuide?.detail).not.toContain("진단됩니다");
+    expect(diagnosisMethodPurposeGuide?.detail).not.toContain("검사를 받으세요");
     expect(differentialDiagnosisGuide).toMatchObject({
       label: "감별진단 확인 메모",
       sourceId: "nccDifferentialDiagnosis",

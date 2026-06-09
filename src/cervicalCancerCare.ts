@@ -130,6 +130,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 식생활",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
   },
+  nccDiagnosisMethods: {
+    label: "국가암정보센터 자궁경부암 진단방법",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
+  },
   nccTreatmentMethods: {
     label: "국가암정보센터 자궁경부암 치료방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
@@ -324,6 +328,12 @@ export const cervicalCancerCareChecks: CervicalCancerCareCheck[] = [
     detail:
       "증상이 없는 검진과 의심 증상 진단검사를 구분하고, 골반내진·자궁경부세포검사·HPV 검사·질확대경·조직검사·경질초음파·골반 MRI 중 내 증상과 결과에 필요한 항목을 진료팀에 확인합니다.",
     sourceId: "nccEarlyDiagnosisPrevention",
+  },
+  {
+    label: "진단·병기검사 목적 메모",
+    detail:
+      "국가암정보센터는 자궁경부암 검사를 암이 맞는지 확인하는 조직검사와 병기 설정 검사로 나누어 설명합니다. 의사의 진찰, 자궁경부세포검사, 질확대경검사, 조직검사, 원추절제술, 방광경 및 에스결장경검사, 경정맥 신우조영술, CT, MRI, PET 중 어떤 검사가 내 결과에서 암 확인, 자궁경부 주위조직 침윤, 림프절 전이, 원격전이와 재발 확인 목적인지 진료팀에 확인합니다.",
+    sourceId: "nccDiagnosisMethods",
   },
   {
     label: "병기 설명 메모",
