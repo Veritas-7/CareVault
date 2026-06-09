@@ -9790,6 +9790,36 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes immune-low foodborne disease risk reduction parent source sentence", () => {
+    const sourceSentence =
+      "다음 사항들을 참조하면 식품으로 인한 질병의 위험을 낮추는 데 도움이 될 것입니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "면역저하 시 식품으로 인한 질병 위험 낮추기 후보",
+      sourceId: "nccImmuneLowDiet",
+    });
+    for (const genericTerm of ["유통기한 확인", "완전히 익힌 음식", "저온살균 제품"]) {
+      expect(terms).not.toContain(genericTerm);
+    }
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes immune-low food handling risk phrases from official guidance", () => {
     const assessment = assessCancerFood(
       "다진 고기, 씻지 않은 딸기, 오래된 남은 음식, 상한 음식",
