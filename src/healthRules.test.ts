@@ -1610,6 +1610,41 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical early-diagnosis prevention balanced produce sentence", () => {
+    const sourceSentence =
+      "채소와 과일을 충분하게 먹고, 다채로운 식단으로 균형 잡힌 식사하기";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalEarlyDiagnosisPrevention.label).toBe(
+      "국립암센터 자궁경부암 조기 진단과 예방법",
+    );
+    expect(foodGuidanceSources.nccCervicalEarlyDiagnosisPrevention.url).toBe(
+      "https://www.cancer.go.kr/download.do?uuid=adf8879c-4343-445e-b67d-0c60e5ac9b58.pdf",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "국립암센터 자궁경부암 조기 진단과 예방법 균형식 생활수칙 후보",
+      sourceId: "nccCervicalEarlyDiagnosisPrevention",
+    });
+    expect(terms).not.toContain("채소와 과일을 충분히 먹습니다");
+    expect(terms).not.toContain("다채로운 식단으로 균형 잡힌 식사를 합니다");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국립암센터 자궁경부암 조기 진단과 예방법 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical-cancer final prevention summary with fresh-produce support sentence", () => {
     const sourceSentence =
       "이상에서 살펴본 바와 같이, 자궁경부암의 예방을 위해서는 정기적인 검진이 가장 효과적인 방법이며, 안전한 성생활을 유지하고, 금연을 하며, 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다.";

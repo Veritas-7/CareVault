@@ -47,6 +47,7 @@ export type FoodGuidanceSourceId =
   | "nccCervicalFoodPrevention"
   | "nccCervicalRiskFactors"
   | "nccCervicalPracticeDiet"
+  | "nccCervicalEarlyDiagnosisPrevention"
   | "nccTreatmentEating"
   | "nccTreatmentNutrients"
   | "nccTreatmentRightEating"
@@ -217,6 +218,10 @@ export const foodGuidanceSources: Record<
     label: "국가암정보센터 자궁경부암 실천지침 식생활",
     url: "https://www.cancer.go.kr/download.do?uuid=6fb06571-5b8b-4dbe-9473-1074110e631d.pdf",
   },
+  nccCervicalEarlyDiagnosisPrevention: {
+    label: "국립암센터 자궁경부암 조기 진단과 예방법",
+    url: "https://www.cancer.go.kr/download.do?uuid=adf8879c-4343-445e-b67d-0c60e5ac9b58.pdf",
+  },
   nccTreatmentEating: {
     label: "국가암정보센터 치료 중 일반적인 식생활",
     url: "https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
@@ -274,6 +279,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "카로틴(carotene)과 거의 유사한 구조를 가진 물질을 카로테노이드라고 하며, 그 중 베타카로틴 은 당근, 시금치, 차, 미역 등 신선한 채소, 과일, 해조류에 풍부합니다., 그러므로 자궁경부암의 예방을 위해서는 조기 검진과 정기 검진이 가장 효과적인 방법이며, 일반적으로 건강한 생활을 위해서는 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다., 이상에서 살펴본 바와 같이, 자궁경부암의 예방을 위해서는 정기적인 검진이 가장 효과적인 방법이며, 안전한 성생활을 유지하고, 금연을 하며, 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다., 당근, 시금치, 차, 미역, 신선한 채소, 과일, 해조류",
         sourceIds: ["nccCervicalFoodPrevention"],
+      },
+      {
+        label: "조기진단 자료 균형식 생활수칙",
+        detail:
+          "국립암센터 자궁경부암 조기 진단과 예방법 PDF는 생활수칙 식생활 항목에서 채소와 과일을 충분하게 먹고 다채로운 식단으로 균형 잡힌 식사를 하도록 안내합니다. 식단 기록에서는 최신 조기진단 자료의 생활수칙 문구를 보존하되, 특정 음식의 치료 효과나 보장으로 과장하지 않습니다.",
+        examples: "채소와 과일을 충분하게 먹고, 다채로운 식단으로 균형 잡힌 식사하기",
+        sourceIds: ["nccCervicalEarlyDiagnosisPrevention"],
       },
       {
         label: "실천지침 식단 예시",
@@ -1307,6 +1319,11 @@ const supportiveFoods: FoodRuleTerm[] = [
     "그러므로 자궁경부암의 예방을 위해서는 조기 검진과 정기 검진이 가장 효과적인 방법이며, 일반적으로 건강한 생활을 위해서는 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다.",
     "자궁경부암 정기검진 우선·신선 채소과일 섭취 확인 후보",
     "nccCervicalFoodPrevention",
+  ],
+  [
+    "채소와 과일을 충분하게 먹고, 다채로운 식단으로 균형 잡힌 식사하기",
+    "국립암센터 자궁경부암 조기 진단과 예방법 균형식 생활수칙 후보",
+    "nccCervicalEarlyDiagnosisPrevention",
   ],
   [
     "이상에서 살펴본 바와 같이, 자궁경부암의 예방을 위해서는 정기적인 검진이 가장 효과적인 방법이며, 안전한 성생활을 유지하고, 금연을 하며, 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다.",
