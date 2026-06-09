@@ -1369,6 +1369,38 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical-cancer appetite and pain-linked meal support source sentence", () => {
+    const sourceSentence =
+      "충분한 영양 섭취를 위해서는 잘 먹는 것이 중요한데, 우선 환자가 평소에 좋아했던 음식이나 먹고 싶어하던 음식을 제공하고, 통증 으로 식욕을 잃었다면 식사 전에 먼저 진통제 를 복용합니다. 음식은 항상 손이 쉽게 갈 수 있는 곳에 두고 식욕을 느낄 때마다 먹습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalDiet.label).toBe(
+      "국가암정보센터 자궁경부암 식생활",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "자궁경부암 통증·식욕저하 식사 전 약 복용 진료팀 확인 후보",
+      sourceId: "nccCervicalDiet",
+    });
+    expect(terms).not.toContain("충분한 영양을 섭취하고 휴식을 취하는 것이 몸의 면역 기능 강화와 투병 생활에 도움이 될 수 있습니다.");
+    expect(terms).not.toContain("식욕부진 간식");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 식생활 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical-cancer radiation or chemotherapy irritating-food source sentence", () => {
     const sourceSentence =
       "방사선 치료나 항암화학요법 중에는 장기능이 약해질 가능성이 있으므로 되도록 자극적인 음식은 피합니다.";
