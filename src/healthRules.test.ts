@@ -12363,6 +12363,81 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes MFDS salmonella egg cooking and cross-contamination guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const mfdsGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식약처 달걀 살모넬라 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "생달걀 또는 달걀물을 만진 후 비누로 30초 이상 손씻기, 생달걀과 일반 조리과정은 구분하고 칼·도마·집게·장갑 등은 분리 사용, 달걀 조리식품은 중심부까지 충분히 가열하기, 달걀 보관온도(0~10℃)를 준수, 작업대·용기·조리 기구는 사용 후 즉시 세척·소독",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "살모넬라 식중독 의심 사례에서 생달걀을 만진 손을 씻지 않고 다른 음식 조리, 가열 전 달걀물이 묻은 집게를 조리 완제품에도 혼용 사용, 충분히 익지 않은 육전 제공, 남은 달걀물의 재사용, 달걀물을 상온에서 장시간 보관, 조리 후 작업공간 세척·소독 미실시를 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.mfdsSalmonellaEggSafety).toMatchObject({
+      label: "식품의약품안전처 달걀 조리식품 살모넬라 식중독 주의",
+      url: "https://www.mfds.go.kr/brd/m_99/view.do?seq=50005",
+    });
+    expect(mfdsGuide).toMatchObject({
+      label: "식약처 달걀 살모넬라 식중독 주의",
+      sourceIds: ["mfdsSalmonellaEggSafety"],
+    });
+    expect(mfdsGuide?.detail).toContain("생달걀 또는 달걀물을 만진 후");
+    expect(mfdsGuide?.detail).toContain("칼·도마·집게·장갑 등은 분리 사용");
+    expect(mfdsGuide?.detail).toContain("달걀 조리식품은 중심부까지 충분히 가열");
+    expect(mfdsGuide?.detail).toContain("달걀 보관온도(0~10℃)");
+    expect(mfdsGuide?.detail).toContain("작업대·용기·조리 기구는 사용 후 즉시 세척·소독");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "생달걀 또는 달걀물을 만진 후 비누로 30초 이상 손씻기",
+      "생달걀과 일반 조리과정은 구분하고 칼·도마·집게·장갑 등은 분리 사용",
+      "달걀 조리식품은 중심부까지 충분히 가열하기",
+      "달걀 보관온도(0~10℃)를 준수",
+      "작업대·용기·조리 기구는 사용 후 즉시 세척·소독",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "mfdsSalmonellaEggSafety",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품의약품안전처 달걀 조리식품 살모넬라 식중독 주의 - https://www.mfds.go.kr/brd/m_99/view.do?seq=50005",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "살모넬라 식중독",
+      "생달걀을 만진 손을 씻지 않고 다른 음식 조리",
+      "가열 전 달걀물이 묻은 집게를 조리 완제품에도 혼용 사용",
+      "충분히 익지 않은 육전",
+      "남은 달걀물의 재사용",
+      "달걀물을 상온에서 장시간 보관",
+      "조리 후 작업공간 세척·소독 미실시",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "mfdsSalmonellaEggSafety",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

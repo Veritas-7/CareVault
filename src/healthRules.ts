@@ -61,6 +61,7 @@ export type FoodGuidanceSourceId =
   | "kdcaFoodPoisoningNaturalToxins"
   | "foodSafetyKoreaListeriaFoodPoisoning"
   | "foodSafetyKoreaCampylobacterFoodPoisoning"
+  | "mfdsSalmonellaEggSafety"
   | "mfdsFoodPoisoningPrevention";
 
 export type FoodMatch = {
@@ -279,6 +280,10 @@ export const foodGuidanceSources: Record<
   foodSafetyKoreaCampylobacterFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 캠필로박터",
     url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+  },
+  mfdsSalmonellaEggSafety: {
+    label: "식품의약품안전처 달걀 조리식품 살모넬라 식중독 주의",
+    url: "https://www.mfds.go.kr/brd/m_99/view.do?seq=50005",
   },
   mfdsFoodPoisoningPrevention: {
     label: "식품의약품안전처 식중독 예방 6대요령",
@@ -1025,6 +1030,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "흐르는 물에 비누로 30초 이상 씻기, 날음식과 조리음식 구분, 칼·도마 구분 사용, 육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기, 식재료·조리기구는 깨끗이 세척·소독 하기, 물은 끓여서 먹기, 냉장식품은 5˚C 이하, 냉동식품은 -18˚C 이하, 따뜻한 음식은 60˚C 이상, 찬 음식은 5˚C 이하, 조리후 2시간 이내 섭취",
         sourceIds: ["mfdsFoodPoisoningPrevention"],
+      },
+      {
+        label: "식약처 달걀 살모넬라 식중독 주의",
+        detail:
+          "식품의약품안전처는 달걀을 사용하는 음식점에서 살모넬라 식중독 의심 사례가 지속 발생해 달걀 취급 업체 식중독 예방수칙 준수를 당부했습니다. 주요 교차오염 사례로 생달걀을 만진 손을 씻지 않고 다른 음식 조리, 가열 전 달걀물이 묻은 집게를 조리 완제품에도 혼용 사용, 충분히 익지 않은 육전, 남은 달걀물의 재사용, 달걀물을 상온에서 장시간 보관, 조리 후 작업공간 세척·소독 미실시를 제시합니다. 예방수칙으로 생달걀 또는 달걀물을 만진 후 비누로 30초 이상 손씻기, 생달걀과 일반 조리과정 구분 및 칼·도마·집게·장갑 등은 분리 사용, 달걀 조리식품은 중심부까지 충분히 가열, 달걀 보관온도(0~10℃) 준수, 작업대·용기·조리 기구는 사용 후 즉시 세척·소독을 안내합니다.",
+        examples:
+          "살모넬라 식중독, 생달걀을 만진 손을 씻지 않고 다른 음식 조리, 가열 전 달걀물이 묻은 집게를 조리 완제품에도 혼용 사용, 충분히 익지 않은 육전, 남은 달걀물의 재사용, 달걀물을 상온에서 장시간 보관, 조리 후 작업공간 세척·소독 미실시, 생달걀 또는 달걀물을 만진 후 비누로 30초 이상 손씻기, 생달걀과 일반 조리과정은 구분하고 칼·도마·집게·장갑 등은 분리 사용, 달걀 조리식품은 중심부까지 충분히 가열하기, 달걀 보관온도(0~10℃)를 준수, 작업대·용기·조리 기구는 사용 후 즉시 세척·소독",
+        sourceIds: ["mfdsSalmonellaEggSafety"],
       },
       {
         label: "질병관리청 노로바이러스 식중독 예방",
@@ -2556,6 +2569,31 @@ const supportiveFoods: FoodRuleTerm[] = [
     "식재료·조리기구는 깨끗이 세척·소독 하기",
     "식약처 식중독 예방 식재료·조리기구 세척·소독 후보",
     "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "생달걀 또는 달걀물을 만진 후 비누로 30초 이상 손씻기",
+    "식약처 살모넬라 달걀 취급 후 30초 손씻기 후보",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "생달걀과 일반 조리과정은 구분하고 칼·도마·집게·장갑 등은 분리 사용",
+    "식약처 살모넬라 생달걀 조리과정·도구 분리 후보",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "달걀 조리식품은 중심부까지 충분히 가열하기",
+    "식약처 살모넬라 달걀 조리식품 중심부 가열 후보",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "달걀 보관온도(0~10℃)를 준수",
+    "식약처 살모넬라 달걀 보관온도 확인 후보",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "작업대·용기·조리 기구는 사용 후 즉시 세척·소독",
+    "식약처 살모넬라 작업대·용기·조리기구 즉시 세척·소독 후보",
+    "mfdsSalmonellaEggSafety",
   ],
   [
     "음식물은 충분히 익혀 먹기(85℃ 이상에서 1분 이상 가열)",
@@ -4208,6 +4246,41 @@ const careTeamFoods: FoodRuleTerm[] = [
     "상온에 오래 방치",
     "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",
     "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "살모넬라 식중독",
+    "식약처 살모넬라 달걀 조리식품 식중독 확인 필요",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "생달걀을 만진 손을 씻지 않고 다른 음식 조리",
+    "식약처 살모넬라 생달걀 취급 후 손씻기 누락 교차오염 확인 필요",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "가열 전 달걀물이 묻은 집게를 조리 완제품에도 혼용 사용",
+    "식약처 살모넬라 달걀물 묻은 집게 완제품 혼용 확인 필요",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "충분히 익지 않은 육전",
+    "식약처 살모넬라 달걀 조리식품 불충분 가열 확인 필요",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "남은 달걀물의 재사용",
+    "식약처 살모넬라 남은 달걀물 재사용 확인 필요",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "달걀물을 상온에서 장시간 보관",
+    "식약처 살모넬라 달걀물 상온 장시간 보관 확인 필요",
+    "mfdsSalmonellaEggSafety",
+  ],
+  [
+    "조리 후 작업공간 세척·소독 미실시",
+    "식약처 살모넬라 조리 후 작업공간 세척·소독 누락 확인 필요",
+    "mfdsSalmonellaEggSafety",
   ],
   [
     "노로바이러스 식중독",
