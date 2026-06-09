@@ -67,6 +67,7 @@ describe("cervicalCancerCare", () => {
       "nccTasteChangeDiet",
       "nccDiarrheaDiet",
       "nccConstipationDiet",
+      "nccWeightChangeDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -137,6 +138,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccTasteChangeDiet.url).toContain("S1T479C484");
     expect(cervicalCancerCareSources.nccDiarrheaDiet.url).toContain("S1T479C488");
     expect(cervicalCancerCareSources.nccConstipationDiet.url).toContain("S1T479C487");
+    expect(cervicalCancerCareSources.nccWeightChangeDiet.url).toContain("S1T479C486");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -225,7 +227,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(42);
+    expect(cervicalCancerCarePrompts).toHaveLength(43);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -251,6 +253,7 @@ describe("cervicalCancerCare", () => {
       "입맛 변화 단백질·향 기록 준비",
       "설사 수분·전해질 음식 기록 준비",
       "변비 수분·섬유소·활동 기록 준비",
+      "체중변화 열량·단백질·원인 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -669,6 +672,41 @@ describe("cervicalCancerCare", () => {
     expect(constipationDietPrompt.question).toContain("의사선생님과 상의");
     expect(buildCervicalCancerCarePromptQuestion(constipationDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 변비 - https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+    );
+    const weightChangeDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "체중변화 열량·단백질·원인 기록 준비",
+    )!;
+    expect(weightChangeDietPrompt.sourceId).toBe("nccWeightChangeDiet");
+    expect(weightChangeDietPrompt.question).toContain("체중의 감소를 흔하게 경험");
+    expect(weightChangeDietPrompt.question).toContain("허약하게 만들고");
+    expect(weightChangeDietPrompt.question).toContain("암에 대한 저항력");
+    expect(weightChangeDietPrompt.question).toContain("치료효과");
+    expect(weightChangeDietPrompt.question).toContain("열량과 단백질");
+    expect(weightChangeDietPrompt.question).toContain("김밥, 초밥, 주먹밥, 볶음밥");
+    expect(weightChangeDietPrompt.question).toContain("야채죽, 전복죽, 계란죽");
+    expect(weightChangeDietPrompt.question).toContain("감자, 고구마, 떡, 만두, 빵");
+    expect(weightChangeDietPrompt.question).toContain("설탕, 꿀, 쨈, 버터, 땅콩버터");
+    expect(weightChangeDietPrompt.question).toContain("우유, 두유");
+    expect(weightChangeDietPrompt.question).toContain("사탕, 젤리, 크래커, 빵류, 과일, 주스");
+    expect(weightChangeDietPrompt.question).toContain("계란");
+    expect(weightChangeDietPrompt.question).toContain("콩, 두부");
+    expect(weightChangeDietPrompt.question).toContain("생선");
+    expect(weightChangeDietPrompt.question).toContain("유제품");
+    expect(weightChangeDietPrompt.question).toContain("체중이 증가하였다고 바로 체중조절");
+    expect(weightChangeDietPrompt.question).toContain("의사선생님과 상의하여 원인을");
+    expect(weightChangeDietPrompt.question).toContain("약물에 의한 체내 수분 보유");
+    expect(weightChangeDietPrompt.question).toContain("식욕의 이상 증가");
+    expect(weightChangeDietPrompt.question).toContain("가공식품, 김치, 젓갈, 장아찌류");
+    expect(weightChangeDietPrompt.question).toContain("청량 음료, 초콜릿, 사탕, 과자류");
+    expect(weightChangeDietPrompt.question).toContain("과일과 야채 그리고 곡류");
+    expect(weightChangeDietPrompt.question).toContain("지방이 없는 부위의 육류제품");
+    expect(weightChangeDietPrompt.question).toContain("저지방 우유 및 유제품");
+    expect(weightChangeDietPrompt.question).toContain("끓이고 찌는 형태");
+    expect(weightChangeDietPrompt.question).toContain("버터, 마요네즈, 감미료");
+    expect(weightChangeDietPrompt.question).toContain("고열량의 간식");
+    expect(weightChangeDietPrompt.question).toContain("많이 먹었다고 생각되면 운동");
+    expect(buildCervicalCancerCarePromptQuestion(weightChangeDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1505,6 +1543,14 @@ describe("cervicalCancerCare", () => {
       "가벼운 산책이나 걷기 등의 자신에게 맞는 운동을 규칙적으로 하는 것이 도움이 됩니다. 누워만 있는 경우라도 배를 부드럽게 문질러 주면 장운동에 도움이 됩니다.";
     const constipationClinicianSentence =
       "계속적으로 변비가 조절되지 않는다면 의사선생님과 상의하도록 합니다.";
+    const weightLossContextSentence =
+      "암환자는 치료과정에서 체중의 감소를 흔하게 경험할 수 있습니다. 체중감소는 환자를 허약하게 만들고 암에 대한 저항력과 치료효과 등을 떨어뜨립니다.";
+    const weightLossCalorieProteinSentence =
+      "그러므로 체중감소를 예방하기 위해서 열량과 단백질 등을 충분히 섭취해야 합니다.";
+    const weightGainCauseSentence =
+      "치료를 받는 동안 체중이 증가하는 사람들도 있습니다. 체중증가는 복용하고 있는 약물에 의한 체내 수분 보유나 식욕의 이상 증가 등으로 생길 수 있습니다.";
+    const weightGainConsultSentence =
+      "그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1554,6 +1600,9 @@ describe("cervicalCancerCare", () => {
     const constipationDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "변비 수분·섬유소·활동 메모",
     );
+    const weightChangeDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "체중변화 열량·단백질·원인 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1576,7 +1625,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(26);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(27);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1942,6 +1991,44 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(constipationDietGuide!)).join(" ")).not.toMatch(
       /변비약을 복용하세요|하제를 복용하세요|관장을 하세요|수분부족을 치료하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(weightChangeDietGuide).toMatchObject({
+      label: "체중변화 열량·단백질·원인 메모",
+      sourceId: "nccWeightChangeDiet",
+    });
+    expect(weightChangeDietGuide?.detail).toContain(weightLossContextSentence);
+    expect(weightChangeDietGuide?.detail).toContain(weightLossCalorieProteinSentence);
+    expect(weightChangeDietGuide?.detail).toContain("김밥, 초밥, 주먹밥, 볶음밥");
+    expect(weightChangeDietGuide?.detail).toContain("야채죽, 전복죽, 계란죽, 닭죽");
+    expect(weightChangeDietGuide?.detail).toContain("감자, 고구마, 떡, 만두, 빵, 과일");
+    expect(weightChangeDietGuide?.detail).toContain("설탕, 꿀, 쨈, 버터, 땅콩버터");
+    expect(weightChangeDietGuide?.detail).toContain("우유, 두유 등 음료");
+    expect(weightChangeDietGuide?.detail).toContain("사탕, 젤리, 크래커, 빵류, 과일, 주스");
+    expect(weightChangeDietGuide?.detail).toContain("계란 : 계란후라이, 계란찜");
+    expect(weightChangeDietGuide?.detail).toContain("콩, 두부 : 콩밥, 두유");
+    expect(weightChangeDietGuide?.detail).toContain("생선 : 생선포, 생선전");
+    expect(weightChangeDietGuide?.detail).toContain("유제품 : 우유, 요구르트");
+    expect(weightChangeDietGuide?.detail).toContain(weightGainCauseSentence);
+    expect(weightChangeDietGuide?.detail).toContain(weightGainConsultSentence);
+    expect(weightChangeDietGuide?.detail).toContain("염분 함량이 높은 식품(예: 가공식품, 김치, 젓갈, 장아찌류 등)");
+    expect(weightChangeDietGuide?.detail).toContain("열량이 높고 영양가가 없는 식품들(예: 청량 음료, 초콜릿, 사탕, 과자류 등)");
+    expect(weightChangeDietGuide?.detail).toContain("과일과 야채 그리고 곡류의 섭취를 증가");
+    expect(weightChangeDietGuide?.detail).toContain("지방이 없는 부위의 육류제품과 저지방 우유 및 유제품");
+    expect(weightChangeDietGuide?.detail).toContain("끓이고 찌는 형태의 요리방법");
+    expect(weightChangeDietGuide?.detail).toContain("버터, 마요네즈, 감미료 등을 추가로 사용하지");
+    expect(weightChangeDietGuide?.detail).toContain("가능한 고열량의 간식은 먹지");
+    expect(weightChangeDietGuide?.detail).toContain("많이 먹었다고 생각되면 운동");
+    expect(formatCervicalCancerCareItemEvidence(weightChangeDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화 - https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(weightChangeDietGuide!).body).toContain(
+      weightGainConsultSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(weightChangeDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 체중변화",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(weightChangeDietGuide!)).join(" ")).not.toMatch(
+      /체중조절을 바로 시작하세요|감량식을 처방하세요|증량식을 처방하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
