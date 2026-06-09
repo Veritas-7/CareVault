@@ -65,6 +65,7 @@ describe("cervicalCancerCare", () => {
       "nccPainAssessment",
       "nccCancerFatigueCoping",
       "nccDyspneaCause",
+      "nccCoughCause",
       "nccDiagnosisMethods",
       "nccStage",
       "nccTreatmentMethods",
@@ -118,6 +119,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccPainAssessment.url).toContain("S1T378C380");
     expect(cervicalCancerCareSources.nccCancerFatigueCoping.url).toContain("S1T420C421");
     expect(cervicalCancerCareSources.nccDyspneaCause.url).toContain("S1T411C414");
+    expect(cervicalCancerCareSources.nccCoughCause.url).toContain("S1T410C412");
     expect(cervicalCancerCareSources.nccTreatmentEating.url).toContain("S1T471C472");
   });
 
@@ -207,7 +209,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(33);
+    expect(cervicalCancerCarePrompts).toHaveLength(34);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -235,6 +237,7 @@ describe("cervicalCancerCare", () => {
       "암성 통증 평가 준비",
       "암관련 피로 대처 준비",
       "호흡곤란 변화 기록 준비",
+      "기침·객혈 변화 기록 준비",
       "치료현황 통계 해석",
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
@@ -580,6 +583,27 @@ describe("cervicalCancerCare", () => {
     expect(dyspneaCausePrompt.question).toContain("갑자기 악화");
     expect(buildCervicalCancerCarePromptQuestion(dyspneaCausePrompt)).toContain(
       "출처: 국가암정보센터 호흡곤란 원인 - https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
+    );
+    const coughCausePrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "기침·객혈 변화 기록 준비",
+    )!;
+    expect(coughCausePrompt.sourceId).toBe("nccCoughCause");
+    expect(coughCausePrompt.question).toContain("기도안에 이물질");
+    expect(coughCausePrompt.question).toContain("분비물");
+    expect(coughCausePrompt.question).toContain("호흡곤란");
+    expect(coughCausePrompt.question).toContain("지속되거나 발작적");
+    expect(coughCausePrompt.question).toContain("밤에 잠을 방해");
+    expect(coughCausePrompt.question).toContain("피곤");
+    expect(coughCausePrompt.question).toContain("통증");
+    expect(coughCausePrompt.question).toContain("기절");
+    expect(coughCausePrompt.question).toContain("구토");
+    expect(coughCausePrompt.question).toContain("흉통");
+    expect(coughCausePrompt.question).toContain("흉막 삼출");
+    expect(coughCausePrompt.question).toContain("이물질 흡인");
+    expect(coughCausePrompt.question).toContain("호흡기 감염");
+    expect(coughCausePrompt.question).toContain("객혈");
+    expect(buildCervicalCancerCarePromptQuestion(coughCausePrompt)).toContain(
+      "출처: 국가암정보센터 기침 원인 - https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
     );
     const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료현황 통계 해석",
@@ -1182,6 +1206,12 @@ describe("cervicalCancerCare", () => {
       "암을 낫게 해주는 특별한 식품이나 영양소는 없으며, 균형 잡힌 식사로 좋은 영양 상태를 유지하는 것이 매우 중요합니다.";
     const treatmentEatingNutrientSentence =
       "그러기 위해서는 충분한 열량과 단백질, 비타민 및 무기질을 섭취해야 하며, 이는 여러 가지 음식을 골고루 먹음으로써 가능합니다.";
+    const coughDefinitionSentence =
+      "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
+    const pathologicCoughSentence =
+      "병적인 기침은 환자가 불편을 느끼는 증상으로 지속되거나 발작적인 것을 말합니다.";
+    const severeCoughBurdenSentence =
+      "밤에 잠을 방해하거나, 피곤, 통증, 기절, 구토, 흉통, 복통, 두통을 일으키거나 가끔씩 늑골골절 등을 일으키는 괴로운 증상입니다.";
     const text = cervicalCancerCareRecoveryGuides
       .map((item) => `${item.label} ${item.detail}`)
       .join(" ");
@@ -1219,8 +1249,11 @@ describe("cervicalCancerCare", () => {
     const dyspneaCauseGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "호흡곤란·흉통 변화 메모",
     );
+    const coughCauseGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "기침·가래·수면방해 메모",
+    );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(17);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(18);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1343,6 +1376,32 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(treatmentEatingGuide!)).join(" ")).not.toMatch(
       /암을 낫게 해주는 특별한 식품이 있습니다|치료 음식|특효|보조식품 권장|치료하세요/,
+    );
+    expect(coughCauseGuide).toMatchObject({
+      label: "기침·가래·수면방해 메모",
+      sourceId: "nccCoughCause",
+    });
+    expect(coughCauseGuide?.detail).toContain(coughDefinitionSentence);
+    expect(coughCauseGuide?.detail).toContain(pathologicCoughSentence);
+    expect(coughCauseGuide?.detail).toContain(severeCoughBurdenSentence);
+    expect(coughCauseGuide?.detail).toContain("말기 암 환자의 기침은 흉막 삼출");
+    expect(coughCauseGuide?.detail).toContain("이물질 흡인");
+    expect(coughCauseGuide?.detail).toContain("호흡기 감염");
+    expect(coughCauseGuide?.detail).toContain("좌심실 부전");
+    expect(coughCauseGuide?.detail).toContain("천식");
+    expect(coughCauseGuide?.detail).toContain("알러지");
+    expect(coughCauseGuide?.detail).toContain("폐암");
+    expect(formatCervicalCancerCareItemEvidence(coughCauseGuide!)).toContain(
+      "국가암정보센터 기침 원인 - https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(coughCauseGuide!).body).toContain(
+      severeCoughBurdenSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(coughCauseGuide!)).toContain(
+      "국가암정보센터 기침 원인",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(coughCauseGuide!)).join(" ")).not.toMatch(
+      /기침약을 복용하세요|흡입기를 사용하세요|항생제를 받으세요|진단하세요|치료하세요|처방하세요/,
     );
     expect(childFamilyCommunicationGuide).toMatchObject({
       label: "자녀·가족 설명 메모",
