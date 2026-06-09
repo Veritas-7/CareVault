@@ -6843,6 +6843,52 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC nausea-vomiting care severe weakness dizziness clinician-consultation source sentence", () => {
+    const sourceSentence = "심하게 힘이 없거나 현기증이 있을 경우";
+    const projectileVomitingSentence = "참지 못하는 구토가 멀리까지 분출되는 경우";
+    const persistentNauseaDailyActivitySentence =
+      "오심이 며칠이상 지속되거나 오심 때문에 당신이 중요한 일을 하지 못할 때";
+    const fatigueCauseConsultSentence =
+      "만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.";
+    const activeVomitingRestrictionSentence = "구토가 멈출 때까지는 음료나 음식을 먹지 않도록 합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 심한 무력감 또는 현기증 발생 시 의료진 상담 필요",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(projectileVomitingSentence);
+    expect(terms).not.toContain(persistentNauseaDailyActivitySentence);
+    expect(terms).not.toContain(fatigueCauseConsultSentence);
+    expect(terms).not.toContain(activeVomitingRestrictionSentence);
+    expect(terms).not.toContain("힘이 없");
+    expect(terms).not.toContain("현기증");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|특효|보조식품 권장|응급치료|응급처치|진토제 처방|구토 치료|피로 치료|운동 처방|활동 처방|어지럼 치료/,
+    );
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";

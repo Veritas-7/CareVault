@@ -1103,6 +1103,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaVomitingCare"],
       },
       {
+        label: "메스꺼움·구토 시 심한 무력감·현기증 상담",
+        detail:
+          "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 자료는 심하게 힘이 없거나 현기증이 있을 경우 의료진과 상의하도록 안내합니다. 식단 기록에서는 심한 무력감이나 현기증의 진료팀 상담 신호로 분리하고, 일반 피로 키워드나 휴식·운동 처방, 진토제 처방, 응급치료 지시로 과장하지 않습니다.",
+        examples: "심하게 힘이 없거나 현기증이 있을 경우",
+        sourceIds: ["nccNauseaVomitingCare"],
+      },
+      {
         label: "설사 심함·혈변·2일 이상 지속 상담",
         detail:
           "국가암정보센터 설사 자료는 설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 안내합니다.",
@@ -3719,6 +3726,11 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "참지 못하는 구토가 멀리까지 분출되는 경우",
     "국가암정보센터 참기 어려운 구토가 멀리까지 분출되는 경우 의료진 상담 필요",
+    "nccNauseaVomitingCare",
+  ],
+  [
+    "심하게 힘이 없거나 현기증이 있을 경우",
+    "국가암정보센터 심한 무력감 또는 현기증 발생 시 의료진 상담 필요",
     "nccNauseaVomitingCare",
   ],
   [
