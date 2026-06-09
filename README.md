@@ -141,6 +141,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC cervical-cancer radiation/chemotherapy irritating-food source sentence matching for 방사선 치료나 항암화학요법 중에는 장기능이 약해질 가능성이 있으므로 되도록 자극적인 음식은 피합니다, keeping the treatment-period bowel-function food limit as one source-backed watch phrase
 - NCC cervical-cancer chemotherapy folk-remedy/supplement avoid source sentence matching for 또한 항암화학요법을 받는 중에는 민간요법이나 건강보조식품은 삼갑니다, keeping the treatment-period supplement boundary as one source-backed care-team phrase
 - NCC cervical-cancer supplement interaction source sentence matching for 민간요법이나 건강보조식품은 과학적으로 효능이 확인되지 않았으며 병원에서 투여하는 약제와 예상할 수 없는 상호작용으로 치료효과가 떨어지거나 부작용이 커질 수도 있기 때문입니다, keeping the treatment-interaction explanation as one source-backed care-team phrase
+- NCC complementary-therapy herb/supplement disclosure source sentence matching for 여러분의 약초나 영양제 복용 사실을 여러분을 돌보고 있는 의료진에게 알리는 것은 부작용 의 위험을 최소화할 수 있는 하나의 방법입니다, keeping the disclosure boundary as one source-backed care-team phrase rather than splitting into generic 약초/영양제 chips
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
 - NCC healthy-eating daily vegetable sentence matching for 채소류(생채소, 나물, 샐러드, 쌈류 등)를 매일, 매끼니 충분히 먹습니다/채소류 생채소 나물 샐러드 쌈류 매일 매끼니 충분히
 - NCC healthy-eating daily fruit sentence matching for 과일류는 매일 1회 이상 간식으로 섭취합니다/과일류 매일 1회 이상 간식 섭취

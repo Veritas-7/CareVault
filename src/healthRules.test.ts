@@ -1468,6 +1468,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC complementary-therapy herb and supplement disclosure source sentence", () => {
+    const sourceSentence =
+      "여러분의 약초나 영양제 복용 사실을 여러분을 돌보고 있는 의료진에게 알리는 것은 부작용 의 위험을 최소화할 수 있는 하나의 방법입니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccComplementaryTherapy.label).toBe(
+      "국가암정보센터 보완대체요법 상담",
+    );
+    expect(foodGuidanceSources.nccComplementaryTherapy.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 보완대체요법 약초·영양제 복용 사실 의료진 공유 후보",
+      sourceId: "nccComplementaryTherapy",
+    });
+    expect(terms).not.toContain("약초");
+    expect(terms).not.toContain("영양제");
+    expect(terms).not.toContain("보충제");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 보완대체요법 상담 - https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes cervical-specific fresh food examples without cure claims", () => {
     const assessment = assessCancerFood("당근, 미역, 차, 시금치");
     const matchesByTerm = Object.fromEntries(
