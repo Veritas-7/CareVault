@@ -1131,6 +1131,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccNauseaVomitingCare"],
       },
       {
+        label: "메스꺼움·구토 시 처방 진토제 후 지속 증상 상담",
+        detail:
+          "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 자료는 의사가 처방한 진토제를 복용했는데도 오심 구토가 계속될 때 의료진과 상의하도록 안내합니다. 식단 기록에서는 처방 진토제 복용 후에도 지속되는 오심·구토의 진료팀 상담 신호로 분리하고, 진토제 추가나 복용 권장, 복용량 조절, 약 변경·중단, 응급치료 또는 자가 치료 지시로 과장하지 않습니다.",
+        examples: "의사가 처방한 진토제를 복용했는데도 오심 구토가 계속될 때",
+        sourceIds: ["nccNauseaVomitingCare"],
+      },
+      {
         label: "설사 심함·혈변·2일 이상 지속 상담",
         detail:
           "국가암정보센터 설사 자료는 설사가 너무 심하거나 피가 섞이거나 2일 이상 계속되면 의사선생님과 상의하도록 안내합니다.",
@@ -3767,6 +3774,11 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "구토물이 커피색일 때 (혈액일 수 있음)",
     "국가암정보센터 구토물이 커피색일 때 혈액 가능성 의료진 상담 필요",
+    "nccNauseaVomitingCare",
+  ],
+  [
+    "의사가 처방한 진토제를 복용했는데도 오심 구토가 계속될 때",
+    "국가암정보센터 처방 진토제 복용 후 오심·구토 지속 시 의료진 상담 필요",
     "nccNauseaVomitingCare",
   ],
   [

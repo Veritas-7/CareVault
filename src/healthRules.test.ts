@@ -7038,6 +7038,58 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC nausea-vomiting care prescribed antiemetic persistent symptoms clinician-consultation source sentence", () => {
+    const sourceSentence =
+      "의사가 처방한 진토제를 복용했는데도 오심 구토가 계속될 때";
+    const antiemeticPlanningSentence =
+      "미리 메스꺼움과 구토증상을 완화시키는 항구토제의 사용에 대해 의사선생님과 상의합니다.";
+    const antiemeticSideEffectSentence = "진토제 복용한 후 부작용 이 발생했을 때";
+    const coffeeColoredVomitSentence = "구토물이 커피색일 때 (혈액일 수 있음)";
+    const persistentNauseaDailyActivitySentence =
+      "오심이 며칠이상 지속되거나 오심 때문에 당신이 중요한 일을 하지 못할 때";
+    const persistentVomitingHeadFogSentence =
+      "구토가 지속되고 머리가 띵하거나 어지럽거나, 혼란한 느낌이 들 때";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 처방 진토제 복용 후 오심·구토 지속 시 의료진 상담 필요",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(antiemeticPlanningSentence);
+    expect(terms).not.toContain(antiemeticSideEffectSentence);
+    expect(terms).not.toContain(coffeeColoredVomitSentence);
+    expect(terms).not.toContain(persistentNauseaDailyActivitySentence);
+    expect(terms).not.toContain(persistentVomitingHeadFogSentence);
+    expect(terms).not.toContain("진토제");
+    expect(terms).not.toContain("항구토제");
+    expect(terms).not.toContain("오심");
+    expect(terms).not.toContain("구토");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|특효|보조식품 권장|항구토제 복용 권장|진토제 추가|진토제 복용 권장|복용량 조절|약 변경|약 중단|처방 변경|응급치료|응급처치|오심 치료|구토 치료|자가 치료/,
+    );
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";
