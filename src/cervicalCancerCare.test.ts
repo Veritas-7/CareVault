@@ -1188,6 +1188,9 @@ describe("cervicalCancerCare", () => {
     const hpvAgeEffectGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 허가연령·노출전 효과 확인",
     );
+    const hpvAdverseReactionGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 접종 후 이상반응·관찰 확인",
+    );
     const hpvScheduleGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 일정·관찰 확인",
     );
@@ -1219,7 +1222,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "실천지침 일상 예방 체크 메모",
     );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(21);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(22);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -1321,6 +1324,31 @@ describe("cervicalCancerCare", () => {
     expect(hpvAgeEffectGuide?.detail).not.toContain("접종하세요");
     expect(hpvAgeEffectGuide?.detail).not.toContain("효과가 입증됐습니다");
     expect(hpvAgeEffectGuide?.detail).not.toContain("치료하세요");
+    expect(hpvAdverseReactionGuide).toMatchObject({
+      label: "HPV 접종 후 이상반응·관찰 확인",
+      sourceId: "kdcaHpv",
+    });
+    expect(hpvAdverseReactionGuide?.detail).toContain("접종 부위 통증");
+    expect(hpvAdverseReactionGuide?.detail).toContain("부종");
+    expect(hpvAdverseReactionGuide?.detail).toContain("발적");
+    expect(hpvAdverseReactionGuide?.detail).toContain("발열");
+    expect(hpvAdverseReactionGuide?.detail).toContain("오심");
+    expect(hpvAdverseReactionGuide?.detail).toContain("메스꺼움");
+    expect(hpvAdverseReactionGuide?.detail).toContain("근육통");
+    expect(hpvAdverseReactionGuide?.detail).toContain("약 80%");
+    expect(hpvAdverseReactionGuide?.detail).toContain("일상 활동을 방해할 정도");
+    expect(hpvAdverseReactionGuide?.detail).toContain("약 6%");
+    expect(hpvAdverseReactionGuide?.detail).toContain("수일 내 회복");
+    expect(hpvAdverseReactionGuide?.detail).toContain("심한(중증) 알레르기 반응");
+    expect(hpvAdverseReactionGuide?.detail).toContain("호흡곤란");
+    expect(hpvAdverseReactionGuide?.detail).toContain("아나필락시스");
+    expect(hpvAdverseReactionGuide?.detail).toContain("실신");
+    expect(hpvAdverseReactionGuide?.detail).toContain("앉거나 누운 상태");
+    expect(hpvAdverseReactionGuide?.detail).toContain("20~30분 관찰");
+    expect(hpvAdverseReactionGuide?.detail).toContain("접종기관과 진료팀");
+    expect(hpvAdverseReactionGuide?.detail).not.toContain("괜찮습니다");
+    expect(hpvAdverseReactionGuide?.detail).not.toContain("치료하세요");
+    expect(hpvAdverseReactionGuide?.detail).not.toContain("응급실로 가세요");
     expect(hpvScheduleGuide).toMatchObject({
       label: "HPV 접종 일정·관찰 확인",
       sourceId: "kdcaHpv",
