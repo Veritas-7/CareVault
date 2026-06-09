@@ -203,6 +203,39 @@ describe("symptomSupportTemplates", () => {
     expect(buildSymptomSupportQuestion(template!, "구토")).not.toMatch(/수액을 맞으세요|처방하세요|진단하세요/);
   });
 
+  it("builds a mouth-sore symptom-support question from official soft-food guidance", () => {
+    const softMoistSentence = "부드럽고 촉촉한 음식을 준비합니다.";
+    const easySwallowSentence = "씹고 삼키기 쉬운 음식을 먹습니다.";
+    const avoidIrritantSentence = "입안을 자극하는 음식이나 음료는 피하도록 합니다.";
+    const cutOrBlendSentence =
+      "요리를 할 때는 부드럽고 연해질 때까지 하도록 하며, 음식을 작은 크기로 자릅니다. 경우에 따라서는 믹서로 곱게 갈도록 합니다.";
+    const strawSentence = "입안이 쓰린 경우 빨대를 이용합니다.";
+    const roomTemperatureSentence =
+      "뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다.";
+    const clinicianVisitSentence =
+      "만약 입안통증이나 잇몸에 염증이 있는 경우 의사선생님을 방문하여 항암치료 의 부작용 때문인지 치과질환인지 알아보도록 합니다.";
+    const template = findSymptomSupportTemplate("입안 상처와 구내염");
+
+    expect(template?.id).toBe("mouth-sore");
+    expect(template?.mealNote).toContain(softMoistSentence);
+    expect(template?.mealNote).toContain(easySwallowSentence);
+    expect(template?.mealNote).toContain(avoidIrritantSentence);
+    expect(template?.mealNote).toContain(cutOrBlendSentence);
+    expect(template?.mealNote).toContain(strawSentence);
+    expect(template?.mealNote).toContain(roomTemperatureSentence);
+    expect(template?.clinicianQuestion).toContain(clinicianVisitSentence);
+    expect(buildSymptomSupportQuestion(template!, "구내염")).toContain(
+      clinicianVisitSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "구내염")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "구내염")).not.toMatch(
+      /구강치료를 지시하세요|진통제를 처방하세요|치료하세요|진단하세요/,
+    );
+  });
+
   it("builds a dry-mouth symptom-support question from official moisture guidance", () => {
     const nearbyWaterSentence = "가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다.";
     const brothSoakingSentence =
