@@ -1263,6 +1263,41 @@ describe("healthRules", () => {
     expect(JSON.stringify(cancerFoodGuideCategories)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC cervical-cancer no special forbidden or recommended food source sentence", () => {
+    const sourceSentence =
+      "자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalDiet.label).toBe(
+      "국가암정보센터 자궁경부암 식생활",
+    );
+    expect(foodGuidanceSources.nccCervicalDiet.url).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 특수 금기·추천 음식 없음 확인 후보",
+      sourceId: "nccCervicalDiet",
+    });
+    expect(terms).not.toContain("브로콜리");
+    expect(terms).not.toContain("보충제");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 식생활 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes cervical-specific fresh food examples without cure claims", () => {
     const assessment = assessCancerFood("당근, 미역, 차, 시금치");
     const matchesByTerm = Object.fromEntries(

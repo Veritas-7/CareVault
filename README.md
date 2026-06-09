@@ -107,6 +107,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC constipation clinician-consultation source sentence matching for 계속적으로 변비가 조절되지 않는다면 의사선생님과 상의하도록 합니다
 - NCC healthy-eating vegetable and fruit heading matching for 채소와 과일을 충분히 먹습니다/채소와 과일 충분히 먹기
 - NCC healthy-eating balanced diet heading matching for 다채로운 식단으로 균형 잡힌 식사를 합니다/다채로운 식단 균형 잡힌 식사
+- NCC cervical-cancer food-boundary source sentence matching for 자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다, keeping the no-special-forbidden-or-recommended-food guidance as one source-backed support phrase
 - NCC healthy-eating daily vegetable matching for 생채소/샐러드/쌈류/매일 매끼니 충분히
 - NCC healthy-eating daily vegetable sentence matching for 채소류(생채소, 나물, 샐러드, 쌈류 등)를 매일, 매끼니 충분히 먹습니다/채소류 생채소 나물 샐러드 쌈류 매일 매끼니 충분히
 - NCC healthy-eating daily fruit sentence matching for 과일류는 매일 1회 이상 간식으로 섭취합니다/과일류 매일 1회 이상 간식 섭취

@@ -243,7 +243,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         label: "자궁경부암 특수 금기/추천 없음",
         detail:
           "공식 자료는 자궁경부암 환자가 특별히 피하거나 추천하는 음식은 없고 충분한 영양과 휴식이 중요하다고 설명합니다.",
-        examples: "평소 먹기 쉬운 음식, 소량씩 자주 먹기, 통증·식욕 저하를 진료팀에 공유",
+        examples:
+          "자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다., 평소 먹기 쉬운 음식, 소량씩 자주 먹기, 통증·식욕 저하를 진료팀에 공유",
         sourceIds: ["nccCervicalDiet"],
       },
       {
@@ -978,6 +979,11 @@ const standaloneFoodTermOptions: FoodRuleTermOptions = {
 };
 
 const supportiveFoods: FoodRuleTerm[] = [
+  [
+    "자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다.",
+    "자궁경부암 특수 금기·추천 음식 없음 확인 후보",
+    "nccCervicalDiet",
+  ],
   ["잡곡밥", "자궁경부암 실천지침 식단 예시 후보", "nccCervicalPracticeDiet"],
   ["다양한 잡곡", "국가암정보센터 암예방 식단 다양한 잡곡밥 예시 후보", "nccPreventionMealExamples"],
   ["잡곡", "국가암정보센터 암예방 식단 다양한 잡곡밥 예시 후보", "nccPreventionMealExamples", standaloneFoodTermOptions],
