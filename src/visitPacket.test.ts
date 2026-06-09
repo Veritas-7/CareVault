@@ -543,6 +543,17 @@ describe("visit packet", () => {
     expect(markdown).toContain("질확대경검사 및 펀치 생검");
     expect(markdown).toContain("자궁경관 내 소파술");
     expect(markdown).toContain("CT·MRI");
+    expect(markdown).toContain("병리조직 확인");
+    expect(markdown).toContain("전암단계");
+    expect(markdown).toContain("상피내이형성증");
+    expect(markdown).toContain("자궁경부상피내암");
+    expect(markdown).toContain("기저막");
+    expect(markdown).toContain("침윤성 암");
+    expect(markdown).toContain("편평상피세포암");
+    expect(markdown).toContain("선암");
+    expect(markdown).toContain("혼합 암종");
+    expect(markdown).toContain("병리결과지 용어");
+    expect(markdown).toContain("병기·치료 설명");
     expect(markdown).toContain("치료 선택 기준");
     expect(markdown).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
     expect(markdown).toContain("재발·추적검사");

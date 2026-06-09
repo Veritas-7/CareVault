@@ -591,6 +591,17 @@ describe("csvExport", () => {
     expect(csv).toContain("질확대경검사 및 펀치 생검");
     expect(csv).toContain("자궁경관 내 소파술");
     expect(csv).toContain("CT·MRI");
+    expect(csv).toContain("병리조직 확인");
+    expect(csv).toContain("전암단계");
+    expect(csv).toContain("상피내이형성증");
+    expect(csv).toContain("자궁경부상피내암");
+    expect(csv).toContain("기저막");
+    expect(csv).toContain("침윤성 암");
+    expect(csv).toContain("편평상피세포암");
+    expect(csv).toContain("선암");
+    expect(csv).toContain("혼합 암종");
+    expect(csv).toContain("병리결과지 용어");
+    expect(csv).toContain("병기·치료 설명");
     expect(csv).toContain("치료 선택 기준");
     expect(csv).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
     expect(csv).toContain("재발·추적검사");

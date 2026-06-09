@@ -1945,6 +1945,18 @@ describe("caregiverExport", () => {
     expect(html).toContain("자궁경관 내 소파술");
     expect(html).toContain("CT·MRI");
     expect(html).toContain(">국가암정보센터 자궁경부암 감별진단</a>");
+    expect(html).toContain("병리조직 확인");
+    expect(html).toContain("전암단계");
+    expect(html).toContain("상피내이형성증");
+    expect(html).toContain("자궁경부상피내암");
+    expect(html).toContain("기저막");
+    expect(html).toContain("침윤성 암");
+    expect(html).toContain("편평상피세포암");
+    expect(html).toContain("선암");
+    expect(html).toContain("혼합 암종");
+    expect(html).toContain("병리결과지 용어");
+    expect(html).toContain("병기·치료 설명");
+    expect(html).toContain(">국가암정보센터 자궁경부암 정의 및 종류</a>");
     expect(html).toContain("치료 선택 기준");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");

@@ -285,6 +285,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccDifferentialDiagnosis",
   },
   {
+    topic: "병리조직 확인",
+    question:
+      "국가암정보센터의 정의 및 종류 설명처럼 전암단계, 상피내이형성증, 자궁경부상피내암, 기저막 침범 여부와 침윤성 암 구분, 편평상피세포암·선암·혼합 암종 같은 병리결과지 용어가 제 병기·치료 설명에 어떻게 반영되는지 진료팀에 어떤 순서로 확인하면 좋을까요?",
+    sourceId: "nccDefinitionTypes",
+  },
+  {
     topic: "치료 후 회복",
     question: "수술·방사선·항암 치료 후 피해야 할 활동, 부부관계 재개 시점, 운전/운동 제한을 제 상태 기준으로 어떻게 확인하면 좋을까요?",
     sourceId: "nccRecovery",
