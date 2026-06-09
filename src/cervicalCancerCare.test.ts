@@ -59,6 +59,7 @@ describe("cervicalCancerCare", () => {
       "nccPregnancyBirth",
       "nccDiet",
       "nccTreatmentEating",
+      "nccNauseaDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -121,6 +122,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccDyspneaCause.url).toContain("S1T411C414");
     expect(cervicalCancerCareSources.nccCoughCause.url).toContain("S1T410C412");
     expect(cervicalCancerCareSources.nccTreatmentEating.url).toContain("S1T471C472");
+    expect(cervicalCancerCareSources.nccNauseaDiet.url).toContain("S1T479C481");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -209,7 +211,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(34);
+    expect(cervicalCancerCarePrompts).toHaveLength(35);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -227,6 +229,7 @@ describe("cervicalCancerCare", () => {
       "림프부종",
       "식생활·보조식품",
       "치료 중 균형식 확인",
+      "메스꺼움·구토 식사 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -443,8 +446,27 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(treatmentEatingPrompt)).toContain(
       "출처: 국가암정보센터 치료 중 일반적인 식생활 - https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
     );
-    expect(cervicalCancerCarePrompts[16].question).toContain("접종 후에도 자궁경부암 선별검사");
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[16])).toContain(
+    const nauseaDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "메스꺼움·구토 식사 기록 준비",
+    )!;
+    expect(nauseaDietPrompt.sourceId).toBe("nccNauseaDiet");
+    expect(nauseaDietPrompt.question).toContain("수술, 화학요법, 방사선요법");
+    expect(nauseaDietPrompt.question).toContain("치료 받은 직후");
+    expect(nauseaDietPrompt.question).toContain("치료 2~3일 후");
+    expect(nauseaDietPrompt.question).toContain("영양소를 충족");
+    expect(nauseaDietPrompt.question).toContain("음식 냄새가 나지 않고 환기가 잘 되는");
+    expect(nauseaDietPrompt.question).toContain("조금씩 자주 천천히");
+    expect(nauseaDietPrompt.question).toContain("식후 1시간");
+    expect(nauseaDietPrompt.question).toContain("항구토제");
+    expect(nauseaDietPrompt.question).toContain("의사선생님과 상의");
+    expect(nauseaDietPrompt.question).toContain("기름진 음식");
+    expect(nauseaDietPrompt.question).toContain("향이 강하거나 뜨거운 음식");
+    expect(nauseaDietPrompt.question).toContain("언제, 무엇 때문에");
+    expect(buildCervicalCancerCarePromptQuestion(nauseaDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(cervicalCancerCarePrompts[17].question).toContain("접종 후에도 자궁경부암 선별검사");
+    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[17])).toContain(
       "출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/",
     );
     const hpvInfectionPrompt = cervicalCancerCarePrompts.find(
@@ -459,7 +481,10 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(hpvInfectionPrompt)).toContain(
       "출처: 국가암정보센터 사람유두종바이러스 감염 - https://www.cancer.go.kr/lay1/S1T250C254/contents.do",
     );
-    expect(buildCervicalCancerCarePromptQuestion(cervicalCancerCarePrompts[18])).toContain(
+    const pregnancyBirthPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "임신·출산 계획",
+    )!;
+    expect(buildCervicalCancerCarePromptQuestion(pregnancyBirthPrompt)).toContain(
       "출처: 국가암정보센터 자궁경부암 임신과 출산 - https://www.cancer.go.kr/",
     );
     const sexLifePrompt = cervicalCancerCarePrompts.find(
@@ -1206,6 +1231,12 @@ describe("cervicalCancerCare", () => {
       "암을 낫게 해주는 특별한 식품이나 영양소는 없으며, 균형 잡힌 식사로 좋은 영양 상태를 유지하는 것이 매우 중요합니다.";
     const treatmentEatingNutrientSentence =
       "그러기 위해서는 충분한 열량과 단백질, 비타민 및 무기질을 섭취해야 하며, 이는 여러 가지 음식을 골고루 먹음으로써 가능합니다.";
+    const nauseaDietSideEffectSentence =
+      "메스꺼움은 수술, 화학요법, 방사선요법 등의 일반적인 부작용 입니다.";
+    const nauseaDietNutritionSentence =
+      "원인이 무엇이든 간에 메스꺼움으로 인해 음식을 충분히 섭취할 수 없으면 우리 몸에 필요한 영양소를 충족시킬 수 없게 되므로 메스꺼움 증상을 잘 조절하는 것이 중요합니다.";
+    const nauseaDietMealSettingSentence =
+      "음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1231,6 +1262,9 @@ describe("cervicalCancerCare", () => {
     const treatmentEatingGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "치료 중 열량·단백질·영양소 메모",
     );
+    const nauseaDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "메스꺼움·구토 식사환경 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1253,7 +1287,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(18);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(19);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1376,6 +1410,40 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(treatmentEatingGuide!)).join(" ")).not.toMatch(
       /암을 낫게 해주는 특별한 식품이 있습니다|치료 음식|특효|보조식품 권장|치료하세요/,
+    );
+    expect(nauseaDietGuide).toMatchObject({
+      label: "메스꺼움·구토 식사환경 메모",
+      sourceId: "nccNauseaDiet",
+    });
+    expect(nauseaDietGuide?.detail).toContain(nauseaDietSideEffectSentence);
+    expect(nauseaDietGuide?.detail).toContain("치료 받은 직후");
+    expect(nauseaDietGuide?.detail).toContain("치료 2~3일 후");
+    expect(nauseaDietGuide?.detail).toContain(nauseaDietNutritionSentence);
+    expect(nauseaDietGuide?.detail).toContain(nauseaDietMealSettingSentence);
+    expect(nauseaDietGuide?.detail).toContain("의사선생님과 상의");
+    expect(nauseaDietGuide?.detail).toContain("억지로 먹거나 마시지 않도록");
+    expect(nauseaDietGuide?.detail).toContain("토스트");
+    expect(nauseaDietGuide?.detail).toContain("크래커");
+    expect(nauseaDietGuide?.detail).toContain("요거트");
+    expect(nauseaDietGuide?.detail).toContain("샤베트");
+    expect(nauseaDietGuide?.detail).toContain("복숭아통조림");
+    expect(nauseaDietGuide?.detail).toContain("맑은 유동식");
+    expect(nauseaDietGuide?.detail).toContain("얼음조각");
+    expect(nauseaDietGuide?.detail).toContain("기름진 음식");
+    expect(nauseaDietGuide?.detail).toContain("매우 단 음식");
+    expect(nauseaDietGuide?.detail).toContain("향이 강하거나 뜨거운 음식");
+    expect(nauseaDietGuide?.detail).toContain("언제, 무엇 때문에");
+    expect(formatCervicalCancerCareItemEvidence(nauseaDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 메스꺼움 - https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(nauseaDietGuide!).body).toContain(
+      nauseaDietMealSettingSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(nauseaDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 메스꺼움",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(nauseaDietGuide!)).join(" ")).not.toMatch(
+      /항구토제를 복용하세요|진토제를 복용하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
