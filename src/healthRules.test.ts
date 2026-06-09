@@ -2199,6 +2199,45 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide fresh produce and fat-salt reduction planning phrases", () => {
+    const fatSaltFreshPhrase =
+      "가능한 지방 함량이 높은 식품이나 짠 음식 섭취를 줄이겠다는 생각을 가지며, 신선한 채소와 과일, 곡류 등을 자주 드시기 바랍니다.";
+    const seasonalMoldPhrase =
+      "가능한 제철 과일, 채소를 구입하십시오. 곰팡이 핀 음식은 피하시기 바랍니다.";
+    const assessment = assessCancerFood(`${fatSaltFreshPhrase}, ${seasonalMoldPhrase}`);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([fatSaltFreshPhrase, seasonalMoldPhrase]);
+    expect(matchesByTerm[fatSaltFreshPhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 지방·짠 음식 줄이기와 신선식품 섭취 계획 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(matchesByTerm[seasonalMoldPhrase]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 제철 과일·채소 구입과 곰팡이 핀 음식 피하기 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(terms).not.toContain("신선한 채소");
+    expect(terms).not.toContain("제철 식품");
+    expect(terms).not.toContain("곰팡이 핀 음식");
+    expect(terms).not.toContain("짠 음식");
+    expect(limitGuideText).toContain(fatSaltFreshPhrase);
+    expect(limitGuideText).toContain(seasonalMoldPhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[seasonalMoldPhrase])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide limit examples without contradicting replacements", () => {
     const assessment = assessCancerFood(
       "햄구이, 초코칩쿠키, 단무지, 국물, 과일샐러드, 채소샐러드",
