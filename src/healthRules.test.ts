@@ -12222,6 +12222,76 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea listeria refrigerated and unpasteurized food guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 리스테리아 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "살균 안 된 우유를 섭취하지 말아야 한다, 냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "리스테리아균은 냉장온도에서도 생존하여 증식할 수 있고, 살균처리하지 아니한 우유, 치즈(특히 소프트치즈), 소시지 및 건조 소시지를 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaListeriaFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 리스테리아",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyGuide).toMatchObject({
+      label: "식품안전나라 리스테리아 식중독 주의",
+      sourceIds: ["foodSafetyKoreaListeriaFoodPoisoning"],
+    });
+    expect(foodSafetyGuide?.detail).toContain("냉장온도에서도 생존하여 증식");
+    expect(foodSafetyGuide?.detail).toContain("살균처리하지 아니한 우유");
+    expect(foodSafetyGuide?.detail).toContain("소프트치즈");
+    expect(foodSafetyGuide?.detail).toContain("핫도그");
+    expect(foodSafetyGuide?.detail).toContain("소시지 및 건조 소시지");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "살균 안 된 우유를 섭취하지 말아야 한다",
+      "냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaListeriaFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 리스테리아 - https://www.foodsafetykorea.go.kr/portal/board/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "리스테리아균",
+      "냉장온도에서도 생존하여 증식",
+      "살균처리하지 아니한 우유",
+      "치즈(특히 소프트치즈)",
+      "소시지 및 건조 소시지",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaListeriaFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

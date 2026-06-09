@@ -59,6 +59,7 @@ export type FoodGuidanceSourceId =
   | "kdcaVibrioSepsis"
   | "kdcaNorovirusFoodSafety"
   | "kdcaFoodPoisoningNaturalToxins"
+  | "foodSafetyKoreaListeriaFoodPoisoning"
   | "mfdsFoodPoisoningPrevention";
 
 export type FoodMatch = {
@@ -269,6 +270,10 @@ export const foodGuidanceSources: Record<
   kdcaFoodPoisoningNaturalToxins: {
     label: "질병관리청 국가건강정보포털 식중독",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5239",
+  },
+  foodSafetyKoreaListeriaFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 리스테리아",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   mfdsFoodPoisoningPrevention: {
     label: "식품의약품안전처 식중독 예방 6대요령",
@@ -1031,6 +1036,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다, 복어요리 전문가가 조리하지 않은 복어, 유독화된 조개, 적조에 노출된 섭조개나 홍합, 야생 독버섯을 식용버섯으로 오인, 녹색을 띠는 감자, 감자의 독이 포함된 부위(싹이 난 부위나 녹색을 띠는 부위)를 잘라내야 합니다, 솔라닌, 곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
         sourceIds: ["kdcaFoodPoisoningNaturalToxins"],
+      },
+      {
+        label: "식품안전나라 리스테리아 식중독 주의",
+        detail:
+          "식품안전나라는 리스테리아균이 냉장온도에서도 생존하여 증식할 수 있다고 설명합니다. 원인식품으로 원유, 살균처리하지 아니한 우유, 핫도그, 치즈(특히 소프트치즈), 아이스크림, 소시지 및 건조 소시지, 가공·비가공 가금육과 비가공 식육 등을 제시하므로, 면역저하 또는 항암 치료 중 식품 메모에서는 냉장 보관 온도 5℃ 이하 관리와 살균 안 된 우유 회피를 식품 안전 질문으로 분리합니다.",
+        examples:
+          "리스테리아균, 냉장온도에서도 생존하여 증식, 살균처리하지 아니한 우유, 살균 안 된 우유를 섭취하지 말아야 한다, 핫도그, 치즈(특히 소프트치즈), 소시지 및 건조 소시지, 냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
+        sourceIds: ["foodSafetyKoreaListeriaFoodPoisoning"],
       },
       {
         label: "질병관리청 비브리오 어패류 안전",
@@ -2550,6 +2563,16 @@ const supportiveFoods: FoodRuleTerm[] = [
     "감자의 독이 포함된 부위(싹이 난 부위나 녹색을 띠는 부위)를 잘라내야 합니다",
     "질병관리청 식중독 자연독 감자 솔라닌 부위 제거 후보",
     "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "살균 안 된 우유를 섭취하지 말아야 한다",
+    "식품안전나라 리스테리아 식중독 살균 안 된 우유 회피 후보",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
+    "식품안전나라 리스테리아 식중독 5℃ 이하 냉장 보관 후보",
+    "foodSafetyKoreaListeriaFoodPoisoning",
   ],
   [
     "어패류는 충분히 익혀 먹습니다",
@@ -4202,6 +4225,31 @@ const careTeamFoods: FoodRuleTerm[] = [
     "곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
     "질병관리청 자연독 식중독 곰팡이독 세척·가열 불충분 확인 필요",
     "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "리스테리아균",
+    "식품안전나라 리스테리아 식중독 냉장증식·원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "냉장온도에서도 생존하여 증식",
+    "식품안전나라 리스테리아 식중독 냉장온도 증식 가능성 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "살균처리하지 아니한 우유",
+    "식품안전나라 리스테리아 식중독 살균처리하지 않은 우유 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "치즈(특히 소프트치즈)",
+    "식품안전나라 리스테리아 식중독 소프트치즈 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "소시지 및 건조 소시지",
+    "식품안전나라 리스테리아 식중독 소시지·건조 소시지 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
   ],
   ["씻지 않은 딸기", "면역저하 시 씻기 어려운 과일 주의", "nccImmuneLowDiet"],
   [
