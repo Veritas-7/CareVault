@@ -59,6 +59,7 @@ describe("cervicalCancerCare", () => {
       "nccPregnancyBirth",
       "nccDiet",
       "nccCancerLifeChildrenCommunication",
+      "nccCancerLifePsychologicalStability",
       "nccDiagnosisMethods",
       "nccStage",
       "nccTreatmentMethods",
@@ -102,6 +103,9 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccRelatedStatistics.url).toContain("menu_seq=4882");
     expect(cervicalCancerCareSources.nccCancerLifeChildrenCommunication.url).toContain(
       "S1T327C330",
+    );
+    expect(cervicalCancerCareSources.nccCancerLifePsychologicalStability.url).toContain(
+      "S1T327C329",
     );
   });
 
@@ -191,7 +195,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(27);
+    expect(cervicalCancerCarePrompts).toHaveLength(28);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -213,6 +217,7 @@ describe("cervicalCancerCare", () => {
       "임신·출산 계획",
       "성생활 재개 상담",
       "자녀·가족 설명 준비",
+      "정서 안정·전문상담 준비",
       "치료현황 통계 해석",
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
@@ -450,6 +455,25 @@ describe("cervicalCancerCare", () => {
     expect(childFamilyPrompt.question).toContain("진료팀과 보호자");
     expect(buildCervicalCancerCarePromptQuestion(childFamilyPrompt)).toContain(
       "출처: 국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법 - https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
+    );
+    const psychologicalStabilityPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "정서 안정·전문상담 준비",
+    )!;
+    expect(psychologicalStabilityPrompt.sourceId).toBe("nccCancerLifePsychologicalStability");
+    expect(psychologicalStabilityPrompt.question).toContain("항암화학요법을 받을 때");
+    expect(psychologicalStabilityPrompt.question).toContain("우울");
+    expect(psychologicalStabilityPrompt.question).toContain("암 치료 자체에 대한 불안감");
+    expect(psychologicalStabilityPrompt.question).toContain("일상의 삶이 바뀌는 것");
+    expect(psychologicalStabilityPrompt.question).toContain("항암제 여러 부작용에 대한 두려움");
+    expect(psychologicalStabilityPrompt.question).toContain("일지나 일기");
+    expect(psychologicalStabilityPrompt.question).toContain("의사나 간호사에게 질문");
+    expect(psychologicalStabilityPrompt.question).toContain("가족이나 친구");
+    expect(psychologicalStabilityPrompt.question).toContain("다른 환자");
+    expect(psychologicalStabilityPrompt.question).toContain("정신과 전문의 상담");
+    expect(psychologicalStabilityPrompt.question).toContain("보호자의 공감적 경청");
+    expect(psychologicalStabilityPrompt.question).toContain("진료팀과 보호자");
+    expect(buildCervicalCancerCarePromptQuestion(psychologicalStabilityPrompt)).toContain(
+      "출처: 국가암정보센터 암환자의 생활 - 심리적 안정을 위해 - https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
     );
     const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료현황 통계 해석",
@@ -1067,8 +1091,11 @@ describe("cervicalCancerCare", () => {
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
+    const psychologicalStabilityGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "정서 안정·전문상담 메모",
+    );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(11);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(12);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1195,6 +1222,37 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(childFamilyCommunicationGuide!)).join(" ")).not.toMatch(
       /진단하세요|치료하세요|완치/,
+    );
+    expect(psychologicalStabilityGuide).toMatchObject({
+      label: "정서 안정·전문상담 메모",
+      sourceId: "nccCancerLifePsychologicalStability",
+    });
+    expect(psychologicalStabilityGuide?.detail).toContain("항암화학요법을 받을 때");
+    expect(psychologicalStabilityGuide?.detail).toContain("우울해지기 쉽습니다");
+    expect(psychologicalStabilityGuide?.detail).toContain("암 치료 자체에 대한 불안감");
+    expect(psychologicalStabilityGuide?.detail).toContain("일상의 삶이 바뀌는 것");
+    expect(psychologicalStabilityGuide?.detail).toContain("항암제 여러 부작용에 대한 두려움");
+    expect(psychologicalStabilityGuide?.detail).toContain("일지나 일기");
+    expect(psychologicalStabilityGuide?.detail).toContain("의사나 간호사에게 질문");
+    expect(psychologicalStabilityGuide?.detail).toContain("가족이나 친구");
+    expect(psychologicalStabilityGuide?.detail).toContain("다른 환자");
+    expect(psychologicalStabilityGuide?.detail).toContain("정신과 전문의");
+    expect(psychologicalStabilityGuide?.detail).toContain("공감의 자세");
+    expect(psychologicalStabilityGuide?.detail).toContain("진료팀과 보호자에게 확인");
+    expect(formatCervicalCancerCareItemEvidence(psychologicalStabilityGuide!)).toContain(
+      "국가암정보센터 암환자의 생활 - 심리적 안정을 위해 - https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(psychologicalStabilityGuide!).body).toContain(
+      "정서 안정·전문상담 메모",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(psychologicalStabilityGuide!).body).toContain(
+      "정신과 전문의 상담 기준",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(psychologicalStabilityGuide!)).toContain(
+      "국가암정보센터 암환자의 생활 - 심리적 안정을 위해",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(psychologicalStabilityGuide!)).join(" ")).not.toMatch(
+      /진단하세요|치료하세요|상담받으세요|운동하세요/,
     );
     expect(text).toContain("골반 방사선치료 난소기능·폐경 증상 상담");
     expect(text).toContain("홍조");

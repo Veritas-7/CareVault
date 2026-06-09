@@ -154,6 +154,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법",
     url: "https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
   },
+  nccCancerLifePsychologicalStability: {
+    label: "국가암정보센터 암환자의 생활 - 심리적 안정을 위해",
+    url: "https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
+  },
   nccDiagnosisMethods: {
     label: "국가암정보센터 자궁경부암 진단방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
@@ -398,6 +402,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccCancerLifeChildrenCommunication",
   },
   {
+    topic: "정서 안정·전문상담 준비",
+    question:
+      "국가암정보센터 심리적 안정 안내처럼 항암화학요법을 받을 때 우울, 암 치료 자체에 대한 불안감, 일상의 삶이 바뀌는 것, 항암제 여러 부작용에 대한 두려움이 생길 수 있다는 점을 기준으로 일지나 일기에 어떤 감정·상황·질문을 기록하고, 의사나 간호사에게 질문할 내용, 가족이나 친구·다른 환자와 나눌 이야기, 정신과 전문의 상담 기준, 보호자의 공감적 경청을 진료팀과 보호자에게 어떤 순서로 확인하면 좋을까요?",
+    sourceId: "nccCancerLifePsychologicalStability",
+  },
+  {
     topic: "치료현황 통계 해석",
     question:
       "국가암정보센터 치료현황 통계처럼 2019-2023년 자궁경부암 5년 상대생존율 79.0%, 요약병기별 국한 94.5%·국소 73.8%·원격 29.1%·모름 69.5%와 5년 이상 생존 확률 설명이 제 병기, 검사 근거, 치료 반응, 재발·전이 여부와 어떤 차이가 있는지 개인 예후로 단정하지 않고 진료팀에 어떻게 해석 질문을 하면 좋을까요?",
@@ -603,6 +613,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 부모의 암 진단과 가족 생활 변화가 숨겨지면 자녀가 혼란을 겪지 않도록 변화와 느낌을 표현할 기회를 주는 것이 중요하다고 설명합니다. 암 설명은 자녀의 나이에 걸맞은 수준으로 준비하고, 치료 계획과 가족 생활의 변화, 탈모·극심한 피로감·체중 저하 같은 외모와 일상 변화, 자녀가 암이나 죽음 같은 말을 꺼내 질문을 할 수 있게 하는 답변, 자신의 정서를 표현할 방법을 진료팀과 보호자에게 확인합니다. 가족이 대신 말할 때는 검사와 치료가 힘들어 감정 변화가 있을 수 있지만 네 잘못 때문이 아니고 환자가 자녀에게 화가 난 것이 아니라는 문구를 기록해 둡니다.",
     sourceId: "nccCancerLifeChildrenCommunication",
+  },
+  {
+    label: "정서 안정·전문상담 메모",
+    detail:
+      "국가암정보센터는 항암화학요법을 받을 때 암 치료 자체에 대한 불안감, 일상의 삶이 바뀌는 것, 항암제 여러 부작용에 대한 두려움 때문에 \"우울해지기 쉽습니다\"라고 설명합니다. 치료 중 일지나 일기에 그날그날 있은 일, 떠오른 상념과 의문을 적으면 생각 정리와 의사나 간호사에게 질문할 때 도움이 된다는 설명을 기준으로 감정 변화, 치료 스케줄로 바뀐 일상, 걱정이나 두려움, 가족이나 친구·다른 환자와 나눌 이야기, 정신과 전문의 상담 기준을 기록합니다. 환자가 불안하거나 두려워할 때는 가족과 친지가 상황과 감정을 평가하지 않고 이해하는 공감의 자세로 듣는다고 설명하므로, 보호자가 같이 확인할 문구와 연락 기준을 진료팀과 보호자에게 확인합니다.",
+    sourceId: "nccCancerLifePsychologicalStability",
   },
   {
     label: "식생활·보조식품 확인",
