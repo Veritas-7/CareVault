@@ -1535,6 +1535,42 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical-cancer final prevention summary with fresh-produce support sentence", () => {
+    const sourceSentence =
+      "이상에서 살펴본 바와 같이, 자궁경부암의 예방을 위해서는 정기적인 검진이 가장 효과적인 방법이며, 안전한 성생활을 유지하고, 금연을 하며, 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalFoodPrevention.label).toBe(
+      "국가암정보센터 자궁경부암 예방과 음식",
+    );
+    expect(foodGuidanceSources.nccCervicalFoodPrevention.url).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 정기검진·생활습관·신선 채소과일 섭취 확인 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
+    expect(terms).not.toContain("신선한 채소");
+    expect(terms).not.toContain("과일");
+    expect(terms).not.toContain("금연");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 예방과 음식 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical-cancer carotenoid and vitamin uncertainty sentence", () => {
     const sourceSentence =
       "자궁경부암의 예방 가능성이 있는 음식으로 카로테노이드(carotenoid), 비타민 A, 비타민 C, 비타민 E 등이 거론되나 아직 그 효과에 대해서는 명확하지 않은 상태입니다.";
