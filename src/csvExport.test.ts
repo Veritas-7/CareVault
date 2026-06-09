@@ -873,6 +873,12 @@ describe("csvExport", () => {
     expect(csv).toContain("자궁경부 전암병변");
     expect(csv).toContain("항문 생식기의 사마귀");
     expect(csv).toContain("호흡기에 생기는 유두종 병변");
+    expect(csv).toContain("HPV 치료효과·재발연구 확인");
+    expect(csv).toContain("예방용 백신");
+    expect(csv).toContain("상피내종양");
+    expect(csv).toContain("치료 효과는 없는");
+    expect(csv).toContain("치료 후 재발 방지");
+    expect(csv).toContain("연구는 현재 진행 중");
     expect(csv).toContain("HPV 접종 일정·관찰 확인");
     expect(csv).toContain("9세 이상");
     expect(csv).toContain("만 12세");

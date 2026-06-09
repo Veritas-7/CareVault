@@ -1182,6 +1182,9 @@ describe("cervicalCancerCare", () => {
     const hpvRelatedDiseaseRangeGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 관련질환 범위 확인",
     );
+    const hpvTreatmentBoundaryGuide = cervicalCancerCarePreventionGuides.find(
+      (item) => item.label === "HPV 치료효과·재발연구 확인",
+    );
     const hpvScheduleGuide = cervicalCancerCarePreventionGuides.find(
       (item) => item.label === "HPV 접종 일정·관찰 확인",
     );
@@ -1213,7 +1216,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "실천지침 일상 예방 체크 메모",
     );
 
-    expect(cervicalCancerCarePreventionGuides).toHaveLength(19);
+    expect(cervicalCancerCarePreventionGuides).toHaveLength(20);
     expect(text).toContain("20세 이상 여성");
     expect(text).toContain("산정특례기간");
     expect(text).toContain("2년 간격");
@@ -1281,6 +1284,21 @@ describe("cervicalCancerCare", () => {
     expect(hpvRelatedDiseaseRangeGuide?.detail).not.toContain("진단하세요");
     expect(hpvRelatedDiseaseRangeGuide?.detail).not.toContain("치료하세요");
     expect(hpvRelatedDiseaseRangeGuide?.detail).not.toContain("암입니다");
+    expect(hpvTreatmentBoundaryGuide).toMatchObject({
+      label: "HPV 치료효과·재발연구 확인",
+      sourceId: "kdcaHpv",
+    });
+    expect(hpvTreatmentBoundaryGuide?.detail).toContain("예방용 백신");
+    expect(hpvTreatmentBoundaryGuide?.detail).toContain("상피내종양");
+    expect(hpvTreatmentBoundaryGuide?.detail).toContain("자궁경부암");
+    expect(hpvTreatmentBoundaryGuide?.detail).toContain("치료 효과는 없는");
+    expect(hpvTreatmentBoundaryGuide?.detail).toContain("치료 후 재발 방지");
+    expect(hpvTreatmentBoundaryGuide?.detail).toContain("연구는 현재 진행 중");
+    expect(hpvTreatmentBoundaryGuide?.detail).toContain("진료팀 질문");
+    expect(hpvTreatmentBoundaryGuide?.detail).not.toContain("치료합니다");
+    expect(hpvTreatmentBoundaryGuide?.detail).not.toContain("재발 방지합니다");
+    expect(hpvTreatmentBoundaryGuide?.detail).not.toContain("완치");
+    expect(hpvTreatmentBoundaryGuide?.detail).not.toContain("접종하세요");
     expect(hpvScheduleGuide).toMatchObject({
       label: "HPV 접종 일정·관찰 확인",
       sourceId: "kdcaHpv",
