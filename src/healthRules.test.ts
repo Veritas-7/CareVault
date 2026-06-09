@@ -1465,6 +1465,41 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC cervical-cancer beta-carotene fresh-food source sentence", () => {
+    const sourceSentence =
+      "카로틴(carotene)과 거의 유사한 구조를 가진 물질을 카로테노이드라고 하며, 그 중 베타카로틴 은 당근, 시금치, 차, 미역 등 신선한 채소, 과일, 해조류에 풍부합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalFoodPrevention.label).toBe(
+      "국가암정보센터 자궁경부암 예방과 음식",
+    );
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "ok",
+      reason: "자궁경부암 베타카로틴 신선식품 확인 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
+    expect(terms).not.toContain("당근");
+    expect(terms).not.toContain("시금치");
+    expect(terms).not.toContain("차");
+    expect(terms).not.toContain("미역");
+    expect(terms).not.toContain("신선한 채소");
+    expect(balancedGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 예방과 음식 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical-cancer regular-screening and fresh-produce boundary sentence", () => {
     const sourceSentence =
       "그러므로 자궁경부암의 예방을 위해서는 조기 검진과 정기 검진이 가장 효과적인 방법이며, 일반적으로 건강한 생활을 위해서는 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다.";
