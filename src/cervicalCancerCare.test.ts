@@ -62,6 +62,7 @@ describe("cervicalCancerCare", () => {
       "nccNauseaDiet",
       "nccVomitingDiet",
       "nccAppetiteLossDiet",
+      "nccMouthPainDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -127,6 +128,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccNauseaDiet.url).toContain("S1T479C481");
     expect(cervicalCancerCareSources.nccVomitingDiet.url).toContain("S1T479C482");
     expect(cervicalCancerCareSources.nccAppetiteLossDiet.url).toContain("S1T479C480");
+    expect(cervicalCancerCareSources.nccMouthPainDiet.url).toContain("S1T479C483");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -215,7 +217,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(37);
+    expect(cervicalCancerCarePrompts).toHaveLength(38);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -236,6 +238,7 @@ describe("cervicalCancerCare", () => {
       "메스꺼움·구토 식사 기록 준비",
       "구토 후 수분·식사 단계 기록 준비",
       "식욕부진 식사·간식 기록 준비",
+      "입과 목 통증 식사·구강상태 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -512,6 +515,34 @@ describe("cervicalCancerCare", () => {
     expect(appetiteLossDietPrompt.question).toContain("억지로 먹으라고 지나치게 강요하지");
     expect(buildCervicalCancerCarePromptQuestion(appetiteLossDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    const mouthPainDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "입과 목 통증 식사·구강상태 기록 준비",
+    )!;
+    expect(mouthPainDietPrompt.sourceId).toBe("nccMouthPainDiet");
+    expect(mouthPainDietPrompt.question).toContain("방사선요법, 화학요법 또는 감염");
+    expect(mouthPainDietPrompt.question).toContain("입안 통증");
+    expect(mouthPainDietPrompt.question).toContain("잇몸의 손상");
+    expect(mouthPainDietPrompt.question).toContain("인후염 또는 식도염");
+    expect(mouthPainDietPrompt.question).toContain("항암치료의 부작용 때문인지 치과질환인지");
+    expect(mouthPainDietPrompt.question).toContain("부드럽고 촉촉한 음식");
+    expect(mouthPainDietPrompt.question).toContain("씹고 삼키기 쉬운");
+    expect(mouthPainDietPrompt.question).toContain("죽류");
+    expect(mouthPainDietPrompt.question).toContain("미음");
+    expect(mouthPainDietPrompt.question).toContain("시지 않은 과일");
+    expect(mouthPainDietPrompt.question).toContain("오렌지, 포도, 레몬, 토마토주스");
+    expect(mouthPainDietPrompt.question).toContain("향신료");
+    expect(mouthPainDietPrompt.question).toContain("소금에 절인 음식");
+    expect(mouthPainDietPrompt.question).toContain("토스트, 크래커 또는 말린 음식");
+    expect(mouthPainDietPrompt.question).toContain("작은 크기");
+    expect(mouthPainDietPrompt.question).toContain("빨대");
+    expect(mouthPainDietPrompt.question).toContain("작은 스푼");
+    expect(mouthPainDietPrompt.question).toContain("뜨거운 음식");
+    expect(mouthPainDietPrompt.question).toContain("옥살로플라틴");
+    expect(mouthPainDietPrompt.question).toContain("차가운 음식");
+    expect(mouthPainDietPrompt.question).toContain("입안은 깨끗이 헹구어");
+    expect(buildCervicalCancerCarePromptQuestion(mouthPainDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1296,6 +1327,12 @@ describe("cervicalCancerCare", () => {
       "조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다.";
     const appetiteLossFluidTimingSentence =
       "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다. 만약 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 합니다.";
+    const mouthPainSoftFoodSentence =
+      "부드럽고 촉촉한 음식을 준비합니다. 씹고 삼키기 쉬운 음식을 먹습니다.";
+    const mouthPainIrritatingFoodSentence =
+      "입안을 자극하는 음식이나 음료는 피하도록 합니다.";
+    const mouthPainTemperatureSentence =
+      "뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다. 얼음조각을 먹는 것도 도움이 됩니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1330,6 +1367,9 @@ describe("cervicalCancerCare", () => {
     const appetiteLossDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "식욕부진 간식·수분 타이밍 메모",
     );
+    const mouthPainDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "입과 목 통증 부드러운 식사 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1352,7 +1392,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(21);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(22);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1563,6 +1603,50 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(appetiteLossDietGuide!)).join(" ")).not.toMatch(
       /식욕촉진제를 복용하세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(mouthPainDietGuide).toMatchObject({
+      label: "입과 목 통증 부드러운 식사 메모",
+      sourceId: "nccMouthPainDiet",
+    });
+    expect(mouthPainDietGuide?.detail).toContain("방사선요법, 화학요법 또는 감염");
+    expect(mouthPainDietGuide?.detail).toContain("입안 통증, 잇몸의 손상, 인후염 또는 식도염");
+    expect(mouthPainDietGuide?.detail).toContain("항암치료의 부작용 때문인지 치과질환인지");
+    expect(mouthPainDietGuide?.detail).toContain(mouthPainSoftFoodSentence);
+    expect(mouthPainDietGuide?.detail).toContain("죽류");
+    expect(mouthPainDietGuide?.detail).toContain("흰죽, 닭죽, 고기죽, 전복죽, 호박죽, 야채죽, 계란죽");
+    expect(mouthPainDietGuide?.detail).toContain("쌀미음, 조미음, 잣미음, 깨미음, 녹두미음");
+    expect(mouthPainDietGuide?.detail).toContain("고기는 부드럽게 조리");
+    expect(mouthPainDietGuide?.detail).toContain("생선은 곱게 다지거나 갈아서");
+    expect(mouthPainDietGuide?.detail).toContain("부드러운 야채를 푹 익히거나 데쳐서");
+    expect(mouthPainDietGuide?.detail).toContain("바나나, 배, 수박, 과일통조림");
+    expect(mouthPainDietGuide?.detail).toContain(mouthPainIrritatingFoodSentence);
+    expect(mouthPainDietGuide?.detail).toContain("오렌지, 포도, 레몬, 토마토주스");
+    expect(mouthPainDietGuide?.detail).toContain("향신료를 많이 사용하거나 소금에 절인 음식");
+    expect(mouthPainDietGuide?.detail).toContain("토스트, 크래커 또는 말린 음식");
+    expect(mouthPainDietGuide?.detail).toContain("부드럽고 연해질 때까지");
+    expect(mouthPainDietGuide?.detail).toContain("작은 크기로 자릅니다");
+    expect(mouthPainDietGuide?.detail).toContain("믹서로 곱게");
+    expect(mouthPainDietGuide?.detail).toContain("빨대");
+    expect(mouthPainDietGuide?.detail).toContain("작은 스푼");
+    expect(mouthPainDietGuide?.detail).toContain(mouthPainTemperatureSentence);
+    expect(mouthPainDietGuide?.detail).toContain("옥살로플라틴");
+    expect(mouthPainDietGuide?.detail).toContain("온도변화");
+    expect(mouthPainDietGuide?.detail).toContain("차가운 음식은 피");
+    expect(mouthPainDietGuide?.detail).toContain("따뜻한 육수");
+    expect(mouthPainDietGuide?.detail).toContain("소금을 약간");
+    expect(mouthPainDietGuide?.detail).toContain("치아와 잇몸");
+    expect(mouthPainDietGuide?.detail).toContain("입안은 깨끗이 헹구어");
+    expect(formatCervicalCancerCareItemEvidence(mouthPainDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(mouthPainDietGuide!).body).toContain(
+      mouthPainTemperatureSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(mouthPainDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 입과 목의 통증",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(mouthPainDietGuide!)).join(" ")).not.toMatch(
+      /진통제를 복용하세요|구강치료하세요|치과치료를 받으세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",

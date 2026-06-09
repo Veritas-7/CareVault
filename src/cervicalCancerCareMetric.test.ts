@@ -10,16 +10,16 @@ describe("cervicalCancerCareMetric", () => {
       ),
     ).toEqual({
       ariaLabel:
-        "전체 109개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 37개 · 기록/회복/예방 60개 · 공식 출처 45개",
+        "전체 111개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 38개 · 기록/회복/예방 61개 · 공식 출처 46개",
       items: [
-        { id: "total", label: "전체", value: "109개" },
+        { id: "total", label: "전체", value: "111개" },
         { id: "priority", label: "우선", value: "3개" },
         { id: "screening", label: "검진요약", value: "1개" },
         { id: "alert-record-field", label: "기록항목", value: "4개" },
         { id: "alert", label: "경고", value: "4개" },
-        { id: "prompt", label: "질문", value: "37개" },
-        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "60개" },
-        { id: "source", label: "공식 출처", value: "45개" },
+        { id: "prompt", label: "질문", value: "38개" },
+        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "61개" },
+        { id: "source", label: "공식 출처", value: "46개" },
       ],
     });
   });
@@ -29,15 +29,15 @@ describe("cervicalCancerCareMetric", () => {
       buildCervicalCancerCarePanelSummary(buildCervicalCancerCareClipboardSummary()),
     ).toEqual({
       ariaLabel:
-        "전체 108개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 37개 · 기록/회복/예방 60개 · 공식 출처 45개",
+        "전체 110개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 38개 · 기록/회복/예방 61개 · 공식 출처 46개",
       items: [
-        { id: "total", label: "전체", value: "108개" },
+        { id: "total", label: "전체", value: "110개" },
         { id: "priority", label: "우선", value: "3개" },
         { id: "alert-record-field", label: "기록항목", value: "4개" },
         { id: "alert", label: "경고", value: "4개" },
-        { id: "prompt", label: "질문", value: "37개" },
-        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "60개" },
-        { id: "source", label: "공식 출처", value: "45개" },
+        { id: "prompt", label: "질문", value: "38개" },
+        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "61개" },
+        { id: "source", label: "공식 출처", value: "46개" },
       ],
     });
   });
