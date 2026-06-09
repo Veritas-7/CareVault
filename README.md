@@ -24,6 +24,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC chemotherapy side-effect misconception and individual-variation clinician-question drafts for source-backed separation of side-effect presence from treatment effect, same-drug/same-dose patient variation, recovery duration that can take months or years or become permanent, and clinician-confirmed dose adjustment/drug-change/stop questions
 - NCC cervical cone-biopsy recovery restriction and constipation-caution source sentence coverage for 원추 절제술 시술 후 6~8주 질분비물·간헐 질출혈, 성관계·수영/탕목욕·무리한 운동 회피, and 변비 주의 wording, keeping it as a source-backed recovery record prompt rather than a direct treatment order
 - NCC cervical broad/radical-hysterectomy recovery source sentence coverage for 수술 후 최소 6주 무거운 것을 들지 않기, 부부관계 회피, 갑작스러운 통증 가능성, and 완전 회복 전 운전 제한 wording, keeping it as a discharge-instruction/clinician-confirmation recovery prompt rather than a direct treatment order
+- NCC cervical recurrence symptom source sentence coverage for 체중감소, 하지 부종, 골반/허벅지 통증, 질출혈/분비물 증가, 진행 성 요관 폐색, 쇄골위 림프절 비대, and 폐 전이 시 기침·객혈·흉통 wording, keeping it as symptom recording and care-team confirmation rather than a diagnosis claim
 - diabetes and hypertension follow-up context
 - hospital visits and next appointments with visit-panel summary chips for upcoming appointments, 14-day reminder window, and planned notes
 - 14-day next-appointment reminders derived from visit records

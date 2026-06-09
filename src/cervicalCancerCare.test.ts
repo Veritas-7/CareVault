@@ -1023,6 +1023,8 @@ describe("cervicalCancerCare", () => {
       "원추 절제술 시술 후에는 수술 후 약 6~8주간 질 분비물이 많이 나올 수 있고, 간헐적 으로 질출혈이 생길 수 있습니다. 이 기간 동안 성관계, 수영이나 탕목욕, 무리한 운동을 피하고, 변비가 생기지 않도록 주의해야 합니다.";
     const radicalHysterectomySentence =
       "광범위 자궁절제술 후에는 수술 후 최소한 6주 동안에는 무거운 것을 들면 안되고, 부부관계를 피해야 하며, 갑작스러운 통증 이 올 수 있으므로 완전히 회복될 때까지는 운전을 하지 않는 것이 좋습니다.";
+    const recurrenceSymptomsSentence =
+      "재발 성 자궁경부암 의 증상은 매우 다양합니다. 체중감소, 하지 부종, 골반 혹은 허벅지 통증, 질출혈 혹은 질분비물의 증가, 진행 성 요관 폐색, 쇄골위 림프절 비대 등이 나타나며, 폐로 전이 하면 기침, 객혈, 때로는 흉통을 호소할 수 있습니다. 그러나 특징적인 증상이 없는 경우가 더 많습니다.";
     const text = cervicalCancerCareRecoveryGuides
       .map((item) => `${item.label} ${item.detail}`)
       .join(" ");
@@ -1075,14 +1077,27 @@ describe("cervicalCancerCare", () => {
       label: "재발 의심 증상·기본 추적검사 메모",
       sourceId: "nccRecurrenceFollowUp",
     });
+    expect(recurrenceSymptomGuide?.detail).toContain(recurrenceSymptomsSentence);
     expect(recurrenceSymptomGuide?.detail).toContain("체중감소");
     expect(recurrenceSymptomGuide?.detail).toContain("하지 부종");
     expect(recurrenceSymptomGuide?.detail).toContain("골반 혹은 허벅지 통증");
     expect(recurrenceSymptomGuide?.detail).toContain("질출혈 혹은 질분비물의 증가");
-    expect(recurrenceSymptomGuide?.detail).toContain("진행성 요관 폐색");
+    expect(recurrenceSymptomGuide?.detail).toContain("진행 성 요관 폐색");
     expect(recurrenceSymptomGuide?.detail).toContain("쇄골위 림프절 비대");
-    expect(recurrenceSymptomGuide?.detail).toContain("기침·객혈·흉통");
+    expect(recurrenceSymptomGuide?.detail).toContain("기침, 객혈, 때로는 흉통");
     expect(recurrenceSymptomGuide?.detail).toContain("특징적인 증상이 없는 경우");
+    expect(formatCervicalCancerCareItemEvidence(recurrenceSymptomGuide!)).toContain(
+      recurrenceSymptomsSentence,
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(recurrenceSymptomGuide!).body).toContain(
+      recurrenceSymptomsSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(recurrenceSymptomGuide!)).toContain(
+      recurrenceSymptomsSentence,
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(recurrenceSymptomGuide!)).join(" ")).not.toContain(
+      "진단하세요",
+    );
     expect(recurrenceSymptomGuide?.detail).toContain("문진");
     expect(recurrenceSymptomGuide?.detail).toContain("골반내진");
     expect(recurrenceSymptomGuide?.detail).toContain("신체검사");
