@@ -705,10 +705,17 @@ describe("careActionQueue", () => {
         label: "고위험 증상",
         source: "symptom",
         title: "등 통증 8/10",
-        detail:
-          "통증 부위, 0-10점 강도, 시작·지속 시간, 악화·완화 요인, 진통제 복용 시간과 효과를 함께 기록하세요. 치료 지시가 아니라 진료 전 확인용 기록 후보입니다. / 근거: 국가암정보센터 통증평가 항목 (https://www.cancer.go.kr/lay1/S1T378C380/contents.do)",
+        detail: expect.stringContaining(
+          "암 환자에게 있어서 통증 은 제 5의 활력 징후라고 할 수 있습니다.",
+        ),
       }),
     ]);
+    expect(actions[0].detail).toContain(
+      "통증 부위, 신체 그림 표시, 0-10점 강도, 시작·경과·지속 시간",
+    );
+    expect(actions[0].detail).toContain(
+      "근거: 국가암정보센터 통증평가 항목 (https://www.cancer.go.kr/lay1/S1T378C380/contents.do)",
+    );
     expect(actions[0].detail).not.toContain("출처:");
   });
 

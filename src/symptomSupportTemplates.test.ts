@@ -1009,17 +1009,40 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("builds a source-backed cancer-pain assessment question", () => {
+    const vitalSignSentence =
+      "암 환자에게 있어서 통증 은 제 5의 활력 징후라고 할 수 있습니다.";
+    const regularAssessmentSentence =
+      "그러므로 통증에 대한 정기적인 평가가 필요하며, 극심한 통증을 보이는 환자에 대해서는 응급 상황에 준하는 신속하고 적절한 통증 관리가 이루어져야 합니다.";
+    const factorSentence =
+      "환자에 따라 통증에 영향을 주는 여러 요인들이 있을 수 있습니다. 통증을 완화시키는 요인은 무엇인지(진통제, 마사지, 휴식, 수면, 냉찜질, 온찜질 등), 통증을 악화시키는 요인은 무엇인지(자세, 기침, 움직임, 배뇨 등)에 대해 의료진에게 자세히 이야기 하도록 합니다.";
+    const qualitySentence =
+      "통증의 느낌이 어떠한지 자신이 흔히 쓰는 용어로 표현하면 됩니다.";
+    const locationSentence =
+      "어느 부위에서 통증이 느껴지는지를 말하는 것입니다. 통증 부위가 한 곳 이상일 수 있으므로 환자가 신체의 그림에 표시하는 방법을 사용한다면 의사전달이 쉬울 수 있습니다.";
+    const severitySentence =
+      "숫자통증등급(numeric rating scale)은 통증의 강도를 숫자 0~10까지 등급을 매겨서 표현할 수 있도록 하는 것입니다.";
+    const timingSentence =
+      "통증의 시작 시간, 경과, 지속 시간, 지속성 여부 등을 평가합니다.";
     const template = findSymptomSupportTemplate("통증점수와 진통제 효과")!;
 
     expect(template.id).toBe("pain-management");
+    expect(template.mealNote).toContain(vitalSignSentence);
+    expect(template.mealNote).toContain(regularAssessmentSentence);
+    expect(template.mealNote).toContain(locationSentence);
+    expect(template.mealNote).toContain(severitySentence);
+    expect(template.mealNote).toContain(timingSentence);
     expect(template.mealNote).toContain("0-10점");
     expect(template.mealNote).toContain("악화·완화 요인");
+    expect(template.clinicianQuestion).toContain(factorSentence);
+    expect(template.clinicianQuestion).toContain(qualitySentence);
     expect(buildSymptomSupportQuestion(template, "등 통증")).toContain(
-      "등 통증 기록과 관련해 통증 강도, 양상, 악화·완화 요인",
+      "등 통증 기록과 관련해 환자에 따라 통증에 영향을 주는 여러 요인들이 있을 수 있습니다.",
     );
-    expect(buildSymptomSupportQuestion(template, "등 통증")).toContain("진통제 효과와 부작용");
     expect(buildSymptomSupportQuestion(template, "등 통증")).toContain(
       "출처: 국가암정보센터 통증평가 항목 - https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
+    );
+    expect(buildSymptomSupportQuestion(template, "등 통증")).not.toMatch(
+      /진통제를 증량하세요|마약성 진통제를 복용하세요|응급 처치하세요|진단하세요|치료하세요|약을 처방하세요/,
     );
     expect(template.safetyNote).toContain("치료 지시가 아니라");
   });
