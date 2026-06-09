@@ -589,6 +589,16 @@ describe("visit packet", () => {
     expect(markdown).toContain("림프 낭종");
     expect(markdown).toContain("다리나 회음부 림프 부종");
     expect(markdown).toContain("흡입도관 배액");
+    expect(markdown).toContain("방사선 급성 부작용 확인");
+    expect(markdown).toContain("방사선치료로 인한 합병증");
+    expect(markdown).toContain("장 점막");
+    expect(markdown).toContain("방광점막");
+    expect(markdown).toContain("장운동의 일시적인 증가");
+    expect(markdown).toContain("점막의 손상");
+    expect(markdown).toContain("설사");
+    expect(markdown).toContain("방광염과 비슷한 증상");
+    expect(markdown).toContain("방사선치료 회차");
+    expect(markdown).toContain("소변 통증");
     expect(markdown).toContain("재발·추적검사");
     expect(markdown).toContain("첫 2년");
     expect(markdown).toContain("3개월마다");

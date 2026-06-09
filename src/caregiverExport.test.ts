@@ -1993,6 +1993,16 @@ describe("caregiverExport", () => {
     expect(html).toContain("림프 낭종");
     expect(html).toContain("다리나 회음부 림프 부종");
     expect(html).toContain("흡입도관 배액");
+    expect(html).toContain("방사선 급성 부작용 확인");
+    expect(html).toContain("방사선치료로 인한 합병증");
+    expect(html).toContain("장 점막");
+    expect(html).toContain("방광점막");
+    expect(html).toContain("장운동의 일시적인 증가");
+    expect(html).toContain("점막의 손상");
+    expect(html).toContain("설사");
+    expect(html).toContain("방광염과 비슷한 증상");
+    expect(html).toContain("방사선치료 회차");
+    expect(html).toContain("소변 통증");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");
     expect(html).toContain("첫 2년");

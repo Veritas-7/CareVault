@@ -183,7 +183,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(19);
+    expect(cervicalCancerCarePrompts).toHaveLength(20);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -203,6 +203,7 @@ describe("cervicalCancerCare", () => {
       "성생활 재개 상담",
       "치료현황 통계 해석",
       "수술 합병증 확인",
+      "방사선 급성 부작용 확인",
       "요약·진료 흐름",
     ]);
     expect(cervicalCancerCarePrompts.every((item) => item.question.endsWith("?"))).toBe(true);
@@ -392,6 +393,23 @@ describe("cervicalCancerCare", () => {
     expect(surgicalComplicationPrompt.question).toContain("흡입도관 배액");
     expect(surgicalComplicationPrompt.question).toContain("제 수술명");
     expect(buildCervicalCancerCarePromptQuestion(surgicalComplicationPrompt)).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    const acuteRadiationPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "방사선 급성 부작용 확인",
+    )!;
+    expect(acuteRadiationPrompt.sourceId).toBe("nccTreatmentSideEffects");
+    expect(acuteRadiationPrompt.question).toContain("방사선치료로 인한 합병증");
+    expect(acuteRadiationPrompt.question).toContain("장 점막");
+    expect(acuteRadiationPrompt.question).toContain("방광점막");
+    expect(acuteRadiationPrompt.question).toContain("급성 합병증");
+    expect(acuteRadiationPrompt.question).toContain("장운동의 일시적인 증가");
+    expect(acuteRadiationPrompt.question).toContain("점막의 손상");
+    expect(acuteRadiationPrompt.question).toContain("설사");
+    expect(acuteRadiationPrompt.question).toContain("방광염과 비슷한 증상");
+    expect(acuteRadiationPrompt.question).toContain("방사선치료 회차");
+    expect(acuteRadiationPrompt.question).toContain("소변 통증");
+    expect(buildCervicalCancerCarePromptQuestion(acuteRadiationPrompt)).toContain(
       "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
     );
     const overviewPrompt = cervicalCancerCarePrompts.find(
