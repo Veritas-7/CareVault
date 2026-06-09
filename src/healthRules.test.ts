@@ -12161,6 +12161,80 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes FoodSafetyKorea norovirus contamination and disinfection guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const foodSafetyKoreaGuide = careTeamGuideItems?.find(
+      (item) => item.label === "식품안전나라 노로바이러스 식중독 주의",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "감염자의 변, 구토물에 접촉하지 않으며, 접촉한 경우에는 충분히 세척하고 소독을 하여야 한다, 조리자는 용변을 본 후나 조리하기 전에 반드시 손을 잘 씻고 소독을 하여야 한다, 과일과 채소는 철저히 씻어야 하며, 굴 등의 어패류는 중심온도 85℃에서 1분 이상 가열하여 먹는다, 질병 발생 후 오염된 표면은 소독제로 철저히 세척, 살균하고 바이러스에 감염된 옷과 이불 등은 즉시 비누를 사용하여 뜨거운 물로 세탁하여야 한다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "노로바이러스는 껍질이 없는(Non-envelop) 바이러스이고 주로 분변-구강 경로(Fecal-oral route)를 통하여 감염되며 사람의 장관 내에서만 증식할 수 있고 연중 발생 가능하며 2차 발병률이 높다, 음식(패류, 샐러드, 과일, 냉장식품, 샌드위치, 상추, 냉장조리 햄, 빙과류)이나 특히 사람의 분변에 오염된 물이나 식품을 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+
+    expect(foodGuidanceSources.foodSafetyKoreaNorovirusFoodPoisoning).toMatchObject({
+      label: "식품안전나라 주요 식중독균별 특성 - 노로바이러스",
+      url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
+    });
+    expect(foodSafetyKoreaGuide).toMatchObject({
+      label: "식품안전나라 노로바이러스 식중독 주의",
+      sourceIds: ["foodSafetyKoreaNorovirusFoodPoisoning"],
+    });
+    expect(foodSafetyKoreaGuide?.detail).toContain("분변-구강 경로");
+    expect(foodSafetyKoreaGuide?.detail).toContain("2차 발병률");
+    expect(foodSafetyKoreaGuide?.detail).toContain("패류, 샐러드, 과일, 냉장식품");
+    expect(foodSafetyKoreaGuide?.detail).toContain("감염자의 변, 구토물");
+    expect(foodSafetyKoreaGuide?.detail).toContain("중심온도 85℃에서 1분 이상");
+    expect(foodSafetyKoreaGuide?.detail).toContain("뜨거운 물로 세탁");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "감염자의 변, 구토물에 접촉하지 않으며, 접촉한 경우에는 충분히 세척하고 소독을 하여야 한다",
+      "조리자는 용변을 본 후나 조리하기 전에 반드시 손을 잘 씻고 소독을 하여야 한다",
+      "과일과 채소는 철저히 씻어야 하며, 굴 등의 어패류는 중심온도 85℃에서 1분 이상 가열하여 먹는다",
+      "질병 발생 후 오염된 표면은 소독제로 철저히 세척, 살균하고 바이러스에 감염된 옷과 이불 등은 즉시 비누를 사용하여 뜨거운 물로 세탁하여야 한다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "foodSafetyKoreaNorovirusFoodPoisoning",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "식품안전나라 주요 식중독균별 특성 - 노로바이러스 - https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "껍질이 없는(Non-envelop) 바이러스",
+      "분변-구강 경로(Fecal-oral route)를 통하여 감염",
+      "사람의 장관 내에서만 증식",
+      "연중 발생 가능하며 2차 발병률이 높다",
+      "음식(패류, 샐러드, 과일, 냉장식품, 샌드위치, 상추, 냉장조리 햄, 빙과류)",
+      "사람의 분변에 오염된 물이나 식품",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "foodSafetyKoreaNorovirusFoodPoisoning",
+      });
+    }
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes KDCA natural-toxin food poisoning risk guidance", () => {
     const careTeamGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "care-team",

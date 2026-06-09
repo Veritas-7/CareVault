@@ -59,6 +59,7 @@ export type FoodGuidanceSourceId =
   | "kdcaVibrioSepsis"
   | "kdcaNorovirusFoodSafety"
   | "kdcaFoodPoisoningNaturalToxins"
+  | "foodSafetyKoreaNorovirusFoodPoisoning"
   | "foodSafetyKoreaStaphylococcusAureusFoodPoisoning"
   | "foodSafetyKoreaSalmonellaFoodPoisoning"
   | "foodSafetyKoreaBacillusCereusFoodPoisoning"
@@ -276,6 +277,10 @@ export const foodGuidanceSources: Record<
   kdcaNorovirusFoodSafety: {
     label: "질병관리청 국가건강정보포털 노로바이러스 식중독 예방",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=80",
+  },
+  foodSafetyKoreaNorovirusFoodPoisoning: {
+    label: "식품안전나라 주요 식중독균별 특성 - 노로바이러스",
+    url: "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?bbs_no=bbs400&menu_grp=MENU_NEW02&menu_no=4418&ntctxt_no=1068747",
   },
   kdcaFoodPoisoningNaturalToxins: {
     label: "질병관리청 국가건강정보포털 식중독",
@@ -1086,6 +1091,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "노로바이러스 식중독, 면역저하자 노로바이러스 탈수, 오염된 식재료를 조리하지 않고 섭취, 음식물은 충분히 익혀 먹기(85℃ 이상에서 1분 이상 가열), 식재료를 흐르는 물에 세척하여 85℃ 이상에서 충분히 익혀 먹기, 조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관, 칼·도마는 소독하여 사용, 환자 구토물 접촉환경, 염소 소독",
         sourceIds: ["kdcaNorovirusFoodSafety"],
+      },
+      {
+        label: "식품안전나라 노로바이러스 식중독 주의",
+        detail:
+          "식품안전나라는 노로바이러스를 외가닥 RNA를 가진 껍질이 없는(Non-envelop) 바이러스로 설명하며, 주로 분변-구강 경로로 감염되고 사람의 장관 내에서만 증식할 수 있으며 연중 발생 가능하고 2차 발병률이 높다고 설명합니다. 원인식품으로 음식(패류, 샐러드, 과일, 냉장식품, 샌드위치, 상추, 냉장조리 햄, 빙과류)이나 물, 특히 사람의 분변에 오염된 물이나 식품을 제시하므로 식품 안전 질문으로 분리합니다. 예방대책으로 감염자의 변, 구토물 접촉 회피 및 접촉 시 충분한 세척·소독, 조리자의 용변 후 또는 조리 전 손 씻기와 소독, 과일과 채소 세척 및 굴 등의 어패류 중심온도 85℃에서 1분 이상 가열, 오염된 표면 세척·살균과 감염된 옷·이불의 비누 사용 뜨거운 물로 세탁을 안내합니다.",
+        examples:
+          "껍질이 없는(Non-envelop) 바이러스, 분변-구강 경로(Fecal-oral route)를 통하여 감염, 사람의 장관 내에서만 증식, 연중 발생 가능하며 2차 발병률이 높다, 음식(패류, 샐러드, 과일, 냉장식품, 샌드위치, 상추, 냉장조리 햄, 빙과류), 사람의 분변에 오염된 물이나 식품, 감염자의 변, 구토물에 접촉하지 않으며, 접촉한 경우에는 충분히 세척하고 소독을 하여야 한다, 조리자는 용변을 본 후나 조리하기 전에 반드시 손을 잘 씻고 소독을 하여야 한다, 과일과 채소는 철저히 씻어야 하며, 굴 등의 어패류는 중심온도 85℃에서 1분 이상 가열하여 먹는다, 질병 발생 후 오염된 표면은 소독제로 철저히 세척, 살균하고 바이러스에 감염된 옷과 이불 등은 즉시 비누를 사용하여 뜨거운 물로 세탁하여야 한다",
+        sourceIds: ["foodSafetyKoreaNorovirusFoodPoisoning"],
       },
       {
         label: "질병관리청 자연독 식중독 주의",
@@ -2813,6 +2826,26 @@ const supportiveFoods: FoodRuleTerm[] = [
     "조리한 식품은 실온에 두지 말고 10℃ 이하의 냉장고에 보관",
     "질병관리청 노로바이러스 식중독 예방 조리식품 10℃ 이하 냉장 보관 후보",
     "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "감염자의 변, 구토물에 접촉하지 않으며, 접촉한 경우에는 충분히 세척하고 소독을 하여야 한다",
+    "식품안전나라 노로바이러스 감염자 변·구토물 접촉 회피 및 세척·소독 후보",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "조리자는 용변을 본 후나 조리하기 전에 반드시 손을 잘 씻고 소독을 하여야 한다",
+    "식품안전나라 노로바이러스 조리자 용변 후·조리 전 손씻기 소독 후보",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "과일과 채소는 철저히 씻어야 하며, 굴 등의 어패류는 중심온도 85℃에서 1분 이상 가열하여 먹는다",
+    "식품안전나라 노로바이러스 과일·채소 세척 및 어패류 85℃ 1분 중심가열 후보",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "질병 발생 후 오염된 표면은 소독제로 철저히 세척, 살균하고 바이러스에 감염된 옷과 이불 등은 즉시 비누를 사용하여 뜨거운 물로 세탁하여야 한다",
+    "식품안전나라 노로바이러스 오염 표면 세척·살균 및 뜨거운 물 세탁 후보",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
   ],
   [
     "감자의 독이 포함된 부위(싹이 난 부위나 녹색을 띠는 부위)를 잘라내야 합니다",
@@ -4730,6 +4763,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "환자 구토물 접촉환경",
     "질병관리청 노로바이러스 환자 구토물·접촉환경 염소 소독 확인 필요",
     "kdcaNorovirusFoodSafety",
+  ],
+  [
+    "껍질이 없는(Non-envelop) 바이러스",
+    "식품안전나라 노로바이러스 비외피 바이러스 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "분변-구강 경로(Fecal-oral route)를 통하여 감염",
+    "식품안전나라 노로바이러스 분변-구강 경로 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "사람의 장관 내에서만 증식",
+    "식품안전나라 노로바이러스 사람 장관 내 증식 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "연중 발생 가능하며 2차 발병률이 높다",
+    "식품안전나라 노로바이러스 연중 발생·2차 발병률 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "음식(패류, 샐러드, 과일, 냉장식품, 샌드위치, 상추, 냉장조리 햄, 빙과류)",
+    "식품안전나라 노로바이러스 원인식품 목록 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "사람의 분변에 오염된 물이나 식품",
+    "식품안전나라 노로바이러스 분변 오염 물·식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
   ],
   [
     "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다",
