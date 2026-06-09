@@ -74,6 +74,28 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
   },
   {
+    id: "taste-change",
+    label: "입맛의 변화",
+    keywords: [
+      "입맛 변화",
+      "입맛의 변화",
+      "맛 변화",
+      "맛이 없음",
+      "금속성 맛",
+      "쓴맛",
+      "냄새에 민감",
+      "taste change",
+      "metallic taste",
+    ],
+    mealNote:
+      "만약 고기가 싫다면 생선이나 계란, 두부, 콩, 우유나 유제품을 이용합니다. 고기나 생선요리에 향이 좋은 양념류(와인, 레몬즙 등)나 새콤달콤한 소스를 사용합니다. 신맛이 금속성의 맛을 제거하는 데 도움이 될 수 있으므로 오렌지나 레몬같이 시큼한 식품을 사용합니다. 그러나 입과 목에 통증 이 있다면, 이런 식품들이 염증을 자극하거나 불편하게 하므로 주의합니다. 어떤 음식에서 쓴맛·금속성 맛·냄새 민감이 생기는지, 대체 단백질이나 양념·신맛 식품 시도 여부를 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "음식의 맛이나 냄새에 영향을 미치는 치과적인 문제가 없는지 확인해보고, 입안을 자주 헹구도록 합니다. 입맛 변화가 식사량·단백질 섭취·입과 목 통증·구강 상태와 관련 있는지, 생선·계란·두부·콩·유제품 대체와 레몬즙·새콤달콤한 소스·시큼한 식품을 내 치료 상황에서 어떻게 조정할지 의료진에게 확인하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 증상별 식생활 - 입맛의 변화",
+    sourceUrl: "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+  },
+  {
     id: "diarrhea",
     label: "설사",
     keywords: ["설사", "묽은 변", "diarrhea"],

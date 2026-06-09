@@ -20,6 +20,7 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("입안이 마르고 구강건조가 심함")?.id).toBe(
       "dry-mouth",
     );
+    expect(findSymptomSupportTemplate("입맛 변화와 금속성 맛")?.id).toBe("taste-change");
     expect(findSymptomSupportTemplate("구토가 계속됨")?.id).toBe("vomiting");
     expect(findSymptomSupportTemplate("diarrhea after medication")?.id).toBe("diarrhea");
     expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
@@ -197,6 +198,32 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a taste-change symptom-support question from official diet guidance", () => {
+    const proteinAlternativeSentence =
+      "만약 고기가 싫다면 생선이나 계란, 두부, 콩, 우유나 유제품을 이용합니다.";
+    const seasoningSentence =
+      "고기나 생선요리에 향이 좋은 양념류(와인, 레몬즙 등)나 새콤달콤한 소스를 사용합니다.";
+    const metallicTasteSentence =
+      "신맛이 금속성의 맛을 제거하는 데 도움이 될 수 있으므로 오렌지나 레몬같이 시큼한 식품을 사용합니다. 그러나 입과 목에 통증 이 있다면, 이런 식품들이 염증을 자극하거나 불편하게 하므로 주의합니다.";
+    const dentalCheckSentence =
+      "음식의 맛이나 냄새에 영향을 미치는 치과적인 문제가 없는지 확인해보고, 입안을 자주 헹구도록 합니다.";
+    const template = findSymptomSupportTemplate("입맛 변화와 금속성 맛");
+
+    expect(template?.id).toBe("taste-change");
+    expect(template?.mealNote).toContain(proteinAlternativeSentence);
+    expect(template?.mealNote).toContain(seasoningSentence);
+    expect(template?.mealNote).toContain(metallicTasteSentence);
+    expect(template?.clinicianQuestion).toContain(dentalCheckSentence);
+    expect(buildSymptomSupportQuestion(template!, "입맛 변화")).toContain(dentalCheckSentence);
+    expect(buildSymptomSupportQuestion(template!, "입맛 변화")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 입맛의 변화 - https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "입맛 변화")).not.toMatch(
+      /치료하세요|진단하세요|레몬을 처방하세요|치과치료를 지시/,
+    );
+  });
+
   it("builds a cervical urinary or bowel change question from bleeding keywords", () => {
     const template = findSymptomSupportTemplate("혈뇨와 혈변");
 
@@ -364,7 +391,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(16);
+    expect(symptomSupportTemplates).toHaveLength(17);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -380,6 +407,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("구강건조")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(findSymptomSupportTemplate("입맛 변화")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
     );
     expect(findSymptomSupportTemplate("림프부종")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T429C431/contents.do",
