@@ -676,6 +676,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccCervicalFoodPrevention"],
       },
       {
+        label: "레티놀·엽산 예방 관련성 없음",
+        detail:
+          "국가암정보센터 자궁경부암 예방과 음식 자료는 레티놀과 엽산도 자궁경부암 예방 관련 연구가 있었으나 자궁경부암과의 관련성이나 위험도를 줄일 가능성은 없는 것으로 나타났다고 설명합니다.",
+        examples:
+          "그 밖에 레티놀(retinol)과 엽산(folate)도 자궁경부암의 예방과 관련한 연구를 진행했으나 자궁경부암과의 관련성이나 자궁경부암의 위험도를 줄일 가능성은 없는 것으로 나타났습니다.",
+        sourceIds: ["nccCervicalFoodPrevention"],
+      },
+      {
         label: "자극적·너무 뜨겁거나 매운 음식",
         detail:
           "자궁경부암 식생활 자료는 방사선치료나 항암화학요법 중 장 기능이 약해질 수 있어 자극적인 음식은 피하도록 설명하고, 국가암정보센터 건강한 식생활 자료도 너무 뜨겁거나 매운 음식의 섭취는 피하도록 안내합니다.",
@@ -2495,6 +2503,11 @@ const limitFoods: FoodRuleTerm[] = [
   [
     "자궁경부암의 예방 가능성이 있는 음식으로 카로테노이드(carotenoid), 비타민 A, 비타민 C, 비타민 E 등이 거론되나 아직 그 효과에 대해서는 명확하지 않은 상태입니다.",
     "자궁경부암 카로테노이드·비타민 예방 효과 불명확성 확인 후보",
+    "nccCervicalFoodPrevention",
+  ],
+  [
+    "그 밖에 레티놀(retinol)과 엽산(folate)도 자궁경부암의 예방과 관련한 연구를 진행했으나 자궁경부암과의 관련성이나 자궁경부암의 위험도를 줄일 가능성은 없는 것으로 나타났습니다.",
+    "자궁경부암 레티놀·엽산 예방 관련성 없음 확인 후보",
     "nccCervicalFoodPrevention",
   ],
   [
