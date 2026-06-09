@@ -599,6 +599,12 @@ describe("visit packet", () => {
     expect(markdown).toContain("방광염과 비슷한 증상");
     expect(markdown).toContain("방사선치료 회차");
     expect(markdown).toContain("소변 통증");
+    expect(markdown).toContain("방사선 질 변화 상담");
+    expect(markdown).toContain("질의 위축 또는 경화");
+    expect(markdown).toContain("호르몬치료");
+    expect(markdown).toContain("국소치료");
+    expect(markdown).toContain("성생활 변화");
+    expect(markdown).toContain("호르몬 금기");
     expect(markdown).toContain("재발·추적검사");
     expect(markdown).toContain("첫 2년");
     expect(markdown).toContain("3개월마다");

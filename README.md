@@ -16,6 +16,7 @@ CareVault is a local-first health notebook for manually tracking:
 - one-click copy for the source-backed cervical-cancer care note as clinic-prep text with the current profile screening quick-check, screening-versus-diagnostic-test question draft, source-retaining question drafts including NCC overview clinic-flow, pathology-report confirmation, stage-explanation confirmation, treatment-status interpretation, pelvic-radiation menopause, and 장·방광 후기 변화 questions, item-level source URLs, and a specific accessible copy label
 - NCC cervical-cancer surgery-complication clinician-question drafts for source-backed acute post-op complications such as 출혈, 장폐색, 혈관손상, 요관손상, 직장 파열, 폐렴, 폐색전 증 plus broad-hysterectomy bladder/rectal dysfunction, 배뇨·배변 장애, 림프 낭종, and 다리·회음부 림프 부종 checks
 - NCC cervical-cancer radiotherapy acute-complication clinician-question drafts for source-backed 장 점막/방광점막 injury context, 일시적 장운동 증가, 점막 손상, 설사, and 방광염과 비슷한 증상 checks by treatment round and urinary/bowel symptom timing
+- NCC cervical-cancer radiotherapy vaginal-change clinician-question drafts for source-backed 질의 위축 또는 경화, 호르몬치료, 국소치료, and prevention/treatment consultation framing by radiation field, 질건조·통증·출혈, 성생활 변화, and hormone contraindication context
 - diabetes and hypertension follow-up context
 - hospital visits and next appointments with visit-panel summary chips for upcoming appointments, 14-day reminder window, and planned notes
 - 14-day next-appointment reminders derived from visit records

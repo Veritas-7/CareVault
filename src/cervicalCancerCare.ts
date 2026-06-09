@@ -380,6 +380,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccTreatmentSideEffects",
   },
   {
+    topic: "방사선 질 변화 상담",
+    question:
+      "국가암정보센터 치료의 부작용 설명처럼 방사선치료 후 질의 위축 또는 경화 등이 올 수 있고 호르몬치료와 국소치료를 병행해 어느 정도 예방과 치료를 할 수 있다는 설명이 제 방사선치료 범위, 질건조·통증·출혈·성생활 변화, 기존 호르몬 금기 여부에 어떻게 적용되는지 진료팀에 어떤 순서로 확인하면 좋을까요?",
+    sourceId: "nccTreatmentSideEffects",
+  },
+  {
     topic: "요약·진료 흐름",
     question:
       "국가암정보센터 요약설명 기준으로 발생부위와 조직형, HPV·위험요인, 권고안 3년 간격과 국가암검진사업 2년 주기, 증상, 진단검사, 치료 선택 기준, 부작용과 재발 추적 중 제 기록에서 빠진 항목을 어떤 순서로 진료팀에 확인하면 좋을까요?",

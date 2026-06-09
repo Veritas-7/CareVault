@@ -183,7 +183,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(20);
+    expect(cervicalCancerCarePrompts).toHaveLength(21);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -204,6 +204,7 @@ describe("cervicalCancerCare", () => {
       "치료현황 통계 해석",
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
+      "방사선 질 변화 상담",
       "요약·진료 흐름",
     ]);
     expect(cervicalCancerCarePrompts.every((item) => item.question.endsWith("?"))).toBe(true);
@@ -410,6 +411,24 @@ describe("cervicalCancerCare", () => {
     expect(acuteRadiationPrompt.question).toContain("방사선치료 회차");
     expect(acuteRadiationPrompt.question).toContain("소변 통증");
     expect(buildCervicalCancerCarePromptQuestion(acuteRadiationPrompt)).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    const radiationVaginalPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "방사선 질 변화 상담",
+    )!;
+    expect(radiationVaginalPrompt.sourceId).toBe("nccTreatmentSideEffects");
+    expect(radiationVaginalPrompt.question).toContain("방사선치료 후");
+    expect(radiationVaginalPrompt.question).toContain("질의 위축 또는 경화");
+    expect(radiationVaginalPrompt.question).toContain("호르몬치료");
+    expect(radiationVaginalPrompt.question).toContain("국소치료");
+    expect(radiationVaginalPrompt.question).toContain("예방과 치료");
+    expect(radiationVaginalPrompt.question).toContain("방사선치료 범위");
+    expect(radiationVaginalPrompt.question).toContain("질건조");
+    expect(radiationVaginalPrompt.question).toContain("통증");
+    expect(radiationVaginalPrompt.question).toContain("출혈");
+    expect(radiationVaginalPrompt.question).toContain("성생활 변화");
+    expect(radiationVaginalPrompt.question).toContain("호르몬 금기");
+    expect(buildCervicalCancerCarePromptQuestion(radiationVaginalPrompt)).toContain(
       "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
     );
     const overviewPrompt = cervicalCancerCarePrompts.find(

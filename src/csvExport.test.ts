@@ -647,6 +647,12 @@ describe("csvExport", () => {
     expect(csv).toContain("방광염과 비슷한 증상");
     expect(csv).toContain("방사선치료 회차");
     expect(csv).toContain("소변 통증");
+    expect(csv).toContain("방사선 질 변화 상담");
+    expect(csv).toContain("질의 위축 또는 경화");
+    expect(csv).toContain("호르몬치료");
+    expect(csv).toContain("국소치료");
+    expect(csv).toContain("성생활 변화");
+    expect(csv).toContain("호르몬 금기");
     expect(csv).toContain("재발·추적검사");
     expect(csv).toContain("첫 2년");
     expect(csv).toContain("3개월마다");

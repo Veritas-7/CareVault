@@ -2003,6 +2003,12 @@ describe("caregiverExport", () => {
     expect(html).toContain("방광염과 비슷한 증상");
     expect(html).toContain("방사선치료 회차");
     expect(html).toContain("소변 통증");
+    expect(html).toContain("방사선 질 변화 상담");
+    expect(html).toContain("질의 위축 또는 경화");
+    expect(html).toContain("호르몬치료");
+    expect(html).toContain("국소치료");
+    expect(html).toContain("성생활 변화");
+    expect(html).toContain("호르몬 금기");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");
     expect(html).toContain("첫 2년");
