@@ -2207,6 +2207,34 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide smoking-support caffeine and alcohol replacement sentence", () => {
+    const sourceSentence =
+      "채식위주의 균형 잡힌 식사를 하고, 흡연욕구를 일으키는 카페인이나 알코올의 섭취를 줄일 수 있도록 평소 마시던 음료를 커피나 청량음료에서 따뜻한 차 등으로 바꾸기";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 금연 보조 카페인·알코올 음료 대체 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(terms).not.toContain("차");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide grain and sodium-reduction replacements", () => {
     const assessment = assessCancerFood("쌀밥, 흰쌀밥, 잡곡밥, 우엉조림, 우엉볶음");
     const matchesByTerm = Object.fromEntries(
