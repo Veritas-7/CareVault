@@ -1849,8 +1849,11 @@ describe("caregiverExport", () => {
     expect(html).toContain("의심 증상 진단검사 준비");
     expect(html).toContain("질확대경·조직검사·경질초음파·골반 MRI");
     expect(html).toContain("병기 설명 메모");
-    expect(html).toContain("0기는 자궁경부 상피내암");
-    expect(html).toContain("방광·직장점막 침범 또는 원격전이");
+    expect(html).toContain("전암 단계인 상피내암");
+    expect(html).toContain("요관침윤");
+    expect(html).toContain("대동맥주위 림프절");
+    expect(html).toContain("방광이나 직장 점막");
+    expect(html).toContain(">국가암정보센터 자궁경부암 진행단계</a>");
     expect(html).toContain("배뇨·배변·출혈 변화 메모");
     expect(html).toContain("혈변·혈뇨");
     expect(html).toContain(">국가암정보센터 자궁경부암 치료의 부작용</a>");

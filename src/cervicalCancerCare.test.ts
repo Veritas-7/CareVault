@@ -54,6 +54,7 @@ describe("cervicalCancerCare", () => {
       "nccPregnancyBirth",
       "nccDiet",
       "nccDiagnosisMethods",
+      "nccStage",
       "nccTreatmentMethods",
       "nccDifferentialDiagnosis",
       "nccTreatmentSideEffects",
@@ -76,6 +77,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccCervicalPracticeGuideline.url).toContain("6fb06571");
     expect(cervicalCancerCareSources.nccTreatmentStatus.url).toContain("menu_seq=4896");
     expect(cervicalCancerCareSources.nccDiagnosisMethods.url).toContain("menu_seq=4889");
+    expect(cervicalCancerCareSources.nccStage.url).toContain("menu_seq=4890");
     expect(cervicalCancerCareSources.nccDifferentialDiagnosis.url).toContain("menu_seq=4891");
   });
 
@@ -309,10 +311,43 @@ describe("cervicalCancerCare", () => {
     ).toContain("질확대경·조직검사·경질초음파·골반 MRI");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
-    ).toContain("0기는 자궁경부 상피내암");
+    ).toContain("전암 단계인 상피내암");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
-    ).toContain("방광·직장점막 침범 또는 원격전이");
+    ).toContain("암의 분류에 속하지");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).toContain("1기는 자궁경부에 국한");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).toContain("질 상부 2/3");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).toContain("자궁 옆 결합조직");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).toContain("질 하부 1/3");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).toContain("요관침윤");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).toContain("대동맥주위 림프절");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).toContain("방광이나 직장 점막");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).toContain("원격전이");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.sourceId,
+    ).toBe("nccStage");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).not.toContain("자가 병기");
+    expect(
+      cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
+    ).not.toContain("진단됩니다");
     expect(
       cervicalCancerCareChecks.find((item) => item.label === "병기 설명 메모")?.detail,
     ).toContain("진료팀에 확인");

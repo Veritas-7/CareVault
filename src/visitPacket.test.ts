@@ -547,10 +547,12 @@ describe("visit packet", () => {
     expect(markdown).toContain("피부 붉어짐");
     expect(markdown).toContain("의료진에게 바로 연락");
     expect(markdown).toContain("병기 설명 메모");
-    expect(markdown).toContain("0기는 자궁경부 상피내암");
-    expect(markdown).toContain("방광·직장점막 침범 또는 원격전이");
+    expect(markdown).toContain("전암 단계인 상피내암");
+    expect(markdown).toContain("요관침윤");
+    expect(markdown).toContain("대동맥주위 림프절");
+    expect(markdown).toContain("방광이나 직장 점막");
     expect(markdown).toContain(
-      "출처: 국립암센터 자궁경부암 조기 진단과 예방법 - https://www.cancer.go.kr/download.do",
+      "출처: 국가암정보센터 자궁경부암 진행단계 - https://www.cancer.go.kr/",
     );
     expect(markdown).toContain(
       "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/",

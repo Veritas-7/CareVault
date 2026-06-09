@@ -134,6 +134,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 자궁경부암 진단방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
   },
+  nccStage: {
+    label: "국가암정보센터 자궁경부암 진행단계",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4890",
+  },
   nccTreatmentMethods: {
     label: "국가암정보센터 자궁경부암 치료방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
@@ -338,8 +342,8 @@ export const cervicalCancerCareChecks: CervicalCancerCareCheck[] = [
   {
     label: "병기 설명 메모",
     detail:
-      "0기는 자궁경부 상피내암, 1기는 자궁경부에 국한, 2기는 질 상부 2/3 또는 주위 조직 침윤, 3기는 골반벽 또는 질 하부 1/3 침범, 4기는 방광·직장점막 침범 또는 원격전이처럼 설명될 수 있으므로 내 진단서 병기와 검사 근거를 진료팀에 확인합니다.",
-    sourceId: "nccEarlyDiagnosisPrevention",
+      "국가암정보센터는 자궁경부암 진행단계를 크게 1기부터 4기로 나누며, 전암 단계인 상피내암은 다른 곳으로 전이되지 않아 암의 분류에 속하지 않는다고 설명합니다. 1기는 자궁경부에 국한, 2기는 자궁경부를 벗어났지만 골반벽까지 퍼지지 않았거나 질 상부 2/3 침범 또는 자궁 옆 결합조직 침윤, 3기는 질 하부 1/3, 골반벽, 요관침윤으로 신장이 부은 경우나 골반·대동맥주위 림프절 전이, 4기는 방광이나 직장 점막 침범 또는 원격전이처럼 설명될 수 있으므로 내 진단서 병기와 검사 근거를 진료팀에 확인합니다.",
+    sourceId: "nccStage",
   },
   {
     label: "치료현황 통계 상담 메모",

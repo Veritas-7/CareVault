@@ -624,8 +624,11 @@ describe("csvExport", () => {
     expect(csv).toContain("의심 증상 진단검사 준비");
     expect(csv).toContain("질확대경·조직검사·경질초음파·골반 MRI");
     expect(csv).toContain("병기 설명 메모");
-    expect(csv).toContain("0기는 자궁경부 상피내암");
-    expect(csv).toContain("방광·직장점막 침범 또는 원격전이");
+    expect(csv).toContain("전암 단계인 상피내암");
+    expect(csv).toContain("요관침윤");
+    expect(csv).toContain("대동맥주위 림프절");
+    expect(csv).toContain("방광이나 직장 점막");
+    expect(csv).toContain("국가암정보센터 자궁경부암 진행단계");
     expect(csv).toContain("배뇨·배변·출혈 변화 메모");
     expect(csv).toContain("혈변·혈뇨");
     expect(csv).toContain("장폐색·혈변·혈뇨 연락 메모");

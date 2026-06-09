@@ -10,7 +10,7 @@ describe("cervicalCancerCareMetric", () => {
       ),
     ).toEqual({
       ariaLabel:
-        "전체 58개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 36개 · 공식 출처 24개",
+        "전체 58개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 36개 · 공식 출처 25개",
       items: [
         { id: "total", label: "전체", value: "58개" },
         { id: "priority", label: "우선", value: "3개" },
@@ -19,7 +19,7 @@ describe("cervicalCancerCareMetric", () => {
         { id: "alert", label: "경고", value: "4개" },
         { id: "prompt", label: "질문", value: "10개" },
         { id: "record-recovery-prevention", label: "기록/회복/예방", value: "36개" },
-        { id: "source", label: "공식 출처", value: "24개" },
+        { id: "source", label: "공식 출처", value: "25개" },
       ],
     });
   });
@@ -29,7 +29,7 @@ describe("cervicalCancerCareMetric", () => {
       buildCervicalCancerCarePanelSummary(buildCervicalCancerCareClipboardSummary()),
     ).toEqual({
       ariaLabel:
-        "전체 57개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 36개 · 공식 출처 24개",
+        "전체 57개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 10개 · 기록/회복/예방 36개 · 공식 출처 25개",
       items: [
         { id: "total", label: "전체", value: "57개" },
         { id: "priority", label: "우선", value: "3개" },
@@ -37,7 +37,7 @@ describe("cervicalCancerCareMetric", () => {
         { id: "alert", label: "경고", value: "4개" },
         { id: "prompt", label: "질문", value: "10개" },
         { id: "record-recovery-prevention", label: "기록/회복/예방", value: "36개" },
-        { id: "source", label: "공식 출처", value: "24개" },
+        { id: "source", label: "공식 출처", value: "25개" },
       ],
     });
   });
