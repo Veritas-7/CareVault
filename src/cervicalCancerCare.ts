@@ -158,6 +158,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 암환자의 생활 - 심리적 안정을 위해",
     url: "https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
   },
+  nccComplementaryTherapyConsultation: {
+    label: "국가암정보센터 보완대체요법 상담",
+    url: "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
+  },
   nccDiagnosisMethods: {
     label: "국가암정보센터 자궁경부암 진단방법",
     url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
@@ -408,6 +412,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccCancerLifePsychologicalStability",
   },
   {
+    topic: "보완대체요법 상담 준비",
+    question:
+      "국가암정보센터 보완대체요법 상담 안내처럼 보완대체요법을 고려할 때 주치의와 먼저 상의하고, 안전과 안녕, 계획한 요법과 다른 치료의 장/단점, 특정 크림이나 약물 또는 침을 맞는 것처럼 제한이 필요한 부위·시술, 약초나 영양제 복용 사실과 부작용 위험, 요법가들의 직접적인 설명, 현재 상태와 앞으로 진행될 의학적 치료 이해 여부를 진료팀에 어떤 순서로 확인하면 좋을까요?",
+    sourceId: "nccComplementaryTherapyConsultation",
+  },
+  {
     topic: "치료현황 통계 해석",
     question:
       "국가암정보센터 치료현황 통계처럼 2019-2023년 자궁경부암 5년 상대생존율 79.0%, 요약병기별 국한 94.5%·국소 73.8%·원격 29.1%·모름 69.5%와 5년 이상 생존 확률 설명이 제 병기, 검사 근거, 치료 반응, 재발·전이 여부와 어떤 차이가 있는지 개인 예후로 단정하지 않고 진료팀에 어떻게 해석 질문을 하면 좋을까요?",
@@ -619,6 +629,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 항암화학요법을 받을 때 암 치료 자체에 대한 불안감, 일상의 삶이 바뀌는 것, 항암제 여러 부작용에 대한 두려움 때문에 \"우울해지기 쉽습니다\"라고 설명합니다. 치료 중 일지나 일기에 그날그날 있은 일, 떠오른 상념과 의문을 적으면 생각 정리와 의사나 간호사에게 질문할 때 도움이 된다는 설명을 기준으로 감정 변화, 치료 스케줄로 바뀐 일상, 걱정이나 두려움, 가족이나 친구·다른 환자와 나눌 이야기, 정신과 전문의 상담 기준을 기록합니다. 환자가 불안하거나 두려워할 때는 가족과 친지가 상황과 감정을 평가하지 않고 이해하는 공감의 자세로 듣는다고 설명하므로, 보호자가 같이 확인할 문구와 연락 기준을 진료팀과 보호자에게 확인합니다.",
     sourceId: "nccCancerLifePsychologicalStability",
+  },
+  {
+    label: "보완대체요법·약초 공유 메모",
+    detail:
+      "국가암정보센터는 보완대체요법을 고려하고 있다면 주치의와 먼저 상의할 것을 안내하고, 상담을 통해 환자의 안전과 안녕을 고려하며 계획한 요법과 다른 치료의 장/단점을 비교할 수 있다고 설명합니다. 주치의가 특정 크림이나 약물 사용 또는 침을 맞는 것 같은 특정 부위·시술을 제한할 수 있고, 약초나 영양제 복용 사실을 의료진에게 알리는 것은 부작용 위험을 최소화하는 방법이라고 설명합니다. 요법가들의 직접적인 설명에는 현재 상태와 앞으로 진행될 의학적 치료 이해 여부, 직접적인 치료 경험, 부작용 가능성을 포함해야 하므로, 보완대체요법 이름, 약초나 영양제 목록, 사용 시점, 기대 효과 문구, 부작용 우려, 설명서를 기록하고 진료팀과 보호자에게 확인합니다.",
+    sourceId: "nccComplementaryTherapyConsultation",
   },
   {
     label: "식생활·보조식품 확인",

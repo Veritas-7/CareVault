@@ -60,6 +60,7 @@ describe("cervicalCancerCare", () => {
       "nccDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
+      "nccComplementaryTherapyConsultation",
       "nccDiagnosisMethods",
       "nccStage",
       "nccTreatmentMethods",
@@ -106,6 +107,9 @@ describe("cervicalCancerCare", () => {
     );
     expect(cervicalCancerCareSources.nccCancerLifePsychologicalStability.url).toContain(
       "S1T327C329",
+    );
+    expect(cervicalCancerCareSources.nccComplementaryTherapyConsultation.url).toContain(
+      "S1T365C368",
     );
   });
 
@@ -195,7 +199,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(28);
+    expect(cervicalCancerCarePrompts).toHaveLength(29);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -218,6 +222,7 @@ describe("cervicalCancerCare", () => {
       "성생활 재개 상담",
       "자녀·가족 설명 준비",
       "정서 안정·전문상담 준비",
+      "보완대체요법 상담 준비",
       "치료현황 통계 해석",
       "수술 합병증 확인",
       "방사선 급성 부작용 확인",
@@ -474,6 +479,25 @@ describe("cervicalCancerCare", () => {
     expect(psychologicalStabilityPrompt.question).toContain("진료팀과 보호자");
     expect(buildCervicalCancerCarePromptQuestion(psychologicalStabilityPrompt)).toContain(
       "출처: 국가암정보센터 암환자의 생활 - 심리적 안정을 위해 - https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
+    );
+    const complementaryTherapyPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "보완대체요법 상담 준비",
+    )!;
+    expect(complementaryTherapyPrompt.sourceId).toBe("nccComplementaryTherapyConsultation");
+    expect(complementaryTherapyPrompt.question).toContain("보완대체요법");
+    expect(complementaryTherapyPrompt.question).toContain("주치의와 먼저 상의");
+    expect(complementaryTherapyPrompt.question).toContain("안전과 안녕");
+    expect(complementaryTherapyPrompt.question).toContain("장/단점");
+    expect(complementaryTherapyPrompt.question).toContain("특정 크림이나 약물");
+    expect(complementaryTherapyPrompt.question).toContain("침");
+    expect(complementaryTherapyPrompt.question).toContain("약초나 영양제");
+    expect(complementaryTherapyPrompt.question).toContain("부작용");
+    expect(complementaryTherapyPrompt.question).toContain("요법가들의 직접적인 설명");
+    expect(complementaryTherapyPrompt.question).toContain("현재 상태");
+    expect(complementaryTherapyPrompt.question).toContain("앞으로 진행될 의학적 치료");
+    expect(complementaryTherapyPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(complementaryTherapyPrompt)).toContain(
+      "출처: 국가암정보센터 보완대체요법 상담 - https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
     );
     const treatmentStatusPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료현황 통계 해석",
@@ -1094,8 +1118,11 @@ describe("cervicalCancerCare", () => {
     const psychologicalStabilityGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "정서 안정·전문상담 메모",
     );
+    const complementaryTherapyGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "보완대체요법·약초 공유 메모",
+    );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(12);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(13);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1253,6 +1280,37 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(psychologicalStabilityGuide!)).join(" ")).not.toMatch(
       /진단하세요|치료하세요|상담받으세요|운동하세요/,
+    );
+    expect(complementaryTherapyGuide).toMatchObject({
+      label: "보완대체요법·약초 공유 메모",
+      sourceId: "nccComplementaryTherapyConsultation",
+    });
+    expect(complementaryTherapyGuide?.detail).toContain("보완대체요법");
+    expect(complementaryTherapyGuide?.detail).toContain("주치의와 먼저 상의");
+    expect(complementaryTherapyGuide?.detail).toContain("안전과 안녕");
+    expect(complementaryTherapyGuide?.detail).toContain("장/단점");
+    expect(complementaryTherapyGuide?.detail).toContain("특정 크림이나 약물");
+    expect(complementaryTherapyGuide?.detail).toContain("침");
+    expect(complementaryTherapyGuide?.detail).toContain("약초나 영양제");
+    expect(complementaryTherapyGuide?.detail).toContain("부작용");
+    expect(complementaryTherapyGuide?.detail).toContain("요법가들의 직접적인 설명");
+    expect(complementaryTherapyGuide?.detail).toContain("현재 상태");
+    expect(complementaryTherapyGuide?.detail).toContain("앞으로 진행될 의학적 치료");
+    expect(complementaryTherapyGuide?.detail).toContain("진료팀과 보호자에게 확인");
+    expect(formatCervicalCancerCareItemEvidence(complementaryTherapyGuide!)).toContain(
+      "국가암정보센터 보완대체요법 상담 - https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(complementaryTherapyGuide!).body).toContain(
+      "보완대체요법·약초 공유 메모",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(complementaryTherapyGuide!).body).toContain(
+      "약초나 영양제",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(complementaryTherapyGuide!)).toContain(
+      "국가암정보센터 보완대체요법 상담",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(complementaryTherapyGuide!)).join(" ")).not.toMatch(
+      /진단하세요|치료하세요|복용하세요|중단하세요|시술하세요/,
     );
     expect(text).toContain("골반 방사선치료 난소기능·폐경 증상 상담");
     expect(text).toContain("홍조");
