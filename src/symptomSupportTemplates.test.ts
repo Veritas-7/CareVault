@@ -21,6 +21,7 @@ describe("symptomSupportTemplates", () => {
       "dry-mouth",
     );
     expect(findSymptomSupportTemplate("입맛 변화와 금속성 맛")?.id).toBe("taste-change");
+    expect(findSymptomSupportTemplate("식욕부진과 공복감 없음")?.id).toBe("appetite-loss");
     expect(findSymptomSupportTemplate("구토가 계속됨")?.id).toBe("vomiting");
     expect(findSymptomSupportTemplate("diarrhea after medication")?.id).toBe("diarrhea");
     expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
@@ -224,6 +225,37 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds an appetite-loss symptom-support question from official diet guidance", () => {
+    const frequentSnackSentence =
+      "조금씩 자주 먹도록 하고 간식을 가까이 두어서 먹고 싶을 때 쉽게 먹을 수 있게 합니다. (예) 과자, 빵, 과일, 우유 및 유제품, 두유, 치즈 등";
+    const eatWhenAbleSentence =
+      "식사 시간에 얽매이지 말고 먹고 싶을 때, 먹을 수 있을 때, 또는 몸 상태가 좋을 때 먹도록 합니다.";
+    const fluidTimingSentence =
+      "식사 시 수분섭취는 포만감을 주므로 한 모금씩 조금만 마시도록 합니다. 만약 많은 양의 물을 마시고 싶다면 식전이나 식후 30~60분에 마시도록 합니다.";
+    const walkAndCleanSentence =
+      "가벼운 산책 등 규칙적인 운동도 입맛을 증진시키는데 도움을 줄 수 있습니다. 입맛을 돋우기 위해서 식사전후에 입안을 청결하게 합니다.";
+    const supplementSentence =
+      "식사섭취가 계속적으로 힘들 경우에는 특수영양 보충음료를 이용합니다. (예) 그린비아, 뉴케어, 메디푸드, 엔슈어 등";
+    const caregiverSupportSentence =
+      "주위 분들도 환자가 먹기 싫어할 때 억지로 먹으라고 지나치게 강요하지 말고 환자 스스로 먹을 수 있게끔 도와줍니다.";
+    const template = findSymptomSupportTemplate("식욕부진과 공복감 없음");
+
+    expect(template?.id).toBe("appetite-loss");
+    expect(template?.mealNote).toContain(frequentSnackSentence);
+    expect(template?.mealNote).toContain(eatWhenAbleSentence);
+    expect(template?.mealNote).toContain(fluidTimingSentence);
+    expect(template?.mealNote).toContain(walkAndCleanSentence);
+    expect(template?.clinicianQuestion).toContain(supplementSentence);
+    expect(template?.clinicianQuestion).toContain(caregiverSupportSentence);
+    expect(buildSymptomSupportQuestion(template!, "식욕부진")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 식욕부진 - https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "식욕부진")).not.toMatch(
+      /식욕촉진제를 처방하세요|강제로 먹이세요|진단하세요|치료하세요/,
+    );
+  });
+
   it("builds a cervical urinary or bowel change question from bleeding keywords", () => {
     const template = findSymptomSupportTemplate("혈뇨와 혈변");
 
@@ -391,7 +423,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(17);
+    expect(symptomSupportTemplates).toHaveLength(18);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -410,6 +442,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("입맛 변화")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+    );
+    expect(findSymptomSupportTemplate("식욕부진")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
     );
     expect(findSymptomSupportTemplate("림프부종")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T429C431/contents.do",
