@@ -1599,6 +1599,38 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical-cancer vitamin E prevention-possibility uncertainty sentence", () => {
+    const sourceSentence =
+      "일부 연구에서 비타민 E의 섭취가 많거나 혈중 농도가 높을수록 자궁경부암의 위험도가 낮은 경향을 보이기는 했지만 아직 확실히 결론을 내린 것은 아닙니다. 그러나 혈중 비타민 E의 농도가 자궁경부이형성증(정상조직과 암조직의 중간과정)의 정도가 심할수록 낮았다는 보고가 있으므로 자궁경부암의 예방 효과가 있을 가능성은 존재합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalFoodPrevention.label).toBe(
+      "국가암정보센터 자궁경부암 예방과 음식",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 비타민 E 예방 가능성·불확실성 확인 후보",
+      sourceId: "nccCervicalFoodPrevention",
+    });
+    expect(terms).not.toContain("비타민 E");
+    expect(terms).not.toContain("비타민");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 예방과 음식 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical-cancer retinol and folate no-risk-reduction source sentence", () => {
     const sourceSentence =
       "그 밖에 레티놀(retinol)과 엽산(folate)도 자궁경부암의 예방과 관련한 연구를 진행했으나 자궁경부암과의 관련성이나 자궁경부암의 위험도를 줄일 가능성은 없는 것으로 나타났습니다.";
