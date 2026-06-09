@@ -1678,6 +1678,43 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical practice-guide vitamin B12 carotenoid produce prevention sentence as evidence-boundary wording", () => {
+    const sourceSentence =
+      "채소와 과일을 충분히 섭취합니다. 영양성분 중 비타민 C, 비타민 E, 엽산, 비타민 B12, 카로티노이드 섭취는 자궁경부암을 예방한다고 알려져 있습니다. 이들 영양성분을 충분히 함유하고 있는 채소와 과일을 섭취하면 자궁경부암을 예방할 수 있습니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalPracticeDiet.label).toBe(
+      "국가암정보센터 자궁경부암 실천지침 식생활",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "자궁경부암 실천지침 비타민 B12·카로티노이드 채소과일 예방문구 확인 후보",
+      sourceId: "nccCervicalPracticeDiet",
+    });
+    expect(terms).not.toContain("채소와 과일을 충분히 먹습니다");
+    expect(terms).not.toContain("비타민 C");
+    expect(terms).not.toContain("비타민 E");
+    expect(terms).not.toContain("엽산");
+    expect(terms).not.toContain("카로티노이드");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /치료 음식|완치|암을 낫게|특효|보장/,
+    );
+  });
+
   it("recognizes NCC cervical-cancer vitamin C risk-reduction uncertainty sentence", () => {
     const sourceSentence =
       "비타민 C의 섭취가 많은 집단의 자궁경부암 발생 빈도가 20~50 %까지 감소한다는 연구 결과가 나온 바 있습니다. 그러나 이후 연구에서 항상 예방 효과가 명확히 보도된 것은 아니었기 때문에 현재 미국암연구협회(American Institute for Cancer Research)에서는 “비타민 C의 다량의 섭취가 자궁경부암의 위험도를 줄일 가능성이 있다”라고 결론을 내렸습니다.";
