@@ -68,7 +68,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccLymphedemaCare.url).toContain("S1T429C431");
     expect(cervicalCancerCareSources.kdcaHpv.url).toContain("health.kdca.go.kr");
     expect(cervicalCancerCareSources.nccHpvVaccine.url).toContain("menu_seq=4885");
-    expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("menu_seq=4885");
+    expect(cervicalCancerCareSources.nccCervicalPrevention.url).toContain("S1T211C213");
     expect(cervicalCancerCareSources.nccCervicalRiskFactors.url).toContain("menu_seq=4884");
     expect(cervicalCancerCareSources.nccCervicalPracticeGuideline.url).toContain("6fb06571");
   });

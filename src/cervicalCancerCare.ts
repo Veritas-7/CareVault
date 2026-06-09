@@ -160,7 +160,7 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
   },
   nccCervicalPrevention: {
     label: "국가암정보센터 자궁경부암 예방법",
-    url: "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4885",
+    url: "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877",
   },
   nccCervicalRiskFactors: {
     label: "국가암정보센터 자궁경부암 위험요인",
