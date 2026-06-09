@@ -863,6 +863,12 @@ describe("csvExport", () => {
     expect(csv).toContain("유전자재조합 백신");
     expect(csv).toContain("병을 일으키는 DNA");
     expect(csv).toContain("감염의 위험");
+    expect(csv).toContain("HPV 남성 접종·관련질환 확인");
+    expect(csv).toContain("4가 및 9가 백신");
+    expect(csv).toContain("항문암");
+    expect(csv).toContain("성기암");
+    expect(csv).toContain("두경부 종양");
+    expect(csv).toContain("여성의 자궁경부암 예방 효과만큼 높지 않습니다");
     expect(csv).toContain("HPV 접종 일정·관찰 확인");
     expect(csv).toContain("9세 이상");
     expect(csv).toContain("만 12세");
