@@ -279,6 +279,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccEarlyDiagnosisPrevention",
   },
   {
+    topic: "감별진단 확인",
+    question:
+      "국가암정보센터의 감별진단 설명처럼 자궁경부염, 질암, 자궁내막암, 자궁체부암, 골반 염증성질환과 제 증상과 검사 결과에서 어떤 근거로 구분됐는지, 자궁경부세포검사, 질확대경검사 및 펀치 생검, 자궁경관 내 소파술, CT·MRI 같은 검사가 어떤 목적과 순서로 해석됐는지 진료팀에 어떻게 확인하면 좋을까요?",
+    sourceId: "nccDifferentialDiagnosis",
+  },
+  {
     topic: "치료 후 회복",
     question: "수술·방사선·항암 치료 후 피해야 할 활동, 부부관계 재개 시점, 운전/운동 제한을 제 상태 기준으로 어떻게 확인하면 좋을까요?",
     sourceId: "nccRecovery",

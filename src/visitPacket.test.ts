@@ -533,6 +533,16 @@ describe("visit packet", () => {
     expect(markdown).toContain("검진·진단검사 구분");
     expect(markdown).toContain("골반내진, 자궁경부세포검사, HPV 검사, 질확대경, 조직검사");
     expect(markdown).toContain("경질초음파, 골반 MRI");
+    expect(markdown).toContain("감별진단 확인");
+    expect(markdown).toContain("자궁경부염");
+    expect(markdown).toContain("질암");
+    expect(markdown).toContain("자궁내막암");
+    expect(markdown).toContain("자궁체부암");
+    expect(markdown).toContain("골반 염증성질환");
+    expect(markdown).toContain("제 증상과 검사 결과에서");
+    expect(markdown).toContain("질확대경검사 및 펀치 생검");
+    expect(markdown).toContain("자궁경관 내 소파술");
+    expect(markdown).toContain("CT·MRI");
     expect(markdown).toContain("치료 선택 기준");
     expect(markdown).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
     expect(markdown).toContain("재발·추적검사");

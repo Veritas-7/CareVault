@@ -1934,6 +1934,17 @@ describe("caregiverExport", () => {
     expect(html).toContain("발생부위와 조직형");
     expect(html).toContain("HPV·위험요인");
     expect(html).toContain("국가암검진사업 2년");
+    expect(html).toContain("감별진단 확인");
+    expect(html).toContain("자궁경부염");
+    expect(html).toContain("질암");
+    expect(html).toContain("자궁내막암");
+    expect(html).toContain("자궁체부암");
+    expect(html).toContain("골반 염증성질환");
+    expect(html).toContain("제 증상과 검사 결과에서");
+    expect(html).toContain("질확대경검사 및 펀치 생검");
+    expect(html).toContain("자궁경관 내 소파술");
+    expect(html).toContain("CT·MRI");
+    expect(html).toContain(">국가암정보센터 자궁경부암 감별진단</a>");
     expect(html).toContain("치료 선택 기준");
     expect(html).toContain(">국가암정보센터 자궁경부암 요약설명</a>");
     expect(html).toContain("재발·추적검사");

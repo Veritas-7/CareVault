@@ -581,6 +581,16 @@ describe("csvExport", () => {
     expect(csv).toContain("검진·진단검사 구분");
     expect(csv).toContain("골반내진, 자궁경부세포검사, HPV 검사, 질확대경, 조직검사");
     expect(csv).toContain("경질초음파, 골반 MRI");
+    expect(csv).toContain("감별진단 확인");
+    expect(csv).toContain("자궁경부염");
+    expect(csv).toContain("질암");
+    expect(csv).toContain("자궁내막암");
+    expect(csv).toContain("자궁체부암");
+    expect(csv).toContain("골반 염증성질환");
+    expect(csv).toContain("제 증상과 검사 결과에서");
+    expect(csv).toContain("질확대경검사 및 펀치 생검");
+    expect(csv).toContain("자궁경관 내 소파술");
+    expect(csv).toContain("CT·MRI");
     expect(csv).toContain("치료 선택 기준");
     expect(csv).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
     expect(csv).toContain("재발·추적검사");
