@@ -63,6 +63,7 @@ describe("cervicalCancerCare", () => {
       "nccVomitingDiet",
       "nccAppetiteLossDiet",
       "nccMouthPainDiet",
+      "nccDryMouthDiet",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -129,6 +130,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccVomitingDiet.url).toContain("S1T479C482");
     expect(cervicalCancerCareSources.nccAppetiteLossDiet.url).toContain("S1T479C480");
     expect(cervicalCancerCareSources.nccMouthPainDiet.url).toContain("S1T479C483");
+    expect(cervicalCancerCareSources.nccDryMouthDiet.url).toContain("S1T479C485");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -217,7 +219,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(38);
+    expect(cervicalCancerCarePrompts).toHaveLength(39);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -239,6 +241,7 @@ describe("cervicalCancerCare", () => {
       "구토 후 수분·식사 단계 기록 준비",
       "식욕부진 식사·간식 기록 준비",
       "입과 목 통증 식사·구강상태 기록 준비",
+      "입안 건조 식사·수분 기록 준비",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -543,6 +546,28 @@ describe("cervicalCancerCare", () => {
     expect(mouthPainDietPrompt.question).toContain("입안은 깨끗이 헹구어");
     expect(buildCervicalCancerCarePromptQuestion(mouthPainDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 입과 목의 통증 - https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
+    const dryMouthDietPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "입안 건조 식사·수분 기록 준비",
+    )!;
+    expect(dryMouthDietPrompt.sourceId).toBe("nccDryMouthDiet");
+    expect(dryMouthDietPrompt.question).toContain("침분비를 감소시켜 입안을 마르게");
+    expect(dryMouthDietPrompt.question).toContain("음식물을 씹고 삼키는 것이 더욱 어려워");
+    expect(dryMouthDietPrompt.question).toContain("음식의 맛도 변할 수");
+    expect(dryMouthDietPrompt.question).toContain("가까운 장소에 물");
+    expect(dryMouthDietPrompt.question).toContain("조금씩 자주");
+    expect(dryMouthDietPrompt.question).toContain("부드럽고 곱게 간 식품");
+    expect(dryMouthDietPrompt.question).toContain("육수나 국물");
+    expect(dryMouthDietPrompt.question).toContain("소스나 드레싱");
+    expect(dryMouthDietPrompt.question).toContain("식사 중간에 자주 물이나 음료");
+    expect(dryMouthDietPrompt.question).toContain("빨대");
+    expect(dryMouthDietPrompt.question).toContain("딱딱한 사탕");
+    expect(dryMouthDietPrompt.question).toContain("껌");
+    expect(dryMouthDietPrompt.question).toContain("아주 달거나 신음식");
+    expect(dryMouthDietPrompt.question).toContain("입안이 헐거나 목구멍이 아플 경우");
+    expect(dryMouthDietPrompt.question).toContain("의사선생님이나 치과선생님과 상의");
+    expect(buildCervicalCancerCarePromptQuestion(dryMouthDietPrompt)).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1333,6 +1358,16 @@ describe("cervicalCancerCare", () => {
       "입안을 자극하는 음식이나 음료는 피하도록 합니다.";
     const mouthPainTemperatureSentence =
       "뜨거운 음식은 입과 목을 자극하므로 차거나 상온의 음식을 이용합니다. 얼음조각을 먹는 것도 도움이 됩니다.";
+    const dryMouthCauseSentence =
+      "머리와 목 주위에 대한 항암화학요법 이나 방사선치료 는 침분비를 감소시켜 입안을 마르게 할 수 있습니다.";
+    const dryMouthChewSwallowSentence =
+      "입안이 건조해 지면, 음식물을 씹고 삼키는 것이 더욱 어려워지고 음식의 맛도 변할 수 있습니다.";
+    const dryMouthWaterSentence =
+      "가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다.";
+    const dryMouthSweetSourCautionSentence =
+      "아주 달거나 신음식을 먹으면 침분비가 많아집니다. 단, 입안이 헐거나 목구멍이 아플 경우에는 피하도록 합니다.";
+    const dryMouthSipStrawSentence =
+      "식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1370,6 +1405,9 @@ describe("cervicalCancerCare", () => {
     const mouthPainDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "입과 목 통증 부드러운 식사 메모",
     );
+    const dryMouthDietGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "입안 건조 수분·촉촉한 식사 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1392,7 +1430,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(22);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(23);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -1647,6 +1685,33 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(mouthPainDietGuide!)).join(" ")).not.toMatch(
       /진통제를 복용하세요|구강치료하세요|치과치료를 받으세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(dryMouthDietGuide).toMatchObject({
+      label: "입안 건조 수분·촉촉한 식사 메모",
+      sourceId: "nccDryMouthDiet",
+    });
+    expect(dryMouthDietGuide?.detail).toContain(dryMouthCauseSentence);
+    expect(dryMouthDietGuide?.detail).toContain(dryMouthChewSwallowSentence);
+    expect(dryMouthDietGuide?.detail).toContain(dryMouthWaterSentence);
+    expect(dryMouthDietGuide?.detail).toContain("부드럽고 곱게 간 식품");
+    expect(dryMouthDietGuide?.detail).toContain("육수나 국물 등에 담그거나 적셔서");
+    expect(dryMouthDietGuide?.detail).toContain("소스나 드레싱");
+    expect(dryMouthDietGuide?.detail).toContain(dryMouthSipStrawSentence);
+    expect(dryMouthDietGuide?.detail).toContain("딱딱한 사탕을 빨거나 껌을 씹는");
+    expect(dryMouthDietGuide?.detail).toContain("입술 연고");
+    expect(dryMouthDietGuide?.detail).toContain(dryMouthSweetSourCautionSentence);
+    expect(dryMouthDietGuide?.detail).toContain("의사선생님이나 치과선생님과 상의");
+    expect(formatCervicalCancerCareItemEvidence(dryMouthDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(dryMouthDietGuide!).body).toContain(
+      dryMouthSipStrawSentence,
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(dryMouthDietGuide!)).toContain(
+      "국가암정보센터 증상별 식생활 - 입안의 건조증",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(dryMouthDietGuide!)).join(" ")).not.toMatch(
+      /침분비제를 복용하세요|구강치료하세요|치과치료를 받으세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
