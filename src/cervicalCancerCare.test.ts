@@ -71,6 +71,7 @@ describe("cervicalCancerCare", () => {
       "nccWeightChangeDiet",
       "nccImmuneLowDiet",
       "nccFatigueDepressionDiet",
+      "nccNeuropathyCare",
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -145,6 +146,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccWeightChangeDiet.url).toContain("S1T479C486");
     expect(cervicalCancerCareSources.nccImmuneLowDiet.url).toContain("S1T479C489");
     expect(cervicalCancerCareSources.nccFatigueDepressionDiet.url).toContain("S1T479C490");
+    expect(cervicalCancerCareSources.nccNeuropathyCare.url).toContain("S1T458C460");
   });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -233,7 +235,7 @@ describe("cervicalCancerCare", () => {
   });
 
   it("turns cervical-cancer topics into clinician-question drafts", () => {
-    expect(cervicalCancerCarePrompts).toHaveLength(46);
+    expect(cervicalCancerCarePrompts).toHaveLength(47);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -263,6 +265,7 @@ describe("cervicalCancerCare", () => {
       "체중변화 열량·단백질·원인 기록 준비",
       "면역기능 저하 식품안전 기록 준비",
       "피로감·우울 식사·활동 기록 준비",
+      "손발저림·감각이상 안전 확인",
       "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -809,6 +812,35 @@ describe("cervicalCancerCare", () => {
     expect(fatigueDepressionDietPrompt.question).toContain("아이보기, 밥하기, 집안일");
     expect(buildCervicalCancerCarePromptQuestion(fatigueDepressionDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
+    const neuropathyCarePrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "손발저림·감각이상 안전 확인",
+    )!;
+    expect(neuropathyCarePrompt.sourceId).toBe("nccNeuropathyCare");
+    expect(neuropathyCarePrompt.question).toContain("신경계 손상");
+    expect(neuropathyCarePrompt.question).toContain("손비비기");
+    expect(neuropathyCarePrompt.question).toContain("주먹을 쥐었다가 폈다");
+    expect(neuropathyCarePrompt.question).toContain("뜨거운 것은 화상");
+    expect(neuropathyCarePrompt.question).toContain("손, 발을 항상 깨끗이 씻고");
+    expect(neuropathyCarePrompt.question).toContain("손톱, 발톱을 짧게");
+    expect(neuropathyCarePrompt.question).toContain("다른 사람의 도움");
+    expect(neuropathyCarePrompt.question).toContain("부드러운 면");
+    expect(neuropathyCarePrompt.question).toContain("신발 앞부분이 뾰족한");
+    expect(neuropathyCarePrompt.question).toContain("맨발");
+    expect(neuropathyCarePrompt.question).toContain("추위나 찬 것");
+    expect(neuropathyCarePrompt.question).toContain("물의 온도");
+    expect(neuropathyCarePrompt.question).toContain("전기면도기");
+    expect(neuropathyCarePrompt.question).toContain("직접 운전");
+    expect(neuropathyCarePrompt.question).toContain("의료진과 상의");
+    expect(neuropathyCarePrompt.question).toContain("감각이 떨어");
+    expect(neuropathyCarePrompt.question).toContain("손끝, 발끝");
+    expect(neuropathyCarePrompt.question).toContain("무감각");
+    expect(neuropathyCarePrompt.question).toContain("통증");
+    expect(neuropathyCarePrompt.question).toContain("따끔거리는 감각");
+    expect(neuropathyCarePrompt.question).toContain("청력");
+    expect(neuropathyCarePrompt.question).toContain("복통, 구토, 변비");
+    expect(buildCervicalCancerCarePromptQuestion(neuropathyCarePrompt)).toContain(
+      "출처: 국가암정보센터 신경계이상 증상 및 주의사항 - https://www.cancer.go.kr/lay1/S1T458C460/contents.do",
     );
     const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "HPV·검진",
@@ -1658,6 +1690,10 @@ describe("cervicalCancerCare", () => {
       "치료를 받는 동안 체중이 증가하는 사람들도 있습니다. 체중증가는 복용하고 있는 약물에 의한 체내 수분 보유나 식욕의 이상 증가 등으로 생길 수 있습니다.";
     const weightGainConsultSentence =
       "그러나 체중이 증가하였다고 바로 체중조절을 해야 하는 것은 아닙니다. 먼저 의사선생님과 상의하여 원인을 찾아야 합니다.";
+    const neuropathyHotSafetySentence =
+      "뜨거운 것은 화상을 입을 위험이 있으므로, 주의하여 사용하셔야 합니다.";
+    const neuropathySymptomSentence =
+      "손가락, 손, 발가락, 발의 감각이 떨어질 수 있습니다. 손끝, 발끝이 저리고 무감각해지고 약해지고 통증 까지 수반할 수 있습니다.";
     const coughDefinitionSentence =
       "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1719,6 +1755,9 @@ describe("cervicalCancerCare", () => {
     const fatigueDepressionDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "피로감·우울 영양·휴식·도움요청 메모",
     );
+    const neuropathyCareGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "손발저림·감각·화상예방 메모",
+    );
     const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "자녀·가족 설명 메모",
     );
@@ -1741,7 +1780,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-    expect(cervicalCancerCareRecoveryGuides).toHaveLength(30);
+    expect(cervicalCancerCareRecoveryGuides).toHaveLength(31);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2267,6 +2306,39 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(fatigueDepressionDietGuide!)).join(" ")).not.toMatch(
       /항우울제를 복용하세요|수면제를 복용하세요|운동하세요|억지로 먹이세요|강제로 먹이세요|우울증으로 진단하세요|빈혈로 진단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(neuropathyCareGuide).toMatchObject({
+      label: "손발저림·감각·화상예방 메모",
+      sourceId: "nccNeuropathyCare",
+    });
+    expect(neuropathyCareGuide?.detail).toContain("손비비기");
+    expect(neuropathyCareGuide?.detail).toContain("주먹을 쥐었다가 폈다");
+    expect(neuropathyCareGuide?.detail).toContain(neuropathyHotSafetySentence);
+    expect(neuropathyCareGuide?.detail).toContain("손, 발을 항상 깨끗이 씻고");
+    expect(neuropathyCareGuide?.detail).toContain("손톱, 발톱을 짧게");
+    expect(neuropathyCareGuide?.detail).toContain("다른 사람의 도움");
+    expect(neuropathyCareGuide?.detail).toContain("부드러운 면");
+    expect(neuropathyCareGuide?.detail).toContain("신발 앞부분이 뾰족한");
+    expect(neuropathyCareGuide?.detail).toContain("맨발");
+    expect(neuropathyCareGuide?.detail).toContain("추위나 찬 것");
+    expect(neuropathyCareGuide?.detail).toContain("물의 온도");
+    expect(neuropathyCareGuide?.detail).toContain("전기면도기");
+    expect(neuropathyCareGuide?.detail).toContain("직접 운전");
+    expect(neuropathyCareGuide?.detail).toContain(neuropathySymptomSentence);
+    expect(neuropathyCareGuide?.detail).toContain("아프고 따끔거리는 감각");
+    expect(neuropathyCareGuide?.detail).toContain("청력이 변화");
+    expect(neuropathyCareGuide?.detail).toContain("복통, 구토, 변비");
+    expect(formatCervicalCancerCareItemEvidence(neuropathyCareGuide!)).toContain(
+      "국가암정보센터 신경계이상 증상 및 주의사항 - https://www.cancer.go.kr/lay1/S1T458C460/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(neuropathyCareGuide!).body).toContain(
+      "손발저림",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(neuropathyCareGuide!)).toContain(
+      "국가암정보센터 신경계이상 증상 및 주의사항",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(neuropathyCareGuide!)).join(" ")).not.toMatch(
+      /신경병증으로 진단하세요|뜨겁게 찜질하세요|운전해도 됩니다|전기면도기를 꼭 사용하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(coughCauseGuide).toMatchObject({
       label: "기침·가래·수면방해 메모",
