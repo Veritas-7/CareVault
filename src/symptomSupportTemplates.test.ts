@@ -52,6 +52,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
       "dyspnea-consult",
     );
+    expect(findSymptomSupportTemplate("충분한 공기를 얻을 수 없어요")?.id).toBe(
+      "dyspnea-experience",
+    );
     expect(findSymptomSupportTemplate("기침이 오래 지속되고 밤잠 방해")?.id).toBe(
       "cough-care",
     );
@@ -517,6 +520,44 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "호흡곤란")).not.toMatch(
       /산소를 줍니다|처방된 약|항생제 치료를 받게 됩니다|진단하세요|치료하세요|약을 처방하세요/,
+    );
+  });
+
+  it("builds a dyspnea experience question from official respiratory cause guidance", () => {
+    const oxygenTransportSentence =
+      "호흡곤란은 신체내에 운반되는 산소가 충분하지 않을 때 발생하는데 양쪽 폐가 충분한 공기를 흡입하지 못하거나 폐가 혈류로 충분한 산소를 운반해 주지 못할 때 일어납니다.";
+    const experienceSentence =
+      "암환자와 관계되는 경험적인 호흡곤란은 “숨이 가쁜”,“충분한 공기를 얻을 수 없어요.”, “호흡은 노력을 요구”, 그리고 “가슴은 단단해지는 것 같다”는 내용을 포함하는 공통된 어구를 사용합니다.";
+    const worrySentence =
+      "호흡곤란이 있는 대부분의 환자들은 걱정을 하게 되고, 심한 호흡곤란은 환자와 가족을 당황스럽게 합니다.";
+    const symptomSentence =
+      "호흡곤란이 오면 쉬고 있거나 움직일 때 숨이 가쁘거나 호흡하기가 힘들어지며, 가슴에 통증 을 호소하기도 하며 맥박수가 빨라지고 피부가 차고 축축하게 느껴지기도 합니다.";
+    const careTeamSentence =
+      "전에 없었던 호흡곤란이 나타나거나 갑자기 악화되는 경우 의사의 진료를 받아야 합니다.";
+    const template = findSymptomSupportTemplate("충분한 공기를 얻을 수 없어요");
+
+    expect(template?.id).toBe("dyspnea-experience");
+    expect(template?.mealNote).toContain(oxygenTransportSentence);
+    expect(template?.mealNote).toContain(experienceSentence);
+    expect(template?.mealNote).toContain(worrySentence);
+    expect(template?.clinicianQuestion).toContain(symptomSentence);
+    expect(template?.clinicianQuestion).toContain(careTeamSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "공기를 얻기 어려움")).toContain(
+      "출처: 국가암정보센터 호흡곤란 원인 - https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
+    );
+    expect(findSymptomSupportTemplate("호흡곤란")?.id).toBe("dyspnea-consult");
+    expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
+      "dyspnea-consult",
+    );
+    expect(findSymptomSupportTemplate("38도 발열과 호흡곤란")?.id).toBe(
+      "infection-fever",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "공기를 얻기 어려움")).not.toMatch(
+      /산소를 투여하세요|산소를 줍니다|처방된 약|진단하세요|치료하세요|약을 처방하세요|응급 처치하세요/,
     );
   });
 
@@ -1059,7 +1100,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(28);
+    expect(symptomSupportTemplates).toHaveLength(29);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1114,6 +1155,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("호흡곤란")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T411C415/contents.do",
+    );
+    expect(findSymptomSupportTemplate("충분한 공기")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
     );
     expect(findSymptomSupportTemplate("기침")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
