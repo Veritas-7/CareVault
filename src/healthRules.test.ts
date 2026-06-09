@@ -1645,6 +1645,39 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical early-diagnosis small-alcohol avoidance sentence", () => {
+    const sourceSentence = "하루 한두 잔의 소량 음주도 피하기";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalEarlyDiagnosisPrevention.label).toBe(
+      "국립암센터 자궁경부암 조기 진단과 예방법",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국립암센터 자궁경부암 조기 진단과 예방법 소량 음주 회피 생활수칙 후보",
+      sourceId: "nccCervicalEarlyDiagnosisPrevention",
+    });
+    expect(terms).not.toContain("술");
+    expect(terms).not.toContain("알코올");
+    expect(terms).not.toContain("하루 한 두 잔의 술도 피합니다.");
+    expect(terms).not.toContain("암 예방을 위해서 하루 한 두 잔의 술도 피하는 것이 좋습니다.");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국립암센터 자궁경부암 조기 진단과 예방법 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes NCC cervical-cancer final prevention summary with fresh-produce support sentence", () => {
     const sourceSentence =
       "이상에서 살펴본 바와 같이, 자궁경부암의 예방을 위해서는 정기적인 검진이 가장 효과적인 방법이며, 안전한 성생활을 유지하고, 금연을 하며, 신선한 채소 및 과일을 충분히 섭취하는 것이 좋습니다.";
