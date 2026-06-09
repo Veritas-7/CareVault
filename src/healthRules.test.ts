@@ -12019,6 +12019,78 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes KDCA vibrio sepsis high-risk seafood safety guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const kdcaGuide = careTeamGuideItems?.find(
+      (item) => item.label === "질병관리청 비브리오 어패류 안전",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "어패류는 충분히 익혀 먹습니다, 어패류는 흐르는 물에 깨끗이 씻은 후 85℃ 이상으로 가열 처리, 조개류를 끓여 요리할 때는 껍질이 열린 후 5분 이상 끓이고, 증기로 익히는 경우에는 9분이상 더 요리합니다",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "비브리오 패혈증 때문에 면역저하 환자가 날것이나 덜 익힌 어패류를 먹거나 항암제 치료 중 어패류 생식을 고민",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+    const rawOysterAssessment = assessCancerFood("생굴");
+
+    expect(foodGuidanceSources.kdcaVibrioSepsis).toMatchObject({
+      label: "질병관리청 국가건강정보포털 비브리오 패혈증",
+      url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5372",
+    });
+    expect(kdcaGuide).toMatchObject({
+      label: "질병관리청 비브리오 어패류 안전",
+      sourceIds: ["kdcaVibrioSepsis"],
+    });
+    expect(kdcaGuide?.detail).toContain("면역저하자");
+    expect(kdcaGuide?.detail).toContain("항암제 치료 중");
+    expect(kdcaGuide?.detail).toContain("날것이나 덜 익힌 어패류");
+    expect(kdcaGuide?.detail).toContain("85℃ 이상");
+    expect(kdcaGuide?.detail).toContain("껍질이 열린 후 5분 이상");
+    expect(kdcaGuide?.detail).toContain("증기로 익히는 경우에는 9분이상");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "어패류는 충분히 익혀 먹습니다",
+      "어패류는 흐르는 물에 깨끗이 씻은 후 85℃ 이상으로 가열 처리",
+      "조개류를 끓여 요리할 때는 껍질이 열린 후 5분 이상 끓이고, 증기로 익히는 경우에는 9분이상 더 요리합니다",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "kdcaVibrioSepsis",
+      });
+      expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
+        "질병관리청 국가건강정보포털 비브리오 패혈증 - https://health.kdca.go.kr/healthinfo/",
+      );
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual(["비브리오 패혈증", "날것이나 덜 익힌 어패류", "항암제 치료 중 어패류 생식"]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "kdcaVibrioSepsis",
+      });
+    }
+    expect(rawOysterAssessment.matches[0]).toMatchObject({
+      term: "생굴",
+      level: "risk",
+      sourceId: "nccImmuneLowDiet",
+    });
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes the exact NCC healthy-eating fatty meat part limit sentence", () => {
     const assessment = assessCancerFood(
       "지방 함량이 많은 부위의 육류 섭취는 제한합니다, 지방 함량이 많은 육류 부위 섭취 제한",

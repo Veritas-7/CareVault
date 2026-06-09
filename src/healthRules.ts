@@ -56,6 +56,7 @@ export type FoodGuidanceSourceId =
   | "nccChemoSideEffectGuide"
   | "kdcaNutrition"
   | "kdcaAlcohol"
+  | "kdcaVibrioSepsis"
   | "mfdsFoodPoisoningPrevention";
 
 export type FoodMatch = {
@@ -254,6 +255,10 @@ export const foodGuidanceSources: Record<
   kdcaAlcohol: {
     label: "질병관리청 국가건강정보포털 위험음주",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5355",
+  },
+  kdcaVibrioSepsis: {
+    label: "질병관리청 국가건강정보포털 비브리오 패혈증",
+    url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5372",
   },
   mfdsFoodPoisoningPrevention: {
     label: "식품의약품안전처 식중독 예방 6대요령",
@@ -1000,6 +1005,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "흐르는 물에 비누로 30초 이상 씻기, 날음식과 조리음식 구분, 칼·도마 구분 사용, 육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기, 식재료·조리기구는 깨끗이 세척·소독 하기, 물은 끓여서 먹기, 냉장식품은 5˚C 이하, 냉동식품은 -18˚C 이하, 따뜻한 음식은 60˚C 이상, 찬 음식은 5˚C 이하, 조리후 2시간 이내 섭취",
         sourceIds: ["mfdsFoodPoisoningPrevention"],
+      },
+      {
+        label: "질병관리청 비브리오 어패류 안전",
+        detail:
+          "질병관리청 국가건강정보포털은 비브리오 패혈증이 간질환자나 면역저하자에서 심하게 나타나고, 고위험군에는 부신피질호르몬제나 항암제 치료 중인 경우 등이 포함된다고 설명합니다. 날것이나 덜 익힌 어패류 섭취 또는 상처 부위의 바닷물 접촉으로 감염될 수 있으므로, 어패류는 충분히 익혀 먹고 여름철 어패류는 5℃ 이하로 저장하며, 흐르는 물에 씻은 뒤 85℃ 이상 가열 처리하고, 조개류는 껍질이 열린 후 5분 이상 끓이거나 증기로 익히는 경우에는 9분이상 더 요리하며, 도마·칼 소독과 장갑 착용을 확인하도록 안내합니다.",
+        examples:
+          "비브리오 패혈증, 날것이나 덜 익힌 어패류, 어패류는 충분히 익혀 먹습니다, 여름철 어패류는 5℃ 이하의 저온 상태로 저장합니다, 어패류는 흐르는 물에 깨끗이 씻은 후 85℃ 이상으로 가열 처리, 조개류를 끓여 요리할 때는 껍질이 열린 후 5분 이상 끓이고, 증기로 익히는 경우에는 9분이상 더 요리합니다, 어패류를 요리한 도마, 칼 등의 조리도구는 소독하여 사용합니다, 어패류를 다룰 때 장갑을 착용합니다, 항암제 치료 중 어패류 생식",
+        sourceIds: ["kdcaVibrioSepsis"],
       },
       {
         label: "특별한 항암 식품·영양소 주장",
@@ -2493,6 +2506,26 @@ const supportiveFoods: FoodRuleTerm[] = [
     "mfdsFoodPoisoningPrevention",
   ],
   [
+    "어패류는 충분히 익혀 먹습니다",
+    "질병관리청 비브리오 패혈증 예방 어패류 충분히 익히기 후보",
+    "kdcaVibrioSepsis",
+  ],
+  [
+    "여름철 어패류는 5℃ 이하의 저온 상태로 저장합니다",
+    "질병관리청 비브리오 패혈증 예방 어패류 저온 저장 후보",
+    "kdcaVibrioSepsis",
+  ],
+  [
+    "어패류는 흐르는 물에 깨끗이 씻은 후 85℃ 이상으로 가열 처리",
+    "질병관리청 비브리오 패혈증 예방 어패류 85℃ 이상 가열 후보",
+    "kdcaVibrioSepsis",
+  ],
+  [
+    "조개류를 끓여 요리할 때는 껍질이 열린 후 5분 이상 끓이고, 증기로 익히는 경우에는 9분이상 더 요리합니다",
+    "질병관리청 비브리오 패혈증 예방 조개류 가열 시간 후보",
+    "kdcaVibrioSepsis",
+  ],
+  [
     "암환자는 치료과정에서 체중의 감소를 흔하게 경험할 수 있습니다. 체중감소는 환자를 허약하게 만들고 암에 대한 저항력과 치료효과 등을 떨어뜨립니다. 그러므로 체중감소를 예방하기 위해서 열량과 단백질 등을 충분히 섭취해야 합니다.",
     "국가암정보센터 체중감소 시 열량·단백질 충분 섭취 후보",
     "nccWeightChangeDiet",
@@ -3970,6 +4003,31 @@ const careTeamFoods: FoodRuleTerm[] = [
     "어떤 특정 식품이나 음식에 의해 암의 재발을 막는다는 연구보고는 없습니다.",
     "국가암정보센터 치료 후 재발 예방 특정식품 근거 없음",
     "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "비브리오 패혈증",
+    "질병관리청 비브리오 패혈증 고위험군·어패류 생식 확인 필요",
+    "kdcaVibrioSepsis",
+  ],
+  [
+    "날것이나 덜 익힌 어패류",
+    "질병관리청 비브리오 패혈증 날것·덜 익힌 어패류 감염위험 확인 필요",
+    "kdcaVibrioSepsis",
+  ],
+  [
+    "오염된 어패류를 날 것으로 먹거나",
+    "질병관리청 비브리오 패혈증 오염 어패류 생식 감염위험 확인 필요",
+    "kdcaVibrioSepsis",
+  ],
+  [
+    "항암제 치료 중 어패류 생식",
+    "질병관리청 비브리오 패혈증 항암제 치료 중 고위험군 어패류 생식 확인 필요",
+    "kdcaVibrioSepsis",
+  ],
+  [
+    "면역저하 환자 어패류 생식",
+    "질병관리청 비브리오 패혈증 면역저하 고위험군 어패류 생식 확인 필요",
+    "kdcaVibrioSepsis",
   ],
   [
     "시중에 암 예방 효과가 있다고 알려진 여러 식품들이나 건강 보조식품들은 아직 안정성이나 효과에 대해 과학적으로 입증된 근거가 없으므로 선택 시 주의가 필요합니다.",
