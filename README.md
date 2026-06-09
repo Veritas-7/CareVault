@@ -44,6 +44,7 @@ CareVault is a local-first health notebook for manually tracking:
 - NCC cervical practice-guide meal-example intro and core-principle phrase matching for 암예방을 위한 식단의 예입니다 and 기본원칙 : 다채로운 식단으로 균형 잡힌 식사 / 채소, 과일을 충분히 섭취 / 짠 음식 및 탄 음식 섭취 제한, preserving the mixed principle as watch because it includes limits
 - NCC cervical practice-guide table-dish matching for 총각김치, 느타리버섯볶음, 달래무무침, 닭고기덮밥, and 왜된장국, preserving 총각김치 as a low-salt check and the other table dishes as balanced practice-guide examples without generic fallback matches
 - NCC cervical practice-guide table-dish matching for 보리밥 and 김구이, preserving both as balanced practice-guide examples without generic 밥/김/구이 fallback matches
+- NCC cervical practice-guide fiber-rich fresh-produce phrase matching for 식이섬유가 풍부한 신선한 채소, 과일 섭취 and 식이 섬유가 풍부한 신선한 채소·과일 섭취, preserving both as exact balanced practice-guide prevention phrases rather than generic 신선한 채소 matches
 - NCC nausea do-not-force intake sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다
 - NCC nausea do-not-force specific-food alternative-food source sentence matching for 메스꺼움이 심한 경우 억지로 먹거나 마시지 않도록 합니다. 특정 음식에 대해 메스꺼움이 심할 때에도 억지로 먹지 않도록 합니다. 대신 먹기 좋은 다른 음식을 많이 먹도록 합니다.
 - NCC nausea treatment-before-eating sentence matching for 항암화학요법 이나 방사선치료 를 받는 동안 오심 증세가 나타난다면, 치료하기 1~2시간 전에는 먹지 않도록 합니다

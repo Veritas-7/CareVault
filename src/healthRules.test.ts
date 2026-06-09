@@ -2030,6 +2030,39 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes cervical practice-guide fiber-rich fresh produce prevention phrases", () => {
+    const commaPhrase = "식이섬유가 풍부한 신선한 채소, 과일 섭취";
+    const middleDotPhrase = "식이 섬유가 풍부한 신선한 채소·과일 섭취";
+    const assessment = assessCancerFood(`${commaPhrase}, ${middleDotPhrase}`);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("ok");
+    expect(terms).toEqual([commaPhrase, middleDotPhrase]);
+    for (const term of [commaPhrase, middleDotPhrase]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "자궁경부암 실천지침 식이섬유 풍부한 신선 채소·과일 섭취 후보",
+        sourceId: "nccCervicalPracticeDiet",
+      });
+    }
+    expect(terms).not.toContain("신선한 채소");
+    expect(terms).not.toContain("과일");
+    expect(terms).not.toContain("채소와 과일을 충분히 먹습니다");
+    expect(balancedGuideText).toContain(commaPhrase);
+    expect(balancedGuideText).toContain(middleDotPhrase);
+    expect(formatFoodMatchEvidence(matchesByTerm[middleDotPhrase])).toContain(
+      "국가암정보센터 자궁경부암 실천지침 식생활 - https://www.cancer.go.kr/download.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
+  });
+
   it("recognizes cervical practice-guide color-variety produce planning examples", () => {
     const colorVarietyPhrase =
       "파프리카, 피망, 시금치, 토마토, 당근, 양배추 등 식품이 지닌 색상을 고려하여 다양한 종류의 색상이 포함되도록 식품을 선택해 보십시오.";
