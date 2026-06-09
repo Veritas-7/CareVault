@@ -61,6 +61,19 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
   },
   {
+    id: "dry-mouth",
+    label: "입안 건조증",
+    keywords: ["입안 건조", "입안이 마르", "입마름", "구강건조", "침 마름", "dry mouth"],
+    priorityKeywords: ["입안 건조", "입안이 마르", "입마름", "구강건조", "침 마름", "dry mouth"],
+    mealNote:
+      "가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다. 음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다. 부드럽고 곱게 간 식품을 먹도록 합니다. 삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다. 식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다. 딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다. 입안이 마른 시점, 삼킴 어려움, 식사 중 수분·촉촉한 음식 시도 여부를 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "그러나 문제가 심각하면 의사선생님이나 치과선생님과 상의합니다. 입안 건조가 씹기·삼키기·복약·식사량에 영향을 주는지, 물·육수·소스/드레싱·빨대·사탕/껌 사용을 내 치료 상황에서 어떻게 조정할지 의료진이나 치과에 확인하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 증상별 식생활 - 입안의 건조증",
+    sourceUrl: "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
+  },
+  {
     id: "diarrhea",
     label: "설사",
     keywords: ["설사", "묽은 변", "diarrhea"],

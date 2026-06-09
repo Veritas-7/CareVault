@@ -17,6 +17,9 @@ describe("symptomSupportTemplates", () => {
   it("matches common cancer-treatment side-effect keywords", () => {
     expect(findSymptomSupportTemplate("식사 후 오심이 심함")?.id).toBe("nausea");
     expect(findSymptomSupportTemplate("입안 상처와 구내염")?.id).toBe("mouth-sore");
+    expect(findSymptomSupportTemplate("입안이 마르고 구강건조가 심함")?.id).toBe(
+      "dry-mouth",
+    );
     expect(findSymptomSupportTemplate("구토가 계속됨")?.id).toBe("vomiting");
     expect(findSymptomSupportTemplate("diarrhea after medication")?.id).toBe("diarrhea");
     expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
@@ -159,6 +162,39 @@ describe("symptomSupportTemplates", () => {
     );
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "구토")).not.toMatch(/수액을 맞으세요|처방하세요|진단하세요/);
+  });
+
+  it("builds a dry-mouth symptom-support question from official moisture guidance", () => {
+    const nearbyWaterSentence = "가까운 장소에 물을 두어 조금씩 자주 마시도록 합니다.";
+    const brothSoakingSentence =
+      "음식을 먹을 때 육수나 국물 등에 담그거나 적셔서 먹도록 합니다.";
+    const moistFoodSentence =
+      "삼키기 쉽게 하기 위해 음식에 소스나 드레싱을 첨가하여 촉촉하게 합니다.";
+    const strawSentence =
+      "식사 중간에 자주 물이나 음료를 한 모금씩 마시도록 합니다. 빨대를 이용하면 삼키는 것에 도움이 됩니다.";
+    const candyGumSentence =
+      "딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다.";
+    const consultationSentence =
+      "그러나 문제가 심각하면 의사선생님이나 치과선생님과 상의합니다.";
+    const template = findSymptomSupportTemplate("입안이 마르고 구강건조가 심함");
+
+    expect(template?.id).toBe("dry-mouth");
+    expect(template?.mealNote).toContain(nearbyWaterSentence);
+    expect(template?.mealNote).toContain(brothSoakingSentence);
+    expect(template?.mealNote).toContain(moistFoodSentence);
+    expect(template?.mealNote).toContain(strawSentence);
+    expect(template?.mealNote).toContain(candyGumSentence);
+    expect(template?.clinicianQuestion).toContain(consultationSentence);
+    expect(buildSymptomSupportQuestion(template!, "입안 건조증")).toContain(
+      consultationSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "입안 건조증")).toContain(
+      "출처: 국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "입안 건조증")).not.toMatch(
+      /인공타액을 처방하세요|치료하세요|진단하세요/,
+    );
   });
 
   it("builds a cervical urinary or bowel change question from bleeding keywords", () => {
@@ -328,7 +364,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(15);
+    expect(symptomSupportTemplates).toHaveLength(16);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -341,6 +377,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("구토")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(findSymptomSupportTemplate("구강건조")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(findSymptomSupportTemplate("림프부종")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T429C431/contents.do",
