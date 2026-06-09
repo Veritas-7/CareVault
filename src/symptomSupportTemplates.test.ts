@@ -31,6 +31,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("백혈구 감소와 날음식 식사 걱정")?.id).toBe(
       "immune-low-food-safety",
     );
+    expect(findSymptomSupportTemplate("손발저림과 감각이상")?.id).toBe(
+      "neuropathy-safety",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -206,6 +209,46 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "체중감소")).not.toMatch(
       /식단을 처방하세요|진단하세요|치료하세요|운동을 강제하세요|체중조절을 지시하세요|고열량 간식을 금지하세요/,
+    );
+  });
+
+  it("builds a neuropathy safety question from official nerve-symptom guidance", () => {
+    const handExerciseSentence = "손비비기, 주먹을 쥐었다가 폈다하는 동작을 합니다.";
+    const burnRiskSentence =
+      "뜨거운 것은 화상을 입을 위험이 있으므로, 주의하여 사용하셔야 합니다.";
+    const nailCareSentence =
+      "손, 발을 항상 깨끗이 씻고, 손톱, 발톱을 짧게 하여 상처가 나지 않도록 주의하셔야 합니다. 혼자서 깎지 말고, 다른 사람의 도움을 받는 것이 좋습니다.";
+    const shoeSentence =
+      "양말은 부드러운 면으로 된 것을 사용하며, 신발 앞부분이 뾰족한 모양은 피하며 맨발로 다니지 않도록 합니다.";
+    const consultSentence =
+      "손발저림과 감각이상 등의 신경증이 있으면 의료진과 상의합니다.";
+    const sensorySentence =
+      "손가락, 손, 발가락, 발의 감각이 떨어질 수 있습니다. 손끝, 발끝이 저리고 무감각해지고 약해지고 통증 까지 수반할 수 있습니다.";
+    const tinglingSentence = "아프고 따끔거리는 감각이 지속적으로 나타납니다.";
+    const hearingSentence = "한쪽 또는 양쪽 귀의 청력이 변화 됩니다.";
+    const autonomicSentence =
+      "내장을 지배하는 신경에 부작용 이 생기는 경우에는 복통, 구토, 변비등의 증상을 일으키기도 합니다.";
+    const template = findSymptomSupportTemplate("손발저림과 감각이상");
+
+    expect(template?.id).toBe("neuropathy-safety");
+    expect(template?.mealNote).toContain(handExerciseSentence);
+    expect(template?.mealNote).toContain(burnRiskSentence);
+    expect(template?.mealNote).toContain(nailCareSentence);
+    expect(template?.mealNote).toContain(shoeSentence);
+    expect(template?.clinicianQuestion).toContain(consultSentence);
+    expect(template?.clinicianQuestion).toContain(sensorySentence);
+    expect(template?.clinicianQuestion).toContain(tinglingSentence);
+    expect(template?.clinicianQuestion).toContain(hearingSentence);
+    expect(template?.clinicianQuestion).toContain(autonomicSentence);
+    expect(buildSymptomSupportQuestion(template!, "손발저림")).toContain(
+      consultSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "손발저림")).toContain(
+      "출처: 국가암정보센터 신경계이상 증상 및 주의사항 - https://www.cancer.go.kr/lay1/S1T458C460/contents.do",
+    );
+    expect(template!.safetyNote).toContain("치료 지시가 아니라");
+    expect(buildSymptomSupportQuestion(template!, "손발저림")).not.toMatch(
+      /신경차단을 하세요|진단하세요|치료하세요|진통제를 처방하세요|운전을 금지하세요/,
     );
   });
 
@@ -680,7 +723,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(20);
+    expect(symptomSupportTemplates).toHaveLength(21);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -714,6 +757,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("체중감소")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
+    expect(findSymptomSupportTemplate("손발저림")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T458C460/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
