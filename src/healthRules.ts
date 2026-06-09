@@ -774,7 +774,8 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         label: "민간요법·건강보조식품",
         detail:
           "자궁경부암 식생활 자료와 보완대체요법 자료는 항암화학요법 중 민간요법·건강보조식품을 삼가거나 주치의에게 알리도록 안내합니다.",
-        examples: "고농축 보충제, 영양제, 약초, 한약, 민간요법, 치료 효과를 표방하는 식품",
+        examples:
+          "또한 항암화학요법을 받는 중에는 민간요법이나 건강보조식품은 삼갑니다., 고농축 보충제, 영양제, 약초, 한약, 민간요법, 치료 효과를 표방하는 식품",
         sourceIds: ["nccCervicalDiet", "nccComplementaryTherapy"],
       },
       {
@@ -2991,6 +2992,11 @@ const limitFoods: FoodRuleTerm[] = [
 
 const careTeamFoods: FoodRuleTerm[] = [
   ["자몽", "약물 상호작용 확인 필요", "kdcaNutrition"],
+  [
+    "또한 항암화학요법을 받는 중에는 민간요법이나 건강보조식품은 삼갑니다.",
+    "자궁경부암 항암화학요법 중 민간요법·건강보조식품 피하기 확인 후보",
+    "nccCervicalDiet",
+  ],
   ["민간요법", "치료 상호작용 확인 필요", "nccComplementaryTherapy"],
   ["약초", "보완대체요법·약초 복용 사실 진료팀 공유", "nccComplementaryTherapy"],
   ["한약", "보완대체요법·약초 복용 사실 진료팀 공유", "nccComplementaryTherapy"],
