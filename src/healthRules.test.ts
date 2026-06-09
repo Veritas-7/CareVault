@@ -6484,6 +6484,46 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|단식 치료|탈수 치료|수분 제한 치료/);
   });
 
+  it("recognizes NCC nausea-vomiting care post-vomiting water and carbonated drink source sentence", () => {
+    const sourceSentence =
+      "구토 후 1~2시간 정도의 시간이 경과한 후에 수분 섭취를 하도록 합니다. 탄산음료는 되도록 피하고 물을 섭취하는 것이 좋습니다.";
+    const stopUntilVomitingEndsSentence = "구토가 멈출 때까지는 음료나 음식을 먹지 않도록 합니다.";
+    const genericCarbonatedSentence = "과자나 탄산음료";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("watch");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 메스꺼움·구토 후 1~2시간 뒤 물 섭취와 탄산음료 피하기 후보",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(stopUntilVomitingEndsSentence);
+    expect(terms).not.toContain(genericCarbonatedSentence);
+    expect(terms).not.toContain("탄산음료");
+    expect(terms).not.toContain("물");
+    expect(terms).not.toContain("수분");
+    expect(limitGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|탈수 치료|수분 제한 치료|무제한 수분/);
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";
