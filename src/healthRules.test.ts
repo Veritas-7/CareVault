@@ -1363,6 +1363,40 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
   });
 
+  it("recognizes NCC cervical-cancer supplement interaction source sentence", () => {
+    const sourceSentence =
+      "민간요법이나 건강보조식품은 과학적으로 효능이 확인되지 않았으며 병원에서 투여하는 약제와 예상할 수 없는 상호작용으로 치료효과가 떨어지거나 부작용이 커질 수도 있기 때문입니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCervicalDiet.label).toBe(
+      "국가암정보센터 자궁경부암 식생활",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "자궁경부암 민간요법·건강보조식품 약제 상호작용 확인 후보",
+      sourceId: "nccCervicalDiet",
+    });
+    expect(terms).not.toContain("민간요법");
+    expect(terms).not.toContain(
+      "또한 항암화학요법을 받는 중에는 민간요법이나 건강보조식품은 삼갑니다.",
+    );
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 자궁경부암 식생활 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게|특효/);
+  });
+
   it("recognizes cervical-specific fresh food examples without cure claims", () => {
     const assessment = assessCancerFood("당근, 미역, 차, 시금치");
     const matchesByTerm = Object.fromEntries(
