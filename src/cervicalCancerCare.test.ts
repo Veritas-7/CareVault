@@ -74,6 +74,7 @@ describe("cervicalCancerCare", () => {
 	      "nccNeuropathyCare",
 	      "nccSkinChangeCare",
 	      "nccAnemiaCare",
+	      "nccBleedingSymptoms",
 	      "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccComplementaryTherapyConsultation",
@@ -151,6 +152,7 @@ describe("cervicalCancerCare", () => {
 	    expect(cervicalCancerCareSources.nccNeuropathyCare.url).toContain("S1T458C460");
 	    expect(cervicalCancerCareSources.nccSkinChangeCare.url).toContain("S1T454C456");
 	    expect(cervicalCancerCareSources.nccAnemiaCare.url).toContain("S1T440C444");
+	    expect(cervicalCancerCareSources.nccBleedingSymptoms.url).toContain("S1T445C448");
 	  });
 
   it("keeps every patient-visible cervical-care item linked to a known source", () => {
@@ -238,8 +240,8 @@ describe("cervicalCancerCare", () => {
     expect(evidence).not.toContain("치료하세요");
   });
 
-  it("turns cervical-cancer topics into clinician-question drafts", () => {
-	    expect(cervicalCancerCarePrompts).toHaveLength(49);
+	  it("turns cervical-cancer topics into clinician-question drafts", () => {
+		    expect(cervicalCancerCarePrompts).toHaveLength(50);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -272,6 +274,7 @@ describe("cervicalCancerCare", () => {
 	      "손발저림·감각이상 안전 확인",
 	      "피부변화·손발홍반·손발톱 확인",
 	      "빈혈·혈색소·어지럼 기록 확인",
+	      "출혈·멍·코피·혈변 기록 확인",
 	      "HPV·검진",
       "HPV 감염·파트너 상담",
       "임신·출산 계획",
@@ -899,12 +902,42 @@ describe("cervicalCancerCare", () => {
 	    expect(anemiaCarePrompt.question).toContain("천천히 일어나");
 	    expect(anemiaCarePrompt.question).toContain("충분한 수면");
 	    expect(anemiaCarePrompt.question).toContain("짧은 낮잠");
-	    expect(buildCervicalCancerCarePromptQuestion(anemiaCarePrompt)).toContain(
-	      "출처: 국가암정보센터 빈혈 관리 - https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
-	    );
-	    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
-	      (item) => item.topic === "HPV·검진",
-	    )!;
+		    expect(buildCervicalCancerCarePromptQuestion(anemiaCarePrompt)).toContain(
+		      "출처: 국가암정보센터 빈혈 관리 - https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
+		    );
+		    const bleedingSymptomsPrompt = cervicalCancerCarePrompts.find(
+		      (item) => item.topic === "출혈·멍·코피·혈변 기록 확인",
+		    )!;
+		    expect(bleedingSymptomsPrompt.sourceId).toBe("nccBleedingSymptoms");
+		    expect(bleedingSymptomsPrompt.question).toContain("의식상태의 변화");
+		    expect(bleedingSymptomsPrompt.question).toContain("핀으로 찌른 것처럼 작고 붉은 발진");
+		    expect(bleedingSymptomsPrompt.question).toContain("멍이 쉽게 생");
+		    expect(bleedingSymptomsPrompt.question).toContain("눈의 흰동자에 출혈");
+		    expect(bleedingSymptomsPrompt.question).toContain("시력저하");
+		    expect(bleedingSymptomsPrompt.question).toContain("코피");
+		    expect(bleedingSymptomsPrompt.question).toContain("입안의 혈액성 수포");
+		    expect(bleedingSymptomsPrompt.question).toContain("잇몸출혈");
+		    expect(bleedingSymptomsPrompt.question).toContain("침에 피");
+		    expect(bleedingSymptomsPrompt.question).toContain("가래에 피");
+		    expect(bleedingSymptomsPrompt.question).toContain("호흡곤란");
+		    expect(bleedingSymptomsPrompt.question).toContain("구토 물에 피");
+		    expect(bleedingSymptomsPrompt.question).toContain("혈변");
+		    expect(bleedingSymptomsPrompt.question).toContain("검은 색의 묽은 변");
+		    expect(bleedingSymptomsPrompt.question).toContain("복부통증");
+		    expect(bleedingSymptomsPrompt.question).toContain("복부팽창");
+		    expect(bleedingSymptomsPrompt.question).toContain("혈뇨");
+		    expect(bleedingSymptomsPrompt.question).toContain("소변을 볼 때 통증");
+		    expect(bleedingSymptomsPrompt.question).toContain("빈뇨");
+		    expect(bleedingSymptomsPrompt.question).toContain("비정상적인 다량의 질출혈");
+		    expect(buildCervicalCancerCarePromptQuestion(bleedingSymptomsPrompt)).toContain(
+		      "출처: 국가암정보센터 출혈 증상 - https://www.cancer.go.kr/lay1/S1T445C448/contents.do",
+		    );
+		    expect(Object.values(buildCervicalCancerCarePromptQuestionDraft(bleedingSymptomsPrompt, "2026-06-15")).join(" ")).not.toMatch(
+		      /출혈로 진단하세요|수혈하세요|지혈제를 복용하세요|응고검사를 지시하세요|항암을 중단하세요|방사선을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+		    );
+		    const hpvScreeningPrompt = cervicalCancerCarePrompts.find(
+		      (item) => item.topic === "HPV·검진",
+		    )!;
     expect(hpvScreeningPrompt.question).toContain("접종 후에도 자궁경부암 선별검사");
     expect(buildCervicalCancerCarePromptQuestion(hpvScreeningPrompt)).toContain(
       "출처: 질병관리청 국가건강정보포털 자궁경부암 백신 - https://health.kdca.go.kr/",
@@ -1762,6 +1795,14 @@ describe("cervicalCancerCare", () => {
 	      "빈혈 관련 증상을 숙지하고 일지에 정리하여 진료 시 담당 의사에게 모든 관련증상을 이야기합니다.";
 	    const anemiaActivityCautionSentence =
 	      "어지럼증이 있을 시에는 운전, 아이 돌보기, 외출과 같은 활동은 주의를 요합니다.";
+	    const bleedingSkinSentence =
+	      "핀으로 찌른 것처럼 작고 붉은 발진 이 피부에 퍼져 있으며 팔과 다리에 주로 나타납니다.";
+	    const bleedingMouthNoseSentence =
+	      "코피, 입안의 혈액성 수포, 잇몸출혈, 구강 궤양 의 출혈이 있을 수 있고 침에 피가 섞여 나오기도 합니다.";
+	    const bleedingDigestiveSentence =
+	      "구토 물에 피가 섞여 나오거나 혈변, 검은 색의 묽은 변을 볼 수 있습니다.";
+	    const bleedingUrinaryReproductiveSentence =
+	      "혈뇨, 소변을 볼 때 통증이나 타는 듯한 느낌, 빈뇨(소변을 자주 봄), 비정상적인 다량의 질출혈(또는 폐경기 이후의 질출혈) 등이 있습니다.";
 	    const coughDefinitionSentence =
 	      "기침이란 기도안에 이물질이 있거나 분비물이 많을때 깨끗이 배출하기 위한 정상적인 반사작용이며 호흡곤란을 일으키거나 호흡곤란에 의해 유발되기도 합니다.";
     const pathologicCoughSentence =
@@ -1832,9 +1873,12 @@ describe("cervicalCancerCare", () => {
 	    const anemiaCareGuide = cervicalCancerCareRecoveryGuides.find(
 	      (item) => item.label === "빈혈·혈색소·어지럼 메모",
 	    );
-	    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
+	    const bleedingSymptomsGuide = cervicalCancerCareRecoveryGuides.find(
+	      (item) => item.label === "출혈·멍·코피·혈변 메모",
+	    );
+		    const childFamilyCommunicationGuide = cervicalCancerCareRecoveryGuides.find(
 	      (item) => item.label === "자녀·가족 설명 메모",
-    );
+	    );
     const psychologicalStabilityGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "정서 안정·전문상담 메모",
     );
@@ -1854,7 +1898,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-	    expect(cervicalCancerCareRecoveryGuides).toHaveLength(33);
+		    expect(cervicalCancerCareRecoveryGuides).toHaveLength(34);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2485,11 +2529,39 @@ describe("cervicalCancerCare", () => {
 	    expect(formatCervicalCancerCareListItemAriaLabel(anemiaCareGuide!)).toContain(
 	      "국가암정보센터 빈혈 관리",
 	    );
-	    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(anemiaCareGuide!)).join(" ")).not.toMatch(
-	      /빈혈로 진단하세요|수혈하세요|철분제를 복용하세요|조혈제를 맞으세요|운전해도 됩니다|운동하세요|물을 억지로 마시세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
-	    );
-	    expect(coughCauseGuide).toMatchObject({
-	      label: "기침·가래·수면방해 메모",
+		    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(anemiaCareGuide!)).join(" ")).not.toMatch(
+		      /빈혈로 진단하세요|수혈하세요|철분제를 복용하세요|조혈제를 맞으세요|운전해도 됩니다|운동하세요|물을 억지로 마시세요|억지로 먹이세요|강제로 먹이세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+		    );
+		    expect(bleedingSymptomsGuide).toMatchObject({
+		      label: "출혈·멍·코피·혈변 메모",
+		      sourceId: "nccBleedingSymptoms",
+		    });
+		    expect(bleedingSymptomsGuide?.detail).toContain("의식상태의 변화");
+		    expect(bleedingSymptomsGuide?.detail).toContain(bleedingSkinSentence);
+		    expect(bleedingSymptomsGuide?.detail).toContain("멍이 쉽게 생깁니다");
+		    expect(bleedingSymptomsGuide?.detail).toContain("눈의 흰동자에 출혈");
+		    expect(bleedingSymptomsGuide?.detail).toContain("시력저하");
+		    expect(bleedingSymptomsGuide?.detail).toContain(bleedingMouthNoseSentence);
+		    expect(bleedingSymptomsGuide?.detail).toContain("가래에 피 섞여 나오거나");
+		    expect(bleedingSymptomsGuide?.detail).toContain("호흡곤란");
+		    expect(bleedingSymptomsGuide?.detail).toContain(bleedingDigestiveSentence);
+		    expect(bleedingSymptomsGuide?.detail).toContain("복부통증");
+		    expect(bleedingSymptomsGuide?.detail).toContain("복부팽창");
+		    expect(bleedingSymptomsGuide?.detail).toContain(bleedingUrinaryReproductiveSentence);
+		    expect(formatCervicalCancerCareItemEvidence(bleedingSymptomsGuide!)).toContain(
+		      "국가암정보센터 출혈 증상 - https://www.cancer.go.kr/lay1/S1T445C448/contents.do",
+		    );
+		    expect(buildCervicalCancerCareItemSymptomDraft(bleedingSymptomsGuide!).body).toContain(
+		      "출혈 관련 증상",
+		    );
+		    expect(formatCervicalCancerCareListItemAriaLabel(bleedingSymptomsGuide!)).toContain(
+		      "국가암정보센터 출혈 증상",
+		    );
+		    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(bleedingSymptomsGuide!)).join(" ")).not.toMatch(
+		      /출혈로 진단하세요|수혈하세요|지혈제를 복용하세요|응고검사를 지시하세요|항암을 중단하세요|방사선을 중단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+		    );
+		    expect(coughCauseGuide).toMatchObject({
+		      label: "기침·가래·수면방해 메모",
       sourceId: "nccCoughCause",
     });
     expect(coughCauseGuide?.detail).toContain(coughDefinitionSentence);

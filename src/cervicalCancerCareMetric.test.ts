@@ -9,18 +9,18 @@ describe("cervicalCancerCareMetric", () => {
         buildCervicalCancerCareClipboardSummary({ age: "56", sex: "female" }),
       ),
 	    ).toEqual({
-	      ariaLabel:
-	        "전체 133개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 49개 · 기록/회복/예방 72개 · 공식 출처 57개",
-	      items: [
-	        { id: "total", label: "전체", value: "133개" },
-	        { id: "priority", label: "우선", value: "3개" },
-	        { id: "screening", label: "검진요약", value: "1개" },
-	        { id: "alert-record-field", label: "기록항목", value: "4개" },
-	        { id: "alert", label: "경고", value: "4개" },
-	        { id: "prompt", label: "질문", value: "49개" },
-	        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "72개" },
-	        { id: "source", label: "공식 출처", value: "57개" },
-	      ],
+		      ariaLabel:
+		        "전체 135개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 50개 · 기록/회복/예방 73개 · 공식 출처 58개",
+		      items: [
+		        { id: "total", label: "전체", value: "135개" },
+		        { id: "priority", label: "우선", value: "3개" },
+		        { id: "screening", label: "검진요약", value: "1개" },
+		        { id: "alert-record-field", label: "기록항목", value: "4개" },
+		        { id: "alert", label: "경고", value: "4개" },
+		        { id: "prompt", label: "질문", value: "50개" },
+		        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "73개" },
+		        { id: "source", label: "공식 출처", value: "58개" },
+		      ],
 	    });
   });
 
@@ -28,17 +28,17 @@ describe("cervicalCancerCareMetric", () => {
     expect(
       buildCervicalCancerCarePanelSummary(buildCervicalCancerCareClipboardSummary()),
 	    ).toEqual({
-	      ariaLabel:
-	        "전체 132개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 49개 · 기록/회복/예방 72개 · 공식 출처 57개",
-	      items: [
-	        { id: "total", label: "전체", value: "132개" },
-	        { id: "priority", label: "우선", value: "3개" },
-	        { id: "alert-record-field", label: "기록항목", value: "4개" },
-	        { id: "alert", label: "경고", value: "4개" },
-	        { id: "prompt", label: "질문", value: "49개" },
-	        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "72개" },
-	        { id: "source", label: "공식 출처", value: "57개" },
-	      ],
+		      ariaLabel:
+		        "전체 134개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 50개 · 기록/회복/예방 73개 · 공식 출처 58개",
+		      items: [
+		        { id: "total", label: "전체", value: "134개" },
+		        { id: "priority", label: "우선", value: "3개" },
+		        { id: "alert-record-field", label: "기록항목", value: "4개" },
+		        { id: "alert", label: "경고", value: "4개" },
+		        { id: "prompt", label: "질문", value: "50개" },
+		        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "73개" },
+		        { id: "source", label: "공식 출처", value: "58개" },
+		      ],
 	    });
   });
 });
