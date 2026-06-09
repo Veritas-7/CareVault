@@ -910,7 +910,7 @@ describe("cervicalCancerCare", () => {
 
   it("builds spaced accessible labels for cervical care side-list items", () => {
     expect(formatCervicalCancerCareListItemAriaLabel(cervicalCancerCareRecoveryGuides[0])).toBe(
-      "원추절제술 후 생활 제한. 6~8주 질분비물·간헐 출혈 가능 기간에 성관계, 수영/탕목욕, 무리한 운동, 변비 주의가 내게 적용되는지 퇴원 안내서와 진료팀 지시로 대조합니다. 출처: 국가암정보센터 자궁경부암 치료 후 생활.",
+      "원추절제술 후 생활 제한. 국가암정보센터는 원추 절제술 시술 후에는 수술 후 약 6~8주간 질 분비물이 많이 나올 수 있고, 간헐적 으로 질출혈이 생길 수 있습니다. 이 기간 동안 성관계, 수영이나 탕목욕, 무리한 운동을 피하고, 변비가 생기지 않도록 주의해야 합니다. 이 제한과 변비 예방 메모가 내 퇴원 안내서와 진료팀 지시에 어떻게 적용되는지 대조합니다. 출처: 국가암정보센터 자궁경부암 치료 후 생활.",
     );
     expect(
       formatCervicalCancerCareListItemAriaLabel({
@@ -1019,10 +1019,15 @@ describe("cervicalCancerCare", () => {
   });
 
   it("keeps recovery timing notes source-backed and clinician-confirmation oriented", () => {
+    const sourceSentence =
+      "원추 절제술 시술 후에는 수술 후 약 6~8주간 질 분비물이 많이 나올 수 있고, 간헐적 으로 질출혈이 생길 수 있습니다. 이 기간 동안 성관계, 수영이나 탕목욕, 무리한 운동을 피하고, 변비가 생기지 않도록 주의해야 합니다.";
     const text = cervicalCancerCareRecoveryGuides
       .map((item) => `${item.label} ${item.detail}`)
       .join(" ");
 
+    const coneRecoveryGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "원추절제술 후 생활 제한",
+    );
     const recurrenceSymptomGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "재발 의심 증상·기본 추적검사 메모",
     );
@@ -1030,6 +1035,14 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareRecoveryGuides).toHaveLength(10);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
+    expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
+    expect(coneRecoveryGuide?.detail).toContain("변비가 생기지 않도록 주의");
+    expect(formatCervicalCancerCareItemEvidence(coneRecoveryGuide!)).toContain(
+      "국가암정보센터 자궁경부암 치료 후 생활 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4898",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(coneRecoveryGuide!).body).toContain(
+      sourceSentence,
+    );
     expect(text).toContain("광범위 자궁절제술");
     expect(text).toContain("최소 6주");
     expect(text).toContain("다리·발 운동");
