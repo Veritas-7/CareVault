@@ -7140,6 +7140,58 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC nausea-vomiting care severe nausea-vomiting unable-to-take-medicine clinician-consultation source sentence", () => {
+    const sourceSentence =
+      "심한 초심이나 구토 때문에 약을 먹을 수 없을 때, 또는 온종일 물을 제대로 마시지 못하거나 식사를 하지 못한 경우";
+    const antiemeticSideEffectSentence = "진토제 복용한 후 부작용 이 발생했을 때";
+    const prescribedAntiemeticPersistentSymptomsSentence =
+      "의사가 처방한 진토제를 복용했는데도 오심 구토가 계속될 때";
+    const lowIntakeRepeatedVomitingSentence =
+      "식사를 거의 못하여 하루에 4컵 이하의 음식을 먹거나 2일 이상 식사를 제대로 하지 못하는 경우와 2일동안 1-2회 이상의 구토가 있을 때";
+    const persistentVomitingFluidElectrolyteSentence =
+      "환자들은 섭취할 수 있을 만큼만 음료를 마셔야 합니다. 대부분의 경우, 음료는 마실 수 있을 만큼 정상으로 돌아오게 되는데, 지속적으로 구토를 하는 환자들은 수분공급과 전해질의 균형을 유지하기 위해서 정맥 또는 피하 체액 주사를 맞을 수 도 있습니다. 이 때는 의료진의 도움이 필요합니다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccNauseaVomitingCare.label).toBe(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
+    );
+    expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
+      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason:
+        "국가암정보센터 심한 오심·구토로 약 복용 불가 또는 종일 수분·식사 어려움 시 의료진 상담 필요",
+      sourceId: "nccNauseaVomitingCare",
+    });
+    expect(terms).not.toContain(antiemeticSideEffectSentence);
+    expect(terms).not.toContain(prescribedAntiemeticPersistentSymptomsSentence);
+    expect(terms).not.toContain(lowIntakeRepeatedVomitingSentence);
+    expect(terms).not.toContain(persistentVomitingFluidElectrolyteSentence);
+    expect(terms).not.toContain("오심");
+    expect(terms).not.toContain("구토");
+    expect(terms).not.toContain("약");
+    expect(terms).not.toContain("물");
+    expect(terms).not.toContain("식사");
+    expect(careTeamGuideText).toContain(sourceSentence);
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|특효|보조식품 권장|약 복용 권장|약 추가|복용량 조절|약 변경|약 중단|처방 변경|수액 처방|정맥주사 지시|응급치료|응급처치|오심 치료|구토 치료|수분 치료|식사 치료|자가 치료/,
+    );
+  });
+
   it("recognizes NCC nausea-vomiting care post-meal upright rest source sentence", () => {
     const sourceSentence =
       "식사직후에 움직이는 것은 소화를 느리게 하므로 식후에는 잠시 쉬도록 하며, 식사 후 한 시간 정도 똑바로 앉아서 휴식을 취하는 것이 가장 좋습니다.";
