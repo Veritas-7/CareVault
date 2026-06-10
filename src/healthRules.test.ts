@@ -12887,7 +12887,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "바실러스 세레우스균은 설사형 독소(Diarrhetic toxin)와 구토형 독소(Emetic toxin)를 생산하며, 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균 오염을 확인",
+      "바실러스 세레우스균은 설사형 독소(Diarrhetic toxin)와 구토형 독소(Emetic toxin)를 생산하며, 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균 오염을 확인, 바실러스 향신료 사용 요리, 바실러스 육류 채소 스프, 바실러스 푸딩, 바실러스 쌀밥, 바실러스 볶음밥을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -12904,6 +12904,8 @@ describe("healthRules", () => {
     });
     expect(foodSafetyGuide?.detail).toContain("135℃에서 4시간");
     expect(foodSafetyGuide?.detail).toContain("구토형 독소(Emetic toxin)");
+    expect(foodSafetyGuide?.detail).toContain("향신료 사용 요리");
+    expect(foodSafetyGuide?.detail).toContain("쌀밥, 볶음밥");
     expect(foodSafetyGuide?.detail).toContain("조리된 음식은 장기간 실온방치를 금지");
     expect(foodSafetyGuide?.detail).toContain("저온보존이 부적절한 김밥 같은 식품");
 
@@ -12931,6 +12933,11 @@ describe("healthRules", () => {
       "향신료 사용 요리, 육류 및 채소의 스프, 푸딩",
       "볶음밥",
       "토양 상재균",
+      "바실러스 향신료 사용 요리",
+      "바실러스 육류 채소 스프",
+      "바실러스 푸딩",
+      "바실러스 쌀밥",
+      "바실러스 볶음밥",
     ]);
     for (const term of riskTerms) {
       expect(riskMatchesByTerm[term]).toMatchObject({

@@ -1127,7 +1127,7 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "식품안전나라 바실러스 세레우스균 식중독 주의",
         detail:
-          "식품안전나라는 바실러스 세레우스균을 135℃에서 4시간의 가열에도 견디는 내열성 포자 형성균으로 설명합니다. 설사형 독소(Diarrhetic toxin)는 장내에서 생성되는 열, 산, 알칼리, 단백질 가수분해 효소에 민감하지만, 구토형 독소(Emetic toxin)는 열과 산 등에 저항력을 갖는다고 설명하므로 식품 안전 질문으로 분리합니다. 예방대책으로 곡류, 채소류는 세척하여 사용, 조리된 음식은 장기간 실온방치를 금지하고 5℃이하에서 냉장보관, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취를 안내합니다.",
+          "식품안전나라는 바실러스 세레우스균을 135℃에서 4시간의 가열에도 견디는 내열성 포자 형성균으로 설명합니다. 설사형 독소(Diarrhetic toxin)는 장내에서 생성되는 열, 산, 알칼리, 단백질 가수분해 효소에 민감하지만, 구토형 독소(Emetic toxin)는 열과 산 등에 저항력을 갖는다고 설명하므로 식품 안전 질문으로 분리합니다. 원인식품으로 설사형은 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 구토형은 주로 쌀밥, 볶음밥을 제시합니다. 예방대책으로 곡류, 채소류는 세척하여 사용, 조리된 음식은 장기간 실온방치를 금지하고 5℃이하에서 냉장보관, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취를 안내합니다.",
         examples:
           "바실러스 세레우스균, 설사형 독소(Diarrhetic toxin), 구토형 독소(Emetic toxin), 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균, 곡류, 채소류는 세척하여 사용하여야 한다, 조리된 음식은 장기간 실온방치를 금지하고, 5℃이하에서 냉장보관 한다, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
         sourceIds: ["foodSafetyKoreaBacillusCereusFoodPoisoning"],
@@ -4722,6 +4722,31 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "토양 상재균",
     "식품안전나라 바실러스 세레우스균 토양 상재균 오염 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 향신료 사용 요리",
+    "식품안전나라 바실러스 세레우스균 향신료 사용 요리 원인식품 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 육류 채소 스프",
+    "식품안전나라 바실러스 세레우스균 육류·채소 스프 원인식품 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 푸딩",
+    "식품안전나라 바실러스 세레우스균 푸딩 원인식품 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 쌀밥",
+    "식품안전나라 바실러스 세레우스균 쌀밥 원인식품 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 볶음밥",
+    "식품안전나라 바실러스 세레우스균 볶음밥 원인식품 확인 필요",
     "foodSafetyKoreaBacillusCereusFoodPoisoning",
   ],
   [
