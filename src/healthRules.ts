@@ -5155,6 +5155,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
   ],
   [
+    "여시니아 오염된 물",
+    "식품안전나라 여시니아 엔테로콜리티카균 오염된 물 원인식품 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "여시니아 돼지고기",
+    "식품안전나라 여시니아 엔테로콜리티카균 돼지고기 원인식품 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "여시니아 양고기",
+    "식품안전나라 여시니아 엔테로콜리티카균 양고기 원인식품 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "여시니아 쇠고기",
+    "식품안전나라 여시니아 엔테로콜리티카균 쇠고기 원인식품 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "여시니아 생우유",
+    "식품안전나라 여시니아 엔테로콜리티카균 생우유 원인식품 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "여시니아 아이스크림",
+    "식품안전나라 여시니아 엔테로콜리티카균 아이스크림 원인식품 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
     "동물의 분변과 함께 배출되어 음료수나 식품에 오염",
     "식품안전나라 여시니아 엔테로콜리티카균 동물 분변 유래 오염 확인 필요",
     "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
