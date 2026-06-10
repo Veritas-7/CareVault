@@ -14895,6 +14895,77 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes additional NCC stem-cell-transplant immune-suppression packaged and dried food table context", () => {
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const immuneSuppressionGuide = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.find((item) => item.label === "NCC 조혈모세포이식 면역억제 식품표 확인");
+    const assessment = assessCancerFood(
+      "면역억제 포장되지 않은 제빵류, 면역억제 훈제연어, 면역억제 젓갈, 면역억제 숙성치즈, 면역억제 효모 건강보조식품, 면역억제 포장된 제빵류, 면역억제 마요네즈, 면역억제 멸균 처리된 상업용 포장꿀, 면역억제 캔으로 판매되는 음료",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const genericAssessment = assessCancerFood("포장된 제빵류, 젓갈, 마요네즈, 포장꿀, 캔음료");
+
+    expect(immuneSuppressionGuide?.detail).toContain("포장되지 않은 제빵류");
+    expect(immuneSuppressionGuide?.detail).toContain("멸균 처리된 상업용 포장꿀");
+    expect(immuneSuppressionGuide?.examples).toContain("면역억제 포장된 제빵류");
+    expect(immuneSuppressionGuide?.examples).toContain("면역억제 캔으로 판매되는 음료");
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "면역억제 포장되지 않은 제빵류",
+      "면역억제 훈제연어",
+      "면역억제 젓갈",
+      "면역억제 숙성치즈",
+      "면역억제 효모 건강보조식품",
+      "면역억제 포장된 제빵류",
+      "면역억제 마요네즈",
+      "면역억제 멸균 처리된 상업용 포장꿀",
+      "면역억제 캔으로 판매되는 음료",
+    ]);
+    for (const term of [
+      "면역억제 포장되지 않은 제빵류",
+      "면역억제 훈제연어",
+      "면역억제 젓갈",
+      "면역억제 숙성치즈",
+      "면역억제 효모 건강보조식품",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+        sourceId: "nccStemCellTransplantImmuneSuppressionDiet",
+      });
+    }
+    for (const term of [
+      "면역억제 포장된 제빵류",
+      "면역억제 마요네즈",
+      "면역억제 멸균 처리된 상업용 포장꿀",
+      "면역억제 캔으로 판매되는 음료",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+        sourceId: "nccStemCellTransplantImmuneSuppressionDiet",
+      });
+    }
+    expect(JSON.stringify(genericAssessment.matches)).not.toContain(
+      "nccStemCellTransplantImmuneSuppressionDiet",
+    );
+    expect(careTeamGuideText).toContain("면역억제 효모 건강보조식품");
+    expect(careTeamGuideText).toContain("면역억제 멸균 처리된 상업용 포장꿀");
+    expect(formatFoodMatchEvidence(matchesByTerm["면역억제 포장된 제빵류"])).toContain(
+      "국가암정보센터 조혈모세포이식 면역억제 식품표 - https://www.cancer.go.kr/lay1/S1T295C296/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /치료 음식|완치|암을 낫게|모든 암환자|자궁경부암 치료/,
+    );
+  });
+
   it("does not match one-syllable food warnings inside unrelated Korean words", () => {
     const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
     const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);

@@ -1435,9 +1435,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "NCC 조혈모세포이식 면역억제 식품표 확인",
         detail:
-          "국가암정보센터 조혈모세포이식 자료는 `면역억제 시 제한하는 식품과 허용하는 식품` 표를 제시합니다. 제한 식품 예시에는 살균처리되지 않은 생우유, 천연치즈, 생과일, 생채소, 끓이지 않은 물, 생꿀 등이 있고, 허용 식품 예시에는 멸균우유, 멸균두유, 과일 통조림, 완전히 익힌 채소류 등이 있습니다. 이 항목은 조혈모세포이식이나 면역억제 상황의 식품표 확인으로만 사용하고, 전체 환자 식단 규칙이나 치료식 주장으로 과장하지 않습니다.",
+          "국가암정보센터 조혈모세포이식 자료는 `면역억제 시 제한하는 식품과 허용하는 식품` 표를 제시합니다. 제한 식품 예시에는 살균처리되지 않은 생우유, 천연치즈, 생과일, 생채소, 끓이지 않은 물, 생꿀, 포장되지 않은 제빵류, 훈제연어, 젓갈, 숙성치즈, 효모 건강보조식품 등이 있고, 허용 식품 예시에는 멸균우유, 멸균두유, 과일 통조림, 완전히 익힌 채소류, 포장된 제빵류, 마요네즈, 멸균 처리된 상업용 포장꿀, 캔으로 판매되는 음료 등이 있습니다. 이 항목은 조혈모세포이식이나 면역억제 상황의 식품표 확인으로만 사용하고, 전체 환자 식단 규칙이나 치료식 주장으로 과장하지 않습니다.",
         examples:
-          "면역억제 시 제한하는 식품과 허용하는 식품, 면역억제 생과일, 면역억제 생채소, 면역억제 끓이지 않은 물, 면역억제 생꿀, 면역억제 천연치즈, 면역억제 멸균우유, 면역억제 멸균두유, 면역억제 과일 통조림, 면역억제 완전히 익힌 채소류",
+          "면역억제 시 제한하는 식품과 허용하는 식품, 면역억제 생과일, 면역억제 생채소, 면역억제 끓이지 않은 물, 면역억제 생꿀, 면역억제 천연치즈, 면역억제 포장되지 않은 제빵류, 면역억제 훈제연어, 면역억제 젓갈, 면역억제 숙성치즈, 면역억제 효모 건강보조식품, 면역억제 멸균우유, 면역억제 멸균두유, 면역억제 과일 통조림, 면역억제 완전히 익힌 채소류, 면역억제 포장된 제빵류, 면역억제 마요네즈, 면역억제 멸균 처리된 상업용 포장꿀, 면역억제 캔으로 판매되는 음료",
         sourceIds: ["nccStemCellTransplantImmuneSuppressionDiet"],
       },
     ],
@@ -2507,6 +2507,26 @@ const supportiveFoods: FoodRuleTerm[] = [
   ],
   [
     "면역억제 완전히 익힌 채소류",
+    "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 포장된 제빵류",
+    "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 마요네즈",
+    "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 멸균 처리된 상업용 포장꿀",
+    "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 캔으로 판매되는 음료",
     "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
     "nccStemCellTransplantImmuneSuppressionDiet",
   ],
@@ -4544,6 +4564,31 @@ const careTeamFoods: FoodRuleTerm[] = [
   ],
   [
     "면역억제 천연치즈",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 포장되지 않은 제빵류",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 훈제연어",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 젓갈",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 숙성치즈",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 효모 건강보조식품",
     "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
     "nccStemCellTransplantImmuneSuppressionDiet",
   ],
