@@ -4980,6 +4980,51 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaNorovirusFoodPoisoning",
   ],
   [
+    "노로바이러스 패류",
+    "식품안전나라 노로바이러스 패류 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 샐러드",
+    "식품안전나라 노로바이러스 샐러드 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 과일",
+    "식품안전나라 노로바이러스 과일 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 냉장식품",
+    "식품안전나라 노로바이러스 냉장식품 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 샌드위치",
+    "식품안전나라 노로바이러스 샌드위치 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 상추",
+    "식품안전나라 노로바이러스 상추 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 냉장조리 햄",
+    "식품안전나라 노로바이러스 냉장조리 햄 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 빙과류",
+    "식품안전나라 노로바이러스 빙과류 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 물",
+    "식품안전나라 노로바이러스 물 원인식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
     "사람의 분변에 오염된 물이나 식품",
     "식품안전나라 노로바이러스 분변 오염 물·식품 확인 필요",
     "foodSafetyKoreaNorovirusFoodPoisoning",

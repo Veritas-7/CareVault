@@ -12185,7 +12185,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "노로바이러스는 껍질이 없는(Non-envelop) 바이러스이고 주로 분변-구강 경로(Fecal-oral route)를 통하여 감염되며 사람의 장관 내에서만 증식할 수 있고 연중 발생 가능하며 2차 발병률이 높다, 음식(패류, 샐러드, 과일, 냉장식품, 샌드위치, 상추, 냉장조리 햄, 빙과류)이나 특히 사람의 분변에 오염된 물이나 식품을 확인",
+      "노로바이러스는 껍질이 없는(Non-envelop) 바이러스이고 주로 분변-구강 경로(Fecal-oral route)를 통하여 감염되며 사람의 장관 내에서만 증식할 수 있고 연중 발생 가능하며 2차 발병률이 높다, 음식(패류, 샐러드, 과일, 냉장식품, 샌드위치, 상추, 냉장조리 햄, 빙과류)이나 노로바이러스 패류, 노로바이러스 샐러드, 노로바이러스 과일, 노로바이러스 냉장식품, 노로바이러스 샌드위치, 노로바이러스 상추, 노로바이러스 냉장조리 햄, 노로바이러스 빙과류, 노로바이러스 물, 특히 사람의 분변에 오염된 물이나 식품을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -12231,6 +12231,15 @@ describe("healthRules", () => {
       "사람의 장관 내에서만 증식",
       "연중 발생 가능하며 2차 발병률이 높다",
       "음식(패류, 샐러드, 과일, 냉장식품, 샌드위치, 상추, 냉장조리 햄, 빙과류)",
+      "노로바이러스 패류",
+      "노로바이러스 샐러드",
+      "노로바이러스 과일",
+      "노로바이러스 냉장식품",
+      "노로바이러스 샌드위치",
+      "노로바이러스 상추",
+      "노로바이러스 냉장조리 햄",
+      "노로바이러스 빙과류",
+      "노로바이러스 물",
       "사람의 분변에 오염된 물이나 식품",
     ]);
     for (const term of riskTerms) {
