@@ -161,6 +161,11 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("성교 후 출혈과 악취 분비물")?.id).toBe(
       "cervical-general-warning",
     );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 진단검사 조직검사 질확대경검사 원추절제술 방광경 직장경 CT MRI PET",
+      )?.id,
+    ).toBe("cervical-diagnosis-test-purpose");
     expect(findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")?.id).toBe(
       "cervical-recurrence-symptom-check",
     );
@@ -2426,6 +2431,60 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
   });
 
+  it("builds a cervical diagnosis-test purpose question from official diagnosis guidance", () => {
+    const testPurposeSentence =
+      "자궁경부암 의 검사는 두 가지로 실제로 암이 맞는지 확인하는 조직검사 와 암이 어느 정도까지 진행되었는지를 확인을 위한 병기 설정 검사로 나눌 수 있습니다.";
+    const colposcopySentence =
+      "자궁경부세포검사나 육안 관찰에서 이상이 있으면 질확대경검사(colposcopy)를 시행하는데, 이는 자궁경부의 비정상 부위를 질확대경으로 확대하여 자세히 보는 것입니다.";
+    const biopsySentence =
+      "조직검사는 자궁경부에서 작게 떼어 염색한 조직을 현미경으로 관찰하는 것입니다.";
+    const cystoscopySentence =
+      "각각의 장기 속을 들여다보는 내시경 검사로 자궁경부암이 방광과 직장(에스결장)의 점막 을 침범했는지 여부를 확인하기 위하여 시행하는 검사입니다.";
+    const ivpSentence =
+      "암이 요관, 방광, 요도 등의 장기에 침범했는지 확인하기 위한 검사입니다.";
+    const petSentence =
+      "암세포의 대사를 영상화함으로써 암의 유무 및 분포를 보여주는 최첨단 검사입니다.";
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 진단검사 조직검사 질확대경검사 원추절제술 방광경 직장경 CT MRI PET",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 진단검사 조직검사 질확대경검사 원추절제술 방광경 직장경 CT MRI PET",
+    );
+
+    expect(template.id).toBe("cervical-diagnosis-test-purpose");
+    expect(template.mealNote).toContain(testPurposeSentence);
+    expect(template.mealNote).toContain(colposcopySentence);
+    expect(template.mealNote).toContain(biopsySentence);
+    expect(template.mealNote).toContain("원추절제술");
+    expect(template.mealNote).toContain("기저막");
+    expect(template.clinicianQuestion).toContain(cystoscopySentence);
+    expect(template.clinicianQuestion).toContain(ivpSentence);
+    expect(template.clinicianQuestion).toContain("전산화단층촬영(CT)");
+    expect(template.clinicianQuestion).toContain("자기공명영상(MRI)");
+    expect(template.clinicianQuestion).toContain(petSentence);
+    expect(template.clinicianQuestion).toContain("원격전이");
+    expect(template.clinicianQuestion).toContain("재발");
+    expect(actionNote).toContain("암 확인 검사");
+    expect(actionNote).toContain("병기 설정 검사");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 진단방법 - https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")
+        ?.id,
+    ).toBe("cervical-recurrence-symptom-check");
+    expect(
+      findSymptomSupportTemplate(
+        "임신 중 자궁경부암 발견 조직 생검 자궁경관 내 소파술 원추생검",
+      )?.id,
+    ).toBe("cervical-pregnancy-diagnosis-treatment");
+    expect(question).not.toMatch(
+      /검사를 받으세요|조직검사를 하세요|질확대경검사를 하세요|원추절제술을 하세요|방광경검사를 하세요|직장경검사를 하세요|CT를 찍으세요|MRI를 찍으세요|PET를 찍으세요|진단하세요|치료하세요|처방하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical recurrence-symptom question from official recurrence guidance", () => {
     const recurrenceSymptomsSentence =
       "재발 성 자궁경부암 의 증상은 매우 다양합니다. 체중감소, 하지 부종, 골반 혹은 허벅지 통증, 질출혈 혹은 질분비물의 증가, 진행 성 요관 폐색, 쇄골위 림프절 비대 등이 나타나며, 폐로 전이 하면 기침, 객혈, 때로는 흉통을 호소할 수 있습니다. 그러나 특징적인 증상이 없는 경우가 더 많습니다.";
@@ -3237,7 +3296,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(70);
+    expect(symptomSupportTemplates).toHaveLength(71);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3413,6 +3472,13 @@ describe("symptomSupportTemplates", () => {
         ?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4895",
+    );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 진단검사 조직검사 질확대경검사 원추절제술 방광경 직장경 CT MRI PET",
+      )?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
     );
     expect(
       findSymptomSupportTemplate("재발성 자궁경부암 골반장기적출술 요로전환술")
