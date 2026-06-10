@@ -12474,7 +12474,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "살모넬라균은 2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균이고 60℃에서 20분 동안 가열 하면 사멸하나, 균이 생체 내로 침입되면 장내에서 분열·증식되어 독소가 생산되며, 부적절하게 가열한 동물성 단백질식품(우유, 유제품, 고기와 그 가공품, 가금류의 알과 그 가공품, 어패류와 그 가공품)과 보균자의 손, 발 등 2차 오염에 의한 오염식품을 확인",
+      "살모넬라균은 2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균이고 60℃에서 20분 동안 가열 하면 사멸하나, 균이 생체 내로 침입되면 장내에서 분열·증식되어 독소가 생산되며, 부적절하게 가열한 동물성 단백질식품(우유, 유제품, 고기와 그 가공품, 가금류의 알과 그 가공품, 어패류와 그 가공품)과 보균자의 손, 발 등 2차 오염에 의한 오염식품을 확인, 살모넬라 식물성 단백질식품, 살모넬라 채소 복합조리식품, 살모넬라 생선묵, 살모넬라 생선요리, 살모넬라 면류, 살모넬라 야채, 살모넬라 샐러드, 살모넬라 마요네즈, 살모넬라 도시락 원인식품을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -12492,7 +12492,17 @@ describe("healthRules", () => {
     expect(foodSafetyGuide?.detail).toContain("2~3×0.6um 의 포자를 형성하지 않는 그람음성 간균");
     expect(foodSafetyGuide?.detail).toContain("60℃에서 20분");
     expect(foodSafetyGuide?.detail).toContain("부적절하게 가열한 동물성 단백질식품");
+    expect(foodSafetyGuide?.detail).toContain("식물성 단백질식품");
+    expect(foodSafetyGuide?.detail).toContain("채소 등 복합조리식품");
+    expect(foodSafetyGuide?.detail).toContain("생선묵");
+    expect(foodSafetyGuide?.detail).toContain("생선요리");
+    expect(foodSafetyGuide?.detail).toContain("면류, 야채, 샐러드, 마요네즈, 도시락");
     expect(foodSafetyGuide?.detail).toContain("75℃에서 1분 이상");
+    expect(foodSafetyGuide?.examples).toContain("식물성 단백질식품");
+    expect(foodSafetyGuide?.examples).toContain("채소 등 복합조리식품");
+    expect(foodSafetyGuide?.examples).toContain("생선묵");
+    expect(foodSafetyGuide?.examples).toContain("생선요리");
+    expect(foodSafetyGuide?.examples).toContain("면류, 야채, 샐러드, 마요네즈, 도시락");
 
     expect(safePracticeAssessment.level).toBe("ok");
     expect(safeTerms).toEqual([
@@ -12518,6 +12528,15 @@ describe("healthRules", () => {
       "균이 생체 내로 침입되면 장내에서 분열·증식되어 독소가 생산",
       "부적절하게 가열한 동물성 단백질식품(우유, 유제품, 고기와 그 가공품, 가금류의 알과 그 가공품, 어패류와 그 가공품)",
       "보균자의 손, 발 등 2차 오염에 의한 오염식품",
+      "살모넬라 식물성 단백질식품",
+      "살모넬라 채소 복합조리식품",
+      "살모넬라 생선묵",
+      "살모넬라 생선요리",
+      "살모넬라 면류",
+      "살모넬라 야채",
+      "살모넬라 샐러드",
+      "살모넬라 마요네즈",
+      "살모넬라 도시락",
     ]);
     for (const term of riskTerms) {
       expect(riskMatchesByTerm[term]).toMatchObject({
@@ -12526,7 +12545,7 @@ describe("healthRules", () => {
       });
     }
     expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
-      /치료 음식|완치|암을 낫게/,
+      /치료 음식|완치|암을 낫게|감염을 막습니다|살모넬라를 예방합니다/,
     );
   });
 
