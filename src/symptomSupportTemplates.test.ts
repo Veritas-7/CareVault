@@ -2222,6 +2222,47 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a cervical radiotherapy acute-complication question from official guidance", () => {
+    const sensitiveTissueSentence =
+      "자궁에 비하여 상대적으로 방사선에 약한 장 점막, 방광점막 등이 손상되어 나타납니다.";
+    const acuteRadiotherapySentence =
+      "급성 합병증으로는 장운동의 일시적인 증가와 점막의 손상으로 올 수 있는 설사, 그리고 일반적인 방광염과 비슷한 증상이 있을 수 있습니다.";
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 방사선치료 중 설사와 방광염 비슷한 증상",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 방사선치료 중 설사와 방광염 비슷한 증상",
+    );
+
+    expect(template.id).toBe("cervical-radiotherapy-acute-complication");
+    expect(template.mealNote).toContain(sensitiveTissueSentence);
+    expect(template.mealNote).toContain(acuteRadiotherapySentence);
+    expect(template.mealNote).toContain("방사선치료 회차");
+    expect(template.mealNote).toContain("설사");
+    expect(template.mealNote).toContain("방광염과 비슷한 증상");
+    expect(template.clinicianQuestion).toContain("방사선치료 회차");
+    expect(template.clinicianQuestion).toContain("감염");
+    expect(template.clinicianQuestion).toContain("탈수");
+    expect(template.clinicianQuestion).toContain("진료팀에 연락");
+    expect(actionNote).toContain("장 점막, 방광점막");
+    expect(actionNote).toContain("방광염과 비슷한 증상");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    expect(findSymptomSupportTemplate("혈뇨와 혈변")?.id).toBe(
+      "cervical-urinary-bowel-bleeding",
+    );
+    expect(findSymptomSupportTemplate("장폐색과 복부팽만")?.id).toBe(
+      "cervical-bowel-obstruction",
+    );
+    expect(findSymptomSupportTemplate("설사만 계속됨")?.id).toBe("diarrhea");
+    expect(question).not.toMatch(
+      /방사선치료를 중단하세요|항생제를 복용하세요|지사제를 복용하세요|방광염입니다|방광염을 진단하세요|설사를 치료하세요|치료하세요|처방하세요|진단하세요|응급실에 가세요|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical bowel-obstruction contact-threshold question", () => {
     const template = findSymptomSupportTemplate("장폐색과 복부팽만");
     const mixedLateComplicationTemplate = findSymptomSupportTemplate(
@@ -2785,7 +2826,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(61);
+    expect(symptomSupportTemplates).toHaveLength(62);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -2960,6 +3001,12 @@ describe("symptomSupportTemplates", () => {
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
     );
     expect(findSymptomSupportTemplate("광범위 자궁절제술 후 배뇨 장애")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 방사선치료 중 설사와 방광염 비슷한 증상")
+        ?.sourceUrl,
+    ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
     );
     expect(findSymptomSupportTemplate("장폐색")?.sourceUrl).toBe(
