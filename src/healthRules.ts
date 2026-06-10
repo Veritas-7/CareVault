@@ -5412,6 +5412,17 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaSalmonellaFoodPoisoning",
   ],
   [
+    "살모넬라 개",
+    "식품안전나라 살모넬라균 개 감염원·감염경로 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+    standaloneFoodTermOptions,
+  ],
+  [
+    "살모넬라 고양이",
+    "식품안전나라 살모넬라균 고양이 감염원·감염경로 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
     "살모넬라 우유",
     "식품안전나라 살모넬라균 우유 원인식품 확인 필요",
     "foodSafetyKoreaSalmonellaFoodPoisoning",
