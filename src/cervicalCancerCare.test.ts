@@ -81,6 +81,7 @@ describe("cervicalCancerCare", () => {
 			      "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccSurvivorSleepManagement",
+      "nccSurvivorExerciseManagement",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
       "nccCancerFatigueCoping",
@@ -135,6 +136,7 @@ describe("cervicalCancerCare", () => {
       "S1T327C329",
     );
     expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
+    expect(cervicalCancerCareSources.nccSurvivorExerciseManagement.url).toContain("S1T748C795");
     expect(cervicalCancerCareSources.nccComplementaryTherapyConsultation.url).toContain(
       "S1T365C368",
     );
@@ -251,7 +253,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(55);
+				    expect(cervicalCancerCarePrompts).toHaveLength(56);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -295,6 +297,7 @@ describe("cervicalCancerCare", () => {
       "자녀·가족 설명 준비",
       "정서 안정·전문상담 준비",
       "불면·수면일지 상담 준비",
+      "운동강도·근력운동 상담 준비",
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
       "암관련 피로 대처 준비",
@@ -1108,6 +1111,28 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /수면제를 복용하세요|약물 치료하세요|인지 행동 치료를 받으세요|치료하세요|처방하세요|진단하세요/,
     );
+    const exerciseManagementPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "운동강도·근력운동 상담 준비",
+    )!;
+    expect(exerciseManagementPrompt.sourceId).toBe("nccSurvivorExerciseManagement");
+    expect(exerciseManagementPrompt.question).toContain("규칙적인 운동참여");
+    expect(exerciseManagementPrompt.question).toContain("체력증진");
+    expect(exerciseManagementPrompt.question).toContain("피로도 감소");
+    expect(exerciseManagementPrompt.question).toContain("삶의 질");
+    expect(exerciseManagementPrompt.question).toContain("주당 150분 이상의 중강도 신체활동");
+    expect(exerciseManagementPrompt.question).toContain("주 2회 이상의 근력운동");
+    expect(exerciseManagementPrompt.question).toContain("숨이 약간 차지만");
+    expect(exerciseManagementPrompt.question).toContain("옆 사람과 대화가 가능한 정도");
+    expect(exerciseManagementPrompt.question).toContain("편안한 운동복");
+    expect(exerciseManagementPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(exerciseManagementPrompt)).toContain(
+      "출처: 국가암정보센터 암생존자 운동 - https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(exerciseManagementPrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(
+      /운동하세요|근력운동을 하세요|유산소 운동을 하세요|치료하세요|처방하세요|진단하세요|재발을 막습니다|사망률을 낮춥니다/,
+    );
     const complementaryTherapyPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "보완대체요법 상담 준비",
     )!;
@@ -1677,6 +1702,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorSleepManagement")).toContain(
       "국가암정보센터 암생존자 수면관리 - https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccSurvivorExerciseManagement")).toContain(
+      "국가암정보센터 암생존자 운동 - https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
   });
 
   it("builds context-specific accessible labels for official source links", () => {
@@ -2035,6 +2063,9 @@ describe("cervicalCancerCare", () => {
     const sleepManagementGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "불면·수면효율·습관 메모",
     );
+    const exerciseManagementGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암생존자 운동강도·근력운동 메모",
+    );
     const complementaryTherapyGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "보완대체요법·약초 공유 메모",
     );
@@ -2054,7 +2085,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(39);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(40);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2938,6 +2969,32 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(sleepManagementGuide!)).join(" ")).not.toMatch(
       /수면제를 복용하세요|약물 치료하세요|인지 행동 치료를 받으세요|치료하세요|처방하세요|진단하세요/,
+    );
+    expect(exerciseManagementGuide).toMatchObject({
+      label: "암생존자 운동강도·근력운동 메모",
+      sourceId: "nccSurvivorExerciseManagement",
+    });
+    expect(exerciseManagementGuide?.detail).toContain("규칙적인 운동참여");
+    expect(exerciseManagementGuide?.detail).toContain("체력증진");
+    expect(exerciseManagementGuide?.detail).toContain("피로도 감소");
+    expect(exerciseManagementGuide?.detail).toContain("삶의 질");
+    expect(exerciseManagementGuide?.detail).toContain("주당 150분 이상의 중강도 신체활동");
+    expect(exerciseManagementGuide?.detail).toContain("주 2회 이상의 근력운동");
+    expect(exerciseManagementGuide?.detail).toContain("숨이 약간 차지만 옆 사람과 대화가 가능한 정도");
+    expect(exerciseManagementGuide?.detail).toContain("정보교육과 스트레칭, 전신 근력운동");
+    expect(exerciseManagementGuide?.detail).toContain("편안한 운동복");
+    expect(exerciseManagementGuide?.detail).toContain("진료팀 확인");
+    expect(formatCervicalCancerCareItemEvidence(exerciseManagementGuide!)).toContain(
+      "국가암정보센터 암생존자 운동 - https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(exerciseManagementGuide!).body).toContain(
+      "암생존자 운동강도·근력운동 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(exerciseManagementGuide!)).toContain(
+      "국가암정보센터 암생존자 운동",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(exerciseManagementGuide!)).join(" ")).not.toMatch(
+      /운동하세요|근력운동을 하세요|유산소 운동을 하세요|치료하세요|처방하세요|진단하세요|재발을 막습니다|사망률을 낮춥니다/,
     );
     expect(complementaryTherapyGuide).toMatchObject({
       label: "보완대체요법·약초 공유 메모",
