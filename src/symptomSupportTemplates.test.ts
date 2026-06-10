@@ -166,6 +166,11 @@ describe("symptomSupportTemplates", () => {
         "자궁경부암 진단검사 조직검사 질확대경검사 원추절제술 방광경 직장경 CT MRI PET",
       )?.id,
     ).toBe("cervical-diagnosis-test-purpose");
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
+      )?.id,
+    ).toBe("cervical-stage-explanation-purpose");
     expect(findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")?.id).toBe(
       "cervical-recurrence-symptom-check",
     );
@@ -2485,6 +2490,54 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a cervical stage-explanation purpose question from official stage guidance", () => {
+    const stageOverviewSentence =
+      "자궁경부암 의 병기 는 크게 1기부터 4기로 나눕니다. 전암 단계인 상피내암은 다른 곳으로 전이 되지 않아 암의 분류에 속하지 않습니다.";
+    const stageOneSentence = "1기는 암이 자궁경부에만 국한되고 다른 부위로 퍼지지 않은 경우";
+    const stageTwoSentence =
+      "2기는 병변 이 자궁경부를 벗어났으나 골반벽으로까지는 퍼지지 않았으며, 질벽 상부 2/3까지 침윤 한 경우, 또는 자궁 옆 결합 조직에 침윤한 경우";
+    const stageThreeSentence =
+      "3기는 병변이 질의 하부 1/3까지 침윤되거나 골반벽 침윤 또는 요관침윤으로 신장이 부은 경우, 또는 골반(그리고/또는) 대동맥주위 림프절 에 전이가 된 경우";
+    const stageFourSentence =
+      "4기는 병변이 주변 장기(방광이나 직장 점막)를 침범하거나 원격전이 가 된 경우를 말합니다.";
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
+    );
+
+    expect(template.id).toBe("cervical-stage-explanation-purpose");
+    expect(template.mealNote).toContain(stageOverviewSentence);
+    expect(template.mealNote).toContain(stageOneSentence);
+    expect(template.mealNote).toContain(stageTwoSentence);
+    expect(template.clinicianQuestion).toContain(stageThreeSentence);
+    expect(template.clinicianQuestion).toContain(stageFourSentence);
+    expect(actionNote).toContain("진단서 병기");
+    expect(actionNote).toContain("검사 근거");
+    expect(question).toContain("상피내암");
+    expect(question).toContain("골반벽");
+    expect(question).toContain("대동맥주위 림프절");
+    expect(question).toContain("원격전이");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 진행단계 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4890",
+    );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 진단검사 조직검사 질확대경검사 원추절제술 방광경 직장경 CT MRI PET",
+      )?.id,
+    ).toBe("cervical-diagnosis-test-purpose");
+    expect(
+      findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")
+        ?.id,
+    ).toBe("cervical-recurrence-symptom-check");
+    expect(question).not.toMatch(
+      /자가 병기|스스로 병기|1기입니다|2기입니다|3기입니다|4기입니다|전이입니다|진단하세요|치료하세요|처방하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical recurrence-symptom question from official recurrence guidance", () => {
     const recurrenceSymptomsSentence =
       "재발 성 자궁경부암 의 증상은 매우 다양합니다. 체중감소, 하지 부종, 골반 혹은 허벅지 통증, 질출혈 혹은 질분비물의 증가, 진행 성 요관 폐색, 쇄골위 림프절 비대 등이 나타나며, 폐로 전이 하면 기침, 객혈, 때로는 흉통을 호소할 수 있습니다. 그러나 특징적인 증상이 없는 경우가 더 많습니다.";
@@ -3296,7 +3349,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(71);
+    expect(symptomSupportTemplates).toHaveLength(72);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3479,6 +3532,13 @@ describe("symptomSupportTemplates", () => {
       )?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
+    );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
+      )?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4890",
     );
     expect(
       findSymptomSupportTemplate("재발성 자궁경부암 골반장기적출술 요로전환술")
