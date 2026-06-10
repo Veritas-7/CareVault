@@ -246,6 +246,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 암생존자 운동",
     url: "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
   },
+  nccSurvivorNutritionLifestyle: {
+    label: "국가암정보센터 암생존자 영양·식생활",
+    url: "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+  },
   nccComplementaryTherapyConsultation: {
     label: "국가암정보센터 보완대체요법 상담",
     url: "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
@@ -652,6 +656,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccSurvivorExerciseManagement",
   },
   {
+    topic: "치료 후 영양·식생활 상담 준비",
+    question:
+      "국가암정보센터 암생존자 영양·식생활 안내처럼 치료 후 건강한 식생활 원칙으로 적정체중 유지, 골고루 균형잡힌 식사 계획, 다양한 색의 과일, 채소, 전곡류 선택, 육가공품과 탄 음식 섭취 주의, 짠 음식 줄이기와 싱겁게 먹기, 하루 한 두 잔의 술도 피하는 원칙, 건강보조식품, 민간요법 주의를 제 치료 이력과 현재 소화기 증상에 맞춰 어떻게 기록하면 좋을까요? 최근 식사와 간식, 체중 변화, 가공육·직화/탄 음식·짠 음식·술 노출, 복용 중인 건강보조식품이나 민간요법 목록을 진료팀에 어떤 순서로 확인하면 좋을까요?",
+    sourceId: "nccSurvivorNutritionLifestyle",
+  },
+  {
     topic: "보완대체요법 상담 준비",
     question:
       "국가암정보센터 보완대체요법 상담 안내처럼 보완대체요법을 고려할 때 주치의와 먼저 상의하고, 안전과 안녕, 계획한 요법과 다른 치료의 장/단점, 특정 크림이나 약물 또는 침을 맞는 것처럼 제한이 필요한 부위·시술, 약초나 영양제 복용 사실과 부작용 위험, 요법가들의 직접적인 설명, 현재 상태와 앞으로 진행될 의학적 치료 이해 여부를 진료팀에 어떤 순서로 확인하면 좋을까요?",
@@ -911,6 +921,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 암생존자의 규칙적인 운동참여가 체력증진, 피로도 감소로 삶의 질을 높여주고 일부 암종에서는 재발률과 사망률 위험을 낮춰준다고 설명하지만, 이 문구를 개인 예후나 자궁경부암 재발 예방 보장으로 단정하지 않고 진료팀 확인 기준으로 분리합니다. 미국 스포츠의학회 권고로 주당 150분 이상의 중강도 신체활동과 주 2회 이상의 근력운동을 제시하며, 중강도 신체활동은 숨이 약간 차지만 옆 사람과 대화가 가능한 정도라고 설명합니다. 암생존자 운동프로그램은 운동 정보교육과 스트레칭, 전신 근력운동을 배울 수 있는 프로그램이고, 실제 운동을 배우는 시간이 있어 편안한 운동복이 좋다고 안내합니다. 활동 전후 피로, 통증, 숨참, 어지럼, 다리 부종·피부 변화, 운동 전후 부종 비교, 쉬어야 했던 이유를 기록하고 내 치료 이력과 체력에 맞는 강도·시간·금기·재활 의뢰 기준을 진료팀 확인 메모로 남깁니다.",
     sourceId: "nccSurvivorExerciseManagement",
+  },
+  {
+    label: "암생존자 균형식·가공육·보조식품 메모",
+    detail:
+      "국가암정보센터는 암생존자 건강한 식생활로 적정체중을 유지하고, 골고루 균형잡힌 식사를 계획하며, 다양한 색의 과일, 채소, 전곡류를 선택하라고 설명합니다. 또한 육가공품과 탄 음식의 섭취, 짠 음식의 섭취를 피하고 싱겁게 먹는 것, 하루 한 두 잔의 술도 피하는 것, 건강보조식품, 민간요법 등은 주의하는 것을 원칙으로 제시합니다. 이 항목은 식단 처방이나 특정 식품 금지 명령이 아니라 최근 식사와 간식, 체중 변화, 가공육·직화/탄 음식·짠 음식·술 노출, 복용 중인 건강보조식품이나 민간요법 목록, 치료 후 소화기 증상과 식사 제한 이유를 기록하고 내 치료 이력에 맞는 조정 기준을 진료팀 확인 메모로 남깁니다.",
+    sourceId: "nccSurvivorNutritionLifestyle",
   },
   {
     label: "보완대체요법·약초 공유 메모",

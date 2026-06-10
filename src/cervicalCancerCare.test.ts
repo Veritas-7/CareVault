@@ -82,6 +82,7 @@ describe("cervicalCancerCare", () => {
       "nccCancerLifePsychologicalStability",
       "nccSurvivorSleepManagement",
       "nccSurvivorExerciseManagement",
+      "nccSurvivorNutritionLifestyle",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
       "nccCancerFatigueCoping",
@@ -137,6 +138,7 @@ describe("cervicalCancerCare", () => {
     );
     expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
     expect(cervicalCancerCareSources.nccSurvivorExerciseManagement.url).toContain("S1T748C795");
+    expect(cervicalCancerCareSources.nccSurvivorNutritionLifestyle.url).toContain("S1T748C796");
     expect(cervicalCancerCareSources.nccComplementaryTherapyConsultation.url).toContain(
       "S1T365C368",
     );
@@ -253,7 +255,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(56);
+				    expect(cervicalCancerCarePrompts).toHaveLength(57);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -298,6 +300,7 @@ describe("cervicalCancerCare", () => {
       "정서 안정·전문상담 준비",
       "불면·수면일지 상담 준비",
       "운동강도·근력운동 상담 준비",
+      "치료 후 영양·식생활 상담 준비",
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
       "암관련 피로 대처 준비",
@@ -1133,6 +1136,27 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /운동하세요|근력운동을 하세요|유산소 운동을 하세요|치료하세요|처방하세요|진단하세요|재발을 막습니다|사망률을 낮춥니다/,
     );
+    const survivorNutritionPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "치료 후 영양·식생활 상담 준비",
+    )!;
+    expect(survivorNutritionPrompt.sourceId).toBe("nccSurvivorNutritionLifestyle");
+    expect(survivorNutritionPrompt.question).toContain("적정체중");
+    expect(survivorNutritionPrompt.question).toContain("균형잡힌 식사");
+    expect(survivorNutritionPrompt.question).toContain("다양한 색의 과일, 채소, 전곡류");
+    expect(survivorNutritionPrompt.question).toContain("육가공품");
+    expect(survivorNutritionPrompt.question).toContain("탄 음식");
+    expect(survivorNutritionPrompt.question).toContain("짠 음식");
+    expect(survivorNutritionPrompt.question).toContain("하루 한 두 잔의 술");
+    expect(survivorNutritionPrompt.question).toContain("건강보조식품, 민간요법");
+    expect(survivorNutritionPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(survivorNutritionPrompt)).toContain(
+      "출처: 국가암정보센터 암생존자 영양·식생활 - https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(survivorNutritionPrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(
+      /식단을 처방하세요|육가공품을 절대 먹지 마세요|술을 마시면 안 됩니다|보조식품을 복용하세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
+    );
     const complementaryTherapyPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "보완대체요법 상담 준비",
     )!;
@@ -1705,6 +1729,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorExerciseManagement")).toContain(
       "국가암정보센터 암생존자 운동 - https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccSurvivorNutritionLifestyle")).toContain(
+      "국가암정보센터 암생존자 영양·식생활 - https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+    );
   });
 
   it("builds context-specific accessible labels for official source links", () => {
@@ -2066,6 +2093,9 @@ describe("cervicalCancerCare", () => {
     const exerciseManagementGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 운동강도·근력운동 메모",
     );
+    const survivorNutritionGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암생존자 균형식·가공육·보조식품 메모",
+    );
     const complementaryTherapyGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "보완대체요법·약초 공유 메모",
     );
@@ -2085,7 +2115,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(40);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(41);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2995,6 +3025,31 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(exerciseManagementGuide!)).join(" ")).not.toMatch(
       /운동하세요|근력운동을 하세요|유산소 운동을 하세요|치료하세요|처방하세요|진단하세요|재발을 막습니다|사망률을 낮춥니다/,
+    );
+    expect(survivorNutritionGuide).toMatchObject({
+      label: "암생존자 균형식·가공육·보조식품 메모",
+      sourceId: "nccSurvivorNutritionLifestyle",
+    });
+    expect(survivorNutritionGuide?.detail).toContain("적정체중");
+    expect(survivorNutritionGuide?.detail).toContain("골고루 균형잡힌 식사");
+    expect(survivorNutritionGuide?.detail).toContain("다양한 색의 과일, 채소, 전곡류");
+    expect(survivorNutritionGuide?.detail).toContain("육가공품");
+    expect(survivorNutritionGuide?.detail).toContain("탄 음식");
+    expect(survivorNutritionGuide?.detail).toContain("짠 음식");
+    expect(survivorNutritionGuide?.detail).toContain("하루 한 두 잔의 술");
+    expect(survivorNutritionGuide?.detail).toContain("건강보조식품, 민간요법");
+    expect(survivorNutritionGuide?.detail).toContain("진료팀 확인");
+    expect(formatCervicalCancerCareItemEvidence(survivorNutritionGuide!)).toContain(
+      "국가암정보센터 암생존자 영양·식생활 - https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(survivorNutritionGuide!).body).toContain(
+      "암생존자 균형식·가공육·보조식품 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(survivorNutritionGuide!)).toContain(
+      "국가암정보센터 암생존자 영양·식생활",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorNutritionGuide!)).join(" ")).not.toMatch(
+      /식단을 처방하세요|육가공품을 절대 먹지 마세요|술을 마시면 안 됩니다|보조식품을 복용하세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
     );
     expect(complementaryTherapyGuide).toMatchObject({
       label: "보완대체요법·약초 공유 메모",
