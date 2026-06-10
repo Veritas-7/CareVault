@@ -173,6 +173,11 @@ describe("symptomSupportTemplates", () => {
     ).toBe("cervical-pathology-type-context");
     expect(
       findSymptomSupportTemplate(
+        "자궁경부암 감별진단 자궁경부염 질암 자궁내막암 자궁체부암 골반 염증성질환",
+      )?.id,
+    ).toBe("cervical-differential-diagnosis-context");
+    expect(
+      findSymptomSupportTemplate(
         "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
       )?.id,
     ).toBe("cervical-stage-explanation-purpose");
@@ -2493,6 +2498,47 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a cervical differential-diagnosis context question from official guidance", () => {
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 감별진단 자궁경부염 질암 자궁내막암 자궁체부암 골반 염증성질환",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 감별진단 자궁경부염 질암 자궁내막암 자궁체부암 골반 염증성질환",
+    );
+
+    expect(template.id).toBe("cervical-differential-diagnosis-context");
+    expect(template.label).toBe("자궁경부암 감별진단 상담 준비");
+    expect(template.mealNote).toContain("자궁경부염");
+    expect(template.mealNote).toContain("질암");
+    expect(template.mealNote).toContain("자궁내막암");
+    expect(template.mealNote).toContain("자궁체부암");
+    expect(template.mealNote).toContain("골반 염증성질환");
+    expect(template.clinicianQuestion).toContain("자궁경부세포검사");
+    expect(template.clinicianQuestion).toContain("Pap smear/팝도말");
+    expect(template.clinicianQuestion).toContain("질확대경검사");
+    expect(template.clinicianQuestion).toContain("펀치 생검");
+    expect(template.clinicianQuestion).toContain("자궁경관 내 소파술");
+    expect(template.clinicianQuestion).toContain("CT");
+    expect(template.clinicianQuestion).toContain("MRI");
+    expect(actionNote).toContain("감별진단");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 감별진단 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4891",
+    );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 진단검사 조직검사 질확대경검사 원추절제술 방광경 직장경 CT MRI PET",
+      )?.id,
+    ).toBe("cervical-diagnosis-test-purpose");
+    expect(findSymptomSupportTemplate("성교 후 출혈과 악취 분비물")?.id).toBe(
+      "cervical-general-warning",
+    );
+    expect(question).not.toMatch(
+      /자궁경부암입니다|자궁경부염입니다|질암입니다|자궁내막암입니다|자궁체부암입니다|골반 염증성질환입니다|검사를 받으세요|팝도말을 하세요|질확대경검사를 하세요|생검을 하세요|CT를 찍으세요|MRI를 찍으세요|진단하세요|치료하세요|처방하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical diagnosis-test purpose question from official diagnosis guidance", () => {
     const testPurposeSentence =
       "자궁경부암 의 검사는 두 가지로 실제로 암이 맞는지 확인하는 조직검사 와 암이 어느 정도까지 진행되었는지를 확인을 위한 병기 설정 검사로 나눌 수 있습니다.";
@@ -3451,7 +3497,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(74);
+    expect(symptomSupportTemplates).toHaveLength(75);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3641,6 +3687,13 @@ describe("symptomSupportTemplates", () => {
       )?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4881",
+    );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 감별진단 자궁경부염 질암 자궁내막암 자궁체부암 골반 염증성질환",
+      )?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4891",
     );
     expect(
       findSymptomSupportTemplate(

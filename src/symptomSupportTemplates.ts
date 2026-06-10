@@ -409,6 +409,48 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4881",
   },
   {
+    id: "cervical-differential-diagnosis-context",
+    label: "자궁경부암 감별진단 상담 준비",
+    keywords: [
+      "자궁경부암 감별진단",
+      "감별진단 자궁경부염",
+      "감별 진단 자궁경부염",
+      "자궁경부염 질암",
+      "질암 자궁내막암",
+      "자궁내막암 자궁체부암",
+      "자궁체부 암",
+      "자궁체부암 골반 염증성질환",
+      "골반 염증성질환",
+      "골반 염증성 질환",
+      "골반염 감별",
+      "질확대경검사 펀치 생검",
+      "자궁경관 내 소파술",
+      "팝도말",
+      "pap smear differential",
+      "cervical differential diagnosis",
+    ],
+    priorityKeywords: [
+      "자궁경부암 감별진단",
+      "감별진단 자궁경부염",
+      "감별 진단 자궁경부염",
+      "자궁경부염 질암",
+      "질암 자궁내막암",
+      "자궁내막암 자궁체부암",
+      "자궁체부암 골반 염증성질환",
+      "골반 염증성질환",
+      "골반 염증성 질환",
+      "cervical differential diagnosis",
+    ],
+    mealNote:
+      "자궁경부암은 자궁경부염, 질암, 자궁내막암, 자궁체부암, 골반 염증성질환 등과 감별해야 한다고 설명됩니다. 증상 시작 시점, 질출혈·질분비물 변화, 통증 위치, 감염 또는 염증으로 들은 표현, 이전 검사명과 검사일, 병리결과지·영상검사 결과, 의료진이 감별진단으로 언급한 이름을 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "감별진단에서는 자궁경부세포검사(Pap smear/팝도말), 자궁경부 질확대경검사 및 펀치 생검, 자궁경관 내 소파술, CT나 MRI 같은 영상학적 검사가 함께 설명될 수 있습니다. 제 증상과 검사 결과에서 자궁경부염·질암·자궁내막암·자궁체부암·골반 염증성질환과 어떤 근거로 구분됐는지, 자궁경부세포검사·질확대경검사·펀치 생검·자궁경관 내 소파술·CT·MRI 결과가 각각 어떤 감별 질문에 답하기 위한 것인지 진료팀에 확인하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 자궁경부암 감별진단",
+    sourceUrl:
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4891",
+  },
+  {
     id: "cervical-diagnosis-test-purpose",
     label: "자궁경부암 진단검사 목적 상담 준비",
     keywords: [
