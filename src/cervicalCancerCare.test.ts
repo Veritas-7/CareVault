@@ -83,6 +83,7 @@ describe("cervicalCancerCare", () => {
       "nccSurvivorDistressAdaptation",
       "nccSurvivorPostTreatmentSlump",
       "nccMentalHealthInsomniaMedicationConcern",
+      "nccMentalHealthPsychiatryConsultBenefits",
       "nccSurvivorAnxietyManagement",
       "nccSurvivorSleepManagement",
       "nccSurvivorExerciseManagement",
@@ -147,6 +148,9 @@ describe("cervicalCancerCare", () => {
     );
     expect(cervicalCancerCareSources.nccMentalHealthInsomniaMedicationConcern.url).toContain(
       "article_seq=22078",
+    );
+    expect(cervicalCancerCareSources.nccMentalHealthPsychiatryConsultBenefits.url).toContain(
+      "article_seq=22079",
     );
     expect(cervicalCancerCareSources.nccSurvivorAnxietyManagement.url).toContain("S1T788C791");
     expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
@@ -269,7 +273,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(62);
+				    expect(cervicalCancerCarePrompts).toHaveLength(63);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -315,6 +319,7 @@ describe("cervicalCancerCare", () => {
       "디스트레스 신호·자가평가 상담 준비",
       "치료 후 슬럼프·우울 상담 준비",
       "불면증·정신과 약 중독 우려 상담 준비",
+      "정신건강의학과 진료 도움 확인 준비",
       "불안 신체증상·주의전환 상담 준비",
       "불면·수면일지 상담 준비",
       "운동강도·근력운동 상담 준비",
@@ -1197,6 +1202,32 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /수면제를 복용하세요|정신과 약을 복용하세요|약물 치료하세요|중독되지 않습니다|중독됩니다|치료하세요|처방하세요|진단하세요|적극적으로 정신건강의학과를 이용하세요/,
     );
+    const psychiatryConsultBenefitsPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "정신건강의학과 진료 도움 확인 준비",
+    )!;
+    expect(psychiatryConsultBenefitsPrompt.sourceId).toBe("nccMentalHealthPsychiatryConsultBenefits");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("주치의 선생님이 정신건강의학과 진료를 권");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("암환자의 절반 가까이");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("투병 중에 정신건강의학적인 문제");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("불면이나 우울, 불안");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("심하거나 오래 지속");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("정신신경 면역학적 기전");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("면역력");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("심리사회적 서비스");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("필수적인 요소");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("정신적 스트레스");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("삶의 질");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("생존율");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("개인 예후 개선으로 단정하지 않");
+    expect(psychiatryConsultBenefitsPrompt.question).toContain("협진 목표");
+    expect(buildCervicalCancerCarePromptQuestion(psychiatryConsultBenefitsPrompt)).toContain(
+      "출처: 국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22079&condition=&cpage=2&keyword=&mode=view&rn=48&rows=12",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(psychiatryConsultBenefitsPrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(
+      /정신건강의학과 진료를 받으세요|상담받으세요|치료하세요|처방하세요|진단하세요|생존율이 높아집니다|면역력이 회복됩니다|약을 복용하세요|개인 예후가 좋아집니다/,
+    );
     const survivorAnxietyPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "불안 신체증상·주의전환 상담 준비",
     )!;
@@ -1901,6 +1932,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccMentalHealthInsomniaMedicationConcern")).toContain(
       "국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=2&keyword=&mode=view&rn=49&rows=12",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccMentalHealthPsychiatryConsultBenefits")).toContain(
+      "국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22079&condition=&cpage=2&keyword=&mode=view&rn=48&rows=12",
+    );
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorAnxietyManagement")).toContain(
       "국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기 - https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
     );
@@ -2277,6 +2311,9 @@ describe("cervicalCancerCare", () => {
     const insomniaMedicationConcernGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "불면증·정신과 약 중독 우려 메모",
     );
+    const psychiatryConsultBenefitsGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "정신건강의학과 진료 도움 확인 메모",
+    );
     const sleepManagementGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "불면·수면효율·습관 메모",
     );
@@ -2311,7 +2348,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(46);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(47);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3267,6 +3304,35 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(insomniaMedicationConcernGuide!)).join(" ")).not.toMatch(
       /수면제를 복용하세요|정신과 약을 복용하세요|약물 치료하세요|중독되지 않습니다|중독됩니다|치료하세요|처방하세요|진단하세요|적극적으로 정신건강의학과를 이용하세요/,
+    );
+    expect(psychiatryConsultBenefitsGuide).toMatchObject({
+      label: "정신건강의학과 진료 도움 확인 메모",
+      sourceId: "nccMentalHealthPsychiatryConsultBenefits",
+    });
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("주치의가 정신건강의학과 진료를 권했을 때");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("암환자의 절반 가까이");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("투병 중에 정신건강의학적 문제");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("불면이나 우울, 불안");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("심하거나 오래 지속");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("정신신경 면역학적 기전");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("면역력");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("심리사회적 서비스");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("암 의료에서 필수적인 요소");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("정신적 스트레스 선별");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("삶의 질");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("생존율");
+    expect(psychiatryConsultBenefitsGuide?.detail).toContain("개인 예후 개선으로 단정하지 않습니다");
+    expect(formatCervicalCancerCareItemEvidence(psychiatryConsultBenefitsGuide!)).toContain(
+      "국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22079&condition=&cpage=2&keyword=&mode=view&rn=48&rows=12",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(psychiatryConsultBenefitsGuide!).body).toContain(
+      "정신건강의학과 진료 도움 확인 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(psychiatryConsultBenefitsGuide!)).toContain(
+      "국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(psychiatryConsultBenefitsGuide!)).join(" ")).not.toMatch(
+      /정신건강의학과 진료를 받으세요|상담받으세요|치료하세요|처방하세요|진단하세요|생존율이 높아집니다|면역력이 회복됩니다|약을 복용하세요|개인 예후가 좋아집니다/,
     );
     expect(survivorAnxietyGuide).toMatchObject({
       label: "암생존자 불안신호·주의전환 메모",
