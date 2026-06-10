@@ -59,6 +59,7 @@ export type FoodGuidanceSourceId =
   | "nccTreatmentHealthyEatingTips"
   | "nccAfterTreatmentHealthyEating"
   | "nccCancerSurvivorHealthGuide"
+  | "nccSurvivorNutritionLifestyle"
   | "nccChemoSideEffectGuide"
   | "kdcaNutrition"
   | "kdcaAlcohol"
@@ -261,6 +262,10 @@ export const foodGuidanceSources: Record<
   nccCancerSurvivorHealthGuide: {
     label: "국가암정보센터 암경험자 건강관리 가이드",
     url: "https://www.cancer.go.kr/org_bbs_b_download.do?attach_seq=8132",
+  },
+  nccSurvivorNutritionLifestyle: {
+    label: "국가암정보센터 암생존자 영양·식생활",
+    url: "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
   },
   nccChemoSideEffectGuide: {
     label: "국가암정보센터 항암 부작용 증상 관리 지침",
@@ -534,6 +539,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "적정 체중과 체지방량을 유지합니다., 암에 대한 모든 치료들이 끝난 후에는 건강한 식생활을 위한 식사지침을 따르도록 합니다., 우리 몸에 필요한 영양소는 다양한 식품과 음식을 통하여 섭취해야 합니다., 균형잡힌 식사란 나에게 맞는 적당량으로, 매끼 적당량의 곡류와 고기, 생선, 계란, 두부 등의 다양한 단백질 식품을 1~2가지, 2~3가지의 채소류를 포함한 식사를 하고 우유 및 유제품류, 과일류를 하루 1~2회 간식으로 섭취합니다., 다양한 색의 과일, 채소와 전곡류를 충분하게 먹습니다., 과일과 채소에 들어있는 비타민, 무기질, 식이섬유소, 항산화 영양소 등이 암 예방 및 건강 증진에 도움이 됩니다., 다양한 종류와 색깔을 선택하고 채소는 매끼 2~3가지 이상, 과일은 매일 1~2회 섭취합니다., 도정이나 가공이 덜 된 전곡류(현미,보리 등의 잡곡류)의 식품을 선택합니다., 치료 후 건강한 식생활, 치료 후 다채로운 식단과 균형잡힌 식사, 치료 후 다양한 단백질 식품과 채소류, 치료 후 우유 및 유제품류 과일류, 치료 후 과일 채소 전곡류 충분히",
         sourceIds: ["nccAfterTreatmentHealthyEating"],
+      },
+      {
+        label: "암생존자 영양·식생활 균형식",
+        detail:
+          "국가암정보센터 암생존자 영양·식생활 자료는 건강한 식생활 원칙으로 적정체중 유지, 골고루 균형잡힌 식사 계획, 다양한 색의 과일·채소·전곡류 선택을 제시합니다. 이 항목은 식단 처방이나 개인 결과 약속이 아니라 치료 후 기록과 진료팀 질문을 위한 균형식 후보로만 사용합니다.",
+        examples:
+          "적정체중을 유지 합니다., 골고루 균형잡힌 식사를 계획합니다., 다양한 색의 과일, 채소, 전곡류를 선택합니다., 암생존자 적정체중 유지, 암생존자 균형잡힌 식사 계획, 암생존자 다양한 색 과일 채소 전곡류",
+        sourceIds: ["nccSurvivorNutritionLifestyle"],
       },
       {
         label: "메스꺼움 시 위 부담 적은 음식",
@@ -836,6 +849,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다., 육류는 적정량 (탁구공 1~2개 크기)으로 살코기 위주로 섭취하며, 조리 시 직화구이를 피하고 탄 음식을 먹지 않습니다., 짠 음식의 섭취를 피하고, 싱겁게 먹습니다., 음식을 만들 때는 소금, 간장 등 짠맛이 나는 양념의 사용을 줄이고, 싱겁게 조리합니다., 국이나 찌개 섭취 시에는 건더기 위주로 섭취하며, 김치, 젓갈, 장아찌, 피클 등 염장 식품의 섭취를 줄입니다., 하루 한 두 잔의 술도 피합니다., 암 예방을 위해서 하루 한 두 잔의 술도 피하는 것이 좋습니다., 치료 후 가공육 제한, 치료 후 탄 음식 피하기, 치료 후 짠 음식 피하기, 치료 후 하루 한 두 잔 술도 피하기",
         sourceIds: ["nccAfterTreatmentHealthyEating"],
+      },
+      {
+        label: "암생존자 영양·식생활 제한 원칙",
+        detail:
+          "국가암정보센터 암생존자 영양·식생활 자료는 건강한 식생활 원칙으로 육가공품과 탄 음식의 섭취를 피하고, 짠 음식의 섭취를 피하면서 싱겁게 먹으며, 하루 한 두 잔의 술도 피하도록 제시합니다. 이 항목은 기록·상담 후보이며 보편적 치료식 명령이나 개인별 금주·식사 처방으로 과장하지 않습니다.",
+        examples:
+          "육가공품, 탄 음식의 섭취를 피합니다., 짠 음식의 섭취를 피하고 싱겁게 먹습니다., 하루 한 두 잔의 술도 피합니다., 암생존자 육가공품 탄 음식 피하기, 암생존자 짠 음식 싱겁게 먹기, 암생존자 하루 한 두 잔 술도 피하기",
+        sourceIds: ["nccSurvivorNutritionLifestyle"],
       },
       {
         label: "붉은 육류 적정량",
@@ -1422,6 +1443,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "어떤 특정 식품이나 음식에 의해 암의 재발을 막는다는 연구보고는 없습니다., 시중에 암 예방 효과가 있다고 알려진 여러 식품들이나 건강 보조식품들은 아직 안정성이나 효과에 대해 과학적으로 입증된 근거가 없으므로 선택 시 주의가 필요합니다., 단, 암 치료가 끝난 후 부작용 등으로 적절한 식사 섭취가 힘들거나 고혈압, 당뇨병, 고지혈증 등으로 식사조절이 필요한 경우 담당의사 및 임상영양사의 상담을 받도록 합니다., 치료 후 부작용으로 식사 섭취 힘듦, 치료 후 건강보조식품 민간요법 주의",
         sourceIds: ["nccAfterTreatmentHealthyEating"],
+      },
+      {
+        label: "암생존자 보조식품·민간요법 주의",
+        detail:
+          "국가암정보센터 암생존자 영양·식생활 자료는 건강보조식품과 민간요법 등에 주의하라고 제시합니다. 이 항목은 복용 권고나 중단 지시가 아니라 복용 목록과 목적, 치료 이력, 상호작용 우려를 진료팀에 확인할 후보로 분리합니다.",
+        examples:
+          "건강보조식품, 민간요법 등은 주의합니다., 암생존자 건강보조식품 민간요법 주의",
+        sourceIds: ["nccSurvivorNutritionLifestyle"],
       },
       {
         label: "암경험자 식품안전·건강보조식품 확인",
@@ -2178,6 +2207,36 @@ const supportiveFoods: FoodRuleTerm[] = [
     "치료 후 과일 채소 전곡류 충분히",
     "국가암정보센터 치료 후 건강한 식생활 균형식 후보",
     "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "적정체중을 유지 합니다.",
+    "국가암정보센터 암생존자 영양·식생활 균형식 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "골고루 균형잡힌 식사를 계획합니다.",
+    "국가암정보센터 암생존자 영양·식생활 균형식 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "다양한 색의 과일, 채소, 전곡류를 선택합니다.",
+    "국가암정보센터 암생존자 영양·식생활 균형식 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "암생존자 적정체중 유지",
+    "국가암정보센터 암생존자 영양·식생활 균형식 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "암생존자 균형잡힌 식사 계획",
+    "국가암정보센터 암생존자 영양·식생활 균형식 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "암생존자 다양한 색 과일 채소 전곡류",
+    "국가암정보센터 암생존자 영양·식생활 균형식 후보",
+    "nccSurvivorNutritionLifestyle",
   ],
   [
     "부드럽고 촉촉한 음식을 준비합니다.",
@@ -3597,6 +3656,31 @@ const limitFoods: FoodRuleTerm[] = [
     "국가암정보센터 치료 후 가공육·탄 음식·짠 음식·음주 제한 후보",
     "nccAfterTreatmentHealthyEating",
   ],
+  [
+    "육가공품, 탄 음식의 섭취를 피합니다.",
+    "국가암정보센터 암생존자 영양·식생활 제한 원칙 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "짠 음식의 섭취를 피하고 싱겁게 먹습니다.",
+    "국가암정보센터 암생존자 영양·식생활 제한 원칙 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "암생존자 육가공품 탄 음식 피하기",
+    "국가암정보센터 암생존자 영양·식생활 제한 원칙 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "암생존자 짠 음식 싱겁게 먹기",
+    "국가암정보센터 암생존자 영양·식생활 제한 원칙 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "암생존자 하루 한 두 잔 술도 피하기",
+    "국가암정보센터 암생존자 영양·식생활 제한 원칙 후보",
+    "nccSurvivorNutritionLifestyle",
+  ],
   ["소고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["돼지고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["붉은 육류", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
@@ -4580,6 +4664,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "어떤 특정 식품이나 음식에 의해 암의 재발을 막는다는 연구보고는 없습니다.",
     "국가암정보센터 치료 후 재발 예방 특정식품 근거 없음",
     "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "건강보조식품, 민간요법 등은 주의합니다.",
+    "국가암정보센터 암생존자 영양·식생활 보조식품·민간요법 확인 필요",
+    "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "암생존자 건강보조식품 민간요법 주의",
+    "국가암정보센터 암생존자 영양·식생활 보조식품·민간요법 확인 필요",
+    "nccSurvivorNutritionLifestyle",
   ],
   [
     "비브리오 패혈증",

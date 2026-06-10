@@ -4804,6 +4804,117 @@ describe("healthRules", () => {
     ).toBe(false);
   });
 
+  it("recognizes NCC adult cancer survivor nutrition lifestyle source sentences", () => {
+    const assessment = assessCancerFood(
+      "적정체중을 유지 합니다. 골고루 균형잡힌 식사를 계획합니다. 다양한 색의 과일, 채소, 전곡류를 선택합니다. 육가공품, 탄 음식의 섭취를 피합니다. 짠 음식의 섭취를 피하고 싱겁게 먹습니다. 건강보조식품, 민간요법 등은 주의합니다.",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccSurvivorNutritionLifestyle.label).toBe(
+      "국가암정보센터 암생존자 영양·식생활",
+    );
+    expect(foodGuidanceSources.nccSurvivorNutritionLifestyle.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "적정체중을 유지 합니다.",
+      "골고루 균형잡힌 식사를 계획합니다.",
+      "다양한 색의 과일, 채소, 전곡류를 선택합니다.",
+      "육가공품, 탄 음식의 섭취를 피합니다.",
+      "짠 음식의 섭취를 피하고 싱겁게 먹습니다.",
+      "건강보조식품, 민간요법 등은 주의합니다.",
+    ]);
+    for (const term of terms.slice(0, 3)) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암생존자 영양·식생활 균형식 후보",
+        sourceId: "nccSurvivorNutritionLifestyle",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 암생존자 영양·식생활 - https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+      );
+    }
+    for (const term of terms.slice(3, 5)) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 암생존자 영양·식생활 제한 원칙 후보",
+        sourceId: "nccSurvivorNutritionLifestyle",
+      });
+    }
+    expect(matchesByTerm["건강보조식품, 민간요법 등은 주의합니다."]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 영양·식생활 보조식품·민간요법 확인 필요",
+      sourceId: "nccSurvivorNutritionLifestyle",
+    });
+    expect(balancedGuideText).toContain("암생존자 균형잡힌 식사 계획");
+    expect(limitGuideText).toContain("암생존자 하루 한 두 잔 술도 피하기");
+    expect(careTeamGuideText).toContain("암생존자 건강보조식품 민간요법 주의");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|치료 음식|먹으세요|끊으세요|재발을 막|예방 보장|보조식품 복용하세요/,
+    );
+  });
+
+  it("keeps NCC adult cancer survivor nutrition lifestyle shorthand scoped to survivor context", () => {
+    const assessment = assessCancerFood(
+      "암생존자 적정체중 유지, 암생존자 균형잡힌 식사 계획, 암생존자 다양한 색 과일 채소 전곡류, 암생존자 육가공품 탄 음식 피하기, 암생존자 짠 음식 싱겁게 먹기, 암생존자 하루 한 두 잔 술도 피하기, 암생존자 건강보조식품 민간요법 주의",
+    );
+    const genericAssessment = assessCancerFood(
+      "적정체중 유지, 균형잡힌 식사 계획, 다양한 색 과일 채소 전곡류, 육가공품 탄 음식 피하기, 짠 음식 싱겁게 먹기, 하루 한 두 잔 술도 피하기, 건강보조식품 민간요법 주의",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "암생존자 적정체중 유지",
+      "암생존자 균형잡힌 식사 계획",
+      "암생존자 다양한 색 과일 채소 전곡류",
+      "암생존자 육가공품 탄 음식 피하기",
+      "암생존자 짠 음식 싱겁게 먹기",
+      "암생존자 하루 한 두 잔 술도 피하기",
+      "암생존자 건강보조식품 민간요법 주의",
+    ]);
+    for (const match of assessment.matches.slice(0, 3)) {
+      expect(match).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암생존자 영양·식생활 균형식 후보",
+        sourceId: "nccSurvivorNutritionLifestyle",
+      });
+    }
+    for (const match of assessment.matches.slice(3, 6)) {
+      expect(match).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 암생존자 영양·식생활 제한 원칙 후보",
+        sourceId: "nccSurvivorNutritionLifestyle",
+      });
+    }
+    expect(assessment.matches[assessment.matches.length - 1]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 영양·식생활 보조식품·민간요법 확인 필요",
+      sourceId: "nccSurvivorNutritionLifestyle",
+    });
+    expect(
+      genericAssessment.matches.some(
+        (match) => match.sourceId === "nccSurvivorNutritionLifestyle",
+      ),
+    ).toBe(false);
+  });
+
   it("recognizes NCC after-treatment processed meat source sentence", () => {
     const sourceSentence =
       "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";
