@@ -189,6 +189,11 @@ describe("symptomSupportTemplates", () => {
         "자궁근종 단순자궁절제술 후 조직검사에서 자궁경부암 발견 절제연 전이여부",
       )?.id,
     ).toBe("cervical-incidental-post-hysterectomy-finding");
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 수술 후 절제면 림프절 침범 자궁주위조직 침윤 보조 동시항암화학방사선치료 외부 내부 방사선치료",
+      )?.id,
+    ).toBe("cervical-radiotherapy-treatment-planning");
     expect(findSymptomSupportTemplate("임신 계획과 가임력")?.id).toBe(
       "cervical-fertility-pregnancy",
     );
@@ -2240,6 +2245,55 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a cervical radiotherapy treatment-planning question from official treatment guidance", () => {
+    const highRiskSentence =
+      "또한 수술 후 조직검사 소견상 절제 면에 암이 남아있거나 림프절 침범이 있거나 자궁주위조직 침윤이 있는 재발 고위험군은 보조적으로 동시항암화학방사선치료를 시행합니다.";
+    const radiationMethodSentence =
+      "방사선치료는 외부 방사선치료와 내부 방사선치료(강내 방사선치료)로 나눌 수 있으며, 병의 진행상태에 따라 두 방법을 적절히 조합하여 사용합니다.";
+    const advancedMethodSentence =
+      "이러한 일반적인 방사선치료 이외에 필요한 경우 세기변조방사선치료(IMRT)나 3차원 입체조형치료 등 새로운 방사선치료 방법을 이용하여 치료율을 높이려고 노력하고 있습니다.";
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 수술 후 절제면 림프절 침범 자궁주위조직 침윤 보조 동시항암화학방사선치료 외부 내부 방사선치료",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 수술 후 절제면 림프절 침범 자궁주위조직 침윤 보조 동시항암화학방사선치료 외부 내부 방사선치료",
+    );
+
+    expect(template.id).toBe("cervical-radiotherapy-treatment-planning");
+    expect(template.mealNote).toContain(highRiskSentence);
+    expect(template.mealNote).toContain("절제 면");
+    expect(template.mealNote).toContain("림프절 침범");
+    expect(template.mealNote).toContain("자궁주위조직 침윤");
+    expect(template.clinicianQuestion).toContain(radiationMethodSentence);
+    expect(template.clinicianQuestion).toContain(advancedMethodSentence);
+    expect(template.clinicianQuestion).toContain("외부 방사선치료");
+    expect(template.clinicianQuestion).toContain("강내 방사선치료");
+    expect(template.clinicianQuestion).toContain("세기변조방사선치료");
+    expect(actionNote).toContain("보조적으로 동시항암화학방사선치료");
+    expect(actionNote).toContain("재발 고위험군");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
+    );
+    expect(buildSymptomSupportQueueHint(template)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 방사선치료 중 설사와 방광염 비슷한 증상")
+        ?.id,
+    ).toBe("cervical-radiotherapy-acute-complication");
+    expect(findSymptomSupportTemplate("방사선치료 후 장폐색과 복부팽만")?.id).toBe(
+      "cervical-bowel-obstruction",
+    );
+    expect(findSymptomSupportTemplate("무월경과 안면홍조")?.id).toBe(
+      "cervical-radiation-menopause",
+    );
+    expect(question).not.toMatch(
+      /방사선치료를 받으세요|동시항암화학방사선치료를 받으세요|항암화학방사선치료를 받으세요|IMRT를 받으세요|3차원 입체조형치료를 받으세요|치료하세요|처방하세요|진단하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical radiotherapy acute-complication question from official guidance", () => {
     const sensitiveTissueSentence =
       "자궁에 비하여 상대적으로 방사선에 약한 장 점막, 방광점막 등이 손상되어 나타납니다.";
@@ -3071,7 +3125,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(67);
+    expect(symptomSupportTemplates).toHaveLength(68);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3291,6 +3345,12 @@ describe("symptomSupportTemplates", () => {
     );
     expect(
       findSymptomSupportTemplate("자궁근종 단순자궁절제술 후 조직검사에서 자궁경부암 발견")
+        ?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 수술 후 절제면 림프절 침범 자궁주위조직 침윤")
         ?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
