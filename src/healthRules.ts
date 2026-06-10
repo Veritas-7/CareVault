@@ -5425,6 +5425,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
   ],
   [
+    "여시니아 냉장육",
+    "식품안전나라 여시니아 엔테로콜리티카균 냉장육 유통과정 주의 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
+    "여시니아 냉동육",
+    "식품안전나라 여시니아 엔테로콜리티카균 냉동육 유통과정 주의 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
     "동물의 분변과 함께 배출되어 음료수나 식품에 오염",
     "식품안전나라 여시니아 엔테로콜리티카균 동물 분변 유래 오염 확인 필요",
     "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
