@@ -13541,7 +13541,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "장염비브리오균은 2~4%의 소금물에서 잘 생육하며 해수온도가 15℃ 이상이 되면 급격히 증식하고, 짧은 쉼표 모양을 나타내며, 어패류, 생선회, 수산식품(게장, 생선회, 오징어무침, 꼬막무침 등) 원인식품과 장염비브리오 어패류, 장염비브리오 생선회, 장염비브리오 수산식품, 장염비브리오 게장, 장염비브리오 오징어무침, 장염비브리오 꼬막무침, 장염비브리오 오징어, 장염비브리오 문어, 장염비브리오 연체동물, 장염비브리오 고등어, 장염비브리오 아지, 장염비브리오 어류, 장염비브리오 조개, 장염비브리오 패류를 확인하고 어패류의 체표와 내장 및 아가미 등에 부착되는 경로를 확인",
+      "장염비브리오균은 해수세균의 일종으로 2~4%의 소금물에서 잘 생육하며 해수온도가 15℃ 이상이 되면 급격히 증식하고, 짧은 쉼표 모양을 나타내며, 어패류, 생선회, 수산식품(게장, 생선회, 오징어무침, 꼬막무침 등) 원인식품과 장염비브리오 어패류, 장염비브리오 생선회, 장염비브리오 수산식품, 장염비브리오 게장, 장염비브리오 오징어무침, 장염비브리오 꼬막무침, 장염비브리오 오징어, 장염비브리오 문어, 장염비브리오 연체동물, 장염비브리오 고등어, 장염비브리오 아지, 장염비브리오 어류, 장염비브리오 조개, 장염비브리오 패류를 확인하고 어패류의 체표와 내장 및 아가미 등에 부착되는 경로와 장염비브리오 해수세균, 장염비브리오 하절기 근해, 장염비브리오 체표, 장염비브리오 내장, 장염비브리오 아가미, 장염비브리오 근육 이행, 장염비브리오 유통과정 증식, 장염비브리오 손 기구 2차 오염을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -13558,6 +13558,10 @@ describe("healthRules", () => {
     });
     expect(foodSafetyGuide?.detail).toContain("2~4%의 소금물");
     expect(foodSafetyGuide?.detail).toContain("해수온도가 15℃ 이상");
+    expect(foodSafetyGuide?.detail).toContain("하절기에 근해의 오징어, 문어 등 연체동물");
+    expect(foodSafetyGuide?.detail).toContain("체표, 내장과 아가미");
+    expect(foodSafetyGuide?.detail).toContain("근육으로 이행되거나 유통과정 중에 증식");
+    expect(foodSafetyGuide?.detail).toContain("손과 기구로부터 다른 식품에 2차 오염");
     expect(foodSafetyGuide?.detail).toContain("횟감용 칼, 도마는 구분");
     expect(foodSafetyGuide?.detail).toContain("60℃에서 5분, 55℃에서 10분");
 
@@ -13599,6 +13603,14 @@ describe("healthRules", () => {
       "장염비브리오 조개",
       "장염비브리오 패류",
       "어패류의 체표와 내장 및 아가미 등에 부착",
+      "장염비브리오 해수세균",
+      "장염비브리오 하절기 근해",
+      "장염비브리오 체표",
+      "장염비브리오 내장",
+      "장염비브리오 아가미",
+      "장염비브리오 근육 이행",
+      "장염비브리오 유통과정 증식",
+      "장염비브리오 손 기구 2차 오염",
     ]);
     for (const term of riskTerms) {
       expect(riskMatchesByTerm[term]).toMatchObject({
