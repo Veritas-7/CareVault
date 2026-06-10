@@ -1183,6 +1183,44 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
   },
   {
+    id: "mental-health-medication-misconception",
+    label: "불면·정신과 약 중독 오해 상담 준비",
+    keywords: [
+      "암 진단 후 불면증",
+      "정신과 약 중독",
+      "정신과약 중독",
+      "정신건강의학과 약",
+      "수면제 중독",
+      "항우울제 중독",
+      "항불안제 중독",
+      "정신과 약 끊지 못",
+      "정신건강의학과 편견",
+      "진료기록 취직",
+      "진료기록 보험",
+      "보험에 못 든",
+      "취직이 안 되",
+      "medication addiction insomnia",
+    ],
+    priorityKeywords: [
+      "정신과 약",
+      "정신과약",
+      "정신건강의학과 약",
+      "수면제 중독",
+      "항우울제 중독",
+      "항불안제 중독",
+      "약 중독",
+      "medication addiction insomnia",
+    ],
+    mealNote:
+      "우리나라에서는 정신건강의학과에 대한 뿌리 깊은 편견이 있습니다. 정신이 이상한 사람만 가는곳이 아니라 그곳의 약을 한 번 먹으면 끊지 못한다는 등의 통념들입니다. 진료기록이 남으면 취직이 안 되거나 보험에 못 든다는 말도 합니다. 정신건강의학과의 도움이 필요한데도 이 같은 편견 탓에 적절한 서비스를 받지 못하는 환자가 많다는 것입니다. 암 진단 후 불면, 우울, 불안 증상의 시작 시점, 잠을 못 잔 기간, 낮 기능 저하, 정신과 약 중독 걱정, 진료기록·취직·보험 걱정, 상담만으로 도움을 받고 싶은 이유, 보호자와 공유할 걱정을 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "가벼운 불면, 우울, 불안 등의 증상은 약 없이 상담만으로도 큰 도움을 받을수 있습니다. 수면제, 항우울제, 항불안제 등 정신약물요법이 필요한 경우라 해도 증상 조절을 위한 것이므로 대부분 단기간에 끊을수 있습니다. 이 설명을 약 복용 지시나 중독·보험·취직 결과 보장으로 쓰지 않으면서, 내 불면·우울·불안 정도에서 상담만으로 가능한지, 약물 상담이 필요하다면 목적·예상 기간·중단 계획·부작용·중독 걱정·진료기록 걱정을 주치의 또는 정신건강의학과와 어떻게 확인하면 좋을지 질문으로 준비하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 암환자 정신건강 - 불면과 정신과 약 중독 오해",
+    sourceUrl:
+      "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=3&keyword=&rn=44&rows=12",
+  },
+  {
     id: "stress-cancer-cause-misconception",
     label: "스트레스·암 원인 오해 상담 준비",
     keywords: [

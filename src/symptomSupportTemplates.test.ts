@@ -67,6 +67,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.id).toBe(
       "survivor-sleep-management",
     );
+    expect(findSymptomSupportTemplate("암 진단 후 불면증 정신과 약 중독 걱정")?.id).toBe(
+      "mental-health-medication-misconception",
+    );
     expect(findSymptomSupportTemplate("스트레스 때문에 암에 걸렸나요 가족 탓 죄책감")?.id).toBe(
       "stress-cancer-cause-misconception",
     );
@@ -754,6 +757,52 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 수면관리 수면효율"),
     ).not.toMatch(
       /수면제를 복용하세요|수면제를 처방하세요|카페인을 끊으세요|물을 적게 마시세요|저녁 물 금지|불면증을 진단하세요|치료하세요|처방하세요|인지 행동 치료를 하세요|8시간 이상 자세요|휴대 전화를 금지하세요/,
+    );
+  });
+
+  it("builds a mental-health medication misconception question from official guidance", () => {
+    const stigmaSentence =
+      "우리나라에서는 정신건강의학과에 대한 뿌리 깊은 편견이 있습니다.";
+    const medicationMisconceptionSentence =
+      "정신이 이상한 사람만 가는곳이 아니라 그곳의 약을 한 번 먹으면 끊지 못한다는 등의 통념들입니다.";
+    const recordWorrySentence =
+      "진료기록이 남으면 취직이 안 되거나 보험에 못 든다는 말도 합니다.";
+    const missedSupportSentence =
+      "정신건강의학과의 도움이 필요한데도 이 같은 편견 탓에 적절한 서비스를 받지 못하는 환자가 많다는 것입니다.";
+    const counselingSentence =
+      "가벼운 불면, 우울, 불안 등의 증상은 약 없이 상담만으로도 큰 도움을 받을수 있습니다.";
+    const shortTermSentence =
+      "수면제, 항우울제, 항불안제 등 정신약물요법이 필요한 경우라 해도 증상 조절을 위한 것이므로 대부분 단기간에 끊을수 있습니다.";
+    const template = findSymptomSupportTemplate("암 진단 후 불면증 정신과 약 중독 걱정");
+
+    expect(template?.id).toBe("mental-health-medication-misconception");
+    expect(template?.mealNote).toContain(stigmaSentence);
+    expect(template?.mealNote).toContain(medicationMisconceptionSentence);
+    expect(template?.mealNote).toContain(recordWorrySentence);
+    expect(template?.mealNote).toContain(missedSupportSentence);
+    expect(template?.clinicianQuestion).toContain(counselingSentence);
+    expect(template?.clinicianQuestion).toContain(shortTermSentence);
+    expect(template?.clinicianQuestion).toContain("중독 걱정");
+    expect(template?.clinicianQuestion).toContain("진료기록");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암 진단 후 불면증 정신과 약 중독 걱정"),
+    ).toContain(shortTermSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암 진단 후 불면증 정신과 약 중독 걱정"),
+    ).toContain(
+      "출처: 국가암정보센터 암환자 정신건강 - 불면과 정신과 약 중독 오해 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=3&keyword=&rn=44&rows=12",
+    );
+    expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.id).toBe(
+      "survivor-sleep-management",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암 진단 후 불면증 정신과 약 중독 걱정"),
+    ).not.toMatch(
+      /정신과 약을 먹으세요|수면제를 복용하세요|항우울제를 복용하세요|항불안제를 복용하세요|약 없이 상담만 받으세요|중독되지 않습니다|단기간에 끊을 수 있습니다$|취직에 문제 없습니다|보험에 문제 없습니다|정신건강의학과에 가세요|진단하세요|치료하세요|처방하세요/,
     );
   });
 
@@ -2613,7 +2662,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(58);
+    expect(symptomSupportTemplates).toHaveLength(59);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2647,6 +2696,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암 진단 후 불면증 정신과 약 중독 걱정")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=3&keyword=&rn=44&rows=12",
     );
     expect(findSymptomSupportTemplate("스트레스 때문에 암에 걸렸나요 가족 탓 죄책감")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&rn=46&rows=12",
