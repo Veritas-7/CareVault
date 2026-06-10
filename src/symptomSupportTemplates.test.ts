@@ -127,6 +127,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("치료 중 건강식 단백질 반찬 채소 두 가지")?.id).toBe(
       "treatment-healthy-eating-tips",
     );
+    expect(
+      findSymptomSupportTemplate("치료 중 탄수화물 단백질 지방 비타민 무기질 물")?.id,
+    ).toBe("treatment-nutrient-role-understanding");
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -2270,6 +2273,57 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a treatment-period nutrient-role question from official guidance", () => {
+    const carbohydrateSentence =
+      "탄수화물(carbohydrate)은 우리 몸에 열량을 공급하는 주요 에너지원으로, 이것이 부족하면 기초 체력이 저하하고 피곤해지며 체중이 줄게 됩니다.";
+    const proteinSentence =
+      "단백질(protein)은 체세포의 주성분으로서 우리 몸을 구성하고 유지하는 역할을 하며, 각종 효소와 호르몬, 항체 등의 성분이 됩니다.";
+    const fatSentence =
+      "지방(fat)은 탄수화물과 같이 우리 몸에 열량을 공급하는 주요 에너지원으로 참기름, 들기름, 콩기름, 버터 등에 함유되어 있습니다.";
+    const vitaminMineralSentence =
+      "우리 몸의 생리 기능을 조절하는 대표적인 영양소로 비타민과 무기질(vitamins and minerals)이 있습니다.";
+    const waterSentence =
+      "물은 중요한 영양소로 생각되지 않는 게 보통이지만, 사실은 혈액과 신체 조직의 핵심적인 성분이면서 영양소와 노폐물을 운반하고 체온을 유지해 주는 등 생명 유지에 필수적인 요소입니다.";
+    const waterNeedSentence = "일반적으로 성인은 하루에 6~8컵 정도의 물이 필요합니다.";
+    const template = findSymptomSupportTemplate(
+      "치료 중 탄수화물 단백질 지방 비타민 무기질 물",
+    );
+
+    expect(template?.id).toBe("treatment-nutrient-role-understanding");
+    expect(template?.label).toBe("치료 중 영양소 역할 상담 준비");
+    expect(template?.mealNote).toContain(carbohydrateSentence);
+    expect(template?.mealNote).toContain(proteinSentence);
+    expect(template?.mealNote).toContain(fatSentence);
+    expect(template?.clinicianQuestion).toContain(vitaminMineralSentence);
+    expect(template?.clinicianQuestion).toContain(waterSentence);
+    expect(template?.clinicianQuestion).toContain(waterNeedSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportActionNote(template!)).toContain(
+      "출처: 국가암정보센터 치료 중 영양소의 이해 - https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
+    );
+    const question = buildSymptomSupportQuestion(
+      template!,
+      "치료 중 탄수화물 단백질 지방 비타민 무기질 물",
+    );
+
+    expect(question).toContain(
+      "치료 중 탄수화물 단백질 지방 비타민 무기질 물 기록과 관련해",
+    );
+    expect(question).toContain(carbohydrateSentence);
+    expect(question).toContain(proteinSentence);
+    expect(question).toContain(waterSentence);
+    expect(question).toContain("의료진, 영양사와 어떤 기준으로 확인할지");
+    expect(question).toContain(
+      "출처: 국가암정보센터 치료 중 영양소의 이해 - https://www.cancer.go.kr/lay1/S1T471C473/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
+      /먹으세요|마시세요|반드시 먹어야|반드시 마셔야|식단을 처방하세요|영양소를 처방하세요|진단하세요|치료하세요|처방하세요|암을 낫게|완치|치료 효과를 높입니다|감염 위험을 감소시킵니다|재발을 예방합니다/,
+    );
+  });
+
   it("builds a cervical fertility and pregnancy planning question", () => {
     const template = findSymptomSupportTemplate("임신 계획과 가임력");
 
@@ -2356,7 +2410,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(53);
+    expect(symptomSupportTemplates).toHaveLength(54);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2493,6 +2547,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("치료 중 건강식 단백질 반찬 채소 두 가지")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
     );
+    expect(
+      findSymptomSupportTemplate("치료 중 탄수화물 단백질 지방 비타민 무기질 물")?.sourceUrl,
+    ).toBe("https://www.cancer.go.kr/lay1/S1T471C473/contents.do");
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
     );
