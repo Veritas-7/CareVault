@@ -89,6 +89,7 @@ describe("cervicalCancerCare", () => {
       "nccSurvivorSleepManagement",
       "nccSurvivorExerciseManagement",
       "nccSurvivorNutritionLifestyle",
+      "nccSurvivorHealthyManagementNutrition",
       "nccSurvivorWorkReturn",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
@@ -160,6 +161,9 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
     expect(cervicalCancerCareSources.nccSurvivorExerciseManagement.url).toContain("S1T748C795");
     expect(cervicalCancerCareSources.nccSurvivorNutritionLifestyle.url).toContain("S1T748C796");
+    expect(cervicalCancerCareSources.nccSurvivorHealthyManagementNutrition.url).toContain(
+      "article_seq=22688",
+    );
     expect(cervicalCancerCareSources.nccSurvivorWorkReturn.url).toContain("S1T748C798");
     expect(cervicalCancerCareSources.nccComplementaryTherapyConsultation.url).toContain(
       "S1T365C368",
@@ -277,7 +281,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(64);
+				    expect(cervicalCancerCarePrompts).toHaveLength(65);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -329,6 +333,7 @@ describe("cervicalCancerCare", () => {
       "불면·수면일지 상담 준비",
       "운동강도·근력운동 상담 준비",
       "치료 후 영양·식생활 상담 준비",
+      "치료 후 고용량 영양식품·우유 질문 준비",
       "직업복귀·근무조정 상담 준비",
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
@@ -1352,6 +1357,40 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /식단을 처방하세요|육가공품을 절대 먹지 마세요|술을 마시면 안 됩니다|보조식품을 복용하세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
     );
+    const survivorHealthyManagementNutritionPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "치료 후 고용량 영양식품·우유 질문 준비",
+    )!;
+    expect(survivorHealthyManagementNutritionPrompt.sourceId).toBe(
+      "nccSurvivorHealthyManagementNutrition",
+    );
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("암생존자 예방접종 및 슬기로운 건강관리");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("너무 고용량");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("뭔가 좋다는 영양 식품");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("안 드시는 것이 가장 안전");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("기름기가 적은 고단백 식품");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("탄수화물도");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("우유 드셔도 되나요");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("드셔도 됩니다");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("특정한 음식을");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("고용량으로 그것만 꾸준히");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("너무 달고 기름진 음식");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("탄 음식");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("가공육 가공식품");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("불필요한 영양제 민간요법");
+    expect(survivorHealthyManagementNutritionPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(survivorHealthyManagementNutritionPrompt)).toContain(
+      "출처: 국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(
+      Object.values(
+        buildCervicalCancerCarePromptQuestionDraft(
+          survivorHealthyManagementNutritionPrompt,
+          "2026-06-15",
+        ),
+      ).join(" "),
+    ).not.toMatch(
+      /우유를 드세요|고단백 식품을 드세요|영양제를 끊으세요|민간요법을 하지 마세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
+    );
     const survivorWorkPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "직업복귀·근무조정 상담 준비",
     )!;
@@ -2363,6 +2402,9 @@ describe("cervicalCancerCare", () => {
     const survivorNutritionGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 균형식·가공육·보조식품 메모",
     );
+    const survivorHealthyManagementNutritionGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암생존자 고용량 영양식품·우유 질문 메모",
+    );
     const survivorWorkGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 직업복귀·근무조정 메모",
     );
@@ -2385,7 +2427,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(48);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(49);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3508,6 +3550,39 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorNutritionGuide!)).join(" ")).not.toMatch(
       /식단을 처방하세요|육가공품을 절대 먹지 마세요|술을 마시면 안 됩니다|보조식품을 복용하세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
+    );
+    expect(survivorHealthyManagementNutritionGuide).toMatchObject({
+      label: "암생존자 고용량 영양식품·우유 질문 메모",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("너무 고용량");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("뭔가 좋다는 영양 식품");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("안 드시는 것이 가장 안전");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("기름기가 적은 고단백 식품");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("탄수화물도");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("우유 드셔도 되나요");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("드셔도 됩니다");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("고용량으로 그것만 꾸준히");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("너무 달고 기름진 음식");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("탄 음식");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("가공육 가공식품");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("불필요한 영양제 민간요법");
+    expect(survivorHealthyManagementNutritionGuide?.detail).toContain("진료팀 확인");
+    expect(formatCervicalCancerCareItemEvidence(survivorHealthyManagementNutritionGuide!)).toContain(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(survivorHealthyManagementNutritionGuide!).body).toContain(
+      "암생존자 고용량 영양식품·우유 질문 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(survivorHealthyManagementNutritionGuide!)).toContain(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리",
+    );
+    expect(
+      Object.values(
+        buildCervicalCancerCareItemSymptomDraft(survivorHealthyManagementNutritionGuide!),
+      ).join(" "),
+    ).not.toMatch(
+      /우유를 드세요|고단백 식품을 드세요|영양제를 끊으세요|민간요법을 하지 마세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
     );
     expect(survivorWorkGuide).toMatchObject({
       label: "암생존자 직업복귀·근무조정 메모",
