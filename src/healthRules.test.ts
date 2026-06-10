@@ -13596,7 +13596,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "황색포도상구균은 장독소(enterotoxin)를 함유한 식품을 섭취할 때 일어나는 독소형 식중독균이고, 코 안이나 피부에 상재한 균이 식품에 혼입될 수 있으며, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 밥, 김밥, 도시락, 두부를 확인, 황색포도상구균 육류, 황색포도상구균 육류 가공품, 황색포도상구균 우유, 황색포도상구균 밥, 황색포도상구균 김밥, 황색포도상구균 도시락, 황색포도상구균 두부, 황색포도상구균 과자류, 황색포도상구균 유제품, 황색포도상구균 크림, 황색포도상구균 버터, 황색포도상구균 치즈, 황색포도상구균 복합조리식품, 황색포도상구균 소스, 황색포도상구균 어육 연제품을 확인",
+      "황색포도상구균은 장독소(enterotoxin)를 함유한 식품을 섭취할 때 일어나는 독소형 식중독균이고, 소금농도가 높은 곳에서 증식하며 특히 건조 상태에서 저항성이 강하여 식품이나 가검물 등에서 장기간(수개월) 생존하며, 토양, 하수 등의 자연계에 널리 분포하며 건강인의 약 30%가 이 균을 보균하고 코 안이나 피부에 상재한 균이 식품에 혼입될 수 있으며, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 밥, 김밥, 도시락, 두부를 확인, 황색포도상구균 장독소 내열성, 황색포도상구균 100℃ 60분, 황색포도상구균 소금농도, 황색포도상구균 건조 상태, 황색포도상구균 장기간 생존, 황색포도상구균 토양, 황색포도상구균 하수, 황색포도상구균 건강인 보균, 황색포도상구균 육류, 황색포도상구균 육류 가공품, 황색포도상구균 우유, 황색포도상구균 밥, 황색포도상구균 김밥, 황색포도상구균 도시락, 황색포도상구균 두부, 황색포도상구균 과자류, 황색포도상구균 유제품, 황색포도상구균 크림, 황색포도상구균 버터, 황색포도상구균 치즈, 황색포도상구균 복합조리식품, 황색포도상구균 소스, 황색포도상구균 어육 연제품을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -13613,6 +13613,9 @@ describe("healthRules", () => {
     });
     expect(foodSafetyGuide?.detail).toContain("장독소(enterotoxin)");
     expect(foodSafetyGuide?.detail).toContain("100℃에서 60분간");
+    expect(foodSafetyGuide?.detail).toContain("소금농도가 높은 곳");
+    expect(foodSafetyGuide?.detail).toContain("건조 상태에서 저항성이 강");
+    expect(foodSafetyGuide?.detail).toContain("건강인의 약 30%");
     expect(foodSafetyGuide?.detail).toContain("과자류와 유제품");
     expect(foodSafetyGuide?.detail).toContain("복합조리식품");
     expect(foodSafetyGuide?.detail).toContain("소스");
@@ -13644,11 +13647,21 @@ describe("healthRules", () => {
     expect(riskTerms).toEqual([
       "황색포도상구균",
       "장독소(enterotoxin)",
+      "소금농도가 높은 곳에서 증식하며 특히 건조 상태에서 저항성이 강하여 식품이나 가검물 등에서 장기간(수개월) 생존",
+      "토양, 하수 등의 자연계에 널리 분포하며 건강인의 약 30%가 이 균을 보균",
       "코 안이나 피부에 상재",
       "손에 창상 또는 화농",
       "신체 다른 부위에 화농",
       "육류 및 그 가공품과 우유, 크림, 버터, 치즈",
       "밥, 김밥, 도시락, 두부",
+      "황색포도상구균 장독소 내열성",
+      "황색포도상구균 100℃ 60분",
+      "황색포도상구균 소금농도",
+      "황색포도상구균 건조 상태",
+      "황색포도상구균 장기간 생존",
+      "황색포도상구균 토양",
+      "황색포도상구균 하수",
+      "황색포도상구균 건강인 보균",
       "황색포도상구균 육류",
       "황색포도상구균 육류 가공품",
       "황색포도상구균 우유",

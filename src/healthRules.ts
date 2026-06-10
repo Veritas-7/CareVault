@@ -1203,7 +1203,7 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "식품안전나라 황색포도상구균 식중독 주의",
         detail:
-          "식품안전나라는 황색포도상구균을 식품 중에서 증식해 생산한 장독소(enterotoxin)를 함유한 식품 섭취로 일어나는 독소형 식중독균으로 설명합니다. 균은 78℃에서 1분 또는 64℃에서 10분 가열로 거의 사멸되지만, 원인 물질인 장독소는 내열성이 강해 100℃에서 60분간 가열해야 파괴된다고 설명하므로 식품 안전 질문으로 분리합니다. 원인식품으로 육류 및 그 가공품과 우유, 크림, 버터, 치즈 등과 이들을 재료로 한 과자류와 유제품, 밥, 김밥, 도시락, 두부 등과 복합조리식품, 크림, 소스, 어육 연제품을 제시합니다. 예방대책으로 식품 취급자의 손 청결, 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있을 때 식품 취급 금지, 기구와 기기 청결 유지, 남은 식품은 실온 방치 대신 5℃ 이하에 냉장 보관을 안내합니다.",
+          "식품안전나라는 황색포도상구균을 식품 중에서 증식해 생산한 장독소(enterotoxin)를 함유한 식품 섭취로 일어나는 독소형 식중독균으로 설명합니다. 소금농도가 높은 곳에서 증식하며 특히 건조 상태에서 저항성이 강해 식품이나 가검물 등에서 장기간 생존할 수 있고, 토양·하수 등의 자연계와 건강인의 약 30% 보균 문맥도 감염원 및 감염경로로 제시합니다. 균은 78℃에서 1분 또는 64℃에서 10분 가열로 거의 사멸되지만, 원인 물질인 장독소는 내열성이 강해 100℃에서 60분간 가열해야 파괴된다고 설명하므로 식품 안전 질문으로 분리합니다. 원인식품으로 육류 및 그 가공품과 우유, 크림, 버터, 치즈 등과 이들을 재료로 한 과자류와 유제품, 밥, 김밥, 도시락, 두부 등과 복합조리식품, 크림, 소스, 어육 연제품을 제시합니다. 예방대책으로 식품 취급자의 손 청결, 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있을 때 식품 취급 금지, 기구와 기기 청결 유지, 남은 식품은 실온 방치 대신 5℃ 이하에 냉장 보관을 안내합니다.",
         examples:
           "황색포도상구균, 장독소(enterotoxin), 코 안이나 피부에 상재, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 과자류와 유제품, 밥, 김밥, 도시락, 두부, 복합조리식품, 소스, 어육 연제품, 식품 취급자는 손을 청결히 하며 손에 창상 또는 화농되거나 신체 다른 부위에 화농이 있으면 식품을 취급해서는 안된다, 식품제조에 필요한 모든 기구와 기기 등을 청결히 유지하여 2차 오염을 방지한다, 식품은 적당량을 조속히 조리한 후 모두 섭취하고, 식품이 남았을 경우에는 실온에 방치하지 말고 5℃ 이하에 냉장 보관한다",
         sourceIds: ["foodSafetyKoreaStaphylococcusAureusFoodPoisoning"],
@@ -5533,6 +5533,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
   ],
   [
+    "소금농도가 높은 곳에서 증식하며 특히 건조 상태에서 저항성이 강하여 식품이나 가검물 등에서 장기간(수개월) 생존",
+    "식품안전나라 황색포도상구균 고염·건조 저항성 장기 생존 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "토양, 하수 등의 자연계에 널리 분포하며 건강인의 약 30%가 이 균을 보균",
+    "식품안전나라 황색포도상구균 자연계 분포·건강인 보균 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
     "코 안이나 피부에 상재",
     "식품안전나라 황색포도상구균 피부·비강 보균 오염 확인 필요",
     "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
@@ -5555,6 +5565,46 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "밥, 김밥, 도시락, 두부",
     "식품안전나라 황색포도상구균 밥·김밥·도시락·두부 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 장독소 내열성",
+    "식품안전나라 황색포도상구균 장독소 내열성 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 100℃ 60분",
+    "식품안전나라 황색포도상구균 장독소 100℃ 60분 가열 파괴 문맥 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 소금농도",
+    "식품안전나라 황색포도상구균 고염 증식 문맥 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 건조 상태",
+    "식품안전나라 황색포도상구균 건조 저항성 문맥 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 장기간 생존",
+    "식품안전나라 황색포도상구균 장기간 생존 문맥 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 토양",
+    "식품안전나라 황색포도상구균 토양 자연계 분포 문맥 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 하수",
+    "식품안전나라 황색포도상구균 하수 자연계 분포 문맥 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 건강인 보균",
+    "식품안전나라 황색포도상구균 건강인 보균 문맥 확인 필요",
     "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
   ],
   [
