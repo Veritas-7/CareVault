@@ -250,6 +250,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 암생존자 영양·식생활",
     url: "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
   },
+  nccSurvivorWorkReturn: {
+    label: "국가암정보센터 암생존자 직업복귀",
+    url: "https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+  },
   nccComplementaryTherapyConsultation: {
     label: "국가암정보센터 보완대체요법 상담",
     url: "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
@@ -662,6 +666,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccSurvivorNutritionLifestyle",
   },
   {
+    topic: "직업복귀·근무조정 상담 준비",
+    question:
+      "국가암정보센터 암생존자 직업복귀 안내처럼 직업복귀는 경제 상태와 삶의 질에 긍정적 영향이 있을 수 있지만, 암을 진단받았다고 해서 반드시 직장을 그만두어야 할 필요는 없습니다. 제 치료계획, 몸 상태, 직업의 종류를 기준으로 치료와 일을 병행할 수 있는지와 직장 복귀시기를 의료진과 상의하려면 업무 종류와 업무 스트레스, 치료방법과 예상 치료기간, 부작용과 스트레스 반응, 근무시간 조정·유연근무제·재택근무 같은 지원 가능성, 휴가·병가·근무조정에 필요한 증빙서류를 어떤 순서로 정리하면 좋을까요? 직장 복귀 후 회식이 불가피할 때 음주와 자극적인 음식을 어떻게 기록하고 진료팀에 확인하면 좋을까요?",
+    sourceId: "nccSurvivorWorkReturn",
+  },
+  {
     topic: "보완대체요법 상담 준비",
     question:
       "국가암정보센터 보완대체요법 상담 안내처럼 보완대체요법을 고려할 때 주치의와 먼저 상의하고, 안전과 안녕, 계획한 요법과 다른 치료의 장/단점, 특정 크림이나 약물 또는 침을 맞는 것처럼 제한이 필요한 부위·시술, 약초나 영양제 복용 사실과 부작용 위험, 요법가들의 직접적인 설명, 현재 상태와 앞으로 진행될 의학적 치료 이해 여부를 진료팀에 어떤 순서로 확인하면 좋을까요?",
@@ -927,6 +937,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 암생존자 건강한 식생활로 적정체중을 유지하고, 골고루 균형잡힌 식사를 계획하며, 다양한 색의 과일, 채소, 전곡류를 선택하라고 설명합니다. 또한 육가공품과 탄 음식의 섭취, 짠 음식의 섭취를 피하고 싱겁게 먹는 것, 하루 한 두 잔의 술도 피하는 것, 건강보조식품, 민간요법 등은 주의하는 것을 원칙으로 제시합니다. 이 항목은 식단 처방이나 특정 식품 금지 명령이 아니라 최근 식사와 간식, 체중 변화, 가공육·직화/탄 음식·짠 음식·술 노출, 복용 중인 건강보조식품이나 민간요법 목록, 치료 후 소화기 증상과 식사 제한 이유를 기록하고 내 치료 이력에 맞는 조정 기준을 진료팀 확인 메모로 남깁니다.",
     sourceId: "nccSurvivorNutritionLifestyle",
+  },
+  {
+    label: "암생존자 직업복귀·근무조정 메모",
+    detail:
+      "국가암정보센터는 직업복귀가 경제 상태와 삶의 질에 긍정적 영향을 줄 수 있고, 암 진단이 반드시 직장을 그만두어야 한다는 뜻은 아니며 치료계획, 몸 상태, 직업의 종류에 따라 일을 유지하면서 치료받는 것이 도움이 될 수 있다고 설명합니다. 치료와 일을 병행할 수 있는지, 직장 복귀시기, 치료방법과 예상 치료기간, 부작용과 스트레스 반응, 휴가·병가·연차·휴직 기간, 근무시간 조정·유연근무제·재택근무 같은 지원, 업무조정이 급여나 복지혜택에 미치는 영향, 근무조정 증빙서류를 의료진과 직장에 확인할 항목으로 기록합니다. 직장 복귀 후 불가피한 외식이나 회식에서는 음주와 맵고 자극적인 음식이 치료 후 몸 상태에 맞는지 진료팀 확인 메모로 남깁니다.",
+    sourceId: "nccSurvivorWorkReturn",
   },
   {
     label: "보완대체요법·약초 공유 메모",

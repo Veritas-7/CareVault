@@ -83,6 +83,7 @@ describe("cervicalCancerCare", () => {
       "nccSurvivorSleepManagement",
       "nccSurvivorExerciseManagement",
       "nccSurvivorNutritionLifestyle",
+      "nccSurvivorWorkReturn",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
       "nccCancerFatigueCoping",
@@ -139,6 +140,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
     expect(cervicalCancerCareSources.nccSurvivorExerciseManagement.url).toContain("S1T748C795");
     expect(cervicalCancerCareSources.nccSurvivorNutritionLifestyle.url).toContain("S1T748C796");
+    expect(cervicalCancerCareSources.nccSurvivorWorkReturn.url).toContain("S1T748C798");
     expect(cervicalCancerCareSources.nccComplementaryTherapyConsultation.url).toContain(
       "S1T365C368",
     );
@@ -255,7 +257,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(57);
+				    expect(cervicalCancerCarePrompts).toHaveLength(58);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -301,6 +303,7 @@ describe("cervicalCancerCare", () => {
       "불면·수면일지 상담 준비",
       "운동강도·근력운동 상담 준비",
       "치료 후 영양·식생활 상담 준비",
+      "직업복귀·근무조정 상담 준비",
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
       "암관련 피로 대처 준비",
@@ -1157,6 +1160,39 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /식단을 처방하세요|육가공품을 절대 먹지 마세요|술을 마시면 안 됩니다|보조식품을 복용하세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
     );
+    const survivorWorkPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "직업복귀·근무조정 상담 준비",
+    )!;
+    expect(survivorWorkPrompt.sourceId).toBe("nccSurvivorWorkReturn");
+    expect(survivorWorkPrompt.question).toContain("직업복귀");
+    expect(survivorWorkPrompt.question).toContain("긍정적 영향");
+    expect(survivorWorkPrompt.question).toContain("경제 상태");
+    expect(survivorWorkPrompt.question).toContain("삶의 질");
+    expect(survivorWorkPrompt.question).toContain("반드시 직장을 그만두어야 할 필요는 없습니다");
+    expect(survivorWorkPrompt.question).toContain("치료계획");
+    expect(survivorWorkPrompt.question).toContain("몸 상태");
+    expect(survivorWorkPrompt.question).toContain("직업의 종류");
+    expect(survivorWorkPrompt.question).toContain("의료진과 상의");
+    expect(survivorWorkPrompt.question).toContain("직장 복귀시기");
+    expect(survivorWorkPrompt.question).toContain("치료방법");
+    expect(survivorWorkPrompt.question).toContain("예상 치료기간");
+    expect(survivorWorkPrompt.question).toContain("부작용");
+    expect(survivorWorkPrompt.question).toContain("스트레스 반응");
+    expect(survivorWorkPrompt.question).toContain("근무시간 조정");
+    expect(survivorWorkPrompt.question).toContain("유연근무제");
+    expect(survivorWorkPrompt.question).toContain("재택근무");
+    expect(survivorWorkPrompt.question).toContain("증빙서류");
+    expect(survivorWorkPrompt.question).toContain("회식");
+    expect(survivorWorkPrompt.question).toContain("음주");
+    expect(survivorWorkPrompt.question).toContain("자극적인 음식");
+    expect(buildCervicalCancerCarePromptQuestion(survivorWorkPrompt)).toContain(
+      "출처: 국가암정보센터 암생존자 직업복귀 - https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(survivorWorkPrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(
+      /복귀하세요|일하세요|퇴사하지 마세요|그만두세요|치료하세요|처방하세요|진단하세요|술을 마셔도 됩니다|매운 음식을 먹어도 됩니다/,
+    );
     const complementaryTherapyPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "보완대체요법 상담 준비",
     )!;
@@ -1732,6 +1768,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorNutritionLifestyle")).toContain(
       "국가암정보센터 암생존자 영양·식생활 - https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccSurvivorWorkReturn")).toContain(
+      "국가암정보센터 암생존자 직업복귀 - https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+    );
   });
 
   it("builds context-specific accessible labels for official source links", () => {
@@ -2096,6 +2135,9 @@ describe("cervicalCancerCare", () => {
     const survivorNutritionGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 균형식·가공육·보조식품 메모",
     );
+    const survivorWorkGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암생존자 직업복귀·근무조정 메모",
+    );
     const complementaryTherapyGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "보완대체요법·약초 공유 메모",
     );
@@ -2115,7 +2157,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(41);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(42);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3050,6 +3092,41 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorNutritionGuide!)).join(" ")).not.toMatch(
       /식단을 처방하세요|육가공품을 절대 먹지 마세요|술을 마시면 안 됩니다|보조식품을 복용하세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
+    );
+    expect(survivorWorkGuide).toMatchObject({
+      label: "암생존자 직업복귀·근무조정 메모",
+      sourceId: "nccSurvivorWorkReturn",
+    });
+    expect(survivorWorkGuide?.detail).toContain("직업복귀");
+    expect(survivorWorkGuide?.detail).toContain("경제 상태");
+    expect(survivorWorkGuide?.detail).toContain("삶의 질");
+    expect(survivorWorkGuide?.detail).toContain("반드시 직장을 그만두어야 한다는 뜻은 아니며");
+    expect(survivorWorkGuide?.detail).toContain("치료계획");
+    expect(survivorWorkGuide?.detail).toContain("몸 상태");
+    expect(survivorWorkGuide?.detail).toContain("직업의 종류");
+    expect(survivorWorkGuide?.detail).toContain("직장 복귀시기");
+    expect(survivorWorkGuide?.detail).toContain("치료방법");
+    expect(survivorWorkGuide?.detail).toContain("예상 치료기간");
+    expect(survivorWorkGuide?.detail).toContain("부작용");
+    expect(survivorWorkGuide?.detail).toContain("스트레스 반응");
+    expect(survivorWorkGuide?.detail).toContain("근무시간 조정");
+    expect(survivorWorkGuide?.detail).toContain("유연근무제");
+    expect(survivorWorkGuide?.detail).toContain("재택근무");
+    expect(survivorWorkGuide?.detail).toContain("증빙서류");
+    expect(survivorWorkGuide?.detail).toContain("회식");
+    expect(survivorWorkGuide?.detail).toContain("음주");
+    expect(survivorWorkGuide?.detail).toContain("자극적인 음식");
+    expect(formatCervicalCancerCareItemEvidence(survivorWorkGuide!)).toContain(
+      "국가암정보센터 암생존자 직업복귀 - https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(survivorWorkGuide!).body).toContain(
+      "암생존자 직업복귀·근무조정 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(survivorWorkGuide!)).toContain(
+      "국가암정보센터 암생존자 직업복귀",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorWorkGuide!)).join(" ")).not.toMatch(
+      /복귀하세요|일하세요|퇴사하지 마세요|그만두세요|치료하세요|처방하세요|진단하세요|술을 마셔도 됩니다|매운 음식을 먹어도 됩니다/,
     );
     expect(complementaryTherapyGuide).toMatchObject({
       label: "보완대체요법·약초 공유 메모",
