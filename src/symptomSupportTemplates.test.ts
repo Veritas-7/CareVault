@@ -184,6 +184,11 @@ describe("symptomSupportTemplates", () => {
         "임신 중 자궁경부암 발견 조직 생검 자궁경관 내 소파술 원추생검",
       )?.id,
     ).toBe("cervical-pregnancy-diagnosis-treatment");
+    expect(
+      findSymptomSupportTemplate(
+        "자궁근종 단순자궁절제술 후 조직검사에서 자궁경부암 발견 절제연 전이여부",
+      )?.id,
+    ).toBe("cervical-incidental-post-hysterectomy-finding");
     expect(findSymptomSupportTemplate("임신 계획과 가임력")?.id).toBe(
       "cervical-fertility-pregnancy",
     );
@@ -2942,6 +2947,57 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds an incidental post-hysterectomy cervical-cancer finding question from official treatment guidance", () => {
+    const findingSentence =
+      "간혹 침윤성 자궁경부암을 단순자궁절제술 이후에 우연히 발견하는 경우가 있습니다.";
+    const treatmentSentence =
+      "이럴 때는 광범위 자궁주위 조직 절제, 질상부 절제 및 골반 림프절 절제술을 포함하는 수술이나 동시항암화학방사선요법을 시행할 수 있습니다.";
+    const decisionSentence =
+      "치료방법은 환자의 상태, 절제된 자궁 조직검사, 전이여부 등에 따라 결정합니다.";
+    const template = findSymptomSupportTemplate(
+      "자궁근종 단순자궁절제술 후 조직검사에서 자궁경부암 발견 절제연 전이여부",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁근종 단순자궁절제술 후 조직검사에서 자궁경부암 발견 절제연 전이여부",
+    );
+
+    expect(template.id).toBe("cervical-incidental-post-hysterectomy-finding");
+    expect(template.mealNote).toContain(findingSentence);
+    expect(template.mealNote).toContain("단순자궁절제술");
+    expect(template.mealNote).toContain("조직검사");
+    expect(template.mealNote).toContain("절제된 자궁 조직검사");
+    expect(template.mealNote).toContain("전이여부");
+    expect(template.clinicianQuestion).toContain(treatmentSentence);
+    expect(template.clinicianQuestion).toContain(decisionSentence);
+    expect(template.clinicianQuestion).toContain("광범위 자궁주위 조직 절제");
+    expect(template.clinicianQuestion).toContain("질상부 절제");
+    expect(template.clinicianQuestion).toContain("골반 림프절 절제술");
+    expect(template.clinicianQuestion).toContain("동시항암화학방사선요법");
+    expect(actionNote).toContain("환자의 상태");
+    expect(actionNote).toContain("절제연");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
+    );
+    expect(buildSymptomSupportQueueHint(template)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(findSymptomSupportTemplate("질건조와 성관계 통증")?.id).toBe(
+      "cervical-sexual-health",
+    );
+    expect(findSymptomSupportTemplate("임신 계획과 가임력")?.id).toBe(
+      "cervical-fertility-pregnancy",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")
+        ?.id,
+    ).toBe("cervical-recurrence-symptom-check");
+    expect(question).not.toMatch(
+      /수술하세요|절제하세요|림프절 절제를 하세요|동시항암화학방사선요법을 받으세요|항암화학방사선치료를 받으세요|방사선치료를 받으세요|치료하세요|처방하세요|진단하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical pelvic-radiation menopause-symptom question", () => {
     const template = findSymptomSupportTemplate("무월경과 안면홍조");
 
@@ -3015,7 +3071,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(66);
+    expect(symptomSupportTemplates).toHaveLength(67);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3230,6 +3286,12 @@ describe("symptomSupportTemplates", () => {
     );
     expect(
       findSymptomSupportTemplate("임신 중 자궁경부암 발견 조직 생검")?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁근종 단순자궁절제술 후 조직검사에서 자궁경부암 발견")
+        ?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
     );
