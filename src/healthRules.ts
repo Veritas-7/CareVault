@@ -4695,6 +4695,41 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
   ],
   [
+    "황색포도상구균 육류",
+    "식품안전나라 황색포도상구균 육류 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 육류 가공품",
+    "식품안전나라 황색포도상구균 육류 가공품 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 우유",
+    "식품안전나라 황색포도상구균 우유 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 밥",
+    "식품안전나라 황색포도상구균 밥 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 김밥",
+    "식품안전나라 황색포도상구균 김밥 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 도시락",
+    "식품안전나라 황색포도상구균 도시락 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
+    "황색포도상구균 두부",
+    "식품안전나라 황색포도상구균 두부 원인식품 확인 필요",
+    "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
+  ],
+  [
     "황색포도상구균 과자류",
     "식품안전나라 황색포도상구균 과자류 원인식품 확인 필요",
     "foodSafetyKoreaStaphylococcusAureusFoodPoisoning",
