@@ -4738,6 +4738,72 @@ describe("healthRules", () => {
     ).toBe(false);
   });
 
+  it("recognizes NCC cancer survivor guide hygiene cooking and cold-storage source sentences", () => {
+    const assessment = assessCancerFood(
+      "식사 전에는 비누와 물을 이용해 손을 깨끗이 씻는다. 조리 시에는 손을 잘 씻고 모든 식 재료들도 깨끗이 씻는다. 날 생선이나 육류,계란은 주의한다. 육류와 생선은 완전히 익혀 조리한다. 세균의 증식을 막기 위해 음식은 4℃ 이하에서 보관한다.",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "식사 전에는 비누와 물을 이용해 손을 깨끗이 씻는다.",
+      "조리 시에는 손을 잘 씻고 모든 식 재료들도 깨끗이 씻는다.",
+      "날 생선이나 육류,계란은 주의한다.",
+      "육류와 생선은 완전히 익혀 조리한다.",
+      "세균의 증식을 막기 위해 음식은 4℃ 이하에서 보관한다.",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 암경험자 식품안전 위생·가열·냉장 확인 필요",
+        sourceId: "nccCancerSurvivorHealthGuide",
+      });
+    }
+    expect(careTeamGuideText).toContain("암경험자 식사 전 손 씻기");
+    expect(careTeamGuideText).toContain("암경험자 음식 4도 이하 보관");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|치료 음식|먹으세요|끊으세요|재발을 막|예방 보장/,
+    );
+  });
+
+  it("keeps NCC cancer survivor guide hygiene shorthand scoped to survivor context", () => {
+    const assessment = assessCancerFood(
+      "암경험자 식사 전 손 씻기, 암경험자 식재료 세척, 암경험자 날 생선 육류 계란 주의, 암경험자 육류와 생선 완전가열, 암경험자 음식 4도 이하 보관",
+    );
+    const genericAssessment = assessCancerFood(
+      "식사 전 손 씻기, 식재료 세척, 날 생선 육류 계란 주의, 육류와 생선 완전가열, 음식 4도 이하 보관",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "암경험자 식사 전 손 씻기",
+      "암경험자 식재료 세척",
+      "암경험자 날 생선 육류 계란 주의",
+      "암경험자 육류와 생선 완전가열",
+      "암경험자 음식 4도 이하 보관",
+    ]);
+    for (const match of assessment.matches) {
+      expect(match).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 암경험자 식품안전 위생·가열·냉장 확인 필요",
+        sourceId: "nccCancerSurvivorHealthGuide",
+      });
+    }
+    expect(
+      genericAssessment.matches.some(
+        (match) => match.sourceId === "nccCancerSurvivorHealthGuide",
+      ),
+    ).toBe(false);
+  });
+
   it("recognizes NCC after-treatment processed meat source sentence", () => {
     const sourceSentence =
       "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";
