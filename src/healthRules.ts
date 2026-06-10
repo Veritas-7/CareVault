@@ -4810,6 +4810,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaBacillusCereusFoodPoisoning",
   ],
   [
+    "바실러스 육류 스프",
+    "식품안전나라 바실러스 세레우스균 육류 스프 원인식품 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 채소 스프",
+    "식품안전나라 바실러스 세레우스균 채소 스프 원인식품 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
     "바실러스 푸딩",
     "식품안전나라 바실러스 세레우스균 푸딩 원인식품 확인 필요",
     "foodSafetyKoreaBacillusCereusFoodPoisoning",
