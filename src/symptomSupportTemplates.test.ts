@@ -118,6 +118,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("케모포트 삽입부위 붓고 분비물")?.id).toBe(
       "chemoport-contact-threshold",
     );
+    expect(findSymptomSupportTemplate("자궁경부암 항암치료 민간요법 건강보조식품")?.id).toBe(
+      "cervical-diet-supplement-boundary",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -2114,6 +2117,49 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a cervical-cancer treatment-period diet and supplement-boundary question", () => {
+    const noSpecialFoodSentence =
+      "자궁경부암 환자가 특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다.";
+    const nutritionRestSentence =
+      "충분한 영양을 섭취하고 휴식을 취하는 것이 몸의 면역 기능 강화와 투병 생활에 도움이 될 수 있습니다.";
+    const bowelFunctionSentence =
+      "방사선 치료나 항암화학요법 중에는 장기능이 약해질 가능성이 있으므로 되도록 자극적인 음식은 피합니다.";
+    const supplementSentence =
+      "민간요법이나 건강보조식품은 과학적으로 효능이 확인되지 않았으며 병원에서 투여하는 약제와 예상할 수 없는 상호작용으로 치료효과가 떨어지거나 부작용 이 커질 수도 있기 때문입니다.";
+    const template = findSymptomSupportTemplate("자궁경부암 항암치료 민간요법 건강보조식품");
+    const question = buildSymptomSupportQuestion(
+      template!,
+      "자궁경부암 항암치료 민간요법 건강보조식품",
+    );
+
+    expect(template?.id).toBe("cervical-diet-supplement-boundary");
+    expect(template?.label).toBe("자궁경부암 식생활·보조식품 상담 준비");
+    expect(template?.mealNote).toContain(noSpecialFoodSentence);
+    expect(template?.mealNote).toContain(nutritionRestSentence);
+    expect(template?.mealNote).toContain("평소 좋아했던 음식");
+    expect(template?.mealNote).toContain("식욕을 느낄 때마다 먹은 기록");
+    expect(template?.clinicianQuestion).toContain(bowelFunctionSentence);
+    expect(template?.clinicianQuestion).toContain(supplementSentence);
+    expect(buildSymptomSupportActionNote(template!)).toContain(
+      "출처: 국가암정보센터 자궁경부암 식생활 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
+    );
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(question).toContain(
+      "자궁경부암 항암치료 민간요법 건강보조식품 기록과 관련해",
+    );
+    expect(question).toContain("특별히 피해야 하거나");
+    expect(question).toContain("장기능이 약해질 가능성");
+    expect(question).toContain("예상할 수 없는 상호작용");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 식생활 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
+    );
+    expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
+      /먹으세요|피하세요|진통제를 복용하세요|민간요법을 시작하세요|건강보조식품을 시작하세요|민간요법을 중단하세요|건강보조식품을 중단하세요|식단을 처방하세요|진단하세요|치료하세요|처방하세요|암을 낫게|완치|면역 기능을 강화합니다|치료효과를 높입니다|재발을 예방합니다/,
+    );
+  });
+
   it("builds a cervical fertility and pregnancy planning question", () => {
     const template = findSymptomSupportTemplate("임신 계획과 가임력");
 
@@ -2200,7 +2246,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(50);
+    expect(symptomSupportTemplates).toHaveLength(51);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2325,6 +2371,11 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("케모포트 삽입부위 붓고 분비물")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T343C345/contents.do",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 항암치료 민간요법 건강보조식품")?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
