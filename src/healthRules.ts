@@ -5402,6 +5402,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaSalmonellaFoodPoisoning",
   ],
   [
+    "살모넬라 하수",
+    "식품안전나라 살모넬라균 하수 자연환경 감염경로 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "살모넬라 하천수",
+    "식품안전나라 살모넬라균 하천수 자연환경 감염경로 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
     "살모넬라 우유",
     "식품안전나라 살모넬라균 우유 원인식품 확인 필요",
     "foodSafetyKoreaSalmonellaFoodPoisoning",
