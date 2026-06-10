@@ -1169,7 +1169,7 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         detail:
           "식품안전나라는 리스테리아균이 냉장온도에서도 생존하여 증식할 수 있다고 설명합니다. 원인식품으로 원유, 살균처리하지 아니한 우유, 핫도그, 치즈(특히 소프트치즈), 아이스크림, 소시지 및 건조 소시지, 가공·비가공 가금육과 비가공 식육 등을 제시하므로, 면역저하 또는 항암 치료 중 식품 메모에서는 냉장 보관 온도 5℃ 이하 관리와 살균 안 된 우유 회피를 식품 안전 질문으로 분리합니다.",
         examples:
-          "리스테리아균, 냉장온도에서도 생존하여 증식, 살균처리하지 아니한 우유, 살균 안 된 우유를 섭취하지 말아야 한다, 핫도그, 치즈(특히 소프트치즈), 소시지 및 건조 소시지, 냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
+          "리스테리아균, 냉장온도에서도 생존하여 증식, 원유, 살균처리하지 아니한 우유, 살균 안 된 우유를 섭취하지 말아야 한다, 핫도그, 치즈(특히 소프트치즈), 아이스크림, 소시지 및 건조 소시지, 가공·비가공 가금육, 비가공 식육, 냉장 보관 온도(5℃ 이하) 관리를 철저하게 하여야 한다",
         sourceIds: ["foodSafetyKoreaListeriaFoodPoisoning"],
       },
       {
@@ -4857,6 +4857,31 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "소시지 및 건조 소시지",
     "식품안전나라 리스테리아 식중독 소시지·건조 소시지 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 원유",
+    "식품안전나라 리스테리아 식중독 원유 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 핫도그",
+    "식품안전나라 리스테리아 식중독 핫도그 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 아이스크림",
+    "식품안전나라 리스테리아 식중독 아이스크림 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "가공·비가공 가금육",
+    "식품안전나라 리스테리아 식중독 가공·비가공 가금육 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "비가공 식육",
+    "식품안전나라 리스테리아 식중독 비가공 식육 원인식품 확인 필요",
     "foodSafetyKoreaListeriaFoodPoisoning",
   ],
   [

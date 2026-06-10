@@ -12320,7 +12320,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "리스테리아균은 냉장온도에서도 생존하여 증식할 수 있고, 살균처리하지 아니한 우유, 치즈(특히 소프트치즈), 소시지 및 건조 소시지를 확인",
+      "리스테리아균은 냉장온도에서도 생존하여 증식할 수 있고, 살균처리하지 아니한 우유, 치즈(특히 소프트치즈), 소시지 및 건조 소시지, 리스테리아 원유, 리스테리아 핫도그, 리스테리아 아이스크림, 가공·비가공 가금육, 비가공 식육을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -12339,7 +12339,15 @@ describe("healthRules", () => {
     expect(foodSafetyGuide?.detail).toContain("살균처리하지 아니한 우유");
     expect(foodSafetyGuide?.detail).toContain("소프트치즈");
     expect(foodSafetyGuide?.detail).toContain("핫도그");
+    expect(foodSafetyGuide?.detail).toContain("원유");
+    expect(foodSafetyGuide?.detail).toContain("아이스크림");
+    expect(foodSafetyGuide?.detail).toContain("가공·비가공 가금육");
+    expect(foodSafetyGuide?.detail).toContain("비가공 식육");
     expect(foodSafetyGuide?.detail).toContain("소시지 및 건조 소시지");
+    expect(foodSafetyGuide?.examples).toContain("원유");
+    expect(foodSafetyGuide?.examples).toContain("아이스크림");
+    expect(foodSafetyGuide?.examples).toContain("가공·비가공 가금육");
+    expect(foodSafetyGuide?.examples).toContain("비가공 식육");
 
     expect(safePracticeAssessment.level).toBe("ok");
     expect(safeTerms).toEqual([
@@ -12363,6 +12371,11 @@ describe("healthRules", () => {
       "살균처리하지 아니한 우유",
       "치즈(특히 소프트치즈)",
       "소시지 및 건조 소시지",
+      "리스테리아 원유",
+      "리스테리아 핫도그",
+      "리스테리아 아이스크림",
+      "가공·비가공 가금육",
+      "비가공 식육",
     ]);
     for (const term of riskTerms) {
       expect(riskMatchesByTerm[term]).toMatchObject({
@@ -12371,7 +12384,7 @@ describe("healthRules", () => {
       });
     }
     expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
-      /치료 음식|완치|암을 낫게/,
+      /치료 음식|완치|암을 낫게|리스테리아를 예방합니다|감염을 막습니다/,
     );
   });
 
