@@ -13908,7 +13908,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "여시니아 엔테로콜리티카균은 0~5℃의 냉장고에서도 발육이 가능한 저온세균이고 진공포장에서도 증식할 수 있는 특성이 있으며, 오물, 오염된 물, 돼지고기, 양고기, 쇠고기, 생우유, 아이스크림 같은 주요 원인식품과 여시니아 오물, 여시니아 오염된 물, 여시니아 돼지고기, 여시니아 양고기, 여시니아 쇠고기, 여시니아 생우유, 여시니아 아이스크림, 여시니아 냉장육, 여시니아 냉동육을 확인하고, 동물의 분변과 함께 배출되어 음료수나 식품에 오염되는 경로, 저온보관 상태에서도 균이 증식하는 상황을 확인",
+      "여시니아 엔테로콜리티카균은 0~5℃의 냉장고에서도 발육이 가능한 저온세균이고 진공포장에서도 증식할 수 있는 특성이 있으며, 오물, 오염된 물, 돼지고기, 양고기, 쇠고기, 생우유, 아이스크림 같은 주요 원인식품과 여시니아 오물, 여시니아 오염된 물, 여시니아 돼지고기, 여시니아 양고기, 여시니아 쇠고기, 여시니아 생우유, 여시니아 아이스크림, 여시니아 냉장육, 여시니아 냉동육, 도살된 돼지와 소 등의 육류, 여시니아 도살된 돼지, 여시니아 도살된 소, 여시니아 쥐 매개, 여시니아 동물 분변을 확인하고, 동물의 분변과 함께 배출되어 음료수나 식품에 오염되는 경로, 저온보관 상태에서도 균이 증식하는 상황을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -13925,6 +13925,9 @@ describe("healthRules", () => {
     });
     expect(foodSafetyGuide?.detail).toContain("0~5℃의 냉장고에서도 발육");
     expect(foodSafetyGuide?.detail).toContain("진공포장에서도 증식");
+    expect(foodSafetyGuide?.detail).toContain("도살된 돼지와 소");
+    expect(foodSafetyGuide?.detail).toContain("쥐가 균을 매개");
+    expect(foodSafetyGuide?.detail).toContain("동물의 분변");
     expect(foodSafetyGuide?.detail).toContain("저온보관 상태에서도 균이 증식");
     expect(foodSafetyGuide?.detail).toContain("돈육 취급 시 조리기구와 손");
 
@@ -13958,6 +13961,11 @@ describe("healthRules", () => {
       "여시니아 아이스크림",
       "여시니아 냉장육",
       "여시니아 냉동육",
+      "도살된 돼지와 소 등의 육류",
+      "여시니아 도살된 돼지",
+      "여시니아 도살된 소",
+      "여시니아 쥐 매개",
+      "여시니아 동물 분변",
       "동물의 분변과 함께 배출되어 음료수나 식품에 오염",
       "저온보관 상태에서도 균이 증식",
     ]);
