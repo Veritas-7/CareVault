@@ -156,6 +156,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("성교 후 출혈과 악취 분비물")?.id).toBe(
       "cervical-general-warning",
     );
+    expect(findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")?.id).toBe(
+      "cervical-recurrence-symptom-check",
+    );
     expect(findSymptomSupportTemplate("방사선치료 후 혈뇨와 혈변")?.id).toBe(
       "cervical-urinary-bowel-bleeding",
     );
@@ -2294,6 +2297,54 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
   });
 
+  it("builds a cervical recurrence-symptom question from official recurrence guidance", () => {
+    const recurrenceSymptomsSentence =
+      "재발 성 자궁경부암 의 증상은 매우 다양합니다. 체중감소, 하지 부종, 골반 혹은 허벅지 통증, 질출혈 혹은 질분비물의 증가, 진행 성 요관 폐색, 쇄골위 림프절 비대 등이 나타나며, 폐로 전이 하면 기침, 객혈, 때로는 흉통을 호소할 수 있습니다. 그러나 특징적인 증상이 없는 경우가 더 많습니다.";
+    const followUpSentence =
+      "추적검사의 주기와 프로그램은 환자 개개인의 상태나 치료받는 병원에 따라 다소 차이가 있을 수 있으나, 일반적으로 첫 2년 간은 3개월마다, 이후 5년까지 6개월마다, 그 이후 이상이 없으면 매년 실시합니다.";
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통",
+    );
+
+    expect(template.id).toBe("cervical-recurrence-symptom-check");
+    expect(template.mealNote).toContain(recurrenceSymptomsSentence);
+    expect(template.mealNote).toContain("체중감소");
+    expect(template.mealNote).toContain("하지 부종");
+    expect(template.mealNote).toContain("기침·객혈·흉통");
+    expect(template.clinicianQuestion).toContain(followUpSentence);
+    expect(template.clinicianQuestion).toContain("문진");
+    expect(template.clinicianQuestion).toContain("골반내진");
+    expect(template.clinicianQuestion).toContain("세포검사");
+    expect(template.clinicianQuestion).toContain("CT");
+    expect(template.clinicianQuestion).toContain("MRI");
+    expect(template.clinicianQuestion).toContain("PET");
+    expect(actionNote).toContain("쇄골위 림프절 비대");
+    expect(actionNote).toContain("특징적인 증상이 없는 경우");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 재발 및 전이 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4895",
+    );
+    expect(findSymptomSupportTemplate("체중감소와 단백질 보충 걱정")?.id).toBe(
+      "weight-change-nutrition",
+    );
+    expect(findSymptomSupportTemplate("림프부종 감염·악화 신호와 피부 붉어짐")?.id).toBe(
+      "lymphedema",
+    );
+    expect(findSymptomSupportTemplate("기침이 오래 지속되고 밤잠 방해")?.id).toBe(
+      "cough-care",
+    );
+    expect(findSymptomSupportTemplate("성교 후 출혈과 악취 분비물")?.id).toBe(
+      "cervical-general-warning",
+    );
+    expect(question).not.toMatch(
+      /재발입니다|전이입니다|폐 전이입니다|검사를 받으세요|CT를 찍으세요|MRI를 찍으세요|PET를 찍으세요|치료하세요|처방하세요|진단하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("prioritizes cervical pain wording over the generic pain template", () => {
     expect(findSymptomSupportTemplate("골반 통증과 다리로 뻗치는 통증")?.id).toBe(
       "cervical-general-warning",
@@ -2332,6 +2383,11 @@ describe("symptomSupportTemplates", () => {
     expect(buildSymptomSupportQueueHint(findSymptomSupportTemplate("비정상 질출혈")!)).toBe(
       "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
     );
+    expect(
+      buildSymptomSupportQueueHint(
+        findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종")!,
+      ),
+    ).toBe("저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.");
     expect(buildSymptomSupportQueueHint(findSymptomSupportTemplate("잇몸출혈")!)).toBe(
       "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
     );
@@ -2864,7 +2920,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(63);
+    expect(symptomSupportTemplates).toHaveLength(64);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3034,6 +3090,12 @@ describe("symptomSupportTemplates", () => {
     ).toBe("https://www.cancer.go.kr/lay1/S1T470C476/contents.do");
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")
+        ?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4895",
     );
     expect(findSymptomSupportTemplate("혈뇨")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
