@@ -70,6 +70,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.id).toBe(
       "survivor-exercise-management",
     );
+    expect(findSymptomSupportTemplate("소아청소년 암생존자 운동 TOP 신체역량")?.id).toBe(
+      "pediatric-exercise-activity-support",
+    );
     expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.id).toBe(
       "survivor-nutrition-lifestyle",
     );
@@ -750,6 +753,70 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 운동강도 상담"),
     ).not.toMatch(
       /운동을 처방하세요|운동하세요|운동을 시작하세요|진단하세요|치료하세요|완치|재발을 예방합니다|사망률을 낮춥니다|무조건 주 150분|반드시 주 2회/,
+    );
+  });
+
+  it("builds a pediatric exercise and activity question from official guidance", () => {
+    const activityOpportunitySentence =
+      "소아청소년이 암 치료를 받는 동안에는 학교생활이나 체육활동에 참여할 기회가 적어지므로 신체역량과 체력이 떨어집니다.";
+    const physicalLiteracySentence =
+      "신체역량에는 달리기, 던지기, 공치기, 발차기, 수영하기, 균형 잡기 능력 등이 포함되요.";
+    const confidenceSentence =
+      "규칙적인 운동과 다양한 체육활동 참여는 신체역량과 체력을 높이고, 자신감 및 자기효능감도 길러 주기 때문에 학교생활 적응에 도움이 됩니다.";
+    const physicalLiteracyDefinitionSentence =
+      "신체역량이란 자신의 신체를 상황에 따라 적절하게 움직일 수 있는 능력을 말합니다.";
+    const goalPlanSentence = "달성할 수 있는 운동 목표와 계획을 주도적으로 세워 보세요.";
+    const dailyActivitySentence =
+      "소아청소년 암생존자는 소아청소년 신체활동 권장 사항에 따라 하루에 60분 이상 중강도 이상의 유산소 신체활동";
+    const strengthSentence = "일주일에 3일 이상은 근력운동을 합니다.";
+    const topExerciseSentence =
+      "탑(TOP) 운동은 태권도, 권투, 근력운동 등을 조합하여 만든 운동 프로그램입니다.";
+    const topIntensitySentence =
+      "저강도(탑 익히기), 중강도(즐기기), 고강도(누리기)";
+    const doctorTimingSentence =
+      "운동은 주치의사의 권고에 따라 운동 시기 및 강도로 하시기 바랍니다.";
+    const discomfortSentence = "운동 중 통증 이나 불편감이 발생하면";
+    const template = findSymptomSupportTemplate("소아청소년 암생존자 운동 TOP 신체역량");
+
+    expect(template?.id).toBe("pediatric-exercise-activity-support");
+    expect(template?.mealNote).toContain(activityOpportunitySentence);
+    expect(template?.mealNote).toContain(physicalLiteracySentence);
+    expect(template?.mealNote).toContain(confidenceSentence);
+    expect(template?.mealNote).toContain(physicalLiteracyDefinitionSentence);
+    expect(template?.mealNote).toContain(goalPlanSentence);
+    expect(template?.clinicianQuestion).toContain(dailyActivitySentence);
+    expect(template?.clinicianQuestion).toContain(strengthSentence);
+    expect(template?.clinicianQuestion).toContain(topExerciseSentence);
+    expect(template?.clinicianQuestion).toContain(topIntensitySentence);
+    expect(template?.clinicianQuestion).toContain(doctorTimingSentence);
+    expect(template?.clinicianQuestion).toContain(discomfortSentence);
+    expect(template?.clinicianQuestion).toContain("현재 체력 수준");
+    expect(template?.clinicianQuestion).toContain("통증·불편감 발생 시 연락 기준");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 운동 TOP 신체역량",
+      ),
+    ).toContain(topExerciseSentence);
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 운동 TOP 신체역량",
+      ),
+    ).toContain(
+      "출처: 국가암정보센터 소아청소년 암생존자 운동 - https://www.cancer.go.kr/lay1/S1T800C801/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 운동 TOP 신체역량",
+      ),
+    ).not.toMatch(
+      /운동하세요|운동을 시작하세요|체육활동에 참여하세요|하루에 60분 이상 운동하세요|고강도 신체활동을 하세요|근력운동을 하세요|TOP 운동을 따라하세요|통증이 있으면 바로 멈추세요|운동을 처방하세요|진단하세요|치료하세요|학교생활 적응이 보장됩니다|체력이 좋아집니다/,
     );
   });
 
@@ -1841,7 +1908,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(44);
+    expect(symptomSupportTemplates).toHaveLength(45);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1878,6 +1945,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
+    expect(findSymptomSupportTemplate("소아청소년 암생존자 운동 TOP 신체역량")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T800C801/contents.do",
     );
     expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
