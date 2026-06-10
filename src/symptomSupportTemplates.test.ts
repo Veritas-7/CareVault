@@ -869,6 +869,66 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a post-surgery delirium concern question from official guidance", () => {
+    const surgerySentence =
+      "큰 수술을 수시간에 걸쳐 받고 나온 가족이, 마취에서 깨어 갑작스럽게 이상해 보이는 행동을 합니다.";
+    const dementiaConcernSentence =
+      "연세가 많은 경우, 혹시 치매가 온 것은 아닌지 걱정이 되기도 합니다.";
+    const fluctuationSentence =
+      "섬망의 시작은 보통 몇 시간 또는 며칠 내에 빠르게 진행이 되고, 하루에도 상태가 오락가락한 모습을 보입니다.";
+    const caregiverChangeSentence =
+      "정확한 진단을 내리려면 가족 구성원이나 간병인이 평소 모습과 최근의 변화를 보고해 주는 것이 중요합니다.";
+    const surgeryCauseSentence = "마취 후 혹은 수술 후 상태";
+    const symptomSentence = "존재하지 않는 것 보기(환각)";
+    const sleepWakeSentence = "야간 수면-각성주기의 역전";
+    const template = findSymptomSupportTemplate("암 수술 후 치매처럼 보여요 섬망 혼돈 환각");
+
+    expect(template?.id).toBe("post-surgery-delirium-concern");
+    expect(template?.mealNote).toContain(surgerySentence);
+    expect(template?.mealNote).toContain(dementiaConcernSentence);
+    expect(template?.mealNote).toContain(fluctuationSentence);
+    expect(template?.mealNote).toContain(caregiverChangeSentence);
+    expect(template?.clinicianQuestion).toContain(surgeryCauseSentence);
+    expect(template?.clinicianQuestion).toContain("환경에 대한 인식 감소");
+    expect(template?.clinicianQuestion).toContain("인지 기능의 저하");
+    expect(template?.clinicianQuestion).toContain(symptomSentence);
+    expect(template?.clinicianQuestion).toContain(sleepWakeSentence);
+    expect(template?.clinicianQuestion).toContain("평소 모습과 최근 변화");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "암 수술 후 치매처럼 보여요 섬망 혼돈 환각",
+      ),
+    ).toContain(fluctuationSentence);
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "암 수술 후 치매처럼 보여요 섬망 혼돈 환각",
+      ),
+    ).toContain(
+      "출처: 국가정신건강정보포털 섬망 - 수술·입원 후 급성 혼돈 기록 - https://www.mentalhealth.go.kr/portal/disease/diseaseDetail.do?dissId=60",
+    );
+    expect(
+      findSymptomSupportTemplate("주치의가 정신건강의학과 진료를 권했어요 불면 우울 불안")
+        ?.id,
+    ).toBe("psychiatry-consult-benefits");
+    expect(findSymptomSupportTemplate("암 진단 후 불면증 정신과 약 중독 걱정")?.id).toBe(
+      "mental-health-medication-misconception",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "암 수술 후 치매처럼 보여요 섬망 혼돈 환각",
+      ),
+    ).not.toMatch(
+      /섬망입니다|섬망을 진단하세요|치매가 아닙니다|치매가 있습니다|치매를 배제하세요|환각을 치료하세요|수면제를 복용하세요|항정신병약을 복용하세요|진정제를 복용하세요|처방하세요|치료하세요|회복됩니다|정상으로 돌아옵니다|안심하세요|괜찮습니다/,
+    );
+  });
+
   it("builds a stress-cancer cause misconception question from official guidance", () => {
     const blameSentence =
       "암환자들은 흔히 누군가를 탓하고 싶은 마음이 듭니다.";
@@ -2725,13 +2785,15 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(60);
+    expect(symptomSupportTemplates).toHaveLength(61);
+    const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
+      (template.sourceLabel.startsWith("국가암정보센터") &&
+        template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
+      (template.sourceLabel.startsWith("국가정신건강정보포털") &&
+        template.sourceUrl.startsWith("https://www.mentalhealth.go.kr/"));
+
     expect(
-      symptomSupportTemplates.every(
-        (template) =>
-          template.sourceLabel.startsWith("국가암정보센터") &&
-          template.sourceUrl.startsWith("https://www.cancer.go.kr/"),
-      ),
+      symptomSupportTemplates.every((template) => allowedOfficialSource(template)),
     ).toBe(true);
     expect(findSymptomSupportTemplate("오심")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
@@ -2768,6 +2830,9 @@ describe("symptomSupportTemplates", () => {
         ?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22079&condition=&cpage=2&keyword=&mode=view&rn=48&rows=12",
+    );
+    expect(findSymptomSupportTemplate("암 수술 후 치매처럼 보여요 섬망 혼돈 환각")?.sourceUrl).toBe(
+      "https://www.mentalhealth.go.kr/portal/disease/diseaseDetail.do?dissId=60",
     );
     expect(findSymptomSupportTemplate("스트레스 때문에 암에 걸렸나요 가족 탓 죄책감")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&rn=46&rows=12",
