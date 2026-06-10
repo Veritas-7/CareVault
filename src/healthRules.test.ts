@@ -5037,6 +5037,106 @@ describe("healthRules", () => {
     ).toBe(false);
   });
 
+  it("recognizes NCC survivor work-return food source sentences", () => {
+    const assessment = assessCancerFood(
+      "만약 직장 내 구내식당이 있다면 영양사가 직접 관리하는 식단이므로 오히려 건강한 식사를 하는 데 도움이 될 것입니다. 다만, 술은 피하시고, 되도록 자극적이지 않는 음식으로 골라 스트레스 받지 말고 즐겁게 드시기 바랍니다. 현재 식사관련 문제점 파악하기 (과식, 불규칙한 식사시간, 과다한 간식섭취, 단백질 섭취부족 등) 보양식, 영양제, 검증 안 된 식품섭취보다, 일상적으로 먹는 음식 위주로 균형 잡힌 식사 챙기기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccSurvivorWorkReturn.label).toBe(
+      "국가암정보센터 암생존자 직업복귀",
+    );
+    expect(foodGuidanceSources.nccSurvivorWorkReturn.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "만약 직장 내 구내식당이 있다면 영양사가 직접 관리하는 식단이므로 오히려 건강한 식사를 하는 데 도움이 될 것입니다.",
+      "다만, 술은 피하시고, 되도록 자극적이지 않는 음식으로 골라 스트레스 받지 말고 즐겁게 드시기 바랍니다.",
+      "현재 식사관련 문제점 파악하기 (과식, 불규칙한 식사시간, 과다한 간식섭취, 단백질 섭취부족 등)",
+      "보양식, 영양제, 검증 안 된 식품섭취보다, 일상적으로 먹는 음식 위주로 균형 잡힌 식사 챙기기",
+    ]);
+    for (const term of [terms[0], terms[2]]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암생존자 직업복귀 식사 기록 후보",
+        sourceId: "nccSurvivorWorkReturn",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 암생존자 직업복귀 - https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+      );
+    }
+    expect(matchesByTerm[terms[1]]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암생존자 직업복귀 회식 음주·자극음식 기록 후보",
+      sourceId: "nccSurvivorWorkReturn",
+    });
+    expect(matchesByTerm[terms[3]]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 직업복귀 보양식·영양제 확인 필요",
+      sourceId: "nccSurvivorWorkReturn",
+    });
+    expect(balancedGuideText).toContain("암생존자 직업복귀 구내식당");
+    expect(limitGuideText).toContain("암생존자 직업복귀 회식 술");
+    expect(careTeamGuideText).toContain("암생존자 직업복귀 보양식 영양제");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|치료 음식|술을 드세요|도시락을 싸세요|영양제를 끊으세요|보양식을 드세요|재발을 막|예방 보장|복직하세요/,
+    );
+  });
+
+  it("keeps NCC survivor work-return food shorthand scoped to survivor work context", () => {
+    const assessment = assessCancerFood(
+      "암생존자 직업복귀 구내식당 식단 기록, 암생존자 직업복귀 식사 문제 파악, 암생존자 직업복귀 회식 술 자극적이지 않은 음식, 암생존자 직업복귀 보양식 영양제 검증 안 된 식품",
+    );
+    const genericAssessment = assessCancerFood(
+      "구내식당 식단 기록, 식사 문제 파악, 회식 술 자극적이지 않은 음식, 보양식 영양제 검증 안 된 식품",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "암생존자 직업복귀 구내식당 식단 기록",
+      "암생존자 직업복귀 식사 문제 파악",
+      "암생존자 직업복귀 회식 술 자극적이지 않은 음식",
+      "암생존자 직업복귀 보양식 영양제 검증 안 된 식품",
+    ]);
+    for (const match of assessment.matches.slice(0, 2)) {
+      expect(match).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암생존자 직업복귀 식사 기록 후보",
+        sourceId: "nccSurvivorWorkReturn",
+      });
+    }
+    expect(assessment.matches[2]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암생존자 직업복귀 회식 음주·자극음식 기록 후보",
+      sourceId: "nccSurvivorWorkReturn",
+    });
+    expect(assessment.matches[3]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 직업복귀 보양식·영양제 확인 필요",
+      sourceId: "nccSurvivorWorkReturn",
+    });
+    expect(
+      genericAssessment.matches.some((match) => match.sourceId === "nccSurvivorWorkReturn"),
+    ).toBe(false);
+  });
+
   it("recognizes NCC after-treatment processed meat source sentence", () => {
     const sourceSentence =
       "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";

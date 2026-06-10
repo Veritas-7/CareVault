@@ -61,6 +61,7 @@ export type FoodGuidanceSourceId =
   | "nccCancerSurvivorHealthGuide"
   | "nccSurvivorNutritionLifestyle"
   | "nccSurvivorHealthyManagementNutrition"
+  | "nccSurvivorWorkReturn"
   | "nccChemoSideEffectGuide"
   | "kdcaNutrition"
   | "kdcaAlcohol"
@@ -271,6 +272,10 @@ export const foodGuidanceSources: Record<
   nccSurvivorHealthyManagementNutrition: {
     label: "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리",
     url: "https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+  },
+  nccSurvivorWorkReturn: {
+    label: "국가암정보센터 암생존자 직업복귀",
+    url: "https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
   },
   nccChemoSideEffectGuide: {
     label: "국가암정보센터 항암 부작용 증상 관리 지침",
@@ -560,6 +565,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "기름기가 적은 고단백 식품을 골고루 섭취하고 탄수화물도 좀 드셔야 됩니다., 우유 드셔도 되나요 이런 질문이 올라와 있는데요 드셔도 됩니다., 암생존자 건강관리 고단백 식품 탄수화물 기록, 암생존자 건강관리 우유 질문",
         sourceIds: ["nccSurvivorHealthyManagementNutrition"],
+      },
+      {
+        label: "암생존자 직업복귀 식사 기록",
+        detail:
+          "국가암정보센터 암생존자 직업복귀 자료는 직장 내 구내식당이 영양사가 직접 관리하는 식단이라면 건강한 식사에 도움이 될 수 있고, 도시락 부담을 무조건 가질 필요는 없다고 설명합니다. 또한 현재 식사 관련 문제점을 파악하라고 안내합니다. 이 항목은 식사 처방이 아니라 복귀 전후 식사 여건, 과식, 불규칙한 식사시간, 과다한 간식, 단백질 섭취부족을 기록해 진료팀에 확인할 후보입니다.",
+        examples:
+          "만약 직장 내 구내식당이 있다면 영양사가 직접 관리하는 식단이므로 오히려 건강한 식사를 하는 데 도움이 될 것입니다., 현재 식사관련 문제점 파악하기 (과식, 불규칙한 식사시간, 과다한 간식섭취, 단백질 섭취부족 등), 암생존자 직업복귀 구내식당 식단 기록, 암생존자 직업복귀 식사 문제 파악",
+        sourceIds: ["nccSurvivorWorkReturn"],
       },
       {
         label: "메스꺼움 시 위 부담 적은 음식",
@@ -878,6 +891,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "너무 달고 기름진 음식 탄 음식 가공육 가공식품 등은 줄이는 것이 좋겠습니다., 암생존자 건강관리 달고 기름진 음식 탄 음식 가공육 가공식품",
         sourceIds: ["nccSurvivorHealthyManagementNutrition"],
+      },
+      {
+        label: "암생존자 직업복귀 회식 음주·자극음식",
+        detail:
+          "국가암정보센터 암생존자 직업복귀 자료는 회식 참여 자체를 무조건 금지하는 대신, 술을 피하고 되도록 자극적이지 않은 음식을 고르라고 안내합니다. 이 항목은 회식 허용이나 금주 처방이 아니라 직장 복귀 후 회식, 음주 노출, 매운 음식·자극적인 음식 선택 고민을 치료 후 몸 상태에 맞춰 진료팀에 확인할 기록 후보입니다.",
+        examples:
+          "다만, 술은 피하시고, 되도록 자극적이지 않는 음식으로 골라 스트레스 받지 말고 즐겁게 드시기 바랍니다., 암생존자 직업복귀 회식 술 자극적이지 않은 음식",
+        sourceIds: ["nccSurvivorWorkReturn"],
       },
       {
         label: "붉은 육류 적정량",
@@ -1480,6 +1501,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "암치료를 받은 암 환자분들은 너무 고용량의 또 뭔가 좋다는 영양 식품을 안 드시는 것이 가장 안전한 것이 현대 약의 근거입니다., 특정한 음식을 뭔가 좋다고 너무 고용량으로 그것만 꾸준히 드시는 게 오히려 좋지 않고 골고루 잘 드시되, 불필요한 영양제 민간요법 하지 마셔야 되고요., 암생존자 건강관리 고용량 영양식품 주의, 암생존자 건강관리 불필요한 영양제 민간요법",
         sourceIds: ["nccSurvivorHealthyManagementNutrition"],
+      },
+      {
+        label: "암생존자 직업복귀 보양식·영양제 확인",
+        detail:
+          "국가암정보센터 암생존자 직업복귀 자료는 건강하게 일하는 방법 중 맛있게 먹기 항목에서 보양식, 영양제, 검증 안 된 식품섭취보다 일상적으로 먹는 음식 위주로 균형 잡힌 식사를 챙기라고 안내합니다. 이 항목은 영양제 중단 지시가 아니라 보양식·영양제·검증 안 된 식품의 이름, 기대 효과 문구, 복용 시점, 치료 후 식사 문제를 진료팀에 확인할 후보입니다.",
+        examples:
+          "보양식, 영양제, 검증 안 된 식품섭취보다, 일상적으로 먹는 음식 위주로 균형 잡힌 식사 챙기기, 암생존자 직업복귀 보양식 영양제 검증 안 된 식품",
+        sourceIds: ["nccSurvivorWorkReturn"],
       },
       {
         label: "암경험자 식품안전·건강보조식품 확인",
@@ -2286,6 +2315,26 @@ const supportiveFoods: FoodRuleTerm[] = [
     "암생존자 건강관리 우유 질문",
     "국가암정보센터 암생존자 건강관리 균형식 기록 후보",
     "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "만약 직장 내 구내식당이 있다면 영양사가 직접 관리하는 식단이므로 오히려 건강한 식사를 하는 데 도움이 될 것입니다.",
+    "국가암정보센터 암생존자 직업복귀 식사 기록 후보",
+    "nccSurvivorWorkReturn",
+  ],
+  [
+    "현재 식사관련 문제점 파악하기 (과식, 불규칙한 식사시간, 과다한 간식섭취, 단백질 섭취부족 등)",
+    "국가암정보센터 암생존자 직업복귀 식사 기록 후보",
+    "nccSurvivorWorkReturn",
+  ],
+  [
+    "암생존자 직업복귀 구내식당 식단 기록",
+    "국가암정보센터 암생존자 직업복귀 식사 기록 후보",
+    "nccSurvivorWorkReturn",
+  ],
+  [
+    "암생존자 직업복귀 식사 문제 파악",
+    "국가암정보센터 암생존자 직업복귀 식사 기록 후보",
+    "nccSurvivorWorkReturn",
   ],
   [
     "부드럽고 촉촉한 음식을 준비합니다.",
@@ -3740,6 +3789,16 @@ const limitFoods: FoodRuleTerm[] = [
     "국가암정보센터 암생존자 건강관리 달고 기름진 음식·가공식품 기록 후보",
     "nccSurvivorHealthyManagementNutrition",
   ],
+  [
+    "다만, 술은 피하시고, 되도록 자극적이지 않는 음식으로 골라 스트레스 받지 말고 즐겁게 드시기 바랍니다.",
+    "국가암정보센터 암생존자 직업복귀 회식 음주·자극음식 기록 후보",
+    "nccSurvivorWorkReturn",
+  ],
+  [
+    "암생존자 직업복귀 회식 술 자극적이지 않은 음식",
+    "국가암정보센터 암생존자 직업복귀 회식 음주·자극음식 기록 후보",
+    "nccSurvivorWorkReturn",
+  ],
   ["소고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["돼지고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["붉은 육류", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
@@ -4758,6 +4817,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "암생존자 건강관리 불필요한 영양제 민간요법",
     "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
     "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "보양식, 영양제, 검증 안 된 식품섭취보다, 일상적으로 먹는 음식 위주로 균형 잡힌 식사 챙기기",
+    "국가암정보센터 암생존자 직업복귀 보양식·영양제 확인 필요",
+    "nccSurvivorWorkReturn",
+  ],
+  [
+    "암생존자 직업복귀 보양식 영양제 검증 안 된 식품",
+    "국가암정보센터 암생존자 직업복귀 보양식·영양제 확인 필요",
+    "nccSurvivorWorkReturn",
   ],
   [
     "비브리오 패혈증",
