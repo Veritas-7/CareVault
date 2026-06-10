@@ -73,6 +73,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("소아청소년 암생존자 운동 TOP 신체역량")?.id).toBe(
       "pediatric-exercise-activity-support",
     );
+    expect(findSymptomSupportTemplate("소아청소년 암생존자 영양 식생활 BMI 백분위수")?.id).toBe(
+      "pediatric-nutrition-growth-support",
+    );
     expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.id).toBe(
       "survivor-nutrition-lifestyle",
     );
@@ -858,6 +861,90 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 영양 식생활 균형잡힌 식사"),
     ).not.toMatch(
       /체중을 감량하세요|체중을 늘리세요|전곡류를 먹으세요|채소를 먹으세요|육가공품을 먹지 마세요|탄 음식을 먹지 마세요|짠 음식을 금지하세요|술을 끊으세요|건강보조식품을 중단하세요|민간요법을 중단하세요|식단을 처방하세요|진단하세요|치료하세요|처방하세요|암 재발을 예방합니다|완치됩니다/,
+    );
+  });
+
+  it("builds a pediatric nutrition and growth question from official guidance", () => {
+    const healthyHabitSentence =
+      "건강하게 성장하려면 건강한 식생활 습관을 유지 하는 것이 좋습니다.";
+    const bmiFormulaSentence = "체질량지수 = 나의 체중(kg) / 키(m) x 키(m)";
+    const bmiPercentileSentence =
+      "성별, 나이에 비교한 체질량지수(BMI) 백분위수로 비만도 판단";
+    const pubertySentence =
+      "호르몬의 변화로 사춘기가 빨라지고 성장이 빨리 멈출 수 있습니다.";
+    const fitnessSentence = "체력이 떨어져 학업 및 운동력이 저하될 수 있습니다.";
+    const balancedMealSentence = "여러 종류의 식품군 섭취를 통한 균형 잡힌 식사";
+    const highCalorieSentence =
+      "패스트푸드, 단 음료 등 고열량 · 저영양 식품 섭취 절제";
+    const sixFoodGroupsSentence =
+      "매일 여섯 가지 식품군을 필요한 만큼 골고루 먹습니다.";
+    const mealCompositionSentence =
+      "매끼 나에게 맞는 적당한 양으로 곡류와 고기·생선· 달걀· 콩류 중 1~2가지, 그리고 2가지 이상의 채소류를 포함한 식사를 합니다.";
+    const snackSentence =
+      "간식으로는 하루에 2번 이상 우유나 유제품을 먹거나, 1~2번 이상 과일류를 먹습니다.";
+    const processedFoodSentence =
+      "가공식품, 즉석 음식(패스트푸드),라면 등의 고열량· 저영양 식품을 주의해서 먹습니다.";
+    const sweetDrinkSentence =
+      "설탕이 많이 들어간 간식이나 음료를 주의해서 먹습니다.";
+    const caffeineSentence = "카페인이 많이 들어간 식품이나 음료를 주의해서 먹습니다.";
+    const breakfastSentence = "가능하면 아침을 먹도록 합니다.";
+    const distractionSentence =
+      "식사를 하는 동안 돌아다니거나 휴대전화, 텔레비전 등을 보지 말고, 정해진 장소에서 식사를 합니다.";
+    const labelSentence =
+      "식품을 선택할 때에는 영양 표시, 제조 일자, 유통기한 등 식품 표시 사항을 확인하고 식품을 선택합니다.";
+    const handwashSentence = "음식을 먹기 전에는 손을 씻습니다.";
+    const activitySentence = "바른 성장과 발달을 위해 매일 한 시간 이상 신체활동을 합니다.";
+    const template = findSymptomSupportTemplate(
+      "소아청소년 암생존자 영양 식생활 BMI 백분위수",
+    );
+
+    expect(template?.id).toBe("pediatric-nutrition-growth-support");
+    expect(template?.mealNote).toContain(healthyHabitSentence);
+    expect(template?.mealNote).toContain(bmiFormulaSentence);
+    expect(template?.mealNote).toContain(bmiPercentileSentence);
+    expect(template?.mealNote).toContain(pubertySentence);
+    expect(template?.mealNote).toContain(fitnessSentence);
+    expect(template?.mealNote).toContain(balancedMealSentence);
+    expect(template?.mealNote).toContain(highCalorieSentence);
+    expect(template?.clinicianQuestion).toContain(sixFoodGroupsSentence);
+    expect(template?.clinicianQuestion).toContain(mealCompositionSentence);
+    expect(template?.clinicianQuestion).toContain(snackSentence);
+    expect(template?.clinicianQuestion).toContain(processedFoodSentence);
+    expect(template?.clinicianQuestion).toContain(sweetDrinkSentence);
+    expect(template?.clinicianQuestion).toContain(caffeineSentence);
+    expect(template?.clinicianQuestion).toContain(breakfastSentence);
+    expect(template?.clinicianQuestion).toContain(distractionSentence);
+    expect(template?.clinicianQuestion).toContain("가족과 함께 식사");
+    expect(template?.clinicianQuestion).toContain(labelSentence);
+    expect(template?.clinicianQuestion).toContain(handwashSentence);
+    expect(template?.clinicianQuestion).toContain(activitySentence);
+    expect(template?.clinicianQuestion).toContain("성장도표");
+    expect(template?.clinicianQuestion).toContain("치료 이력");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 영양 식생활 BMI 백분위수",
+      ),
+    ).toContain(bmiPercentileSentence);
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 영양 식생활 BMI 백분위수",
+      ),
+    ).toContain(
+      "출처: 국가암정보센터 소아청소년 암생존자 영양·식생활 - https://www.cancer.go.kr/lay1/S1T800C802/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 영양 식생활 BMI 백분위수",
+      ),
+    ).not.toMatch(
+      /먹이세요|먹으세요|금지하세요|절제시키세요|아침을 먹이세요|휴대전화를 금지하세요|손을 씻기세요|매일 한 시간 이상 운동시키세요|체중을 감량하세요|비만을 진단하세요|식단을 처방하세요|치료하세요|처방하세요|성장발달이 보장됩니다|비만 예방이 보장됩니다/,
     );
   });
 
@@ -1908,7 +1995,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(45);
+    expect(symptomSupportTemplates).toHaveLength(46);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1949,6 +2036,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("소아청소년 암생존자 운동 TOP 신체역량")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T800C801/contents.do",
     );
+    expect(
+      findSymptomSupportTemplate("소아청소년 암생존자 영양 식생활 BMI 백분위수")?.sourceUrl,
+    ).toBe("https://www.cancer.go.kr/lay1/S1T800C802/contents.do");
     expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
     );
