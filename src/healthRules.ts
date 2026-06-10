@@ -5275,6 +5275,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaListeriaFoodPoisoning",
   ],
   [
+    "리스테리아 살균 안 된 우유",
+    "식품안전나라 리스테리아 식중독 살균 안 된 우유 회피 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
     "리스테리아 치즈",
     "식품안전나라 리스테리아 식중독 치즈 원인식품 확인 필요",
     "foodSafetyKoreaListeriaFoodPoisoning",
