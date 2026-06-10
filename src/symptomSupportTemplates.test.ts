@@ -181,6 +181,11 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("질건조와 성관계 통증")?.id).toBe(
       "cervical-sexual-health",
     );
+    expect(
+      findSymptomSupportTemplate(
+        "HPV 감염 파트너에게 어떻게 말하나요 성접촉 혈액 체액 장기이식 자연소멸",
+      )?.id,
+    ).toBe("hpv-infection-partner-counseling");
     expect(findSymptomSupportTemplate("무월경과 안면홍조")?.id).toBe(
       "cervical-radiation-menopause",
     );
@@ -2595,6 +2600,58 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds an HPV infection and partner-counseling question from official infection guidance", () => {
+    const sexualContactSentence =
+      "사람유두종바이러스는 성접촉을 통하여 전파됩니다.";
+    const allContactSentence =
+      "사람유두종바이러스는 피부와 피부의 접촉으로 전파되고, 모든 형태의 성 접촉을 통해서 전파될 수 있습니다.";
+    const nonBloodSentence =
+      "체액이나 혈액 또는 기관 이식 등을 통해서는 전파되지 않습니다.";
+    const asymptomaticSentence =
+      "사람유두종바이러스에 감염되어도 대부분 증상 없이 자연소멸 됩니다.";
+    const naturalClearanceSentence =
+      "사람유두종바이러스 감염은 특별한 치료 없이도 80% 이상이 감염 1-2년 이내에 자연적으로 소멸합니다.";
+    const noVirusTreatmentSentence = "그러나 바이러스 자체에 대한 치료법은 없습니다.";
+    const template = findSymptomSupportTemplate(
+      "HPV 감염 파트너에게 어떻게 말하나요 성접촉 혈액 체액 장기이식 자연소멸",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "HPV 감염 파트너에게 어떻게 말하나요 성접촉 혈액 체액 장기이식 자연소멸",
+    );
+
+    expect(template.id).toBe("hpv-infection-partner-counseling");
+    expect(template.mealNote).toContain(sexualContactSentence);
+    expect(template.mealNote).toContain(allContactSentence);
+    expect(template.mealNote).toContain(nonBloodSentence);
+    expect(template.mealNote).toContain(asymptomaticSentence);
+    expect(template.clinicianQuestion).toContain(naturalClearanceSentence);
+    expect(template.clinicianQuestion).toContain(noVirusTreatmentSentence);
+    expect(template.clinicianQuestion).toContain("배우자/파트너");
+    expect(template.clinicianQuestion).toContain("백신");
+    expect(template.clinicianQuestion).toContain("콘돔");
+    expect(template.clinicianQuestion).toContain("정기검진");
+    expect(template.clinicianQuestion).toContain("HPV 검사");
+    expect(actionNote).toContain("감염을 비난이나 개인 원인으로 단정하지 않고");
+    expect(actionNote).toContain("본인 또는 배우자의 성 상대자 수");
+    expect(question).toContain(
+      "출처: 국가암정보센터 사람유두종바이러스 감염 - https://www.cancer.go.kr/lay1/S1T250C254/contents.do",
+    );
+    expect(buildSymptomSupportQueueHint(template)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(findSymptomSupportTemplate("질건조와 성관계 통증")?.id).toBe(
+      "cervical-sexual-health",
+    );
+    expect(findSymptomSupportTemplate("성문제나 성행위 의문 의료진 상담")?.id).toBe(
+      "sexual-function-consult-threshold",
+    );
+    expect(question).not.toMatch(
+      /검사하세요|백신을 맞으세요|성관계를 금지하세요|파트너가 원인입니다|치료하세요|처방하세요|진단하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical radiotherapy vaginal-change question from official side-effect guidance", () => {
     const vaginalChangeSentence =
       "방사선치료 후 질의 위축 또는 경화 등이 올 수 있으나 호르몬치료와 국소치료를 병행해 어느 정도 예방과 치료를 할 수 있습니다.";
@@ -3180,7 +3237,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(69);
+    expect(symptomSupportTemplates).toHaveLength(70);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3387,6 +3444,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("성교통")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5373",
     );
+    expect(
+      findSymptomSupportTemplate("HPV 감염 파트너 성접촉 혈액 체액 장기이식")?.sourceUrl,
+    ).toBe("https://www.cancer.go.kr/lay1/S1T250C254/contents.do");
     expect(findSymptomSupportTemplate("무월경")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T292C294/contents.do",
     );
