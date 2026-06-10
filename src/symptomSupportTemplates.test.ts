@@ -82,6 +82,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 가족 통합지지 상담")?.id).toBe(
       "survivor-integrated-support",
     );
+    expect(findSymptomSupportTemplate("소아청소년 암생존자 학교복귀 지원")?.id).toBe(
+      "pediatric-school-return-support",
+    );
     expect(findSymptomSupportTemplate("암관련 피로 대처")?.id).toBe(
       "cancer-fatigue-coping",
     );
@@ -939,6 +942,73 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a pediatric school-return question from official guidance", () => {
+    const educationOpportunitySentence =
+      "청소년기의 교육기회는 성인기 이후의 직업, 소득, 결혼 등 자립적인 성인으로 전환하는 데 필요한 성과를 달성하고 사회구성원으로서 통합되어 살아가는 것과 밀접한 관련이 있습니다.";
+    const schoolRoleSentence =
+      "학교 교육은 아동청소년의 인지 및 정서 발달, 학업 성취, 상급학교 진학 등에 있어 중요한 역할";
+    const readinessSentence =
+      "학교로 돌아가기 전에 부모(보호자), 학교 선생님, 스스로의 준비상태에 대해 점검해보는 것이 좋습니다.";
+    const teacherHealthSentence = "현재 학생의 건강 상태";
+    const teacherTreatmentSentence = "치료의 진행(치료 기간, 치료 종류 등) 과정";
+    const classroomCautionSentence =
+      "학생의 건강 유지 및 증진을 위해 주의할 점(교실 환경, 신체활동의 제한, 음식물 등)";
+    const attendanceSentence =
+      "건강으로 학교 출석이 불가능할 경우 출석을 인정해주는 지원방안";
+    const academicGapSentence =
+      "학교로 복귀한 학생의 학업 격차를 최소화하는 지원방안";
+    const activityAdjustmentSentence =
+      "교내외 행사 및 활동에 참여할 수 있도록 활동 조정 가능";
+    const emergencySentence =
+      "열, 구토, 통증 호소, 부종, 멍, 코피, 출혈";
+    const template = findSymptomSupportTemplate("소아청소년 암생존자 학교복귀 지원");
+
+    expect(template?.id).toBe("pediatric-school-return-support");
+    expect(template?.mealNote).toContain(educationOpportunitySentence);
+    expect(template?.mealNote).toContain(schoolRoleSentence);
+    expect(template?.mealNote).toContain(readinessSentence);
+    expect(template?.mealNote).toContain("자녀의 진단명과 치료");
+    expect(template?.mealNote).toContain("학교 친구들이 자녀의 병에 대해 아는 것");
+    expect(template?.mealNote).toContain("학교생활에서 자녀가 도움이 필요할 때");
+    expect(template?.clinicianQuestion).toContain(teacherHealthSentence);
+    expect(template?.clinicianQuestion).toContain(teacherTreatmentSentence);
+    expect(template?.clinicianQuestion).toContain(classroomCautionSentence);
+    expect(template?.clinicianQuestion).toContain(attendanceSentence);
+    expect(template?.clinicianQuestion).toContain(academicGapSentence);
+    expect(template?.clinicianQuestion).toContain(activityAdjustmentSentence);
+    expect(template?.clinicianQuestion).toContain("학습 내용이나 과제 조정");
+    expect(template?.clinicianQuestion).toContain("앞자리, 화장실 배치");
+    expect(template?.clinicianQuestion).toContain("학교급식 시 제외 음식");
+    expect(template?.clinicianQuestion).toContain(emergencySentence);
+    expect(template?.clinicianQuestion).toContain("충고보다 공감");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 학교복귀 지원",
+      ),
+    ).toContain(teacherHealthSentence);
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 학교복귀 지원",
+      ),
+    ).toContain(
+      "출처: 국가암정보센터 소아청소년 암생존자 학교복귀 지원 - https://www.cancer.go.kr/lay1/S1T800C804/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 학교복귀 지원",
+      ),
+    ).not.toMatch(
+      /학교에 복귀시키세요|질병을 공개하세요|특별대우를 요청하세요|수업시간을 조정하세요|과제를 조정하세요|체육수업에 참여시키세요|급식을 제외하세요|응급처치하세요|진단하세요|치료하세요|처방하세요|학교생활에 잘 적응합니다|학업성취가 보장됩니다/,
+    );
+  });
+
   it("builds a complementary-therapy consultation question from official guidance", () => {
     const consultFirstSentence =
       "보완대체요법을 사용하는 것을 고려하신다면 주치의와 먼저 상의하시기 바랍니다.";
@@ -1771,7 +1841,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(43);
+    expect(symptomSupportTemplates).toHaveLength(44);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1820,6 +1890,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 가족 통합지지 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T786C841/contents.do",
+    );
+    expect(findSymptomSupportTemplate("소아청소년 암생존자 학교복귀 지원")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T800C804/contents.do",
     );
     expect(findSymptomSupportTemplate("보완대체요법 약초 영양제 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
