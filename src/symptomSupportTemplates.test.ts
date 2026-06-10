@@ -2372,6 +2372,44 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a cervical radiotherapy vaginal-change question from official side-effect guidance", () => {
+    const vaginalChangeSentence =
+      "방사선치료 후 질의 위축 또는 경화 등이 올 수 있으나 호르몬치료와 국소치료를 병행해 어느 정도 예방과 치료를 할 수 있습니다.";
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 방사선치료 후 질의 위축 또는 경화",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 방사선치료 후 질의 위축 또는 경화",
+    );
+
+    expect(template.id).toBe("cervical-radiotherapy-vaginal-change");
+    expect(template.mealNote).toContain(vaginalChangeSentence);
+    expect(template.mealNote).toContain("방사선치료 종료 시점");
+    expect(template.mealNote).toContain("질건조·통증·출혈");
+    expect(template.clinicianQuestion).toContain("호르몬치료");
+    expect(template.clinicianQuestion).toContain("국소치료");
+    expect(template.clinicianQuestion).toContain("호르몬 금기");
+    expect(actionNote).toContain("질의 위축 또는 경화");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    expect(findSymptomSupportTemplate("질건조와 성교통")?.id).toBe(
+      "cervical-sexual-health",
+    );
+    expect(findSymptomSupportTemplate("골반 방사선치료 후 무월경 안면홍조")?.id).toBe(
+      "cervical-radiation-menopause",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 방사선치료 중 설사와 방광염 비슷한 증상")
+        ?.id,
+    ).toBe("cervical-radiotherapy-acute-complication");
+    expect(question).not.toMatch(
+      /호르몬치료를 시작하세요|국소치료를 받으세요|윤활제를 사용하세요|질 위축입니다|질 경화입니다|성관계를 재개하세요|치료하세요|처방하세요|진단하세요|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a general cancer-patient sexual-function change question from NCC guidance", () => {
     const overviewSentence =
       "항암화학요법 치료 기간 중에 사용되는 약물의 종류, 치료 기간, 약물의 용량, 환자의 나이, 치료부위에 따라 일시적으로나 영구적으로 성기능의 장애를 경험할 수 있습니다.";
@@ -2826,7 +2864,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(62);
+    expect(symptomSupportTemplates).toHaveLength(63);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3005,6 +3043,12 @@ describe("symptomSupportTemplates", () => {
     );
     expect(
       findSymptomSupportTemplate("자궁경부암 방사선치료 중 설사와 방광염 비슷한 증상")
+        ?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 방사선치료 후 질의 위축 또는 경화")
         ?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
