@@ -10,16 +10,16 @@ describe("cervicalCancerCareMetric", () => {
       ),
 	    ).toEqual({
 		      ariaLabel:
-				        "전체 151개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 58개 · 기록/회복/예방 81개 · 공식 출처 66개",
+				        "전체 153개 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 59개 · 기록/회복/예방 82개 · 공식 출처 67개",
 			      items: [
-				        { id: "total", label: "전체", value: "151개" },
+				        { id: "total", label: "전체", value: "153개" },
 		        { id: "priority", label: "우선", value: "3개" },
 		        { id: "screening", label: "검진요약", value: "1개" },
 		        { id: "alert-record-field", label: "기록항목", value: "4개" },
 		        { id: "alert", label: "경고", value: "4개" },
-				        { id: "prompt", label: "질문", value: "58개" },
-				        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "81개" },
-				        { id: "source", label: "공식 출처", value: "66개" },
+				        { id: "prompt", label: "질문", value: "59개" },
+				        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "82개" },
+				        { id: "source", label: "공식 출처", value: "67개" },
 		      ],
 	    });
   });
@@ -29,15 +29,15 @@ describe("cervicalCancerCareMetric", () => {
       buildCervicalCancerCarePanelSummary(buildCervicalCancerCareClipboardSummary()),
 	    ).toEqual({
 		      ariaLabel:
-				        "전체 150개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 58개 · 기록/회복/예방 81개 · 공식 출처 66개",
+				        "전체 152개 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 59개 · 기록/회복/예방 82개 · 공식 출처 67개",
 			      items: [
-				        { id: "total", label: "전체", value: "150개" },
+				        { id: "total", label: "전체", value: "152개" },
 		        { id: "priority", label: "우선", value: "3개" },
 		        { id: "alert-record-field", label: "기록항목", value: "4개" },
 		        { id: "alert", label: "경고", value: "4개" },
-				        { id: "prompt", label: "질문", value: "58개" },
-				        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "81개" },
-				        { id: "source", label: "공식 출처", value: "66개" },
+				        { id: "prompt", label: "질문", value: "59개" },
+				        { id: "record-recovery-prevention", label: "기록/회복/예방", value: "82개" },
+				        { id: "source", label: "공식 출처", value: "67개" },
 		      ],
 	    });
   });
