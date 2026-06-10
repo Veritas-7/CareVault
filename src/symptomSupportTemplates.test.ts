@@ -168,6 +168,11 @@ describe("symptomSupportTemplates", () => {
     ).toBe("cervical-diagnosis-test-purpose");
     expect(
       findSymptomSupportTemplate(
+        "자궁경부암 병리결과 편평상피세포암 선암 혼합 암종 상피내암 기저막 침윤성 암",
+      )?.id,
+    ).toBe("cervical-pathology-type-context");
+    expect(
+      findSymptomSupportTemplate(
         "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
       )?.id,
     ).toBe("cervical-stage-explanation-purpose");
@@ -2441,6 +2446,53 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
   });
 
+  it("builds a cervical pathology-type context question from official definition guidance", () => {
+    const precancerSentence =
+      "자궁경부암은 암이 되기 이전 단계인 전암단계를 상당 기간 동안 거치는 것으로 알려졌습니다.";
+    const carcinomaInSituSentence =
+      "상피내암이란 암세포가 피부나 우리 몸의 장기 모두 가장 바깥층인 상피에만 존재하는 상태를 의미합니다.";
+    const basementMembraneSentence =
+      "그 아래 부분인 기질과 상피 사이의 경계를 형성하는 기저막을 침범하면 침윤성 암으로 분류합니다.";
+    const histologySentence =
+      "자궁경부암은 주로 두 종류로 나눕니다. 한 종류는 편평상피세포암(squamous cell carcinoma)으로 전체 자궁경부암 중 약 80%를 차지하며, 다른 한 종류는 선암(adenocarcinoma)으로 10-20 %를 차지합니다.";
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 병리결과 편평상피세포암 선암 혼합 암종 상피내암 기저막 침윤성 암",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 병리결과 편평상피세포암 선암 혼합 암종 상피내암 기저막 침윤성 암",
+    );
+
+    expect(template.id).toBe("cervical-pathology-type-context");
+    expect(template.label).toBe("자궁경부암 병리조직 용어 상담 준비");
+    expect(template.mealNote).toContain(precancerSentence);
+    expect(template.mealNote).toContain("자궁경부 상피내이형성증");
+    expect(template.mealNote).toContain("자궁경부상피내암");
+    expect(template.clinicianQuestion).toContain(carcinomaInSituSentence);
+    expect(template.clinicianQuestion).toContain(basementMembraneSentence);
+    expect(template.clinicianQuestion).toContain(histologySentence);
+    expect(template.clinicianQuestion).toContain("혼합 암종");
+    expect(actionNote).toContain("병리결과지");
+    expect(actionNote).toContain("조직형");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 정의 및 종류 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4881",
+    );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 진단검사 조직검사 질확대경검사 원추절제술 방광경 직장경 CT MRI PET",
+      )?.id,
+    ).toBe("cervical-diagnosis-test-purpose");
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
+      )?.id,
+    ).toBe("cervical-stage-explanation-purpose");
+    expect(question).not.toMatch(
+      /편평상피세포암입니다|선암입니다|상피내암입니다|침윤성 암입니다|예후가 좋습니다|예후가 나쁩니다|자가 병기|스스로 병기|진단하세요|치료하세요|처방하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical diagnosis-test purpose question from official diagnosis guidance", () => {
     const testPurposeSentence =
       "자궁경부암 의 검사는 두 가지로 실제로 암이 맞는지 확인하는 조직검사 와 암이 어느 정도까지 진행되었는지를 확인을 위한 병기 설정 검사로 나눌 수 있습니다.";
@@ -3399,7 +3451,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(73);
+    expect(symptomSupportTemplates).toHaveLength(74);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3582,6 +3634,13 @@ describe("symptomSupportTemplates", () => {
       )?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C213/cancer/view.do?cancer_seq=4877&menu_seq=4889",
+    );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 병리결과 편평상피세포암 선암 혼합 암종 상피내암 기저막 침윤성 암",
+      )?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4881",
     );
     expect(
       findSymptomSupportTemplate(
