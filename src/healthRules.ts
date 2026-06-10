@@ -41,6 +41,7 @@ export type FoodGuidanceSourceId =
   | "nccWeightMaintenanceDiet"
   | "nccWeightChangeDiet"
   | "nccFatigueDepressionDiet"
+  | "nccAnemiaCare"
   | "nccMouthPainDiet"
   | "nccMucositisCare"
   | "nccDryMouthDiet"
@@ -193,6 +194,10 @@ export const foodGuidanceSources: Record<
   nccFatigueDepressionDiet: {
     label: "국가암정보센터 증상별 식생활 - 피로감과 우울",
     url: "https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+  },
+  nccAnemiaCare: {
+    label: "국가암정보센터 빈혈 관리",
+    url: "https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
   },
   nccMouthPainDiet: {
     label: "국가암정보센터 증상별 식생활 - 입과 목의 통증",
@@ -739,6 +744,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "영양이 풍부한 음식을 충분히 섭취합니다. 불충분한 열량과 영양소 섭취가 피로의 원인이 될 수 있기 때문입니다., 하루 중 가장 좋은 시간에 가능한 많이 먹습니다., 낮잠이나 휴식 후에 먹는 것이 더 편안함을 느낄 수 있습니다., 적은 양의 식사와 간식을 자주 먹습니다., 가족이나 친구의 도움을 받도록 합니다., 주변의 이용 가능한 음식배달서비스를 알아두고 이용합니다., 치료를 받지 않을 때에는 좋아하는 음식을 먹도록 합니다., 피로감 영양이 풍부한 음식, 피로감 하루 중 가장 좋은 시간에 많이 먹기, 피로감 휴식 후 먹기, 피로감 적은 양의 식사와 간식, 피로감 음식배달서비스, 우울 좋아하는 음식",
         sourceIds: ["nccFatigueDepressionDiet"],
+      },
+      {
+        label: "빈혈 관리 균형 잡힌 음식",
+        detail:
+          "빈혈 증상·혈액검사와 함께 진료팀 확인용 식사 기록으로 둡니다.",
+        examples: "빈혈 관리 균형 잡힌 음식",
+        sourceIds: ["nccAnemiaCare"],
       },
       {
         label: "식욕부진 시 먹을 수 있을 때 식사",
@@ -1345,6 +1357,13 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.",
         sourceIds: ["nccFatigueDepressionDiet"],
+      },
+      {
+        label: "빈혈 관리 수분·탈수 확인",
+        detail:
+          "탈수·어지럼·수분제한 여부를 진료팀에 묻는 기록으로 분리합니다.",
+        examples: "빈혈 관리 하루 6--8잔 물 탈수 예방 기록",
+        sourceIds: ["nccAnemiaCare"],
       },
       {
         label: "메스꺼움 유발 요인 기록·의료진 상담",
@@ -3500,6 +3519,16 @@ const supportiveFoods: FoodRuleTerm[] = [
     "nccFatigueDepressionDiet",
   ],
   [
+    "균형 잡힌 음식을 섭취합니다.",
+    "NCC 빈혈 균형식",
+    "nccAnemiaCare",
+  ],
+  [
+    "빈혈 관리 균형 잡힌 음식",
+    "NCC 빈혈 균형식",
+    "nccAnemiaCare",
+  ],
+  [
     "식사 시간에 얽매이지 말고 먹고 싶을 때, 먹을 수 있을 때, 또는 몸 상태가 좋을 때 먹도록 합니다.",
     "국가암정보센터 식욕부진 시 먹을 수 있을 때 식사 후보",
     "nccAppetiteLossDiet",
@@ -4718,6 +4747,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "만일 피로를 느낀다면 의사선생님과 원인에 대해 함께 이야기하는 것이 필요합니다.",
     "국가암정보센터 피로감·우울 시 피로 원인 의료진 상담 필요",
     "nccFatigueDepressionDiet",
+  ],
+  [
+    "탈수되지 않도록 유의하고 하루 6--8잔의 물을 마시도록 노력합니다.",
+    "NCC 빈혈 수분 확인",
+    "nccAnemiaCare",
+  ],
+  [
+    "빈혈 관리 하루 6--8잔 물 탈수 예방 기록",
+    "NCC 빈혈 수분 확인",
+    "nccAnemiaCare",
   ],
   [
     "메스꺼움이 언제, 무엇 때문에 나타나는지를 체크하고 의사선생님이나 간호사와 상의합니다.",

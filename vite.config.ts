@@ -29,14 +29,14 @@ export default defineConfig(async () => ({
             return "care-cervical";
           if (normalizedId.includes("/src/healthStandards"))
             return "health-standards";
-          if (
-            normalizedId.includes("/src/caregiverExport") ||
-            normalizedId.includes("/src/csvExport") ||
-            normalizedId.includes("/src/visitPacket") ||
-            normalizedId.includes("/src/exportPreviewSummary")
-          ) {
-            return "export-tools";
-          }
+          if (normalizedId.includes("/src/caregiverExport"))
+            return "export-caregiver";
+          if (normalizedId.includes("/src/csvExport"))
+            return "export-csv";
+          if (normalizedId.includes("/src/visitPacket"))
+            return "export-visit";
+          if (normalizedId.includes("/src/exportPreviewSummary"))
+            return "export-preview";
 
           return undefined;
         },

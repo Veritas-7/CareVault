@@ -5219,6 +5219,81 @@ describe("healthRules", () => {
     ).toBe(false);
   });
 
+  it("recognizes NCC anemia-care food and hydration source sentences", () => {
+    const assessment = assessCancerFood(
+      "균형 잡힌 음식을 섭취합니다. 탈수되지 않도록 유의하고 하루 6--8잔의 물을 마시도록 노력합니다.",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccAnemiaCare.label).toBe("국가암정보센터 빈혈 관리");
+    expect(foodGuidanceSources.nccAnemiaCare.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "균형 잡힌 음식을 섭취합니다.",
+      "탈수되지 않도록 유의하고 하루 6--8잔의 물을 마시도록 노력합니다.",
+    ]);
+    expect(matchesByTerm[terms[0]]).toMatchObject({
+      level: "ok",
+      reason: "NCC 빈혈 균형식",
+      sourceId: "nccAnemiaCare",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm[terms[0]])).toContain(
+      "국가암정보센터 빈혈 관리 - https://www.cancer.go.kr/lay1/S1T440C444/contents.do",
+    );
+    expect(matchesByTerm[terms[1]]).toMatchObject({
+      level: "risk",
+      reason: "NCC 빈혈 수분 확인",
+      sourceId: "nccAnemiaCare",
+    });
+    expect(balancedGuideText).toContain("빈혈 관리 균형 잡힌 음식");
+    expect(careTeamGuideText).toContain("빈혈 관리 하루 6--8잔 물");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /빈혈을 치료|철분제를 복용|수혈|물을 마시세요|균형식을 드세요|진단하세요|처방하세요|치료하세요|완치|암을 낫게|재발을 막/,
+    );
+  });
+
+  it("keeps NCC anemia-care food shorthand scoped to anemia context", () => {
+    const assessment = assessCancerFood(
+      "빈혈 관리 균형 잡힌 음식, 빈혈 관리 하루 6--8잔 물 탈수 예방 기록",
+    );
+    const genericAssessment = assessCancerFood(
+      "균형 잡힌 음식, 하루 6--8잔 물 탈수 예방 기록",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "빈혈 관리 균형 잡힌 음식",
+      "빈혈 관리 하루 6--8잔 물 탈수 예방 기록",
+    ]);
+    expect(assessment.matches[0]).toMatchObject({
+      level: "ok",
+      reason: "NCC 빈혈 균형식",
+      sourceId: "nccAnemiaCare",
+    });
+    expect(assessment.matches[1]).toMatchObject({
+      level: "risk",
+      reason: "NCC 빈혈 수분 확인",
+      sourceId: "nccAnemiaCare",
+    });
+    expect(genericAssessment.matches.some((match) => match.sourceId === "nccAnemiaCare")).toBe(
+      false,
+    );
+  });
+
   it("recognizes NCC after-treatment processed meat source sentence", () => {
     const sourceSentence =
       "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";
