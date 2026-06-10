@@ -13117,11 +13117,14 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "캠필로박터균은 소, 돼지, 개, 고양이, 닭, 우유, 물이 원인이 될 수 있고 캠필로박터 소, 캠필로박터 돼지, 캠필로박터 고양이, 캠필로박터 닭, 캠필로박터 닭고기, 캠필로박터 우유, 캠필로박터 물, 캠필로박터 하천수, 캠필로박터 호수, 캠필로박터 가금류, 캠필로박터 칠면조, 캠필로박터 가축, 육류의 생식이나 불충분한 가열, 동물(조류 등)의 분변에 의한 오염, 식육(특히 닭고기)의 생식을 확인",
+      "캠필로박터균은 소, 돼지, 개, 고양이, 닭, 우유, 물이 원인이 될 수 있고 캠필로박터 소, 캠필로박터 돼지, 캠필로박터 개, 캠필로박터 고양이, 캠필로박터 닭, 캠필로박터 닭고기, 캠필로박터 우유, 캠필로박터 물, 캠필로박터 하천수, 캠필로박터 호수, 캠필로박터 가금류, 캠필로박터 칠면조, 캠필로박터 가축, 육류의 생식이나 불충분한 가열, 동물(조류 등)의 분변에 의한 오염, 식육(특히 닭고기)의 생식을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
       riskAssessment.matches.map((match) => [match.term, match]),
+    );
+    const dogFalsePositiveTerms = assessCancerFood("캠필로박터 개요를 보호자에게 설명").matches.map(
+      (match) => match.term,
     );
 
     expect(foodGuidanceSources.foodSafetyKoreaCampylobacterFoodPoisoning).toMatchObject({
@@ -13160,6 +13163,7 @@ describe("healthRules", () => {
       "소, 돼지, 개, 고양이, 닭, 우유, 물",
       "캠필로박터 소",
       "캠필로박터 돼지",
+      "캠필로박터 개",
       "캠필로박터 고양이",
       "캠필로박터 닭",
       "캠필로박터 닭고기",
@@ -13180,6 +13184,7 @@ describe("healthRules", () => {
         sourceId: "foodSafetyKoreaCampylobacterFoodPoisoning",
       });
     }
+    expect(dogFalsePositiveTerms).not.toContain("캠필로박터 개");
     expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
       /치료 음식|완치|암을 낫게/,
     );
