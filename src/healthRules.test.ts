@@ -14895,6 +14895,84 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC stem-cell-transplant immune-suppression cooked and packaged nutrition-management context", () => {
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const immuneSuppressionGuide = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.find((item) => item.label === "NCC 조혈모세포이식 면역억제 식품표 확인");
+    const assessment = assessCancerFood(
+      "면역억제 익히지 않은 생과일, 면역억제 익히지 않은 생야채, 면역억제 익히지 않은 어육류, 면역억제 익히지 않은 치즈, 면역억제 완전 조리된 음식, 면역억제 통조림, 면역억제 병조림, 면역억제 캔음료수, 면역억제 집에서 만든 음식, 면역억제 진공 포장된 음식",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const genericAssessment = assessCancerFood(
+      "익히지 않은 생과일, 생야채, 어육류, 치즈, 완전 조리된 음식, 통조림, 병조림, 캔음료수, 집에서 만든 음식, 진공 포장된 음식",
+    );
+
+    expect(immuneSuppressionGuide?.detail).toContain(
+      "완전 조리된 음식(통조림, 병조림, 캔음료수, 멸균우유, 두유 등)",
+    );
+    expect(immuneSuppressionGuide?.detail).toContain("진공 포장된 음식");
+    expect(immuneSuppressionGuide?.detail).toContain("익히지 않은 생과일, 생야채, 어육류, 치즈");
+    expect(immuneSuppressionGuide?.examples).toContain("면역억제 완전 조리된 음식");
+    expect(immuneSuppressionGuide?.examples).toContain("면역억제 진공 포장된 음식");
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "면역억제 익히지 않은 생과일",
+      "면역억제 익히지 않은 생야채",
+      "면역억제 익히지 않은 어육류",
+      "면역억제 익히지 않은 치즈",
+      "면역억제 완전 조리된 음식",
+      "면역억제 통조림",
+      "면역억제 병조림",
+      "면역억제 캔음료수",
+      "면역억제 집에서 만든 음식",
+      "면역억제 진공 포장된 음식",
+    ]);
+    for (const term of [
+      "면역억제 익히지 않은 생과일",
+      "면역억제 익히지 않은 생야채",
+      "면역억제 익히지 않은 어육류",
+      "면역억제 익히지 않은 치즈",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+        sourceId: "nccStemCellTransplantImmuneSuppressionDiet",
+      });
+    }
+    for (const term of [
+      "면역억제 완전 조리된 음식",
+      "면역억제 통조림",
+      "면역억제 병조림",
+      "면역억제 캔음료수",
+      "면역억제 집에서 만든 음식",
+      "면역억제 진공 포장된 음식",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+        sourceId: "nccStemCellTransplantImmuneSuppressionDiet",
+      });
+    }
+    expect(JSON.stringify(genericAssessment.matches)).not.toContain(
+      "nccStemCellTransplantImmuneSuppressionDiet",
+    );
+    expect(careTeamGuideText).toContain("면역억제 익히지 않은 치즈");
+    expect(careTeamGuideText).toContain("면역억제 진공 포장된 음식");
+    expect(formatFoodMatchEvidence(matchesByTerm["면역억제 완전 조리된 음식"])).toContain(
+      "국가암정보센터 조혈모세포이식 면역억제 식품표 - https://www.cancer.go.kr/lay1/S1T295C296/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /치료 음식|완치|암을 낫게|모든 암환자|자궁경부암 치료/,
+    );
+  });
+
   it("recognizes additional NCC stem-cell-transplant immune-suppression packaged and dried food table context", () => {
     const careTeamGuideText = cancerFoodGuideCategories
       .find((category) => category.id === "care-team")
