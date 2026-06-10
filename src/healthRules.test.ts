@@ -12967,12 +12967,14 @@ describe("healthRules", () => {
       "감자의 독이 포함된 부위(싹이 난 부위나 녹색을 띠는 부위)를 잘라내야 합니다",
     );
     const riskAssessment = assessCancerFood(
-      "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다, 복어요리 전문가가 조리하지 않은 복어, 야생 독버섯을 식용버섯으로 오인, 녹색을 띠는 감자, 곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
+      "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다, 복어요리 전문가가 조리하지 않은 복어, 유독화된 조개, 유독성 플랑크톤 조개, 적조에 노출된 섭조개, 적조에 노출된 홍합, 마비성 조개독, 조개독 홍합, 야생 독버섯을 식용버섯으로 오인, 녹색을 띠는 감자, 곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
       riskAssessment.matches.map((match) => [match.term, match]),
     );
+    const genericShellfishAssessment = assessCancerFood("조개류, 홍합, 섭조개");
+    const genericShellfishTerms = genericShellfishAssessment.matches.map((match) => match.term);
 
     expect(foodGuidanceSources.kdcaFoodPoisoningNaturalToxins).toMatchObject({
       label: "질병관리청 국가건강정보포털 식중독",
@@ -13002,6 +13004,12 @@ describe("healthRules", () => {
     expect(riskTerms).toEqual([
       "복어독은 열에 강하기 때문에 120℃에서 1시간 이상 가열해도 파괴되지 않습니다",
       "복어요리 전문가가 조리하지 않은 복어",
+      "유독화된 조개",
+      "유독성 플랑크톤 조개",
+      "적조에 노출된 섭조개",
+      "적조에 노출된 홍합",
+      "마비성 조개독",
+      "조개독 홍합",
       "야생 독버섯을 식용버섯으로 오인",
       "녹색을 띠는 감자",
       "곰팡이독은 세척하거나 열을 가하더라도 없어지지 않고",
@@ -13012,6 +13020,9 @@ describe("healthRules", () => {
         sourceId: "kdcaFoodPoisoningNaturalToxins",
       });
     }
+    expect(genericShellfishTerms).not.toEqual(
+      expect.arrayContaining(["유독화된 조개", "적조에 노출된 홍합", "마비성 조개독", "조개독 홍합"]),
+    );
     expect(JSON.stringify([...potatoPracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
       /치료 음식|완치|암을 낫게/,
     );

@@ -6513,6 +6513,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "kdcaFoodPoisoningNaturalToxins",
   ],
   [
+    "유독화된 조개",
+    "질병관리청 자연독 식중독 유독성 플랑크톤 축적 조개 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "유독성 플랑크톤 조개",
+    "질병관리청 자연독 식중독 유독성 플랑크톤 조개류 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "적조에 노출된 섭조개",
+    "질병관리청 자연독 식중독 적조 노출 섭조개 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "적조에 노출된 홍합",
+    "질병관리청 자연독 식중독 적조 노출 홍합 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "마비성 조개독",
+    "질병관리청 자연독 식중독 마비성 조개독 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
+    "조개독 홍합",
+    "질병관리청 자연독 식중독 조개독 홍합 확인 필요",
+    "kdcaFoodPoisoningNaturalToxins",
+  ],
+  [
     "야생 독버섯을 식용버섯으로 오인",
     "질병관리청 자연독 식중독 야생 독버섯 오인 섭취 확인 필요",
     "kdcaFoodPoisoningNaturalToxins",
