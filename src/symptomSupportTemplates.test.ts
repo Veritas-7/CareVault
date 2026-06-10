@@ -23,6 +23,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("입맛 변화와 금속성 맛")?.id).toBe("taste-change");
     expect(findSymptomSupportTemplate("식욕부진과 공복감 없음")?.id).toBe("appetite-loss");
     expect(findSymptomSupportTemplate("구토가 계속됨")?.id).toBe("vomiting");
+    expect(findSymptomSupportTemplate("구토 12시간 이상 지속")?.id).toBe(
+      "nausea-vomiting-consult-threshold",
+    );
     expect(findSymptomSupportTemplate("diarrhea after medication")?.id).toBe("diarrhea");
     expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
     expect(findSymptomSupportTemplate("체중감소와 단백질 보충 걱정")?.id).toBe(
@@ -1093,6 +1096,55 @@ describe("symptomSupportTemplates", () => {
     expect(buildSymptomSupportQuestion(template!, "구토")).not.toMatch(/수액을 맞으세요|처방하세요|진단하세요/);
   });
 
+  it("builds a nausea-vomiting consultation-threshold question from official symptom-management guidance", () => {
+    const fluidHelpSentence =
+      "환자들은 섭취할 수 있을 만큼만 음료를 마셔야 합니다. 대부분의 경우, 음료는 마실 수 있을 만큼 정상으로 돌아오게 되는데, 지속적으로 구토를 하는 환자들은 수분공급과 전해질의 균형을 유지하기 위해서 정맥 또는 피하 체액 주사를 맞을 수 도 있습니다. 이 때는 의료진의 도움이 필요합니다.";
+    const throatCoughSentence = "구토 후 목에 음식물이 걸린 느낌과 기침이 계속되는 경우";
+    const persistentNauseaSentence =
+      "오심이 며칠이상 지속되거나 오심 때문에 당신이 중요한 일을 하지 못할 때";
+    const hourlyVomitingSentence =
+      "구토를 12시간 이상 지속적으로 하거나 한 시간 동안 3번 이상 한 경우";
+    const lowIntakeSentence =
+      "식사를 거의 못하여 하루에 4컵 이하의 음식을 먹거나 2일 이상 식사를 제대로 하지 못하는 경우와 2일동안 1-2회 이상의 구토가 있을 때";
+    const darkUrineSentence =
+      "수차례 구토를 하고, 소변의 색이 진한 노란색이고 평상시의 소변 횟수만큼 화장실에 가지 못할 때";
+    const confusionSentence =
+      "구토가 지속되고 머리가 띵하거나 어지럽거나, 혼란한 느낌이 들 때";
+    const coffeeVomitSentence = "구토물이 커피색일 때 (혈액일 수 있음)";
+    const antiemeticPersistentSentence =
+      "의사가 처방한 진토제를 복용했는데도 오심 구토가 계속될 때";
+    const antiemeticSideEffectSentence = "진토제 복용한 후 부작용 이 발생했을 때";
+    const unableToTakeMedicineSentence =
+      "심한 초심이나 구토 때문에 약을 먹을 수 없을 때, 또는 온종일 물을 제대로 마시지 못하거나 식사를 하지 못한 경우";
+    const template = findSymptomSupportTemplate("구토 12시간 이상 지속");
+
+    expect(template?.id).toBe("nausea-vomiting-consult-threshold");
+    expect(template?.mealNote).toContain(fluidHelpSentence);
+    expect(template?.mealNote).toContain(throatCoughSentence);
+    expect(template?.mealNote).toContain(persistentNauseaSentence);
+    expect(template?.mealNote).toContain(hourlyVomitingSentence);
+    expect(template?.clinicianQuestion).toContain(lowIntakeSentence);
+    expect(template?.clinicianQuestion).toContain(darkUrineSentence);
+    expect(template?.clinicianQuestion).toContain(confusionSentence);
+    expect(template?.clinicianQuestion).toContain(coffeeVomitSentence);
+    expect(template?.clinicianQuestion).toContain(antiemeticPersistentSentence);
+    expect(template?.clinicianQuestion).toContain(antiemeticSideEffectSentence);
+    expect(template?.clinicianQuestion).toContain(unableToTakeMedicineSentence);
+    expect(buildSymptomSupportQuestion(template!, "오심·구토")).toContain(
+      hourlyVomitingSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "오심·구토")).toContain(
+      "출처: 국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
+    );
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(buildSymptomSupportQuestion(template!, "오심·구토")).not.toMatch(
+      /수액을 맞으세요|전해질을 처방하세요|진토제를 복용하세요|진토제를 추가하세요|복용량을 조절하세요|약을 중단하세요|응급치료하세요|자가 치료하세요|진단하세요|치료하세요/,
+    );
+  });
+
   it("builds a mouth-sore symptom-support question from official soft-food guidance", () => {
     const softMoistSentence = "부드럽고 촉촉한 음식을 준비합니다.";
     const easySwallowSentence = "씹고 삼키기 쉬운 음식을 먹습니다.";
@@ -1516,7 +1568,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(39);
+    expect(symptomSupportTemplates).toHaveLength(40);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1529,6 +1581,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("구토")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
+    expect(findSymptomSupportTemplate("구토 12시간 이상 지속")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(findSymptomSupportTemplate("구강건조")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
