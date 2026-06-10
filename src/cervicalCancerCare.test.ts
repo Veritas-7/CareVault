@@ -77,9 +77,10 @@ describe("cervicalCancerCare", () => {
 		      "nccAnemiaCare",
 			      "nccBleedingSymptoms",
 			      "nccHairLossCare",
-			      "nccHiccupConsult",
-			      "nccCancerLifeChildrenCommunication",
+      "nccHiccupConsult",
+      "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
+      "nccSurvivorDistressAdaptation",
       "nccSurvivorAnxietyManagement",
       "nccSurvivorSleepManagement",
       "nccSurvivorExerciseManagement",
@@ -138,6 +139,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccCancerLifePsychologicalStability.url).toContain(
       "S1T327C329",
     );
+    expect(cervicalCancerCareSources.nccSurvivorDistressAdaptation.url).toContain("S1T788C790");
     expect(cervicalCancerCareSources.nccSurvivorAnxietyManagement.url).toContain("S1T788C791");
     expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
     expect(cervicalCancerCareSources.nccSurvivorExerciseManagement.url).toContain("S1T748C795");
@@ -259,7 +261,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(59);
+				    expect(cervicalCancerCarePrompts).toHaveLength(60);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -302,6 +304,7 @@ describe("cervicalCancerCare", () => {
       "성생활 재개 상담",
       "자녀·가족 설명 준비",
       "정서 안정·전문상담 준비",
+      "디스트레스 신호·자가평가 상담 준비",
       "불안 신체증상·주의전환 상담 준비",
       "불면·수면일지 상담 준비",
       "운동강도·근력운동 상담 준비",
@@ -1097,6 +1100,41 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(psychologicalStabilityPrompt)).toContain(
       "출처: 국가암정보센터 암환자의 생활 - 심리적 안정을 위해 - https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
     );
+    const survivorDistressPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "디스트레스 신호·자가평가 상담 준비",
+    )!;
+    expect(survivorDistressPrompt.sourceId).toBe("nccSurvivorDistressAdaptation");
+    expect(survivorDistressPrompt.question).toContain("변화된 삶에 적응하기");
+    expect(survivorDistressPrompt.question).toContain("디스트레스");
+    expect(survivorDistressPrompt.question).toContain("몸과 마음에 나타나는 모든 괴로움");
+    expect(survivorDistressPrompt.question).toContain("20~40%");
+    expect(survivorDistressPrompt.question).toContain("10명 중 2명에서 4명");
+    expect(survivorDistressPrompt.question).toContain("다스리기 어려운 고통스러운 신체 증상");
+    expect(survivorDistressPrompt.question).toContain("외모에 원하지 않은 변화");
+    expect(survivorDistressPrompt.question).toContain("역할이나 관계");
+    expect(survivorDistressPrompt.question).toContain("돌보아야 하는 아이");
+    expect(survivorDistressPrompt.question).toContain("암 관리에 대한 정보가 부족");
+    expect(survivorDistressPrompt.question).toContain("걱정, 두려움, 불안");
+    expect(survivorDistressPrompt.question).toContain("잠들기 어렵거나 잠에서 쉽게 깹");
+    expect(survivorDistressPrompt.question).toContain("사람들과 사이가 안 좋아지거나 혼자");
+    expect(survivorDistressPrompt.question).toContain("죽고 싶다는 생각");
+    expect(survivorDistressPrompt.question).toContain("자녀보육");
+    expect(survivorDistressPrompt.question).toContain("경제적 문제");
+    expect(survivorDistressPrompt.question).toContain("우울/슬픔");
+    expect(survivorDistressPrompt.question).toContain("재발/죽음에 대한 불안");
+    expect(survivorDistressPrompt.question).toContain("식사");
+    expect(survivorDistressPrompt.question).toContain("피로");
+    expect(survivorDistressPrompt.question).toContain("기억력/집중력");
+    expect(survivorDistressPrompt.question).toContain("통증");
+    expect(survivorDistressPrompt.question).toContain("관심과 도움이 필요하다는 신호");
+    expect(buildCervicalCancerCarePromptQuestion(survivorDistressPrompt)).toContain(
+      "출처: 국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기 - https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(survivorDistressPrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(
+      /디스트레스를 진단하세요|치료하세요|처방하세요|자살하세요|혼자 견디세요|암관리를 중단하세요/,
+    );
     const survivorAnxietyPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "불안 신체증상·주의전환 상담 준비",
     )!;
@@ -1792,6 +1830,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorSleepManagement")).toContain(
       "국가암정보센터 암생존자 수면관리 - https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccSurvivorDistressAdaptation")).toContain(
+      "국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기 - https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
+    );
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorAnxietyManagement")).toContain(
       "국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기 - https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
     );
@@ -2159,6 +2200,9 @@ describe("cervicalCancerCare", () => {
     const psychologicalStabilityGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "정서 안정·전문상담 메모",
     );
+    const survivorDistressGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암생존자 디스트레스 자가평가 메모",
+    );
     const sleepManagementGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "불면·수면효율·습관 메모",
     );
@@ -2193,7 +2237,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(43);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(44);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3050,6 +3094,42 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(psychologicalStabilityGuide!)).join(" ")).not.toMatch(
       /진단하세요|치료하세요|상담받으세요|운동하세요/,
+    );
+    expect(survivorDistressGuide).toMatchObject({
+      label: "암생존자 디스트레스 자가평가 메모",
+      sourceId: "nccSurvivorDistressAdaptation",
+    });
+    expect(survivorDistressGuide?.detail).toContain("몸과 마음에 나타나는 모든 괴로움");
+    expect(survivorDistressGuide?.detail).toContain("20~40%");
+    expect(survivorDistressGuide?.detail).toContain("다스리기 어려운 고통스러운 신체 증상");
+    expect(survivorDistressGuide?.detail).toContain("외모에 원하지 않은 변화");
+    expect(survivorDistressGuide?.detail).toContain("역할이나 관계");
+    expect(survivorDistressGuide?.detail).toContain("돌보아야 하는 아이");
+    expect(survivorDistressGuide?.detail).toContain("새로운 직장");
+    expect(survivorDistressGuide?.detail).toContain("암 관리에 대한 정보가 부족");
+    expect(survivorDistressGuide?.detail).toContain("걱정, 두려움, 불안");
+    expect(survivorDistressGuide?.detail).toContain("잠들기 어렵거나 잠에서 쉽게 깹");
+    expect(survivorDistressGuide?.detail).toContain("죽고 싶다는 생각");
+    expect(survivorDistressGuide?.detail).toContain("자녀보육");
+    expect(survivorDistressGuide?.detail).toContain("경제적 문제");
+    expect(survivorDistressGuide?.detail).toContain("우울/슬픔");
+    expect(survivorDistressGuide?.detail).toContain("재발/죽음에 대한 불안");
+    expect(survivorDistressGuide?.detail).toContain("식사");
+    expect(survivorDistressGuide?.detail).toContain("피로");
+    expect(survivorDistressGuide?.detail).toContain("기억력/집중력");
+    expect(survivorDistressGuide?.detail).toContain("통증");
+    expect(survivorDistressGuide?.detail).toContain("관심과 도움이 필요하다는 신호");
+    expect(formatCervicalCancerCareItemEvidence(survivorDistressGuide!)).toContain(
+      "국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기 - https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(survivorDistressGuide!).body).toContain(
+      "암생존자 디스트레스 자가평가 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(survivorDistressGuide!)).toContain(
+      "국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorDistressGuide!)).join(" ")).not.toMatch(
+      /디스트레스를 진단하세요|치료하세요|처방하세요|자살하세요|혼자 견디세요|암관리를 중단하세요/,
     );
     expect(survivorAnxietyGuide).toMatchObject({
       label: "암생존자 불안신호·주의전환 메모",
