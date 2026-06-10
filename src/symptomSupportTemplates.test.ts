@@ -121,6 +121,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("자궁경부암 항암치료 민간요법 건강보조식품")?.id).toBe(
       "cervical-diet-supplement-boundary",
     );
+    expect(findSymptomSupportTemplate("백혈구 수치 올리는 특별한 음식 치료 중 영양")?.id).toBe(
+      "treatment-balanced-nutrition-boundary",
+    );
     expect(findSymptomSupportTemplate("치료 중 건강식 단백질 반찬 채소 두 가지")?.id).toBe(
       "treatment-healthy-eating-tips",
     );
@@ -2215,6 +2218,58 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a treatment-period balanced-nutrition boundary question from official guidance", () => {
+    const calorieNutrientSentence =
+      "암환자에게 식생활이 중요하다는 것은 누구나 압니다. 그러나 대부분의 사람들은 몸에 좋다고 소문난 식품이나 영양소에만 관심을 기울이고, 적정 열량(칼로리)과 필수 영양소의 섭취는 제대로 고려하지 않는 수가 많습니다.";
+    const balancedMealSentence =
+      "건강식이란 균형 잡힌 식사를 말합니다. 즉, 다양한 음식을 골고루 먹는 것입니다.";
+    const noCureFoodSentence = "암을 치유하는 특별한 음식이나 영양소는 없습니다.";
+    const pickyEatingSentence =
+      "암환자가 몸에 좋다는 특정 식품이나 영양소를 편중해서 섭취하면 일부 영양소는 과잉 상태가 되고 다른 중요한 영양소와 전체 열량은 부족한 상태가 되어, 당초 의도와 달리 환자에게 나쁜 영향을 줄 수 있습니다.";
+    const immuneLowSentence =
+      "음식을 들기가 전반적으로 힘들고 면역력까지 저하된 경우에는 개별적으로 영양 상담을 받아야 합니다.";
+    const wbcFoodSentence = "백혈구 수치를 올리는 특별한 음식은 없습니다.";
+    const consultSentence =
+      "암환자의 식사와 관련하여 고민이 있다면 의료진, 영양사와 상담하십시오.";
+    const template = findSymptomSupportTemplate(
+      "백혈구 수치 올리는 특별한 음식 치료 중 영양",
+    );
+
+    expect(template?.id).toBe("treatment-balanced-nutrition-boundary");
+    expect(template?.label).toBe("치료 중 균형영양·특별음식 상담 준비");
+    expect(template?.mealNote).toContain(calorieNutrientSentence);
+    expect(template?.mealNote).toContain(balancedMealSentence);
+    expect(template?.mealNote).toContain(noCureFoodSentence);
+    expect(template?.mealNote).toContain(pickyEatingSentence);
+    expect(template?.clinicianQuestion).toContain(immuneLowSentence);
+    expect(template?.clinicianQuestion).toContain(wbcFoodSentence);
+    expect(template?.clinicianQuestion).toContain(consultSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportActionNote(template!)).toContain(
+      "출처: 국가암정보센터 치료 중 올바르게 식사하기 - https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+    );
+    const question = buildSymptomSupportQuestion(
+      template!,
+      "백혈구 수치 올리는 특별한 음식 치료 중 영양",
+    );
+
+    expect(question).toContain(
+      "백혈구 수치 올리는 특별한 음식 치료 중 영양 기록과 관련해",
+    );
+    expect(question).toContain(noCureFoodSentence);
+    expect(question).toContain(wbcFoodSentence);
+    expect(question).toContain("의료진, 영양사와 어떤 기준으로 확인할지");
+    expect(question).toContain(
+      "출처: 국가암정보센터 치료 중 올바르게 식사하기 - https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
+      /먹으세요|반드시 먹어야|백혈구를 올립니다|백혈구 수치를 올립니다|면역력을 올립니다|특별한 음식을 처방하세요|식단을 처방하세요|진단하세요|치료하세요|처방하세요|암을 낫게|완치|치료 효과를 높입니다|감염 위험을 감소시킵니다|재발을 예방합니다/,
+    );
+  });
+
   it("builds a cervical fertility and pregnancy planning question", () => {
     const template = findSymptomSupportTemplate("임신 계획과 가임력");
 
@@ -2301,7 +2356,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(52);
+    expect(symptomSupportTemplates).toHaveLength(53);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2432,6 +2487,9 @@ describe("symptomSupportTemplates", () => {
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4899",
     );
+    expect(
+      findSymptomSupportTemplate("백혈구 수치 올리는 특별한 음식 치료 중 영양")?.sourceUrl,
+    ).toBe("https://www.cancer.go.kr/lay1/S1T471C474/contents.do");
     expect(findSymptomSupportTemplate("치료 중 건강식 단백질 반찬 채소 두 가지")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T471C475/contents.do",
     );

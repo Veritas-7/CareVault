@@ -1293,6 +1293,45 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T800C802/contents.do",
   },
   {
+    id: "treatment-balanced-nutrition-boundary",
+    label: "치료 중 균형영양·특별음식 상담 준비",
+    keywords: [
+      "치료 중 올바르게 식사하기",
+      "치료 중 균형영양",
+      "치료 중 균형 영양",
+      "치료 중 균형잡힌 식사",
+      "치료 중 균형 잡힌 식사",
+      "치료 중 특별한 음식",
+      "치료 중 특별한 영양소",
+      "암을 치유하는 특별한 음식",
+      "몸에 좋다는 특정 식품",
+      "특정 식품 편중",
+      "백혈구 수치 올리는 특별한 음식",
+      "백혈구 수치를 올리는 특별한 음식",
+      "치료 중 고칼로리 고단백",
+      "treatment balanced nutrition",
+    ],
+    priorityKeywords: [
+      "치료 중 올바르게 식사하기",
+      "치료 중 균형영양",
+      "치료 중 균형 영양",
+      "치료 중 특별한 음식",
+      "치료 중 특별한 영양소",
+      "암을 치유하는 특별한 음식",
+      "몸에 좋다는 특정 식품",
+      "백혈구 수치 올리는 특별한 음식",
+      "백혈구 수치를 올리는 특별한 음식",
+      "treatment balanced nutrition",
+    ],
+    mealNote:
+      "암환자에게 식생활이 중요하다는 것은 누구나 압니다. 그러나 대부분의 사람들은 몸에 좋다고 소문난 식품이나 영양소에만 관심을 기울이고, 적정 열량(칼로리)과 필수 영양소의 섭취는 제대로 고려하지 않는 수가 많습니다. 건강식이란 균형 잡힌 식사를 말합니다. 즉, 다양한 음식을 골고루 먹는 것입니다. 암을 치유하는 특별한 음식이나 영양소는 없습니다. 암환자가 몸에 좋다는 특정 식품이나 영양소를 편중해서 섭취하면 일부 영양소는 과잉 상태가 되고 다른 중요한 영양소와 전체 열량은 부족한 상태가 되어, 당초 의도와 달리 환자에게 나쁜 영향을 줄 수 있습니다. 치료 일정, 식욕, 실제 섭취량, 체중 변화, 특정 식품·영양소에 치우친 정도, 고칼로리·고단백 식품 섭취 가능 여부를 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "암을 치유하는 특별한 음식이나 영양소는 없습니다. 음식을 들기가 전반적으로 힘들고 면역력까지 저하된 경우에는 개별적으로 영양 상담을 받아야 합니다. 백혈구 수치를 올리는 특별한 음식은 없습니다. 이 수치는 시간이 지나면 자연히 회복됩니다. 고칼로리, 고단백질의 식품을 비롯한 다양한 음식을 골고루 섭취하는 것이 도움이 됩니다. 암환자의 식사와 관련하여 고민이 있다면 의료진, 영양사와 상담하십시오. 적절한 열량과 필수 영양소, 특정 식품 편중, 백혈구 수치 관련 식품 오해, 면역저하 시 개별 영양 상담 필요성을 현재 치료 일정과 검사 수치, 식욕·구강·소화기 증상에 맞춰 의료진, 영양사와 어떤 기준으로 확인할지 질문으로 준비하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 치료 중 올바르게 식사하기",
+    sourceUrl: "https://www.cancer.go.kr/lay1/S1T471C474/contents.do",
+  },
+  {
     id: "treatment-healthy-eating-tips",
     label: "치료 중 건강식 기록 상담 준비",
     keywords: [
@@ -1613,6 +1652,18 @@ export function findSymptomSupportTemplate(input: string) {
       ),
   );
   if (bowelObstructionPriorityMatch) return bowelObstructionPriorityMatch;
+  const treatmentNutritionBoundaryMatch = priorityMatches.find(
+    (template) =>
+      template.id === "treatment-balanced-nutrition-boundary"
+      && [
+        "특별한 음식",
+        "특별한 영양소",
+        "백혈구 수치 올리는",
+        "백혈구 수치를 올리는",
+        "몸에 좋다는 특정 식품",
+      ].some((keyword) => normalized.includes(keyword.toLowerCase())),
+  );
+  if (treatmentNutritionBoundaryMatch) return treatmentNutritionBoundaryMatch;
   const priorityMatch = priorityMatches[0];
   if (priorityMatch) return priorityMatch;
 
