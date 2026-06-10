@@ -13024,7 +13024,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "리스테리아균은 냉장온도에서도 생존하여 증식할 수 있고, 살균처리하지 아니한 우유, 치즈(특히 소프트치즈), 소시지 및 건조 소시지, 리스테리아 원유, 리스테리아 핫도그, 리스테리아 아이스크림, 리스테리아 살균처리하지 아니한 우유, 리스테리아 살균 안 된 우유, 리스테리아 치즈, 리스테리아 소프트치즈, 리스테리아 소시지, 리스테리아 건조 소시지, 리스테리아 가금육, 리스테리아 가공 가금육, 리스테리아 비가공 가금육, 리스테리아 비가공 식육, 가공·비가공 가금육, 비가공 식육을 확인",
+      "리스테리아균은 냉장온도에서도 생존하여 증식할 수 있고, 살균처리하지 아니한 우유, 치즈(특히 소프트치즈), 소시지 및 건조 소시지, 식육제품과 비가공·훈연생성 및 채소류, 리스테리아 원유, 리스테리아 핫도그, 리스테리아 아이스크림, 리스테리아 살균처리하지 아니한 우유, 리스테리아 살균 안 된 우유, 리스테리아 치즈, 리스테리아 소프트치즈, 리스테리아 소시지, 리스테리아 건조 소시지, 리스테리아 가금육, 리스테리아 가공 가금육, 리스테리아 비가공 가금육, 리스테리아 비가공 식육, 리스테리아 식육제품, 리스테리아 비가공·훈연생성, 리스테리아 훈연생선, 리스테리아 채소류, 가공·비가공 가금육, 비가공 식육을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -13047,11 +13047,15 @@ describe("healthRules", () => {
     expect(foodSafetyGuide?.detail).toContain("아이스크림");
     expect(foodSafetyGuide?.detail).toContain("가공·비가공 가금육");
     expect(foodSafetyGuide?.detail).toContain("비가공 식육");
+    expect(foodSafetyGuide?.detail).toContain("식육제품");
+    expect(foodSafetyGuide?.detail).toContain("비가공·훈연생성 및 채소류");
     expect(foodSafetyGuide?.detail).toContain("소시지 및 건조 소시지");
     expect(foodSafetyGuide?.examples).toContain("원유");
     expect(foodSafetyGuide?.examples).toContain("아이스크림");
     expect(foodSafetyGuide?.examples).toContain("가공·비가공 가금육");
     expect(foodSafetyGuide?.examples).toContain("비가공 식육");
+    expect(foodSafetyGuide?.examples).toContain("식육제품");
+    expect(foodSafetyGuide?.examples).toContain("비가공·훈연생성 및 채소류");
 
     expect(safePracticeAssessment.level).toBe("ok");
     expect(safeTerms).toEqual([
@@ -13075,6 +13079,7 @@ describe("healthRules", () => {
       "살균처리하지 아니한 우유",
       "치즈(특히 소프트치즈)",
       "소시지 및 건조 소시지",
+      "식육제품과 비가공·훈연생성 및 채소류",
       "리스테리아 원유",
       "리스테리아 핫도그",
       "리스테리아 아이스크림",
@@ -13088,6 +13093,10 @@ describe("healthRules", () => {
       "리스테리아 가공 가금육",
       "리스테리아 비가공 가금육",
       "리스테리아 비가공 식육",
+      "리스테리아 식육제품",
+      "리스테리아 비가공·훈연생성",
+      "리스테리아 훈연생선",
+      "리스테리아 채소류",
       "가공·비가공 가금육",
       "비가공 식육",
     ]);
