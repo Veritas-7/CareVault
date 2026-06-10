@@ -5125,6 +5125,41 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaListeriaFoodPoisoning",
   ],
   [
+    "리스테리아 살균처리하지 아니한 우유",
+    "식품안전나라 리스테리아 식중독 살균처리하지 아니한 우유 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 치즈",
+    "식품안전나라 리스테리아 식중독 치즈 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 소프트치즈",
+    "식품안전나라 리스테리아 식중독 소프트치즈 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 소시지",
+    "식품안전나라 리스테리아 식중독 소시지 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 건조 소시지",
+    "식품안전나라 리스테리아 식중독 건조 소시지 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 가금육",
+    "식품안전나라 리스테리아 식중독 가공·비가공 가금육 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 비가공 식육",
+    "식품안전나라 리스테리아 식중독 비가공 식육 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
     "가공·비가공 가금육",
     "식품안전나라 리스테리아 식중독 가공·비가공 가금육 원인식품 확인 필요",
     "foodSafetyKoreaListeriaFoodPoisoning",
