@@ -12714,6 +12714,72 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes KDCA food poisoning bacterial temperature safety guidance", () => {
+    const careTeamGuideItems = cancerFoodGuideCategories.find(
+      (category) => category.id === "care-team",
+    )?.items;
+    const kdcaGuide = careTeamGuideItems?.find(
+      (item) => item.label === "질병관리청 식중독균 온도관리",
+    );
+    const safePracticeAssessment = assessCancerFood(
+      "뜨거운 음식 60˚C 이상, 찬 음식 4˚C 이하",
+    );
+    const safeTerms = safePracticeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safePracticeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "식중독균 4~60˚C 온도에서 증식하고 식중독균 35~36℃ 내외에서 빠르게 번식하며 여름철 세균성 식중독 위험을 확인",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+    const genericTemperatureAssessment = assessCancerFood("뜨거운 음식, 찬 음식, 여름철 음식");
+    const genericTemperatureTerms = genericTemperatureAssessment.matches.map((match) => match.term);
+
+    expect(foodGuidanceSources.kdcaFoodPoisoningTemperatureSafety).toMatchObject({
+      label: "질병관리청 국가건강정보포털 식중독 온도관리",
+      url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5239",
+    });
+    expect(kdcaGuide).toMatchObject({
+      label: "질병관리청 식중독균 온도관리",
+      sourceIds: ["kdcaFoodPoisoningTemperatureSafety"],
+    });
+    expect(kdcaGuide?.detail).toContain("4~60˚C의 온도에서 증식");
+    expect(kdcaGuide?.detail).toContain("뜨거운 음식은 최소한 60˚C 이상");
+    expect(kdcaGuide?.detail).toContain("찬 음식은 최대한 4˚C 이하");
+    expect(kdcaGuide?.detail).toContain("35~36℃");
+
+    expect(safePracticeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual(["뜨거운 음식 60˚C 이상", "찬 음식 4˚C 이하"]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        sourceId: "kdcaFoodPoisoningTemperatureSafety",
+      });
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "식중독균 4~60˚C",
+      "식중독균 35~36℃",
+      "여름철 세균성 식중독 위험",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        sourceId: "kdcaFoodPoisoningTemperatureSafety",
+      });
+    }
+    expect(genericTemperatureTerms).not.toEqual(
+      expect.arrayContaining(["뜨거운 음식 60˚C 이상", "찬 음식 4˚C 이하", "여름철 세균성 식중독 위험"]),
+    );
+    expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게/,
+    );
+  });
+
   it("recognizes KDCA vibrio sepsis high-risk seafood safety guidance", () => {
     const careTeamGuideItems = cancerFoodGuideCategories.find(
       (category) => category.id === "care-team",

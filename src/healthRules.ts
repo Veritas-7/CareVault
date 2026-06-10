@@ -69,6 +69,7 @@ export type FoodGuidanceSourceId =
   | "kdcaAlcohol"
   | "kdcaVibrioSepsis"
   | "kdcaNorovirusFoodSafety"
+  | "kdcaFoodPoisoningTemperatureSafety"
   | "kdcaFoodPoisoningNaturalToxins"
   | "foodSafetyKoreaNorovirusFoodPoisoning"
   | "foodSafetyKoreaStaphylococcusAureusFoodPoisoning"
@@ -306,6 +307,10 @@ export const foodGuidanceSources: Record<
   kdcaNorovirusFoodSafety: {
     label: "질병관리청 국가건강정보포털 노로바이러스 식중독 예방",
     url: "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=80",
+  },
+  kdcaFoodPoisoningTemperatureSafety: {
+    label: "질병관리청 국가건강정보포털 식중독 온도관리",
+    url: "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5239",
   },
   foodSafetyKoreaNorovirusFoodPoisoning: {
     label: "식품안전나라 주요 식중독균별 특성 - 노로바이러스",
@@ -1167,6 +1172,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "흐르는 물에 비누로 30초 이상 씻기, 날음식과 조리음식 구분, 칼·도마 구분 사용, 육류 중심온도 75˚C(어패류는 85˚C) 1분 이상 익히기, 식재료·조리기구는 깨끗이 세척·소독 하기, 물은 끓여서 먹기, 냉장식품은 5˚C 이하, 냉동식품은 -18˚C 이하, 따뜻한 음식은 60˚C 이상, 찬 음식은 5˚C 이하, 조리후 2시간 이내 섭취",
         sourceIds: ["mfdsFoodPoisoningPrevention"],
+      },
+      {
+        label: "질병관리청 식중독균 온도관리",
+        detail:
+          "질병관리청 국가건강정보포털은 대부분의 식중독균이 4~60˚C의 온도에서 증식한다고 설명합니다. 세균 증식 방지를 위해 뜨거운 음식은 최소한 60˚C 이상으로, 찬 음식은 최대한 4˚C 이하로 보관하도록 안내하고, 식중독균의 번식 속도는 세균마다 다르지만 대부분 35~36℃ 내외에서 가장 빠르며 기온이 높은 여름철에 세균성 식중독 위험이 가장 높다고 설명합니다.",
+        examples:
+          "대부분의 식중독균은 4~60˚C의 온도에서 증식합니다, 뜨거운 음식은 최소한 60˚C 이상, 찬 음식은 최대한 4˚C 이하, 식중독균 4~60˚C, 식중독균 35~36℃, 여름철 세균성 식중독 위험",
+        sourceIds: ["kdcaFoodPoisoningTemperatureSafety"],
       },
       {
         label: "식약처 달걀 살모넬라 식중독 주의",
@@ -3045,9 +3058,19 @@ const supportiveFoods: FoodRuleTerm[] = [
     "mfdsFoodPoisoningPrevention",
   ],
   [
+    "뜨거운 음식 60˚C 이상",
+    "질병관리청 식중독균 증식 방지 뜨거운 음식 60˚C 이상 보관 후보",
+    "kdcaFoodPoisoningTemperatureSafety",
+  ],
+  [
     "찬 음식은 5˚C 이하",
     "식약처 식중독 예방 찬 음식 보관온도 확인 후보",
     "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "찬 음식 4˚C 이하",
+    "질병관리청 식중독균 증식 방지 찬 음식 4˚C 이하 보관 후보",
+    "kdcaFoodPoisoningTemperatureSafety",
   ],
   [
     "조리후 2시간 이내 섭취",
@@ -5355,6 +5378,21 @@ const careTeamFoods: FoodRuleTerm[] = [
     "상온에 오래 방치",
     "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",
     "mfdsFoodPoisoningPrevention",
+  ],
+  [
+    "식중독균 4~60˚C",
+    "질병관리청 식중독균 4~60˚C 증식 온도 확인 필요",
+    "kdcaFoodPoisoningTemperatureSafety",
+  ],
+  [
+    "식중독균 35~36℃",
+    "질병관리청 식중독균 35~36℃ 내외 빠른 번식 확인 필요",
+    "kdcaFoodPoisoningTemperatureSafety",
+  ],
+  [
+    "여름철 세균성 식중독 위험",
+    "질병관리청 기온 높은 여름철 세균성 식중독 위험 확인 필요",
+    "kdcaFoodPoisoningTemperatureSafety",
   ],
   [
     "살모넬라 식중독",
