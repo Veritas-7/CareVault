@@ -14914,6 +14914,73 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes CDC weakened-immune deli meat and hot dog reheating food safety choices", () => {
+    const safeAssessment = assessCancerFood(
+      "델리미트 165°F 재가열, 콜드컷 김이 날 때까지 데우기, 핫도그 김이 날 때까지 데우기, 건조 소시지 165°F 재가열",
+    );
+    const safeTerms = safeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "데우지 않은 델리미트, 데우지 않은 콜드컷, 데우지 않은 핫도그, 데우지 않은 발효 소시지, 데우지 않은 건조 소시지",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+    const genericAssessment = assessCancerFood("핫도그, 햄, 소시지, 런천미트");
+    const genericTerms = genericAssessment.matches.map((match) => match.term);
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(careTeamGuideText).toContain("데우지 않은 델리미트");
+    expect(careTeamGuideText).toContain("데우지 않은 핫도그");
+    expect(careTeamGuideText).toContain("165°F 또는 김이 날 때까지");
+
+    expect(safeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual([
+      "델리미트 165°F 재가열",
+      "콜드컷 김이 날 때까지 데우기",
+      "핫도그 김이 날 때까지 데우기",
+      "건조 소시지 165°F 재가열",
+    ]);
+    for (const term of safeTerms) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "CDC 면역저하자 식품안전 델리미트·핫도그 재가열 후보",
+        sourceId: "cdcWeakenedImmuneFoodSafety",
+      });
+    }
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "데우지 않은 델리미트",
+      "데우지 않은 콜드컷",
+      "데우지 않은 핫도그",
+      "데우지 않은 발효 소시지",
+      "데우지 않은 건조 소시지",
+    ]);
+    for (const term of riskTerms) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "CDC 면역저하자 식품안전 데우지 않은 델리미트·핫도그 확인 필요",
+        sourceId: "cdcWeakenedImmuneFoodSafety",
+      });
+    }
+
+    expect(genericTerms).not.toContain("데우지 않은 핫도그");
+    expect(genericTerms).not.toContain("데우지 않은 델리미트");
+    expect(formatFoodMatchEvidence(riskMatchesByTerm["데우지 않은 핫도그"])).toContain(
+      "CDC 면역저하자 안전한 식품 선택 - https://www.cdc.gov/food-safety/foods/weakened-immune-systems.html",
+    );
+    expect(JSON.stringify([...safeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게|감염을 막습니다|핫도그를 모두 금지|가공육을 모두 금지/,
+    );
+  });
+
   it("recognizes immune-low leftover discard and abnormal food condition wording", () => {
     const assessment = assessCancerFood(
       "냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다, 식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다",
