@@ -81,6 +81,7 @@ describe("cervicalCancerCare", () => {
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccSurvivorDistressAdaptation",
+      "nccSurvivorPostTreatmentSlump",
       "nccSurvivorAnxietyManagement",
       "nccSurvivorSleepManagement",
       "nccSurvivorExerciseManagement",
@@ -140,6 +141,9 @@ describe("cervicalCancerCare", () => {
       "S1T327C329",
     );
     expect(cervicalCancerCareSources.nccSurvivorDistressAdaptation.url).toContain("S1T788C790");
+    expect(cervicalCancerCareSources.nccSurvivorPostTreatmentSlump.url).toContain(
+      "article_seq=22077",
+    );
     expect(cervicalCancerCareSources.nccSurvivorAnxietyManagement.url).toContain("S1T788C791");
     expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
     expect(cervicalCancerCareSources.nccSurvivorExerciseManagement.url).toContain("S1T748C795");
@@ -261,7 +265,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(60);
+				    expect(cervicalCancerCarePrompts).toHaveLength(61);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -305,6 +309,7 @@ describe("cervicalCancerCare", () => {
       "자녀·가족 설명 준비",
       "정서 안정·전문상담 준비",
       "디스트레스 신호·자가평가 상담 준비",
+      "치료 후 슬럼프·우울 상담 준비",
       "불안 신체증상·주의전환 상담 준비",
       "불면·수면일지 상담 준비",
       "운동강도·근력운동 상담 준비",
@@ -1135,6 +1140,30 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /디스트레스를 진단하세요|치료하세요|처방하세요|자살하세요|혼자 견디세요|암관리를 중단하세요/,
     );
+    const survivorSlumpPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "치료 후 슬럼프·우울 상담 준비",
+    )!;
+    expect(survivorSlumpPrompt.sourceId).toBe("nccSurvivorPostTreatmentSlump");
+    expect(survivorSlumpPrompt.question).toContain("암치료 후 슬럼프");
+    expect(survivorSlumpPrompt.question).toContain("수술과 항암화학요법");
+    expect(survivorSlumpPrompt.question).toContain("방사선치료");
+    expect(survivorSlumpPrompt.question).toContain("초기 치료가 일단락");
+    expect(survivorSlumpPrompt.question).toContain("한참 후에 우울증");
+    expect(survivorSlumpPrompt.question).toContain("좌절감");
+    expect(survivorSlumpPrompt.question).toContain("고립감");
+    expect(survivorSlumpPrompt.question).toContain("허무감");
+    expect(survivorSlumpPrompt.question).toContain("혼자서 관리해야 한다는 부담감");
+    expect(survivorSlumpPrompt.question).toContain("재발이나 전이에 대한 막연한 두려움");
+    expect(survivorSlumpPrompt.question).toContain("우울한 기분이나 의욕 상실");
+    expect(survivorSlumpPrompt.question).toContain("한 달 이상");
+    expect(survivorSlumpPrompt.question).toContain("정신건강의학과 상담");
+    expect(survivorSlumpPrompt.question).toContain("전문가의 도움");
+    expect(buildCervicalCancerCarePromptQuestion(survivorSlumpPrompt)).toContain(
+      "출처: 국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(survivorSlumpPrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(/우울증을 진단하세요|항우울제를 처방하세요|치료하세요|혼자 관리하세요|상담받으세요|괜찮으니 참으세요/);
     const survivorAnxietyPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "불안 신체증상·주의전환 상담 준비",
     )!;
@@ -1833,6 +1862,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorDistressAdaptation")).toContain(
       "국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기 - https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccSurvivorPostTreatmentSlump")).toContain(
+      "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+    );
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorAnxietyManagement")).toContain(
       "국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기 - https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
     );
@@ -2203,6 +2235,9 @@ describe("cervicalCancerCare", () => {
     const survivorDistressGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 디스트레스 자가평가 메모",
     );
+    const survivorSlumpGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암치료 후 슬럼프·우울상담 메모",
+    );
     const sleepManagementGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "불면·수면효율·습관 메모",
     );
@@ -2237,7 +2272,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(44);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(45);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3130,6 +3165,38 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorDistressGuide!)).join(" ")).not.toMatch(
       /디스트레스를 진단하세요|치료하세요|처방하세요|자살하세요|혼자 견디세요|암관리를 중단하세요/,
+    );
+    expect(survivorSlumpGuide).toMatchObject({
+      label: "암치료 후 슬럼프·우울상담 메모",
+      sourceId: "nccSurvivorPostTreatmentSlump",
+    });
+    expect(survivorSlumpGuide?.detail).toContain("암 진단 후에 수술과 항암화학요법");
+    expect(survivorSlumpGuide?.detail).toContain("방사선치료");
+    expect(survivorSlumpGuide?.detail).toContain("초기 치료가 일단락");
+    expect(survivorSlumpGuide?.detail).toContain("한참 후에 우울증");
+    expect(survivorSlumpGuide?.detail).toContain("좌절감");
+    expect(survivorSlumpGuide?.detail).toContain("절망감");
+    expect(survivorSlumpGuide?.detail).toContain("고립감");
+    expect(survivorSlumpGuide?.detail).toContain("고독감");
+    expect(survivorSlumpGuide?.detail).toContain("허무감");
+    expect(survivorSlumpGuide?.detail).toContain("혼자서 관리해야 한다는 부담감");
+    expect(survivorSlumpGuide?.detail).toContain("재발이나 전이에 대한 막연한 두려움");
+    expect(survivorSlumpGuide?.detail).toContain("우울한 기분이나 의욕 상실");
+    expect(survivorSlumpGuide?.detail).toContain("한 달 이상");
+    expect(survivorSlumpGuide?.detail).toContain("정신건강의학과 상담");
+    expect(survivorSlumpGuide?.detail).toContain("전문가의 도움");
+    expect(survivorSlumpGuide?.detail).toContain("진료를 대신하거나 항우울제 처방을 지시하지 않습니다");
+    expect(formatCervicalCancerCareItemEvidence(survivorSlumpGuide!)).toContain(
+      "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(survivorSlumpGuide!).body).toContain(
+      "암치료 후 슬럼프·우울상담 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(survivorSlumpGuide!)).toContain(
+      "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorSlumpGuide!)).join(" ")).not.toMatch(
+      /우울증을 진단하세요|항우울제를 처방하세요|치료하세요|혼자 관리하세요|상담받으세요|괜찮으니 참으세요/,
     );
     expect(survivorAnxietyGuide).toMatchObject({
       label: "암생존자 불안신호·주의전환 메모",
