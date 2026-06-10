@@ -76,6 +76,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("소아청소년 암생존자 영양 식생활 BMI 백분위수")?.id).toBe(
       "pediatric-nutrition-growth-support",
     );
+    expect(findSymptomSupportTemplate("소아청소년 암생존자 마음관리 마음 온도계 4점")?.id).toBe(
+      "pediatric-mental-health-support",
+    );
     expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.id).toBe(
       "survivor-nutrition-lifestyle",
     );
@@ -945,6 +948,75 @@ describe("symptomSupportTemplates", () => {
       ),
     ).not.toMatch(
       /먹이세요|먹으세요|금지하세요|절제시키세요|아침을 먹이세요|휴대전화를 금지하세요|손을 씻기세요|매일 한 시간 이상 운동시키세요|체중을 감량하세요|비만을 진단하세요|식단을 처방하세요|치료하세요|처방하세요|성장발달이 보장됩니다|비만 예방이 보장됩니다/,
+    );
+  });
+
+  it("builds a pediatric mental-health question from official guidance", () => {
+    const distressThermometerSentence =
+      "오늘을 포함하여 지난 7일 동안 경험한 괴로움(힘듦) 정도";
+    const fourPointSentence = "마음 온도계에서 4점보다 높을 때";
+    const naturalEmotionSentence =
+      "모든 감정은 누구나 느낄 수 있는 자연스러운 것입니다.";
+    const survivorDifficultySentence =
+      "암 치료가 끝난 소아청소년 암생존자들은 일상으로 돌아가 대체로 건강하게 생활을 잘 합니다.";
+    const physicalSymptomSentence = "신체증상 - 가슴 통증, 구토, 숨가쁨, 피로감 등";
+    const concentrationSentence = "집중력과 기억력 저하";
+    const anxietySentence = "불안, 긴장, 겁이많음";
+    const depressionSentence = "우울, 의욕이 없고, 위축된 느낌";
+    const signalSentence =
+      "나의 마음은 감정, 생각, 행동, 신체적 증상을 통해 알 수 있으며";
+    const moodSentence = "쉽게 짜증이 나요.";
+    const behaviorSentence = "자꾸 눈물이 나요.";
+    const thoughtSentence = "‘역시 난 안돼’와 같이 부정적인 말을 자꾸 해요.";
+    const bodySentence = "잠이 잘 안 오거나, 자꾸 잠만 자고 싶어져요.";
+    const activitySentence = "마음을 즐겁게 할 수 있는 활동을 해요.";
+    const adultHelpSentence = "마음이 힘들면 어른들에게 도움을 요청해요.";
+    const template = findSymptomSupportTemplate(
+      "소아청소년 암생존자 마음관리 마음 온도계 4점",
+    );
+
+    expect(template?.id).toBe("pediatric-mental-health-support");
+    expect(template?.mealNote).toContain(distressThermometerSentence);
+    expect(template?.mealNote).toContain(fourPointSentence);
+    expect(template?.mealNote).toContain(naturalEmotionSentence);
+    expect(template?.mealNote).toContain(survivorDifficultySentence);
+    expect(template?.mealNote).toContain(physicalSymptomSentence);
+    expect(template?.mealNote).toContain(concentrationSentence);
+    expect(template?.mealNote).toContain(anxietySentence);
+    expect(template?.mealNote).toContain(depressionSentence);
+    expect(template?.clinicianQuestion).toContain(signalSentence);
+    expect(template?.clinicianQuestion).toContain(moodSentence);
+    expect(template?.clinicianQuestion).toContain(behaviorSentence);
+    expect(template?.clinicianQuestion).toContain(thoughtSentence);
+    expect(template?.clinicianQuestion).toContain(bodySentence);
+    expect(template?.clinicianQuestion).toContain(activitySentence);
+    expect(template?.clinicianQuestion).toContain(adultHelpSentence);
+    expect(template?.clinicianQuestion).toContain("부모님 또는 주치의");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 마음관리 마음 온도계 4점",
+      ),
+    ).toContain(fourPointSentence);
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 마음관리 마음 온도계 4점",
+      ),
+    ).toContain(
+      "출처: 국가암정보센터 소아청소년 암생존자 마음관리 - https://www.cancer.go.kr/lay1/S1T800C803/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "소아청소년 암생존자 마음관리 마음 온도계 4점",
+      ),
+    ).not.toMatch(
+      /우울증을 진단하세요|불안장애를 진단하세요|상담을 받으세요|치료하세요|처방하세요|약을 복용하세요|혼자 참으세요|괜찮아집니다|학교생활 적응이 보장됩니다|마음 온도계 점수를 낮추세요|활동을 강제하세요|도움을 요청하세요/,
     );
   });
 
@@ -1995,7 +2067,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(46);
+    expect(symptomSupportTemplates).toHaveLength(47);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2039,6 +2111,10 @@ describe("symptomSupportTemplates", () => {
     expect(
       findSymptomSupportTemplate("소아청소년 암생존자 영양 식생활 BMI 백분위수")?.sourceUrl,
     ).toBe("https://www.cancer.go.kr/lay1/S1T800C802/contents.do");
+    expect(
+      findSymptomSupportTemplate("소아청소년 암생존자 마음관리 마음 온도계 4점")
+        ?.sourceUrl,
+    ).toBe("https://www.cancer.go.kr/lay1/S1T800C803/contents.do");
     expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
     );
