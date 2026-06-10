@@ -67,6 +67,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.id).toBe(
       "survivor-sleep-management",
     );
+    expect(findSymptomSupportTemplate("암치료 후 슬럼프 울적함 의욕 상실 한 달")?.id).toBe(
+      "survivor-treatment-slump",
+    );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.id).toBe(
       "survivor-exercise-management",
     );
@@ -748,6 +751,48 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 수면관리 수면효율"),
     ).not.toMatch(
       /수면제를 복용하세요|수면제를 처방하세요|카페인을 끊으세요|물을 적게 마시세요|저녁 물 금지|불면증을 진단하세요|치료하세요|처방하세요|인지 행동 치료를 하세요|8시간 이상 자세요|휴대 전화를 금지하세요/,
+    );
+  });
+
+  it("builds a survivor treatment-slump question from official guidance", () => {
+    const treatmentFinishedSentence =
+      "암 진단 후에 수술과 항암화학요법을 받고 방사선치료까지 마쳤다는 것은 일단 초기 치료가 일단락되었음을 의미합니다.";
+    const delayedDepressionSentence =
+      "우울증은 보통 암 진단을 받은 직후나 치료를 받고 있는 중에 많이 생기지만, 처음에는 멀쩡하다가 한참 후에 우울증이 나타나는 경우도 흔합니다.";
+    const isolationSentence =
+      "좌절감, 절망감, 고립감, 고독감, 허무감 등의 감정";
+    const burdenSentence =
+      "혼자서 관리해야 한다는 부담감과 재발이나 전이에 대한 막연한 두려움";
+    const thresholdSentence =
+      "우울한 기분이나 의욕 상실 같은 증상이 한 달 이상 가거나 정도가 심하면";
+    const expertHelpSentence =
+      "전문가의 도움을 받으면 힘든 시기를 수월하게 극복할 수 있습니다.";
+    const template = findSymptomSupportTemplate("암치료 후 슬럼프 울적함 의욕 상실 한 달");
+
+    expect(template?.id).toBe("survivor-treatment-slump");
+    expect(template?.mealNote).toContain(treatmentFinishedSentence);
+    expect(template?.mealNote).toContain(delayedDepressionSentence);
+    expect(template?.mealNote).toContain(isolationSentence);
+    expect(template?.mealNote).toContain(burdenSentence);
+    expect(template?.clinicianQuestion).toContain(thresholdSentence);
+    expect(template?.clinicianQuestion).toContain(expertHelpSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암치료 후 슬럼프 울적함 의욕 상실 한 달"),
+    ).toContain(thresholdSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암치료 후 슬럼프 울적함 의욕 상실 한 달"),
+    ).toContain(
+      "출처: 국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+    );
+    expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암치료 후 슬럼프 울적함 의욕 상실 한 달"),
+    ).not.toMatch(
+      /우울증을 진단하세요|항우울제를 처방하세요|항우울제를 복용하세요|정신건강의학과 상담을 받으세요|치료하세요|처방하세요|혼자 관리하세요|괜찮으니 참으세요|전이가 아닙니다|재발이 아닙니다|우울증은 잘 낫습니다/,
     );
   });
 
@@ -2522,7 +2567,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(56);
+    expect(symptomSupportTemplates).toHaveLength(57);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2556,6 +2601,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암치료 후 슬럼프 울적함 의욕 상실 한 달")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
     );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
