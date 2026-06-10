@@ -179,6 +179,11 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("무월경과 안면홍조")?.id).toBe(
       "cervical-radiation-menopause",
     );
+    expect(
+      findSymptomSupportTemplate(
+        "임신 중 자궁경부암 발견 조직 생검 자궁경관 내 소파술 원추생검",
+      )?.id,
+    ).toBe("cervical-pregnancy-diagnosis-treatment");
     expect(findSymptomSupportTemplate("임신 계획과 가임력")?.id).toBe(
       "cervical-fertility-pregnancy",
     );
@@ -2895,6 +2900,48 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a pregnancy-diagnosis treatment-planning question from official cervical guidance", () => {
+    const diagnosisSentence =
+      "임신 자체가 자궁경부암의 예후 에 영향을 미치지 않지만 진단과 치료에 제약을 줍니다.";
+    const biopsySentence =
+      "임신 중이라도 조직 생검 은 안전하게 시행할 수 있으나, 자궁경관 내 소파술 은 시행할 수 없습니다.";
+    const coneBiopsySentence =
+      "원추생검 술은 유산이나 조산 등 산과적 합병증을 증가시키므로 반드시 필요한 경우에만 시행합니다.";
+    const template = findSymptomSupportTemplate(
+      "임신 중 자궁경부암 발견 조직 생검 자궁경관 내 소파술 원추생검",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "임신 중 자궁경부암 발견 조직 생검 자궁경관 내 소파술 원추생검",
+    );
+
+    expect(template.id).toBe("cervical-pregnancy-diagnosis-treatment");
+    expect(template.mealNote).toContain(diagnosisSentence);
+    expect(template.mealNote).toContain("임신주수");
+    expect(template.mealNote).toContain("조직 생검");
+    expect(template.mealNote).toContain("자궁경관 내 소파술");
+    expect(template.mealNote).toContain("원추생검");
+    expect(template.clinicianQuestion).toContain(biopsySentence);
+    expect(template.clinicianQuestion).toContain(coneBiopsySentence);
+    expect(template.clinicianQuestion).toContain("분만 후 6주경");
+    expect(template.clinicianQuestion).toContain("제왕절개술");
+    expect(template.clinicianQuestion).toContain("태아의 폐 성숙");
+    expect(actionNote).toContain("태아 생존 가능 주수");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
+    );
+    expect(buildSymptomSupportQueueHint(template)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(findSymptomSupportTemplate("임신 계획과 가임력")?.id).toBe(
+      "cervical-fertility-pregnancy",
+    );
+    expect(question).not.toMatch(
+      /조직 생검을 받으세요|원추생검을 하세요|제왕절개술을 하세요|치료를 미루세요|항암화학요법을 쓰세요|치료하세요|처방하세요|진단하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical pelvic-radiation menopause-symptom question", () => {
     const template = findSymptomSupportTemplate("무월경과 안면홍조");
 
@@ -2968,7 +3015,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(65);
+    expect(symptomSupportTemplates).toHaveLength(66);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3180,6 +3227,11 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("임신 계획")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=5374",
+    );
+    expect(
+      findSymptomSupportTemplate("임신 중 자궁경부암 발견 조직 생검")?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
     );
     expect(findSymptomSupportTemplate("진통제")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
