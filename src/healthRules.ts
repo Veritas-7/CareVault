@@ -3215,6 +3215,11 @@ const supportiveFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaNorovirusFoodPoisoning",
   ],
   [
+    "노로바이러스 감염자 변 구토물 소독",
+    "식품안전나라 노로바이러스 감염자 변·구토물 세척·소독 후보",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
     "조리자는 용변을 본 후나 조리하기 전에 반드시 손을 잘 씻고 소독을 하여야 한다",
     "식품안전나라 노로바이러스 조리자 용변 후·조리 전 손씻기 소독 후보",
     "foodSafetyKoreaNorovirusFoodPoisoning",
@@ -3225,8 +3230,23 @@ const supportiveFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaNorovirusFoodPoisoning",
   ],
   [
+    "노로바이러스 굴 85℃ 1분",
+    "식품안전나라 노로바이러스 굴 등 어패류 85℃ 1분 중심가열 후보",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
     "질병 발생 후 오염된 표면은 소독제로 철저히 세척, 살균하고 바이러스에 감염된 옷과 이불 등은 즉시 비누를 사용하여 뜨거운 물로 세탁하여야 한다",
     "식품안전나라 노로바이러스 오염 표면 세척·살균 및 뜨거운 물 세탁 후보",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 오염 표면 세척 살균",
+    "식품안전나라 노로바이러스 오염 표면 세척·살균 후보",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 뜨거운 물 세탁",
+    "식품안전나라 노로바이러스 감염 옷·이불 뜨거운 물 세탁 후보",
     "foodSafetyKoreaNorovirusFoodPoisoning",
   ],
   [
@@ -6460,6 +6480,26 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "사람의 분변에 오염된 물이나 식품",
     "식품안전나라 노로바이러스 분변 오염 물·식품 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 분변-구강 경로",
+    "식품안전나라 노로바이러스 분변-구강 감염경로 문맥 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 사람 장관",
+    "식품안전나라 노로바이러스 사람 장관 내 증식 문맥 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 2차 발병률",
+    "식품안전나라 노로바이러스 2차 발병률 문맥 확인 필요",
+    "foodSafetyKoreaNorovirusFoodPoisoning",
+  ],
+  [
+    "노로바이러스 사람 분변 오염",
+    "식품안전나라 노로바이러스 사람 분변 오염 물·식품 문맥 확인 필요",
     "foodSafetyKoreaNorovirusFoodPoisoning",
   ],
   [
