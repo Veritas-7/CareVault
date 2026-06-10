@@ -13775,7 +13775,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "클로스트리디움 퍼프린젠스균은 아포의 발아 시 독소를 생성하고 A형과 C형이 사람의 식중독에 관여하며, 돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품과 미리 가열 조리된 후 실온에서 5시간이상 방치된 식품을 확인, 물, 토양, 하수 등 자연계와 가축과 가금류의 장관에 상재하는 감염경로를 확인, 퍼프린젠스 물, 퍼프린젠스 토양, 퍼프린젠스 하수, 퍼프린젠스 가축, 퍼프린젠스 가금류, 퍼프린젠스 돼지고기 조리식품, 퍼프린젠스 닭고기 조리식품, 퍼프린젠스 칠면조고기 조리식품, 퍼프린젠스 돼지고기 가공품, 퍼프린젠스 닭고기 가공품, 퍼프린젠스 칠면조고기 가공품, 퍼프린젠스 동물성 단백질식품, 퍼프린젠스 5시간 실온방치 식품을 확인",
+      "클로스트리디움 퍼프린젠스균은 아포의 발아 시 독소를 생성하고 A형과 C형이 사람의 식중독에 관여하며, 돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품과 미리 가열 조리된 후 실온에서 5시간이상 방치된 식품을 확인, 물, 토양, 하수 등 자연계와 가축과 가금류의 장관 및 건강한 사람의 장관에도 존재하는 감염경로를 확인, 퍼프린젠스 물, 퍼프린젠스 토양, 퍼프린젠스 하수, 퍼프린젠스 가축, 퍼프린젠스 가금류, 퍼프린젠스 건강한 사람 장관, 퍼프린젠스 사람 장관, 퍼프린젠스 돼지고기 조리식품, 퍼프린젠스 닭고기 조리식품, 퍼프린젠스 칠면조고기 조리식품, 퍼프린젠스 돼지고기 가공품, 퍼프린젠스 닭고기 가공품, 퍼프린젠스 칠면조고기 가공품, 퍼프린젠스 동물성 단백질식품, 퍼프린젠스 5시간 실온방치 식품을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -13793,6 +13793,7 @@ describe("healthRules", () => {
     expect(foodSafetyGuide?.detail).toContain("아포의 발아 시 독소를 생성");
     expect(foodSafetyGuide?.detail).toContain("실온에서 5시간이상 방치");
     expect(foodSafetyGuide?.detail).toContain("가축과 가금류의 장관");
+    expect(foodSafetyGuide?.detail).toContain("건강한 사람의 장관");
     expect(foodSafetyGuide?.detail).toContain("소량씩 용기에 넣어 보관");
     expect(foodSafetyGuide?.detail).toContain("배식까지 60℃ 이상");
     expect(foodSafetyGuide?.detail).toContain("5℃ 이하에서 보관");
@@ -13825,6 +13826,8 @@ describe("healthRules", () => {
       "퍼프린젠스 하수",
       "퍼프린젠스 가축",
       "퍼프린젠스 가금류",
+      "퍼프린젠스 건강한 사람 장관",
+      "퍼프린젠스 사람 장관",
       "퍼프린젠스 돼지고기 조리식품",
       "퍼프린젠스 닭고기 조리식품",
       "퍼프린젠스 칠면조고기 조리식품",
