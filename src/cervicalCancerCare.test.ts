@@ -81,6 +81,7 @@ describe("cervicalCancerCare", () => {
       "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
       "nccSurvivorDistressAdaptation",
+      "nccMentalHealthStressCancerCause",
       "nccSurvivorPostTreatmentSlump",
       "nccMentalHealthInsomniaMedicationConcern",
       "nccMentalHealthPsychiatryConsultBenefits",
@@ -143,6 +144,9 @@ describe("cervicalCancerCare", () => {
       "S1T327C329",
     );
     expect(cervicalCancerCareSources.nccSurvivorDistressAdaptation.url).toContain("S1T788C790");
+    expect(cervicalCancerCareSources.nccMentalHealthStressCancerCause.url).toContain(
+      "article_seq=22076",
+    );
     expect(cervicalCancerCareSources.nccSurvivorPostTreatmentSlump.url).toContain(
       "article_seq=22077",
     );
@@ -273,7 +277,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(63);
+				    expect(cervicalCancerCarePrompts).toHaveLength(64);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -317,6 +321,7 @@ describe("cervicalCancerCare", () => {
       "자녀·가족 설명 준비",
       "정서 안정·전문상담 준비",
       "디스트레스 신호·자가평가 상담 준비",
+      "스트레스·암 원인 오해 상담 준비",
       "치료 후 슬럼프·우울 상담 준비",
       "불면증·정신과 약 중독 우려 상담 준비",
       "정신건강의학과 진료 도움 확인 준비",
@@ -1150,6 +1155,32 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /디스트레스를 진단하세요|치료하세요|처방하세요|자살하세요|혼자 견디세요|암관리를 중단하세요/,
     );
+    const stressCancerCausePrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "스트레스·암 원인 오해 상담 준비",
+    )!;
+    expect(stressCancerCausePrompt.sourceId).toBe("nccMentalHealthStressCancerCause");
+    expect(stressCancerCausePrompt.question).toContain("스트레스를 많이 받아서 암에 걸린 걸까요");
+    expect(stressCancerCausePrompt.question).toContain("누군가를 탓하고 싶은 마음");
+    expect(stressCancerCausePrompt.question).toContain("스트레스를 불러일으킨 상황이나 사람을 탓");
+    expect(stressCancerCausePrompt.question).toContain("직접적인 발암인자");
+    expect(stressCancerCausePrompt.question).toContain("암이 생기게 한 원인이라고 할 수는 없습니다");
+    expect(stressCancerCausePrompt.question).toContain("면역력을 약화");
+    expect(stressCancerCausePrompt.question).toContain("악성세포의 성장");
+    expect(stressCancerCausePrompt.question).toContain("스트레스를 피하는 것보다");
+    expect(stressCancerCausePrompt.question).toContain("건전한 스트레스 해소법");
+    expect(stressCancerCausePrompt.question).toContain("적당한 운동");
+    expect(stressCancerCausePrompt.question).toContain("건강한 식생활");
+    expect(stressCancerCausePrompt.question).toContain("좋은 대인관계");
+    expect(stressCancerCausePrompt.question).toContain("건전한 신앙생활");
+    expect(stressCancerCausePrompt.question).toContain("원인 단정이나 책임 전가로 쓰지 않");
+    expect(buildCervicalCancerCarePromptQuestion(stressCancerCausePrompt)).toContain(
+      "출처: 국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&mode=view&rn=46&rows=12",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(stressCancerCausePrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(
+      /스트레스 때문에 암에 걸렸습니다|스트레스가 직접적인 암 원인입니다|누군가를 탓하세요|운동하세요|식생활을 바꾸세요|신앙생활을 하세요|면역력이 회복됩니다|악성세포 성장이 줄어듭니다|치료하세요|처방하세요|진단하세요/,
+    );
     const survivorSlumpPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "치료 후 슬럼프·우울 상담 준비",
     )!;
@@ -1926,6 +1957,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorDistressAdaptation")).toContain(
       "국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기 - https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccMentalHealthStressCancerCause")).toContain(
+      "국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&mode=view&rn=46&rows=12",
+    );
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorPostTreatmentSlump")).toContain(
       "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
     );
@@ -2305,6 +2339,9 @@ describe("cervicalCancerCare", () => {
     const survivorDistressGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 디스트레스 자가평가 메모",
     );
+    const stressCancerCauseGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "스트레스 원인 오해·관리 메모",
+    );
     const survivorSlumpGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암치료 후 슬럼프·우울상담 메모",
     );
@@ -2348,7 +2385,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(47);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(48);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3241,6 +3278,36 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorDistressGuide!)).join(" ")).not.toMatch(
       /디스트레스를 진단하세요|치료하세요|처방하세요|자살하세요|혼자 견디세요|암관리를 중단하세요/,
+    );
+    expect(stressCancerCauseGuide).toMatchObject({
+      label: "스트레스 원인 오해·관리 메모",
+      sourceId: "nccMentalHealthStressCancerCause",
+    });
+    expect(stressCancerCauseGuide?.detail).toContain("스트레스를 많이 받아서 암에 걸린 걸까요");
+    expect(stressCancerCauseGuide?.detail).toContain("누군가를 탓하고 싶은 마음");
+    expect(stressCancerCauseGuide?.detail).toContain("스트레스를 불러일으킨 상황이나 사람을 탓");
+    expect(stressCancerCauseGuide?.detail).toContain("직접적인 발암인자");
+    expect(stressCancerCauseGuide?.detail).toContain("암이 생기게 한 원인이라고 할 수는 없습니다");
+    expect(stressCancerCauseGuide?.detail).toContain("면역력을 약화");
+    expect(stressCancerCauseGuide?.detail).toContain("악성세포의 성장");
+    expect(stressCancerCauseGuide?.detail).toContain("스트레스를 피하는 것보다");
+    expect(stressCancerCauseGuide?.detail).toContain("건전한 스트레스 해소법");
+    expect(stressCancerCauseGuide?.detail).toContain("적당한 운동");
+    expect(stressCancerCauseGuide?.detail).toContain("건강한 식생활");
+    expect(stressCancerCauseGuide?.detail).toContain("좋은 대인관계");
+    expect(stressCancerCauseGuide?.detail).toContain("건전한 신앙생활");
+    expect(stressCancerCauseGuide?.detail).toContain("원인 단정이나 책임 전가로 쓰지 않습니다");
+    expect(formatCervicalCancerCareItemEvidence(stressCancerCauseGuide!)).toContain(
+      "국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&mode=view&rn=46&rows=12",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(stressCancerCauseGuide!).body).toContain(
+      "스트레스 원인 오해·관리 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(stressCancerCauseGuide!)).toContain(
+      "국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(stressCancerCauseGuide!)).join(" ")).not.toMatch(
+      /스트레스 때문에 암에 걸렸습니다|스트레스가 직접적인 암 원인입니다|누군가를 탓하세요|운동하세요|식생활을 바꾸세요|신앙생활을 하세요|면역력이 회복됩니다|악성세포 성장이 줄어듭니다|치료하세요|처방하세요|진단하세요/,
     );
     expect(survivorSlumpGuide).toMatchObject({
       label: "암치료 후 슬럼프·우울상담 메모",
