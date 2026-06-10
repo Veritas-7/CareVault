@@ -6352,6 +6352,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
   ],
   [
+    "여시니아 오물",
+    "식품안전나라 여시니아 엔테로콜리티카균 오물 원인식품 확인 필요",
+    "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
+  ],
+  [
     "여시니아 오염된 물",
     "식품안전나라 여시니아 엔테로콜리티카균 오염된 물 원인식품 확인 필요",
     "foodSafetyKoreaYersiniaEnterocoliticaFoodPoisoning",
