@@ -98,6 +98,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("방사선치료 후 혈뇨와 혈변")?.id).toBe(
       "cervical-urinary-bowel-bleeding",
     );
+    expect(findSymptomSupportTemplate("광범위 자궁절제술 후 배뇨 장애")?.id).toBe(
+      "cervical-urinary-bowel-bleeding",
+    );
     expect(findSymptomSupportTemplate("방사선치료 후 장폐색과 복부팽만")?.id).toBe(
       "cervical-bowel-obstruction",
     );
@@ -1383,6 +1386,48 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
   });
 
+  it("builds a cervical surgery bladder or bowel dysfunction question from official complication guidance", () => {
+    const acuteComplicationSentence =
+      "수술로 인한 합병증에는 급성과 만성이 있습니다. 급성 합병증이란 수술 직후에 일어나는 합병증으로 출혈, 장폐색, 혈관손상, 요관손상, 직장 파열, 폐렴, 폐색전 증 등이 있으나, 수술의 발전으로 최근 급성 합병증의 발생은 매우 드문 편입니다.";
+    const bladderRectalSentence =
+      "만성 합병증으로는 방광이나 직장의 기능부전이 가장 대표적입니다.";
+    const surgeryScopeSentence =
+      "침윤 성 자궁경부암 으로 수술한 경우, 근종이나 기타 양성 질환으로 수술하는 경우와는 달리 광범위자궁절제 및 림프절 절제술 을 동시에 시행해서 생깁니다.";
+    const radicalHysterectomySentence =
+      "광범위 자궁절제술 은 단순히 자궁뿐만 아니라 자궁주변의 조직을 많이 포함하여 절제하는 것을 말합니다.";
+    const nerveInjurySentence =
+      "이 경우 방광이나 직장으로 들어가는 신경조직이 많이 손상되므로 수술 후 배뇨나 배변 장애가 올 수 있습니다.";
+    const nerveSparingSentence =
+      "이와 같은 부작용 을 줄이기 위하여 최근에는 신경보존 광범위자궁절제술 등을 개발하여 시도하고 있습니다.";
+    const lymphedemaSentence =
+      "또한 림프절 절제술로 인한 림프 낭종 이나 다리나 회음부 에 림프 부종 이 생길 수 있습니다.";
+    const template = findSymptomSupportTemplate("광범위 자궁절제술 후 배뇨 장애")!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(template, "광범위 자궁절제술 후 배뇨 장애");
+
+    expect(template.id).toBe("cervical-urinary-bowel-bleeding");
+    expect(template.mealNote).toContain(acuteComplicationSentence);
+    expect(template.mealNote).toContain(bladderRectalSentence);
+    expect(template.mealNote).toContain(nerveInjurySentence);
+    expect(template.clinicianQuestion).toContain(surgeryScopeSentence);
+    expect(template.clinicianQuestion).toContain(radicalHysterectomySentence);
+    expect(template.clinicianQuestion).toContain(nerveSparingSentence);
+    expect(template.clinicianQuestion).toContain(lymphedemaSentence);
+    expect(actionNote).toContain("방광이나 직장의 기능부전");
+    expect(actionNote).toContain("수술 후 배뇨나 배변 장애");
+    expect(actionNote).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료의 부작용 - https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    expect(buildSymptomSupportQueueHint(template)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(question).toContain("수술 직후");
+    expect(question).toContain("배뇨나 배변 장애");
+    expect(question).not.toMatch(
+      /진단하세요|치료하세요|수술하세요|신경보존 광범위자궁절제술을 받으세요|림프낭종을 배액하세요|흡입도관|항생제를 복용하세요|도뇨관을 삽입하세요|약을 복용하세요/,
+    );
+  });
+
   it("builds a cervical bowel-obstruction contact-threshold question", () => {
     const template = findSymptomSupportTemplate("장폐색과 복부팽만");
     const mixedLateComplicationTemplate = findSymptomSupportTemplate(
@@ -1667,6 +1712,9 @@ describe("symptomSupportTemplates", () => {
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
     );
     expect(findSymptomSupportTemplate("혈뇨")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
+    );
+    expect(findSymptomSupportTemplate("광범위 자궁절제술 후 배뇨 장애")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
     );
     expect(findSymptomSupportTemplate("장폐색")?.sourceUrl).toBe(
