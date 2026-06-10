@@ -5240,6 +5240,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaCampylobacterFoodPoisoning",
   ],
   [
+    "캠필로박터 소",
+    "식품안전나라 캠필로박터 식중독 소 원인식품 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "캠필로박터 돼지",
+    "식품안전나라 캠필로박터 식중독 돼지 원인식품 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "캠필로박터 닭",
+    "식품안전나라 캠필로박터 식중독 닭 원인식품 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "캠필로박터 닭고기",
+    "식품안전나라 캠필로박터 식중독 닭고기 원인식품 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "캠필로박터 우유",
+    "식품안전나라 캠필로박터 식중독 우유 원인식품 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
+    "캠필로박터 물",
+    "식품안전나라 캠필로박터 식중독 물 원인식품 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
     "육류의 생식이나 불충분한 가열",
     "식품안전나라 캠필로박터 식중독 육류 생식·불충분 가열 확인 필요",
     "foodSafetyKoreaCampylobacterFoodPoisoning",
