@@ -130,6 +130,10 @@ describe("symptomSupportTemplates", () => {
     expect(
       findSymptomSupportTemplate("치료 중 탄수화물 단백질 지방 비타민 무기질 물")?.id,
     ).toBe("treatment-nutrient-role-understanding");
+    expect(
+      findSymptomSupportTemplate("치료 후 식욕 감퇴 구강 건조증 입맛 변화 연하곤란 체중 감소")
+        ?.id,
+    ).toBe("post-treatment-eating-recovery");
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -2324,6 +2328,62 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a post-treatment eating-recovery question from official guidance", () => {
+    const lingeringSideEffectSentence =
+      "암 치료로 인한 식사와 관련된 대부분의 부작용 은 치료가 끝나면 서서히 사라집니다.";
+    const lingeringSymptomSentence =
+      "가끔 식욕 감퇴, 구강 건조증, 입맛의 변화, 연하곤란, 체중 감소 등과 같은 부작용이 계속될 수도 있습니다.";
+    const consultSentence = "이 경우에는 의사 선생님과 상의하도록 합니다.";
+    const noRecurrenceFoodSentence =
+      "여러분이 섭취하는 어떤 음식이 암의 재발 을 막는다는 연구 보고는 없습니다.";
+    const specialDietCheckSentence =
+      "단, 특별한 식사 조절 여부는 담당 의사 선생님께 확인합니다.";
+    const limitSentence =
+      "기름, 소금, 설탕, 술, 그리고 염장이나 훈제 식품 등의 섭취를 제한합니다.";
+    const cookingSentence =
+      "고기는 기름이 적은 부위를 선택하고, 닭고기는 껍질을 제거한 후 이용합니다. 이때 튀기는 요리법보다 끓이거나 삶는 요리법을 이용하도록 합니다.";
+    const weightSentence =
+      "만약 과체중이라면 식이에서 지방의 양을 줄이고 활동량을 늘리는 방법으로 체중을 줄이는 것을 고려해야 합니다.";
+    const template = findSymptomSupportTemplate(
+      "치료 후 식욕 감퇴 구강 건조증 입맛 변화 연하곤란 체중 감소",
+    );
+
+    expect(template?.id).toBe("post-treatment-eating-recovery");
+    expect(template?.label).toBe("치료 후 식생활 회복 상담 준비");
+    expect(template?.mealNote).toContain(lingeringSideEffectSentence);
+    expect(template?.mealNote).toContain(lingeringSymptomSentence);
+    expect(template?.mealNote).toContain(noRecurrenceFoodSentence);
+    expect(template?.clinicianQuestion).toContain(consultSentence);
+    expect(template?.clinicianQuestion).toContain(specialDietCheckSentence);
+    expect(template?.clinicianQuestion).toContain(limitSentence);
+    expect(template?.clinicianQuestion).toContain(cookingSentence);
+    expect(template?.clinicianQuestion).toContain(weightSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportActionNote(template!)).toContain(
+      "출처: 국가암정보센터 치료후의 식생활 - https://www.cancer.go.kr/lay1/S1T470C476/contents.do",
+    );
+    const question = buildSymptomSupportQuestion(
+      template!,
+      "치료 후 식욕 감퇴 구강 건조증 입맛 변화 연하곤란 체중 감소",
+    );
+
+    expect(question).toContain(
+      "치료 후 식욕 감퇴 구강 건조증 입맛 변화 연하곤란 체중 감소 기록과 관련해",
+    );
+    expect(question).toContain(lingeringSymptomSentence);
+    expect(question).toContain(noRecurrenceFoodSentence);
+    expect(question).toContain("담당 의사 선생님께 확인");
+    expect(question).toContain(
+      "출처: 국가암정보센터 치료후의 식생활 - https://www.cancer.go.kr/lay1/S1T470C476/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
+      /먹으세요|마시세요|반드시 먹어야|반드시 마셔야|체중을 줄이세요|활동량을 늘리세요|식단을 처방하세요|진단하세요|치료하세요|처방하세요|암을 낫게|완치|재발을 막습니다|재발을 예방합니다|치료 효과를 높입니다|감염 위험을 감소시킵니다/,
+    );
+  });
+
   it("builds a cervical fertility and pregnancy planning question", () => {
     const template = findSymptomSupportTemplate("임신 계획과 가임력");
 
@@ -2410,7 +2470,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(54);
+    expect(symptomSupportTemplates).toHaveLength(55);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2550,6 +2610,11 @@ describe("symptomSupportTemplates", () => {
     expect(
       findSymptomSupportTemplate("치료 중 탄수화물 단백질 지방 비타민 무기질 물")?.sourceUrl,
     ).toBe("https://www.cancer.go.kr/lay1/S1T471C473/contents.do");
+    expect(
+      findSymptomSupportTemplate(
+        "치료 후 식욕 감퇴 구강 건조증 입맛 변화 연하곤란 체중 감소",
+      )?.sourceUrl,
+    ).toBe("https://www.cancer.go.kr/lay1/S1T470C476/contents.do");
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
     );
