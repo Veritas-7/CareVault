@@ -62,6 +62,7 @@ export type FoodGuidanceSourceId =
   | "nccSurvivorNutritionLifestyle"
   | "nccSurvivorHealthyManagementNutrition"
   | "nccSurvivorWorkReturn"
+  | "nccSurvivorSleepManagement"
   | "nccChemoSideEffectGuide"
   | "kdcaNutrition"
   | "kdcaAlcohol"
@@ -276,6 +277,10 @@ export const foodGuidanceSources: Record<
   nccSurvivorWorkReturn: {
     label: "국가암정보센터 암생존자 직업복귀",
     url: "https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+  },
+  nccSurvivorSleepManagement: {
+    label: "국가암정보센터 암생존자 수면관리",
+    url: "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
   },
   nccChemoSideEffectGuide: {
     label: "국가암정보센터 항암 부작용 증상 관리 지침",
@@ -901,6 +906,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccSurvivorWorkReturn"],
       },
       {
+        label: "암생존자 수면관리 저녁 카페인",
+        detail:
+          "국가암정보센터 암생존자 수면관리 자료는 건강한 수면 습관 항목에서 저녁에는 커피, 홍차, 녹차, 콜라 등 카페인이 포함된 음료를 섭취하지 않는다고 안내합니다. 식단 기록에서는 저녁 카페인 음료 노출을 수면일지와 함께 확인할 후보로 남기되, 카페인 금지 명령이나 불면 치료 지시로 쓰지 않습니다.",
+        examples:
+          "커피, 홍차, 녹차, 콜라 등 카페인이 포함된 음료는 저녁에는 섭취하지 않습니다., 암생존자 수면관리 저녁 카페인 음료, 암생존자 수면관리 저녁 커피 홍차 녹차 콜라",
+        sourceIds: ["nccSurvivorSleepManagement"],
+      },
+      {
         label: "붉은 육류 적정량",
         detail:
           "국가암정보센터 암예방 식단 예시는 소고기와 돼지고기 같은 붉은 육류를 주 3인분 이하로 적정량 섭취하도록 안내하고, 건강한 식생활 자료는 붉은색 육류 섭취 시 1회에 1인분씩, 주 3인분(익힌 상태로 350~500g)을 넘지 않도록 설명합니다.",
@@ -1509,6 +1522,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "보양식, 영양제, 검증 안 된 식품섭취보다, 일상적으로 먹는 음식 위주로 균형 잡힌 식사 챙기기, 암생존자 직업복귀 보양식 영양제 검증 안 된 식품",
         sourceIds: ["nccSurvivorWorkReturn"],
+      },
+      {
+        label: "암생존자 수면관리 저녁 수분·배뇨",
+        detail:
+          "국가암정보센터 암생존자 수면관리 자료는 소변을 자주 보는 경우 저녁 수분과 취침 전 화장실을 수면 습관 항목으로 안내합니다. 앱에서는 수분 제한 지시가 아니라 야간뇨, 수면 방해, 저녁 수분 섭취 기록을 진료팀에 확인할 질문 후보로 둡니다.",
+        examples:
+          "소변을 자주 보는 경우, 저녁에 물을 적게 먹고 주무시기 전 꼭 화장실을 다녀오세요., 암생존자 수면관리 저녁 수분 취침 전 화장실",
+        sourceIds: ["nccSurvivorSleepManagement"],
       },
       {
         label: "암경험자 식품안전·건강보조식품 확인",
@@ -3799,6 +3820,21 @@ const limitFoods: FoodRuleTerm[] = [
     "국가암정보센터 암생존자 직업복귀 회식 음주·자극음식 기록 후보",
     "nccSurvivorWorkReturn",
   ],
+  [
+    "커피, 홍차, 녹차, 콜라 등 카페인이 포함된 음료는 저녁에는 섭취하지 않습니다.",
+    "국가암정보센터 암생존자 수면관리 저녁 카페인 음료 기록 후보",
+    "nccSurvivorSleepManagement",
+  ],
+  [
+    "암생존자 수면관리 저녁 카페인 음료",
+    "국가암정보센터 암생존자 수면관리 저녁 카페인 음료 기록 후보",
+    "nccSurvivorSleepManagement",
+  ],
+  [
+    "암생존자 수면관리 저녁 커피 홍차 녹차 콜라",
+    "국가암정보센터 암생존자 수면관리 저녁 카페인 음료 기록 후보",
+    "nccSurvivorSleepManagement",
+  ],
   ["소고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["돼지고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["붉은 육류", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
@@ -4827,6 +4863,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "암생존자 직업복귀 보양식 영양제 검증 안 된 식품",
     "국가암정보센터 암생존자 직업복귀 보양식·영양제 확인 필요",
     "nccSurvivorWorkReturn",
+  ],
+  [
+    "소변을 자주 보는 경우, 저녁에 물을 적게 먹고 주무시기 전 꼭 화장실을 다녀오세요.",
+    "국가암정보센터 암생존자 수면관리 저녁 수분·취침 전 배뇨 확인 필요",
+    "nccSurvivorSleepManagement",
+  ],
+  [
+    "암생존자 수면관리 저녁 수분 취침 전 화장실",
+    "국가암정보센터 암생존자 수면관리 저녁 수분·취침 전 배뇨 확인 필요",
+    "nccSurvivorSleepManagement",
   ],
   [
     "비브리오 패혈증",

@@ -5137,6 +5137,88 @@ describe("healthRules", () => {
     ).toBe(false);
   });
 
+  it("recognizes NCC survivor sleep-management beverage source sentences", () => {
+    const assessment = assessCancerFood(
+      "커피, 홍차, 녹차, 콜라 등 카페인이 포함된 음료는 저녁에는 섭취하지 않습니다. 소변을 자주 보는 경우, 저녁에 물을 적게 먹고 주무시기 전 꼭 화장실을 다녀오세요.",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccSurvivorSleepManagement.label).toBe(
+      "국가암정보센터 암생존자 수면관리",
+    );
+    expect(foodGuidanceSources.nccSurvivorSleepManagement.url).toBe(
+      "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "커피, 홍차, 녹차, 콜라 등 카페인이 포함된 음료는 저녁에는 섭취하지 않습니다.",
+      "소변을 자주 보는 경우, 저녁에 물을 적게 먹고 주무시기 전 꼭 화장실을 다녀오세요.",
+    ]);
+    expect(matchesByTerm[terms[0]]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암생존자 수면관리 저녁 카페인 음료 기록 후보",
+      sourceId: "nccSurvivorSleepManagement",
+    });
+    expect(formatFoodMatchEvidence(matchesByTerm[terms[0]])).toContain(
+      "국가암정보센터 암생존자 수면관리 - https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
+    expect(matchesByTerm[terms[1]]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 수면관리 저녁 수분·취침 전 배뇨 확인 필요",
+      sourceId: "nccSurvivorSleepManagement",
+    });
+    expect(limitGuideText).toContain("암생존자 수면관리 저녁 카페인");
+    expect(careTeamGuideText).toContain("암생존자 수면관리 저녁 수분·배뇨");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /수면제를 복용하세요|카페인을 끊으세요|물을 적게 마시세요|저녁 물 금지|불면증을 치료|수면치료|진단하세요|처방하세요|치료하세요|완치|암을 낫게|재발을 막/,
+    );
+  });
+
+  it("keeps NCC survivor sleep-management shorthand scoped to survivor sleep context", () => {
+    const assessment = assessCancerFood(
+      "암생존자 수면관리 저녁 카페인 음료, 암생존자 수면관리 저녁 커피 홍차 녹차 콜라, 암생존자 수면관리 저녁 수분 취침 전 화장실",
+    );
+    const genericAssessment = assessCancerFood(
+      "저녁 카페인 음료, 저녁 커피 홍차 녹차 콜라, 저녁 수분 취침 전 화장실",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "암생존자 수면관리 저녁 카페인 음료",
+      "암생존자 수면관리 저녁 커피 홍차 녹차 콜라",
+      "암생존자 수면관리 저녁 수분 취침 전 화장실",
+    ]);
+    for (const match of assessment.matches.slice(0, 2)) {
+      expect(match).toMatchObject({
+        level: "watch",
+        reason: "국가암정보센터 암생존자 수면관리 저녁 카페인 음료 기록 후보",
+        sourceId: "nccSurvivorSleepManagement",
+      });
+    }
+    expect(assessment.matches[2]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 수면관리 저녁 수분·취침 전 배뇨 확인 필요",
+      sourceId: "nccSurvivorSleepManagement",
+    });
+    expect(
+      genericAssessment.matches.some(
+        (match) => match.sourceId === "nccSurvivorSleepManagement",
+      ),
+    ).toBe(false);
+  });
+
   it("recognizes NCC after-treatment processed meat source sentence", () => {
     const sourceSentence =
       "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";
