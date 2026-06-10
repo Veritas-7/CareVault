@@ -49,6 +49,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("하루 이상 딸꾹질과 호흡곤란")?.id).toBe(
       "hiccup-consult",
     );
+    expect(findSymptomSupportTemplate("자녀에게 암 설명 준비")?.id).toBe(
+      "child-family-communication",
+    );
     expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
       "dyspnea-consult",
     );
@@ -476,6 +479,41 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("치료 지시가 아니라");
     expect(buildSymptomSupportQuestion(template!, "딸꾹질")).not.toMatch(
       /약을 처방하세요|진단하세요|치료하세요|종이백을 사용하세요|눈을 지압하세요|설탕을 삼키세요/,
+    );
+  });
+
+  it("builds a child and family communication question from official guidance", () => {
+    const confusionSentence =
+      "그들이 혼란을 겪지 않도록 엄마나 아빠에게 어떤 변화가 생겼는지를 알려주고, 나름의 느낌과 의문들을 충분히 표현할 수 있도록 하는 것이 중요합니다.";
+    const ageAppropriateSentence =
+      "암에 대한 설명은 자녀의 나이에 걸맞은 수준으로, 지나친 두려움을 주지 않는 방식으로 해야 합니다. 그러나 ‘암’이라는 단어의 사용을 피하지는 말아야 합니다.";
+    const treatmentChangeSentence =
+      "치료 계획을 알려주고, 그에 따르는 가족 생활의 변화와 환자에게 생길 수 있는 변모(예컨대 탈모, 극심한 피로감, 체중 저하 등)도 미리 말해 두어 나중에 놀라지 않도록 합니다.";
+    const questionSentence =
+      "자녀의 질문에 대해 가능한 한 신중하고 정확하게 답해야 합니다. 혹 뭐라고 해야 할지를 모를 때는 당황하지 말고 이렇게 말하십시오.";
+    const noBlameSentence = "질병을 죄악이나 벌과 연결시키지 마십시오.";
+    const counselingSentence = "그 밖에 전문적인 상담이 필요한 경우";
+    const template = findSymptomSupportTemplate("자녀에게 암 설명 준비");
+
+    expect(template?.id).toBe("child-family-communication");
+    expect(template?.mealNote).toContain(confusionSentence);
+    expect(template?.mealNote).toContain(ageAppropriateSentence);
+    expect(template?.mealNote).toContain(treatmentChangeSentence);
+    expect(template?.clinicianQuestion).toContain(questionSentence);
+    expect(template?.clinicianQuestion).toContain(noBlameSentence);
+    expect(template?.clinicianQuestion).toContain(counselingSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "자녀에게 암 설명")).toContain(
+      questionSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "자녀에게 암 설명")).toContain(
+      "출처: 국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법 - https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(buildSymptomSupportQuestion(template!, "자녀에게 암 설명")).not.toMatch(
+      /심리치료를 하세요|진단하세요|치료하세요|처방하세요|반드시 공개하세요|완치된다고 말하세요|걱정하지 않아도 된다고 보장하세요|아이 책임이라고 말하세요/,
     );
   });
 
@@ -1138,7 +1176,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(30);
+    expect(symptomSupportTemplates).toHaveLength(31);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1154,6 +1192,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("구강건조")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
+    expect(findSymptomSupportTemplate("자녀에게 암 설명")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
     );
     expect(findSymptomSupportTemplate("입맛 변화")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
