@@ -14966,6 +14966,79 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes additional NCC stem-cell-transplant immune-suppression raw animal and cooked protein table context", () => {
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const immuneSuppressionGuide = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.find((item) => item.label === "NCC 조혈모세포이식 면역억제 식품표 확인");
+    const assessment = assessCancerFood(
+      "면역억제 생선회, 면역억제 육회, 면역억제 껍질에 금이 간 계란, 면역억제 조개류, 면역억제 오징어, 면역억제 내장류, 면역억제 완전히 익힌 어육류, 면역억제 완전히 익힌 난류, 면역억제 두부, 면역억제 완전히 익힌 육가공품",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const genericAssessment = assessCancerFood("생선회, 육회, 두부, 조개류, 오징어, 내장류");
+
+    expect(immuneSuppressionGuide?.detail).toContain("익히지 않은 어육류");
+    expect(immuneSuppressionGuide?.detail).toContain("완전히 익힌 어육류 및 난류");
+    expect(immuneSuppressionGuide?.examples).toContain("면역억제 생선회");
+    expect(immuneSuppressionGuide?.examples).toContain("면역억제 완전히 익힌 어육류");
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "면역억제 생선회",
+      "면역억제 육회",
+      "면역억제 껍질에 금이 간 계란",
+      "면역억제 조개류",
+      "면역억제 오징어",
+      "면역억제 내장류",
+      "면역억제 완전히 익힌 어육류",
+      "면역억제 완전히 익힌 난류",
+      "면역억제 두부",
+      "면역억제 완전히 익힌 육가공품",
+    ]);
+    for (const term of [
+      "면역억제 생선회",
+      "면역억제 육회",
+      "면역억제 껍질에 금이 간 계란",
+      "면역억제 조개류",
+      "면역억제 오징어",
+      "면역억제 내장류",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+        sourceId: "nccStemCellTransplantImmuneSuppressionDiet",
+      });
+    }
+    for (const term of [
+      "면역억제 완전히 익힌 어육류",
+      "면역억제 완전히 익힌 난류",
+      "면역억제 두부",
+      "면역억제 완전히 익힌 육가공품",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+        sourceId: "nccStemCellTransplantImmuneSuppressionDiet",
+      });
+    }
+    expect(JSON.stringify(genericAssessment.matches)).not.toContain(
+      "nccStemCellTransplantImmuneSuppressionDiet",
+    );
+    expect(careTeamGuideText).toContain("면역억제 껍질에 금이 간 계란");
+    expect(careTeamGuideText).toContain("면역억제 완전히 익힌 육가공품");
+    expect(formatFoodMatchEvidence(matchesByTerm["면역억제 완전히 익힌 어육류"])).toContain(
+      "국가암정보센터 조혈모세포이식 면역억제 식품표 - https://www.cancer.go.kr/lay1/S1T295C296/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /치료 음식|완치|암을 낫게|모든 암환자|자궁경부암 치료/,
+    );
+  });
+
   it("does not match one-syllable food warnings inside unrelated Korean words", () => {
     const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
     const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);
