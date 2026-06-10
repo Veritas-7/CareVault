@@ -27,6 +27,8 @@ export default defineConfig(async () => ({
           }
           if (normalizedId.includes("/src/cervicalCancerCare"))
             return "care-cervical";
+          if (normalizedId.includes("/src/healthRules"))
+            return "health-rules";
           if (normalizedId.includes("/src/healthStandards"))
             return "health-standards";
           if (normalizedId.includes("/src/caregiverExport"))
