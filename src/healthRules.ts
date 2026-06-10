@@ -4575,6 +4575,46 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaSalmonellaFoodPoisoning",
   ],
   [
+    "살모넬라 우유",
+    "식품안전나라 살모넬라균 우유 원인식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "살모넬라 유제품",
+    "식품안전나라 살모넬라균 유제품 원인식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "살모넬라 고기",
+    "식품안전나라 살모넬라균 고기 원인식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "살모넬라 고기 가공품",
+    "식품안전나라 살모넬라균 고기 가공품 원인식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "살모넬라 가금류 알",
+    "식품안전나라 살모넬라균 가금류 알 원인식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "살모넬라 가금류 알 가공품",
+    "식품안전나라 살모넬라균 가금류 알 가공품 원인식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "살모넬라 어패류",
+    "식품안전나라 살모넬라균 어패류 원인식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
+    "살모넬라 어패류 가공품",
+    "식품안전나라 살모넬라균 어패류 가공품 원인식품 확인 필요",
+    "foodSafetyKoreaSalmonellaFoodPoisoning",
+  ],
+  [
     "살모넬라 식물성 단백질식품",
     "식품안전나라 살모넬라균 식물성 단백질식품 원인식품 확인 필요",
     "foodSafetyKoreaSalmonellaFoodPoisoning",
