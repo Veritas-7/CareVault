@@ -4895,6 +4895,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
   ],
   [
+    "퍼프린젠스 동물성 단백질식품",
+    "식품안전나라 클로스트리디움 퍼프린젠스균 동물성 단백질식품 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
+  ],
+  [
     "퍼프린젠스 5시간 실온방치 식품",
     "식품안전나라 클로스트리디움 퍼프린젠스균 5시간 이상 실온방치 식품 확인 필요",
     "foodSafetyKoreaClostridiumPerfringensFoodPoisoning",
