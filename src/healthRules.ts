@@ -1219,9 +1219,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "식품안전나라 바실러스 세레우스균 식중독 주의",
         detail:
-          "식품안전나라는 바실러스 세레우스균을 135℃에서 4시간의 가열에도 견디는 내열성 포자 형성균으로 설명합니다. 설사형 독소(Diarrhetic toxin)는 장내에서 생성되는 열, 산, 알칼리, 단백질 가수분해 효소에 민감하지만, 구토형 독소(Emetic toxin)는 열과 산 등에 저항력을 갖는다고 설명하므로 식품 안전 질문으로 분리합니다. 원인식품으로 설사형은 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 구토형은 주로 쌀밥, 볶음밥을 제시합니다. 예방대책으로 곡류, 채소류는 세척하여 사용, 조리된 음식은 장기간 실온방치를 금지하고 5℃이하에서 냉장보관, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취를 안내합니다.",
+          "식품안전나라는 바실러스 세레우스균을 사람의 생활환경을 비롯하여 토양, 농장, 산야, 하천, 먼지, 오수 등 자연계에 널리 분포하는 토양세균으로 설명하고, 135℃에서 4시간의 가열에도 견디는 내열성 포자 형성균으로 설명합니다. 설사형 독소(Diarrhetic toxin)는 장내에서 생성되는 열, 산, 알칼리, 단백질 가수분해 효소에 민감하지만, 구토형 독소(Emetic toxin)는 열과 산 등에 저항력을 갖는다고 설명하므로 식품 안전 질문으로 분리합니다. 원인식품으로 설사형은 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 구토형은 주로 쌀밥, 볶음밥을 제시합니다. 예방대책으로 곡류, 채소류는 세척하여 사용, 조리된 음식은 장기간 실온방치를 금지하고 5℃이하에서 냉장보관, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취를 안내합니다.",
         examples:
-          "바실러스 세레우스균, 설사형 독소(Diarrhetic toxin), 구토형 독소(Emetic toxin), 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균, 곡류, 채소류는 세척하여 사용하여야 한다, 조리된 음식은 장기간 실온방치를 금지하고, 5℃이하에서 냉장보관 한다, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
+          "바실러스 세레우스균, 설사형 독소(Diarrhetic toxin), 구토형 독소(Emetic toxin), 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균, 사람의 생활환경, 토양, 농장, 산야, 하천, 먼지, 오수, 곡류, 채소류는 세척하여 사용하여야 한다, 조리된 음식은 장기간 실온방치를 금지하고, 5℃이하에서 냉장보관 한다, 저온보존이 부적절한 김밥 같은 식품은 조리 후 바로 섭취하여야 한다",
         sourceIds: ["foodSafetyKoreaBacillusCereusFoodPoisoning"],
       },
       {
@@ -5710,6 +5710,41 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "토양 상재균",
     "식품안전나라 바실러스 세레우스균 토양 상재균 오염 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 사람 생활환경",
+    "식품안전나라 바실러스 세레우스균 생활환경 분포 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 토양",
+    "식품안전나라 바실러스 세레우스균 토양 분포 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 농장",
+    "식품안전나라 바실러스 세레우스균 농장 분포 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 산야",
+    "식품안전나라 바실러스 세레우스균 산야 분포 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 하천",
+    "식품안전나라 바실러스 세레우스균 하천 분포 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 먼지",
+    "식품안전나라 바실러스 세레우스균 먼지 분포 확인 필요",
+    "foodSafetyKoreaBacillusCereusFoodPoisoning",
+  ],
+  [
+    "바실러스 오수",
+    "식품안전나라 바실러스 세레우스균 오수 분포 확인 필요",
     "foodSafetyKoreaBacillusCereusFoodPoisoning",
   ],
   [
