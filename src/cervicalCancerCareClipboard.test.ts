@@ -52,10 +52,18 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("골반 방사선 후 폐경·질협착");
     expect(text).toContain("국가암정보센터 자궁경부암 식생활");
     expect(text).toContain("경고 신호 기록 항목");
-    expect(text).toContain("- 언제: 새로 시작된 날짜, 반복 횟수, 치료·검사 후 며칠째인지");
-    expect(text).toContain("- 무엇이: 출혈·분비물 색/냄새/양, 혈뇨·혈변, 배뇨·배변 변화");
-    expect(text).toContain("- 얼마나: 통증 정도와 지속 시간, 복부팽만·구토·배변/가스 변화 동반 여부");
-    expect(text).toContain("- 같이: 발열, 열감, 피부 붉어짐, 다리 부종·통증, 상처 동반 여부");
+    expect(text).toContain(
+      "- 언제: 새로 시작된 날짜, 반복 횟수, 치료·검사 후 며칠째인지",
+    );
+    expect(text).toContain(
+      "- 무엇이: 출혈·분비물 색/냄새/양, 혈뇨·혈변, 배뇨·배변 변화",
+    );
+    expect(text).toContain(
+      "- 얼마나: 통증 정도와 지속 시간, 복부팽만·구토·배변/가스 변화 동반 여부",
+    );
+    expect(text).toContain(
+      "- 같이: 발열, 열감, 피부 붉어짐, 다리 부종·통증, 상처 동반 여부",
+    );
     expect(text).toContain("국가암정보센터 림프부종 치료 전후관리");
     expect(text).toContain("검진 기준 빠른 확인");
     expect(text).toContain("국가암검진 대상 기준 해당");
@@ -67,13 +75,17 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("- 비정상 질출혈");
     expect(text).toContain("진료 질문 초안");
     expect(text).toContain("- 검진·진단검사 구분:");
-    expect(text).toContain("골반내진, 자궁경부세포검사, HPV 검사, 질확대경, 조직검사");
+    expect(text).toContain(
+      "골반내진, 자궁경부세포검사, HPV 검사, 질확대경, 조직검사",
+    );
     expect(text).toContain("경질초음파, 골반 MRI");
     expect(text).toContain(
       "출처: 국립암센터 자궁경부암 조기 진단과 예방법 - https://www.cancer.go.kr/download.do",
     );
     expect(text).toContain("- 치료 선택 기준:");
-    expect(text).toContain("제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부");
+    expect(text).toContain(
+      "제 병기, 암 크기, 전신상태, 연령, 향후 출산 희망 여부",
+    );
     expect(text).toContain("- 골반 방사선 후 폐경:");
     expect(text).toContain("난소부전, 홍조·무월경 같은 폐경 증상");
     expect(text).toContain("질협착, 성욕 변화, 골다공증 위험");
@@ -95,7 +107,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("비타민 및 무기질");
     expect(text).toContain("여러 가지 음식을 골고루");
     expect(text).toContain("국가암정보센터 치료 중 일반적인 식생활");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T471C472/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T471C472/contents.do",
+    );
     expect(text).toContain("- 메스꺼움·구토 식사 기록 준비:");
     expect(text).toContain("수술, 화학요법, 방사선요법");
     expect(text).toContain("치료 받은 직후");
@@ -109,7 +123,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("향이 강하거나 뜨거운 음식");
     expect(text).toContain("메스꺼움·구토 식사환경 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 메스꺼움");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C481/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C481/contents.do",
+    );
     expect(text).toContain("- 구토 후 수분·식사 단계 기록 준비:");
     expect(text).toContain("구토증상이 있는 경우");
     expect(text).toContain("먹거나 마시지");
@@ -122,7 +138,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("1~2일 이상");
     expect(text).toContain("구토 후 유동식·부드러운 식사 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 구토");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C482/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C482/contents.do",
+    );
     expect(text).toContain("- 식욕부진 식사·간식 기록 준비:");
     expect(text).toContain("암 자체와 항암치료");
     expect(text).toContain("공포나 우울감");
@@ -142,7 +160,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("억지로 먹으라고 지나치게 강요하지");
     expect(text).toContain("식욕부진 간식·수분 타이밍 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 식욕부진");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C480/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C480/contents.do",
+    );
     expect(text).toContain("- 입과 목 통증 식사·구강상태 기록 준비:");
     expect(text).toContain("방사선요법, 화학요법 또는 감염");
     expect(text).toContain("입안 통증");
@@ -166,7 +186,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("입안은 깨끗이 헹구어");
     expect(text).toContain("입과 목 통증 부드러운 식사 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 입과 목의 통증");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C483/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C483/contents.do",
+    );
     expect(text).toContain("- 구내염 구강관리 확인:");
     expect(text).toContain("입안의 염증");
     expect(text).toContain("구강을 깨끗하고 촉촉하게");
@@ -187,8 +209,12 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("의치는 꼭 필요한 경우");
     expect(text).toContain("24시간 이상");
     expect(text).toContain("구내염 구강청결·틀니·헹굼 메모");
-    expect(text).toContain("국가암정보센터 입안의 염증(구내염) 도움이 되는 방법");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T390C393/contents.do");
+    expect(text).toContain(
+      "국가암정보센터 입안의 염증(구내염) 도움이 되는 방법",
+    );
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T390C393/contents.do",
+    );
     expect(text).toContain("- 입안 건조 식사·수분 기록 준비:");
     expect(text).toContain("침분비를 감소시켜 입안을 마르게");
     expect(text).toContain("음식물을 씹고 삼키는 것이 더욱 어려워");
@@ -208,7 +234,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("의사선생님이나 치과선생님과 상의");
     expect(text).toContain("입안 건조 수분·촉촉한 식사 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 입안의 건조증");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C485/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
+    );
     expect(text).toContain("- 입맛 변화 단백질·향 기록 준비:");
     expect(text).toContain("암이나 항암치료");
     expect(text).toContain("치과적인 문제");
@@ -218,7 +246,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("음식의 맛이 없어질 수");
     expect(text).toContain("치료가 끝나면 사라질");
     expect(text).toContain("보기가 좋고 냄새도 좋은 식품");
-    expect(text).toContain("고기가 싫다면 생선이나 계란, 두부, 콩, 우유나 유제품");
+    expect(text).toContain(
+      "고기가 싫다면 생선이나 계란, 두부, 콩, 우유나 유제품",
+    );
     expect(text).toContain("향이 좋은 양념류");
     expect(text).toContain("와인, 레몬즙");
     expect(text).toContain("새콤달콤한 소스");
@@ -230,7 +260,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("입안을 자주 헹구");
     expect(text).toContain("입맛 변화 단백질·향 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 입맛의 변화");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C484/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
+    );
     expect(text).toContain("- 설사 수분·전해질 음식 기록 준비:");
     expect(text).toContain("항암치료");
     expect(text).toContain("복부와 골반 부위의 방사선치료");
@@ -259,7 +291,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("너무 심하거나 피가 섞이거나 2일 이상");
     expect(text).toContain("설사 수분·전해질·자극음식 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 설사");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C488/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C488/contents.do",
+    );
     expect(text).toContain("- 변비 수분·섬유소·활동 기록 준비:");
     expect(text).toContain("수분 및 음식섭취가 불충분");
     expect(text).toContain("오랫동안 누워있는 경우");
@@ -284,7 +318,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("의사선생님과 상의");
     expect(text).toContain("변비 수분·섬유소·활동 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 변비");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C487/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C487/contents.do",
+    );
     expect(text).toContain("- 체중변화 열량·단백질·원인 기록 준비:");
     expect(text).toContain("체중의 감소를 흔하게 경험");
     expect(text).toContain("허약하게 만들고");
@@ -316,7 +352,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("많이 먹었다고 생각되면 운동");
     expect(text).toContain("체중변화 열량·단백질·원인 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 체중변화");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C486/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C486/contents.do",
+    );
     expect(text).toContain("- 면역기능 저하 식품안전 기록 준비:");
     expect(text).toContain("백혈구수가 감소");
     expect(text).toContain("감염에 대해 특별히 주의");
@@ -339,7 +377,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("비살균");
     expect(text).toContain("면역저하 익힌음식·위생·보관 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 면역기능의 저하");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C489/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
+    );
     expect(text).toContain("- 피로감·우울 식사·활동 기록 준비:");
     expect(text).toContain("치료기간 동안 피로감");
     expect(text).toContain("제대로 먹지 못한 것");
@@ -367,7 +407,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("아이보기, 밥하기, 집안일");
     expect(text).toContain("피로감·우울 영양·휴식·도움요청 메모");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 피로감과 우울");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T479C490/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
     expect(text).toContain("- 발열·오한 감염 상담 기준 확인:");
     expect(text).toContain("열이 38℃ 이상");
     expect(text).toContain("예방주사와 치과진료");
@@ -377,7 +419,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("구강내 궤양이나 흰색의 반점");
     expect(text).toContain("발열·오한·감염 상담 메모");
     expect(text).toContain("국가암정보센터 감염 의료진 상담 기준");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T435C439/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T435C439/contents.do",
+    );
     expect(text).toContain("- 손발저림·감각이상 안전 확인:");
     expect(text).toContain("신경계 손상");
     expect(text).toContain("손비비기");
@@ -401,7 +445,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("복통, 구토, 변비");
     expect(text).toContain("손발저림·감각·화상예방 메모");
     expect(text).toContain("국가암정보센터 신경계이상 증상 및 주의사항");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T458C460/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T458C460/contents.do",
+    );
     expect(text).toContain("- 림프부종:");
     expect(text).toContain("피부 붉어짐");
     expect(text).toContain("의료진에게 바로 연락");
@@ -488,8 +534,12 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("암이 누구의 잘못도 아니며 아이의 잘못도 아니라는");
     expect(text).toContain("자녀·가족 설명 메모");
     expect(text).toContain("네 잘못 때문이 아니고");
-    expect(text).toContain("국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T327C330/contents.do");
+    expect(text).toContain(
+      "국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법",
+    );
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
+    );
     expect(text).toContain("정서 안정·전문상담 준비");
     expect(text).toContain("항암화학요법을 받을 때");
     expect(text).toContain("암 치료 자체에 대한 불안감");
@@ -504,7 +554,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("정서 안정·전문상담 메모");
     expect(text).toContain("공감의 자세");
     expect(text).toContain("국가암정보센터 암환자의 생활 - 심리적 안정을 위해");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T327C329/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
+    );
     expect(text).toContain("디스트레스 신호·자가평가 상담 준비");
     expect(text).toContain("변화된 삶에 적응하기");
     expect(text).toContain("디스트레스");
@@ -530,8 +582,12 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("통증");
     expect(text).toContain("관심과 도움이 필요하다는 신호");
     expect(text).toContain("암생존자 디스트레스 자가평가 메모");
-    expect(text).toContain("국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T788C790/contents.do");
+    expect(text).toContain(
+      "국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기",
+    );
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
+    );
     expect(text).toContain("스트레스·암 원인 오해 상담 준비");
     expect(text).toContain("스트레스를 많이 받아서 암에 걸린 걸까요");
     expect(text).toContain("누군가를 탓하고 싶은 마음");
@@ -548,7 +604,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("건전한 신앙생활");
     expect(text).toContain("원인 단정이나 책임 전가로 쓰지 않");
     expect(text).toContain("스트레스 원인 오해·관리 메모");
-    expect(text).toContain("국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해");
+    expect(text).toContain(
+      "국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해",
+    );
     expect(text).toContain(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&mode=view&rn=46&rows=12",
     );
@@ -591,7 +649,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("상담·처방 필요성");
     expect(text).toContain("중단 계획");
     expect(text).toContain("불면증·정신과 약 중독 우려 메모");
-    expect(text).toContain("국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려");
+    expect(text).toContain(
+      "국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려",
+    );
     expect(text).toContain(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=2&keyword=&mode=view&rn=49&rows=12",
     );
@@ -610,7 +670,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("생존율");
     expect(text).toContain("개인 예후 개선으로 단정하지 않");
     expect(text).toContain("정신건강의학과 진료 도움 확인 메모");
-    expect(text).toContain("국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움");
+    expect(text).toContain(
+      "국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움",
+    );
     expect(text).toContain(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22079&condition=&cpage=2&keyword=&mode=view&rn=48&rows=12",
     );
@@ -631,8 +693,12 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("복식호흡");
     expect(text).toContain("심상유도");
     expect(text).toContain("암생존자 불안신호·주의전환 메모");
-    expect(text).toContain("국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T788C791/contents.do");
+    expect(text).toContain(
+      "국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기",
+    );
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
+    );
     expect(text).toContain("불면·수면일지 상담 준비");
     expect(text).toContain("암 환자의 약 30~50%");
     expect(text).toContain("복용하는 약물");
@@ -644,7 +710,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("휴대 전화");
     expect(text).toContain("불면·수면효율·습관 메모");
     expect(text).toContain("국가암정보센터 암생존자 수면관리");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T748C794/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
     expect(text).toContain("운동강도·근력운동 상담 준비");
     expect(text).toContain("규칙적인 운동참여");
     expect(text).toContain("체력증진");
@@ -657,7 +725,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("편안한 운동복");
     expect(text).toContain("암생존자 운동강도·근력운동 메모");
     expect(text).toContain("국가암정보센터 암생존자 운동");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T748C795/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
     expect(text).toContain("치료 후 영양·식생활 상담 준비");
     expect(text).toContain("적정체중");
     expect(text).toContain("균형잡힌 식사");
@@ -669,7 +739,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("건강보조식품, 민간요법");
     expect(text).toContain("암생존자 균형식·가공육·보조식품 메모");
     expect(text).toContain("국가암정보센터 암생존자 영양·식생활");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T748C796/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+    );
     expect(text).toContain("치료 후 고용량 영양식품·우유 질문 준비");
     expect(text).toContain("암생존자 예방접종 및 슬기로운 건강관리");
     expect(text).toContain("너무 고용량");
@@ -684,7 +756,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("가공육 가공식품");
     expect(text).toContain("불필요한 영양제 민간요법");
     expect(text).toContain("암생존자 고용량 영양식품·우유 질문 메모");
-    expect(text).toContain("국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리");
+    expect(text).toContain(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리",
+    );
     expect(text).toContain(
       "https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
     );
@@ -737,7 +811,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("자극적인 음식");
     expect(text).toContain("암생존자 직업복귀·근무조정 메모");
     expect(text).toContain("국가암정보센터 암생존자 직업복귀");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T748C798/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+    );
     expect(text).toContain("보완대체요법 상담 준비");
     expect(text).toContain("주치의와 먼저 상의");
     expect(text).toContain("안전과 안녕");
@@ -749,7 +825,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("앞으로 진행될 의학적 치료");
     expect(text).toContain("보완대체요법·약초 공유 메모");
     expect(text).toContain("국가암정보센터 보완대체요법 상담");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T365C368/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
+    );
     expect(text).toContain("암성 통증 평가 준비");
     expect(text).toContain("제5의 활력 징후");
     expect(text).toContain("정기적인 평가");
@@ -761,7 +839,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("암성 통증 평가 메모");
     expect(text).toContain("진통제 사용 여부와 효과");
     expect(text).toContain("국가암정보센터 암성 통증평가 항목");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T378C380/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
+    );
     expect(text).toContain("암관련 피로 대처 준비");
     expect(text).toContain("피로의 정도");
     expect(text).toContain("정확하게 평가");
@@ -774,7 +854,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("숨이 차고");
     expect(text).toContain("암관련 피로·수면·도움요청 메모");
     expect(text).toContain("국가암정보센터 암관련 피로대처");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T420C421/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
+    );
     expect(text).toContain("호흡곤란 변화 기록 준비");
     expect(text).toContain("숨이 가쁜");
     expect(text).toContain("충분한 공기");
@@ -788,17 +870,23 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("청색증");
     expect(text).toContain("호흡곤란·흉통 변화 메모");
     expect(text).toContain("국가암정보센터 호흡곤란 원인");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T411C414/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T411C414/contents.do",
+    );
     expect(text).toContain("호흡곤란·흉통 상담 기준 확인");
     expect(text).toContain("기침이나 구토 가 있으면 가래의 양과 양상 및 냄새");
     expect(text).toContain("호흡곤란이나 흉통이 있을 때");
     expect(text).toContain("노랗거나 녹색이며 걸쭉하고 혈액이 섞인 가래");
-    expect(text).toContain("피부가 창백하거나 파랗거나 혹은 차가우며 축축할 때");
+    expect(text).toContain(
+      "피부가 창백하거나 파랗거나 혹은 차가우며 축축할 때",
+    );
     expect(text).toContain("호흡하는 동안 콧구멍이 넓게 벌어질 때");
     expect(text).toContain("호흡시 그르렁소리가 날 때");
     expect(text).toContain("호흡곤란·흉통·가래 상담 메모");
     expect(text).toContain("국가암정보센터 호흡곤란 도움이 되는 방법");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T411C415/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T411C415/contents.do",
+    );
     expect(text).toContain("- 기침·객혈 변화 기록 준비:");
     expect(text).toContain("기도안에 이물질");
     expect(text).toContain("분비물");
@@ -815,7 +903,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("호흡기 감염");
     expect(text).toContain("기침·가래·수면방해 메모");
     expect(text).toContain("국가암정보센터 기침 원인");
-    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T410C412/contents.do");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
+    );
     expect(text).toContain("임신·출산 계획 상담");
     expect(text).toContain("유산 및 조산 위험");
     expect(text).toContain("국가암정보센터 자궁경부암 임신과 출산");
@@ -833,7 +923,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("치료 선택 기준");
     expect(text).toContain("국가암정보센터 자궁경부암 요약설명");
     expect(text).toContain("식생활·보조식품 확인");
-    expect(text).toContain("특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다");
+    expect(text).toContain(
+      "특별히 피해야 하거나 환자에게 추천하는 음식은 없습니다",
+    );
     expect(text).toContain("민간요법이나 건강보조식품은 삼갑니다");
     expect(text).toContain("치료 중 열량·단백질·영양소 메모");
     expect(text).toContain("균형 잡힌 식사로 좋은 영양 상태");
@@ -1047,7 +1139,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("콘돔");
     expect(text).toContain("경구피임약");
     expect(text).toContain("경구피임약 장기복용 상담 메모");
-    expect(text).toContain("5년 이상의 장기적인 경구피임약 복용은 가능한 하지 않습니다.");
+    expect(text).toContain(
+      "5년 이상의 장기적인 경구피임약 복용은 가능한 하지 않습니다.",
+    );
     expect(text).toContain("예방법 종합 체크 메모");
     expect(text).toContain("정기적으로 자궁경부 세포검진");
     expect(text).toContain("사람유두종바이러스 예방 백신접종");
@@ -1069,7 +1163,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("재발 부위별로 선택지가");
     expect(text).toContain("진단·병기검사 목적 메모");
     expect(text).toContain("암이 맞는지 확인하는 조직검사와 병기 설정 검사");
-    expect(text).toContain("의사의 진찰, 자궁경부세포검사, 질확대경검사, 조직검사, 원추절제술");
+    expect(text).toContain(
+      "의사의 진찰, 자궁경부세포검사, 질확대경검사, 조직검사, 원추절제술",
+    );
     expect(text).toContain("방광경 및 에스결장경검사");
     expect(text).toContain("경정맥 신우조영술");
     expect(text).toContain("CT, MRI, PET");
@@ -1077,7 +1173,9 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("림프절 전이");
     expect(text).toContain("원격전이와 재발");
     expect(text).toContain("감별진단 확인 메모");
-    expect(text).toContain("자궁경부염, 질암, 자궁내막암, 자궁체부암, 골반 염증성질환");
+    expect(text).toContain(
+      "자궁경부염, 질암, 자궁내막암, 자궁체부암, 골반 염증성질환",
+    );
     expect(text).toContain("질확대경검사 및 펀치 생검");
     expect(text).toContain("자궁경관 내 소파술");
     expect(text).toContain("CT나 MRI");
@@ -1097,7 +1195,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("림프관 및 림프절");
     expect(text).toContain("국가암정보센터 항암화학요법의 이해");
     expect(text).toContain("국가암정보센터 항암화학요법의 부작용");
-					    expect(text).toContain("출처 목록 (73개)");
+    expect(text).toContain("출처 목록 (73개)");
     expect(text).toContain("국가암정보센터 자궁경부암 일반적 증상");
     expect(text).toContain("국가암정보센터 자궁경부암 요약설명");
     expect(text).toContain(
@@ -1115,25 +1213,41 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("국가암정보센터 자궁경부암 관련통계");
     expect(text).toContain("국가암정보센터 자궁경부암 감별진단");
     expect(text).toContain("국가암정보센터 자궁경부암 치료현황");
-    expect(text).toContain("국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법");
+    expect(text).toContain(
+      "국가암정보센터 암환자의 생활 - 자녀에게 알리는 방법",
+    );
     expect(text).toContain("국가암정보센터 암환자의 생활 - 심리적 안정을 위해");
-    expect(text).toContain("국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기");
-    expect(text).toContain("국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해");
+    expect(text).toContain(
+      "국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기",
+    );
+    expect(text).toContain(
+      "국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해",
+    );
     expect(text).toContain("국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프");
-    expect(text).toContain("국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려");
-    expect(text).toContain("국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움");
-    expect(text).toContain("국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기");
+    expect(text).toContain(
+      "국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려",
+    );
+    expect(text).toContain(
+      "국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움",
+    );
+    expect(text).toContain(
+      "국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기",
+    );
     expect(text).toContain("국가암정보센터 암생존자 수면관리");
     expect(text).toContain("국가암정보센터 암생존자 운동");
     expect(text).toContain("국가암정보센터 암생존자 영양·식생활");
-    expect(text).toContain("국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리");
+    expect(text).toContain(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리",
+    );
     expect(text).toContain("국가암정보센터 암생존자 직업복귀");
     expect(text).toContain("국가암정보센터 보완대체요법 상담");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 메스꺼움");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 구토");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 식욕부진");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 입과 목의 통증");
-    expect(text).toContain("국가암정보센터 입안의 염증(구내염) 도움이 되는 방법");
+    expect(text).toContain(
+      "국가암정보센터 입안의 염증(구내염) 도움이 되는 방법",
+    );
     expect(text).toContain("국가암정보센터 증상별 식생활 - 입안의 건조증");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 입맛의 변화");
     expect(text).toContain("국가암정보센터 증상별 식생활 - 설사");
@@ -1149,51 +1263,57 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("손바닥과 발바닥");
     expect(text).toContain("표피박리");
     expect(text).toContain("수용성 크림이나 로션");
-	    expect(text).toContain("검은색으로 변하거나 흰색 줄");
-	    expect(text).toContain("국가암정보센터 피부변화 증상별 대처방법");
-	    expect(text).toContain("빈혈·혈색소·어지럼 기록 확인");
-	    expect(text).toContain("빈혈·혈색소·어지럼 메모");
-	    expect(text).toContain("국가암정보센터 빈혈 관리");
-	    expect(text).toContain("항암 치료가 적혈구에 영향을");
-	    expect(text).toContain("빈혈 관련 증상");
-		    expect(text).toContain("적혈구 수와 헤모글로빈");
-		    expect(text).toContain("하루 6--8잔의 물");
-		    expect(text).toContain("운전, 아이 돌보기, 외출");
-		    expect(text).toContain("출혈·멍·코피·혈변 기록 확인");
-		    expect(text).toContain("출혈·멍·코피·혈변 메모");
-		    expect(text).toContain("국가암정보센터 출혈 증상");
-		    expect(text).toContain("의식상태의 변화");
-		    expect(text).toContain("핀으로 찌른 것처럼 작고 붉은 발진");
-			    expect(text).toContain("입안의 혈액성 수포");
-			    expect(text).toContain("검은 색의 묽은 변");
-			    expect(text).toContain("비정상적인 다량의 질출혈");
-			    expect(text).toContain("탈모·두피 보호 기록 확인");
-			    expect(text).toContain("탈모·두피 보호·가발 준비 메모");
-			    expect(text).toContain("국가암정보센터 탈모 도움이 되는 방법");
-			    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T451C453/contents.do");
-			    expect(text).toContain("머리를 거칠게 감지");
-			    expect(text).toContain("두피를 청결하게");
-			    expect(text).toContain("부드러운 샴푸와 크림린스");
-			    expect(text).toContain("헤어 드라이기");
-			    expect(text).toContain("간격이 넓고 부드러운 빗");
-			    expect(text).toContain("탈모로 인한 불안감");
-				    expect(text).toContain("모자, 스카프");
-				    expect(text).toContain("가발");
-				    expect(text).toContain("딸꾹질 지속 상담 기준 확인");
-				    expect(text).toContain("딸꾹질 지속·호흡곤란 상담 메모");
-				    expect(text).toContain("국가암정보센터 딸꾹질 의료진 상담 상황");
-				    expect(text).toContain("https://www.cancer.go.kr/lay1/S1T466C468/contents.do");
-				    expect(text).toContain("하루이상 딸꾹질이 지속될 경우");
-				    expect(text).toContain("호흡곤란이 일어날 경우");
-				    expect(text).toContain("위장이 커져있거나 팽만");
-				    expect(text).toContain("잠을 이룰수 없을 정도");
-				    expect(text).toContain("딸꾹질로 인해 고통");
-				    expect(text).toContain("국립암센터 자궁경부암 조기 진단과 예방법");
+    expect(text).toContain("검은색으로 변하거나 흰색 줄");
+    expect(text).toContain("국가암정보센터 피부변화 증상별 대처방법");
+    expect(text).toContain("빈혈·혈색소·어지럼 기록 확인");
+    expect(text).toContain("빈혈·혈색소·어지럼 메모");
+    expect(text).toContain("국가암정보센터 빈혈 관리");
+    expect(text).toContain("항암 치료가 적혈구에 영향을");
+    expect(text).toContain("빈혈 관련 증상");
+    expect(text).toContain("적혈구 수와 헤모글로빈");
+    expect(text).toContain("하루 6--8잔의 물");
+    expect(text).toContain("운전, 아이 돌보기, 외출");
+    expect(text).toContain("출혈·멍·코피·혈변 기록 확인");
+    expect(text).toContain("출혈·멍·코피·혈변 메모");
+    expect(text).toContain("국가암정보센터 출혈 증상");
+    expect(text).toContain("의식상태의 변화");
+    expect(text).toContain("핀으로 찌른 것처럼 작고 붉은 발진");
+    expect(text).toContain("입안의 혈액성 수포");
+    expect(text).toContain("검은 색의 묽은 변");
+    expect(text).toContain("비정상적인 다량의 질출혈");
+    expect(text).toContain("탈모·두피 보호 기록 확인");
+    expect(text).toContain("탈모·두피 보호·가발 준비 메모");
+    expect(text).toContain("국가암정보센터 탈모 도움이 되는 방법");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T451C453/contents.do",
+    );
+    expect(text).toContain("머리를 거칠게 감지");
+    expect(text).toContain("두피를 청결하게");
+    expect(text).toContain("부드러운 샴푸와 크림린스");
+    expect(text).toContain("헤어 드라이기");
+    expect(text).toContain("간격이 넓고 부드러운 빗");
+    expect(text).toContain("탈모로 인한 불안감");
+    expect(text).toContain("모자, 스카프");
+    expect(text).toContain("가발");
+    expect(text).toContain("딸꾹질 지속 상담 기준 확인");
+    expect(text).toContain("딸꾹질 지속·호흡곤란 상담 메모");
+    expect(text).toContain("국가암정보센터 딸꾹질 의료진 상담 상황");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/S1T466C468/contents.do",
+    );
+    expect(text).toContain("하루이상 딸꾹질이 지속될 경우");
+    expect(text).toContain("호흡곤란이 일어날 경우");
+    expect(text).toContain("위장이 커져있거나 팽만");
+    expect(text).toContain("잠을 이룰수 없을 정도");
+    expect(text).toContain("딸꾹질로 인해 고통");
+    expect(text).toContain("국립암센터 자궁경부암 조기 진단과 예방법");
     expect(text).toContain("질병관리청 국가건강정보포털 자궁경부암 백신");
     expect(text).toContain("질병관리청 예방접종도우미 HPV 국가예방접종 사업");
     expect(text).toContain("국가암정보센터 사람유두종바이러스 감염");
     expect(text).toContain("국가암정보센터 자궁경부암 예방법");
-    expect(text).toContain("국가암정보센터 국민 암예방 수칙 실천지침 자궁경부암");
+    expect(text).toContain(
+      "국가암정보센터 국민 암예방 수칙 실천지침 자궁경부암",
+    );
   });
 
   it("keeps the copied care note framed as recording and clinician-confirmation support", () => {
@@ -1201,7 +1321,14 @@ describe("cervicalCancerCareClipboard", () => {
       age: "56",
       sex: "female",
     });
-    const treatmentOrders = ["복용하세요", "중단하세요", "치료하세요", "운동하세요", "투약하세요", "처방하세요"];
+    const treatmentOrders = [
+      "복용하세요",
+      "중단하세요",
+      "치료하세요",
+      "운동하세요",
+      "투약하세요",
+      "처방하세요",
+    ];
 
     expect(text).toContain("진단·처방·치료 지시가 아니라");
     expect(text).toContain("진료팀 확인");
@@ -1215,7 +1342,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).not.toContain("검진 기준 빠른 확인");
     expect(text).toContain("우선 확인 체크리스트");
     expect(text).toContain("검진·예방 메모");
-						    expect(text).toContain("출처 목록 (73개)");
+    expect(text).toContain("출처 목록 (73개)");
   });
 
   it("summarizes the copied care note scope for labels and post-copy feedback", () => {
@@ -1230,30 +1357,36 @@ describe("cervicalCancerCareClipboard", () => {
       alertRecordFieldCount: 4,
       preventionCount: 22,
       priorityCount: 3,
-						      promptCount: 67,
-						      recordRecoveryPreventionCount: 90,
-						      recoveryCount: 51,
-					      screeningSummaryCount: 1,
-						      sourceCount: 73,
-						      totalItemCount: 169,
-					    });
-					    expect(formatCervicalCancerCareClipboardCompactSummary(profileSummary)).toBe(
-						      "총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
-					    );
-					    expect(formatCervicalCancerCareClipboardDescription(profileSummary)).toBe(
-						      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
-					    );
-					    expect(formatCervicalCancerCareClipboardStatus(profileSummary)).toBe(
-						      "자궁경부암 케어 노트 복사됨 · 총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
-					    );
-					    expect(formatCervicalCancerCareClipboardUnsupportedStatus(profileSummary)).toBe(
-						      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
-					    );
-					    expect(formatCervicalCancerCareClipboardFailedStatus(profileSummary)).toBe(
-						      "자궁경부암 케어 노트 복사 실패 · 총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
-					    );
-					    expect(formatCervicalCancerCareClipboardCompactSummary(genericSummary)).toBe(
-						      "총 168개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
-					    );
+      promptCount: 67,
+      recordRecoveryPreventionCount: 90,
+      recoveryCount: 51,
+      screeningSummaryCount: 1,
+      sourceCount: 73,
+      totalItemCount: 169,
+    });
+    expect(
+      formatCervicalCancerCareClipboardCompactSummary(profileSummary),
+    ).toBe(
+      "총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
+    );
+    expect(formatCervicalCancerCareClipboardDescription(profileSummary)).toBe(
+      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
+    );
+    expect(formatCervicalCancerCareClipboardStatus(profileSummary)).toBe(
+      "자궁경부암 케어 노트 복사됨 · 총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
+    );
+    expect(
+      formatCervicalCancerCareClipboardUnsupportedStatus(profileSummary),
+    ).toBe(
+      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
+    );
+    expect(formatCervicalCancerCareClipboardFailedStatus(profileSummary)).toBe(
+      "자궁경부암 케어 노트 복사 실패 · 총 169개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
+    );
+    expect(
+      formatCervicalCancerCareClipboardCompactSummary(genericSummary),
+    ).toBe(
+      "총 168개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 67개 · 기록/회복/예방 90개 · 출처 73개",
+    );
   });
 });
