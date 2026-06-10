@@ -6077,8 +6077,23 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
   ],
   [
+    "장염비브리오 연체동물",
+    "식품안전나라 장염비브리오균 연체동물 오염경로 확인 필요",
+    "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+  ],
+  [
     "장염비브리오 고등어",
     "식품안전나라 장염비브리오균 고등어 오염경로 확인 필요",
+    "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+  ],
+  [
+    "장염비브리오 아지",
+    "식품안전나라 장염비브리오균 아지 오염경로 확인 필요",
+    "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+  ],
+  [
+    "장염비브리오 어류",
+    "식품안전나라 장염비브리오균 어류 오염경로 확인 필요",
     "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
   ],
   [
