@@ -73,6 +73,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.id).toBe(
       "survivor-nutrition-lifestyle",
     );
+    expect(findSymptomSupportTemplate("암생존자 예방접종 생백신 시점")?.id).toBe(
+      "survivor-vaccination-timing",
+    );
     expect(findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정")?.id).toBe(
       "survivor-work-return",
     );
@@ -785,6 +788,62 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 영양 식생활 균형잡힌 식사"),
     ).not.toMatch(
       /체중을 감량하세요|체중을 늘리세요|전곡류를 먹으세요|채소를 먹으세요|육가공품을 먹지 마세요|탄 음식을 먹지 마세요|짠 음식을 금지하세요|술을 끊으세요|건강보조식품을 중단하세요|민간요법을 중단하세요|식단을 처방하세요|진단하세요|치료하세요|처방하세요|암 재발을 예방합니다|완치됩니다/,
+    );
+  });
+
+  it("builds a survivor vaccination-timing question from official guidance", () => {
+    const infectionRiskSentence = "폐렴, 인플루엔자, 코로나";
+    const mortalitySeveritySentence = "사망과 중증화";
+    const inactivatedVaccineSentence = "대부분의 예방접종 백신은 사백신";
+    const liveVaccineSentence = "일부 예방접종은 생백신";
+    const beforeChemoSentence = "항암치료 한 달 전";
+    const afterChemoSentence = "항암치료 마치고 3개월 후";
+    const shinglesSentence = "대상포진 백신";
+    const pneumococcalRiskSentence = "침습성 폐렴구균 감염률";
+    const tenTimesSentence = "10배 이상";
+    const thirteenValentSentence = "13가";
+    const twentyThreeValentSentence = "23가";
+    const fiveYearSentence = "5년 후";
+    const fluSentence = "독감 예방접종";
+    const annualSentence = "매년";
+    const template = findSymptomSupportTemplate("암생존자 예방접종 생백신 시점");
+
+    expect(template?.id).toBe("survivor-vaccination-timing");
+    expect(template?.mealNote).toContain(infectionRiskSentence);
+    expect(template?.mealNote).toContain(mortalitySeveritySentence);
+    expect(template?.mealNote).toContain(inactivatedVaccineSentence);
+    expect(template?.mealNote).toContain(liveVaccineSentence);
+    expect(template?.mealNote).toContain(beforeChemoSentence);
+    expect(template?.mealNote).toContain(afterChemoSentence);
+    expect(template?.mealNote).toContain(shinglesSentence);
+    expect(template?.clinicianQuestion).toContain(pneumococcalRiskSentence);
+    expect(template?.clinicianQuestion).toContain(tenTimesSentence);
+    expect(template?.clinicianQuestion).toContain(thirteenValentSentence);
+    expect(template?.clinicianQuestion).toContain(twentyThreeValentSentence);
+    expect(template?.clinicianQuestion).toContain(fiveYearSentence);
+    expect(template?.clinicianQuestion).toContain(fluSentence);
+    expect(template?.clinicianQuestion).toContain(annualSentence);
+    expect(template?.clinicianQuestion).toContain("코로나19");
+    expect(template?.clinicianQuestion).toContain("파상풍");
+    expect(template?.clinicianQuestion).toContain("HPV");
+    expect(template?.clinicianQuestion).toContain("65세 이상 무료 23가");
+    expect(template?.clinicianQuestion).toContain("지역 보건소·병의원");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 예방접종 생백신 시점"),
+    ).toContain(inactivatedVaccineSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 예방접종 생백신 시점"),
+    ).toContain(
+      "출처: 국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 예방접종 생백신 시점"),
+    ).not.toMatch(
+      /폐렴구균 예방접종을 받으세요|독감 예방접종을 받으세요|코로나19 예방접종을 받으세요|대상포진 예방접종을 하세요|생백신을 맞으세요|사백신을 맞으세요|항암치료 중 맞으세요|백신을 예약하세요|감염병을 예방합니다|중증화를 막습니다|치료하세요|처방하세요|진단하세요/,
     );
   });
 
@@ -1712,7 +1771,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(42);
+    expect(symptomSupportTemplates).toHaveLength(43);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1752,6 +1811,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암생존자 예방접종 생백신 시점")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
     );
     expect(findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
