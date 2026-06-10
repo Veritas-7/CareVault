@@ -61,6 +61,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.id).toBe(
       "survivor-anxiety-management",
     );
+    expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.id).toBe(
+      "survivor-sleep-management",
+    );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.id).toBe(
       "survivor-exercise-management",
     );
@@ -641,6 +644,52 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("진료 전 확인용");
     expect(buildSymptomSupportQuestion(template!, "암생존자 불안 신체증상")).not.toMatch(
       /불안을 치료하세요|호흡훈련을 하세요|주의전환을 하세요|약을 복용하세요|진단하세요|처방하세요|치료하세요|불안은 위험하지 않습니다|응급실에 가지 않아도 됩니다|괜찮으니 참으세요/,
+    );
+  });
+
+  it("builds a survivor sleep-management question from official guidance", () => {
+    const insomniaSentence =
+      "불면증은 밤에 잠을 자지 못하는 증상을 말합니다. 암 환자의 약 30~50%가 불면증을 경험합니다.";
+    const causeSentence =
+      "불면증은 복용하는 약물 때문에 나타나기도 하고, 암 치료 때문에 수면 습관이 바뀌어서 나타날 수도 있습니다.";
+    const sleepEfficiencySentence =
+      "수면효율 = 실제로 잠을 자는 시간 x 100 잠자리에 누워 있는 총시간";
+    const wakeTimeSentence =
+      "전날 일찍 잠들지 못했더라도 아침에 항상 일정한 시각에 일어납니다.";
+    const eveningCaffeineSentence =
+      "커피, 홍차, 녹차, 콜라 등 카페인이 포함된 음료는 저녁에는 섭취하지 않습니다.";
+    const preSleepExerciseSentence =
+      "낮에 규칙적으로 운동을 하면 수면에 도움이 됩니다. 단, 잠들기 전 2시간 안에는 운동하지 않는 것이 좋습니다.";
+    const phoneSentence =
+      "잠자리에서는 휴대 전화 사용을 삼가고, 자다가 시간을 확인하지 않습니다.";
+    const template = findSymptomSupportTemplate("암생존자 수면관리 수면효율");
+
+    expect(template?.id).toBe("survivor-sleep-management");
+    expect(template?.mealNote).toContain(insomniaSentence);
+    expect(template?.mealNote).toContain(causeSentence);
+    expect(template?.mealNote).toContain(sleepEfficiencySentence);
+    expect(template?.mealNote).toContain(wakeTimeSentence);
+    expect(template?.clinicianQuestion).toContain(eveningCaffeineSentence);
+    expect(template?.clinicianQuestion).toContain(preSleepExerciseSentence);
+    expect(template?.clinicianQuestion).toContain(phoneSentence);
+    expect(template?.clinicianQuestion).toContain("수면일지");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 수면관리 수면효율"),
+    ).toContain(sleepEfficiencySentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 수면관리 수면효율"),
+    ).toContain(
+      "출처: 국가암정보센터 암생존자 수면관리 - https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
+    expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 수면관리 수면효율"),
+    ).not.toMatch(
+      /수면제를 복용하세요|수면제를 처방하세요|카페인을 끊으세요|물을 적게 마시세요|저녁 물 금지|불면증을 진단하세요|치료하세요|처방하세요|인지 행동 치료를 하세요|8시간 이상 자세요|휴대 전화를 금지하세요/,
     );
   });
 
@@ -1384,7 +1433,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(36);
+    expect(symptomSupportTemplates).toHaveLength(37);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1412,6 +1461,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
     );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
