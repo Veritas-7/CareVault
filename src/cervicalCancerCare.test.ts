@@ -281,7 +281,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(65);
+				    expect(cervicalCancerCarePrompts).toHaveLength(66);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -334,6 +334,7 @@ describe("cervicalCancerCare", () => {
       "운동강도·근력운동 상담 준비",
       "치료 후 영양·식생활 상담 준비",
       "치료 후 고용량 영양식품·우유 질문 준비",
+      "치료 후 이차암 검진 구분 준비",
       "직업복귀·근무조정 상담 준비",
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
@@ -1391,6 +1392,38 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /우유를 드세요|고단백 식품을 드세요|영양제를 끊으세요|민간요법을 하지 마세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
     );
+    const survivorSecondCancerScreeningPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "치료 후 이차암 검진 구분 준비",
+    )!;
+    expect(survivorSecondCancerScreeningPrompt.sourceId).toBe(
+      "nccSurvivorHealthyManagementNutrition",
+    );
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("이차암은 원발암");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("새로운 부위");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("암 생존자에게");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("다른 암을 겪지 않은 사람보다");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("10% 에서 20%정도");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("자궁경부암");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("흡연");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("폐암 검진");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("저선량 흉부 CT");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("치료받은 병원");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("다른 부위");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("국가 검진");
+    expect(survivorSecondCancerScreeningPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(survivorSecondCancerScreeningPrompt)).toContain(
+      "출처: 국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(
+      Object.values(
+        buildCervicalCancerCarePromptQuestionDraft(
+          survivorSecondCancerScreeningPrompt,
+          "2026-06-15",
+        ),
+      ).join(" "),
+    ).not.toMatch(
+      /폐암 검진을 받으세요|국가암검진을 받으세요|금연하세요|이차암을 예방합니다|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
+    );
     const survivorWorkPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "직업복귀·근무조정 상담 준비",
     )!;
@@ -2405,6 +2438,9 @@ describe("cervicalCancerCare", () => {
     const survivorHealthyManagementNutritionGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 고용량 영양식품·우유 질문 메모",
     );
+    const survivorSecondCancerScreeningGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암생존자 이차암 검진·흡연력 메모",
+    );
     const survivorWorkGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 직업복귀·근무조정 메모",
     );
@@ -2427,7 +2463,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(49);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(50);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3583,6 +3619,38 @@ describe("cervicalCancerCare", () => {
       ).join(" "),
     ).not.toMatch(
       /우유를 드세요|고단백 식품을 드세요|영양제를 끊으세요|민간요법을 하지 마세요|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
+    );
+    expect(survivorSecondCancerScreeningGuide).toMatchObject({
+      label: "암생존자 이차암 검진·흡연력 메모",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("이차암은 원발암");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("새로운 부위");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("다른 암을 겪지 않은 사람보다");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("10% 에서 20%정도");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("자궁경부암");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("흡연");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("폐암 검진");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("저선량 흉부 CT");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("치료받은 병원");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("다른 부위의 이차암");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("국가 검진");
+    expect(survivorSecondCancerScreeningGuide?.detail).toContain("진료팀 확인");
+    expect(formatCervicalCancerCareItemEvidence(survivorSecondCancerScreeningGuide!)).toContain(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(survivorSecondCancerScreeningGuide!).body).toContain(
+      "암생존자 이차암 검진·흡연력 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(survivorSecondCancerScreeningGuide!)).toContain(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리",
+    );
+    expect(
+      Object.values(
+        buildCervicalCancerCareItemSymptomDraft(survivorSecondCancerScreeningGuide!),
+      ).join(" "),
+    ).not.toMatch(
+      /폐암 검진을 받으세요|국가암검진을 받으세요|금연하세요|이차암을 예방합니다|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
     );
     expect(survivorWorkGuide).toMatchObject({
       label: "암생존자 직업복귀·근무조정 메모",
