@@ -4825,6 +4825,36 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
   ],
   [
+    "보툴리늄 통조림",
+    "식품안전나라 클로스트리디움 보툴리늄균 통조림 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 병조림",
+    "식품안전나라 클로스트리디움 보툴리늄균 병조림 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 레토르트 식품",
+    "식품안전나라 클로스트리디움 보툴리늄균 레토르트 식품 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 식육",
+    "식품안전나라 클로스트리디움 보툴리늄균 식육 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 소시지",
+    "식품안전나라 클로스트리디움 보툴리늄균 소시지 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 생선",
+    "식품안전나라 클로스트리디움 보툴리늄균 생선 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
     "환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산",
     "식품안전나라 클로스트리디움 보툴리늄균 혐기조건 아포 발아·독소 생산 확인 필요",
     "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
