@@ -4675,6 +4675,69 @@ describe("healthRules", () => {
     );
   });
 
+  it("recognizes NCC cancer survivor guide sterilized drink and boiled-water source sentences", () => {
+    const assessment = assessCancerFood(
+      "우유나 주스,꿀 같은 음식은 멸균처리 된 것을 이용한다. 물은 끓여서 먹는다.",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "우유나 주스,꿀 같은 음식은 멸균처리 된 것을 이용한다.",
+      "물은 끓여서 먹는다.",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 암경험자 식품안전 멸균·끓인 물 확인 필요",
+        sourceId: "nccCancerSurvivorHealthGuide",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 암경험자 건강관리 가이드 - https://www.cancer.go.kr/org_bbs_b_download.do?attach_seq=8132",
+      );
+    }
+    expect(careTeamGuideText).toContain("암경험자 멸균처리 우유");
+    expect(careTeamGuideText).toContain("암경험자 물 끓여서 먹기");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|치료 음식|먹으세요|끊으세요|재발을 막|예방 보장/,
+    );
+  });
+
+  it("keeps NCC cancer survivor guide sterilized drink shorthand scoped to survivor context", () => {
+    const assessment = assessCancerFood(
+      "암경험자 멸균처리 우유, 암경험자 멸균처리 주스, 암경험자 멸균처리 꿀, 암경험자 물 끓여서 먹기",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const genericAssessment = assessCancerFood("멸균처리 우유, 멸균처리 주스, 멸균처리 꿀, 물 끓여서 먹기");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "암경험자 멸균처리 우유",
+      "암경험자 멸균처리 주스",
+      "암경험자 멸균처리 꿀",
+      "암경험자 물 끓여서 먹기",
+    ]);
+    for (const match of assessment.matches) {
+      expect(match).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 암경험자 식품안전 멸균·끓인 물 확인 필요",
+        sourceId: "nccCancerSurvivorHealthGuide",
+      });
+    }
+    expect(
+      genericAssessment.matches.some(
+        (match) => match.sourceId === "nccCancerSurvivorHealthGuide",
+      ),
+    ).toBe(false);
+  });
+
   it("recognizes NCC after-treatment processed meat source sentence", () => {
     const sourceSentence =
       "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";
