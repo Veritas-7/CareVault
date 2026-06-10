@@ -67,6 +67,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.id).toBe(
       "survivor-exercise-management",
     );
+    expect(findSymptomSupportTemplate("암생존자 가족 통합지지 상담")?.id).toBe(
+      "survivor-integrated-support",
+    );
     expect(findSymptomSupportTemplate("암관련 피로 대처")?.id).toBe(
       "cancer-fatigue-coping",
     );
@@ -729,6 +732,46 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 운동강도 상담"),
     ).not.toMatch(
       /운동을 처방하세요|운동하세요|운동을 시작하세요|진단하세요|치료하세요|완치|재발을 예방합니다|사망률을 낮춥니다|무조건 주 150분|반드시 주 2회/,
+    );
+  });
+
+  it("builds a survivor integrated-support question from official guidance", () => {
+    const familySelfManagementSentence =
+      "암생존자통합지지센터는 암생존자와 그 가족이 직면하는 신체·심리·생활 문제를 스스로 극복하도록 자가관리 능력 및 회복 탄력성을 증진하여 암생존자의 건강증진과 사회적 기능 복귀 (직장·학교)를 도모합니다.";
+    const expertSupportSentence =
+      "암생존자통합지지센터에 방문하시는 암생존자 및 가족은 의사, 간호사, 사회복지사, 영양사 등 여러 분야 전문가들을 통해 암 치료 후 발생할 수 있는 신체, 심리, 생활(사회·경제적) 문제를 파악하여 필요한 상담, 교육 등 다양한 서비스를 제공 받을 수 있습니다.";
+    const eligibilitySentence =
+      "암 진단 후 완치 목적의 주요 치료(수술, 항암화학요법, 방사선치료 등)를 마친 암환자와 그 가족";
+    const useMethodSentence =
+      "암생존자 통합지지 서비스 이용을 원하시는 경우, 가까운 권역센터를 방문하거나, 대표번호(1577-9740)로 전화하면";
+    const serviceContentSentence =
+      "암생존자통합지지센터에 방문하시는 암생존자 및 가족은 의사, 간호사, 사회복지사, 영양사 등 여러 분야 전문가들을 통해 암 치료 후 발생할 수 있는 신체, 심리, 생활(사회·경제적) 문제를 파악하여 필요한 상담, 교육 등의 다양한 서비스를 받을 수 있습니다.";
+    const template = findSymptomSupportTemplate("암생존자 가족 통합지지 상담");
+
+    expect(template?.id).toBe("survivor-integrated-support");
+    expect(template?.mealNote).toContain(familySelfManagementSentence);
+    expect(template?.mealNote).toContain(expertSupportSentence);
+    expect(template?.clinicianQuestion).toContain(eligibilitySentence);
+    expect(template?.clinicianQuestion).toContain(useMethodSentence);
+    expect(template?.clinicianQuestion).toContain(serviceContentSentence);
+    expect(template?.clinicianQuestion).toContain("자가평가");
+    expect(template?.clinicianQuestion).toContain("지역사회 연계 서비스");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 가족 통합지지 상담"),
+    ).toContain(serviceContentSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 가족 통합지지 상담"),
+    ).toContain(
+      "출처: 국가암정보센터 암생존자통합지지센터 - https://www.cancer.go.kr/lay1/S1T786C841/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 가족 통합지지 상담"),
+    ).not.toMatch(
+      /통합지지센터에 등록하세요|센터에 방문하세요|전화하세요|진단하세요|치료하세요|처방하세요|상담을 받으세요|사회복귀가 보장됩니다|회복탄력성이 좋아집니다|건강증진을 보장합니다/,
     );
   });
 
@@ -1473,7 +1516,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(38);
+    expect(symptomSupportTemplates).toHaveLength(39);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1507,6 +1550,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암생존자 가족 통합지지 상담")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T786C841/contents.do",
     );
     expect(findSymptomSupportTemplate("보완대체요법 약초 영양제 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
