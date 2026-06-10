@@ -13950,7 +13950,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "클로스트리디움 보툴리늄균은 그람양성의 편성혐기성 간균이며 세포 한쪽 끝에 난 원형의 아포를 형성하고, A형, B형, E형, 및 F형균이 사람에게 식중독을 일으키며, 독소는 80℃, 20분과 100℃, 1~2분 가열로 파괴되고, 통조림, 병조림, 레토르트 식품, 식육, 소시지 생선 같은 원인식품과 보툴리늄 통조림, 보툴리늄 병조림, 보툴리늄 레토르트 식품, 보툴리늄 레토르트식품, 보툴리늄 식육, 보툴리늄 햄, 보툴리늄 소시지, 보툴리늄 육제품, 보툴리늄 생선, 보툴리늄 갑각류, 보툴리늄 저장식품, 보툴리늄 기타 저장식품을 확인하며, 환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산하는 상황을 확인",
+      "클로스트리디움 보툴리늄균은 그람양성의 편성혐기성 간균이며 세포 한쪽 끝에 난 원형의 아포를 형성하고, A형, B형, E형, 및 F형균이 사람에게 식중독을 일으키며, 독소는 80℃, 20분과 100℃, 1~2분 가열로 파괴되고, 통조림, 병조림, 레토르트 식품, 식육, 소시지 생선 같은 원인식품과 보툴리늄 통조림, 보툴리늄 병조림, 보툴리늄 레토르트 식품, 보툴리늄 레토르트식품, 보툴리늄 식육, 보툴리늄 햄, 보툴리늄 소시지, 보툴리늄 육제품, 보툴리늄 생선, 보툴리늄 토양, 보툴리늄 바다, 보툴리늄 개천, 보툴리늄 호수, 보툴리늄 동물 분변, 보툴리늄 어류 장관, 보툴리늄 갑각류, 보툴리늄 갑각류 장관, 보툴리늄 저장식품, 보툴리늄 기타 저장식품을 확인하며, 환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산하는 상황을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -13969,6 +13969,8 @@ describe("healthRules", () => {
     expect(foodSafetyGuide?.detail).toContain("80℃, 20분과 100℃, 1~2분");
     expect(foodSafetyGuide?.detail).toContain("통조림, 병조림, 레토르트 식품");
     expect(foodSafetyGuide?.detail).toContain("통조림, 햄, 소시지, 육제품");
+    expect(foodSafetyGuide?.detail).toContain("토양, 바다, 개천, 호수");
+    expect(foodSafetyGuide?.detail).toContain("동물의 분변");
     expect(foodSafetyGuide?.detail).toContain("어류, 갑각류의 장관");
     expect(foodSafetyGuide?.detail).toContain("환경조건이 혐기적일 때 아포가 발아");
     expect(foodSafetyGuide?.detail).toContain("기타 저장식품도 반드시 가열 후 섭취");
@@ -14005,7 +14007,14 @@ describe("healthRules", () => {
       "보툴리늄 소시지",
       "보툴리늄 육제품",
       "보툴리늄 생선",
+      "보툴리늄 토양",
+      "보툴리늄 바다",
+      "보툴리늄 개천",
+      "보툴리늄 호수",
+      "보툴리늄 동물 분변",
+      "보툴리늄 어류 장관",
       "보툴리늄 갑각류",
+      "보툴리늄 갑각류 장관",
       "보툴리늄 저장식품",
       "보툴리늄 기타 저장식품",
       "환경조건이 혐기적일 때 아포가 발아하여 증식하면서 식중독을 발생시킬 정도의 독소를 생산",

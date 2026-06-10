@@ -5918,7 +5918,42 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
   ],
   [
+    "보툴리늄 토양",
+    "식품안전나라 클로스트리디움 보툴리늄균 토양 분포 문맥 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 바다",
+    "식품안전나라 클로스트리디움 보툴리늄균 바다 분포 문맥 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 개천",
+    "식품안전나라 클로스트리디움 보툴리늄균 개천 분포 문맥 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 호수",
+    "식품안전나라 클로스트리디움 보툴리늄균 호수 분포 문맥 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 동물 분변",
+    "식품안전나라 클로스트리디움 보툴리늄균 동물 분변 분포 문맥 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 어류 장관",
+    "식품안전나라 클로스트리디움 보툴리늄균 어류 장관 분포 문맥 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
     "보툴리늄 갑각류",
+    "식품안전나라 클로스트리디움 보툴리늄균 갑각류 장관 분포 문맥 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
+    "보툴리늄 갑각류 장관",
     "식품안전나라 클로스트리디움 보툴리늄균 갑각류 장관 분포 문맥 확인 필요",
     "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
   ],
