@@ -70,6 +70,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암 진단 후 불면증 정신과 약 중독 걱정")?.id).toBe(
       "mental-health-medication-misconception",
     );
+    expect(findSymptomSupportTemplate("주치의가 정신건강의학과 진료를 권했어요 불면 우울 불안")?.id).toBe(
+      "psychiatry-consult-benefits",
+    );
     expect(findSymptomSupportTemplate("스트레스 때문에 암에 걸렸나요 가족 탓 죄책감")?.id).toBe(
       "stress-cancer-cause-misconception",
     );
@@ -803,6 +806,66 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암 진단 후 불면증 정신과 약 중독 걱정"),
     ).not.toMatch(
       /정신과 약을 먹으세요|수면제를 복용하세요|항우울제를 복용하세요|항불안제를 복용하세요|약 없이 상담만 받으세요|중독되지 않습니다|단기간에 끊을 수 있습니다$|취직에 문제 없습니다|보험에 문제 없습니다|정신건강의학과에 가세요|진단하세요|치료하세요|처방하세요/,
+    );
+  });
+
+  it("builds a psychiatry-consult benefits question from official guidance", () => {
+    const consultQuestionSentence =
+      "암을 치료하는 주치의 선생님이 정신건강의학과 진료를 권하셨는데,";
+    const prevalenceSentence =
+      "암환자의 절반 가까이가 투병 중에 정신건강의학적인 문제를 갖게 되는데,";
+    const symptomDurationSentence =
+      "임상적으로 불면이나 우울, 불안 등의 증상이 심하거나 오래 지속되면";
+    const psychoneuroimmunologySentence =
+      "그런 정신적 고통때문에 정신신경 면역학적 기전을 통해";
+    const psychosocialSentence =
+      "선진국에서는 정신건강의학과 진료를 포함한 심리사회적 서비스가";
+    const essentialCareSentence = "암 의료에서 필수적인 요소로 되어가고 있습니다.";
+    const qualitySurvivalSentence =
+      "환자의 삶의 질뿐만 아니라 생존율도 높아진다는 사실이 밝혀지고 있습니다.";
+    const template = findSymptomSupportTemplate(
+      "주치의가 정신건강의학과 진료를 권했어요 불면 우울 불안",
+    );
+
+    expect(template?.id).toBe("psychiatry-consult-benefits");
+    expect(template?.mealNote).toContain(consultQuestionSentence);
+    expect(template?.mealNote).toContain(prevalenceSentence);
+    expect(template?.mealNote).toContain(symptomDurationSentence);
+    expect(template?.mealNote).toContain(psychoneuroimmunologySentence);
+    expect(template?.clinicianQuestion).toContain(psychosocialSentence);
+    expect(template?.clinicianQuestion).toContain(essentialCareSentence);
+    expect(template?.clinicianQuestion).toContain(qualitySurvivalSentence);
+    expect(template?.clinicianQuestion).toContain("개인 예후 개선으로 단정하지 않으면서");
+    expect(template?.clinicianQuestion).toContain("협진 목표");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "주치의가 정신건강의학과 진료를 권했어요 불면 우울 불안",
+      ),
+    ).toContain(symptomDurationSentence);
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "주치의가 정신건강의학과 진료를 권했어요 불면 우울 불안",
+      ),
+    ).toContain(
+      "출처: 국가암정보센터 암환자 정신건강 - 정신건강의학과 진료 도움 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22079&condition=&cpage=2&keyword=&mode=view&rn=48&rows=12",
+    );
+    expect(findSymptomSupportTemplate("암 진단 후 불면증 정신과 약 중독 걱정")?.id).toBe(
+      "mental-health-medication-misconception",
+    );
+    expect(findSymptomSupportTemplate("우울과 불면이 계속됨")?.id).toBe("fatigue");
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(
+        template!,
+        "주치의가 정신건강의학과 진료를 권했어요 불면 우울 불안",
+      ),
+    ).not.toMatch(
+      /정신건강의학과 진료를 받으세요|정신건강의학과에 가세요|상담받으세요|치료하세요|처방하세요|진단하세요|생존율이 높아집니다|면역력이 회복됩니다|약을 복용하세요|개인 예후가 좋아집니다/,
     );
   });
 
@@ -2662,7 +2725,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(59);
+    expect(symptomSupportTemplates).toHaveLength(60);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2699,6 +2762,12 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암 진단 후 불면증 정신과 약 중독 걱정")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=3&keyword=&rn=44&rows=12",
+    );
+    expect(
+      findSymptomSupportTemplate("주치의가 정신건강의학과 진료를 권했어요 불면 우울 불안")
+        ?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22079&condition=&cpage=2&keyword=&mode=view&rn=48&rows=12",
     );
     expect(findSymptomSupportTemplate("스트레스 때문에 암에 걸렸나요 가족 탓 죄책감")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&rn=46&rows=12",
