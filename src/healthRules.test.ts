@@ -13662,7 +13662,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "바실러스 세레우스균은 설사형 독소(Diarrhetic toxin)와 구토형 독소(Emetic toxin)를 생산하며, 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균 오염을 확인, 바실러스 향신료 사용 요리, 바실러스 육류 채소 스프, 바실러스 육류 스프, 바실러스 채소 스프, 바실러스 푸딩, 바실러스 쌀밥, 바실러스 김밥, 바실러스 볶음밥을 확인",
+      "바실러스 세레우스균은 설사형 독소(Diarrhetic toxin)와 구토형 독소(Emetic toxin)를 생산하며, 향신료 사용 요리, 육류 및 채소의 스프, 푸딩, 볶음밥, 토양 상재균 오염을 확인, 바실러스 향신료 사용 요리, 바실러스 육류 채소 스프, 바실러스 육류 스프, 바실러스 채소 스프, 바실러스 육류 채소 수프, 바실러스 육류 수프, 바실러스 채소 수프, 바실러스 푸딩, 바실러스 쌀밥, 바실러스 김밥, 바실러스 볶음밥을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -13712,6 +13712,9 @@ describe("healthRules", () => {
       "바실러스 육류 채소 스프",
       "바실러스 육류 스프",
       "바실러스 채소 스프",
+      "바실러스 육류 채소 수프",
+      "바실러스 육류 수프",
+      "바실러스 채소 수프",
       "바실러스 푸딩",
       "바실러스 쌀밥",
       "바실러스 김밥",
