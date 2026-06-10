@@ -80,6 +80,7 @@ describe("cervicalCancerCare", () => {
 			      "nccHiccupConsult",
 			      "nccCancerLifeChildrenCommunication",
       "nccCancerLifePsychologicalStability",
+      "nccSurvivorSleepManagement",
       "nccComplementaryTherapyConsultation",
       "nccPainAssessment",
       "nccCancerFatigueCoping",
@@ -133,6 +134,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccCancerLifePsychologicalStability.url).toContain(
       "S1T327C329",
     );
+    expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
     expect(cervicalCancerCareSources.nccComplementaryTherapyConsultation.url).toContain(
       "S1T365C368",
     );
@@ -249,7 +251,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(54);
+				    expect(cervicalCancerCarePrompts).toHaveLength(55);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -292,6 +294,7 @@ describe("cervicalCancerCare", () => {
       "성생활 재개 상담",
       "자녀·가족 설명 준비",
       "정서 안정·전문상담 준비",
+      "불면·수면일지 상담 준비",
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
       "암관련 피로 대처 준비",
@@ -1082,6 +1085,29 @@ describe("cervicalCancerCare", () => {
     expect(buildCervicalCancerCarePromptQuestion(psychologicalStabilityPrompt)).toContain(
       "출처: 국가암정보센터 암환자의 생활 - 심리적 안정을 위해 - https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
     );
+    const sleepManagementPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "불면·수면일지 상담 준비",
+    )!;
+    expect(sleepManagementPrompt.sourceId).toBe("nccSurvivorSleepManagement");
+    expect(sleepManagementPrompt.question).toContain("암 환자의 약 30~50%");
+    expect(sleepManagementPrompt.question).toContain("복용하는 약물");
+    expect(sleepManagementPrompt.question).toContain("암 치료 때문에 수면 습관");
+    expect(sleepManagementPrompt.question).toContain("수면 효율");
+    expect(sleepManagementPrompt.question).toContain("실제로 잠을 자는 시간");
+    expect(sleepManagementPrompt.question).toContain("잠자리에 누워 있는 총시간");
+    expect(sleepManagementPrompt.question).toContain("일정한 시각에 일어");
+    expect(sleepManagementPrompt.question).toContain("저녁 카페인");
+    expect(sleepManagementPrompt.question).toContain("잠들기 전 2시간 안");
+    expect(sleepManagementPrompt.question).toContain("휴대 전화");
+    expect(sleepManagementPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(sleepManagementPrompt)).toContain(
+      "출처: 국가암정보센터 암생존자 수면관리 - https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(sleepManagementPrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(
+      /수면제를 복용하세요|약물 치료하세요|인지 행동 치료를 받으세요|치료하세요|처방하세요|진단하세요/,
+    );
     const complementaryTherapyPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "보완대체요법 상담 준비",
     )!;
@@ -1648,6 +1674,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccHpvInfection")).toContain(
       "국가암정보센터 사람유두종바이러스 감염 - https://www.cancer.go.kr/lay1/S1T250C254/contents.do",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccSurvivorSleepManagement")).toContain(
+      "국가암정보센터 암생존자 수면관리 - https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
   });
 
   it("builds context-specific accessible labels for official source links", () => {
@@ -2003,6 +2032,9 @@ describe("cervicalCancerCare", () => {
     const psychologicalStabilityGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "정서 안정·전문상담 메모",
     );
+    const sleepManagementGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "불면·수면효율·습관 메모",
+    );
     const complementaryTherapyGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "보완대체요법·약초 공유 메모",
     );
@@ -2022,7 +2054,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(38);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(39);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2879,6 +2911,33 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(psychologicalStabilityGuide!)).join(" ")).not.toMatch(
       /진단하세요|치료하세요|상담받으세요|운동하세요/,
+    );
+    expect(sleepManagementGuide).toMatchObject({
+      label: "불면·수면효율·습관 메모",
+      sourceId: "nccSurvivorSleepManagement",
+    });
+    expect(sleepManagementGuide?.detail).toContain("암 환자의 약 30~50%");
+    expect(sleepManagementGuide?.detail).toContain("복용하는 약물");
+    expect(sleepManagementGuide?.detail).toContain("암 치료 때문에 수면 습관");
+    expect(sleepManagementGuide?.detail).toContain("수면효율");
+    expect(sleepManagementGuide?.detail).toContain("실제로 잠을 자는 시간");
+    expect(sleepManagementGuide?.detail).toContain("잠자리에 누워 있는 총시간");
+    expect(sleepManagementGuide?.detail).toContain("항상 일정한 시각");
+    expect(sleepManagementGuide?.detail).toContain("저녁에는 섭취하지");
+    expect(sleepManagementGuide?.detail).toContain("잠들기 전 2시간 안");
+    expect(sleepManagementGuide?.detail).toContain("휴대 전화 사용");
+    expect(sleepManagementGuide?.detail).toContain("진료팀 확인");
+    expect(formatCervicalCancerCareItemEvidence(sleepManagementGuide!)).toContain(
+      "국가암정보센터 암생존자 수면관리 - https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(sleepManagementGuide!).body).toContain(
+      "불면·수면효율·습관 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(sleepManagementGuide!)).toContain(
+      "국가암정보센터 암생존자 수면관리",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(sleepManagementGuide!)).join(" ")).not.toMatch(
+      /수면제를 복용하세요|약물 치료하세요|인지 행동 치료를 받으세요|치료하세요|처방하세요|진단하세요/,
     );
     expect(complementaryTherapyGuide).toMatchObject({
       label: "보완대체요법·약초 공유 메모",

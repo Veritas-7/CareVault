@@ -238,6 +238,10 @@ export const cervicalCancerCareSources: Record<string, CervicalCancerCareSource>
     label: "국가암정보센터 암환자의 생활 - 심리적 안정을 위해",
     url: "https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
   },
+  nccSurvivorSleepManagement: {
+    label: "국가암정보센터 암생존자 수면관리",
+    url: "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+  },
   nccComplementaryTherapyConsultation: {
     label: "국가암정보센터 보완대체요법 상담",
     url: "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
@@ -632,6 +636,12 @@ export const cervicalCancerCarePrompts: CervicalCancerCarePrompt[] = [
     sourceId: "nccCancerLifePsychologicalStability",
   },
   {
+    topic: "불면·수면일지 상담 준비",
+    question:
+      "국가암정보센터 암생존자 수면관리 안내처럼 암 환자의 약 30~50%가 불면증을 경험하고, 불면은 복용하는 약물이나 암 치료 때문에 수면 습관이 바뀌어 나타날 수 있다고 설명됩니다. 수면 효율은 실제로 잠을 자는 시간을 잠자리에 누워 있는 총시간으로 나누어 계산한다는 점을 기준으로 취침·기상 시각, 실제 수면 시간, 낮잠, 항상 일정한 시각에 일어난 기록, 저녁 카페인, 취침 시간 외 침대 사용, 잠들기 전 2시간 안 운동, 휴대 전화 사용, 잠이 오지 않을 때 침실 밖에서 조용한 활동을 했는지를 어떻게 수면일지로 정리하고 진료팀에 확인하면 좋을까요?",
+    sourceId: "nccSurvivorSleepManagement",
+  },
+  {
     topic: "보완대체요법 상담 준비",
     question:
       "국가암정보센터 보완대체요법 상담 안내처럼 보완대체요법을 고려할 때 주치의와 먼저 상의하고, 안전과 안녕, 계획한 요법과 다른 치료의 장/단점, 특정 크림이나 약물 또는 침을 맞는 것처럼 제한이 필요한 부위·시술, 약초나 영양제 복용 사실과 부작용 위험, 요법가들의 직접적인 설명, 현재 상태와 앞으로 진행될 의학적 치료 이해 여부를 진료팀에 어떤 순서로 확인하면 좋을까요?",
@@ -879,6 +889,12 @@ export const cervicalCancerCareRecoveryGuides: CervicalCancerCareRecoveryGuide[]
     detail:
       "국가암정보센터는 항암화학요법을 받을 때 암 치료 자체에 대한 불안감, 일상의 삶이 바뀌는 것, 항암제 여러 부작용에 대한 두려움 때문에 \"우울해지기 쉽습니다\"라고 설명합니다. 치료 중 일지나 일기에 그날그날 있은 일, 떠오른 상념과 의문을 적으면 생각 정리와 의사나 간호사에게 질문할 때 도움이 된다는 설명을 기준으로 감정 변화, 치료 스케줄로 바뀐 일상, 걱정이나 두려움, 가족이나 친구·다른 환자와 나눌 이야기, 정신과 전문의 상담 기준을 기록합니다. 환자가 불안하거나 두려워할 때는 가족과 친지가 상황과 감정을 평가하지 않고 이해하는 공감의 자세로 듣는다고 설명하므로, 보호자가 같이 확인할 문구와 연락 기준을 진료팀과 보호자에게 확인합니다.",
     sourceId: "nccCancerLifePsychologicalStability",
+  },
+  {
+    label: "불면·수면효율·습관 메모",
+    detail:
+      "국가암정보센터는 불면증은 밤에 잠을 자지 못하는 증상이며 암 환자의 약 30~50%가 불면증을 경험한다고 설명합니다. 불면증은 복용하는 약물 때문에 나타나기도 하고 암 치료 때문에 수면 습관이 바뀌어서 나타날 수도 있다고 안내합니다. 수면효율은 실제로 잠을 자는 시간과 잠자리에 누워 있는 총시간을 비교해 계산하므로 취침 시각, 기상 시각, 실제 수면 시간, 잠자리에 누워 있던 총시간, 낮잠 여부를 기록합니다. 건강한 수면 습관으로는 전날 일찍 잠들지 못했더라도 아침에 항상 일정한 시각에 일어나기, 취침 시간 외에는 잠자리에 눕지 않기, 커피·홍차·녹차·콜라 같은 카페인 음료를 저녁에는 섭취하지 않기, 낮에 규칙적으로 운동하되 잠들기 전 2시간 안에는 운동하지 않기, 잠자리에서 휴대 전화 사용을 삼가고 자다가 시간을 확인하지 않기, 잠이 오지 않을 때 억지로 자려 하지 않고 침실 밖에서 조용한 음악 듣기나 책 읽기 같은 활동 후 졸릴 때 다시 눕는지를 진료팀 확인 메모로 남깁니다.",
+    sourceId: "nccSurvivorSleepManagement",
   },
   {
     label: "보완대체요법·약초 공유 메모",
