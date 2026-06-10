@@ -1,4 +1,4 @@
-import { parseFiniteNumberText } from "./healthRules";
+import { parseFiniteNumberText } from "./numberParsing";
 
 export type CervicalCancerCareSource = {
   label: string;

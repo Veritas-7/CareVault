@@ -1,3 +1,7 @@
+import { parseFiniteNumberText } from "./numberParsing";
+
+export { parseFiniteNumberText };
+
 export type HealthLevel = "ok" | "watch" | "risk" | "neutral";
 export type GlucoseContext = "fasting" | "before-meal" | "after-meal" | "bedtime" | "random";
 
@@ -109,16 +113,6 @@ export type LabFlag = "low" | "normal" | "high" | "unknown";
 export type LabAssessment = HealthAssessment & {
   flag: LabFlag;
 };
-
-const finiteNumberTextPattern = /^[+-]?(?:(?:\d+\.?\d*)|(?:\.\d+))(?:[eE][+-]?\d+)?$/;
-
-export function parseFiniteNumberText(value: string | undefined): number | undefined {
-  const trimmed = value?.trim();
-  if (!trimmed || !finiteNumberTextPattern.test(trimmed)) return undefined;
-
-  const parsed = Number(trimmed);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
 
 export type FoodAssessment = HealthAssessment & {
   matches: FoodMatch[];

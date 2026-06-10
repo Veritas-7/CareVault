@@ -15,10 +15,20 @@ export default defineConfig(async () => ({
         manualChunks(id) {
           const normalizedId = id.replace(/\\/g, "/");
 
-          if (normalizedId.includes("/node_modules/lucide-react/")) return "vendor-icons";
-          if (normalizedId.includes("/node_modules/recharts/")) return "vendor-recharts";
-          if (normalizedId.includes("/src/cervicalCancerCare")) return "care-cervical";
-          if (normalizedId.includes("/src/healthStandards")) return "health-standards";
+          if (normalizedId.includes("/node_modules/lucide-react/"))
+            return "vendor-icons";
+          if (normalizedId.includes("/node_modules/recharts/"))
+            return "vendor-recharts";
+          if (normalizedId.includes("/src/cervicalCancerCareClipboard")) {
+            return "care-cervical-clipboard";
+          }
+          if (normalizedId.includes("/src/cervicalCancerCareMetric")) {
+            return "care-cervical-metric";
+          }
+          if (normalizedId.includes("/src/cervicalCancerCare"))
+            return "care-cervical";
+          if (normalizedId.includes("/src/healthStandards"))
+            return "health-standards";
           if (
             normalizedId.includes("/src/caregiverExport") ||
             normalizedId.includes("/src/csvExport") ||
