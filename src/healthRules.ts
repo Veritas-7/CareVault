@@ -5105,6 +5105,31 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
   ],
   [
+    "장염비브리오 오징어",
+    "식품안전나라 장염비브리오균 오징어 오염경로 확인 필요",
+    "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+  ],
+  [
+    "장염비브리오 문어",
+    "식품안전나라 장염비브리오균 문어 오염경로 확인 필요",
+    "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+  ],
+  [
+    "장염비브리오 고등어",
+    "식품안전나라 장염비브리오균 고등어 오염경로 확인 필요",
+    "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+  ],
+  [
+    "장염비브리오 조개",
+    "식품안전나라 장염비브리오균 조개 오염경로 확인 필요",
+    "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+  ],
+  [
+    "장염비브리오 패류",
+    "식품안전나라 장염비브리오균 패류 오염경로 확인 필요",
+    "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
+  ],
+  [
     "어패류의 체표와 내장 및 아가미 등에 부착",
     "식품안전나라 장염비브리오균 어패류 체표·내장·아가미 오염 확인 필요",
     "foodSafetyKoreaVibrioParahaemolyticusFoodPoisoning",
