@@ -52,6 +52,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("자녀에게 암 설명 준비")?.id).toBe(
       "child-family-communication",
     );
+    expect(findSymptomSupportTemplate("치료 불안과 부작용 두려움")?.id).toBe(
+      "psychological-stability",
+    );
     expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
       "dyspnea-consult",
     );
@@ -514,6 +517,39 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("진료 전 확인용");
     expect(buildSymptomSupportQuestion(template!, "자녀에게 암 설명")).not.toMatch(
       /심리치료를 하세요|진단하세요|치료하세요|처방하세요|반드시 공개하세요|완치된다고 말하세요|걱정하지 않아도 된다고 보장하세요|아이 책임이라고 말하세요/,
+    );
+  });
+
+  it("builds a psychological-stability question from official guidance", () => {
+    const treatmentAnxietySentence =
+      "항암화학요법을 받을 때 환자는 우울해지기 쉽습니다. 암 치료 자체에 대한 불안감, 일상의 삶이 바뀌는 것의 낯섦, 그리고 항암제 의 여러 부작용 에 대한 두려움 때문입니다.";
+    const helpSentence =
+      "겁이 너무 나서 자포자기하는 심정까지 들 정도라면 주위의 도움을 청하십시오.";
+    const journalSentence =
+      "치료를 받는 동안 일지나 일기를 쓰십시오. 그날그날 있은 일, 떠오른 상념과 의문을 기록해 두면 생각을 체계적으로 정리할 수 있으며, 의사나 간호사에게 질문을 할 때도 도움이 됩니다.";
+    const specialistSentence = "필요하다면 정신과 전문의와 상담하십시오.";
+    const listeningSentence =
+      "그의 생각과 기분을 있는 그대로, 평가하지 않고 이해하는 ‘공감의 자세’가 필요합니다.";
+    const template = findSymptomSupportTemplate("치료 불안과 부작용 두려움");
+
+    expect(template?.id).toBe("psychological-stability");
+    expect(template?.mealNote).toContain(treatmentAnxietySentence);
+    expect(template?.mealNote).toContain(journalSentence);
+    expect(template?.clinicianQuestion).toContain(helpSentence);
+    expect(template?.clinicianQuestion).toContain(specialistSentence);
+    expect(template?.clinicianQuestion).toContain(listeningSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "치료 불안")).toContain(
+      listeningSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "치료 불안")).toContain(
+      "출처: 국가암정보센터 암환자의 생활 - 심리적 안정을 위해 - https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(buildSymptomSupportQuestion(template!, "치료 불안")).not.toMatch(
+      /심리치료를 하세요|정신과 진료를 받으세요|운동하세요|진단하세요|치료하세요|처방하세요|완치됩니다|걱정하지 않아도 된다고 보장하세요|암 치료 결과가 좋아집니다/,
     );
   });
 
@@ -1176,7 +1212,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(31);
+    expect(symptomSupportTemplates).toHaveLength(32);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1195,6 +1231,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("자녀에게 암 설명")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T327C330/contents.do",
+    );
+    expect(findSymptomSupportTemplate("치료 불안")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
     );
     expect(findSymptomSupportTemplate("입맛 변화")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
