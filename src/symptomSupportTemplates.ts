@@ -19,6 +19,7 @@ export type SymptomSupportSourceLinkLabels = {
 const safetyNote = "치료 지시가 아니라 진료 전 확인용 기록 후보입니다.";
 const careQueueSymptomTemplateIds = new Set([
   "bleeding-warning",
+  "cancer-fatigue-coping",
   "cervical-bowel-obstruction",
   "cervical-general-warning",
   "cervical-urinary-bowel-bleeding",
@@ -194,6 +195,40 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     safetyNote,
     sourceLabel: "국가암정보센터 증상별 식생활 - 피로감과 우울",
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+  },
+  {
+    id: "cancer-fatigue-coping",
+    label: "암관련 피로 대처 기록",
+    keywords: [
+      "암관련 피로",
+      "암 관련 피로",
+      "피로 대처",
+      "피로 상황 기록",
+      "에너지 보존",
+      "우선순위 활동",
+      "중요하지 않은 활동",
+      "자꾸 몽롱",
+      "피로 현기증",
+      "귀가 윙윙",
+      "삶의 의욕",
+      "cancer fatigue",
+    ],
+    priorityKeywords: [
+      "암관련 피로",
+      "암 관련 피로",
+      "피로 대처",
+      "피로 상황 기록",
+      "에너지 보존",
+      "자꾸 몽롱",
+      "cancer fatigue",
+    ],
+    mealNote:
+      "피로의 치료를 잘하기 위해서는 피로의 정도를 반드시 정확하게 평가해야 합니다. 암관련 피로를 치료할 때는 의료진의 도움뿐만 아니라 환자 본인과 가족의 노력이 함께 필요합니다. 여러 가지 일들 중에 우선순위를 정하고 중요하지 않은 활동은 연기하는 지혜가 필요합니다. 일상생활에서 주위 사람들의 도움을 받도록 하며, 항상 사용하는 물건은 손이 닿기 쉬운 곳에 두어 에너지를 낭비하지 않도록 합니다. 피로를 느낄 때의 상황을 기록하여 생활의 계획을 세우면, 효율적으로 시간을 관리하게 되어 피로를 덜 느끼게 됩니다. 다양한 음식으로 단백질과 비타민 등이 함유된 균형있는 식생활을 합니다. 피로 정도, 피로가 심해지는 상황, 수면과 낮잠, 식사와 무알코올·무카페인 음료, 알코올·카페인 노출 시간, 활동 우선순위, 미룬 활동, 도움 요청할 일, 자주 쓰는 물건 위치를 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "피로를 느낄 때의 상황을 기록하여 생활의 계획을 세우면, 효율적으로 시간을 관리하게 되어 피로를 덜 느끼게 됩니다. 피로에 대하여 주치의와 간호사에게 공유할 기록을 준비하고, 현기증이 심해질 때, 자꾸 몽롱해질 때, 숨이 차고 가쁠 때, 귀가 윙윙거리거나 두통이 있을 때, 우울하여 나가기 싫거나 삶의 의욕이 없어질 때 어떤 연락·상담 기준으로 연결할지 진료팀과 보호자에게 확인하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 암관련 피로대처",
+    sourceUrl: "https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
   },
   {
     id: "weight-change-nutrition",

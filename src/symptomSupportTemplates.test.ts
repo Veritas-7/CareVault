@@ -61,6 +61,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.id).toBe(
       "survivor-anxiety-management",
     );
+    expect(findSymptomSupportTemplate("암관련 피로 대처")?.id).toBe(
+      "cancer-fatigue-coping",
+    );
     expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
       "dyspnea-consult",
     );
@@ -816,6 +819,48 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a cancer-fatigue coping question from official coping guidance", () => {
+    const evaluationSentence =
+      "피로의 치료를 잘하기 위해서는 피로의 정도를 반드시 정확하게 평가해야 합니다.";
+    const familyEffortSentence =
+      "암관련 피로를 치료할 때는 의료진의 도움뿐만 아니라 환자 본인과 가족의 노력이 함께 필요합니다.";
+    const prioritySentence =
+      "여러 가지 일들 중에 우선순위를 정하고 중요하지 않은 활동은 연기하는 지혜가 필요합니다.";
+    const helpSentence =
+      "일상생활에서 주위 사람들의 도움을 받도록 하며, 항상 사용하는 물건은 손이 닿기 쉬운 곳에 두어 에너지를 낭비하지 않도록 합니다.";
+    const recordSentence =
+      "피로를 느낄 때의 상황을 기록하여 생활의 계획을 세우면, 효율적으로 시간을 관리하게 되어 피로를 덜 느끼게 됩니다.";
+    const balancedMealSentence =
+      "다양한 음식으로 단백질과 비타민 등이 함유된 균형있는 식생활을 합니다.";
+    const contactSignalSentence = "자꾸 몽롱해질 때";
+    const template = findSymptomSupportTemplate("암관련 피로 대처");
+
+    expect(template?.id).toBe("cancer-fatigue-coping");
+    expect(template?.mealNote).toContain(evaluationSentence);
+    expect(template?.mealNote).toContain(familyEffortSentence);
+    expect(template?.mealNote).toContain(prioritySentence);
+    expect(template?.mealNote).toContain(helpSentence);
+    expect(template?.mealNote).toContain(recordSentence);
+    expect(template?.mealNote).toContain(balancedMealSentence);
+    expect(template?.clinicianQuestion).toContain("주치의와 간호사");
+    expect(template?.clinicianQuestion).toContain(contactSignalSentence);
+    expect(template?.clinicianQuestion).toContain("현기증");
+    expect(template?.clinicianQuestion).toContain("숨이 차고");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "암관련 피로 대처")).toContain(
+      recordSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "암관련 피로 대처")).toContain(
+      "출처: 국가암정보센터 암관련 피로대처 - https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(buildSymptomSupportQuestion(template!, "암관련 피로 대처")).not.toMatch(
+      /피로를 진단하세요|치료하세요|운동하세요|수면제를 처방하세요|음식을 처방하세요|암이 악화된 것이 아닙니다|반드시 상담받으세요|금연하세요|카페인을 끊으세요|낮잠을 자세요/,
+    );
+  });
+
   it("builds a nausea symptom-support question from official diet guidance", () => {
     const mealEnvironmentSentence =
       "음식 냄새가 나지 않고 환기가 잘 되는 쾌적한 장소에서 식사를 하고, 식사 시에는 조금씩 자주 천천히 하며, 식후 1시간 정도는 휴식을 취하는 것이 좋습니다.";
@@ -1297,7 +1342,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(34);
+    expect(symptomSupportTemplates).toHaveLength(35);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1325,6 +1370,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암관련 피로 대처")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
     );
     expect(findSymptomSupportTemplate("입맛 변화")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
