@@ -732,6 +732,46 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a complementary-therapy consultation question from official guidance", () => {
+    const consultFirstSentence =
+      "보완대체요법을 사용하는 것을 고려하신다면 주치의와 먼저 상의하시기 바랍니다.";
+    const safetyWellbeingSentence =
+      "의료진들이 여러분의 안전과 안녕에 대해 생각해 볼 기회를 주고, 여러분도 다른 치료법들의 장/단점을 비교해 볼 수 있게 되는 기회";
+    const restrictedSiteSentence =
+      "특정 크림이나 약물을 사용하거나 신체의 어느 부위에 침을 맞는 것을 금지";
+    const herbSupplementSentence =
+      "여러분의 약초나 영양제 복용 사실을 여러분을 돌보고 있는 의료진에게 알리는 것은 부작용 의 위험을 최소화할 수 있는 하나의 방법입니다.";
+    const providerSentence =
+      "요법가들의 직접적인 설명";
+    const futureTreatmentSentence = "앞으로 진행될 의학적 치료";
+    const template = findSymptomSupportTemplate("보완대체요법 약초 영양제 상담");
+
+    expect(template?.id).toBe("complementary-therapy-consultation");
+    expect(template?.mealNote).toContain(consultFirstSentence);
+    expect(template?.mealNote).toContain(safetyWellbeingSentence);
+    expect(template?.mealNote).toContain(restrictedSiteSentence);
+    expect(template?.clinicianQuestion).toContain(herbSupplementSentence);
+    expect(template?.clinicianQuestion).toContain(providerSentence);
+    expect(template?.clinicianQuestion).toContain(futureTreatmentSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "보완대체요법 약초 영양제 상담"),
+    ).toContain(herbSupplementSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "보완대체요법 약초 영양제 상담"),
+    ).toContain(
+      "출처: 국가암정보센터 보완대체요법 상담 - https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "보완대체요법 약초 영양제 상담"),
+    ).not.toMatch(
+      /보완대체요법을 사용하세요|약초를 복용하세요|영양제를 복용하세요|침을 맞으세요|크림을 바르세요|치료를 중단하세요|병원치료를 대체하세요|효과가 입증됐습니다|안전합니다|암을 낫게|진단하세요|치료하세요|처방하세요/,
+    );
+  });
+
   it("builds a dyspnea consult-threshold question from official respiratory guidance", () => {
     const sputumObservationSentence =
       "기침이나 구토 가 있으면 가래의 양과 양상 및 냄새를 관찰합니다. (투명하거나 하얗고 거품이 있는 것이 정상입니다. )";
@@ -1433,7 +1473,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(37);
+    expect(symptomSupportTemplates).toHaveLength(38);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1467,6 +1507,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
+    expect(findSymptomSupportTemplate("보완대체요법 약초 영양제 상담")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T365C368/contents.do",
     );
     expect(findSymptomSupportTemplate("암관련 피로 대처")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
