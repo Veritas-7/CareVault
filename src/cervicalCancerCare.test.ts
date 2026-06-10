@@ -281,7 +281,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(66);
+				    expect(cervicalCancerCarePrompts).toHaveLength(67);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -335,6 +335,7 @@ describe("cervicalCancerCare", () => {
       "치료 후 영양·식생활 상담 준비",
       "치료 후 고용량 영양식품·우유 질문 준비",
       "치료 후 이차암 검진 구분 준비",
+      "암생존자 예방접종·생백신 시점 확인 준비",
       "직업복귀·근무조정 상담 준비",
       "보완대체요법 상담 준비",
       "암성 통증 평가 준비",
@@ -1424,6 +1425,40 @@ describe("cervicalCancerCare", () => {
     ).not.toMatch(
       /폐암 검진을 받으세요|국가암검진을 받으세요|금연하세요|이차암을 예방합니다|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
     );
+    const survivorVaccinationPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "암생존자 예방접종·생백신 시점 확인 준비",
+    )!;
+    expect(survivorVaccinationPrompt.sourceId).toBe(
+      "nccSurvivorHealthyManagementNutrition",
+    );
+    expect(survivorVaccinationPrompt.question).toContain("폐렴, 인플루엔자, 코로나");
+    expect(survivorVaccinationPrompt.question).toContain("사망과 중증화");
+    expect(survivorVaccinationPrompt.question).toContain("대부분의 예방접종 백신은 사백신");
+    expect(survivorVaccinationPrompt.question).toContain("일부 예방접종은 생백신");
+    expect(survivorVaccinationPrompt.question).toContain("항암치료 한 달 전");
+    expect(survivorVaccinationPrompt.question).toContain("항암치료 마치고 3개월 후");
+    expect(survivorVaccinationPrompt.question).toContain("대상포진 백신");
+    expect(survivorVaccinationPrompt.question).toContain("침습성 폐렴구균 감염률");
+    expect(survivorVaccinationPrompt.question).toContain("10배 이상");
+    expect(survivorVaccinationPrompt.question).toContain("13가");
+    expect(survivorVaccinationPrompt.question).toContain("23가");
+    expect(survivorVaccinationPrompt.question).toContain("5년 후");
+    expect(survivorVaccinationPrompt.question).toContain("독감 예방접종");
+    expect(survivorVaccinationPrompt.question).toContain("매년");
+    expect(survivorVaccinationPrompt.question).toContain("진료팀");
+    expect(buildCervicalCancerCarePromptQuestion(survivorVaccinationPrompt)).toContain(
+      "출처: 국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(
+      Object.values(
+        buildCervicalCancerCarePromptQuestionDraft(
+          survivorVaccinationPrompt,
+          "2026-06-15",
+        ),
+      ).join(" "),
+    ).not.toMatch(
+      /폐렴구균 예방접종을 받으세요|독감 예방접종을 받으세요|대상포진 예방접종을 하세요|생백신을 맞으세요|항암치료 중 맞으세요|치료하세요|처방하세요|진단하세요/,
+    );
     const survivorWorkPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "직업복귀·근무조정 상담 준비",
     )!;
@@ -2441,6 +2476,9 @@ describe("cervicalCancerCare", () => {
     const survivorSecondCancerScreeningGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 이차암 검진·흡연력 메모",
     );
+    const survivorVaccinationGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "암생존자 예방접종·생백신 시점 메모",
+    );
     const survivorWorkGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암생존자 직업복귀·근무조정 메모",
     );
@@ -2463,7 +2501,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(50);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(51);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3651,6 +3689,41 @@ describe("cervicalCancerCare", () => {
       ).join(" "),
     ).not.toMatch(
       /폐암 검진을 받으세요|국가암검진을 받으세요|금연하세요|이차암을 예방합니다|재발을 막습니다|치료하세요|처방하세요|진단하세요/,
+    );
+    expect(survivorVaccinationGuide).toMatchObject({
+      label: "암생존자 예방접종·생백신 시점 메모",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    expect(survivorVaccinationGuide?.detail).toContain("폐렴, 인플루엔자, 코로나");
+    expect(survivorVaccinationGuide?.detail).toContain("사망과 중증화");
+    expect(survivorVaccinationGuide?.detail).toContain("대부분의 예방접종 백신은 사백신");
+    expect(survivorVaccinationGuide?.detail).toContain("일부 예방접종은 생백신");
+    expect(survivorVaccinationGuide?.detail).toContain("항암치료 한 달 전");
+    expect(survivorVaccinationGuide?.detail).toContain("항암치료 마치고 3개월 후");
+    expect(survivorVaccinationGuide?.detail).toContain("대상포진 백신");
+    expect(survivorVaccinationGuide?.detail).toContain("침습성 폐렴구균 감염률");
+    expect(survivorVaccinationGuide?.detail).toContain("10배 이상");
+    expect(survivorVaccinationGuide?.detail).toContain("13가");
+    expect(survivorVaccinationGuide?.detail).toContain("23가");
+    expect(survivorVaccinationGuide?.detail).toContain("5년 후");
+    expect(survivorVaccinationGuide?.detail).toContain("독감 예방접종");
+    expect(survivorVaccinationGuide?.detail).toContain("매년");
+    expect(survivorVaccinationGuide?.detail).toContain("진료팀 확인");
+    expect(formatCervicalCancerCareItemEvidence(survivorVaccinationGuide!)).toContain(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(survivorVaccinationGuide!).body).toContain(
+      "암생존자 예방접종·생백신 시점 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(survivorVaccinationGuide!)).toContain(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리",
+    );
+    expect(
+      Object.values(
+        buildCervicalCancerCareItemSymptomDraft(survivorVaccinationGuide!),
+      ).join(" "),
+    ).not.toMatch(
+      /폐렴구균 예방접종을 받으세요|독감 예방접종을 받으세요|대상포진 예방접종을 하세요|생백신을 맞으세요|항암치료 중 맞으세요|치료하세요|처방하세요|진단하세요/,
     );
     expect(survivorWorkGuide).toMatchObject({
       label: "암생존자 직업복귀·근무조정 메모",
