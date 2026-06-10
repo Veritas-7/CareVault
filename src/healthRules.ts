@@ -60,6 +60,7 @@ export type FoodGuidanceSourceId =
   | "nccAfterTreatmentHealthyEating"
   | "nccCancerSurvivorHealthGuide"
   | "nccSurvivorNutritionLifestyle"
+  | "nccSurvivorHealthyManagementNutrition"
   | "nccChemoSideEffectGuide"
   | "kdcaNutrition"
   | "kdcaAlcohol"
@@ -266,6 +267,10 @@ export const foodGuidanceSources: Record<
   nccSurvivorNutritionLifestyle: {
     label: "국가암정보센터 암생존자 영양·식생활",
     url: "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+  },
+  nccSurvivorHealthyManagementNutrition: {
+    label: "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리",
+    url: "https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
   },
   nccChemoSideEffectGuide: {
     label: "국가암정보센터 항암 부작용 증상 관리 지침",
@@ -547,6 +552,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "적정체중을 유지 합니다., 골고루 균형잡힌 식사를 계획합니다., 다양한 색의 과일, 채소, 전곡류를 선택합니다., 암생존자 적정체중 유지, 암생존자 균형잡힌 식사 계획, 암생존자 다양한 색 과일 채소 전곡류",
         sourceIds: ["nccSurvivorNutritionLifestyle"],
+      },
+      {
+        label: "암생존자 건강관리 우유·고단백 식품 기록",
+        detail:
+          "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 영상은 암생존자 식생활을 특정 음식 처방이 아니라 골고루 먹는 기록과 상담 맥락으로 설명합니다. 기름기가 적은 고단백 식품과 탄수화물, 우유 질문은 개인별 소화·동반질환·치료 이력에 맞춰 기록하고 진료팀에 확인할 균형식 후보로만 사용합니다.",
+        examples:
+          "기름기가 적은 고단백 식품을 골고루 섭취하고 탄수화물도 좀 드셔야 됩니다., 우유 드셔도 되나요 이런 질문이 올라와 있는데요 드셔도 됩니다., 암생존자 건강관리 고단백 식품 탄수화물 기록, 암생존자 건강관리 우유 질문",
+        sourceIds: ["nccSurvivorHealthyManagementNutrition"],
       },
       {
         label: "메스꺼움 시 위 부담 적은 음식",
@@ -857,6 +870,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "육가공품, 탄 음식의 섭취를 피합니다., 짠 음식의 섭취를 피하고 싱겁게 먹습니다., 하루 한 두 잔의 술도 피합니다., 암생존자 육가공품 탄 음식 피하기, 암생존자 짠 음식 싱겁게 먹기, 암생존자 하루 한 두 잔 술도 피하기",
         sourceIds: ["nccSurvivorNutritionLifestyle"],
+      },
+      {
+        label: "암생존자 건강관리 달고 기름진 음식·가공식품",
+        detail:
+          "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 영상은 암생존자 식생활에서 너무 달고 기름진 음식, 탄 음식, 가공육, 가공식품 노출을 줄이는 방향을 설명합니다. 이 항목은 금지 명령이 아니라 최근 노출 빈도와 양, 치료 후 증상, 동반질환을 기록해 진료팀에 확인할 후보입니다.",
+        examples:
+          "너무 달고 기름진 음식 탄 음식 가공육 가공식품 등은 줄이는 것이 좋겠습니다., 암생존자 건강관리 달고 기름진 음식 탄 음식 가공육 가공식품",
+        sourceIds: ["nccSurvivorHealthyManagementNutrition"],
       },
       {
         label: "붉은 육류 적정량",
@@ -1451,6 +1472,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "건강보조식품, 민간요법 등은 주의합니다., 암생존자 건강보조식품 민간요법 주의",
         sourceIds: ["nccSurvivorNutritionLifestyle"],
+      },
+      {
+        label: "암생존자 건강관리 고용량 영양식품·민간요법 주의",
+        detail:
+          "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 영상은 너무 고용량의 좋다는 영양 식품을 반복적으로 먹는 것과 불필요한 영양제·민간요법을 주의해야 한다고 설명합니다. 이 항목은 영양제 중단 지시가 아니라 보충제·농축식품·민간요법의 이름, 용량, 시작 시점, 기대 효과 문구를 진료팀에 확인할 후보로 분리합니다.",
+        examples:
+          "암치료를 받은 암 환자분들은 너무 고용량의 또 뭔가 좋다는 영양 식품을 안 드시는 것이 가장 안전한 것이 현대 약의 근거입니다., 특정한 음식을 뭔가 좋다고 너무 고용량으로 그것만 꾸준히 드시는 게 오히려 좋지 않고 골고루 잘 드시되, 불필요한 영양제 민간요법 하지 마셔야 되고요., 암생존자 건강관리 고용량 영양식품 주의, 암생존자 건강관리 불필요한 영양제 민간요법",
+        sourceIds: ["nccSurvivorHealthyManagementNutrition"],
       },
       {
         label: "암경험자 식품안전·건강보조식품 확인",
@@ -2237,6 +2266,26 @@ const supportiveFoods: FoodRuleTerm[] = [
     "암생존자 다양한 색 과일 채소 전곡류",
     "국가암정보센터 암생존자 영양·식생활 균형식 후보",
     "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "기름기가 적은 고단백 식품을 골고루 섭취하고 탄수화물도 좀 드셔야 됩니다.",
+    "국가암정보센터 암생존자 건강관리 균형식 기록 후보",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "우유 드셔도 되나요 이런 질문이 올라와 있는데요 드셔도 됩니다.",
+    "국가암정보센터 암생존자 건강관리 균형식 기록 후보",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "암생존자 건강관리 고단백 식품 탄수화물 기록",
+    "국가암정보센터 암생존자 건강관리 균형식 기록 후보",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "암생존자 건강관리 우유 질문",
+    "국가암정보센터 암생존자 건강관리 균형식 기록 후보",
+    "nccSurvivorHealthyManagementNutrition",
   ],
   [
     "부드럽고 촉촉한 음식을 준비합니다.",
@@ -3681,6 +3730,16 @@ const limitFoods: FoodRuleTerm[] = [
     "국가암정보센터 암생존자 영양·식생활 제한 원칙 후보",
     "nccSurvivorNutritionLifestyle",
   ],
+  [
+    "너무 달고 기름진 음식 탄 음식 가공육 가공식품 등은 줄이는 것이 좋겠습니다.",
+    "국가암정보센터 암생존자 건강관리 달고 기름진 음식·가공식품 기록 후보",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "암생존자 건강관리 달고 기름진 음식 탄 음식 가공육 가공식품",
+    "국가암정보센터 암생존자 건강관리 달고 기름진 음식·가공식품 기록 후보",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
   ["소고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["돼지고기", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
   ["붉은 육류", "국가암정보센터 암예방 식단 붉은 육류 주 3인분 이하 적정량 예시", "nccPreventionMealExamples"],
@@ -4674,6 +4733,31 @@ const careTeamFoods: FoodRuleTerm[] = [
     "암생존자 건강보조식품 민간요법 주의",
     "국가암정보센터 암생존자 영양·식생활 보조식품·민간요법 확인 필요",
     "nccSurvivorNutritionLifestyle",
+  ],
+  [
+    "암치료를 받은 암 환자분들은 너무 고용량의 또 뭔가 좋다는 영양 식품을 안 드시는 것이 가장 안전한 것이 현대 약의 근거입니다.",
+    "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "특정한 음식을 뭔가 좋다고 너무 고용량으로 그것만 꾸준히 드시는 게 오히려 좋지 않고 골고루 잘 드시되",
+    "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "불필요한 영양제 민간요법 하지 마셔야 되고요.",
+    "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "암생존자 건강관리 고용량 영양식품 주의",
+    "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+    "nccSurvivorHealthyManagementNutrition",
+  ],
+  [
+    "암생존자 건강관리 불필요한 영양제 민간요법",
+    "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+    "nccSurvivorHealthyManagementNutrition",
   ],
   [
     "비브리오 패혈증",

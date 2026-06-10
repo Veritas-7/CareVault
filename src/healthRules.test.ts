@@ -4915,6 +4915,128 @@ describe("healthRules", () => {
     ).toBe(false);
   });
 
+  it("recognizes NCC survivor healthy-management nutrition video food sentences", () => {
+    const assessment = assessCancerFood(
+      "암치료를 받은 암 환자분들은 너무 고용량의 또 뭔가 좋다는 영양 식품을 안 드시는 것이 가장 안전한 것이 현대 약의 근거입니다. 기름기가 적은 고단백 식품을 골고루 섭취하고 탄수화물도 좀 드셔야 됩니다. 우유 드셔도 되나요 이런 질문이 올라와 있는데요 드셔도 됩니다. 너무 달고 기름진 음식 탄 음식 가공육 가공식품 등은 줄이는 것이 좋겠습니다. 불필요한 영양제 민간요법 하지 마셔야 되고요.",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const balancedGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "balanced")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const limitGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "limit")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccSurvivorHealthyManagementNutrition.label).toBe(
+      "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리",
+    );
+    expect(foodGuidanceSources.nccSurvivorHealthyManagementNutrition.url).toBe(
+      "https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "암치료를 받은 암 환자분들은 너무 고용량의 또 뭔가 좋다는 영양 식품을 안 드시는 것이 가장 안전한 것이 현대 약의 근거입니다.",
+      "기름기가 적은 고단백 식품을 골고루 섭취하고 탄수화물도 좀 드셔야 됩니다.",
+      "우유 드셔도 되나요 이런 질문이 올라와 있는데요 드셔도 됩니다.",
+      "너무 달고 기름진 음식 탄 음식 가공육 가공식품 등은 줄이는 것이 좋겠습니다.",
+      "불필요한 영양제 민간요법 하지 마셔야 되고요.",
+    ]);
+    expect(
+      matchesByTerm[
+        "암치료를 받은 암 환자분들은 너무 고용량의 또 뭔가 좋다는 영양 식품을 안 드시는 것이 가장 안전한 것이 현대 약의 근거입니다."
+      ],
+    ).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    for (const term of terms.slice(1, 3)) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암생존자 건강관리 균형식 기록 후보",
+        sourceId: "nccSurvivorHealthyManagementNutrition",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+      );
+    }
+    expect(
+      matchesByTerm[
+        "너무 달고 기름진 음식 탄 음식 가공육 가공식품 등은 줄이는 것이 좋겠습니다."
+      ],
+    ).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암생존자 건강관리 달고 기름진 음식·가공식품 기록 후보",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    expect(matchesByTerm["불필요한 영양제 민간요법 하지 마셔야 되고요."]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    expect(balancedGuideText).toContain("암생존자 건강관리 우유 질문");
+    expect(limitGuideText).toContain("암생존자 건강관리 달고 기름진 음식");
+    expect(careTeamGuideText).toContain("암생존자 건강관리 고용량 영양식품");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|치료 음식|우유를 드세요|고단백 식품을 드세요|영양제를 끊으세요|민간요법을 하지 마세요|재발을 막|예방 보장|보조식품 복용하세요/,
+    );
+  });
+
+  it("keeps NCC survivor healthy-management nutrition video shorthand scoped to survivor context", () => {
+    const assessment = assessCancerFood(
+      "암생존자 건강관리 고용량 영양식품 주의, 암생존자 건강관리 고단백 식품 탄수화물 기록, 암생존자 건강관리 우유 질문, 암생존자 건강관리 달고 기름진 음식 탄 음식 가공육 가공식품, 암생존자 건강관리 불필요한 영양제 민간요법",
+    );
+    const genericAssessment = assessCancerFood(
+      "고용량 영양식품 주의, 고단백 식품 탄수화물 기록, 우유 질문, 달고 기름진 음식 탄 음식 가공육 가공식품, 불필요한 영양제 민간요법",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "암생존자 건강관리 고용량 영양식품 주의",
+      "암생존자 건강관리 고단백 식품 탄수화물 기록",
+      "암생존자 건강관리 우유 질문",
+      "암생존자 건강관리 달고 기름진 음식 탄 음식 가공육 가공식품",
+      "암생존자 건강관리 불필요한 영양제 민간요법",
+    ]);
+    expect(assessment.matches[0]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    for (const match of assessment.matches.slice(1, 3)) {
+      expect(match).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 암생존자 건강관리 균형식 기록 후보",
+        sourceId: "nccSurvivorHealthyManagementNutrition",
+      });
+    }
+    expect(assessment.matches[3]).toMatchObject({
+      level: "watch",
+      reason: "국가암정보센터 암생존자 건강관리 달고 기름진 음식·가공식품 기록 후보",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    expect(assessment.matches[4]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암생존자 고용량 영양식품·민간요법 확인 필요",
+      sourceId: "nccSurvivorHealthyManagementNutrition",
+    });
+    expect(
+      genericAssessment.matches.some(
+        (match) => match.sourceId === "nccSurvivorHealthyManagementNutrition",
+      ),
+    ).toBe(false);
+  });
+
   it("recognizes NCC after-treatment processed meat source sentence", () => {
     const sourceSentence =
       "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";
