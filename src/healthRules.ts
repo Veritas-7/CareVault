@@ -5777,6 +5777,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
   ],
   [
+    "보툴리늄 레토르트식품",
+    "식품안전나라 클로스트리디움 보툴리늄균 레토르트식품 원인식품 확인 필요",
+    "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
+  ],
+  [
     "보툴리늄 식육",
     "식품안전나라 클로스트리디움 보툴리늄균 식육 원인식품 확인 필요",
     "foodSafetyKoreaClostridiumBotulinumFoodPoisoning",
