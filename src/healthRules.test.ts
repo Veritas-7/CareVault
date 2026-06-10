@@ -12942,7 +12942,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "클로스트리디움 퍼프린젠스균은 아포의 발아 시 독소를 생성하고 A형과 C형이 사람의 식중독에 관여하며, 돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품과 미리 가열 조리된 후 실온에서 5시간이상 방치된 식품을 확인",
+      "클로스트리디움 퍼프린젠스균은 아포의 발아 시 독소를 생성하고 A형과 C형이 사람의 식중독에 관여하며, 돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품과 미리 가열 조리된 후 실온에서 5시간이상 방치된 식품을 확인, 퍼프린젠스 돼지고기 조리식품, 퍼프린젠스 닭고기 조리식품, 퍼프린젠스 칠면조고기 조리식품, 퍼프린젠스 5시간 실온방치 식품을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -12986,6 +12986,10 @@ describe("healthRules", () => {
       "A형과 C형",
       "돼지고기, 닭고기, 칠면조고기 등으로 조리한 식품 및 그 가공품인 동물성 단백질식품",
       "미리 가열 조리된 후 실온에서 5시간이상 방치된 식품",
+      "퍼프린젠스 돼지고기 조리식품",
+      "퍼프린젠스 닭고기 조리식품",
+      "퍼프린젠스 칠면조고기 조리식품",
+      "퍼프린젠스 5시간 실온방치 식품",
     ]);
     for (const term of riskTerms) {
       expect(riskMatchesByTerm[term]).toMatchObject({
@@ -12994,7 +12998,7 @@ describe("healthRules", () => {
       });
     }
     expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
-      /치료 음식|완치|암을 낫게/,
+      /치료 음식|완치|암을 낫게|감염을 막습니다|퍼프린젠스를 예방합니다/,
     );
   });
 
