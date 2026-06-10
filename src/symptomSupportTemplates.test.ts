@@ -37,6 +37,11 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("손발저림과 감각이상")?.id).toBe(
       "neuropathy-safety",
     );
+    expect(
+      findSymptomSupportTemplate(
+        "항암 부작용 없으면 효과 없는 건가요 같은 항암제 같은 용량 환자마다 골수기능 저하 말초신경병증",
+      )?.id,
+    ).toBe("chemotherapy-side-effect-pattern-check");
     expect(findSymptomSupportTemplate("피부 발진과 가려움")?.id).toBe(
       "skin-change-care",
     );
@@ -2294,6 +2299,56 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a chemotherapy side-effect pattern question from official side-effect guidance", () => {
+    const effectBoundarySentence =
+      "항암제에 의한 부작용의 유무와 항암제의 치료 효과는 전혀 별개의 문제입니다.";
+    const individualDifferenceSentence =
+      "같은 항암제와 같은 용량이라도 환자마다 부작용의 정도가 다르게 나타날 수 있습니다.";
+    const delayedRecoverySentence =
+      "대부분은 치료가 끝나면 점차 사라지지만 일부는 몇 개월 또는 몇 년이 걸리기도 합니다.";
+    const permanentDamageSentence =
+      "폐, 신장, 심장, 생식 기관에 손상을 줄 때는 영구적으로 지속될 수도 있습니다.";
+    const symptomListSentence =
+      "오심, 구토, 구강 궤양, 설사, 변비, 골수기능 저하, 탈모, 피부나 손톱의 변색, 말초신경병증";
+    const template = findSymptomSupportTemplate(
+      "항암 부작용 없으면 효과 없는 건가요 같은 항암제 같은 용량 환자마다 골수기능 저하 말초신경병증",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "항암 부작용 없으면 효과 없는 건가요 같은 항암제 같은 용량 환자마다 골수기능 저하 말초신경병증",
+    );
+
+    expect(template.id).toBe("chemotherapy-side-effect-pattern-check");
+    expect(template.mealNote).toContain(effectBoundarySentence);
+    expect(template.mealNote).toContain(individualDifferenceSentence);
+    expect(template.mealNote).toContain(delayedRecoverySentence);
+    expect(template.mealNote).toContain(permanentDamageSentence);
+    expect(template.mealNote).toContain(symptomListSentence);
+    expect(template.clinicianQuestion).toContain("부작용이 치료 효과보다 크게 느껴질 때");
+    expect(template.clinicianQuestion).toContain("투여 용량 조절");
+    expect(template.clinicianQuestion).toContain("약물 종류 변경");
+    expect(template.clinicianQuestion).toContain("중단 여부");
+    expect(actionNote).toContain("부작용의 유무와 항암제의 치료 효과");
+    expect(actionNote).toContain("같은 항암제와 같은 용량");
+    expect(question).toContain(
+      "출처: 국가암정보센터 항암화학요법의 부작용 - https://www.cancer.go.kr/lay1/S1T289C291/contents.do",
+    );
+    expect(buildSymptomSupportQueueHint(template)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(findSymptomSupportTemplate("손발저림과 감각이상")?.id).toBe(
+      "neuropathy-safety",
+    );
+    expect(findSymptomSupportTemplate("피부 발진과 가려움")?.id).toBe(
+      "skin-change-care",
+    );
+    expect(findSymptomSupportTemplate("입안 상처와 구내염")?.id).toBe("mouth-sore");
+    expect(question).not.toMatch(
+      /항암제를 중단하세요|용량을 줄이세요|약을 바꾸세요|치료 효과가 없습니다|효과가 있습니다|효과가 좋습니다|괜찮습니다|기다리세요|진단하세요|치료하세요|처방하세요|완치/,
+    );
+  });
+
   it("builds a cervical radiotherapy acute-complication question from official guidance", () => {
     const sensitiveTissueSentence =
       "자궁에 비하여 상대적으로 방사선에 약한 장 점막, 방광점막 등이 손상되어 나타납니다.";
@@ -3125,7 +3180,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(68);
+    expect(symptomSupportTemplates).toHaveLength(69);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3355,6 +3410,9 @@ describe("symptomSupportTemplates", () => {
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
     );
+    expect(
+      findSymptomSupportTemplate("항암 부작용 같은 항암제 같은 용량 환자마다")?.sourceUrl,
+    ).toBe("https://www.cancer.go.kr/lay1/S1T289C291/contents.do");
     expect(findSymptomSupportTemplate("진통제")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T378C380/contents.do",
     );
