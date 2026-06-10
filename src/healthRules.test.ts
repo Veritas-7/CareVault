@@ -12799,7 +12799,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "황색포도상구균은 장독소(enterotoxin)를 함유한 식품을 섭취할 때 일어나는 독소형 식중독균이고, 코 안이나 피부에 상재한 균이 식품에 혼입될 수 있으며, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 밥, 김밥, 도시락, 두부를 확인",
+      "황색포도상구균은 장독소(enterotoxin)를 함유한 식품을 섭취할 때 일어나는 독소형 식중독균이고, 코 안이나 피부에 상재한 균이 식품에 혼입될 수 있으며, 손에 창상 또는 화농, 신체 다른 부위에 화농, 육류 및 그 가공품과 우유, 크림, 버터, 치즈, 밥, 김밥, 도시락, 두부를 확인, 황색포도상구균 과자류, 황색포도상구균 유제품, 황색포도상구균 크림, 황색포도상구균 버터, 황색포도상구균 치즈, 황색포도상구균 복합조리식품, 황색포도상구균 소스, 황색포도상구균 어육 연제품을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -12816,8 +12816,16 @@ describe("healthRules", () => {
     });
     expect(foodSafetyGuide?.detail).toContain("장독소(enterotoxin)");
     expect(foodSafetyGuide?.detail).toContain("100℃에서 60분간");
+    expect(foodSafetyGuide?.detail).toContain("과자류와 유제품");
+    expect(foodSafetyGuide?.detail).toContain("복합조리식품");
+    expect(foodSafetyGuide?.detail).toContain("소스");
+    expect(foodSafetyGuide?.detail).toContain("어육 연제품");
     expect(foodSafetyGuide?.detail).toContain("손에 창상 또는 화농");
     expect(foodSafetyGuide?.detail).toContain("5℃ 이하에 냉장 보관");
+    expect(foodSafetyGuide?.examples).toContain("과자류와 유제품");
+    expect(foodSafetyGuide?.examples).toContain("복합조리식품");
+    expect(foodSafetyGuide?.examples).toContain("소스");
+    expect(foodSafetyGuide?.examples).toContain("어육 연제품");
 
     expect(safePracticeAssessment.level).toBe("ok");
     expect(safeTerms).toEqual([
@@ -12844,6 +12852,14 @@ describe("healthRules", () => {
       "신체 다른 부위에 화농",
       "육류 및 그 가공품과 우유, 크림, 버터, 치즈",
       "밥, 김밥, 도시락, 두부",
+      "황색포도상구균 과자류",
+      "황색포도상구균 유제품",
+      "황색포도상구균 크림",
+      "황색포도상구균 버터",
+      "황색포도상구균 치즈",
+      "황색포도상구균 복합조리식품",
+      "황색포도상구균 소스",
+      "황색포도상구균 어육 연제품",
     ]);
     for (const term of riskTerms) {
       expect(riskMatchesByTerm[term]).toMatchObject({
@@ -12852,7 +12868,7 @@ describe("healthRules", () => {
       });
     }
     expect(JSON.stringify([...safePracticeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
-      /치료 음식|완치|암을 낫게/,
+      /치료 음식|완치|암을 낫게|감염을 막습니다|포도상구균을 예방합니다/,
     );
   });
 
