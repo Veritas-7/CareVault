@@ -109,6 +109,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("기침이 오래 지속되고 밤잠 방해")?.id).toBe(
       "cough-care",
     );
+    expect(findSymptomSupportTemplate("암환자 성기능장애 성욕 변화 의료진 상담")?.id).toBe(
+      "sexual-function-change",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -1981,6 +1984,44 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a general cancer-patient sexual-function change question from NCC guidance", () => {
+    const overviewSentence =
+      "항암화학요법 치료 기간 중에 사용되는 약물의 종류, 치료 기간, 약물의 용량, 환자의 나이, 치료부위에 따라 일시적으로나 영구적으로 성기능의 장애를 경험할 수 있습니다.";
+    const personalContextSentence =
+      "성기능은 환자의 성별이나 나이, 개인적 성향, 종교, 문화적 가치에 따라 다르게 느낄 수 있으므로 섣불리 단정지을 수는 없으며";
+    const categorySentence =
+      "성욕 장애, 성적 흥분장애, 오르가즘 장애, 성 통증 장애";
+    const template = findSymptomSupportTemplate("암환자 성기능장애 성욕 변화 의료진 상담");
+    const actionNote = buildSymptomSupportActionNote(template!);
+    const question = buildSymptomSupportQuestion(template!, "성기능장애와 성욕 변화");
+
+    expect(template?.id).toBe("sexual-function-change");
+    expect(template?.mealNote).toContain(overviewSentence);
+    expect(template?.mealNote).toContain("성적흥미");
+    expect(template?.mealNote).toContain("친밀감");
+    expect(template?.mealNote).toContain("피로, 건강에 대한 염려, 스트레스");
+    expect(template?.clinicianQuestion).toContain(personalContextSentence);
+    expect(template?.clinicianQuestion).toContain(categorySentence);
+    expect(template?.clinicianQuestion).toContain("배우자와 의료진");
+    expect(actionNote).toContain("성욕 변화");
+    expect(actionNote).toContain("치료 기간");
+    expect(actionNote).toContain(
+      "출처: 국가암정보센터 성기능장애 - https://www.cancer.go.kr/lay1/S1T461C462/contents.do",
+    );
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(question).toContain("성기능장애와 성욕 변화 기록과 관련해");
+    expect(question).toContain("성욕 장애");
+    expect(question).toContain("성 통증 장애");
+    expect(question).toContain(
+      "출처: 국가암정보센터 성기능장애 - https://www.cancer.go.kr/lay1/S1T461C462/contents.do",
+    );
+    expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
+      /성생활을 해도 됩니다|성행위를 하세요|피임법을 시행하세요|임신을 피하세요|정자은행을 이용하세요|난자은행을 이용하세요|윤활제를 사용하세요|크림을 바르세요|확장기를 사용하세요|호르몬 대체요법을 받으세요|비뇨기과로 의뢰하세요|배우자에게 반드시 말하세요|진단하세요|치료하세요|처방하세요|회복을 보장/,
+    );
+  });
+
   it("builds a cervical fertility and pregnancy planning question", () => {
     const template = findSymptomSupportTemplate("임신 계획과 가임력");
 
@@ -2067,7 +2108,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(47);
+    expect(symptomSupportTemplates).toHaveLength(48);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2183,6 +2224,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("기침")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암환자 성기능장애 성욕 변화 의료진 상담")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T461C462/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
