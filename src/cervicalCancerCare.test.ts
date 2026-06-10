@@ -71,6 +71,7 @@ describe("cervicalCancerCare", () => {
       "nccWeightChangeDiet",
       "nccImmuneLowDiet",
       "nccFatigueDepressionDiet",
+      "nccInfectionConsult",
 	      "nccNeuropathyCare",
 	      "nccSkinChangeCare",
 		      "nccAnemiaCare",
@@ -153,6 +154,7 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccWeightChangeDiet.url).toContain("S1T479C486");
     expect(cervicalCancerCareSources.nccImmuneLowDiet.url).toContain("S1T479C489");
 	    expect(cervicalCancerCareSources.nccFatigueDepressionDiet.url).toContain("S1T479C490");
+    expect(cervicalCancerCareSources.nccInfectionConsult.url).toContain("S1T435C439");
 	    expect(cervicalCancerCareSources.nccNeuropathyCare.url).toContain("S1T458C460");
 		    expect(cervicalCancerCareSources.nccSkinChangeCare.url).toContain("S1T454C456");
 		    expect(cervicalCancerCareSources.nccAnemiaCare.url).toContain("S1T440C444");
@@ -247,7 +249,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(53);
+				    expect(cervicalCancerCarePrompts).toHaveLength(54);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -277,6 +279,7 @@ describe("cervicalCancerCare", () => {
       "체중변화 열량·단백질·원인 기록 준비",
       "면역기능 저하 식품안전 기록 준비",
       "피로감·우울 식사·활동 기록 준비",
+      "발열·오한 감염 상담 기준 확인",
 	      "손발저림·감각이상 안전 확인",
 	      "피부변화·손발홍반·손발톱 확인",
 		      "빈혈·혈색소·어지럼 기록 확인",
@@ -830,6 +833,27 @@ describe("cervicalCancerCare", () => {
     expect(fatigueDepressionDietPrompt.question).toContain("아이보기, 밥하기, 집안일");
     expect(buildCervicalCancerCarePromptQuestion(fatigueDepressionDietPrompt)).toContain(
       "출처: 국가암정보센터 증상별 식생활 - 피로감과 우울 - https://www.cancer.go.kr/lay1/S1T479C490/contents.do",
+    );
+    const infectionConsultPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "발열·오한 감염 상담 기준 확인",
+    )!;
+    expect(infectionConsultPrompt.sourceId).toBe("nccInfectionConsult");
+    expect(infectionConsultPrompt.question).toContain("항문 상처");
+    expect(infectionConsultPrompt.question).toContain("오한");
+    expect(infectionConsultPrompt.question).toContain("열이 38℃ 이상");
+    expect(infectionConsultPrompt.question).toContain("예방주사와 치과진료");
+    expect(infectionConsultPrompt.question).toContain("오심·구토·설사");
+    expect(infectionConsultPrompt.question).toContain("흉통이나 호흡곤란");
+    expect(infectionConsultPrompt.question).toContain("배뇨시 쓰리거나 빈뇨");
+    expect(infectionConsultPrompt.question).toContain("뇨의 색변화나 냄새");
+    expect(infectionConsultPrompt.question).toContain("구강내 궤양이나 흰색의 반점");
+    expect(infectionConsultPrompt.question).toContain("체온 측정 시각");
+    expect(infectionConsultPrompt.question).toContain("진료팀에 알려야 하는지");
+    expect(buildCervicalCancerCarePromptQuestion(infectionConsultPrompt)).toContain(
+      "출처: 국가암정보센터 감염 의료진 상담 기준 - https://www.cancer.go.kr/lay1/S1T435C439/contents.do",
+    );
+    expect(Object.values(buildCervicalCancerCarePromptQuestionDraft(infectionConsultPrompt, "2026-06-15")).join(" ")).not.toMatch(
+      /감염으로 진단하세요|항생제를 복용하세요|해열제를 복용하세요|응급실로 가세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     const neuropathyCarePrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "손발저림·감각이상 안전 확인",
@@ -1952,6 +1976,9 @@ describe("cervicalCancerCare", () => {
     const fatigueDepressionDietGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "피로감·우울 영양·휴식·도움요청 메모",
     );
+    const infectionConsultGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "발열·오한·감염 상담 메모",
+    );
     const neuropathyCareGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "손발저림·감각·화상예방 메모",
     );
@@ -1995,7 +2022,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(37);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(38);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -2521,6 +2548,36 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(fatigueDepressionDietGuide!)).join(" ")).not.toMatch(
       /항우울제를 복용하세요|수면제를 복용하세요|운동하세요|억지로 먹이세요|강제로 먹이세요|우울증으로 진단하세요|빈혈로 진단하세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
+    );
+    expect(infectionConsultGuide).toMatchObject({
+      label: "발열·오한·감염 상담 메모",
+      sourceId: "nccInfectionConsult",
+    });
+    expect(infectionConsultGuide?.detail).toContain("항문 상처");
+    expect(infectionConsultGuide?.detail).toContain("오한 또는 38℃ 이상 열");
+    expect(infectionConsultGuide?.detail).toContain("응급실 기준");
+    expect(infectionConsultGuide?.detail).toContain("예방주사와 치과진료");
+    expect(infectionConsultGuide?.detail).toContain("오심·구토·설사");
+    expect(infectionConsultGuide?.detail).toContain("흉통이나 호흡곤란");
+    expect(infectionConsultGuide?.detail).toContain("배뇨시 쓰리거나 빈뇨");
+    expect(infectionConsultGuide?.detail).toContain("뇨의 색변화나 냄새");
+    expect(infectionConsultGuide?.detail).toContain("구강내 궤양이나 흰색의 반점");
+    expect(infectionConsultGuide?.detail).toContain("체온 측정 시각");
+    expect(infectionConsultGuide?.detail).toContain("진료팀에 알려야 하는지");
+    expect(formatCervicalCancerCareItemEvidence(infectionConsultGuide!)).toContain(
+      "국가암정보센터 감염 의료진 상담 기준 - https://www.cancer.go.kr/lay1/S1T435C439/contents.do",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(infectionConsultGuide!).body).toContain(
+      "발열·오한·감염 상담 메모",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(infectionConsultGuide!).body).toContain(
+      "체온 측정 시각",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(infectionConsultGuide!)).toContain(
+      "국가암정보센터 감염 의료진 상담 기준",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(infectionConsultGuide!)).join(" ")).not.toMatch(
+      /감염으로 진단하세요|항생제를 복용하세요|해열제를 복용하세요|응급실로 가세요|치료하세요|처방하세요|진단하세요|암을 낫게|특효/,
     );
     expect(neuropathyCareGuide).toMatchObject({
       label: "손발저림·감각·화상예방 메모",
