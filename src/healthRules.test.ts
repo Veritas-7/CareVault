@@ -4599,6 +4599,82 @@ describe("healthRules", () => {
     expect(careTeamGuideText).toContain("치료 후 부작용으로 식사 섭취 힘듦");
   });
 
+  it("recognizes NCC cancer survivor guide eating-out raw-food safety source sentence", () => {
+    const sourceSentence =
+      "외식할 때는 박테리아가 있을 수 있는 음식들(샐러드 바, 회, 생선 초밥, 덜 익힌 고기나 생선, 해산물이나 계란)은 피한다.";
+    const assessment = assessCancerFood(sourceSentence);
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.nccCancerSurvivorHealthGuide.label).toBe(
+      "국가암정보센터 암경험자 건강관리 가이드",
+    );
+    expect(foodGuidanceSources.nccCancerSurvivorHealthGuide.url).toBe(
+      "https://www.cancer.go.kr/org_bbs_b_download.do?attach_seq=8132",
+    );
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([sourceSentence]);
+    expect(matchesByTerm[sourceSentence]).toMatchObject({
+      level: "risk",
+      reason: "국가암정보센터 암경험자 식품안전 외식·날음식 확인 필요",
+      sourceId: "nccCancerSurvivorHealthGuide",
+    });
+    expect(terms).not.toContain("회");
+    expect(terms).not.toContain("초밥");
+    expect(terms).not.toContain("덜 익힌 고기");
+    expect(careTeamGuideText).toContain("샐러드 바");
+    expect(careTeamGuideText).toContain("멸균처리 된");
+    expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
+      "국가암정보센터 암경험자 건강관리 가이드 - https://www.cancer.go.kr/org_bbs_b_download.do?attach_seq=8132",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /완치|암을 낫게|치료 음식|먹으세요|끊으세요|재발을 막|예방 보장/,
+    );
+  });
+
+  it("recognizes NCC cancer survivor guide supplement and antioxidant confirmation context", () => {
+    const assessment = assessCancerFood(
+      "암경험자 건강보조식품 재발위험 근거 없음, 암경험자 영양소 결핍 평가 후 건강보조식품, 암경험자 항암화학치료 중 항산화제, 암경험자 방사선치료 중 항산화제",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "암경험자 건강보조식품 재발위험 근거 없음",
+      "암경험자 영양소 결핍 평가 후 건강보조식품",
+      "암경험자 항암화학치료 중 항산화제",
+      "암경험자 방사선치료 중 항산화제",
+    ]);
+    for (const term of terms) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 암경험자 건강보조식품·항산화제 진료팀 확인 필요",
+        sourceId: "nccCancerSurvivorHealthGuide",
+      });
+      expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
+        "국가암정보센터 암경험자 건강관리 가이드 - https://www.cancer.go.kr/org_bbs_b_download.do?attach_seq=8132",
+      );
+    }
+    expect(careTeamGuideText).toContain("항암화학 또는 방사선치료");
+    expect(careTeamGuideText).toContain("영양소 결핍");
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /보조식품 복용하세요|보조식품 끊으세요|항산화제 복용하세요|진단하세요|처방하세요|치료하세요|재발 예방 보장/,
+    );
+  });
+
   it("recognizes NCC after-treatment processed meat source sentence", () => {
     const sourceSentence =
       "햄, 베이컨, 소시지 등의 가공육은 되도록 피합니다.";

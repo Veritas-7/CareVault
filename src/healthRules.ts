@@ -58,6 +58,7 @@ export type FoodGuidanceSourceId =
   | "nccTreatmentRightEating"
   | "nccTreatmentHealthyEatingTips"
   | "nccAfterTreatmentHealthyEating"
+  | "nccCancerSurvivorHealthGuide"
   | "nccChemoSideEffectGuide"
   | "kdcaNutrition"
   | "kdcaAlcohol"
@@ -256,6 +257,10 @@ export const foodGuidanceSources: Record<
   nccAfterTreatmentHealthyEating: {
     label: "국가암정보센터 치료 후 건강한 식생활",
     url: "https://www.cancer.go.kr/download.do?uuid=500129bf-9dac-4580-a42f-df5b8c0e6c48.pdf",
+  },
+  nccCancerSurvivorHealthGuide: {
+    label: "국가암정보센터 암경험자 건강관리 가이드",
+    url: "https://www.cancer.go.kr/org_bbs_b_download.do?attach_seq=8132",
   },
   nccChemoSideEffectGuide: {
     label: "국가암정보센터 항암 부작용 증상 관리 지침",
@@ -1417,6 +1422,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         examples:
           "어떤 특정 식품이나 음식에 의해 암의 재발을 막는다는 연구보고는 없습니다., 시중에 암 예방 효과가 있다고 알려진 여러 식품들이나 건강 보조식품들은 아직 안정성이나 효과에 대해 과학적으로 입증된 근거가 없으므로 선택 시 주의가 필요합니다., 단, 암 치료가 끝난 후 부작용 등으로 적절한 식사 섭취가 힘들거나 고혈압, 당뇨병, 고지혈증 등으로 식사조절이 필요한 경우 담당의사 및 임상영양사의 상담을 받도록 합니다., 치료 후 부작용으로 식사 섭취 힘듦, 치료 후 건강보조식품 민간요법 주의",
         sourceIds: ["nccAfterTreatmentHealthyEating"],
+      },
+      {
+        label: "암경험자 식품안전·건강보조식품 확인",
+        detail:
+          "국가암정보센터 암경험자 건강관리 가이드는 식품 안전을 위해 날 생선·육류·계란을 주의하고, 육류·생선을 완전히 익히며, 외식할 때 박테리아가 있을 수 있는 샐러드 바·회·생선 초밥·덜 익힌 고기나 생선·해산물이나 계란은 피한다고 안내합니다. 우유나 주스, 꿀은 멸균처리 된 것을 이용하고 물은 끓여서 먹도록 제시합니다. 건강보조식품은 암 재발위험을 낮추거나 생존 가능성을 높인다는 증거가 없고, 복용 전 실제 영양소 결핍 평가가 더 중요하며, 항암화학 또는 방사선치료 중 항산화제는 특별한 상황에서 주치의가 권장하는 경우를 제외하고 일일 권장량 이상 섭취를 피해야 한다고 안내하므로 진료팀 확인 후보로 분리합니다.",
+        examples:
+          "외식할 때는 박테리아가 있을 수 있는 음식들(샐러드 바, 회, 생선 초밥, 덜 익힌 고기나 생선, 해산물이나 계란)은 피한다., 우유나 주스, 꿀 같은 음식은 멸균처리 된 것을 이용한다., 물은 끓여서 먹는다., 건강보조식품의 복용이 암 재발위험을 낮추거나 암 생존 가능성을 높인다는 증거는 없습니다., 건강보조식품을 복용하기 전에 실제로 특정 영양소가 결핍된 상태인지 평가하는 것이 더 중요합니다., 항암화학 또는 방사선치료, 일일 권장량 이상의 항산화제, 암경험자 건강보조식품 재발위험 근거 없음, 암경험자 영양소 결핍 평가 후 건강보조식품, 암경험자 항암화학치료 중 항산화제, 암경험자 방사선치료 중 항산화제",
+        sourceIds: ["nccCancerSurvivorHealthGuide"],
       },
       {
         label: "날음식·비살균·보관/세척 주의 식품",
@@ -4617,6 +4630,31 @@ const careTeamFoods: FoodRuleTerm[] = [
     "치료 후 건강보조식품 민간요법 주의",
     "국가암정보센터 치료 후 식사 어려움·보조식품 상담 필요",
     "nccAfterTreatmentHealthyEating",
+  ],
+  [
+    "외식할 때는 박테리아가 있을 수 있는 음식들(샐러드 바, 회, 생선 초밥, 덜 익힌 고기나 생선, 해산물이나 계란)은 피한다.",
+    "국가암정보센터 암경험자 식품안전 외식·날음식 확인 필요",
+    "nccCancerSurvivorHealthGuide",
+  ],
+  [
+    "암경험자 건강보조식품 재발위험 근거 없음",
+    "국가암정보센터 암경험자 건강보조식품·항산화제 진료팀 확인 필요",
+    "nccCancerSurvivorHealthGuide",
+  ],
+  [
+    "암경험자 영양소 결핍 평가 후 건강보조식품",
+    "국가암정보센터 암경험자 건강보조식품·항산화제 진료팀 확인 필요",
+    "nccCancerSurvivorHealthGuide",
+  ],
+  [
+    "암경험자 항암화학치료 중 항산화제",
+    "국가암정보센터 암경험자 건강보조식품·항산화제 진료팀 확인 필요",
+    "nccCancerSurvivorHealthGuide",
+  ],
+  [
+    "암경험자 방사선치료 중 항산화제",
+    "국가암정보센터 암경험자 건강보조식품·항산화제 진료팀 확인 필요",
+    "nccCancerSurvivorHealthGuide",
   ],
   [
     "육회, 생선회, 생조개, 초밥 등 익히지 않은 음식은 드시지 않습니다",
