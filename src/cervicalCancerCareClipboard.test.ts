@@ -554,6 +554,27 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain(
       "https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
     );
+    expect(text).toContain("불면증·정신과 약 중독 우려 상담 준비");
+    expect(text).toContain("암 진단 후 불면증");
+    expect(text).toContain("정신건강의학과에 대한 편견");
+    expect(text).toContain("약을 한 번 먹으면 끊지 못한다는 통념");
+    expect(text).toContain("진료기록");
+    expect(text).toContain("취직이나 보험");
+    expect(text).toContain("적절한 서비스를 받지 못");
+    expect(text).toContain("가벼운 불면");
+    expect(text).toContain("약 없이 상담");
+    expect(text).toContain("수면제");
+    expect(text).toContain("항우울제");
+    expect(text).toContain("항불안제");
+    expect(text).toContain("증상 조절 목적");
+    expect(text).toContain("대부분 단기간에 끊");
+    expect(text).toContain("상담·처방 필요성");
+    expect(text).toContain("중단 계획");
+    expect(text).toContain("불면증·정신과 약 중독 우려 메모");
+    expect(text).toContain("국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려");
+    expect(text).toContain(
+      "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=2&keyword=&mode=view&rn=49&rows=12",
+    );
     expect(text).toContain("불안 신체증상·주의전환 상담 준비");
     expect(text).toContain("내 안의 불안 다스리기");
     expect(text).toContain("몸의 경보장치");
@@ -989,7 +1010,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("림프관 및 림프절");
     expect(text).toContain("국가암정보센터 항암화학요법의 이해");
     expect(text).toContain("국가암정보센터 항암화학요법의 부작용");
-				    expect(text).toContain("출처 목록 (69개)");
+					    expect(text).toContain("출처 목록 (70개)");
     expect(text).toContain("국가암정보센터 자궁경부암 일반적 증상");
     expect(text).toContain("국가암정보센터 자궁경부암 요약설명");
     expect(text).toContain(
@@ -1011,6 +1032,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("국가암정보센터 암환자의 생활 - 심리적 안정을 위해");
     expect(text).toContain("국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기");
     expect(text).toContain("국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프");
+    expect(text).toContain("국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려");
     expect(text).toContain("국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기");
     expect(text).toContain("국가암정보센터 암생존자 수면관리");
     expect(text).toContain("국가암정보센터 암생존자 운동");
@@ -1103,7 +1125,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).not.toContain("검진 기준 빠른 확인");
     expect(text).toContain("우선 확인 체크리스트");
     expect(text).toContain("검진·예방 메모");
-				    expect(text).toContain("출처 목록 (69개)");
+					    expect(text).toContain("출처 목록 (70개)");
   });
 
   it("summarizes the copied care note scope for labels and post-copy feedback", () => {
@@ -1118,30 +1140,30 @@ describe("cervicalCancerCareClipboard", () => {
       alertRecordFieldCount: 4,
       preventionCount: 22,
       priorityCount: 3,
-				      promptCount: 61,
-				      recordRecoveryPreventionCount: 84,
-				      recoveryCount: 45,
+					      promptCount: 62,
+					      recordRecoveryPreventionCount: 85,
+					      recoveryCount: 46,
 				      screeningSummaryCount: 1,
-				      sourceCount: 69,
-				      totalItemCount: 157,
+					      sourceCount: 70,
+					      totalItemCount: 159,
 				    });
 				    expect(formatCervicalCancerCareClipboardCompactSummary(profileSummary)).toBe(
-				      "총 157개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 61개 · 기록/회복/예방 84개 · 출처 69개",
+					      "총 159개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 62개 · 기록/회복/예방 85개 · 출처 70개",
 				    );
 				    expect(formatCervicalCancerCareClipboardDescription(profileSummary)).toBe(
-				      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 157개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 61개 · 기록/회복/예방 84개 · 출처 69개",
+					      "자궁경부암 케어 노트 공식 출처 포함 복사 · 총 159개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 62개 · 기록/회복/예방 85개 · 출처 70개",
 				    );
 				    expect(formatCervicalCancerCareClipboardStatus(profileSummary)).toBe(
-				      "자궁경부암 케어 노트 복사됨 · 총 157개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 61개 · 기록/회복/예방 84개 · 출처 69개",
+					      "자궁경부암 케어 노트 복사됨 · 총 159개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 62개 · 기록/회복/예방 85개 · 출처 70개",
 				    );
 				    expect(formatCervicalCancerCareClipboardUnsupportedStatus(profileSummary)).toBe(
-				      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 157개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 61개 · 기록/회복/예방 84개 · 출처 69개",
+					      "자궁경부암 케어 노트 복사 미지원 · 브라우저 클립보드 없음 · 총 159개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 62개 · 기록/회복/예방 85개 · 출처 70개",
 				    );
 				    expect(formatCervicalCancerCareClipboardFailedStatus(profileSummary)).toBe(
-				      "자궁경부암 케어 노트 복사 실패 · 총 157개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 61개 · 기록/회복/예방 84개 · 출처 69개",
+					      "자궁경부암 케어 노트 복사 실패 · 총 159개 항목 · 우선 3개 · 검진요약 1개 · 기록항목 4개 · 경고 4개 · 질문 62개 · 기록/회복/예방 85개 · 출처 70개",
 				    );
 				    expect(formatCervicalCancerCareClipboardCompactSummary(genericSummary)).toBe(
-				      "총 156개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 61개 · 기록/회복/예방 84개 · 출처 69개",
+					      "총 158개 항목 · 우선 3개 · 기록항목 4개 · 경고 4개 · 질문 62개 · 기록/회복/예방 85개 · 출처 70개",
 				    );
   });
 });

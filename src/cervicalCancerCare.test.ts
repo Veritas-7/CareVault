@@ -82,6 +82,7 @@ describe("cervicalCancerCare", () => {
       "nccCancerLifePsychologicalStability",
       "nccSurvivorDistressAdaptation",
       "nccSurvivorPostTreatmentSlump",
+      "nccMentalHealthInsomniaMedicationConcern",
       "nccSurvivorAnxietyManagement",
       "nccSurvivorSleepManagement",
       "nccSurvivorExerciseManagement",
@@ -143,6 +144,9 @@ describe("cervicalCancerCare", () => {
     expect(cervicalCancerCareSources.nccSurvivorDistressAdaptation.url).toContain("S1T788C790");
     expect(cervicalCancerCareSources.nccSurvivorPostTreatmentSlump.url).toContain(
       "article_seq=22077",
+    );
+    expect(cervicalCancerCareSources.nccMentalHealthInsomniaMedicationConcern.url).toContain(
+      "article_seq=22078",
     );
     expect(cervicalCancerCareSources.nccSurvivorAnxietyManagement.url).toContain("S1T788C791");
     expect(cervicalCancerCareSources.nccSurvivorSleepManagement.url).toContain("S1T748C794");
@@ -265,7 +269,7 @@ describe("cervicalCancerCare", () => {
   });
 
 	  it("turns cervical-cancer topics into clinician-question drafts", () => {
-				    expect(cervicalCancerCarePrompts).toHaveLength(61);
+				    expect(cervicalCancerCarePrompts).toHaveLength(62);
     expect(cervicalCancerCarePrompts.map((item) => item.topic)).toEqual([
       "자궁경부암 추적",
       "검진·진단검사 구분",
@@ -310,6 +314,7 @@ describe("cervicalCancerCare", () => {
       "정서 안정·전문상담 준비",
       "디스트레스 신호·자가평가 상담 준비",
       "치료 후 슬럼프·우울 상담 준비",
+      "불면증·정신과 약 중독 우려 상담 준비",
       "불안 신체증상·주의전환 상담 준비",
       "불면·수면일지 상담 준비",
       "운동강도·근력운동 상담 준비",
@@ -1164,6 +1169,34 @@ describe("cervicalCancerCare", () => {
     expect(
       Object.values(buildCervicalCancerCarePromptQuestionDraft(survivorSlumpPrompt, "2026-06-15")).join(" "),
     ).not.toMatch(/우울증을 진단하세요|항우울제를 처방하세요|치료하세요|혼자 관리하세요|상담받으세요|괜찮으니 참으세요/);
+    const insomniaMedicationConcernPrompt = cervicalCancerCarePrompts.find(
+      (item) => item.topic === "불면증·정신과 약 중독 우려 상담 준비",
+    )!;
+    expect(insomniaMedicationConcernPrompt.sourceId).toBe("nccMentalHealthInsomniaMedicationConcern");
+    expect(insomniaMedicationConcernPrompt.question).toContain("암 진단 후 불면증");
+    expect(insomniaMedicationConcernPrompt.question).toContain("정신건강의학과에 대한 편견");
+    expect(insomniaMedicationConcernPrompt.question).toContain("약을 한 번 먹으면 끊지 못한다는 통념");
+    expect(insomniaMedicationConcernPrompt.question).toContain("진료기록");
+    expect(insomniaMedicationConcernPrompt.question).toContain("취직이나 보험");
+    expect(insomniaMedicationConcernPrompt.question).toContain("적절한 서비스를 받지 못");
+    expect(insomniaMedicationConcernPrompt.question).toContain("가벼운 불면");
+    expect(insomniaMedicationConcernPrompt.question).toContain("약 없이 상담");
+    expect(insomniaMedicationConcernPrompt.question).toContain("수면제");
+    expect(insomniaMedicationConcernPrompt.question).toContain("항우울제");
+    expect(insomniaMedicationConcernPrompt.question).toContain("항불안제");
+    expect(insomniaMedicationConcernPrompt.question).toContain("증상 조절 목적");
+    expect(insomniaMedicationConcernPrompt.question).toContain("대부분 단기간에 끊");
+    expect(insomniaMedicationConcernPrompt.question).toContain("상담·처방 필요성");
+    expect(insomniaMedicationConcernPrompt.question).toContain("중단 계획");
+    expect(insomniaMedicationConcernPrompt.question).toContain("협진 질문");
+    expect(buildCervicalCancerCarePromptQuestion(insomniaMedicationConcernPrompt)).toContain(
+      "출처: 국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=2&keyword=&mode=view&rn=49&rows=12",
+    );
+    expect(
+      Object.values(buildCervicalCancerCarePromptQuestionDraft(insomniaMedicationConcernPrompt, "2026-06-15")).join(" "),
+    ).not.toMatch(
+      /수면제를 복용하세요|정신과 약을 복용하세요|약물 치료하세요|중독되지 않습니다|중독됩니다|치료하세요|처방하세요|진단하세요|적극적으로 정신건강의학과를 이용하세요/,
+    );
     const survivorAnxietyPrompt = cervicalCancerCarePrompts.find(
       (item) => item.topic === "불안 신체증상·주의전환 상담 준비",
     )!;
@@ -1865,6 +1898,9 @@ describe("cervicalCancerCare", () => {
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorPostTreatmentSlump")).toContain(
       "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
     );
+    expect(formatCervicalCancerCareSourceEvidence("nccMentalHealthInsomniaMedicationConcern")).toContain(
+      "국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=2&keyword=&mode=view&rn=49&rows=12",
+    );
     expect(formatCervicalCancerCareSourceEvidence("nccSurvivorAnxietyManagement")).toContain(
       "국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기 - https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
     );
@@ -2238,6 +2274,9 @@ describe("cervicalCancerCare", () => {
     const survivorSlumpGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "암치료 후 슬럼프·우울상담 메모",
     );
+    const insomniaMedicationConcernGuide = cervicalCancerCareRecoveryGuides.find(
+      (item) => item.label === "불면증·정신과 약 중독 우려 메모",
+    );
     const sleepManagementGuide = cervicalCancerCareRecoveryGuides.find(
       (item) => item.label === "불면·수면효율·습관 메모",
     );
@@ -2272,7 +2311,7 @@ describe("cervicalCancerCare", () => {
       (item) => item.label === "기침·가래·수면방해 메모",
     );
 
-				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(45);
+				    expect(cervicalCancerCareRecoveryGuides).toHaveLength(46);
     expect(text).toContain("원추절제술");
     expect(text).toContain("6~8주");
     expect(coneRecoveryGuide?.detail).toContain(sourceSentence);
@@ -3197,6 +3236,37 @@ describe("cervicalCancerCare", () => {
     );
     expect(Object.values(buildCervicalCancerCareItemSymptomDraft(survivorSlumpGuide!)).join(" ")).not.toMatch(
       /우울증을 진단하세요|항우울제를 처방하세요|치료하세요|혼자 관리하세요|상담받으세요|괜찮으니 참으세요/,
+    );
+    expect(insomniaMedicationConcernGuide).toMatchObject({
+      label: "불면증·정신과 약 중독 우려 메모",
+      sourceId: "nccMentalHealthInsomniaMedicationConcern",
+    });
+    expect(insomniaMedicationConcernGuide?.detail).toContain("암 진단 후 잠을 잘 못 잘 때");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("정신건강의학과 약을 먹으면 중독되는지");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("정신건강의학과에 대한 편견");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("약을 한 번 먹으면 끊지 못한다는 통념");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("진료기록과 취직·보험 걱정");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("적절한 서비스를 받지 못");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("가벼운 불면");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("약 없이 상담");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("수면제");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("항우울제");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("항불안제");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("증상 조절 목적");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("대부분 단기간에 끊");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("중단 계획");
+    expect(insomniaMedicationConcernGuide?.detail).toContain("중독 가능성을 단정하지 않습니다");
+    expect(formatCervicalCancerCareItemEvidence(insomniaMedicationConcernGuide!)).toContain(
+      "국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22078&condition=&cpage=2&keyword=&mode=view&rn=49&rows=12",
+    );
+    expect(buildCervicalCancerCareItemSymptomDraft(insomniaMedicationConcernGuide!).body).toContain(
+      "불면증·정신과 약 중독 우려 메모",
+    );
+    expect(formatCervicalCancerCareListItemAriaLabel(insomniaMedicationConcernGuide!)).toContain(
+      "국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려",
+    );
+    expect(Object.values(buildCervicalCancerCareItemSymptomDraft(insomniaMedicationConcernGuide!)).join(" ")).not.toMatch(
+      /수면제를 복용하세요|정신과 약을 복용하세요|약물 치료하세요|중독되지 않습니다|중독됩니다|치료하세요|처방하세요|진단하세요|적극적으로 정신건강의학과를 이용하세요/,
     );
     expect(survivorAnxietyGuide).toMatchObject({
       label: "암생존자 불안신호·주의전환 메모",
