@@ -5000,6 +5000,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
   ],
   [
+    "장출혈성 대장균 어패류",
+    "식품안전나라 장출혈성 대장균 어패류 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
     "장출혈성 대장균 도시락",
     "식품안전나라 장출혈성 대장균 도시락 원인식품 확인 필요",
     "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
