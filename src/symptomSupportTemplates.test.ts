@@ -61,6 +61,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.id).toBe(
       "survivor-anxiety-management",
     );
+    expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.id).toBe(
+      "survivor-exercise-management",
+    );
     expect(findSymptomSupportTemplate("암관련 피로 대처")?.id).toBe(
       "cancer-fatigue-coping",
     );
@@ -638,6 +641,45 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("진료 전 확인용");
     expect(buildSymptomSupportQuestion(template!, "암생존자 불안 신체증상")).not.toMatch(
       /불안을 치료하세요|호흡훈련을 하세요|주의전환을 하세요|약을 복용하세요|진단하세요|처방하세요|치료하세요|불안은 위험하지 않습니다|응급실에 가지 않아도 됩니다|괜찮으니 참으세요/,
+    );
+  });
+
+  it("builds a survivor exercise-management question from official guidance", () => {
+    const regularExerciseSentence =
+      "암생존자의 규칙적인 운동참여는 체력증진, 피로도 감소로 삶의 질을 높여주고 일부 암종에서는 재발 율과 사망률의 위험을 낮춰줍니다.";
+    const guidelineSentence =
+      "미국 스포츠의학회에서는 암생존자의 건강 증진을 위하여 주당 150분 이상의 중강도 신체활동과 주 2회 이상의 근력운동을 권고하고 있습니다.";
+    const moderateIntensitySentence =
+      "중강도 신체활동: 숨이 약간 차지만 옆 사람과 대화가 가능한 정도";
+    const programSentence =
+      "암생존자의 신체활동 증진과 체력 향상을 위하여 운동과 관련된 정보교육과 스트레칭, 전신 근력운동을 배울 수 있는 프로그램입니다.";
+    const clothingSentence =
+      "실제 운동을 배우는 시간이 있으므로 편안한 운동복을 입고 오시면 좋습니다.";
+    const template = findSymptomSupportTemplate("암생존자 운동강도 상담");
+
+    expect(template?.id).toBe("survivor-exercise-management");
+    expect(template?.mealNote).toContain(regularExerciseSentence);
+    expect(template?.mealNote).toContain(guidelineSentence);
+    expect(template?.mealNote).toContain(moderateIntensitySentence);
+    expect(template?.clinicianQuestion).toContain(programSentence);
+    expect(template?.clinicianQuestion).toContain(clothingSentence);
+    expect(template?.clinicianQuestion).toContain("운동강도·시간·금기·재활 의뢰 기준");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 운동강도 상담"),
+    ).toContain(guidelineSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 운동강도 상담"),
+    ).toContain(
+      "출처: 국가암정보센터 암생존자 운동 - https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 운동강도 상담"),
+    ).not.toMatch(
+      /운동을 처방하세요|운동하세요|운동을 시작하세요|진단하세요|치료하세요|완치|재발을 예방합니다|사망률을 낮춥니다|무조건 주 150분|반드시 주 2회/,
     );
   });
 
@@ -1342,7 +1384,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(35);
+    expect(symptomSupportTemplates).toHaveLength(36);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1370,6 +1412,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
     );
     expect(findSymptomSupportTemplate("암관련 피로 대처")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T420C421/contents.do",
