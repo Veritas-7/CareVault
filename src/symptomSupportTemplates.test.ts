@@ -112,6 +112,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암환자 성기능장애 성욕 변화 의료진 상담")?.id).toBe(
       "sexual-function-change",
     );
+    expect(findSymptomSupportTemplate("성문제나 성행위 의문 의료진 상담")?.id).toBe(
+      "sexual-function-consult-threshold",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -1969,6 +1972,11 @@ describe("symptomSupportTemplates", () => {
     expect(buildSymptomSupportQueueHint(findSymptomSupportTemplate("통증점수")!)).toBe(
       "질문 초안에는 이 출처와 URL이 함께 남습니다.",
     );
+    expect(
+      buildSymptomSupportQueueHint(
+        findSymptomSupportTemplate("성문제나 성행위 의문 의료진 상담")!,
+      ),
+    ).toBe("저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.");
   });
 
   it("builds a cervical sexual-health question from dryness or pain keywords", () => {
@@ -2019,6 +2027,36 @@ describe("symptomSupportTemplates", () => {
     );
     expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
       /성생활을 해도 됩니다|성행위를 하세요|피임법을 시행하세요|임신을 피하세요|정자은행을 이용하세요|난자은행을 이용하세요|윤활제를 사용하세요|크림을 바르세요|확장기를 사용하세요|호르몬 대체요법을 받으세요|비뇨기과로 의뢰하세요|배우자에게 반드시 말하세요|진단하세요|치료하세요|처방하세요|회복을 보장/,
+    );
+  });
+
+  it("builds a sexual-function medical-staff consult-threshold question from NCC guidance", () => {
+    const consultHeading = "이런 때에는 의료진과 상의하십시오";
+    const template = findSymptomSupportTemplate("성문제나 성행위 의문 의료진 상담");
+    const actionNote = buildSymptomSupportActionNote(template!);
+    const question = buildSymptomSupportQuestion(template!, "성문제나 성행위 의문");
+
+    expect(template?.id).toBe("sexual-function-consult-threshold");
+    expect(template?.mealNote).toContain(consultHeading);
+    expect(template?.mealNote).toContain("새롭거나 더 심한 통증");
+    expect(template?.mealNote).toContain("출혈");
+    expect(template?.mealNote).toContain("발기능력이나 정액량에 변화");
+    expect(template?.clinicianQuestion).toContain("성문제나 성행위와 관련된 의문점");
+    expect(actionNote).toContain("발기능력이나 정액량");
+    expect(actionNote).toContain(
+      "출처: 국가암정보센터 성기능장애 극복방법 - https://www.cancer.go.kr/lay1/S1T461C465/contents.do",
+    );
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(question).toContain("성문제나 성행위 의문 기록과 관련해");
+    expect(question).toContain("새롭거나 더 심한 통증");
+    expect(question).toContain("출혈");
+    expect(question).toContain(
+      "출처: 국가암정보센터 성기능장애 극복방법 - https://www.cancer.go.kr/lay1/S1T461C465/contents.do",
+    );
+    expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
+      /성교를 하세요|성행위를 하세요|일주일에 3회|크림과 젤리를 바르세요|확장기를 사용하세요|피임법을 시행하세요|임신을 피하세요|정자은행을 이용하세요|난자은행을 이용하세요|호르몬 대체요법을 받으세요|비뇨기과로 의뢰하세요|진단하세요|치료하세요|처방하세요|자가치료|회복을 보장/,
     );
   });
 
@@ -2108,7 +2146,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(48);
+    expect(symptomSupportTemplates).toHaveLength(49);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2227,6 +2265,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암환자 성기능장애 성욕 변화 의료진 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T461C462/contents.do",
+    );
+    expect(findSymptomSupportTemplate("성문제나 성행위 의문 의료진 상담")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T461C465/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",

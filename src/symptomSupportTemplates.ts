@@ -28,6 +28,7 @@ const careQueueSymptomTemplateIds = new Set([
   "infection-fever",
   "lymphedema",
   "nausea-vomiting-consult-threshold",
+  "sexual-function-consult-threshold",
   "survivor-distress-adaptation",
 ]);
 
@@ -809,6 +810,44 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     safetyNote,
     sourceLabel: "국가암정보센터 기침 원인",
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T410C412/contents.do",
+  },
+  {
+    id: "sexual-function-consult-threshold",
+    label: "성기능 변화 의료진 상담 기준",
+    keywords: [
+      "성문제나 성행위",
+      "성문제",
+      "성행위 의문",
+      "새롭거나 더 심한 통증",
+      "성기능 통증",
+      "성기능 출혈",
+      "발기능력",
+      "발기 능력",
+      "정액량",
+      "정액 양",
+      "semen amount",
+      "erection change",
+    ],
+    priorityKeywords: [
+      "성문제나 성행위",
+      "성행위 의문",
+      "새롭거나 더 심한 통증",
+      "성기능 통증",
+      "성기능 출혈",
+      "발기능력",
+      "발기 능력",
+      "정액량",
+      "정액 양",
+      "semen amount",
+      "erection change",
+    ],
+    mealNote:
+      "이런 때에는 의료진과 상의하십시오. 새롭거나 더 심한 통증 이 있을 때 출혈이 있을 때 발기능력이나 정액량에 변화가 있을 때 성문제나 성행위와 관련된 의문점이 있을 때 통증의 새로움·악화 정도, 출혈 시점과 양상, 발기능력이나 정액량 변화, 성문제나 성행위와 관련해 궁금한 점을 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "새롭거나 더 심한 통증, 출혈, 발기능력이나 정액량에 변화, 성문제나 성행위와 관련된 의문점 중 내 기록에 해당되는 항목을 어느 진료팀에 어떤 기준으로 상의해야 하는지, 치료 종류·기간·혈액검사·감염 위험·통증/출혈 맥락과 함께 어떻게 전달하면 되는지 의료진에게 확인하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 성기능장애 극복방법",
+    sourceUrl: "https://www.cancer.go.kr/lay1/S1T461C465/contents.do",
   },
   {
     id: "sexual-function-change",
