@@ -115,6 +115,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("성문제나 성행위 의문 의료진 상담")?.id).toBe(
       "sexual-function-consult-threshold",
     );
+    expect(findSymptomSupportTemplate("케모포트 삽입부위 붓고 분비물")?.id).toBe(
+      "chemoport-contact-threshold",
+    );
     expect(findSymptomSupportTemplate("골반 림프절 치료 후 다리 붓기와 열감")?.id).toBe(
       "lymphedema",
     );
@@ -1977,6 +1980,11 @@ describe("symptomSupportTemplates", () => {
         findSymptomSupportTemplate("성문제나 성행위 의문 의료진 상담")!,
       ),
     ).toBe("저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.");
+    expect(
+      buildSymptomSupportQueueHint(
+        findSymptomSupportTemplate("케모포트 삽입부위 붓고 분비물")!,
+      ),
+    ).toBe("저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.");
   });
 
   it("builds a cervical sexual-health question from dryness or pain keywords", () => {
@@ -2057,6 +2065,52 @@ describe("symptomSupportTemplates", () => {
     );
     expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
       /성교를 하세요|성행위를 하세요|일주일에 3회|크림과 젤리를 바르세요|확장기를 사용하세요|피임법을 시행하세요|임신을 피하세요|정자은행을 이용하세요|난자은행을 이용하세요|호르몬 대체요법을 받으세요|비뇨기과로 의뢰하세요|진단하세요|치료하세요|처방하세요|자가치료|회복을 보장/,
+    );
+  });
+
+  it("builds a chemoport physician-or-ER contact-threshold question from NCC guidance", () => {
+    const heading =
+      "NCC는 다음 항목을 담당의사 상담 또는 응급실 방문 기준으로 제시합니다.";
+    const insertionSiteSentence =
+      "삽입부위가 빨갛게 붓거나, 아프거나, 냄새가 나거나 분비물이 있을 때";
+    const feverSentence = "체온이 38도 이상이 넘을 때";
+    const numbPainSentence =
+      "삽입부위나 삽입한 쪽의 어깨, 팔이 계속 저리거나 아픈 경우";
+    const swellingSentence = "삽입한 쪽의 어깨, 팔, 또는 얼굴이 붓는 경우";
+    const blockageSentence =
+      "중심정맥관이 막혔다고 의심되는 경우(혈액 역류가 안 되거나 헤파린 주입 시 심하게 저항이 느껴지는 경우 또는 주입이 안 되는 경우, 이 경우 무리하게 힘을 가하면 카테터 손상이 있을 수 있습니다)";
+    const template = findSymptomSupportTemplate("케모포트 삽입부위 붓고 분비물");
+    const actionNote = buildSymptomSupportActionNote(template!);
+    const question = buildSymptomSupportQuestion(
+      template!,
+      "케모포트 삽입부위 붓고 분비물",
+    );
+
+    expect(template?.id).toBe("chemoport-contact-threshold");
+    expect(template?.label).toBe("케모포트 연락 기준");
+    expect(template?.mealNote).toContain(heading);
+    expect(template?.mealNote).toContain(insertionSiteSentence);
+    expect(template?.mealNote).toContain(feverSentence);
+    expect(template?.mealNote).toContain(numbPainSentence);
+    expect(template?.mealNote).toContain(swellingSentence);
+    expect(template?.clinicianQuestion).toContain(blockageSentence);
+    expect(actionNote).toContain("혈액 역류");
+    expect(actionNote).toContain("헤파린 주입 시 심하게 저항");
+    expect(actionNote).toContain(
+      "출처: 국가암정보센터 케모포트 - https://www.cancer.go.kr/lay1/S1T343C345/contents.do",
+    );
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(question).toContain("케모포트 삽입부위 붓고 분비물 기록과 관련해");
+    expect(question).toContain("삽입부위가 빨갛게 붓거나");
+    expect(question).toContain("체온이 38도 이상");
+    expect(question).toContain("중심정맥관이 막혔다고 의심");
+    expect(question).toContain(
+      "출처: 국가암정보센터 케모포트 - https://www.cancer.go.kr/lay1/S1T343C345/contents.do",
+    );
+    expect(`${template?.mealNote}\n${template?.clinicianQuestion}\n${question}`).not.toMatch(
+      /헤파린을 주입하세요|카테터를 뚫으세요|무리하게 힘을 가하세요|포트를 제거하세요|소독하세요|거즈를 붙이세요|샤워하세요|통목욕하세요|응급실을 방문하세요|응급실을 방문하셔야 합니다|진단하세요|치료하세요|처방하세요|자가수리|스스로 해결/,
     );
   });
 
@@ -2146,7 +2200,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(49);
+    expect(symptomSupportTemplates).toHaveLength(50);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2268,6 +2322,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("성문제나 성행위 의문 의료진 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T461C465/contents.do",
+    );
+    expect(findSymptomSupportTemplate("케모포트 삽입부위 붓고 분비물")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T343C345/contents.do",
     );
     expect(findSymptomSupportTemplate("질출혈")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4888",
