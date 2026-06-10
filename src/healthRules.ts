@@ -41,6 +41,7 @@ export type FoodGuidanceSourceId =
   | "nccMucositisCare"
   | "nccDryMouthDiet"
   | "nccImmuneLowDiet"
+  | "nccStemCellTransplantImmuneSuppressionDiet"
   | "nccNauseaVomitingCare"
   | "nccComplementaryTherapy"
   | "nccCervicalDiet"
@@ -209,6 +210,10 @@ export const foodGuidanceSources: Record<
   nccImmuneLowDiet: {
     label: "국가암정보센터 증상별 식생활 - 면역기능의 저하",
     url: "https://cancer.go.kr/lay1/S1T479C489/contents.do",
+  },
+  nccStemCellTransplantImmuneSuppressionDiet: {
+    label: "국가암정보센터 조혈모세포이식 면역억제 식품표",
+    url: "https://www.cancer.go.kr/lay1/S1T295C296/contents.do",
   },
   nccNauseaVomitingCare: {
     label: "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
@@ -1427,6 +1432,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
           "생굴, 회, 육회, 생선회, 생조개, 초밥 등 익히지 않은 음식은 드시지 않습니다, 날계란, 덜 익힌 고기, 날계란이나 덜 익힌 계란과 이들이 들어간 음식은 먹지 않습니다, 날계란이나 덜 익힌 계란이 들어간 음식, 다진 고기, 가는 과정에서 고기의 표면적이 넓어져 세균 등에 오염될 가능성이 커지기 때문입니다, 가는 과정에서 오염 가능, 씻지 않은 딸기, 딸기 등 꼼꼼히 씻기 어려운 과일은 주의해서 드시고, 딸기 등 꼼꼼히 씻기 어려운 과일, 오래된 남은 음식, 3~4일 지난 남은 음식, 냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다, 곰팡이가 핀 음식, 곰팡이 핀 음식, 상한 음식, 식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다, 상온 30분 이상 운반, 30분 이상 상온에서 운반, 녹슨 캔, 움푹해진 캔, 녹슬거나 움푹해진 캔, 냉동제품 녹음, 냉동제품이 녹아 있다면 구입하지 않도록, 비살균 우유·주스, 비살균 쥬스, 비살균 요구르트",
         sourceIds: ["nccImmuneLowDiet"],
       },
+      {
+        label: "NCC 조혈모세포이식 면역억제 식품표 확인",
+        detail:
+          "국가암정보센터 조혈모세포이식 자료는 `면역억제 시 제한하는 식품과 허용하는 식품` 표를 제시합니다. 제한 식품 예시에는 살균처리되지 않은 생우유, 천연치즈, 생과일, 생채소, 끓이지 않은 물, 생꿀 등이 있고, 허용 식품 예시에는 멸균우유, 멸균두유, 과일 통조림, 완전히 익힌 채소류 등이 있습니다. 이 항목은 조혈모세포이식이나 면역억제 상황의 식품표 확인으로만 사용하고, 전체 환자 식단 규칙이나 치료식 주장으로 과장하지 않습니다.",
+        examples:
+          "면역억제 시 제한하는 식품과 허용하는 식품, 면역억제 생과일, 면역억제 생채소, 면역억제 끓이지 않은 물, 면역억제 생꿀, 면역억제 천연치즈, 면역억제 멸균우유, 면역억제 멸균두유, 면역억제 과일 통조림, 면역억제 완전히 익힌 채소류",
+        sourceIds: ["nccStemCellTransplantImmuneSuppressionDiet"],
+      },
     ],
   },
 ];
@@ -2477,6 +2490,26 @@ const supportiveFoods: FoodRuleTerm[] = [
   ],
   ["저온살균 제품", "면역저하 시 저온살균 우유·주스·요구르트 제품 선택 후보", "nccImmuneLowDiet"],
   ["저온살균 요구르트", "면역저하 시 익힌 음식·저온살균 제품 선택 후보", "nccImmuneLowDiet"],
+  [
+    "면역억제 멸균우유",
+    "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 멸균두유",
+    "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 과일 통조림",
+    "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 완전히 익힌 채소류",
+    "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
   [
     "모든 식품은 사용하기 전에 반드시 유효기간을 확인합니다",
     "면역저하 시 유효기간·저온살균 제품 확인 후보",
@@ -4489,6 +4522,31 @@ const careTeamFoods: FoodRuleTerm[] = [
   ["덜 익힌 고기", "면역저하 시 고기·생선은 완전히 익힘 확인", "nccImmuneLowDiet"],
   ["덜익힌 고기", "면역저하 시 고기·생선은 완전히 익힘 확인", "nccImmuneLowDiet"],
   ["생고기", "면역저하 시 고기·생선은 완전히 익힘 확인", "nccImmuneLowDiet"],
+  [
+    "면역억제 생과일",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 생채소",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 끓이지 않은 물",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 생꿀",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
+  [
+    "면역억제 천연치즈",
+    "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+    "nccStemCellTransplantImmuneSuppressionDiet",
+  ],
   [
     "상온에 오랜시간 방치",
     "식약처 식중독 예방 조리 후 상온 방치·2시간 초과 확인 필요",

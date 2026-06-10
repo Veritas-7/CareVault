@@ -14812,6 +14812,89 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes NCC stem-cell-transplant immune-suppression allowed and restricted food table context", () => {
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+    const immuneSuppressionGuide = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.find((item) => item.label === "NCC 조혈모세포이식 면역억제 식품표 확인");
+    const assessment = assessCancerFood(
+      "면역억제 생과일, 면역억제 생채소, 면역억제 끓이지 않은 물, 면역억제 생꿀, 면역억제 천연치즈, 면역억제 멸균우유, 면역억제 멸균두유, 면역억제 과일 통조림, 면역억제 완전히 익힌 채소류",
+    );
+    const terms = assessment.matches.map((match) => match.term);
+    const matchesByTerm = Object.fromEntries(
+      assessment.matches.map((match) => [match.term, match]),
+    );
+    const genericAssessment = assessCancerFood("생과일, 생채소, 우유, 치즈");
+
+    expect(foodGuidanceSources.nccStemCellTransplantImmuneSuppressionDiet).toMatchObject({
+      label: "국가암정보센터 조혈모세포이식 면역억제 식품표",
+      url: "https://www.cancer.go.kr/lay1/S1T295C296/contents.do",
+    });
+    expect(immuneSuppressionGuide).toMatchObject({
+      label: "NCC 조혈모세포이식 면역억제 식품표 확인",
+      sourceIds: ["nccStemCellTransplantImmuneSuppressionDiet"],
+    });
+    expect(immuneSuppressionGuide?.detail).toContain("면역억제 시 제한하는 식품과 허용하는 식품");
+    expect(immuneSuppressionGuide?.detail).toContain("살균처리되지 않은 생우유");
+    expect(immuneSuppressionGuide?.detail).toContain("완전히 익힌 채소류");
+    expect(immuneSuppressionGuide?.examples).toContain("면역억제 생과일");
+    expect(immuneSuppressionGuide?.examples).toContain("면역억제 멸균우유");
+    expect(assessment.level).toBe("risk");
+    expect(terms).toEqual([
+      "면역억제 생과일",
+      "면역억제 생채소",
+      "면역억제 끓이지 않은 물",
+      "면역억제 생꿀",
+      "면역억제 천연치즈",
+      "면역억제 멸균우유",
+      "면역억제 멸균두유",
+      "면역억제 과일 통조림",
+      "면역억제 완전히 익힌 채소류",
+    ]);
+    for (const term of [
+      "면역억제 생과일",
+      "면역억제 생채소",
+      "면역억제 끓이지 않은 물",
+      "면역억제 생꿀",
+      "면역억제 천연치즈",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "국가암정보센터 조혈모세포이식 면역억제 제한 식품 확인 필요",
+        sourceId: "nccStemCellTransplantImmuneSuppressionDiet",
+      });
+    }
+    for (const term of [
+      "면역억제 멸균우유",
+      "면역억제 멸균두유",
+      "면역억제 과일 통조림",
+      "면역억제 완전히 익힌 채소류",
+    ]) {
+      expect(matchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "국가암정보센터 조혈모세포이식 면역억제 허용 식품 확인 후보",
+        sourceId: "nccStemCellTransplantImmuneSuppressionDiet",
+      });
+    }
+    expect(terms).not.toContain("생채소");
+    expect(terms).not.toContain("생과일");
+    expect(terms).not.toContain("우유");
+    expect(JSON.stringify(genericAssessment.matches)).not.toContain(
+      "nccStemCellTransplantImmuneSuppressionDiet",
+    );
+    expect(careTeamGuideText).toContain("면역억제 생꿀");
+    expect(careTeamGuideText).toContain("면역억제 완전히 익힌 채소류");
+    expect(formatFoodMatchEvidence(matchesByTerm["면역억제 생과일"])).toContain(
+      "국가암정보센터 조혈모세포이식 면역억제 식품표 - https://www.cancer.go.kr/lay1/S1T295C296/contents.do",
+    );
+    expect(JSON.stringify(assessment.matches)).not.toMatch(
+      /치료 음식|완치|암을 낫게|모든 암환자|자궁경부암 치료/,
+    );
+  });
+
   it("does not match one-syllable food warnings inside unrelated Korean words", () => {
     const postSurgeryAssessment = assessCancerFood("수술 후 식사로 통밀빵과 닭고기");
     const postSurgeryTerms = postSurgeryAssessment.matches.map((match) => match.term);
