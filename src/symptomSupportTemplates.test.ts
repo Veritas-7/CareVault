@@ -85,6 +85,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 예방접종 생백신 시점")?.id).toBe(
       "survivor-vaccination-timing",
     );
+    expect(findSymptomSupportTemplate("암생존자 이차암 검진 흡연력 폐암 검진")?.id).toBe(
+      "survivor-second-cancer-screening",
+    );
     expect(findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정")?.id).toBe(
       "survivor-work-return",
     );
@@ -1098,6 +1101,55 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 예방접종 생백신 시점"),
     ).not.toMatch(
       /폐렴구균 예방접종을 받으세요|독감 예방접종을 받으세요|코로나19 예방접종을 받으세요|대상포진 예방접종을 하세요|생백신을 맞으세요|사백신을 맞으세요|항암치료 중 맞으세요|백신을 예약하세요|감염병을 예방합니다|중증화를 막습니다|치료하세요|처방하세요|진단하세요/,
+    );
+  });
+
+  it("builds a survivor second-cancer screening question from official guidance", () => {
+    const firstCancerSentence = "첫 번째 암이 걸리는데 좀더 취약한";
+    const treatmentDamageSentence =
+      "암 치료를 받으면서 방사선치료 항암치료를 받으면서 건강한 세포가 손상을 받아서";
+    const lifestyleSentence =
+      "담배를 피거나 술을 드시거나 이렇게 암에 좋지 않은 생활 슴관";
+    const riskHigherSentence =
+      "따른 암이 생길 가능성이 상대적으로 암을 겪지 않은 분 보다";
+    const tenTwentySentence = "10% 에서 20%정도 더 높아진다";
+    const originalCancerSentence = "원발암, 즉 내가 처음 겪었던 암 외에";
+    const cervicalSmokingSentence = "자궁경부암을 겪은 분들이 흡연";
+    const lungScreeningSentence = "폐암 검진";
+    const recurrenceFollowUpSentence = "치료받은 병원에서 원발암 재발 검사";
+    const nationalScreeningSentence = "국가 검진";
+    const template = findSymptomSupportTemplate("암생존자 이차암 검진 흡연력 폐암 검진");
+
+    expect(template?.id).toBe("survivor-second-cancer-screening");
+    expect(template?.mealNote).toContain(firstCancerSentence);
+    expect(template?.mealNote).toContain(treatmentDamageSentence);
+    expect(template?.mealNote).toContain(lifestyleSentence);
+    expect(template?.mealNote).toContain(riskHigherSentence);
+    expect(template?.mealNote).toContain(tenTwentySentence);
+    expect(template?.clinicianQuestion).toContain(originalCancerSentence);
+    expect(template?.clinicianQuestion).toContain(cervicalSmokingSentence);
+    expect(template?.clinicianQuestion).toContain(lungScreeningSentence);
+    expect(template?.clinicianQuestion).toContain(recurrenceFollowUpSentence);
+    expect(template?.clinicianQuestion).toContain(nationalScreeningSentence);
+    expect(template?.clinicianQuestion).toContain("흡연 기간·양");
+    expect(template?.clinicianQuestion).toContain("저선량 흉부 CT");
+    expect(template?.clinicianQuestion).toContain("검진 결과 공유 방식");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 이차암 검진 흡연력 폐암 검진"),
+    ).toContain(originalCancerSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 이차암 검진 흡연력 폐암 검진"),
+    ).toContain(
+      "출처: 국가암정보센터 암생존자 예방접종 및 슬기로운 건강관리 - https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 이차암 검진 흡연력 폐암 검진"),
+    ).not.toMatch(
+      /폐암 검진을 받으세요|저선량 흉부 CT를 찍으세요|국가검진을 예약하세요|금연하세요|술을 끊으세요|이차암을 예방합니다|재발을 예방합니다|위험이 높습니다|진단하세요|치료하세요|처방하세요/,
     );
   });
 
@@ -2470,7 +2522,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(55);
+    expect(symptomSupportTemplates).toHaveLength(56);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2522,6 +2574,9 @@ describe("symptomSupportTemplates", () => {
       "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
     );
     expect(findSymptomSupportTemplate("암생존자 예방접종 생백신 시점")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
+    );
+    expect(findSymptomSupportTemplate("암생존자 이차암 검진 흡연력")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/bbs/S1T767C750/G/46/view.do?article_seq=22688&condition=&cpage=3&keyword=&rn=33&rows=12",
     );
     expect(findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정")?.sourceUrl).toBe(
