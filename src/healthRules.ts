@@ -5300,6 +5300,16 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaListeriaFoodPoisoning",
   ],
   [
+    "리스테리아 가공 가금육",
+    "식품안전나라 리스테리아 식중독 가공 가금육 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
+    "리스테리아 비가공 가금육",
+    "식품안전나라 리스테리아 식중독 비가공 가금육 원인식품 확인 필요",
+    "foodSafetyKoreaListeriaFoodPoisoning",
+  ],
+  [
     "리스테리아 비가공 식육",
     "식품안전나라 리스테리아 식중독 비가공 식육 원인식품 확인 필요",
     "foodSafetyKoreaListeriaFoodPoisoning",
