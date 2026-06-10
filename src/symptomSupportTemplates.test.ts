@@ -55,6 +55,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("치료 불안과 부작용 두려움")?.id).toBe(
       "psychological-stability",
     );
+    expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.id).toBe(
+      "survivor-anxiety-management",
+    );
     expect(findSymptomSupportTemplate("기침과 호흡곤란, 흉통")?.id).toBe(
       "dyspnea-consult",
     );
@@ -550,6 +553,46 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("진료 전 확인용");
     expect(buildSymptomSupportQuestion(template!, "치료 불안")).not.toMatch(
       /심리치료를 하세요|정신과 진료를 받으세요|운동하세요|진단하세요|치료하세요|처방하세요|완치됩니다|걱정하지 않아도 된다고 보장하세요|암 치료 결과가 좋아집니다/,
+    );
+  });
+
+  it("builds a survivor anxiety-management question from official guidance", () => {
+    const alarmSentence =
+      "따라서 불안은 우리 몸의 ‘경보장치’라고 할 수 있으며, 생존을 위해 꼭 필요합니다.";
+    const heartbeatSentence = "심장이 빨리 뛰고, 가슴이 두근거립니다.";
+    const breathSentence = "숨이 가쁘거나 답답한 느낌이 듭니다.";
+    const dailyLifeSentence =
+      "고장난 경보장치처럼 오히려 일상생활에 방해가 되는 불안을 ‘병리적 불안’이라고 합니다.";
+    const persistenceSentence =
+      "불안을 느끼게 한 위협적인 요소가 사라졌음에도 불구하고 불안이 과도하게 오래 지속됩니다.";
+    const discloseSentence =
+      "가족이나 주위 사람들에게 불안한 마음을 솔직하게 털어놓는 방법입니다.";
+    const attentionSentence =
+      "불안과 관련된 생각과 신체 증상이 심해질 때 이를 멈추기 위해서 주의를 다른 곳으로 분산시키는 방법입니다.";
+    const template = findSymptomSupportTemplate("암생존자 불안 신체증상");
+
+    expect(template?.id).toBe("survivor-anxiety-management");
+    expect(template?.mealNote).toContain(alarmSentence);
+    expect(template?.mealNote).toContain(heartbeatSentence);
+    expect(template?.mealNote).toContain(breathSentence);
+    expect(template?.mealNote).toContain(dailyLifeSentence);
+    expect(template?.mealNote).toContain(persistenceSentence);
+    expect(template?.clinicianQuestion).toContain(discloseSentence);
+    expect(template?.clinicianQuestion).toContain(attentionSentence);
+    expect(template?.clinicianQuestion).toContain("복식호흡");
+    expect(template?.clinicianQuestion).toContain("심상유도");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(buildSymptomSupportQuestion(template!, "암생존자 불안 신체증상")).toContain(
+      attentionSentence,
+    );
+    expect(buildSymptomSupportQuestion(template!, "암생존자 불안 신체증상")).toContain(
+      "출처: 국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기 - https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(buildSymptomSupportQuestion(template!, "암생존자 불안 신체증상")).not.toMatch(
+      /불안을 치료하세요|호흡훈련을 하세요|주의전환을 하세요|약을 복용하세요|진단하세요|처방하세요|치료하세요|불안은 위험하지 않습니다|응급실에 가지 않아도 됩니다|괜찮으니 참으세요/,
     );
   });
 
@@ -1212,7 +1255,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(32);
+    expect(symptomSupportTemplates).toHaveLength(33);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1234,6 +1277,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("치료 불안")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
     );
     expect(findSymptomSupportTemplate("입맛 변화")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T479C484/contents.do",
