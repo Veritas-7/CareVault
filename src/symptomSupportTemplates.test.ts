@@ -171,6 +171,11 @@ describe("symptomSupportTemplates", () => {
         "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
       )?.id,
     ).toBe("cervical-stage-explanation-purpose");
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 5년 상대생존율 79.0 국한 국소 원격 모름 요약병기",
+      )?.id,
+    ).toBe("cervical-survival-statistics-context");
     expect(findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")?.id).toBe(
       "cervical-recurrence-symptom-check",
     );
@@ -2538,6 +2543,51 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a cervical survival-statistics context question from official treatment-status guidance", () => {
+    const fiveYearSentence =
+      "2019년~2023년의 자궁경부암 의 5년 상대 생존율 은 79.0%였습니다.";
+    const summaryStageSentence =
+      "요약병기는 암이 그 원발 부위로부터 얼마나 퍼져있는지를 범주화2) 한 기본적인 분류 방법";
+    const definitionSentence =
+      "5년 상대생존율: 해당 기간 중 발생한 암환자가 5년 이상 생존할 확률을 추정한 것";
+    const template = findSymptomSupportTemplate(
+      "자궁경부암 5년 상대생존율 79.0 국한 국소 원격 모름 요약병기",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "자궁경부암 5년 상대생존율 79.0 국한 국소 원격 모름 요약병기",
+    );
+
+    expect(template.id).toBe("cervical-survival-statistics-context");
+    expect(template.label).toBe("자궁경부암 생존통계 해석 상담 준비");
+    expect(template.mealNote).toContain(fiveYearSentence);
+    expect(template.mealNote).toContain("국한 94.5%");
+    expect(template.mealNote).toContain("국소 73.8%");
+    expect(template.mealNote).toContain("원격 29.1%");
+    expect(template.mealNote).toContain("모름 69.5%");
+    expect(template.clinicianQuestion).toContain(summaryStageSentence);
+    expect(template.clinicianQuestion).toContain(definitionSentence);
+    expect(template.clinicianQuestion).toContain("동일한 개인 예후");
+    expect(actionNote).toContain("인구 통계");
+    expect(actionNote).toContain("개인 예후로 단정하지 않고");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료현황 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4896",
+    );
+    expect(
+      findSymptomSupportTemplate(
+        "자궁경부암 병기 1기 2기 3기 4기 상피내암 질 상부 2/3 요관침윤 림프절 전이 원격전이",
+      )?.id,
+    ).toBe("cervical-stage-explanation-purpose");
+    expect(
+      findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")
+        ?.id,
+    ).toBe("cervical-recurrence-symptom-check");
+    expect(question).not.toMatch(
+      /생존율이 높습니다|생존율이 낮습니다|개인 예후입니다|예후가 좋습니다|예후가 나쁩니다|국한입니다|국소입니다|원격입니다|진단하세요|치료하세요|처방하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("builds a cervical recurrence-symptom question from official recurrence guidance", () => {
     const recurrenceSymptomsSentence =
       "재발 성 자궁경부암 의 증상은 매우 다양합니다. 체중감소, 하지 부종, 골반 혹은 허벅지 통증, 질출혈 혹은 질분비물의 증가, 진행 성 요관 폐색, 쇄골위 림프절 비대 등이 나타나며, 폐로 전이 하면 기침, 객혈, 때로는 흉통을 호소할 수 있습니다. 그러나 특징적인 증상이 없는 경우가 더 많습니다.";
@@ -3349,7 +3399,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(72);
+    expect(symptomSupportTemplates).toHaveLength(73);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3539,6 +3589,12 @@ describe("symptomSupportTemplates", () => {
       )?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4890",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 5년 상대생존율 79.0 국한 국소 원격 모름")
+        ?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4896",
     );
     expect(
       findSymptomSupportTemplate("재발성 자궁경부암 골반장기적출술 요로전환술")

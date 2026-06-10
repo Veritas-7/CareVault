@@ -434,6 +434,41 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4890",
   },
   {
+    id: "cervical-survival-statistics-context",
+    label: "자궁경부암 생존통계 해석 상담 준비",
+    keywords: [
+      "자궁경부암 5년 상대생존율",
+      "자궁경부암 상대생존율",
+      "자궁경부암 생존율",
+      "자궁경부암 치료현황",
+      "5년 상대생존율 79.0",
+      "요약병기별 5년",
+      "요약병기 국한 국소 원격",
+      "국한 국소 원격 모름",
+      "localized regional distant unknown",
+      "cervical survival statistics",
+    ],
+    priorityKeywords: [
+      "자궁경부암 5년 상대생존율",
+      "자궁경부암 상대생존율",
+      "자궁경부암 생존율",
+      "자궁경부암 치료현황",
+      "5년 상대생존율 79.0",
+      "요약병기별 5년",
+      "요약병기 국한 국소 원격",
+      "국한 국소 원격 모름",
+      "cervical survival statistics",
+    ],
+    mealNote:
+      "2019년~2023년의 자궁경부암 의 5년 상대 생존율 은 79.0%였습니다. 자궁경부암의 요약병기별 5년 상대생존율은 국한 94.5%, 국소 73.8%, 원격 29.1%, 모름 69.5%로 제시되어 있습니다. 이 수치는 인구 통계이므로 내 결과의 동일한 개인 예후로 단정하지 않고, 발표 기준 연도, 진단 시기, 진단서 병기, 요약병기 표현, 치료 반응, 재발·전이 여부, 담당 의료진이 설명한 예후 표현을 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "요약병기는 암이 그 원발 부위로부터 얼마나 퍼져있는지를 범주화2) 한 기본적인 분류 방법입니다. 5년 상대생존율: 해당 기간 중 발생한 암환자가 5년 이상 생존할 확률을 추정한 것으로, 암 이외의 원인으로 사망했을 경우의 효과를 보정하기 위하여 관찰생존율을 일반 인구의 기대생존율로 나누어 구한 값입니다. 국한은 암이 발생한 장기를 벗어나지 않음, 국소는 주위 장기·인접 조직·림프절 침범, 원격은 멀리 떨어진 다른 부위 전이, 모름은 병기 정보를 확인할 수 없는 경우라는 구분을 제 병기와 어떻게 비교해야 하는지, 2019-2023년 인구 통계를 동일한 개인 예후로 보지 않으려면 제 검사 근거·치료 반응·재발/전이 상태와 어떤 차이가 있는지 진료팀에게 확인하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 자궁경부암 치료현황",
+    sourceUrl:
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4896",
+  },
+  {
     id: "cervical-recurrent-treatment-choice",
     label: "재발성 자궁경부암 치료 선택 확인 준비",
     keywords: [
