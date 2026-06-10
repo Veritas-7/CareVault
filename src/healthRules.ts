@@ -1151,9 +1151,9 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
       {
         label: "식품안전나라 장출혈성 대장균 식중독 주의",
         detail:
-          "식품안전나라는 병원성 대장균 중 베로독소를 생성해 대장점막에 궤양과 출혈을 유발하는 대장균을 장관출혈성대장균이라고 설명하며, O26, O103, O104, O146, O157 등 혈청형과 대표 균인 대장균 O157:H7을 제시합니다. 주요 증상은 설사, 복통, 발열, 구토이고 심하면 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증 등이 나타날 수 있으므로 식품 안전 질문으로 분리합니다. 예방대책으로 조리기구(칼, 도마 등) 구분 사용, 생육과 조리된 음식을 구분하여 보관, 다진 고기는 중심부 온도가 75℃ 1분 이상 가열을 안내합니다.",
+          "식품안전나라는 병원성 대장균 중 베로독소를 생성해 대장점막에 궤양과 출혈을 유발하는 대장균을 장관출혈성대장균이라고 설명하며, O26, O103, O104, O146, O157 등 혈청형과 대표 균인 대장균 O157:H7을 제시합니다. 주요 증상은 설사, 복통, 발열, 구토이고 심하면 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증 등이 나타날 수 있으므로 식품 안전 질문으로 분리합니다. 주요 원인식품으로 햄, 치즈, 소시지, 채소샐러드, 분유, 두부, 음료수, 어패류, 도시락, 급식 등을 제시합니다. 예방대책으로 조리기구(칼, 도마 등) 구분 사용, 생육과 조리된 음식을 구분하여 보관, 다진 고기는 중심부 온도가 75℃ 1분 이상 가열을 안내합니다.",
         examples:
-          "장출혈성 대장균, 장관출혈성대장균, 대장균 O157:H7, 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증, 환자나 보균자의 분변, 보균자가 화장실을 비위생적으로 사용할 때, 하천수와 어패류 등에서 분리 검출, 조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다, 생육과 조리된 음식을 구분하여 보관하여야 한다, 다진 고기는 중심부 온도가 75℃ 1분 이상 가열하여야 한다",
+          "장출혈성 대장균, 장관출혈성대장균, 대장균 O157:H7, 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증, 햄, 치즈, 소시지, 채소샐러드, 분유, 두부, 음료수, 어패류, 도시락, 급식, 환자나 보균자의 분변, 보균자가 화장실을 비위생적으로 사용할 때, 하천수와 어패류 등에서 분리 검출, 조리기구(칼, 도마 등) 구분 사용으로 2차 오염을 방지하여야 한다, 생육과 조리된 음식을 구분하여 보관하여야 한다, 다진 고기는 중심부 온도가 75℃ 1분 이상 가열하여야 한다",
         sourceIds: ["foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning"],
       },
       {
@@ -4727,6 +4727,51 @@ const careTeamFoods: FoodRuleTerm[] = [
   [
     "하천수와 어패류 등에서 분리 검출",
     "식품안전나라 장출혈성 대장균 환경·어패류 오염 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 햄",
+    "식품안전나라 장출혈성 대장균 햄 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 치즈",
+    "식품안전나라 장출혈성 대장균 치즈 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 소시지",
+    "식품안전나라 장출혈성 대장균 소시지 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 채소샐러드",
+    "식품안전나라 장출혈성 대장균 채소샐러드 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 분유",
+    "식품안전나라 장출혈성 대장균 분유 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 두부",
+    "식품안전나라 장출혈성 대장균 두부 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 음료수",
+    "식품안전나라 장출혈성 대장균 음료수 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 도시락",
+    "식품안전나라 장출혈성 대장균 도시락 원인식품 확인 필요",
+    "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
+  ],
+  [
+    "장출혈성 대장균 급식",
+    "식품안전나라 장출혈성 대장균 급식 원인식품 확인 필요",
     "foodSafetyKoreaEnterohemorrhagicEcoliFoodPoisoning",
   ],
   [
