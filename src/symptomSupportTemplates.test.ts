@@ -70,6 +70,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.id).toBe(
       "survivor-exercise-management",
     );
+    expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.id).toBe(
+      "survivor-nutrition-lifestyle",
+    );
     expect(findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정")?.id).toBe(
       "survivor-work-return",
     );
@@ -741,6 +744,47 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 운동강도 상담"),
     ).not.toMatch(
       /운동을 처방하세요|운동하세요|운동을 시작하세요|진단하세요|치료하세요|완치|재발을 예방합니다|사망률을 낮춥니다|무조건 주 150분|반드시 주 2회/,
+    );
+  });
+
+  it("builds a survivor nutrition-lifestyle question from official guidance", () => {
+    const properWeightSentence = "적정체중을 유지 합니다.";
+    const balancedMealSentence = "골고루 균형잡힌 식사를 계획합니다.";
+    const colorfulFoodSentence =
+      "다양한 색의 과일, 채소, 전곡류를 선택합니다.";
+    const processedBurntSentence = "육가공품, 탄 음식의 섭취를 피합니다.";
+    const lowSaltSentence = "짠 음식의 섭취를 피하고 싱겁게 먹습니다.";
+    const alcoholSentence = "하루 한 두 잔의 술도 피합니다.";
+    const supplementSentence = "건강보조식품, 민간요법 등은 주의합니다.";
+    const template = findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사");
+
+    expect(template?.id).toBe("survivor-nutrition-lifestyle");
+    expect(template?.mealNote).toContain(properWeightSentence);
+    expect(template?.mealNote).toContain(balancedMealSentence);
+    expect(template?.mealNote).toContain(colorfulFoodSentence);
+    expect(template?.mealNote).toContain(processedBurntSentence);
+    expect(template?.clinicianQuestion).toContain(lowSaltSentence);
+    expect(template?.clinicianQuestion).toContain(alcoholSentence);
+    expect(template?.clinicianQuestion).toContain(supplementSentence);
+    expect(template?.clinicianQuestion).toContain("최근 식사와 간식");
+    expect(template?.clinicianQuestion).toContain("가공육·탄 음식·짠 음식·술 노출");
+    expect(template?.clinicianQuestion).toContain("건강보조식품·민간요법 목록");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 영양 식생활 균형잡힌 식사"),
+    ).toContain(supplementSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 영양 식생활 균형잡힌 식사"),
+    ).toContain(
+      "출처: 국가암정보센터 암생존자 영양·식생활 - https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 영양 식생활 균형잡힌 식사"),
+    ).not.toMatch(
+      /체중을 감량하세요|체중을 늘리세요|전곡류를 먹으세요|채소를 먹으세요|육가공품을 먹지 마세요|탄 음식을 먹지 마세요|짠 음식을 금지하세요|술을 끊으세요|건강보조식품을 중단하세요|민간요법을 중단하세요|식단을 처방하세요|진단하세요|치료하세요|처방하세요|암 재발을 예방합니다|완치됩니다/,
     );
   });
 
@@ -1668,7 +1712,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(41);
+    expect(symptomSupportTemplates).toHaveLength(42);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1705,6 +1749,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암생존자 영양 식생활 균형잡힌 식사")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T748C796/contents.do",
     );
     expect(findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
