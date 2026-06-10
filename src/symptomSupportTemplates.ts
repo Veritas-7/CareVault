@@ -26,6 +26,7 @@ const careQueueSymptomTemplateIds = new Set([
   "hiccup-consult",
   "infection-fever",
   "lymphedema",
+  "survivor-distress-adaptation",
 ]);
 
 export const symptomSupportTemplates: SymptomSupportTemplate[] = [
@@ -859,6 +860,38 @@ export const symptomSupportTemplates: SymptomSupportTemplate[] = [
     safetyNote,
     sourceLabel: "국가암정보센터 암생존자 마음관리 - 내 안의 불안 다스리기",
     sourceUrl: "https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
+  },
+  {
+    id: "survivor-distress-adaptation",
+    label: "암생존자 디스트레스 자가평가",
+    keywords: [
+      "암생존자 디스트레스",
+      "디스트레스 신호",
+      "디스트레스 자가평가",
+      "변화된 삶",
+      "몸과 마음 괴로움",
+      "살고 싶지 않",
+      "죽고 싶",
+      "재발 불안",
+      "기억력 집중력",
+      "distress adaptation",
+    ],
+    priorityKeywords: [
+      "암생존자 디스트레스",
+      "디스트레스 신호",
+      "디스트레스 자가평가",
+      "변화된 삶",
+      "살고 싶지 않",
+      "죽고 싶",
+      "distress adaptation",
+    ],
+    mealNote:
+      "디스트레스란 암생존자의 몸과 마음에 나타나는 모든 괴로움을 의미합니다. 모든 암환자의 20~40%(10명 중 2명에서 4명)는 디스트레스를 경험합니다. 힘든 신체 증상, 원하지 않은 외모의 변화, 정신건강 문제가 악화되는 것, 내가 하던 역할이나 대인 관계의 변화, 돌보아야 할 자녀, 나를 다시 도와주어야 하는 부모, 다른 사람에게 암에 대해 알려야 하는 것, 새로운 직장을 얻거나 학교에 가는 것, 복직하는 것에 대한 걱정과 실제 경험 사이의 간극, 암 관리에 대한 정보가 부족하거나, 암 관리를 계속 해야 한다는 부담, 살고 싶지 않거나 죽고 싶다는 생각을 진료 전 확인용으로 기록하세요.",
+    clinicianQuestion:
+      "자녀보육, 경제적 문제, 직업/학교, 우울/슬픔, 재발/죽음에 대한 불안, 식사, 피로, 기억력/집중력, 통증 같은 자가평가 항목을 체크하고, 예가 많을 수록 관심과 도움이 필요하다는 신호입니다. 살고 싶지 않거나 죽고 싶다는 생각이 있거나 걱정·두려움·불안·숨이 답답함·긴장·우울·의욕 저하·짜증·수면 문제·혼자라는 느낌·식욕 변화·무가치감·죽음에 대한 두려움이 커질 때 보호자, 진료팀, 위기 지원에 어떻게 즉시 공유할지 확인하세요.",
+    safetyNote,
+    sourceLabel: "국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기",
+    sourceUrl: "https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
   },
   {
     id: "pain-management",

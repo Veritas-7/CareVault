@@ -55,6 +55,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("치료 불안과 부작용 두려움")?.id).toBe(
       "psychological-stability",
     );
+    expect(findSymptomSupportTemplate("암생존자 디스트레스 자가평가")?.id).toBe(
+      "survivor-distress-adaptation",
+    );
     expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.id).toBe(
       "survivor-anxiety-management",
     );
@@ -553,6 +556,45 @@ describe("symptomSupportTemplates", () => {
     expect(template!.safetyNote).toContain("진료 전 확인용");
     expect(buildSymptomSupportQuestion(template!, "치료 불안")).not.toMatch(
       /심리치료를 하세요|정신과 진료를 받으세요|운동하세요|진단하세요|치료하세요|처방하세요|완치됩니다|걱정하지 않아도 된다고 보장하세요|암 치료 결과가 좋아집니다/,
+    );
+  });
+
+  it("builds a survivor distress-adaptation question from official guidance", () => {
+    const definitionSentence =
+      "디스트레스란 암생존자의 몸과 마음에 나타나는 모든 괴로움을 의미합니다.";
+    const prevalenceSentence =
+      "모든 암환자의 20~40%(10명 중 2명에서 4명)는 디스트레스를 경험합니다.";
+    const burdenSentence =
+      "암 관리에 대한 정보가 부족하거나, 암 관리를 계속 해야 한다는 부담";
+    const highDistressSentence = "살고 싶지 않거나 죽고 싶다는 생각";
+    const childcareSentence = "자녀보육";
+    const helpSignalSentence =
+      "예가 많을 수록 관심과 도움이 필요하다는 신호입니다.";
+    const template = findSymptomSupportTemplate("암생존자 디스트레스 자가평가");
+
+    expect(template?.id).toBe("survivor-distress-adaptation");
+    expect(template?.mealNote).toContain(definitionSentence);
+    expect(template?.mealNote).toContain(prevalenceSentence);
+    expect(template?.mealNote).toContain(burdenSentence);
+    expect(template?.mealNote).toContain(highDistressSentence);
+    expect(template?.clinicianQuestion).toContain(childcareSentence);
+    expect(template?.clinicianQuestion).toContain(helpSignalSentence);
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "저장하면 진료 준비 큐에도 근거가 남는 확인 항목입니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 디스트레스 자가평가"),
+    ).toContain(highDistressSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 디스트레스 자가평가"),
+    ).toContain(
+      "출처: 국가암정보센터 암생존자 마음관리 - 변화된 삶에 적응하기 - https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 디스트레스 자가평가"),
+    ).not.toMatch(
+      /디스트레스를 진단하세요|치료하세요|처방하세요|혼자 견디세요|암관리를 중단하세요|자살하세요|괜찮으니 참으세요|문제가 아닙니다|위험하지 않습니다/,
     );
   });
 
@@ -1255,7 +1297,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(33);
+    expect(symptomSupportTemplates).toHaveLength(34);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1277,6 +1319,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("치료 불안")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T327C329/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암생존자 디스트레스 자가평가")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T788C790/contents.do",
     );
     expect(findSymptomSupportTemplate("암생존자 불안 신체증상")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T788C791/contents.do",
