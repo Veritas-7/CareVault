@@ -6467,6 +6467,11 @@ const careTeamFoods: FoodRuleTerm[] = [
     "foodSafetyKoreaCampylobacterFoodPoisoning",
   ],
   [
+    "캠필로박터 가축",
+    "식품안전나라 캠필로박터 식중독 가축 도살 해체 오염경로 확인 필요",
+    "foodSafetyKoreaCampylobacterFoodPoisoning",
+  ],
+  [
     "육류의 생식이나 불충분한 가열",
     "식품안전나라 캠필로박터 식중독 육류 생식·불충분 가열 확인 필요",
     "foodSafetyKoreaCampylobacterFoodPoisoning",
