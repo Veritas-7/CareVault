@@ -12674,7 +12674,7 @@ describe("healthRules", () => {
       safePracticeAssessment.matches.map((match) => [match.term, match]),
     );
     const riskAssessment = assessCancerFood(
-      "장출혈성 대장균은 대장균 O157:H7이 대표적이고, 심하면 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증이 나타날 수 있으며, 환자나 보균자의 분변, 보균자가 화장실을 비위생적으로 사용할 때, 하천수와 어패류 등에서 분리 검출되는 오염 경로와 장출혈성 대장균 하천수, 장출혈성 대장균 햄, 장출혈성 대장균 치즈, 장출혈성 대장균 소시지, 장출혈성 대장균 채소샐러드, 장출혈성 대장균 분유, 장출혈성 대장균 두부, 장출혈성 대장균 음료수, 장출혈성 대장균 어패류, 장출혈성 대장균 도시락, 장출혈성 대장균 급식 원인식품을 확인",
+      "장출혈성 대장균은 대장균 O157:H7이 대표적이고, 심하면 출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증이 나타날 수 있으며, 환자나 보균자의 분변, 소, 돼지와 개, 고양이 등의 분변, 보균자가 화장실을 비위생적으로 사용할 때, 하천수와 어패류 등에서 분리 검출되는 오염 경로와 장출혈성 대장균 동물 분변, 장출혈성 대장균 하천수, 장출혈성 대장균 햄, 장출혈성 대장균 치즈, 장출혈성 대장균 소시지, 장출혈성 대장균 채소샐러드, 장출혈성 대장균 분유, 장출혈성 대장균 두부, 장출혈성 대장균 음료수, 장출혈성 대장균 어패류, 장출혈성 대장균 도시락, 장출혈성 대장균 급식 원인식품을 확인",
     );
     const riskTerms = riskAssessment.matches.map((match) => match.term);
     const riskMatchesByTerm = Object.fromEntries(
@@ -12692,6 +12692,7 @@ describe("healthRules", () => {
     expect(foodSafetyGuide?.detail).toContain("장관출혈성대장균");
     expect(foodSafetyGuide?.detail).toContain("대장균 O157:H7");
     expect(foodSafetyGuide?.detail).toContain("출혈성 대장염");
+    expect(foodSafetyGuide?.detail).toContain("소, 돼지와 개, 고양이 등의 분변");
     expect(foodSafetyGuide?.detail).toContain("햄, 치즈, 소시지");
     expect(foodSafetyGuide?.detail).toContain("채소샐러드");
     expect(foodSafetyGuide?.detail).toContain("분유, 두부, 음료수");
@@ -12726,8 +12727,10 @@ describe("healthRules", () => {
       "대장균 O157:H7",
       "출혈성 대장염, 용혈성요독증후군, 혈전성혈소판 감소증",
       "환자나 보균자의 분변",
+      "소, 돼지와 개, 고양이 등의 분변",
       "보균자가 화장실을 비위생적으로 사용할 때",
       "하천수와 어패류 등에서 분리 검출",
+      "장출혈성 대장균 동물 분변",
       "장출혈성 대장균 하천수",
       "장출혈성 대장균 햄",
       "장출혈성 대장균 치즈",
