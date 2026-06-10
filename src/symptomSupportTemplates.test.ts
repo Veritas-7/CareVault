@@ -70,6 +70,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.id).toBe(
       "survivor-exercise-management",
     );
+    expect(findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정")?.id).toBe(
+      "survivor-work-return",
+    );
     expect(findSymptomSupportTemplate("암생존자 가족 통합지지 상담")?.id).toBe(
       "survivor-integrated-support",
     );
@@ -738,6 +741,58 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 운동강도 상담"),
     ).not.toMatch(
       /운동을 처방하세요|운동하세요|운동을 시작하세요|진단하세요|치료하세요|완치|재발을 예방합니다|사망률을 낮춥니다|무조건 주 150분|반드시 주 2회/,
+    );
+  });
+
+  it("builds a survivor work-return question from official guidance", () => {
+    const noNeedQuitSentence =
+      "암을 진단받았다고 해서 반드시 일을 그만둘 필요는 없습니다.";
+    const consultTimingSentence =
+      "치료중 일을 유지해도 되는지, 치료 후 언제 복귀할지 담당 의료진과 잘 상의하여 결정 하십시오.";
+    const objectiveAssessmentSentence =
+      "무엇보다 자신의 신체적, 정신적, 경제적 상황, 업무와 관련된 요인, 치료일정 등을 의료진과 함께 객관적으로 평가한 뒤 일을 계속해도 되는지, 쉬어야 할지, 쉰다면 얼마나 쉬어야 할지 상의하시기 바랍니다.";
+    const sideEffectSentence =
+      "암 치료로 예상되는 부작용 및 어려움";
+    const workAdjustmentSentence =
+      "근무시간 조정 가능여부";
+    const flexibleWorkSentence =
+      "출퇴근시간 조정, 유연근무제, 재택근무 변경 등";
+    const benefitImpactSentence =
+      "업무조정이 급여나 복지혜택에 미치는 영향";
+    const proofDocumentSentence = "필요한 증빙서류 (진단서 등)";
+    const workDiningSentence =
+      "다만, 술은 피하시고, 되도록 자극적이지 않는 음식으로 골라 스트레스 받지 말고 즐겁게 드시기 바랍니다.";
+    const template = findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정");
+
+    expect(template?.id).toBe("survivor-work-return");
+    expect(template?.mealNote).toContain(noNeedQuitSentence);
+    expect(template?.mealNote).toContain(consultTimingSentence);
+    expect(template?.mealNote).toContain(objectiveAssessmentSentence);
+    expect(template?.mealNote).toContain(sideEffectSentence);
+    expect(template?.clinicianQuestion).toContain(workAdjustmentSentence);
+    expect(template?.clinicianQuestion).toContain(flexibleWorkSentence);
+    expect(template?.clinicianQuestion).toContain(benefitImpactSentence);
+    expect(template?.clinicianQuestion).toContain(proofDocumentSentence);
+    expect(template?.clinicianQuestion).toContain(workDiningSentence);
+    expect(template?.clinicianQuestion).toContain("치료와 일을 병행할 수 있는지");
+    expect(template?.clinicianQuestion).toContain("직장 복귀시기");
+    expect(template?.clinicianQuestion).toContain("부작용 및 스트레스 반응");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 직업복귀 근무시간 조정"),
+    ).toContain(objectiveAssessmentSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 직업복귀 근무시간 조정"),
+    ).toContain(
+      "출처: 국가암정보센터 암생존자 직업복귀 - https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "암생존자 직업복귀 근무시간 조정"),
+    ).not.toMatch(
+      /복귀하세요|일하세요|퇴사하지 마세요|그만두세요|근무시간을 조정하세요|유연근무제를 신청하세요|재택근무를 하세요|술을 마셔도 됩니다|매운 음식을 먹어도 됩니다|진단하세요|치료하세요|처방하세요|직업복귀가 보장됩니다|삶의 질이 좋아집니다|보상을 신청하세요/,
     );
   });
 
@@ -1613,7 +1668,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(40);
+    expect(symptomSupportTemplates).toHaveLength(41);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -1650,6 +1705,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 운동강도 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C795/contents.do",
+    );
+    expect(findSymptomSupportTemplate("암생존자 직업복귀 근무시간 조정")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/S1T748C798/contents.do",
     );
     expect(findSymptomSupportTemplate("암생존자 가족 통합지지 상담")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T786C841/contents.do",
