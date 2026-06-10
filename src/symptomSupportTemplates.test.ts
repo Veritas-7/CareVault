@@ -159,6 +159,11 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")?.id).toBe(
       "cervical-recurrence-symptom-check",
     );
+    expect(
+      findSymptomSupportTemplate(
+        "재발성 자궁경부암 골반 내 국소 재발 골반장기적출술 요로전환술 장전환술",
+      )?.id,
+    ).toBe("cervical-recurrent-treatment-choice");
     expect(findSymptomSupportTemplate("방사선치료 후 혈뇨와 혈변")?.id).toBe(
       "cervical-urinary-bowel-bleeding",
     );
@@ -2345,6 +2350,49 @@ describe("symptomSupportTemplates", () => {
     );
   });
 
+  it("builds a recurrent cervical-cancer treatment-choice question from official treatment guidance", () => {
+    const recurrenceScopeSentence =
+      "재발 은 크게 골반 내에서 발생하는 골반 내 국소 재발과 폐나 간, 뇌, 뼈와 같이 골반으로부터 떨어진 장기에 발생하는 원격 재발이 있으며, 치료방법은 환자의 상태 및 재발 부위에 따라 달라집니다.";
+    const localTreatmentSentence =
+      "골반 내 국소 재발이면 주로 방사선요법(수술 후 재발한 경우), 동시항암화학방사선치료, 골반장기적출술 등이 이용됩니다.";
+    const template = findSymptomSupportTemplate(
+      "재발성 자궁경부암 골반 내 국소 재발 골반장기적출술 요로전환술 장전환술",
+    )!;
+    const actionNote = buildSymptomSupportActionNote(template);
+    const question = buildSymptomSupportQuestion(
+      template,
+      "재발성 자궁경부암 골반 내 국소 재발 골반장기적출술 요로전환술 장전환술",
+    );
+
+    expect(template.id).toBe("cervical-recurrent-treatment-choice");
+    expect(template.mealNote).toContain(recurrenceScopeSentence);
+    expect(template.mealNote).toContain("골반 내 국소 재발");
+    expect(template.mealNote).toContain("원격 재발");
+    expect(template.mealNote).toContain("환자의 상태");
+    expect(template.mealNote).toContain("재발 부위");
+    expect(template.clinicianQuestion).toContain(localTreatmentSentence);
+    expect(template.clinicianQuestion).toContain("요로전환술");
+    expect(template.clinicianQuestion).toContain("장전환술");
+    expect(template.clinicianQuestion).toContain("단독 병소");
+    expect(template.clinicianQuestion).toContain("외과적 절제술");
+    expect(template.clinicianQuestion).toContain("다발성 전이");
+    expect(actionNote).toContain("이전 방사선치료 여부");
+    expect(actionNote).toContain("수술 가능성");
+    expect(question).toContain(
+      "출처: 국가암정보센터 자궁경부암 치료방법 - https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
+    );
+    expect(buildSymptomSupportQueueHint(template)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      findSymptomSupportTemplate("자궁경부암 재발 의심 체중감소 하지 부종 기침 객혈 흉통")
+        ?.id,
+    ).toBe("cervical-recurrence-symptom-check");
+    expect(question).not.toMatch(
+      /방사선치료를 받으세요|항암화학요법을 받으세요|골반장기적출술을 받으세요|수술하세요|치료하세요|처방하세요|진단하세요|완치|괜찮습니다|기다리세요/,
+    );
+  });
+
   it("prioritizes cervical pain wording over the generic pain template", () => {
     expect(findSymptomSupportTemplate("골반 통증과 다리로 뻗치는 통증")?.id).toBe(
       "cervical-general-warning",
@@ -2920,7 +2968,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(64);
+    expect(symptomSupportTemplates).toHaveLength(65);
     const allowedOfficialSource = (template: (typeof symptomSupportTemplates)[number]) =>
       (template.sourceLabel.startsWith("국가암정보센터") &&
         template.sourceUrl.startsWith("https://www.cancer.go.kr/")) ||
@@ -3096,6 +3144,12 @@ describe("symptomSupportTemplates", () => {
         ?.sourceUrl,
     ).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4895",
+    );
+    expect(
+      findSymptomSupportTemplate("재발성 자궁경부암 골반장기적출술 요로전환술")
+        ?.sourceUrl,
+    ).toBe(
+      "https://www.cancer.go.kr/lay1/program/S1T211C223/cancer/view.do?cancer_seq=4877&menu_seq=4893",
     );
     expect(findSymptomSupportTemplate("혈뇨")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/program/S1T211C211/cancer/view.do?cancer_seq=4877&menu_seq=4894",
