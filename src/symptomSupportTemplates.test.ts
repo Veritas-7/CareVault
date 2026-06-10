@@ -67,6 +67,9 @@ describe("symptomSupportTemplates", () => {
     expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.id).toBe(
       "survivor-sleep-management",
     );
+    expect(findSymptomSupportTemplate("스트레스 때문에 암에 걸렸나요 가족 탓 죄책감")?.id).toBe(
+      "stress-cancer-cause-misconception",
+    );
     expect(findSymptomSupportTemplate("암치료 후 슬럼프 울적함 의욕 상실 한 달")?.id).toBe(
       "survivor-treatment-slump",
     );
@@ -751,6 +754,49 @@ describe("symptomSupportTemplates", () => {
       buildSymptomSupportQuestion(template!, "암생존자 수면관리 수면효율"),
     ).not.toMatch(
       /수면제를 복용하세요|수면제를 처방하세요|카페인을 끊으세요|물을 적게 마시세요|저녁 물 금지|불면증을 진단하세요|치료하세요|처방하세요|인지 행동 치료를 하세요|8시간 이상 자세요|휴대 전화를 금지하세요/,
+    );
+  });
+
+  it("builds a stress-cancer cause misconception question from official guidance", () => {
+    const blameSentence =
+      "암환자들은 흔히 누군가를 탓하고 싶은 마음이 듭니다.";
+    const stressBlameSentence =
+      "암이 스트레스 때문에 생겼다고 생각하는 경우에는 스트레스를 불러일으킨 상황이나 사람을 탓하는 경향이 있습니다.";
+    const directCauseSentence =
+      "스트레스가 직접적인 발암인자, 암이 생기게 한 원인이라고 할 수는 없습니다.";
+    const immuneSentence =
+      "이미 암이 있는 환자에게는 면역력을 약화시켜 악성세포의 성장에 영향을 줍니다.";
+    const managementSentence =
+      "스트레스를 피하는 것보다 더 중요한 일은 건전한 스트레스 해소법을 통해 스트레스를 잘 관리하는 것입니다.";
+    const template = findSymptomSupportTemplate("스트레스 때문에 암에 걸렸나요 가족 탓 죄책감");
+
+    expect(template?.id).toBe("stress-cancer-cause-misconception");
+    expect(template?.mealNote).toContain(blameSentence);
+    expect(template?.mealNote).toContain(stressBlameSentence);
+    expect(template?.mealNote).toContain(directCauseSentence);
+    expect(template?.mealNote).toContain(immuneSentence);
+    expect(template?.clinicianQuestion).toContain(managementSentence);
+    expect(template?.clinicianQuestion).toContain("적당한 운동");
+    expect(template?.clinicianQuestion).toContain("건강한 식생활");
+    expect(buildSymptomSupportQueueHint(template!)).toBe(
+      "질문 초안에는 이 출처와 URL이 함께 남습니다.",
+    );
+    expect(
+      buildSymptomSupportQuestion(template!, "스트레스 때문에 암에 걸렸나요 가족 탓 죄책감"),
+    ).toContain(directCauseSentence);
+    expect(
+      buildSymptomSupportQuestion(template!, "스트레스 때문에 암에 걸렸나요 가족 탓 죄책감"),
+    ).toContain(
+      "출처: 국가암정보센터 암환자 정신건강 - 스트레스와 암 원인 오해 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&rn=46&rows=12",
+    );
+    expect(findSymptomSupportTemplate("암생존자 직업복귀 부작용 및 스트레스 반응 기록")?.id).toBe(
+      "survivor-work-return",
+    );
+    expect(template!.safetyNote).toContain("진료 전 확인용");
+    expect(
+      buildSymptomSupportQuestion(template!, "스트레스 때문에 암에 걸렸나요 가족 탓 죄책감"),
+    ).not.toMatch(
+      /스트레스 때문에 암에 걸렸습니다|스트레스가 암 원인입니다|스트레스가 직접적인 암 원인입니다|누군가를 탓하세요|운동하세요|식생활을 바꾸세요|신앙생활을 하세요|면역력이 회복됩니다|악성세포 성장이 줄어듭니다|치료하세요|처방하세요|진단하세요/,
     );
   });
 
@@ -2567,7 +2613,7 @@ describe("symptomSupportTemplates", () => {
   });
 
   it("keeps every symptom-support template tied to an official Korean source URL", () => {
-    expect(symptomSupportTemplates).toHaveLength(57);
+    expect(symptomSupportTemplates).toHaveLength(58);
     expect(
       symptomSupportTemplates.every(
         (template) =>
@@ -2601,6 +2647,9 @@ describe("symptomSupportTemplates", () => {
     );
     expect(findSymptomSupportTemplate("암생존자 수면관리 수면효율")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/S1T748C794/contents.do",
+    );
+    expect(findSymptomSupportTemplate("스트레스 때문에 암에 걸렸나요 가족 탓 죄책감")?.sourceUrl).toBe(
+      "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22076&condition=&cpage=4&keyword=&rn=46&rows=12",
     );
     expect(findSymptomSupportTemplate("암치료 후 슬럼프 울적함 의욕 상실 한 달")?.sourceUrl).toBe(
       "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
