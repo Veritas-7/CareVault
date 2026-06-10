@@ -14828,6 +14828,92 @@ describe("healthRules", () => {
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
 
+  it("recognizes CDC weakened-immune raw sprout and cut-melon food safety choices", () => {
+    const safeAssessment = assessCancerFood(
+      "익힌 새싹채소, 익힌 숙주, 자른 멜론 냉장 보관 7일 이하",
+    );
+    const safeTerms = safeAssessment.matches.map((match) => match.term);
+    const safeMatchesByTerm = Object.fromEntries(
+      safeAssessment.matches.map((match) => [match.term, match]),
+    );
+    const riskAssessment = assessCancerFood(
+      "생 새싹채소, 덜 익힌 새싹채소, 생 알팔파 새싹, 생 숙주, 덜 익힌 콩나물, 자른 멜론 2시간 이상 상온, 자른 멜론 1시간 이상 고온",
+    );
+    const riskTerms = riskAssessment.matches.map((match) => match.term);
+    const riskMatchesByTerm = Object.fromEntries(
+      riskAssessment.matches.map((match) => [match.term, match]),
+    );
+    const careTeamGuideText = cancerFoodGuideCategories
+      .find((category) => category.id === "care-team")
+      ?.items.map((item) => `${item.label} ${item.detail} ${item.examples}`)
+      .join(" ");
+
+    expect(foodGuidanceSources.cdcWeakenedImmuneFoodSafety).toMatchObject({
+      label: "CDC 면역저하자 안전한 식품 선택",
+      url: "https://www.cdc.gov/food-safety/foods/weakened-immune-systems.html",
+    });
+    expect(careTeamGuideText).toContain("항암화학요법이나 방사선치료를 받는 경우");
+    expect(careTeamGuideText).toContain("생 또는 덜 익힌 새싹채소");
+    expect(careTeamGuideText).toContain("자른 멜론을 2시간 넘게 상온에 둔 경우");
+    expect(careTeamGuideText).toContain("익힌 새싹채소");
+    expect(careTeamGuideText).toContain("자른 멜론 냉장 보관 7일 이하");
+
+    expect(safeAssessment.level).toBe("ok");
+    expect(safeTerms).toEqual(["익힌 새싹채소", "익힌 숙주", "자른 멜론 냉장 보관 7일 이하"]);
+    for (const term of ["익힌 새싹채소", "익힌 숙주"]) {
+      expect(safeMatchesByTerm[term]).toMatchObject({
+        level: "ok",
+        reason: "CDC 면역저하자 식품안전 익힌 새싹채소 후보",
+        sourceId: "cdcWeakenedImmuneFoodSafety",
+      });
+    }
+    expect(safeMatchesByTerm["자른 멜론 냉장 보관 7일 이하"]).toMatchObject({
+      level: "ok",
+      reason: "CDC 면역저하자 식품안전 자른 멜론 냉장 보관 후보",
+      sourceId: "cdcWeakenedImmuneFoodSafety",
+    });
+
+    expect(riskAssessment.level).toBe("risk");
+    expect(riskTerms).toEqual([
+      "생 새싹채소",
+      "덜 익힌 새싹채소",
+      "생 알팔파 새싹",
+      "생 숙주",
+      "덜 익힌 콩나물",
+      "자른 멜론 2시간 이상 상온",
+      "자른 멜론 1시간 이상 고온",
+    ]);
+    for (const term of [
+      "생 새싹채소",
+      "덜 익힌 새싹채소",
+      "생 알팔파 새싹",
+      "생 숙주",
+      "덜 익힌 콩나물",
+    ]) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요",
+        sourceId: "cdcWeakenedImmuneFoodSafety",
+      });
+    }
+    for (const term of ["자른 멜론 2시간 이상 상온", "자른 멜론 1시간 이상 고온"]) {
+      expect(riskMatchesByTerm[term]).toMatchObject({
+        level: "risk",
+        reason: "CDC 면역저하자 식품안전 자른 멜론 상온 방치 확인 필요",
+        sourceId: "cdcWeakenedImmuneFoodSafety",
+      });
+    }
+    expect(riskTerms).not.toContain("새싹채소");
+    expect(riskTerms).not.toContain("숙주");
+    expect(riskTerms).not.toContain("콩나물");
+    expect(formatFoodMatchEvidence(riskMatchesByTerm["생 새싹채소"])).toContain(
+      "CDC 면역저하자 안전한 식품 선택 - https://www.cdc.gov/food-safety/foods/weakened-immune-systems.html",
+    );
+    expect(JSON.stringify([...safeAssessment.matches, ...riskAssessment.matches])).not.toMatch(
+      /치료 음식|완치|암을 낫게|감염을 막습니다|새싹채소를 모두 금지/,
+    );
+  });
+
   it("recognizes immune-low leftover discard and abnormal food condition wording", () => {
     const assessment = assessCancerFood(
       "냉장고에 보관하던 남은 음식도 3~4일이 지나면 버립니다, 식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다",

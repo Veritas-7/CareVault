@@ -60,6 +60,7 @@ export type FoodGuidanceSourceId =
   | "nccTreatmentHealthyEatingTips"
   | "nccAfterTreatmentHealthyEating"
   | "nccCancerSurvivorHealthGuide"
+  | "cdcWeakenedImmuneFoodSafety"
   | "nccSurvivorNutritionLifestyle"
   | "nccSurvivorHealthyManagementNutrition"
   | "nccSurvivorWorkReturn"
@@ -271,6 +272,10 @@ export const foodGuidanceSources: Record<
   nccCancerSurvivorHealthGuide: {
     label: "국가암정보센터 암경험자 건강관리 가이드",
     url: "https://www.cancer.go.kr/org_bbs_b_download.do?attach_seq=8132",
+  },
+  cdcWeakenedImmuneFoodSafety: {
+    label: "CDC 면역저하자 안전한 식품 선택",
+    url: "https://www.cdc.gov/food-safety/foods/weakened-immune-systems.html",
   },
   nccSurvivorNutritionLifestyle: {
     label: "국가암정보센터 암생존자 영양·식생활",
@@ -1572,6 +1577,14 @@ export const cancerFoodGuideCategories: CancerFoodGuideCategory[] = [
         sourceIds: ["nccCancerSurvivorHealthGuide"],
       },
       {
+        label: "CDC 면역저하자 새싹채소·자른 멜론 확인",
+        detail:
+          "CDC는 항암화학요법이나 방사선치료를 받는 경우 면역저하 상태일 수 있고, 면역저하자는 식중독 위험이 더 높다고 설명합니다. 채소와 과일 선택에서는 생 또는 덜 익힌 새싹채소, 세척하지 않은 신선 과일·채소, 자른 멜론을 2시간 넘게 상온에 둔 경우(고온 노출 시 1시간)를 위험 선택으로 분리하고, 익힌 새싹채소와 씻은 채소·과일, 자른 직후의 멜론 또는 자른 멜론 냉장 보관 7일 이하를 더 안전한 선택으로 제시합니다. 앱에서는 모든 새싹채소나 멜론을 금지하지 않고, 최근 WBC/ANC·항암·방사선 일정과 함께 생식·덜 익힘·상온 방치 여부를 진료팀에 확인할 기록 후보로 사용합니다.",
+        examples:
+          "항암화학요법이나 방사선치료를 받는 경우, 생 또는 덜 익힌 새싹채소, 생 새싹채소, 덜 익힌 새싹채소, 생 알팔파 새싹, 생 숙주, 덜 익힌 콩나물, 자른 멜론을 2시간 넘게 상온에 둔 경우, 자른 멜론 2시간 이상 상온, 자른 멜론 1시간 이상 고온, 익힌 새싹채소, 익힌 숙주, 익힌 콩나물, 자른 멜론 냉장 보관 7일 이하",
+        sourceIds: ["cdcWeakenedImmuneFoodSafety"],
+      },
+      {
         label: "날음식·비살균·보관/세척 주의 식품",
         detail:
           "백혈구 감소 등 면역저하 맥락에서는 음식으로 인한 감염을 줄이기 위해 완전히 익힌 음식, 과일·채소 세척, 손상된 캔이나 녹은 냉동제품 구매 주의, 갈은 고기의 가는 과정에서 오염 가능성, 날계란이나 덜 익힌 계란이 들어간 음식 회피, 상온 운반 후 즉시 냉장, 오래 보관한 남은 음식과 곰팡이가 핀 음식 폐기, 저온살균 제품 여부를 확인합니다.",
@@ -2692,6 +2705,14 @@ const supportiveFoods: FoodRuleTerm[] = [
     "nccImmuneLowDiet",
   ],
   ["완전히 익힌 음식", "면역저하 시 익힌 음식·저온살균 제품 선택 후보", "nccImmuneLowDiet"],
+  ["익힌 새싹채소", "CDC 면역저하자 식품안전 익힌 새싹채소 후보", "cdcWeakenedImmuneFoodSafety"],
+  ["익힌 숙주", "CDC 면역저하자 식품안전 익힌 새싹채소 후보", "cdcWeakenedImmuneFoodSafety"],
+  ["익힌 콩나물", "CDC 면역저하자 식품안전 익힌 새싹채소 후보", "cdcWeakenedImmuneFoodSafety"],
+  [
+    "자른 멜론 냉장 보관 7일 이하",
+    "CDC 면역저하자 식품안전 자른 멜론 냉장 보관 후보",
+    "cdcWeakenedImmuneFoodSafety",
+  ],
   ["저온살균 우유", "면역저하 시 저온살균 우유·주스·요구르트 제품 선택 후보", "nccImmuneLowDiet"],
   ["저온살균 주스", "면역저하 시 저온살균 우유·주스·요구르트 제품 선택 후보", "nccImmuneLowDiet"],
   ["저온살균 쥬스", "면역저하 시 유효기간·저온살균 제품 확인 후보", "nccImmuneLowDiet"],
@@ -6995,6 +7016,29 @@ const careTeamFoods: FoodRuleTerm[] = [
   ["비살균 요구르트", "면역저하 시 저온살균 제품 여부 확인 필요", "nccImmuneLowDiet"],
   ["비살균", "면역저하 시 저온살균 제품 여부 확인 필요", "nccImmuneLowDiet"],
   ["곰팡이", "면역저하 시 곰팡이가 핀 음식 사용 금지 기준 확인", "nccImmuneLowDiet"],
+  ["생 새싹채소", "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요", "cdcWeakenedImmuneFoodSafety"],
+  ["날 새싹채소", "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요", "cdcWeakenedImmuneFoodSafety"],
+  [
+    "덜 익힌 새싹채소",
+    "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요",
+    "cdcWeakenedImmuneFoodSafety",
+  ],
+  ["생 알팔파 새싹", "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요", "cdcWeakenedImmuneFoodSafety"],
+  ["덜 익힌 알팔파 새싹", "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요", "cdcWeakenedImmuneFoodSafety"],
+  ["생 숙주", "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요", "cdcWeakenedImmuneFoodSafety"],
+  ["덜 익힌 숙주", "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요", "cdcWeakenedImmuneFoodSafety"],
+  ["생 콩나물", "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요", "cdcWeakenedImmuneFoodSafety"],
+  ["덜 익힌 콩나물", "CDC 면역저하자 식품안전 생/덜 익힌 새싹채소 확인 필요", "cdcWeakenedImmuneFoodSafety"],
+  [
+    "자른 멜론 2시간 이상 상온",
+    "CDC 면역저하자 식품안전 자른 멜론 상온 방치 확인 필요",
+    "cdcWeakenedImmuneFoodSafety",
+  ],
+  [
+    "자른 멜론 1시간 이상 고온",
+    "CDC 면역저하자 식품안전 자른 멜론 상온 방치 확인 필요",
+    "cdcWeakenedImmuneFoodSafety",
+  ],
   ["상온 30분 이상 운반", "면역저하 시 상온 운반 후 즉시 냉장 확인", "nccImmuneLowDiet"],
   ["30분 이상 상온에서 운반", "면역저하 시 상온 운반 후 즉시 냉장 확인", "nccImmuneLowDiet"],
   ["녹슬거나 움푹해진 캔", "면역저하 시 손상 캔·해동 냉동제품 구매 주의", "nccImmuneLowDiet"],
