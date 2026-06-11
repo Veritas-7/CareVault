@@ -190,6 +190,13 @@ import {
 } from "./documentKnowledge";
 import { buildDocumentParserAudit } from "./documentParserAudit";
 import {
+  formatDocumentParserAuditClipboardDescription,
+  formatDocumentParserAuditClipboardFailedStatus,
+  formatDocumentParserAuditClipboardStatus,
+  formatDocumentParserAuditClipboardText,
+  formatDocumentParserAuditClipboardUnsupportedStatus,
+} from "./documentParserAuditClipboard";
+import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
@@ -1544,6 +1551,14 @@ function App() {
     () => buildDocumentParserAudit(state.documents),
     [state.documents],
   );
+  const documentParserAuditClipboardDescription = useMemo(
+    () => formatDocumentParserAuditClipboardDescription(documentParserAudit),
+    [documentParserAudit],
+  );
+  const documentParserAuditClipboardStatus = useMemo(
+    () => formatDocumentParserAuditClipboardStatus(documentParserAudit),
+    [documentParserAudit],
+  );
   const documentDraftHasRequiredFields = hasRequiredTextValues(
     documentDraft.title,
     documentDraft.body,
@@ -1844,6 +1859,22 @@ function App() {
     setDocumentCategoryFilter("all");
     setDocumentStatusFilter("all");
     setSaveLabel(option.statusLabel);
+  };
+
+  const copyDocumentParserAudit = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel(formatDocumentParserAuditClipboardUnsupportedStatus(documentParserAudit));
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(formatDocumentParserAuditClipboardText(documentParserAudit))
+      .then(() => {
+        setTransientSaveLabel(documentParserAuditClipboardStatus);
+      })
+      .catch(() => {
+        setSaveLabel(formatDocumentParserAuditClipboardFailedStatus(documentParserAudit));
+      });
   };
 
   const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>
@@ -7411,6 +7442,16 @@ function App() {
                 <div className="document-parser-audit-title">
                   <strong>문서 파서 점검</strong>
                   <span>{documentParserAudit.summary}</span>
+                  <button
+                    className="secondary-inline-button document-parser-audit-copy"
+                    type="button"
+                    onClick={copyDocumentParserAudit}
+                    aria-label={documentParserAuditClipboardDescription}
+                    title={documentParserAuditClipboardDescription}
+                  >
+                    <ClipboardList aria-hidden="true" />
+                    점검 복사
+                  </button>
                 </div>
                 <ul>
                   {documentParserAudit.items.map((item) => (

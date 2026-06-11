@@ -3824,6 +3824,13 @@ textarea:focus-visible {
   font-weight: 800;
 }
 
+.document-parser-audit-copy {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 9px;
+  font-size: 0.78rem;
+}
+
 .document-parser-audit ul {
   display: grid;
   gap: 6px;
