@@ -12,6 +12,7 @@
     "runtime:doctor:dev": "bash scripts/verify_runtime_clean.sh --expect-dev",
     "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
     "clinical:sources:smoke": "bash scripts/smoke_clinical_source_urls.sh",
+    "clinical:review:smoke": "vitest run src/clinicalSourceRegistry.test.ts src/clinicalReviewPacket.test.ts",
     "hwp:smoke:test": "bash scripts/test_hwp_sample_smoke.sh",
     "rag:ollama:doctor:test": "bash scripts/test_ollama_runtime_doctor.sh",
     "rag:ollama:smoke:test": "bash scripts/test_ollama_rag_smoke.sh",
