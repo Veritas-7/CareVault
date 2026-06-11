@@ -25,6 +25,7 @@ touch "$SAMPLES_DIR/02-lab.hwpx"
 touch "$SAMPLES_DIR/03-note.hwpml"
 touch "$SAMPLES_DIR/ignore.txt"
 REPORT_PATH="$TMP_DIR/hwp-smoke-report.json"
+TERMS_REPORT_PATH="$TMP_DIR/hwp-smoke-terms-report.json"
 
 run_smoke() {
   local output_file="$1"
@@ -107,10 +108,16 @@ report_text = report_path.read_text()
 if sample_dir in report_text:
     raise SystemExit("report leaked the sample directory path")
 report = json.loads(report_text)
-assert report["schema"] == "carevault-hwp-smoke-report.v1"
+assert report["schema"] == "carevault-hwp-smoke-report.v2"
 assert report["status"] == "passed"
 assert report["sample_count"] == 3
 assert report["expected_terms_provided"] is False
+assert report["expected_term_count"] == 0
+assert report["objective_term_groups"] == {
+    "cervical_cancer": False,
+    "hypertension": False,
+    "diabetes": False,
+}
 assert [sample["basename"] for sample in report["samples"]] == [
     "01-follow-up.HWP",
     "02-lab.hwpx",
@@ -129,6 +136,33 @@ CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" expect_success "single-file
 assert_contains "$TMP_DIR/single-file.out" "Samples: 1"
 assert_contains "$TMP_DIR/single-file.out" "Sample: 02-lab.hwpx"
 assert_not_contains "$TMP_DIR/single-file.out" "$SAMPLES_DIR"
+
+CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
+  CAREVAULT_HWP_SAMPLE_TERMS="자궁경부암,혈압,당화혈색소" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$TERMS_REPORT_PATH" \
+  expect_success "single-file-with-terms"
+python3 - "$TERMS_REPORT_PATH" "$SAMPLES_DIR" <<'PY'
+import json
+import pathlib
+import sys
+
+report_path = pathlib.Path(sys.argv[1])
+sample_dir = sys.argv[2]
+report_text = report_path.read_text()
+if sample_dir in report_text:
+    raise SystemExit("report leaked the sample directory path")
+report = json.loads(report_text)
+assert report["schema"] == "carevault-hwp-smoke-report.v2"
+assert report["expected_terms_provided"] is True
+assert report["expected_term_count"] == 3
+assert report["objective_term_groups"] == {
+    "cervical_cancer": True,
+    "hypertension": True,
+    "diabetes": True,
+}
+assert [sample["basename"] for sample in report["samples"]] == ["02-lab.hwpx"]
+PY
+assert_not_contains "$TMP_DIR/single-file-with-terms.out" "$SAMPLES_DIR"
 
 EMPTY_DIR="$TMP_DIR/empty"
 mkdir -p "$EMPTY_DIR"

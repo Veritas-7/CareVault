@@ -10,16 +10,23 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 
 VALID_HWP_REPORT="$TMP_DIR/valid-hwp-report.json"
 PATH_LEAK_HWP_REPORT="$TMP_DIR/path-leak-hwp-report.json"
+MISSING_GROUP_HWP_REPORT="$TMP_DIR/missing-group-hwp-report.json"
 VALID_EXTERNAL_REPORT="$TMP_DIR/valid-external-review.json"
 OPEN_FINDING_EXTERNAL_REPORT="$TMP_DIR/open-finding-external-review.json"
 
 cat > "$VALID_HWP_REPORT" <<'JSON'
 {
-  "schema": "carevault-hwp-smoke-report.v1",
+  "schema": "carevault-hwp-smoke-report.v2",
   "status": "passed",
   "sample_count": 2,
   "minimum_parsed_chars": "200",
   "expected_terms_provided": true,
+  "expected_term_count": 3,
+  "objective_term_groups": {
+    "cervical_cancer": true,
+    "hypertension": true,
+    "diabetes": true
+  },
   "samples": [
     {"basename": "oncology-followup.hwpx", "extension": "hwpx", "status": "passed"},
     {"basename": "blood-pressure-labs.hwp", "extension": "hwp", "status": "passed"}
@@ -29,13 +36,38 @@ JSON
 
 cat > "$PATH_LEAK_HWP_REPORT" <<'JSON'
 {
-  "schema": "carevault-hwp-smoke-report.v1",
+  "schema": "carevault-hwp-smoke-report.v2",
   "status": "passed",
   "sample_count": 1,
   "minimum_parsed_chars": "200",
   "expected_terms_provided": true,
+  "expected_term_count": 3,
+  "objective_term_groups": {
+    "cervical_cancer": true,
+    "hypertension": true,
+    "diabetes": true
+  },
   "samples": [
     {"basename": "/Users/wj/private/oncology-followup.hwpx", "extension": "hwpx", "status": "passed"}
+  ]
+}
+JSON
+
+cat > "$MISSING_GROUP_HWP_REPORT" <<'JSON'
+{
+  "schema": "carevault-hwp-smoke-report.v2",
+  "status": "passed",
+  "sample_count": 1,
+  "minimum_parsed_chars": "200",
+  "expected_terms_provided": true,
+  "expected_term_count": 3,
+  "objective_term_groups": {
+    "cervical_cancer": true,
+    "hypertension": true,
+    "diabetes": false
+  },
+  "samples": [
+    {"basename": "oncology-followup.hwpx", "extension": "hwpx", "status": "passed"}
   ]
 }
 JSON
@@ -155,13 +187,19 @@ assert_not_contains "$TMP_DIR/missing-hwp-file.out" "$TMP_DIR"
 expect_failure "path-leak-hwp" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$PATH_LEAK_HWP_REPORT" \
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
-assert_contains "$TMP_DIR/path-leak-hwp.out" "AssertionError"
+assert_contains "$TMP_DIR/path-leak-hwp.out" "basename-only entries"
 assert_not_contains "$TMP_DIR/path-leak-hwp.out" "/Users/wj/private"
+
+expect_failure "missing-group-hwp" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$MISSING_GROUP_HWP_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
+assert_contains "$TMP_DIR/missing-group-hwp.out" "missing diabetes"
+assert_not_contains "$TMP_DIR/missing-group-hwp.out" "$TMP_DIR"
 
 expect_failure "open-finding-external" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$OPEN_FINDING_EXTERNAL_REPORT"
-assert_contains "$TMP_DIR/open-finding-external.out" "AssertionError"
+assert_contains "$TMP_DIR/open-finding-external.out" "critical or major findings"
 
 expect_success "valid-completion-evidence" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \

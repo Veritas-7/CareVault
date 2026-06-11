@@ -7,14 +7,20 @@ import {
 } from "./carevaultObjectiveReadiness";
 
 const validHwpSmokeReportEvidence: CareVaultHwpSmokeReportEvidence = {
+  expected_term_count: 3,
   expected_terms_provided: true,
   minimum_parsed_chars: "200",
+  objective_term_groups: {
+    cervical_cancer: true,
+    diabetes: true,
+    hypertension: true,
+  },
   sample_count: 2,
   samples: [
     { basename: "oncology-followup.hwpx", extension: "hwpx", status: "passed" },
     { basename: "blood-pressure-labs.hwp", extension: "hwp", status: "passed" },
   ],
-  schema: "carevault-hwp-smoke-report.v1",
+  schema: "carevault-hwp-smoke-report.v2",
   status: "passed",
 };
 
@@ -98,6 +104,7 @@ describe("carevaultObjectiveReadiness", () => {
       status: "required",
     });
     expect(markdown).toContain("Sanitized real private HWP/HWPX smoke evidence accepted");
+    expect(markdown).toContain("cervical-cancer, hypertension, and diabetes");
     expect(markdown).toContain("oncology-followup.hwpx");
     expect(requirementsById["real-private-hwp-hwpx-sample"]?.detail).not.toContain(
       "/Users/wj",
@@ -122,6 +129,41 @@ describe("carevaultObjectiveReadiness", () => {
       status: "blocked",
     });
     expect(requirement?.detail).toContain("expected-term checks");
+  });
+
+  it("keeps HWP smoke evidence blocked when expected-term coverage misses an objective group", () => {
+    const report = buildCareVaultObjectiveReadinessReport({
+      hwpSmokeReportEvidence: {
+        ...validHwpSmokeReportEvidence,
+        objective_term_groups: {
+          ...validHwpSmokeReportEvidence.objective_term_groups,
+          diabetes: false,
+        },
+      },
+    });
+    const requirement = report.requirements.find(
+      ({ id }) => id === "real-private-hwp-hwpx-sample",
+    );
+
+    expect(report.status).toBe("blocked");
+    expect(report.blockingRequirementIds).toContain("real-private-hwp-hwpx-sample");
+    expect(requirement?.detail).toContain("missing diabetes");
+  });
+
+  it("keeps HWP smoke evidence blocked when expected-term count is too small", () => {
+    const report = buildCareVaultObjectiveReadinessReport({
+      hwpSmokeReportEvidence: {
+        ...validHwpSmokeReportEvidence,
+        expected_term_count: 2,
+      },
+    });
+    const requirement = report.requirements.find(
+      ({ id }) => id === "real-private-hwp-hwpx-sample",
+    );
+
+    expect(report.status).toBe("blocked");
+    expect(report.blockingRequirementIds).toContain("real-private-hwp-hwpx-sample");
+    expect(requirement?.detail).toContain("expected_term_count must be at least 3");
   });
 
   it("keeps HWP smoke evidence blocked when the report leaks paths or mismatches samples", () => {

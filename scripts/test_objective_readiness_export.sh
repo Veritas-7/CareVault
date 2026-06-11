@@ -15,11 +15,17 @@ BAD_JSON_REPORT="$TMP_DIR/bad-json-report.json"
 
 cat > "$VALID_HWP_REPORT" <<'JSON'
 {
-  "schema": "carevault-hwp-smoke-report.v1",
+  "schema": "carevault-hwp-smoke-report.v2",
   "status": "passed",
   "sample_count": 2,
   "minimum_parsed_chars": "200",
   "expected_terms_provided": true,
+  "expected_term_count": 3,
+  "objective_term_groups": {
+    "cervical_cancer": true,
+    "hypertension": true,
+    "diabetes": true
+  },
   "samples": [
     {"basename": "oncology-followup.hwpx", "extension": "hwpx", "status": "passed"},
     {"basename": "blood-pressure-labs.hwp", "extension": "hwp", "status": "passed"}
@@ -50,11 +56,17 @@ JSON
 
 cat > "$PATH_LEAK_HWP_REPORT" <<'JSON'
 {
-  "schema": "carevault-hwp-smoke-report.v1",
+  "schema": "carevault-hwp-smoke-report.v2",
   "status": "passed",
   "sample_count": 1,
   "minimum_parsed_chars": "200",
   "expected_terms_provided": true,
+  "expected_term_count": 3,
+  "objective_term_groups": {
+    "cervical_cancer": true,
+    "hypertension": true,
+    "diabetes": true
+  },
   "samples": [
     {"basename": "/Users/wj/private/oncology-followup.hwpx", "extension": "hwpx", "status": "passed"}
   ]

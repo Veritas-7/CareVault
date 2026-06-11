@@ -47,6 +47,13 @@ describeWhenConfigured("carevaultObjectiveCompletionEvidenceSmoke", () => {
     });
     const markdown = formatCareVaultObjectiveReadinessMarkdown(report);
 
+    if (report.status !== "pass") {
+      const blockingDetails = report.requirements
+        .filter((requirement) => requirement.status !== "pass")
+        .map((requirement) => `${requirement.id}: ${requirement.detail}`)
+        .join("\n");
+      throw new Error(blockingDetails);
+    }
     expect(report.status).toBe("pass");
     expect(report.blockingRequirementIds).toEqual([]);
     expect(report.requirements.every((requirement) => requirement.status === "pass")).toBe(true);

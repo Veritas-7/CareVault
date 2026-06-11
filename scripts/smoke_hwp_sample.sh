@@ -23,7 +23,8 @@ Tauri Rust command boundary used by the app. It intentionally prints only each
 sample basename, not the full local path. Use exactly one of
 CAREVAULT_HWP_SAMPLE_PATH or CAREVAULT_HWP_SAMPLE_DIR.
 When CAREVAULT_HWP_SMOKE_REPORT_PATH is set, the success report also stores only
-sample basenames and extensions, never full local paths.
+sample basenames, extensions, expected-term counts, and objective term-group
+coverage, never full local paths.
 EOF
 }
 
@@ -79,6 +80,42 @@ json_bool() {
   fi
 }
 
+expected_term_count() {
+  python3 - <<'PY'
+import os
+
+terms = [
+    term.strip()
+    for term in os.environ.get("CAREVAULT_HWP_SAMPLE_TERMS", "").split(",")
+    if term.strip()
+]
+print(len(terms))
+PY
+}
+
+objective_term_group_bool() {
+  local group="$1"
+
+  python3 - "$group" <<'PY'
+import os
+import sys
+
+group = sys.argv[1]
+terms = [
+    term.strip().lower()
+    for term in os.environ.get("CAREVAULT_HWP_SAMPLE_TERMS", "").split(",")
+    if term.strip()
+]
+patterns = {
+    "cervical_cancer": ["자궁경부암", "cervical"],
+    "hypertension": ["고혈압", "혈압", "hypertension", "blood pressure", "bp"],
+    "diabetes": ["당뇨", "혈당", "당화혈색소", "hba1c", "glucose", "diabetes"],
+}
+covered = any(pattern in term for term in terms for pattern in patterns[group])
+print("true" if covered else "false")
+PY
+}
+
 validate_report_path() {
   local report_path="$1"
   local report_parent
@@ -109,11 +146,17 @@ write_success_report() {
   temp_report="${report_path}.tmp"
   {
     printf '{\n'
-    printf '  "schema": "carevault-hwp-smoke-report.v1",\n'
+    printf '  "schema": "carevault-hwp-smoke-report.v2",\n'
     printf '  "status": "passed",\n'
     printf '  "sample_count": %s,\n' "${#sample_paths[@]}"
     printf '  "minimum_parsed_chars": %s,\n' "$(json_string "${CAREVAULT_HWP_SAMPLE_MIN_CHARS:-100}")"
     printf '  "expected_terms_provided": %s,\n' "$(json_bool "${CAREVAULT_HWP_SAMPLE_TERMS:-}")"
+    printf '  "expected_term_count": %s,\n' "$(expected_term_count)"
+    printf '  "objective_term_groups": {\n'
+    printf '    "cervical_cancer": %s,\n' "$(objective_term_group_bool cervical_cancer)"
+    printf '    "hypertension": %s,\n' "$(objective_term_group_bool hypertension)"
+    printf '    "diabetes": %s\n' "$(objective_term_group_bool diabetes)"
+    printf '  },\n'
     printf '  "samples": [\n'
     for sample_path in "${sample_paths[@]}"; do
       sample_name="$(basename "$sample_path")"

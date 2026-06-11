@@ -10,15 +10,22 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 
 VALID_REPORT="$TMP_DIR/valid-report.json"
 PATH_LEAK_REPORT="$TMP_DIR/path-leak-report.json"
+MISSING_GROUP_REPORT="$TMP_DIR/missing-group-report.json"
 BAD_JSON_REPORT="$TMP_DIR/bad-json-report.json"
 
 cat > "$VALID_REPORT" <<'JSON'
 {
-  "schema": "carevault-hwp-smoke-report.v1",
+  "schema": "carevault-hwp-smoke-report.v2",
   "status": "passed",
   "sample_count": 2,
   "minimum_parsed_chars": "200",
   "expected_terms_provided": true,
+  "expected_term_count": 3,
+  "objective_term_groups": {
+    "cervical_cancer": true,
+    "hypertension": true,
+    "diabetes": true
+  },
   "samples": [
     {"basename": "oncology-followup.hwpx", "extension": "hwpx", "status": "passed"},
     {"basename": "blood-pressure-labs.hwp", "extension": "hwp", "status": "passed"}
@@ -28,13 +35,38 @@ JSON
 
 cat > "$PATH_LEAK_REPORT" <<'JSON'
 {
-  "schema": "carevault-hwp-smoke-report.v1",
+  "schema": "carevault-hwp-smoke-report.v2",
   "status": "passed",
   "sample_count": 1,
   "minimum_parsed_chars": "200",
   "expected_terms_provided": true,
+  "expected_term_count": 3,
+  "objective_term_groups": {
+    "cervical_cancer": true,
+    "hypertension": true,
+    "diabetes": true
+  },
   "samples": [
     {"basename": "/Users/wj/private/oncology-followup.hwpx", "extension": "hwpx", "status": "passed"}
+  ]
+}
+JSON
+
+cat > "$MISSING_GROUP_REPORT" <<'JSON'
+{
+  "schema": "carevault-hwp-smoke-report.v2",
+  "status": "passed",
+  "sample_count": 1,
+  "minimum_parsed_chars": "200",
+  "expected_terms_provided": true,
+  "expected_term_count": 3,
+  "objective_term_groups": {
+    "cervical_cancer": true,
+    "hypertension": true,
+    "diabetes": false
+  },
+  "samples": [
+    {"basename": "oncology-followup.hwpx", "extension": "hwpx", "status": "passed"}
   ]
 }
 JSON
@@ -112,6 +144,10 @@ assert_not_contains "$TMP_DIR/bad-json.out" "$BAD_JSON_REPORT"
 expect_failure "path-leak" CAREVAULT_HWP_SMOKE_REPORT_PATH="$PATH_LEAK_REPORT"
 assert_contains "$TMP_DIR/path-leak.out" "real-private-hwp-hwpx-sample"
 assert_not_contains "$TMP_DIR/path-leak.out" "/Users/wj/private"
+
+expect_failure "missing-group" CAREVAULT_HWP_SMOKE_REPORT_PATH="$MISSING_GROUP_REPORT"
+assert_contains "$TMP_DIR/missing-group.out" "missing diabetes"
+assert_not_contains "$TMP_DIR/missing-group.out" "$TMP_DIR"
 
 expect_success "valid-report" CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_REPORT"
 assert_contains "$TMP_DIR/valid-report.out" "Objective readiness report smoke passed"

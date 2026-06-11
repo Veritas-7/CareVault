@@ -36,6 +36,9 @@ describeWhenConfigured("carevaultObjectiveReadinessReportSmoke", () => {
       (requirement) => requirement.id === "real-private-hwp-hwpx-sample",
     );
 
+    if (hwpRequirement?.status !== "pass") {
+      throw new Error(hwpRequirement?.detail ?? "HWP smoke report was not accepted.");
+    }
     expect(hwpRequirement?.status).toBe("pass");
     expect(report.status).toBe("ready-for-external-review");
     expect(report.blockingRequirementIds).toEqual(["external-clinician-source-review"]);

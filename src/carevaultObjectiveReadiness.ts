@@ -23,9 +23,17 @@ export type CareVaultHwpSmokeReportSample = {
   status: string;
 };
 
+export type CareVaultHwpSmokeObjectiveTermGroups = {
+  cervical_cancer: boolean;
+  diabetes: boolean;
+  hypertension: boolean;
+};
+
 export type CareVaultHwpSmokeReportEvidence = {
+  expected_term_count: number;
   expected_terms_provided: boolean;
   minimum_parsed_chars: string;
+  objective_term_groups: CareVaultHwpSmokeObjectiveTermGroups;
   sample_count: number;
   samples: CareVaultHwpSmokeReportSample[];
   schema: string;
@@ -84,9 +92,17 @@ export const careVaultObjectiveText =
 export const careVaultObjectiveReadinessBoundary =
   "This readiness report is a command-only completion audit input. It is not a clinical approval, not a production medical readiness claim, and not permission to mark the active goal complete while blocked requirements remain.";
 
-const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v1";
+const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v2";
 const externalReviewReportSchema = "carevault-external-clinician-review.v1";
 const supportedHwpSampleExtensions = new Set(["hwp", "hwpx", "hwpml"]);
+const hwpObjectiveTermGroupLabels: Record<
+  keyof CareVaultHwpSmokeObjectiveTermGroups,
+  string
+> = {
+  cervical_cancer: "cervical-cancer",
+  diabetes: "diabetes",
+  hypertension: "hypertension",
+};
 const externalReviewRequiredCheckIds = [
   "clinician-source-review",
   "real-workflow-review",
@@ -122,6 +138,14 @@ function isPathSafeLabel(value: string) {
 
 function hasAllRequiredIds(ids: string[], requiredIds: readonly string[]) {
   return requiredIds.every((requiredId) => ids.includes(requiredId));
+}
+
+function missingHwpObjectiveTermGroups(
+  groups: CareVaultHwpSmokeObjectiveTermGroups,
+) {
+  return Object.entries(hwpObjectiveTermGroupLabels)
+    .filter(([group]) => !groups[group as keyof CareVaultHwpSmokeObjectiveTermGroups])
+    .map(([, label]) => label);
 }
 
 export function assessCareVaultHwpSmokeReportEvidence(
@@ -194,6 +218,40 @@ export function assessCareVaultHwpSmokeReportEvidence(
       status: "blocked",
     };
   }
+  if (!Number.isInteger(report.expected_term_count) || report.expected_term_count < 3) {
+    return {
+      detail:
+        "Blocked: HWP smoke report expected_term_count must be at least 3 for the cervical-cancer, hypertension, and diabetes objective.",
+      sampleBasenames: [],
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
+  if (
+    typeof report.objective_term_groups !== "object"
+    || report.objective_term_groups === null
+    || typeof report.objective_term_groups.cervical_cancer !== "boolean"
+    || typeof report.objective_term_groups.hypertension !== "boolean"
+    || typeof report.objective_term_groups.diabetes !== "boolean"
+  ) {
+    return {
+      detail:
+        "Blocked: HWP smoke report objective_term_groups must include cervical_cancer, hypertension, and diabetes booleans.",
+      sampleBasenames: [],
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
+  const missingGroups = missingHwpObjectiveTermGroups(report.objective_term_groups);
+  if (missingGroups.length > 0) {
+    return {
+      detail:
+        `Blocked: HWP smoke report expected-term coverage is missing ${missingGroups.join(", ")}.`,
+      sampleBasenames: [],
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
   if (report.samples.length !== report.sample_count) {
     return {
       detail: "Blocked: HWP smoke report sample_count must match the samples array.",
@@ -241,7 +299,7 @@ export function assessCareVaultHwpSmokeReportEvidence(
   const sampleBasenames = report.samples.map((sample) => sample.basename);
   return {
     detail:
-      `Sanitized real private HWP/HWPX smoke evidence accepted for ${report.sample_count} sample(s) with expected-term checks; report stores basename-only sample evidence: ${sampleBasenames.join(", ")}.`,
+      `Sanitized real private HWP/HWPX smoke evidence accepted for ${report.sample_count} sample(s) with ${report.expected_term_count} expected terms covering cervical-cancer, hypertension, and diabetes; report stores basename-only sample evidence: ${sampleBasenames.join(", ")}.`,
     sampleBasenames,
     sampleCount: report.sample_count,
     status: "pass",
