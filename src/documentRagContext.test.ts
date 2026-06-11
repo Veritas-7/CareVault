@@ -93,6 +93,19 @@ describe("documentRagContext", () => {
     expect(context.items[0].evidenceChunks[0].text).toContain("HbA1c 7.2%");
   });
 
+  it("explains query coverage for multi-signal RAG context ranking", () => {
+    const context = buildDocumentRagContext(
+      [unrelatedDocument, parsedHwpDocument],
+      "자궁경부암 혈압 당화혈색소",
+    );
+    const text = formatDocumentRagContextClipboardText(context);
+
+    expect(context.items).toHaveLength(1);
+    expect(context.items[0].reasonSummary).toContain("쿼리 커버리지:");
+    expect(context.items[0].evidenceChunks[0].reasonSummary).toContain("쿼리 커버리지:");
+    expect(text).toContain("쿼리 커버리지:");
+  });
+
   it("formats a clinic-ready context packet without leaking local attachment paths", () => {
     const context = buildDocumentRagContext([parsedHwpDocument], "데스크톱 파서");
     const text = formatDocumentRagContextClipboardText(context);

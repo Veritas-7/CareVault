@@ -63,6 +63,17 @@ function splitQueryTokens(query: string) {
   return [...new Set(normalizeSearchText(query).split(/[\s,.;:!?()[\]{}"'`~|/\\<>·]+/).filter(Boolean))];
 }
 
+function scoreQueryCoverage(tokenHits: string[], queryTokens: string[], maxScore: number) {
+  if (!tokenHits.length || !queryTokens.length) return 0;
+  return Math.min(maxScore, Math.round((tokenHits.length / queryTokens.length) * maxScore));
+}
+
+function formatQueryCoverageReason(tokenHits: string[], queryTokens: string[]) {
+  if (!tokenHits.length || !queryTokens.length) return "";
+  const percent = Math.round((tokenHits.length / queryTokens.length) * 100);
+  return `쿼리 커버리지: ${tokenHits.length}/${queryTokens.length} (${percent}%)`;
+}
+
 export function buildDocumentRagProfileQuery(profile: DocumentRagProfileQuerySource) {
   const queryParts = [
     profile.cancerCareMode ? "자궁경부암" : "",
@@ -199,6 +210,8 @@ function scoreEvidenceChunk(
   if (tokenHits.length) {
     score += tokenHits.length * 8;
     reasons.push(`검색어 일부: ${tokenHits.slice(0, 4).join(", ")}`);
+    score += scoreQueryCoverage(tokenHits, queryTokens, 18);
+    reasons.push(formatQueryCoverageReason(tokenHits, queryTokens));
   }
 
   const queryClinicalSignalIds = new Set(getClinicalSignals(querySignals).map((signal) => signal.id));
@@ -270,6 +283,8 @@ function scoreDocumentForContext(
   if (tokenHits.length) {
     score += tokenHits.length * 10;
     reasons.push(`검색어 일부: ${tokenHits.slice(0, 4).join(", ")}`);
+    score += scoreQueryCoverage(tokenHits, queryTokens, 24);
+    reasons.push(formatQueryCoverageReason(tokenHits, queryTokens));
   }
 
   const queryClinicalSignalIds = new Set(getClinicalSignals(querySignals).map((signal) => signal.id));
