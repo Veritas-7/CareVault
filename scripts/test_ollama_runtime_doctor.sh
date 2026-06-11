@@ -115,6 +115,7 @@ fi
 
 assert_contains "$OUTPUT_FILE" 'Homebrew package: ollama 0.30.7'
 assert_contains "$OUTPUT_FILE" 'Ollama worker binary: not found in checked install roots'
+assert_contains "$OUTPUT_FILE" 'endpoint probes will verify runtime worker availability'
 assert_contains "$OUTPUT_FILE" 'Diagnosis: local Ollama can start its API, but its model worker binary `llama-server` is missing'
 assert_contains "$OUTPUT_FILE" 'Repair hint: the current install snapshot did not expose a `llama-server`/runner binary'
 assert_contains "$OUTPUT_FILE" '[local path]'

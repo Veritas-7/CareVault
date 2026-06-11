@@ -79,7 +79,7 @@ EMBEDDING_MODEL_NAME="${CAREVAULT_OLLAMA_EMBEDDING_MODEL:-bge-m3:latest}"
 MODEL_JSON="$(json_escape "$MODEL_NAME")"
 EMBEDDING_MODEL_JSON="$(json_escape "$EMBEDDING_MODEL_NAME")"
 OLLAMA_BASE_URL="http://${OLLAMA_HOST_VALUE}"
-OLLAMA_LOG="$(mktemp /tmp/carevault-ollama-doctor.XXXXXX.log)"
+OLLAMA_LOG="$(mktemp /tmp/carevault-ollama-doctor.XXXXXX)"
 OLLAMA_PID=""
 MISSING_LLAMA_SERVER=0
 WORKER_LAYOUT_MISSING=0
@@ -138,7 +138,7 @@ print_worker_snapshot() {
   fi
 
   if [[ -n "$checked_labels" ]]; then
-    printf 'Ollama worker binary: not found in checked install roots (%s)\n' "$checked_labels"
+    printf 'Ollama worker binary: not found in checked install roots (%s); endpoint probes will verify runtime worker availability\n' "$checked_labels"
     WORKER_LAYOUT_MISSING=1
   else
     printf 'Ollama worker binary: install roots unavailable for preflight\n'
@@ -177,7 +177,7 @@ post_json() {
   local response_file
   local status
 
-  response_file="$(mktemp /tmp/carevault-ollama-doctor-response.XXXXXX.json)"
+  response_file="$(mktemp /tmp/carevault-ollama-doctor-response.XXXXXX)"
   status="$(curl -sS -o "$response_file" -w '%{http_code}' \
     -H 'Content-Type: application/json' \
     -X POST \

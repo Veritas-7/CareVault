@@ -76,9 +76,9 @@ EMBEDDING_MODEL_NAME="${CAREVAULT_RAG_EMBEDDING_MODEL:-${CAREVAULT_OLLAMA_EMBEDD
 MODEL_ENDPOINT="${CAREVAULT_RAG_MODEL_ENDPOINT:-http://${OLLAMA_HOST_VALUE}/v1/chat/completions}"
 EMBEDDING_ENDPOINT="${CAREVAULT_RAG_EMBEDDING_ENDPOINT:-http://${OLLAMA_HOST_VALUE}/v1/embeddings}"
 OLLAMA_BASE_URL="http://${OLLAMA_HOST_VALUE}"
-OLLAMA_LOG="$(mktemp /tmp/carevault-ollama-rag.XXXXXX.log)"
-MODEL_OUTPUT_LOG="$(mktemp /tmp/carevault-rag-model.XXXXXX.log)"
-EMBEDDING_OUTPUT_LOG="$(mktemp /tmp/carevault-rag-embedding.XXXXXX.log)"
+OLLAMA_LOG="$(mktemp /tmp/carevault-ollama-rag.XXXXXX)"
+MODEL_OUTPUT_LOG="$(mktemp /tmp/carevault-rag-model.XXXXXX)"
+EMBEDDING_OUTPUT_LOG="$(mktemp /tmp/carevault-rag-embedding.XXXXXX)"
 OLLAMA_PID=""
 
 cleanup() {
