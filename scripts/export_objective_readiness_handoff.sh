@@ -184,11 +184,13 @@ npm run objective:readiness:inputs:verify
 CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json \
 CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet \
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/path/to/filled-external-review.json \
+CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH=/path/to/carevault-objective-readiness-complete-verify.json \
 npm run objective:readiness:complete
 ```
 
 Only after the final command prints `Objective readiness complete: pass` and
-`Blocking requirements: none` can these two blockers be treated as resolved.
+`Blocking requirements: none`, and the optional completion verify JSON records
+`verified-complete`, can these two blockers be treated as resolved.
 EOF
 
 cat > "$MANIFEST_JSON" <<'EOF'
@@ -233,7 +235,8 @@ cat > "$MANIFEST_JSON" <<'EOF'
     "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH"
   ],
   "optional_verification_outputs": [
-    "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH"
+    "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH",
+    "CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH"
   ],
   "non_evidence_statement": "This handoff bundle does not create private HWP evidence, external clinician/source review, or production medical readiness approval."
 }

@@ -147,10 +147,12 @@ objective:readiness:inputs:doctor`, `npm run
 objective:readiness:inputs:verify`, and `npm run
 objective:readiness:complete`. The manifest also records the optional
 `CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` status output and optional
-`CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH` verification output
-for automation, and includes the baseline input-doctor JSON in the bundle file
-list. The baseline JSON is a status snapshot only; it does not create or
-replace HWP/HWPX sample evidence or external clinician/source review evidence.
+verification outputs
+`CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH` and
+`CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH` for automation, and
+includes the baseline input-doctor JSON in the bundle file list. The baseline
+JSON is a status snapshot only; it does not create or replace HWP/HWPX sample
+evidence or external clinician/source review evidence.
 `npm run objective:readiness:handoff:test` verifies missing-output failures,
 bundle contents, current blocker names, machine-readable manifest
 schema/status/file list/exact command sequence, optional status and
@@ -181,7 +183,8 @@ the bundle. It fails if any bundle file leaks local paths. When
 `CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH` is set, it writes
 schema `carevault-objective-readiness-handoff-verify.v1` with only path-safe
 verification status, blocker IDs, command sequence, bundle file count, manifest
-declared optional verification outputs, and input-doctor status/next-action IDs.
+declared optional verification outputs including the completion verify JSON
+env, and input-doctor status/next-action IDs.
 `npm run objective:readiness:handoff:verify:test` covers valid bundles, missing
 env/dir/manifest, invalid JSON, missing listed files, wrong manifest status,
 wrong baseline input-doctor status, missing input-verifier command, JSON report

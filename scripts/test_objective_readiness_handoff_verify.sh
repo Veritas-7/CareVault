@@ -146,7 +146,7 @@ if (
 if (
   !Array.isArray(report.optional_verification_outputs) ||
   report.optional_verification_outputs.join(",") !==
-    "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH"
+    "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH,CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH"
 ) {
   process.exit(1);
 }

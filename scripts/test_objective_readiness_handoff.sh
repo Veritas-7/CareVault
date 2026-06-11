@@ -124,6 +124,7 @@ assert_contains "$FINAL_HANDOFF" "npm run objective:readiness:complete"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=/path/to/carevault-readiness-inputs.json"
+assert_contains "$FINAL_HANDOFF" "CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH=/path/to/carevault-objective-readiness-complete-verify.json"
 assert_contains "$FINAL_HANDOFF" "carevault-readiness-inputs-doctor.json"
 assert_contains "$FINAL_HANDOFF" "Verify Input Doctor JSON"
 
@@ -181,7 +182,8 @@ if (
 }
 if (
   !Array.isArray(manifest.optional_verification_outputs) ||
-  !manifest.optional_verification_outputs.includes("CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH")
+  !manifest.optional_verification_outputs.includes("CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH") ||
+  !manifest.optional_verification_outputs.includes("CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH")
 ) {
   process.exit(1);
 }

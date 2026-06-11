@@ -135,6 +135,7 @@ const expectedOptionalStatusOutputs = [
 ];
 const expectedOptionalVerificationOutputs = [
   "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH",
+  "CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH",
 ];
 const requiredBundleFiles = [
   "carevault-private-hwp-smoke-handoff.md",
