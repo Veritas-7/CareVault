@@ -84,7 +84,8 @@ summary, accepted external-review evidence summary, and
 verifies missing report paths, rejected HWP evidence, rejected external-review
 evidence, valid combined fixture evidence, path-safe JSON output, and
 missing-output-parent failures without using private documents or claiming
-clinical approval.
+clinical approval. It also verifies that the generated JSON passes
+`npm run objective:readiness:complete:verify`.
 
 After writing that JSON, verify it before automation treats the objective as
 complete:

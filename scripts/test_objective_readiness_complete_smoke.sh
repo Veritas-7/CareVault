@@ -204,6 +204,7 @@ assert_contains "$TMP_DIR/help.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH"
+assert_contains "$TMP_DIR/help.out" "npm run objective:readiness:complete:verify"
 
 expect_failure "missing-hwp-env" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
 assert_contains "$TMP_DIR/missing-hwp-env.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH is required"
@@ -263,6 +264,7 @@ expect_success "valid-completion-json" \
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
   CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
   CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH="$VERIFY_JSON_PATH"
+assert_contains "$TMP_DIR/valid-completion-json.out" "npm run objective:readiness:complete:verify"
 python3 - "$VERIFY_JSON_PATH" "$TMP_DIR" <<'PY'
 import json
 import pathlib
@@ -296,7 +298,13 @@ assert report["external_review"]["reviewed_artifact_ids"] == [
 assert report["external_review"]["open_findings"] == {"critical": 0, "major": 0}
 assert report["input_paths_included"] is False
 PY
+CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH="$VERIFY_JSON_PATH" \
+  bash "$ROOT_DIR/scripts/verify_objective_readiness_complete.sh" > "$TMP_DIR/valid-completion-json-verify.out" 2>&1
+assert_contains "$TMP_DIR/valid-completion-json-verify.out" "Objective readiness complete verify JSON verified."
+assert_contains "$TMP_DIR/valid-completion-json-verify.out" "Status: verified-complete"
+assert_contains "$TMP_DIR/valid-completion-json-verify.out" "Blocking requirements: none"
 assert_not_contains "$TMP_DIR/valid-completion-json.out" "$TMP_DIR"
+assert_not_contains "$TMP_DIR/valid-completion-json-verify.out" "$TMP_DIR"
 
 expect_failure "verify-json-missing-parent" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \

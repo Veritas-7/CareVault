@@ -22,7 +22,8 @@ CareVault objective readiness report reaches Status: pass. It does not create
 private HWP evidence or clinical approval; it only verifies supplied evidence.
 When CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH is set, it writes
 a path-safe machine-readable verification report after the final completion
-gate passes.
+gate passes. Verify that JSON next with:
+  npm run objective:readiness:complete:verify
 EOF
 }
 
@@ -182,6 +183,7 @@ verify_report_path.write_text(json.dumps(verify_report, indent=2, ensure_ascii=F
 PY
 
   printf 'Objective readiness complete verify JSON: written with path-safe evidence summary.\n'
+  printf 'Next verify JSON command: npm run objective:readiness:complete:verify\n'
 }
 
 node "$ROOT_DIR/scripts/verify_external_review_packet_hashes.mjs" \
