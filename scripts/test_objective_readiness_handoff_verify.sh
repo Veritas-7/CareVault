@@ -168,7 +168,22 @@ fs.writeFileSync(path, `${JSON.stringify(report, null, 2)}\n`);
 NODE
 expect_failure "wrong-inputs-status" \
   CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$WRONG_INPUTS_STATUS_BUNDLE"
-assert_contains "$TMP_DIR/wrong-inputs-status.err" "inputs doctor baseline status must be missing-evidence"
+assert_contains "$TMP_DIR/wrong-inputs-status.err" "ready inputs JSON must have final_readiness_gate pass"
+
+EXTRA_INPUTS_BLOCKER_BUNDLE="$(copy_bundle extra-inputs-blocker-bundle)"
+node - <<'NODE' "$EXTRA_INPUTS_BLOCKER_BUNDLE/carevault-readiness-inputs-doctor.json"
+const fs = require("fs");
+const path = process.argv[2];
+const report = JSON.parse(fs.readFileSync(path, "utf8"));
+report.blocking_requirements = [
+  ...report.blocking_requirements,
+  "unsupported-extra-blocker",
+];
+fs.writeFileSync(path, `${JSON.stringify(report, null, 2)}\n`);
+NODE
+expect_failure "extra-inputs-blocker" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$EXTRA_INPUTS_BLOCKER_BUNDLE"
+assert_contains "$TMP_DIR/extra-inputs-blocker.err" "inputs doctor JSON blockers do not match accepted input states"
 
 PATH_LEAK_BUNDLE="$(copy_bundle path-leak-bundle)"
 printf '\n/Users/wj/private-carevault/sample.hwp\n' >> "$PATH_LEAK_BUNDLE/carevault-final-readiness-handoff.md"

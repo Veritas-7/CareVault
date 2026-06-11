@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+INPUTS_VERIFY_SCRIPT="$ROOT_DIR/scripts/verify_objective_readiness_inputs.sh"
+
 print_usage() {
   cat <<'EOF'
 Usage:
@@ -47,10 +50,15 @@ if [[ ! -r "$MANIFEST_PATH" ]]; then
   exit 2
 fi
 
+INPUTS_DOCTOR_PATH="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-readiness-inputs-doctor.json"
+
 if grep -R -q -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR"; then
   printf 'FAIL: handoff bundle contains a local path or attachment path field.\n' >&2
   exit 2
 fi
+
+CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH="$INPUTS_DOCTOR_PATH" \
+  bash "$INPUTS_VERIFY_SCRIPT"
 
 node - <<'NODE' "$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR"
 const fs = require("fs");

@@ -157,11 +157,16 @@ the required bundle files, confirms the manifest and readiness report remain
 `external-clinician-source-review`, verifies the final evidence command
 sequence including the input JSON verifier before the completion gate, optional
 status-output field, no-input input-doctor baseline JSON, and reviewer handoff
-sections, and fails if any bundle file leaks local paths.
+sections. It also runs `npm run objective:readiness:inputs:verify` logic
+against the bundled `carevault-readiness-inputs-doctor.json`, so blocker,
+next-action, ready-state, and path-safety drift are caught by the same input
+JSON verifier used outside the bundle. It fails if any bundle file leaks local
+paths.
 `npm run objective:readiness:handoff:verify:test` covers valid bundles, missing
 env/dir/manifest, invalid JSON, missing listed files, wrong manifest status,
 wrong baseline input-doctor status, missing input-verifier command, and
-path-leak failures.
+path-leak failures. It also rejects a baseline input-doctor JSON with extra
+unsupported blockers.
 
 ## Clinical source smoke
 
