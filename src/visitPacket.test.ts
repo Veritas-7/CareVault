@@ -1525,13 +1525,19 @@ describe("visit packet", () => {
       },
       { exportedAt: "2026-06-04T08:00:00.000Z" },
     );
+    const documentQueueLine =
+      markdown.split("\n").find((line) => line.includes("[서류 · 서류 질문] HWPX 추적 검사")) ?? "";
 
     expect(markdown).toContain("## 진료 준비 큐");
     expect(markdown).toContain("[서류 · 서류 질문] HWPX 추적 검사");
     expect(markdown).toContain("HWPX 추적 검사 서류에서 자궁경부암, 고혈압, 당뇨 관련 단서");
     expect(markdown).toContain("당화혈색소");
+    expect(markdown).toContain("문서 측정 단서(원문): 혈압 149/93 mmHg · HbA1c 7.4%");
+    expect(markdown).toContain("수치 해석, 반복 측정 시점, 약·식사·치료 영향은 진료팀 기준으로 확인합니다.");
     expect(markdown).toContain("파싱 원천: HWPX 본문 XML: follow.hwpx");
     expect(markdown).toContain("[local path]");
+    expect(documentQueueLine).not.toContain("처방");
+    expect(documentQueueLine).not.toContain("치료하세요");
     expect(markdown).not.toContain("/Users/wj/private");
     expect(markdown).not.toContain("C:\\Users\\wj");
     expect(markdown).not.toContain("attachmentPath");

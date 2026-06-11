@@ -1676,14 +1676,20 @@ describe("csvExport", () => {
       },
       "2026-06-04T10:00:00.000Z",
     );
+    const documentQueueRow =
+      csv.split("\n").find((row) => row.includes('"care_queue"') && row.includes("HWPX 추적 검사")) ?? "";
 
     expect(csv).toContain(
       '"care_queue","2026-06-04","서류 · 서류 질문","HWPX 추적 검사","watch"',
     );
     expect(csv).toContain("HWPX 추적 검사 서류에서 자궁경부암, 고혈압, 당뇨 관련 단서");
     expect(csv).toContain("당화혈색소");
+    expect(csv).toContain("문서 측정 단서(원문): 혈압 149/93 mmHg · HbA1c 7.4%");
+    expect(csv).toContain("수치 해석, 반복 측정 시점, 약·식사·치료 영향은 진료팀 기준으로 확인합니다.");
     expect(csv).toContain("파싱 원천: HWPX 본문 XML: follow.hwpx");
     expect(csv).toContain("[local path]");
+    expect(documentQueueRow).not.toContain("처방");
+    expect(documentQueueRow).not.toContain("치료하세요");
     expect(csv).not.toContain("/Users/wj/private");
     expect(csv).not.toContain("C:\\Users\\wj");
     expect(csv).not.toContain("attachmentPath");
