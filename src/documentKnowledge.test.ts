@@ -87,6 +87,26 @@ describe("documentKnowledge", () => {
     expect(draft).not.toMatch(/진단한다|처방|복용하세요|치료하세요|완치|괜찮습니다|기다려도 됩니다/);
   });
 
+  it("uses a focused parsed-document excerpt in care-team question drafts", () => {
+    const draft = buildDocumentCareQuestionDraft({
+      ...parsedHwpDocument,
+      attachmentPath: "/Users/wj/private/상급병원_병리결과.hwp",
+      body: [
+        `${"관련 없는 접수 메모 ".repeat(30)}진료 전 확인 예정.`,
+        "",
+        "[첨부 텍스트 파싱: 상급병원_병리결과.hwp · HWP/HWPX 데스크톱 파서]",
+        "자궁경부암 병리 결과: 절제연 음성. HbA1c 7.2%, 혈압 142/88. 혈압약과 혈당 관리 연결 질문.",
+      ].join("\n"),
+    });
+
+    expect(draft).toContain("HbA1c 7.2%");
+    expect(draft).toContain("혈압 142/88");
+    expect(draft).toContain("파싱 원천: HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp");
+    expect(draft).not.toContain("[첨부 텍스트 파싱:");
+    expect(draft).not.toContain("관련 없는 접수 메모 ".repeat(10).trim());
+    expect(draft).not.toContain("/Users/wj/private");
+  });
+
   it("builds a search snippet that preserves source text without local paths", () => {
     const snippet = buildDocumentKnowledgeSnippet(
       {

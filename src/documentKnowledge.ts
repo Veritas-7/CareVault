@@ -164,6 +164,29 @@ function findExcerpt(text: string, query: string, maxLength = 96) {
   return `${prefix}${normalizedText.slice(start, end).trim()}${suffix}`;
 }
 
+function stripParsedAttachmentMarkers(value: string) {
+  return value.replace(/^\[첨부 텍스트 파싱:\s*[^\]\n]+\]\s*$/gm, "");
+}
+
+function buildDocumentCareQuestionSourceText(
+  document: DocumentKnowledgeSource,
+  clinicalSignals: DocumentKnowledgeSignal[],
+) {
+  const body = stripParsedAttachmentMarkers(document.body ?? "");
+  const focusTerms = uniq(
+    clinicalSignals.flatMap((signal) => [signal.label, ...signal.aliases, ...signal.matchedBy]),
+  );
+  const lowerBody = body.toLowerCase();
+  const focusTerm = focusTerms.find((term) => lowerBody.includes(term.toLowerCase())) ?? "";
+  const bodyExcerpt = findExcerpt(body, focusTerm, 130);
+  const parserSummary = buildDocumentParserProvenanceSummary(document);
+
+  return compactText(
+    bodyExcerpt ? `원문 메모: ${bodyExcerpt}` : "",
+    parserSummary,
+  );
+}
+
 export function detectDocumentKnowledgeSignals(
   document: DocumentKnowledgeSource,
 ): DocumentKnowledgeSignal[] {
@@ -221,15 +244,16 @@ export function buildDocumentKnowledgeSummary(document: DocumentKnowledgeSource)
 
 export function buildDocumentCareQuestionDraft(document: DocumentKnowledgeSource) {
   const signals = detectDocumentKnowledgeSignals(document);
-  const clinicalLabels = getClinicalSignals(signals).map((signal) => signal.label);
+  const clinicalSignals = getClinicalSignals(signals);
+  const clinicalLabels = clinicalSignals.map((signal) => signal.label);
   if (!clinicalLabels.length) return "";
 
   const title = document.title?.trim() || "저장된 서류";
-  const bodyExcerpt = truncateText(document.body ?? "", 110);
   const signalText = clinicalLabels.join(", ");
-  const sourceText = bodyExcerpt ? ` 원문 메모: ${bodyExcerpt}` : "";
+  const sourceText = buildDocumentCareQuestionSourceText(document, clinicalSignals);
+  const sourceClause = sourceText ? ` ${sourceText}` : "";
 
-  return `${title} 서류에서 ${signalText} 관련 단서가 함께 보입니다. 기록 의미, 추적 일정, 다른 만성질환 관리와의 연결을 담당 의료진에게 확인할 질문으로 정리합니다.${sourceText}`;
+  return `${title} 서류에서 ${signalText} 관련 단서가 함께 보입니다. 기록 의미, 추적 일정, 다른 만성질환 관리와의 연결을 담당 의료진에게 확인할 질문으로 정리합니다.${sourceClause}`;
 }
 
 export function buildDocumentKnowledgeSnippet(document: DocumentKnowledgeSource, query: string) {
