@@ -54,6 +54,11 @@ import {
   type VitalAssessmentEvidence,
 } from "./vitalAssessmentEvidence";
 import { buildDocumentParserAudit } from "./documentParserAudit";
+import {
+  buildDocumentRagContext,
+  buildDocumentRagProfileQuery,
+  documentRagSourceBoundaryLine,
+} from "./documentRagContext";
 
 type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
 type QuestionStatus = "open" | "answered" | "deferred";
@@ -183,6 +188,11 @@ export function buildCaregiverExportContentFingerprint(
     (document) => document.reviewStatus !== "done" && getValidIsoDate(document.date),
   );
   const documentParserAudit = buildDocumentParserAudit(activeDocuments);
+  const documentRagContext = buildDocumentRagContext(
+    activeDocuments,
+    buildDocumentRagProfileQuery(state.profile),
+    { maxItems: 3 },
+  );
 
   return JSON.stringify({
     documents: enabledSections.documents
@@ -201,6 +211,22 @@ export function buildCaregiverExportContentFingerprint(
             dateLabel: item.dateLabel,
             documentLabel: item.documentLabel,
             sourceSummary: item.sourceSummary,
+          })),
+          ragContext: documentRagContext.items.map((item) => ({
+            documentId: item.documentId,
+            evidenceChunks: item.evidenceChunks.map((chunk) => ({
+              label: chunk.label,
+              reasonSummary: chunk.reasonSummary,
+              sourceSummary: chunk.sourceSummary,
+              text: chunk.text,
+            })),
+            nextActionSummary: item.nextActionSummary,
+            parserSummary: item.parserSummary,
+            queryLabel: documentRagContext.queryLabel,
+            signalSummary: item.signalSummary,
+            snippet: item.snippet,
+            statusSummary: item.statusSummary,
+            titleLine: item.titleLine,
           })),
         }
       : [],
@@ -589,6 +615,11 @@ export function buildCaregiverExportHtml(
     (document) => document.reviewStatus !== "done" && getValidIsoDate(document.date),
   );
   const documentParserAudit = buildDocumentParserAudit(activeDocuments);
+  const documentRagContext = buildDocumentRagContext(
+    activeDocuments,
+    buildDocumentRagProfileQuery(state.profile),
+    { maxItems: 3 },
+  );
   const foodQuery = state.foodQuery?.trim() ?? "";
   const foodAssessment = foodQuery ? assessCancerFood(foodQuery) : null;
   const immuneFoodContext =
@@ -644,6 +675,23 @@ export function buildCaregiverExportHtml(
       `<strong>${escapeHtml(item.dateLabel)} ${escapeHtml(item.documentLabel)}</strong>`,
       `<span class="source-label">문서 파서 점검</span> ${escapeHtml(item.sourceSummary)}`,
       `<small>임상 단서: ${escapeHtml(item.clinicalSignalSummary)}</small>`,
+    ].join("<br>"),
+  );
+  const documentRagItems = documentRagContext.items.map((item) =>
+    [
+      `<strong>${escapeHtml(item.titleLine)}</strong>`,
+      `<span class="source-label">문서 RAG 근거</span> ${escapeHtml(item.reasonSummary || "근거 조각 일치")}`,
+      `<small>문서 상태: ${escapeHtml(item.statusSummary)}</small>`,
+      `<small>다음 조치: ${escapeHtml(item.nextActionSummary)}</small>`,
+      `<small>임상 단서: ${escapeHtml(item.signalSummary)}</small>`,
+      `<small>파싱 원천: ${escapeHtml(item.parserSummary)}</small>`,
+      `<small>근거 스니펫: ${escapeHtml(item.snippet)}</small>`,
+      ...item.evidenceChunks.slice(0, 2).map(
+        (chunk, chunkIndex) =>
+          `<small>근거 조각 ${chunkIndex + 1}: ${escapeHtml(chunk.label)} · ${escapeHtml(
+            chunk.sourceSummary,
+          )}<br>${escapeHtml(chunk.text)}</small>`,
+      ),
     ].join("<br>"),
   );
   const symptomItems = latestByDate(state.symptoms, 5).map(
@@ -787,6 +835,17 @@ export function buildCaregiverExportHtml(
           ? `<h3>문서 파서 점검</h3>
       <p class="meta">파싱 원천과 감지 단서를 보호자 확인용으로 요약합니다. 진단, 처방, 치료 지시가 아닙니다.</p>
       ${listItems(documentParserAuditItems, "파싱된 첨부 본문이 없습니다.")}`
+          : ""
+      }
+      ${
+        documentRagItems.length
+          ? `<h3>문서 RAG 근거 조각</h3>
+      <p class="meta">저장 서류와 파싱 본문에서 가져온 보호자 확인용 근거 조각입니다. 진단, 처방, 치료 지시가 아닙니다.</p>
+      <p class="meta">${escapeHtml(documentRagSourceBoundaryLine)}</p>
+      <p class="meta">검색 기준: ${escapeHtml(documentRagContext.queryLabel)} · ${escapeHtml(
+        documentRagContext.summary,
+      )}</p>
+      ${listItems(documentRagItems, "검색 기준에 맞는 저장 서류 근거 조각이 없습니다.")}`
           : ""
       }
     </section>`,
