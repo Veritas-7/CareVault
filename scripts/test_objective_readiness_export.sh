@@ -161,6 +161,10 @@ expect_success "file-export" \
 assert_contains "$TMP_DIR/file-export.err" "Objective readiness export completed."
 assert_contains "$MARKDOWN_REPORT" "Status: blocked"
 node -e "const fs=require('fs'); const report=JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); if (report.status !== 'blocked') process.exit(1); if (!report.blockingRequirementIds.includes('real-private-hwp-hwpx-sample')) process.exit(1);" "$JSON_REPORT"
+if grep -n -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$JSON_REPORT"; then
+  printf 'Expected objective readiness JSON export to be path-safe.\n' >&2
+  exit 1
+fi
 
 expect_success "valid-complete-evidence" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \

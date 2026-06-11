@@ -94,6 +94,45 @@ export type CareVaultObjectiveReadinessReport = {
   workflowReviewPacket: ClinicalWorkflowReviewPacket;
 };
 
+export type CareVaultObjectiveReadinessExport = {
+  blockingRequirementIds: string[];
+  clinicalReviewPacket: Pick<
+    ClinicalReviewPacket,
+    | "domainSummaries"
+    | "generatedBy"
+    | "keySourceHighlights"
+    | "purpose"
+    | "remainingBlockers"
+    | "requiredChecks"
+    | "summary"
+    | "title"
+    | "useBoundary"
+  > & {
+    registryErrors: ClinicalReviewPacket["registryAudit"]["errors"];
+    registryWarnings: ClinicalReviewPacket["registryAudit"]["warnings"];
+  };
+  explicitObjective: string;
+  generatedBy: string;
+  requirements: CareVaultObjectiveRequirement[];
+  status: CareVaultObjectiveReadinessReport["status"];
+  title: string;
+  useBoundary: string;
+  workflowReviewPacket: Pick<
+    ClinicalWorkflowReviewPacket,
+    | "exportedAt"
+    | "query"
+    | "requirements"
+    | "status"
+    | "surfaces"
+    | "title"
+    | "useBoundary"
+  > & {
+    answerDraftSummary: string;
+    careActionCount: number;
+    documentRagSummary: string;
+  };
+};
+
 export const careVaultObjectiveText =
   "CareVault must be a reliable local-first care app for cervical-cancer patients who also need hypertension and diabetes tracking, with durable document storage, HWP/HWPX parsing, search/RAG use of parsed documents, internal/rhwp evidence, and app surfaces that can use stored documents without making diagnosis, prescription, or treatment claims.";
 
@@ -555,7 +594,7 @@ export function buildCareVaultObjectiveReadinessReport({
       detail:
         "Current thread identity and live repository state must be checked before edits; the durable audit records that the stale Downloads handoff is not the source of truth.",
       id: "live-carevault-target",
-      objectiveText: "/Users/wj/Downloads/working.md/CareVault.txt read and continue the live CareVault work",
+      objectiveText: "downloaded CareVault handoff read and live CareVault work continued",
       status: "pass",
     }),
     buildRequirement({
@@ -701,6 +740,45 @@ export function buildCareVaultObjectiveReadinessReport({
     title: "CareVault Objective Readiness Report",
     useBoundary: careVaultObjectiveReadinessBoundary,
     workflowReviewPacket,
+  };
+}
+
+export function buildCareVaultObjectiveReadinessExport(
+  report: CareVaultObjectiveReadinessReport = buildCareVaultObjectiveReadinessReport(),
+): CareVaultObjectiveReadinessExport {
+  return {
+    blockingRequirementIds: report.blockingRequirementIds,
+    clinicalReviewPacket: {
+      domainSummaries: report.clinicalReviewPacket.domainSummaries,
+      generatedBy: report.clinicalReviewPacket.generatedBy,
+      keySourceHighlights: report.clinicalReviewPacket.keySourceHighlights,
+      purpose: report.clinicalReviewPacket.purpose,
+      registryErrors: report.clinicalReviewPacket.registryAudit.errors,
+      registryWarnings: report.clinicalReviewPacket.registryAudit.warnings,
+      remainingBlockers: report.clinicalReviewPacket.remainingBlockers,
+      requiredChecks: report.clinicalReviewPacket.requiredChecks,
+      summary: report.clinicalReviewPacket.summary,
+      title: report.clinicalReviewPacket.title,
+      useBoundary: report.clinicalReviewPacket.useBoundary,
+    },
+    explicitObjective: report.explicitObjective,
+    generatedBy: report.generatedBy,
+    requirements: report.requirements,
+    status: report.status,
+    title: report.title,
+    useBoundary: report.useBoundary,
+    workflowReviewPacket: {
+      answerDraftSummary: report.workflowReviewPacket.documentRagContext.answerDraft.summary,
+      careActionCount: report.workflowReviewPacket.careActions.length,
+      documentRagSummary: report.workflowReviewPacket.documentRagContext.summary,
+      exportedAt: report.workflowReviewPacket.exportedAt,
+      query: report.workflowReviewPacket.query,
+      requirements: report.workflowReviewPacket.requirements,
+      status: report.workflowReviewPacket.status,
+      surfaces: report.workflowReviewPacket.surfaces,
+      title: report.workflowReviewPacket.title,
+      useBoundary: report.workflowReviewPacket.useBoundary,
+    },
   };
 }
 

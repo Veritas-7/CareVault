@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import {
   buildCareVaultObjectiveReadinessReport,
+  buildCareVaultObjectiveReadinessExport,
   formatCareVaultObjectiveReadinessMarkdown,
   type CareVaultExternalReviewEvidence,
   type CareVaultHwpSmokeReportEvidence,
@@ -46,7 +47,7 @@ if (markdownOutputPath) {
 }
 
 if (jsonOutputPath) {
-  writeFileSync(jsonOutputPath, `${JSON.stringify(report, null, 2)}\n`);
+  writeFileSync(jsonOutputPath, `${JSON.stringify(buildCareVaultObjectiveReadinessExport(report), null, 2)}\n`);
 }
 
 if (markdownOutputPath || jsonOutputPath) {

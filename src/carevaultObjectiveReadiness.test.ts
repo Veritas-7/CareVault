@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildCareVaultObjectiveReadinessExport,
   buildCareVaultObjectiveReadinessReport,
   formatCareVaultObjectiveReadinessMarkdown,
   type CareVaultExternalReviewEvidence,
@@ -294,5 +295,18 @@ describe("carevaultObjectiveReadiness", () => {
     expect(markdown).toContain("Do not mark the active goal complete");
     expect(markdown).not.toContain("Status: pass");
     expect(markdown).not.toContain("No blocking requirements remain");
+  });
+
+  it("exports path-safe JSON summary without raw workflow state", () => {
+    const exported = buildCareVaultObjectiveReadinessExport();
+    const json = JSON.stringify(exported);
+
+    expect(exported.workflowReviewPacket.surfaces).toHaveLength(6);
+    expect(Object.prototype.hasOwnProperty.call(exported.workflowReviewPacket, "state")).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(exported.workflowReviewPacket, "documentRagContext"))
+      .toBe(false);
+    expect(json).not.toContain("/Users/");
+    expect(json).not.toContain("attachmentPath");
+    expect(json).not.toContain("private-carevault");
   });
 });
