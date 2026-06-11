@@ -70,6 +70,22 @@ input, not an approval claim: it preserves the non-diagnosis boundary, records
 that real private HWP/HWPX sample smoke still needs a supplied sample, and keeps
 browser/cmux QA excluded for this session.
 
+When an external clinician/source reviewer returns a structured evidence report,
+run:
+
+```bash
+CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
+npm run clinical:external-review:report
+```
+
+The report must use schema `carevault-external-clinician-review.v1`, cover both
+`clinician-source-review` and `real-workflow-review`, attest source registry,
+real workflow, non-diagnosis boundary, and cervical-cancer/hypertension/diabetes
+scope review, match the current registry error/warning counts, and have zero
+open critical or major findings. `npm run clinical:external-review:report:test`
+verifies the command bridge with fixture reports; it does not require or create
+real clinical approval.
+
 Run this command to verify a synthetic cervical-cancer + hypertension + diabetes
 workflow across parsed-document RAG, clinic-prep queue, visit Markdown, CSV, and
 caregiver HTML surfaces:

@@ -39,6 +39,33 @@ export type CareVaultHwpSmokeEvidenceAssessment = {
   status: Extract<CareVaultObjectiveRequirementStatus, "blocked" | "pass">;
 };
 
+export type CareVaultExternalReviewAttestations = {
+  cervical_hypertension_diabetes_scope_reviewed: boolean;
+  non_diagnosis_boundary_reviewed: boolean;
+  real_workflow_reviewed: boolean;
+  source_registry_reviewed: boolean;
+};
+
+export type CareVaultExternalReviewEvidence = {
+  attestations: CareVaultExternalReviewAttestations;
+  critical_findings_open: number;
+  major_findings_open: number;
+  required_check_ids: string[];
+  reviewed_at: string;
+  reviewer_role: string;
+  schema: string;
+  source_registry_error_count: number;
+  source_registry_warning_count: number;
+  status: string;
+  unresolved_required_check_ids: string[];
+};
+
+export type CareVaultExternalReviewEvidenceAssessment = {
+  detail: string;
+  reviewedCheckIds: string[];
+  status: Extract<CareVaultObjectiveRequirementStatus, "pass" | "required">;
+};
+
 export type CareVaultObjectiveReadinessReport = {
   blockingRequirementIds: string[];
   clinicalReviewPacket: ClinicalReviewPacket;
@@ -58,7 +85,12 @@ export const careVaultObjectiveReadinessBoundary =
   "This readiness report is a command-only completion audit input. It is not a clinical approval, not a production medical readiness claim, and not permission to mark the active goal complete while blocked requirements remain.";
 
 const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v1";
+const externalReviewReportSchema = "carevault-external-clinician-review.v1";
 const supportedHwpSampleExtensions = new Set(["hwp", "hwpx", "hwpml"]);
+const externalReviewRequiredCheckIds = [
+  "clinician-source-review",
+  "real-workflow-review",
+] as const;
 
 function basenameIsPathSafe(basename: string) {
   return (
@@ -73,6 +105,23 @@ function basenameIsPathSafe(basename: string) {
 function parseMinimumParsedChars(value: string) {
   if (!/^\d+$/.test(value)) return Number.NaN;
   return Number(value);
+}
+
+function isNonNegativeInteger(value: number) {
+  return Number.isInteger(value) && value >= 0;
+}
+
+function isPathSafeLabel(value: string) {
+  return (
+    value.length > 0
+    && value === value.trim()
+    && !value.includes("/")
+    && !value.includes("\\")
+  );
+}
+
+function hasAllRequiredIds(ids: string[], requiredIds: readonly string[]) {
+  return requiredIds.every((requiredId) => ids.includes(requiredId));
 }
 
 export function assessCareVaultHwpSmokeReportEvidence(
@@ -193,6 +242,135 @@ export function assessCareVaultHwpSmokeReportEvidence(
   };
 }
 
+export function assessCareVaultExternalReviewEvidence(
+  evidence: CareVaultExternalReviewEvidence | undefined,
+  clinicalReviewPacket: ClinicalReviewPacket,
+): CareVaultExternalReviewEvidenceAssessment {
+  if (!evidence) {
+    return {
+      detail:
+        "Source and workflow review packets exist, but no external clinician/source review evidence report has been supplied.",
+      reviewedCheckIds: [],
+      status: "required",
+    };
+  }
+
+  if (evidence.schema !== externalReviewReportSchema) {
+    return {
+      detail: `Required: external review report schema must be ${externalReviewReportSchema}.`,
+      reviewedCheckIds: [],
+      status: "required",
+    };
+  }
+  if (evidence.status !== "passed") {
+    return {
+      detail: "Required: external review report status must be passed.",
+      reviewedCheckIds: [],
+      status: "required",
+    };
+  }
+  if (
+    typeof evidence.reviewer_role !== "string"
+    || !isPathSafeLabel(evidence.reviewer_role)
+  ) {
+    return {
+      detail: "Required: external review report must include a non-path reviewer_role.",
+      reviewedCheckIds: [],
+      status: "required",
+    };
+  }
+  if (
+    typeof evidence.reviewed_at !== "string"
+    || !/^\d{4}-\d{2}-\d{2}/.test(evidence.reviewed_at)
+  ) {
+    return {
+      detail: "Required: external review report reviewed_at must start with YYYY-MM-DD.",
+      reviewedCheckIds: [],
+      status: "required",
+    };
+  }
+  if (
+    !Array.isArray(evidence.required_check_ids)
+    || !evidence.required_check_ids.every((id) => typeof id === "string")
+    || !hasAllRequiredIds(evidence.required_check_ids, externalReviewRequiredCheckIds)
+  ) {
+    return {
+      detail:
+        "Required: external review report must cover clinician-source-review and real-workflow-review.",
+      reviewedCheckIds: Array.isArray(evidence.required_check_ids)
+        ? evidence.required_check_ids.filter((id) => typeof id === "string")
+        : [],
+      status: "required",
+    };
+  }
+  if (
+    !Array.isArray(evidence.unresolved_required_check_ids)
+    || !evidence.unresolved_required_check_ids.every((id) => typeof id === "string")
+  ) {
+    return {
+      detail: "Required: external review report unresolved_required_check_ids must be an array.",
+      reviewedCheckIds: evidence.required_check_ids,
+      status: "required",
+    };
+  }
+  if (
+    externalReviewRequiredCheckIds.some((id) => evidence.unresolved_required_check_ids.includes(id))
+  ) {
+    return {
+      detail:
+        "Required: external review report still lists clinician/source or real-workflow review as unresolved.",
+      reviewedCheckIds: evidence.required_check_ids,
+      status: "required",
+    };
+  }
+
+  const attestations = evidence.attestations;
+  if (
+    !attestations
+    || attestations.source_registry_reviewed !== true
+    || attestations.real_workflow_reviewed !== true
+    || attestations.non_diagnosis_boundary_reviewed !== true
+    || attestations.cervical_hypertension_diabetes_scope_reviewed !== true
+  ) {
+    return {
+      detail:
+        "Required: external review report must attest source registry, real workflow, non-diagnosis boundary, and cervical/hypertension/diabetes scope review.",
+      reviewedCheckIds: evidence.required_check_ids,
+      status: "required",
+    };
+  }
+  if (
+    !isNonNegativeInteger(evidence.critical_findings_open)
+    || !isNonNegativeInteger(evidence.major_findings_open)
+    || evidence.critical_findings_open > 0
+    || evidence.major_findings_open > 0
+  ) {
+    return {
+      detail: "Required: external review report must have zero open critical or major findings.",
+      reviewedCheckIds: evidence.required_check_ids,
+      status: "required",
+    };
+  }
+  if (
+    evidence.source_registry_error_count !== clinicalReviewPacket.summary.registryErrorCount
+    || evidence.source_registry_warning_count !== clinicalReviewPacket.summary.registryWarningCount
+  ) {
+    return {
+      detail:
+        "Required: external review report source registry counts must match the current clinical review packet.",
+      reviewedCheckIds: evidence.required_check_ids,
+      status: "required",
+    };
+  }
+
+  return {
+    detail:
+      `External clinician/source review evidence accepted for ${evidence.required_check_ids.join(", ")} by ${evidence.reviewer_role} on ${evidence.reviewed_at}; zero open critical or major findings.`,
+    reviewedCheckIds: evidence.required_check_ids,
+    status: "pass",
+  };
+}
+
 function hasRequirement(
   workflowPacket: ClinicalWorkflowReviewPacket,
   requirementId: string,
@@ -223,14 +401,20 @@ function computeReportStatus(requirements: CareVaultObjectiveRequirement[]) {
 
 export function buildCareVaultObjectiveReadinessReport({
   clinicalReviewPacket = buildClinicalReviewPacket(),
+  externalReviewEvidence,
   hwpSmokeReportEvidence,
   workflowReviewPacket = buildClinicalWorkflowReviewPacket(),
 }: {
   clinicalReviewPacket?: ClinicalReviewPacket;
+  externalReviewEvidence?: CareVaultExternalReviewEvidence;
   hwpSmokeReportEvidence?: CareVaultHwpSmokeReportEvidence;
   workflowReviewPacket?: ClinicalWorkflowReviewPacket;
 } = {}): CareVaultObjectiveReadinessReport {
   const hwpSmokeAssessment = assessCareVaultHwpSmokeReportEvidence(hwpSmokeReportEvidence);
+  const externalReviewAssessment = assessCareVaultExternalReviewEvidence(
+    externalReviewEvidence,
+    clinicalReviewPacket,
+  );
   const sourceRegistryClean =
     clinicalReviewPacket.summary.registryErrorCount === 0
     && clinicalReviewPacket.summary.registryWarningCount === 0
@@ -379,12 +563,12 @@ export function buildCareVaultObjectiveReadinessReport({
         "src/clinicalReviewPacket.ts",
         "src/clinicalWorkflowReview.ts",
         "docs/completion-audits/carevault-objective-audit-2026-06-11.md",
+        "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH",
       ],
-      detail:
-        "Source and workflow review packets exist, but external clinician/source review on real workflows is still required before production medical readiness can be claimed.",
+      detail: externalReviewAssessment.detail,
       id: "external-clinician-source-review",
       objectiveText: "perfect/accurate healthcare readiness",
-      status: "required",
+      status: externalReviewAssessment.status,
     }),
   ];
   const blockingRequirementIds = requirements

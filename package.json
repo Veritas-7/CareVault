@@ -16,6 +16,8 @@
     "objective:readiness:report:test": "bash scripts/test_objective_readiness_report_smoke.sh",
     "clinical:sources:smoke": "bash scripts/smoke_clinical_source_urls.sh",
     "clinical:review:smoke": "vitest run src/clinicalSourceRegistry.test.ts src/clinicalReviewPacket.test.ts",
+    "clinical:external-review:report": "bash scripts/smoke_external_review_report.sh",
+    "clinical:external-review:report:test": "bash scripts/test_external_review_report_smoke.sh",
     "clinical:workflow:smoke": "vitest run src/clinicalWorkflowReview.test.ts",
     "hwp:smoke:test": "bash scripts/test_hwp_sample_smoke.sh",
     "rag:ollama:doctor:test": "bash scripts/test_ollama_runtime_doctor.sh",

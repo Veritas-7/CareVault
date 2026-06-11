@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildCareVaultObjectiveReadinessReport,
   formatCareVaultObjectiveReadinessMarkdown,
+  type CareVaultExternalReviewEvidence,
   type CareVaultHwpSmokeReportEvidence,
 } from "./carevaultObjectiveReadiness";
 
@@ -15,6 +16,25 @@ const validHwpSmokeReportEvidence: CareVaultHwpSmokeReportEvidence = {
   ],
   schema: "carevault-hwp-smoke-report.v1",
   status: "passed",
+};
+
+const validExternalReviewEvidence: CareVaultExternalReviewEvidence = {
+  attestations: {
+    cervical_hypertension_diabetes_scope_reviewed: true,
+    non_diagnosis_boundary_reviewed: true,
+    real_workflow_reviewed: true,
+    source_registry_reviewed: true,
+  },
+  critical_findings_open: 0,
+  major_findings_open: 0,
+  required_check_ids: ["clinician-source-review", "real-workflow-review"],
+  reviewed_at: "2026-06-11",
+  reviewer_role: "external clinical reviewer",
+  schema: "carevault-external-clinician-review.v1",
+  source_registry_error_count: 0,
+  source_registry_warning_count: 0,
+  status: "passed",
+  unresolved_required_check_ids: [],
 };
 
 describe("carevaultObjectiveReadiness", () => {
@@ -111,6 +131,61 @@ describe("carevaultObjectiveReadiness", () => {
     expect(mismatchedCountReport.status).toBe("blocked");
     expect(mismatchedCountReport.blockingRequirementIds).toContain(
       "real-private-hwp-hwpx-sample",
+    );
+  });
+
+  it("accepts external clinician/source review evidence without hiding the private HWP blocker", () => {
+    const report = buildCareVaultObjectiveReadinessReport({
+      externalReviewEvidence: validExternalReviewEvidence,
+    });
+    const requirementsById = Object.fromEntries(
+      report.requirements.map((requirement) => [requirement.id, requirement]),
+    );
+
+    expect(report.status).toBe("blocked");
+    expect(report.blockingRequirementIds).toEqual(["real-private-hwp-hwpx-sample"]);
+    expect(requirementsById["external-clinician-source-review"]).toMatchObject({
+      status: "pass",
+    });
+    expect(requirementsById["external-clinician-source-review"]?.detail).toContain(
+      "zero open critical or major findings",
+    );
+  });
+
+  it("can mark the command-only readiness report pass when both external and private-sample evidence pass", () => {
+    const report = buildCareVaultObjectiveReadinessReport({
+      externalReviewEvidence: validExternalReviewEvidence,
+      hwpSmokeReportEvidence: validHwpSmokeReportEvidence,
+    });
+    const markdown = formatCareVaultObjectiveReadinessMarkdown(report);
+
+    expect(report.status).toBe("pass");
+    expect(report.blockingRequirementIds).toEqual([]);
+    expect(markdown).toContain("Status: pass");
+    expect(markdown).toContain("No blocking requirements remain");
+  });
+
+  it("keeps external review required when evidence is incomplete or has open major findings", () => {
+    const missingWorkflowReview = buildCareVaultObjectiveReadinessReport({
+      externalReviewEvidence: {
+        ...validExternalReviewEvidence,
+        required_check_ids: ["clinician-source-review"],
+      },
+    });
+    const openMajorFinding = buildCareVaultObjectiveReadinessReport({
+      externalReviewEvidence: {
+        ...validExternalReviewEvidence,
+        major_findings_open: 1,
+      },
+    });
+
+    expect(missingWorkflowReview.status).toBe("blocked");
+    expect(missingWorkflowReview.blockingRequirementIds).toContain(
+      "external-clinician-source-review",
+    );
+    expect(openMajorFinding.status).toBe("blocked");
+    expect(openMajorFinding.blockingRequirementIds).toContain(
+      "external-clinician-source-review",
     );
   });
 
