@@ -73,6 +73,25 @@ objective:readiness:complete:test` verifies missing report paths, rejected HWP
 evidence, rejected external-review evidence, and valid combined fixture evidence
 without using private documents or claiming clinical approval.
 
+Export a single operator bundle for the two remaining external inputs:
+
+```bash
+CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR=/tmp/carevault-objective-readiness-handoff \
+npm run objective:readiness:handoff
+```
+
+The bundle command validates and exports the private HWP/HWPX smoke handoff,
+exports the current external review packet, exports the current blocked
+objective-readiness report as Markdown and JSON, and writes
+`carevault-final-readiness-handoff.md` with the exact follow-up sequence:
+`npm run hwp:smoke`, `npm run clinical:external-review:packet`, `npm run
+clinical:external-review:report`, and `npm run
+objective:readiness:complete`. `npm run objective:readiness:handoff:test`
+verifies missing-output failures, bundle contents, current blocker names, final
+command sequence, and local-path exclusion. The command still does not run or
+invent a real private sample and does not create external clinician/source
+approval.
+
 ## Clinical source smoke
 
 Run this command to verify that CareVault's embedded clinical source registry
