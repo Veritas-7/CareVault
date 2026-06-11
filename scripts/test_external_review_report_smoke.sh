@@ -11,20 +11,21 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 VALID_REPORT="$TMP_DIR/valid-external-review.json"
 MISSING_SCOPE_REPORT="$TMP_DIR/missing-scope.json"
 MISSING_ARTIFACT_REPORT="$TMP_DIR/missing-artifact.json"
+MISSING_HASH_REPORT="$TMP_DIR/missing-hash.json"
 STALE_COUNT_REPORT="$TMP_DIR/stale-count.json"
 OPEN_FINDING_REPORT="$TMP_DIR/open-finding.json"
 BAD_JSON_REPORT="$TMP_DIR/bad-json.json"
 
 cat > "$VALID_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v2",
+  "schema": "carevault-external-clinician-review.v3",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
   "reviewed_artifacts": [
-    {"id": "clinical-review-packet", "status": "reviewed"},
-    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
-    {"id": "objective-readiness-report", "status": "reviewed"}
+    {"id": "clinical-review-packet", "status": "reviewed", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 1200},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 1300},
+    {"id": "objective-readiness-report", "status": "reviewed", "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "bytes": 1400}
   ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],
@@ -45,14 +46,14 @@ JSON
 
 cat > "$MISSING_SCOPE_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v2",
+  "schema": "carevault-external-clinician-review.v3",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
   "reviewed_artifacts": [
-    {"id": "clinical-review-packet", "status": "reviewed"},
-    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
-    {"id": "objective-readiness-report", "status": "reviewed"}
+    {"id": "clinical-review-packet", "status": "reviewed", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 1200},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 1300},
+    {"id": "objective-readiness-report", "status": "reviewed", "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "bytes": 1400}
   ],
   "required_check_ids": ["clinician-source-review"],
   "unresolved_required_check_ids": [],
@@ -73,13 +74,41 @@ JSON
 
 cat > "$MISSING_ARTIFACT_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v2",
+  "schema": "carevault-external-clinician-review.v3",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
   "reviewed_artifacts": [
-    {"id": "clinical-review-packet", "status": "reviewed"},
-    {"id": "clinical-workflow-review-packet", "status": "reviewed"}
+    {"id": "clinical-review-packet", "status": "reviewed", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 1200},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 1300}
+  ],
+  "required_check_ids": ["clinician-source-review", "real-workflow-review"],
+  "unresolved_required_check_ids": [],
+  "attestations": {
+    "source_registry_reviewed": true,
+    "real_workflow_reviewed": true,
+    "non_diagnosis_boundary_reviewed": true,
+    "cervical_hypertension_diabetes_scope_reviewed": true
+  },
+  "critical_findings_open": 0,
+  "major_findings_open": 0,
+  "source_registry_error_count": 0,
+  "source_registry_total_count": 84,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 6
+}
+JSON
+
+cat > "$MISSING_HASH_REPORT" <<'JSON'
+{
+  "schema": "carevault-external-clinician-review.v3",
+  "status": "passed",
+  "reviewed_at": "2026-06-11",
+  "reviewer_role": "external clinical reviewer",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "reviewed", "sha256": "not-a-sha", "bytes": 1200},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 1300},
+    {"id": "objective-readiness-report", "status": "reviewed", "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "bytes": 1400}
   ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],
@@ -100,14 +129,14 @@ JSON
 
 cat > "$OPEN_FINDING_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v2",
+  "schema": "carevault-external-clinician-review.v3",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
   "reviewed_artifacts": [
-    {"id": "clinical-review-packet", "status": "reviewed"},
-    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
-    {"id": "objective-readiness-report", "status": "reviewed"}
+    {"id": "clinical-review-packet", "status": "reviewed", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 1200},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 1300},
+    {"id": "objective-readiness-report", "status": "reviewed", "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "bytes": 1400}
   ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],
@@ -128,14 +157,14 @@ JSON
 
 cat > "$STALE_COUNT_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v2",
+  "schema": "carevault-external-clinician-review.v3",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
   "reviewed_artifacts": [
-    {"id": "clinical-review-packet", "status": "reviewed"},
-    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
-    {"id": "objective-readiness-report", "status": "reviewed"}
+    {"id": "clinical-review-packet", "status": "reviewed", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 1200},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 1300},
+    {"id": "objective-readiness-report", "status": "reviewed", "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "bytes": 1400}
   ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],
@@ -231,6 +260,10 @@ assert_not_contains "$TMP_DIR/missing-scope.out" "$TMP_DIR"
 expect_failure "missing-artifact" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$MISSING_ARTIFACT_REPORT"
 assert_contains "$TMP_DIR/missing-artifact.out" "must include reviewed artifacts"
 assert_not_contains "$TMP_DIR/missing-artifact.out" "$TMP_DIR"
+
+expect_failure "missing-hash" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$MISSING_HASH_REPORT"
+assert_contains "$TMP_DIR/missing-hash.out" "sha256 hashes"
+assert_not_contains "$TMP_DIR/missing-hash.out" "$TMP_DIR"
 
 expect_failure "open-finding" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$OPEN_FINDING_REPORT"
 assert_contains "$TMP_DIR/open-finding.out" "zero open critical or major findings"

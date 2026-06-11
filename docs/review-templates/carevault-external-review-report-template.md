@@ -33,7 +33,10 @@ The reviewer should fill a copy of the JSON, not this checked-in template.
 Keep `schema` unchanged. Set `status` to `passed` only after the actual review
 has been completed. Set every `reviewed_artifacts[*].status` to `reviewed` only
 after checking the clinical review packet, clinical workflow review packet, and
-objective readiness report. Keep `required_check_ids` covering both
+objective readiness report. Copy each reviewed artifact's SHA-256 hash and byte
+count from `reviewer-handoff.md` into the matching `reviewed_artifacts[*].sha256`
+and `reviewed_artifacts[*].bytes` fields so stale or substituted packets fail
+closed. Keep `required_check_ids` covering both
 `clinician-source-review` and `real-workflow-review`. Remove those IDs from
 `unresolved_required_check_ids` only when the source registry and real patient
 workflow review are complete.

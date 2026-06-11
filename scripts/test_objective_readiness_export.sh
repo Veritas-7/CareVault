@@ -35,14 +35,14 @@ JSON
 
 cat > "$VALID_EXTERNAL_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v2",
+  "schema": "carevault-external-clinician-review.v3",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
   "reviewed_artifacts": [
-    {"id": "clinical-review-packet", "status": "reviewed"},
-    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
-    {"id": "objective-readiness-report", "status": "reviewed"}
+    {"id": "clinical-review-packet", "status": "reviewed", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 1200},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 1300},
+    {"id": "objective-readiness-report", "status": "reviewed", "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "bytes": 1400}
   ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],

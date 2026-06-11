@@ -48,12 +48,27 @@ const validExternalReviewEvidence: CareVaultExternalReviewEvidence = {
   required_check_ids: ["clinician-source-review", "real-workflow-review"],
   reviewed_at: "2026-06-11",
   reviewed_artifacts: [
-    { id: "clinical-review-packet", status: "reviewed" },
-    { id: "clinical-workflow-review-packet", status: "reviewed" },
-    { id: "objective-readiness-report", status: "reviewed" },
+    {
+      bytes: 1200,
+      id: "clinical-review-packet",
+      sha256: "a".repeat(64),
+      status: "reviewed",
+    },
+    {
+      bytes: 1300,
+      id: "clinical-workflow-review-packet",
+      sha256: "b".repeat(64),
+      status: "reviewed",
+    },
+    {
+      bytes: 1400,
+      id: "objective-readiness-report",
+      sha256: "c".repeat(64),
+      status: "reviewed",
+    },
   ],
   reviewer_role: "external clinical reviewer",
-  schema: "carevault-external-clinician-review.v2",
+  schema: "carevault-external-clinician-review.v3",
   source_registry_error_count: 0,
   source_registry_total_count: 84,
   source_registry_warning_count: 0,
@@ -341,8 +356,18 @@ describe("carevaultObjectiveReadiness", () => {
       externalReviewEvidence: {
         ...validExternalReviewEvidence,
         reviewed_artifacts: [
-          { id: "clinical-review-packet", status: "reviewed" },
-          { id: "clinical-workflow-review-packet", status: "reviewed" },
+          {
+            bytes: 1200,
+            id: "clinical-review-packet",
+            sha256: "a".repeat(64),
+            status: "reviewed",
+          },
+          {
+            bytes: 1300,
+            id: "clinical-workflow-review-packet",
+            sha256: "b".repeat(64),
+            status: "reviewed",
+          },
         ],
       },
     });
@@ -352,6 +377,20 @@ describe("carevaultObjectiveReadiness", () => {
         workflow_surface_count: 5,
       },
     });
+    const missingArtifactHash = buildCareVaultObjectiveReadinessReport({
+      externalReviewEvidence: {
+        ...validExternalReviewEvidence,
+        reviewed_artifacts: [
+          {
+            bytes: 1200,
+            id: "clinical-review-packet",
+            sha256: "not-a-sha",
+            status: "reviewed",
+          },
+          ...validExternalReviewEvidence.reviewed_artifacts.slice(1),
+        ],
+      },
+    });
 
     expect(missingArtifact.status).toBe("blocked");
     expect(missingArtifact.blockingRequirementIds).toContain(
@@ -359,6 +398,10 @@ describe("carevaultObjectiveReadiness", () => {
     );
     expect(staleCount.status).toBe("blocked");
     expect(staleCount.blockingRequirementIds).toContain(
+      "external-clinician-source-review",
+    );
+    expect(missingArtifactHash.status).toBe("blocked");
+    expect(missingArtifactHash.blockingRequirementIds).toContain(
       "external-clinician-source-review",
     );
   });

@@ -21,7 +21,7 @@ describe("carevaultExternalReviewTemplate", () => {
     const workflowReviewPacket = buildClinicalWorkflowReviewPacket();
     const serializedTemplate = JSON.stringify(externalReviewTemplate);
 
-    expect(externalReviewTemplate.schema).toBe("carevault-external-clinician-review.v2");
+    expect(externalReviewTemplate.schema).toBe("carevault-external-clinician-review.v3");
     expect(externalReviewTemplate.status).toBe("draft");
     expect(externalReviewTemplate.reviewed_at).toBe("YYYY-MM-DD");
     expect(externalReviewTemplate.reviewer_role).toBe(
@@ -34,9 +34,24 @@ describe("carevaultExternalReviewTemplate", () => {
       requiredExternalReviewCheckIds,
     );
     expect(externalReviewTemplate.reviewed_artifacts).toEqual([
-      { id: "clinical-review-packet", status: "pending" },
-      { id: "clinical-workflow-review-packet", status: "pending" },
-      { id: "objective-readiness-report", status: "pending" },
+      {
+        bytes: 0,
+        id: "clinical-review-packet",
+        sha256: "REPLACE_WITH_PACKET_SHA256",
+        status: "pending",
+      },
+      {
+        bytes: 0,
+        id: "clinical-workflow-review-packet",
+        sha256: "REPLACE_WITH_PACKET_SHA256",
+        status: "pending",
+      },
+      {
+        bytes: 0,
+        id: "objective-readiness-report",
+        sha256: "REPLACE_WITH_PACKET_SHA256",
+        status: "pending",
+      },
     ]);
     expect(externalReviewTemplate.attestations).toEqual({
       cervical_hypertension_diabetes_scope_reviewed: false,
@@ -85,8 +100,10 @@ describe("carevaultExternalReviewTemplate", () => {
         source_registry_reviewed: true,
       },
       reviewed_at: "2026-06-11",
-      reviewed_artifacts: externalReviewTemplate.reviewed_artifacts.map((artifact) => ({
+      reviewed_artifacts: externalReviewTemplate.reviewed_artifacts.map((artifact, index) => ({
         ...artifact,
+        bytes: 1200 + index,
+        sha256: String(index + 1).repeat(64),
         status: "reviewed",
       })),
       reviewer_role: "external clinical reviewer",

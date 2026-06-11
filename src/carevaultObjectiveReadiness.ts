@@ -56,7 +56,9 @@ export type CareVaultExternalReviewAttestations = {
 };
 
 export type CareVaultExternalReviewArtifact = {
+  bytes: number;
   id: string;
+  sha256: string;
   status: string;
 };
 
@@ -150,7 +152,7 @@ export const careVaultObjectiveReadinessBoundary =
   "This readiness report is a command-only completion audit input. It is not a clinical approval, not a production medical readiness claim, and not permission to mark the active goal complete while blocked requirements remain.";
 
 const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v3";
-const externalReviewReportSchema = "carevault-external-clinician-review.v2";
+const externalReviewReportSchema = "carevault-external-clinician-review.v3";
 const supportedHwpSampleExtensions = new Set(["hwp", "hwpx", "hwpml"]);
 const hwpObjectiveTermGroupLabels: Record<
   keyof CareVaultHwpSmokeObjectiveTermGroups,
@@ -196,6 +198,10 @@ function isPathSafeLabel(value: string) {
     && !value.includes("/")
     && !value.includes("\\")
   );
+}
+
+function isSha256Hex(value: string) {
+  return /^[a-f0-9]{64}$/i.test(value);
 }
 
 function hasAllRequiredIds(ids: string[], requiredIds: readonly string[]) {
@@ -512,11 +518,15 @@ export function assessCareVaultExternalReviewEvidence(
       && isPathSafeLabel(artifact.id)
       && typeof artifact.status === "string"
       && artifact.status === "reviewed"
+      && typeof artifact.sha256 === "string"
+      && isSha256Hex(artifact.sha256)
+      && Number.isInteger(artifact.bytes)
+      && artifact.bytes > 0
     )
   ) {
     return {
       detail:
-        "Required: external review report reviewed_artifacts must be reviewed, non-path artifact IDs.",
+        "Required: external review report reviewed_artifacts must include reviewed non-path artifact IDs with packet sha256 hashes and positive byte counts.",
       reviewedCheckIds: evidence.required_check_ids,
       status: "required",
     };
@@ -533,7 +543,7 @@ export function assessCareVaultExternalReviewEvidence(
 
   return {
     detail:
-      `External clinician/source review evidence accepted for ${evidence.required_check_ids.join(", ")} by ${evidence.reviewer_role} on ${evidence.reviewed_at}; reviewed ${reviewedArtifactIds.length} artifacts with current source/workflow counts and zero open critical or major findings.`,
+      `External clinician/source review evidence accepted for ${evidence.required_check_ids.join(", ")} by ${evidence.reviewer_role} on ${evidence.reviewed_at}; reviewed ${reviewedArtifactIds.length} hashed artifacts with current source/workflow counts and zero open critical or major findings.`,
     reviewedCheckIds: evidence.required_check_ids,
     status: "pass",
   };

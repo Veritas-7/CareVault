@@ -113,9 +113,22 @@ if (clinical.summary.totalSources <= 70) process.exit(1);
 if (workflow.surfaces.length !== 6) process.exit(1);
 if (readiness.status !== "blocked") process.exit(1);
 if (!readiness.blockingRequirementIds.includes("real-private-hwp-hwpx-sample")) process.exit(1);
-if (template.schema !== "carevault-external-clinician-review.v2") process.exit(1);
+if (template.schema !== "carevault-external-clinician-review.v3") process.exit(1);
 if (template.source_registry_total_count !== clinical.summary.totalSources) process.exit(1);
 if (template.workflow_surface_count !== workflow.surfaces.length) process.exit(1);
+const requiredArtifactIds = [
+  "clinical-review-packet",
+  "clinical-workflow-review-packet",
+  "objective-readiness-report",
+];
+if (template.reviewed_artifacts.length !== requiredArtifactIds.length) process.exit(1);
+for (const id of requiredArtifactIds) {
+  const artifact = template.reviewed_artifacts.find((candidate) => candidate.id === id);
+  if (!artifact) process.exit(1);
+  if (artifact.status !== "pending") process.exit(1);
+  if (artifact.sha256 !== "REPLACE_WITH_PACKET_SHA256") process.exit(1);
+  if (artifact.bytes !== 0) process.exit(1);
+}
 NODE
 
 printf 'External review packet export fixture tests passed.\n'
