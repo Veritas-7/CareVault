@@ -22,6 +22,19 @@ the readiness module can accept that basename-only report as evidence for the
 private-sample requirement while still leaving external clinician/source review
 as required.
 
+After a private sample smoke writes that report, run:
+
+```bash
+CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
+npm run objective:readiness:report
+```
+
+This command fails closed when the report is missing, unreadable, invalid JSON,
+path-leaking, count-mismatched, or otherwise rejected by the same objective
+readiness gate. Without `CAREVAULT_HWP_SMOKE_REPORT_PATH`, the normal
+`npm run objective:readiness:smoke` command still keeps the private-sample
+requirement blocked.
+
 ## Clinical source smoke
 
 Run this command to verify that CareVault's embedded clinical source registry
@@ -104,6 +117,9 @@ basename/extension/status only. It never stores full local sample paths.
 evidence only when the schema is `carevault-hwp-smoke-report.v1`, the report and
 all samples passed, the sample count matches the samples array, extensions are
 `.hwp`, `.hwpx`, or `.hwpml`, and every sample entry is basename-only.
+`npm run objective:readiness:report` is the command-only bridge from this report
+to the objective-readiness status; `npm run objective:readiness:report:test`
+uses fixture reports to verify the bridge without any private sample.
 
 For a repeatable non-private regression that proves HWPX section XML can become
 source-grounded CareVault RAG evidence, run:

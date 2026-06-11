@@ -12,6 +12,8 @@
     "runtime:doctor:dev": "bash scripts/verify_runtime_clean.sh --expect-dev",
     "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
     "objective:readiness:smoke": "vitest run src/carevaultObjectiveReadiness.test.ts src/clinicalWorkflowReview.test.ts src/clinicalReviewPacket.test.ts",
+    "objective:readiness:report": "bash scripts/smoke_objective_readiness_report.sh",
+    "objective:readiness:report:test": "bash scripts/test_objective_readiness_report_smoke.sh",
     "clinical:sources:smoke": "bash scripts/smoke_clinical_source_urls.sh",
     "clinical:review:smoke": "vitest run src/clinicalSourceRegistry.test.ts src/clinicalReviewPacket.test.ts",
     "clinical:workflow:smoke": "vitest run src/clinicalWorkflowReview.test.ts",
