@@ -171,6 +171,11 @@ import {
   hasActiveDocumentFilters as hasActiveDocumentFilterState,
 } from "./documentFilterActions";
 import {
+  buildDocumentCareQuestionDraft,
+  buildDocumentKnowledgeSnippet,
+  buildDocumentKnowledgeSummary,
+} from "./documentKnowledge";
+import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
@@ -1755,6 +1760,12 @@ function App() {
     statusFilter: documentStatusFilter,
     statusLabels: documentReviewStatusLabel,
   });
+  const documentKnowledgeSearchSnippets = documentFilter.trim()
+    ? filteredDocuments
+        .map((document) => buildDocumentKnowledgeSnippet(document, documentFilter))
+        .filter(Boolean)
+        .slice(0, 3)
+    : [];
   const hasActiveDocumentFilters = hasActiveDocumentFilterState({
     categoryFilter: documentCategoryFilter,
     searchText: documentFilter,
@@ -2176,6 +2187,34 @@ function App() {
       documents: current.documents.map((item) =>
         item.id === document.id
           ? { ...item, history: appendDocumentHistory(item.history, historyEntry) }
+          : item,
+      ),
+    }));
+    clearDocumentActionBaseline(document.id);
+    const feedback = formatDocumentNextActionHistoryStatusLabel(document, nextAction);
+    setDocumentActionFeedback({ documentId: document.id, message: feedback });
+    setActionSaveLabel(feedback);
+  };
+
+  const applyDocumentKnowledgeQuestionDraft = (document: CareDocument) => {
+    const nextAction = buildDocumentCareQuestionDraft(document);
+    if (!nextAction) return;
+
+    const historyEntry = createDocumentHistory(
+      "next-action",
+      "문서 질문 초안",
+      nextAction,
+    );
+    setState((current) => ({
+      ...current,
+      documents: current.documents.map((item) =>
+        item.id === document.id
+          ? {
+              ...item,
+              nextAction,
+              reviewStatus: "care-question",
+              history: appendDocumentHistory(item.history, historyEntry),
+            }
           : item,
       ),
     }));
@@ -7052,7 +7091,7 @@ function App() {
                 type="file"
                 tabIndex={-1}
                 aria-hidden="true"
-                accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"
+                accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md,.hwp,.hwpx"
                 aria-label={formControlDescriptions.documentAttachmentFile}
                 title={formControlDescriptions.documentAttachmentFile}
                 onChange={(event) => {
@@ -7140,7 +7179,7 @@ function App() {
               type="file"
               tabIndex={-1}
               aria-hidden="true"
-              accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md"
+              accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.md,.hwp,.hwpx"
               aria-label={formControlDescriptions.savedAttachmentFile}
               title={formControlDescriptions.savedAttachmentFile}
               onChange={(event) => {
@@ -7161,6 +7200,16 @@ function App() {
             </label>
             {normalizedSearchText ? (
               <p className="normalized-search-note">{normalizedSearchText}</p>
+            ) : null}
+            {documentKnowledgeSearchSnippets.length ? (
+              <div className="document-knowledge-search" aria-label="문서 파싱 검색 단서">
+                <strong>문서 파싱 검색 단서</strong>
+                <ul>
+                  {documentKnowledgeSearchSnippets.map((snippet) => (
+                    <li key={snippet}>{snippet}</li>
+                  ))}
+                </ul>
+              </div>
             ) : null}
             <div className="document-filter-row">
               <label>
@@ -7220,6 +7269,8 @@ function App() {
                         "저장된 경로 또는 데스크톱 런타임 필요",
                       )
                     : "";
+                  const documentKnowledgeSummary = buildDocumentKnowledgeSummary(document);
+                  const documentCareQuestionDraft = buildDocumentCareQuestionDraft(document);
 
                   return (
                   <article className="document-item" key={document.id}>
@@ -7233,6 +7284,9 @@ function App() {
                       </div>
                       <strong>{document.title}</strong>
                       <p>{document.body}</p>
+                      {documentKnowledgeSummary ? (
+                        <p className="document-knowledge-summary">{documentKnowledgeSummary}</p>
+                      ) : null}
                       <div
                         className="document-update-controls"
                         aria-label={`${document.title} 서류 조치 수정`}
@@ -7371,6 +7425,17 @@ function App() {
                         >
                           <Unlink aria-hidden="true" />
                           첨부 제거
+                        </button>
+                      ) : null}
+                      {documentCareQuestionDraft ? (
+                        <button
+                          type="button"
+                          onClick={() => applyDocumentKnowledgeQuestionDraft(document)}
+                          aria-label={`${document.title} 문서 단서로 의료진 질문 초안 만들기`}
+                          title={`${document.title} 문서 단서로 의료진 질문 초안 만들기`}
+                        >
+                          <MessageSquare aria-hidden="true" />
+                          질문 초안
                         </button>
                       ) : null}
                       <button

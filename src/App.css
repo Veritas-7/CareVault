@@ -3745,6 +3745,30 @@ textarea:focus-visible {
   line-height: 1.45;
 }
 
+.document-knowledge-search {
+  display: grid;
+  gap: 6px;
+  margin: -2px 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #d7e2e1;
+  border-radius: 8px;
+  background: #f7fbfa;
+  color: #2f5357;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.document-knowledge-search strong {
+  color: #0f4c5c;
+}
+
+.document-knowledge-search ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+}
+
 .document-filter-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3807,6 +3831,22 @@ textarea:focus-visible {
 .document-item strong {
   display: block;
   margin: 3px 0 4px;
+}
+
+.document-knowledge-summary {
+  display: inline-flex;
+  max-width: 100%;
+  width: fit-content;
+  margin: 2px 0 10px;
+  padding: 5px 8px;
+  border: 1px solid #cce0df;
+  border-radius: 8px;
+  color: #0f4c5c;
+  background: #edf7f4;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .document-status-row {

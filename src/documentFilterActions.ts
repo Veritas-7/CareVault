@@ -1,3 +1,5 @@
+import { buildDocumentKnowledgeSearchText } from "./documentKnowledge";
+
 type DocumentFilterSource = {
   attachmentName?: string;
   attachmentStatus?: string;
@@ -96,6 +98,7 @@ export function filterDocumentsBySearchAndReview<Document extends DocumentFilter
       statusLabels[document.reviewStatus] ?? document.reviewStatus,
       document.attachmentName ?? "",
       document.attachmentStatus ?? "",
+      buildDocumentKnowledgeSearchText(document),
     ]
       .join(" ")
       .toLowerCase();

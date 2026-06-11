@@ -40,6 +40,16 @@ const documents = [
     tags: "CT",
     title: "복부 CT",
   },
+  {
+    attachmentName: "상급병원_병리결과.hwpx",
+    body: "자궁경부 편평상피세포암 병리결과: 절제연 음성. HbA1c 7.2%, 혈압 142/88 기록도 함께 확인 필요.",
+    category: "pathology",
+    date: "2026-06-11",
+    nextAction: "",
+    reviewStatus: "needs-review",
+    tags: "",
+    title: "병리결과",
+  },
 ] as const;
 
 describe("documentFilterActions", () => {
@@ -103,6 +113,18 @@ describe("documentFilterActions", () => {
     });
 
     expect(filtered).toEqual([documents[0]]);
+  });
+
+  it("matches parsed document knowledge aliases in saved-document search", () => {
+    const filtered = filterDocumentsBySearchAndReview(documents, {
+      categoryFilter: "all",
+      categoryLabels,
+      searchText: "문서 파싱",
+      statusFilter: "all",
+      statusLabels,
+    });
+
+    expect(filtered).toEqual([documents[2]]);
   });
 
   it("applies category and review-status filters before search", () => {
