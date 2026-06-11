@@ -77,6 +77,8 @@ MODEL_ENDPOINT="${CAREVAULT_RAG_MODEL_ENDPOINT:-http://${OLLAMA_HOST_VALUE}/v1/c
 EMBEDDING_ENDPOINT="${CAREVAULT_RAG_EMBEDDING_ENDPOINT:-http://${OLLAMA_HOST_VALUE}/v1/embeddings}"
 OLLAMA_BASE_URL="http://${OLLAMA_HOST_VALUE}"
 OLLAMA_LOG="$(mktemp /tmp/carevault-ollama-rag.XXXXXX.log)"
+MODEL_OUTPUT_LOG="$(mktemp /tmp/carevault-rag-model.XXXXXX.log)"
+EMBEDDING_OUTPUT_LOG="$(mktemp /tmp/carevault-rag-embedding.XXXXXX.log)"
 OLLAMA_PID=""
 
 cleanup() {
@@ -84,7 +86,7 @@ cleanup() {
     kill "$OLLAMA_PID" >/dev/null 2>&1 || true
     wait "$OLLAMA_PID" >/dev/null 2>&1 || true
   fi
-  rm -f "$OLLAMA_LOG"
+  rm -f "$OLLAMA_LOG" "$MODEL_OUTPUT_LOG" "$EMBEDDING_OUTPUT_LOG"
 }
 trap cleanup EXIT
 
@@ -97,6 +99,16 @@ wait_for_ollama() {
     sleep 0.25
   done
   return 1
+}
+
+report_missing_llama_server_diagnosis() {
+  local output_file
+  for output_file in "$MODEL_OUTPUT_LOG" "$EMBEDDING_OUTPUT_LOG" "$OLLAMA_LOG"; do
+    if [[ -s "$output_file" ]] && grep -Eqi 'llama-server binary not found|error starting llama-server' "$output_file"; then
+      printf 'Diagnosis: local Ollama can start its API, but its model worker binary `llama-server` is missing; repair or reinstall the Ollama runtime before expecting model-backed CareVault RAG smokes to pass.\n' >&2
+      return 0
+    fi
+  done
 }
 
 printf 'CareVault Ollama RAG smoke\n'
@@ -130,13 +142,13 @@ cd "$ROOT_DIR"
 set +e
 CAREVAULT_RAG_MODEL_ENDPOINT="$MODEL_ENDPOINT" \
   CAREVAULT_RAG_MODEL_NAME="$MODEL_NAME" \
-  npm run rag:model:smoke
-MODEL_STATUS="$?"
+  npm run rag:model:smoke 2>&1 | sanitize_log | tee "$MODEL_OUTPUT_LOG"
+MODEL_STATUS="${PIPESTATUS[0]}"
 
 CAREVAULT_RAG_EMBEDDING_ENDPOINT="$EMBEDDING_ENDPOINT" \
   CAREVAULT_RAG_EMBEDDING_MODEL="$EMBEDDING_MODEL_NAME" \
-  npm run rag:embedding:smoke
-EMBEDDING_STATUS="$?"
+  npm run rag:embedding:smoke 2>&1 | sanitize_log | tee "$EMBEDDING_OUTPUT_LOG"
+EMBEDDING_STATUS="${PIPESTATUS[0]}"
 set -e
 
 if [[ "$MODEL_STATUS" -ne 0 || "$EMBEDDING_STATUS" -ne 0 ]]; then
@@ -146,6 +158,7 @@ if [[ "$MODEL_STATUS" -ne 0 || "$EMBEDDING_STATUS" -ne 0 ]]; then
     printf 'Ollama log tail:\n' >&2
     tail -20 "$OLLAMA_LOG" | sanitize_log >&2
   fi
+  report_missing_llama_server_diagnosis
   exit 1
 fi
 
