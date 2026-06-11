@@ -1,6 +1,18 @@
+import { appendDocumentHistory, type DocumentHistoryEntry } from "./documentHistory";
+
 export type DocumentAttachmentTextCandidate = {
   name: string;
   type?: string;
+};
+
+export type ParsedAttachmentTextSourceLabel =
+  | "텍스트 파일"
+  | "HWPX 미리보기 텍스트"
+  | "HWPX 본문 XML";
+
+export type SavedDocumentParsedAttachmentTarget = {
+  body: string;
+  history?: DocumentHistoryEntry[];
 };
 
 const textAttachmentExtensions = new Set(["txt", "md", "csv"]);
@@ -17,6 +29,19 @@ function formatAttachmentFileName(fileName: string | undefined) {
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function formatParsedAttachmentHeader(fileName: string, sourceLabel?: ParsedAttachmentTextSourceLabel) {
+  const sourceContext = sourceLabel ? ` · ${sourceLabel}` : "";
+  return `[첨부 텍스트 파싱: ${formatAttachmentFileName(fileName)}${sourceContext}]`;
+}
+
+function buildParsedAttachmentHeaderPattern(fileName: string) {
+  return new RegExp(
+    `(^|\\n)\\[첨부 텍스트 파싱: ${escapeRegExp(
+      formatAttachmentFileName(fileName),
+    )}(?: · [^\\]]+)?\\]\\n`,
+  );
 }
 
 export function canParseDocumentAttachmentText(candidate: DocumentAttachmentTextCandidate) {
@@ -44,19 +69,22 @@ export function buildDocumentAttachmentParsedTextBlock(fileName: string, text: s
   const normalizedText = normalizeParsedAttachmentText(text);
   if (!normalizedText) return "";
 
-  return `[첨부 텍스트 파싱: ${formatAttachmentFileName(fileName)}]\n${normalizedText}`;
+  return `${formatParsedAttachmentHeader(fileName)}\n${normalizedText}`;
 }
 
 export function mergeParsedAttachmentTextIntoDocumentBody(
   currentBody: string,
   fileName: string,
   parsedText: string,
+  sourceLabel?: ParsedAttachmentTextSourceLabel,
 ) {
-  const block = buildDocumentAttachmentParsedTextBlock(fileName, parsedText);
+  const normalizedText = normalizeParsedAttachmentText(parsedText);
+  if (!normalizedText) return currentBody;
+
+  const block = `${formatParsedAttachmentHeader(fileName, sourceLabel)}\n${normalizedText}`;
   if (!block) return currentBody;
 
-  const header = `[첨부 텍스트 파싱: ${formatAttachmentFileName(fileName)}]`;
-  if (new RegExp(`(^|\\n)${escapeRegExp(header)}\\n`).test(currentBody)) {
+  if (buildParsedAttachmentHeaderPattern(fileName).test(currentBody)) {
     return currentBody;
   }
 
@@ -67,14 +95,37 @@ export function mergeParsedAttachmentTextIntoDocumentBody(
 export function formatDocumentAttachmentTextParsedStatus(
   fileName: string | undefined,
   characterCount: number,
+  sourceLabel?: ParsedAttachmentTextSourceLabel,
 ) {
+  const sourceContext = sourceLabel ? ` · 원천 ${sourceLabel}` : "";
   return `첨부 텍스트 파싱됨 · 현재 첨부 ${formatAttachmentFileName(
     fileName,
-  )} · 본문 ${characterCount}자 반영`;
+  )}${sourceContext} · 본문 ${characterCount}자 반영`;
 }
 
 export function formatDocumentAttachmentTextParseFailedStatus(fileName: string | undefined) {
   return `첨부 텍스트 파싱 실패 · 현재 첨부 ${formatAttachmentFileName(
     fileName,
   )} · 파일명 참조는 유지됨`;
+}
+
+export function mergeParsedAttachmentTextIntoSavedDocument<
+  T extends SavedDocumentParsedAttachmentTarget,
+>(
+  document: T,
+  fileName: string,
+  parsedText: string,
+  sourceLabel: ParsedAttachmentTextSourceLabel | undefined,
+  historyEntry: DocumentHistoryEntry,
+): T {
+  return {
+    ...document,
+    body: mergeParsedAttachmentTextIntoDocumentBody(
+      document.body,
+      fileName,
+      parsedText,
+      sourceLabel,
+    ),
+    history: appendDocumentHistory(document.history, historyEntry),
+  };
 }

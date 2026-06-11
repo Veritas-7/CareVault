@@ -165,13 +165,12 @@ import {
   formatDocumentDraftAttachmentSelectionFailedStatusLabel,
 } from "./documentAttachmentActions";
 import {
-  canParseDocumentAttachmentText,
   formatDocumentAttachmentTextParsedStatus,
   formatDocumentAttachmentTextParseFailedStatus,
   mergeParsedAttachmentTextIntoDocumentBody,
-  normalizeParsedAttachmentText,
+  mergeParsedAttachmentTextIntoSavedDocument,
 } from "./documentAttachmentText";
-import { canParseHwpxAttachment, extractHwpxTextFromArrayBuffer } from "./documentHwpxText";
+import { parseBrowserDocumentAttachmentText } from "./documentAttachmentParsing";
 import {
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
@@ -2340,25 +2339,23 @@ function App() {
     setSaveLabel(feedback);
 
     try {
-      let parsedText = "";
-      if (canParseDocumentAttachmentText(file)) {
-        parsedText = await file.text();
-      } else if (canParseHwpxAttachment(file)) {
-        parsedText = (await extractHwpxTextFromArrayBuffer(await file.arrayBuffer())).text;
-      } else {
-        return;
-      }
+      const parsedAttachment = await parseBrowserDocumentAttachmentText(file);
+      if (!parsedAttachment) return;
       if (documentDraftAttachmentFileRef.current !== file) return;
-      const normalizedText = normalizeParsedAttachmentText(parsedText);
-      if (!normalizedText) return;
 
       setDocumentDraft((current) => ({
         ...current,
-        body: mergeParsedAttachmentTextIntoDocumentBody(current.body, file.name, normalizedText),
+        body: mergeParsedAttachmentTextIntoDocumentBody(
+          current.body,
+          file.name,
+          parsedAttachment.normalizedText,
+          parsedAttachment.sourceLabel,
+        ),
       }));
       const parsedFeedback = formatDocumentAttachmentTextParsedStatus(
         file.name,
-        normalizedText.length,
+        parsedAttachment.normalizedText.length,
+        parsedAttachment.sourceLabel,
       );
       setDocumentSaveFeedback(parsedFeedback);
       setSaveLabel(parsedFeedback);
@@ -2582,14 +2579,41 @@ function App() {
     }));
   };
 
-  const attachBrowserReferenceToSavedDocument = (file?: File) => {
-    if (!file || !savedAttachmentTargetId) return;
-    const targetDocument = state.documents.find(
-      (document) => document.id === savedAttachmentTargetId,
+  const mergeParsedTextIntoSavedDocument = (
+    documentId: string,
+    fileName: string,
+    normalizedText: string,
+    sourceLabel: Parameters<typeof mergeParsedAttachmentTextIntoDocumentBody>[3],
+  ) => {
+    const historyEntry = createDocumentHistory(
+      "attachment-replaced",
+      "첨부 본문 파싱",
+      `${fileName}: ${sourceLabel ?? "첨부 텍스트"} ${normalizedText.length}자 반영`,
     );
 
-    rememberBrowserAttachmentPreviewUrl(savedAttachmentTargetId, file);
-    updateSavedDocumentAttachment(savedAttachmentTargetId, {
+    setState((current) => ({
+      ...current,
+      documents: current.documents.map((document) =>
+        document.id === documentId
+          ? mergeParsedAttachmentTextIntoSavedDocument(
+              document,
+              fileName,
+              normalizedText,
+              sourceLabel,
+              historyEntry,
+            )
+          : document,
+      ),
+    }));
+  };
+
+  const attachBrowserReferenceToSavedDocument = async (file?: File) => {
+    if (!file || !savedAttachmentTargetId) return;
+    const targetDocumentId = savedAttachmentTargetId;
+    const targetDocument = state.documents.find((document) => document.id === targetDocumentId);
+
+    rememberBrowserAttachmentPreviewUrl(targetDocumentId, file);
+    updateSavedDocumentAttachment(targetDocumentId, {
       attachmentName: file.name,
       attachmentPath: undefined,
       attachmentStorage: "browser-reference",
@@ -2599,8 +2623,31 @@ function App() {
     const feedback = targetDocument
       ? formatDocumentAttachmentReferenceStatusLabel(targetDocument, file.name)
       : "저장된 서류 첨부 파일명 참조 갱신";
-    setDocumentActionFeedback({ documentId: savedAttachmentTargetId, message: feedback });
+    setDocumentActionFeedback({ documentId: targetDocumentId, message: feedback });
     setActionSaveLabel(feedback);
+
+    try {
+      const parsedAttachment = await parseBrowserDocumentAttachmentText(file);
+      if (!parsedAttachment) return;
+
+      mergeParsedTextIntoSavedDocument(
+        targetDocumentId,
+        file.name,
+        parsedAttachment.normalizedText,
+        parsedAttachment.sourceLabel,
+      );
+      const parsedFeedback = formatDocumentAttachmentTextParsedStatus(
+        file.name,
+        parsedAttachment.normalizedText.length,
+        parsedAttachment.sourceLabel,
+      );
+      setDocumentActionFeedback({ documentId: targetDocumentId, message: parsedFeedback });
+      setActionSaveLabel(parsedFeedback);
+    } catch {
+      const parseFailedFeedback = formatDocumentAttachmentTextParseFailedStatus(file.name);
+      setDocumentActionFeedback({ documentId: targetDocumentId, message: parseFailedFeedback });
+      setActionSaveLabel(parseFailedFeedback);
+    }
   };
 
   const replaceSavedDocumentAttachment = async (document: CareDocument) => {

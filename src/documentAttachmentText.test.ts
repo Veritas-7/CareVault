@@ -5,6 +5,7 @@ import {
   formatDocumentAttachmentTextParseFailedStatus,
   formatDocumentAttachmentTextParsedStatus,
   mergeParsedAttachmentTextIntoDocumentBody,
+  mergeParsedAttachmentTextIntoSavedDocument,
   normalizeParsedAttachmentText,
 } from "./documentAttachmentText";
 
@@ -46,12 +47,62 @@ describe("documentAttachmentText", () => {
     expect(mergeParsedAttachmentTextIntoDocumentBody(first, "labs.csv", "새 내용")).toBe(first);
   });
 
+  it("keeps parser source labels in parsed attachment blocks and duplicate checks", () => {
+    const first = mergeParsedAttachmentTextIntoDocumentBody(
+      "",
+      "pathology.hwpx",
+      "자궁경부암 병리 결과",
+      "HWPX 미리보기 텍스트",
+    );
+
+    expect(first).toBe(
+      "[첨부 텍스트 파싱: pathology.hwpx · HWPX 미리보기 텍스트]\n자궁경부암 병리 결과",
+    );
+    expect(
+      mergeParsedAttachmentTextIntoDocumentBody(
+        first,
+        "pathology.hwpx",
+        "새 본문",
+        "HWPX 본문 XML",
+      ),
+    ).toBe(first);
+  });
+
   it("formats parse status labels with filename and character counts", () => {
     expect(formatDocumentAttachmentTextParsedStatus("labs.csv", 18)).toBe(
       "첨부 텍스트 파싱됨 · 현재 첨부 labs.csv · 본문 18자 반영",
     );
+    expect(formatDocumentAttachmentTextParsedStatus("pathology.hwpx", 42, "HWPX 본문 XML")).toBe(
+      "첨부 텍스트 파싱됨 · 현재 첨부 pathology.hwpx · 원천 HWPX 본문 XML · 본문 42자 반영",
+    );
     expect(formatDocumentAttachmentTextParseFailedStatus("labs.csv")).toBe(
       "첨부 텍스트 파싱 실패 · 현재 첨부 labs.csv · 파일명 참조는 유지됨",
     );
+  });
+
+  it("merges parsed reattachment text into a saved document body and history", () => {
+    const historyEntry = {
+      at: "2026-06-11T05:16:00.000Z",
+      detail: "pathology.hwpx: HWPX 미리보기 텍스트 12자 반영",
+      id: "history-parse-1",
+      kind: "attachment-replaced" as const,
+      label: "첨부 본문 파싱",
+    };
+
+    const document = mergeParsedAttachmentTextIntoSavedDocument(
+      {
+        body: "기존 병리 메모",
+        history: [],
+      },
+      "pathology.hwpx",
+      "자궁경부암 병리 결과",
+      "HWPX 미리보기 텍스트",
+      historyEntry,
+    );
+
+    expect(document.body).toBe(
+      "기존 병리 메모\n\n[첨부 텍스트 파싱: pathology.hwpx · HWPX 미리보기 텍스트]\n자궁경부암 병리 결과",
+    );
+    expect(document.history).toEqual([historyEntry]);
   });
 });
