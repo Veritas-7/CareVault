@@ -110,7 +110,7 @@ npm run clinical:external-review:packet
 
 The packet command validates the current template/readiness gates and exports
 the reviewer-facing artifacts required by schema
-`carevault-external-clinician-review.v2`: clinical review packet,
+`carevault-external-clinician-review.v3`: clinical review packet,
 clinical workflow review packet, objective readiness report, draft review JSON
 template, and a reviewer handoff with SHA-256 hashes. The exported packet uses
 path-safe summary JSON, not raw workflow state, so synthetic attachment paths do
@@ -139,10 +139,11 @@ CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
 npm run clinical:external-review:report
 ```
 
-The report must use schema `carevault-external-clinician-review.v2`, cover both
+The report must use schema `carevault-external-clinician-review.v3`, cover both
 `clinician-source-review` and `real-workflow-review`, mark the clinical review
 packet, clinical workflow review packet, and objective readiness report as
-reviewed artifacts, attest source registry, real workflow, non-diagnosis
+reviewed artifacts, copy their SHA-256 hashes and byte counts from
+`reviewer-handoff.md`, attest source registry, real workflow, non-diagnosis
 boundary, and cervical-cancer/hypertension/diabetes scope review, match the
 current registry total/error/warning counts and workflow surface count, and have
 zero open critical or major findings. `npm run clinical:external-review:report:test`
