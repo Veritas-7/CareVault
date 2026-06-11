@@ -1496,6 +1496,67 @@ describe("csvExport", () => {
     expect(csv).not.toContain("attachmentPath");
   });
 
+  it("exports parsed document audit rows without local attachment paths", () => {
+    const csv = buildCareVaultCsv(
+      {
+        ...state,
+        documents: [
+          {
+            date: "2026-06-04",
+            title: "자궁경부암 추적 HWP 결과",
+            category: "pathology",
+            body: [
+              "[첨부 텍스트 파싱: follow-up.hwp · HWP/HWPX 데스크톱 파서]",
+              "자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.",
+            ].join("\n"),
+            tags: "자궁경부암 고혈압 당뇨",
+            reviewStatus: "care-question",
+            nextAction: "진료 때 병리 의미와 혈압/혈당 관리 연결 질문",
+            attachmentName: "follow-up.hwp",
+            attachmentStatus: "파일 확인됨",
+          },
+        ],
+      },
+      "2026-06-04T10:00:00.000Z",
+    );
+
+    expect(csv).toContain(
+      '"document_parser_audit","2026-06-04","자궁경부암 추적 HWP 결과","HWP/HWPX 데스크톱 파서: follow-up.hwp","자궁경부암 · 고혈압 · 당뇨","문서 파서 점검 | 진단, 처방, 치료 지시가 아님"',
+    );
+    expect(csv).not.toContain("attachmentPath");
+    expect(csv).not.toContain("/Users/wj/private");
+  });
+
+  it("exports deleted parsed document audit rows separately", () => {
+    const csv = buildCareVaultCsv(
+      {
+        ...state,
+        documents: [],
+        deletedDocuments: [
+          {
+            date: "2026-06-05",
+            title: "삭제 보관 HWP 결과",
+            category: "visit-note",
+            body: [
+              "[첨부 텍스트 파싱: archived.hwp · HWP/HWPX 데스크톱 파서]",
+              "혈압 150/95 추적과 당뇨 식전 혈당 확인 필요.",
+            ].join("\n"),
+            tags: "고혈압 당뇨",
+            reviewStatus: "done",
+            nextAction: "삭제 보관 참고",
+            attachmentName: "archived.hwp",
+            attachmentStatus: "파일 확인됨",
+          },
+        ],
+      },
+      "2026-06-05T10:00:00.000Z",
+    );
+
+    expect(csv).toContain(
+      '"deleted_document_parser_audit","2026-06-05","삭제 보관 HWP 결과","HWP/HWPX 데스크톱 파서: archived.hwp","고혈압 · 당뇨","문서 파서 점검 | 진단, 처방, 치료 지시가 아님"',
+    );
+  });
+
   it("keeps source-backed lab queue details separated in CSV care_queue rows", () => {
     const csv = buildCareVaultCsv(
       {

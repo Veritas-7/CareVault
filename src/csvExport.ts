@@ -54,6 +54,7 @@ import {
   buildImmuneFoodSafetyContext,
   formatImmuneFoodSafetyContextText,
 } from "./immuneFoodContext";
+import { buildDocumentParserAudit } from "./documentParserAudit";
 
 type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
 type QuestionStatus = "open" | "answered" | "deferred";
@@ -478,9 +479,28 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
       ]),
     );
   };
+  const pushDocumentParserAudit = (
+    section: "document_parser_audit" | "deleted_document_parser_audit",
+    documents: CsvDocument[],
+  ) => {
+    buildDocumentParserAudit(documents).items.forEach((item) => {
+      rows.push(
+        row([
+          section,
+          csvIsoDate(item.dateLabel),
+          item.documentLabel,
+          item.sourceSummary,
+          item.clinicalSignalSummary,
+          "문서 파서 점검 | 진단, 처방, 치료 지시가 아님",
+        ]),
+      );
+    });
+  };
 
   state.documents.forEach((document) => pushDocument("document", document));
   state.deletedDocuments.forEach((document) => pushDocument("deleted_document", document));
+  pushDocumentParserAudit("document_parser_audit", state.documents);
+  pushDocumentParserAudit("deleted_document_parser_audit", state.deletedDocuments);
 
   rows.push(
     row([
