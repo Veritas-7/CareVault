@@ -1,0 +1,41 @@
+{
+  "candidate": "kordoc",
+  "candidate_version": "3.0.1",
+  "candidate_license": "MIT",
+  "candidate_npm_unpacked_size": 6490355,
+  "dependency_peer_runtime": "pdfjs-dist",
+  "fixture": {
+    "name": "carevault-parser-fixture.hwpx",
+    "bytes": 23194,
+    "format": "hwpx",
+    "source_markdown_terms": [
+      "자궁경부암 병리 결과",
+      "편평상피세포암",
+      "절제연 음성",
+      "혈압 142/88",
+      "HbA1c 7.2%",
+      "식후혈당 181",
+      "의료진에게 확인"
+    ]
+  },
+  "commands": [
+    "npm init -y",
+    "npm install kordoc@3.0.1 pdfjs-dist",
+    "node --input-type=module <same-sample markdownToHwpx parse smoke>"
+  ],
+  "results": {
+    "npm_audit_vulnerabilities": 0,
+    "parse_path_success": true,
+    "parse_buffer_success": true,
+    "expected_count": 7,
+    "hit_count": 7,
+    "missing": [],
+    "markdown_preview": "CareVault HWPX Parser Fixture\n\n자궁경부암 병리 결과: 편평상피세포암, 절제연 음성.\n\n고혈압 기록: 혈압 142/88 mmHg.\n\n당뇨 기록: HbA1c 7.2%, 식후혈당 181 mg/dL.\n\n다음 진료 질문: 병리결과, 혈압, 혈당 기록을 함께 의료진에게 확인."
+  },
+  "decision": {
+    "status": "candidate_passed_same_sample_smoke",
+    "adopt_runtime_now": false,
+    "reason": "The candidate parsed a generated HWPX same-sample fixture, but CareVault still needs a real user or public HWP/HWPX fixture and a browser/Tauri bundling check before runtime adoption.",
+    "next_gate": "Run the same parser against a real HWP/HWPX sample and verify the adapter can be loaded without bundling Node-only code into the React runtime."
+  }
+}
