@@ -180,7 +180,11 @@ fixed synthetic HWPX-style parsed document with cervical-cancer, blood-pressure,
 glucose/HbA1c, and lab-result cues, then checks that the existing CareVault
 surfaces keep parsed evidence visible, strip local file paths, avoid direct
 diagnosis/prescription/treatment instructions, and still mark real
-clinician/source review plus private HWP/HWPX sample smoke as unresolved.
+clinician/source review plus private HWP/HWPX sample smoke as unresolved. The
+workflow packet now includes a fail-closed requirement that Document RAG context,
+clinic-prep queue, visit Markdown, CSV, and caregiver HTML all preserve parsed
+document evidence before the objective-readiness gate can pass the app-use
+portion of parsed-document readiness.
 
 ## HWP/HWPX private sample smoke
 

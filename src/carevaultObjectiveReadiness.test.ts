@@ -141,6 +141,24 @@ describe("carevaultObjectiveReadiness", () => {
     expect(report.blockingRequirementIds).toContain("document-search-rag");
   });
 
+  it("blocks parsed-document app usage when user-facing workflow surfaces lose parsed evidence", () => {
+    const workflowReviewPacket = buildClinicalWorkflowReviewPacket();
+    const report = buildCareVaultObjectiveReadinessReport({
+      workflowReviewPacket: {
+        ...workflowReviewPacket,
+        requirements: workflowReviewPacket.requirements.map((requirement) =>
+          requirement.id === "parsed-document-user-facing-surfaces"
+            ? { ...requirement, status: "fail" }
+            : requirement,
+        ),
+      },
+    });
+    const requirement = report.requirements.find(({ id }) => id === "app-uses-parsed-documents");
+
+    expect(requirement).toMatchObject({ status: "blocked" });
+    expect(report.blockingRequirementIds).toContain("app-uses-parsed-documents");
+  });
+
   it("accepts sanitized private HWP smoke report evidence without marking clinical review complete", () => {
     const report = buildCareVaultObjectiveReadinessReport({
       hwpSmokeReportEvidence: validHwpSmokeReportEvidence,

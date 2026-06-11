@@ -282,6 +282,9 @@ function buildClinicalWorkflowReviewRequirements(
     (surface) =>
       surface.containsCervicalCancer && surface.containsHypertension && surface.containsDiabetes,
   );
+  const allUserFacingSurfacesCarryParsedEvidence = clinicalSurfaces.every(
+    (surface) => surface.containsParsedEvidence,
+  );
   const ragHasParsedEvidence = packet.documentRagContext.items.some(
     (item) => item.parsedSourceCount > 0 && item.evidenceChunks.length > 0,
   );
@@ -299,6 +302,12 @@ function buildClinicalWorkflowReviewRequirements(
       id: "parsed-document-rag",
       label: "parsed document RAG evidence",
       status: ragHasParsedEvidence ? "pass" : "fail",
+    },
+    {
+      detail: "Document RAG context, clinic-prep queue, visit Markdown, CSV, and caregiver HTML all preserve parsed document evidence.",
+      id: "parsed-document-user-facing-surfaces",
+      label: "parsed document evidence across user-facing surfaces",
+      status: allUserFacingSurfacesCarryParsedEvidence ? "pass" : "fail",
     },
     {
       detail: "A saved document with no manual nextAction still becomes a care-team question in the clinic-prep queue.",

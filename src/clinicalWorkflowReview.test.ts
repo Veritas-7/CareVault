@@ -62,4 +62,33 @@ describe("clinicalWorkflowReview", () => {
     expect(markdown).not.toContain("처방합니다");
     expect(markdown).not.toContain("치료합니다");
   });
+
+  it("requires every user-facing workflow surface to preserve parsed document evidence", () => {
+    const packet = buildClinicalWorkflowReviewPacket();
+    const requirementsById = Object.fromEntries(
+      packet.requirements.map((requirement) => [requirement.id, requirement]),
+    );
+    const userFacingSurfaceIds = [
+      "care-action-queue",
+      "caregiver-html",
+      "csv-export",
+      "document-rag-context",
+      "visit-summary-markdown",
+    ];
+    const userFacingSurfaces = packet.surfaces.filter((surface) =>
+      userFacingSurfaceIds.includes(surface.id),
+    );
+
+    expect(userFacingSurfaces.map((surface) => surface.id).sort()).toEqual(userFacingSurfaceIds);
+    expect(userFacingSurfaces.every((surface) => surface.containsParsedEvidence)).toBe(true);
+    expect(requirementsById["parsed-document-user-facing-surfaces"]).toMatchObject({
+      status: "pass",
+    });
+
+    const markdown = formatClinicalWorkflowReviewPacketMarkdown(packet);
+    expect(markdown).toContain("parsed document evidence across user-facing surfaces");
+    for (const surfaceId of userFacingSurfaceIds) {
+      expect(markdown).toContain(`${surfaceId}) - parsed=true`);
+    }
+  });
 });

@@ -632,6 +632,10 @@ export function buildCareVaultObjectiveReadinessReport({
     "comorbid-profile-coverage",
   );
   const parsedDocumentRagPass = hasRequirement(workflowReviewPacket, "parsed-document-rag");
+  const parsedDocumentUserFacingSurfacesPass = hasRequirement(
+    workflowReviewPacket,
+    "parsed-document-user-facing-surfaces",
+  );
   const documentCareQueuePass = hasRequirement(workflowReviewPacket, "document-care-queue");
   const surfaceSafetyPass =
     hasRequirement(workflowReviewPacket, "surface-safety") && allWorkflowSurfacesPass(workflowReviewPacket);
@@ -758,7 +762,9 @@ export function buildCareVaultObjectiveReadinessReport({
         "Parsed document clues flow into clinic-prep queue items, visit Markdown, CSV rows, and caregiver HTML without local path leakage or direct clinical instructions.",
       id: "app-uses-parsed-documents",
       objectiveText: "the app should parse and use document content",
-      status: documentCareQueuePass && surfaceSafetyPass ? "pass" : "blocked",
+      status: documentCareQueuePass && parsedDocumentUserFacingSurfacesPass && surfaceSafetyPass
+        ? "pass"
+        : "blocked",
     }),
     buildRequirement({
       artifacts: [
