@@ -165,6 +165,13 @@ import {
   formatDocumentDraftAttachmentSelectionFailedStatusLabel,
 } from "./documentAttachmentActions";
 import {
+  canParseDocumentAttachmentText,
+  formatDocumentAttachmentTextParsedStatus,
+  formatDocumentAttachmentTextParseFailedStatus,
+  mergeParsedAttachmentTextIntoDocumentBody,
+  normalizeParsedAttachmentText,
+} from "./documentAttachmentText";
+import {
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
   formatDocumentFilterResetStatusLabel,
@@ -2268,7 +2275,20 @@ function App() {
         filters: [
           {
             name: "Medical documents",
-            extensions: ["pdf", "png", "jpg", "jpeg", "webp", "docx", "xlsx", "csv", "txt", "md"],
+            extensions: [
+              "pdf",
+              "png",
+              "jpg",
+              "jpeg",
+              "webp",
+              "docx",
+              "xlsx",
+              "csv",
+              "txt",
+              "md",
+              "hwp",
+              "hwpx",
+            ],
           },
         ],
       });
@@ -2303,7 +2323,7 @@ function App() {
     }
   };
 
-  const attachBrowserReference = (file?: File) => {
+  const attachBrowserReference = async (file?: File) => {
     if (!file) return;
     clearDocumentDraftAttachmentPreviewUrl();
     documentDraftAttachmentFileRef.current = file;
@@ -2317,6 +2337,31 @@ function App() {
     const feedback = formatDocumentDraftAttachmentReferenceReadyStatusLabel(file.name);
     setDocumentSaveFeedback(feedback);
     setSaveLabel(feedback);
+
+    if (!canParseDocumentAttachmentText(file)) return;
+
+    try {
+      const parsedText = await file.text();
+      if (documentDraftAttachmentFileRef.current !== file) return;
+      const normalizedText = normalizeParsedAttachmentText(parsedText);
+      if (!normalizedText) return;
+
+      setDocumentDraft((current) => ({
+        ...current,
+        body: mergeParsedAttachmentTextIntoDocumentBody(current.body, file.name, normalizedText),
+      }));
+      const parsedFeedback = formatDocumentAttachmentTextParsedStatus(
+        file.name,
+        normalizedText.length,
+      );
+      setDocumentSaveFeedback(parsedFeedback);
+      setSaveLabel(parsedFeedback);
+    } catch {
+      if (documentDraftAttachmentFileRef.current !== file) return;
+      const parseFailedFeedback = formatDocumentAttachmentTextParseFailedStatus(file.name);
+      setDocumentSaveFeedback(parseFailedFeedback);
+      setSaveLabel(parseFailedFeedback);
+    }
   };
 
   const clearDocumentAttachment = () => {
@@ -2571,7 +2616,20 @@ function App() {
         filters: [
           {
             name: "Medical documents",
-            extensions: ["pdf", "png", "jpg", "jpeg", "webp", "docx", "xlsx", "csv", "txt", "md"],
+            extensions: [
+              "pdf",
+              "png",
+              "jpg",
+              "jpeg",
+              "webp",
+              "docx",
+              "xlsx",
+              "csv",
+              "txt",
+              "md",
+              "hwp",
+              "hwpx",
+            ],
           },
         ],
       });
