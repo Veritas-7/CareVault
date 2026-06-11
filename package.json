@@ -19,6 +19,7 @@
     "hwp:smoke": "bash scripts/smoke_hwp_sample.sh",
     "hwp:synthetic:smoke": "vitest run src/documentHwpxText.test.ts src/documentAttachmentParsing.test.ts src/documentRagContext.test.ts",
     "rag:readiness:smoke": "vitest run src/documentRagReadiness.test.ts src/documentRagContext.test.ts src/documentRagModelRequest.test.ts src/documentRagEmbeddingRequest.test.ts",
+    "rag:safety:smoke": "vitest run src/documentRagContext.test.ts src/documentRagModelRequest.test.ts",
     "rag:model:smoke": "bash scripts/smoke_rag_model.sh",
     "rag:embedding:smoke": "bash scripts/smoke_rag_embedding.sh",
     "rag:ollama:doctor": "bash scripts/doctor_ollama_runtime.sh",
