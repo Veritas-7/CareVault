@@ -108,6 +108,23 @@ describe("documentRagContext", () => {
     expect(text).toContain("쿼리 커버리지:");
   });
 
+  it("explains deterministic local vector similarity for parsed document ranking", () => {
+    const context = buildDocumentRagContext(
+      [unrelatedDocument, parsedHwpDocument],
+      "고혈압 당화혈색소",
+    );
+    const text = formatDocumentRagContextClipboardText(context);
+
+    expect(context.items).toHaveLength(1);
+    expect(context.items[0].documentId).toBe("doc-parsed");
+    expect(context.items[0].reasonSummary).toContain("로컬 벡터 유사도:");
+    expect(context.items[0].reasonSummary).toContain("공통 단서:");
+    expect(context.items[0].evidenceChunks[0].reasonSummary).toContain("로컬 벡터 유사도:");
+    expect(context.items[0].evidenceChunks[0].reasonSummary).toContain("공통 단서:");
+    expect(text).toContain("로컬 벡터 유사도:");
+    expect(text).not.toContain("/Users/wj/private");
+  });
+
   it("focuses long parsed evidence chunks around matched clinical terms", () => {
     const longParsedDocument = {
       ...parsedHwpDocument,

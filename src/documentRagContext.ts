@@ -109,6 +109,46 @@ function formatQueryCoverageReason(tokenHits: string[], queryTokens: string[]) {
   return `쿼리 커버리지: ${tokenHits.length}/${queryTokens.length} (${percent}%)`;
 }
 
+function getSignalVectorTerms(signals: DocumentKnowledgeSignal[]) {
+  return signals.flatMap((signal) => [signal.label, ...signal.aliases, ...signal.matchedBy]);
+}
+
+function buildLocalVectorTerms(text: string, signals: DocumentKnowledgeSignal[]) {
+  return [
+    ...new Set(
+      [...splitQueryTokens(text), ...getSignalVectorTerms(signals).map(normalizeSearchText)]
+        .map((term) => term.trim())
+        .filter((term) => term.length > 1),
+    ),
+  ];
+}
+
+function scoreLocalVectorSimilarity(
+  queryTokens: string[],
+  querySignals: DocumentKnowledgeSignal[],
+  candidateText: string,
+  candidateSignals: DocumentKnowledgeSignal[],
+  maxScore: number,
+) {
+  const queryTerms = new Set(
+    [...queryTokens, ...getSignalVectorTerms(querySignals).map(normalizeSearchText)]
+      .map((term) => term.trim())
+      .filter((term) => term.length > 1),
+  );
+  if (!queryTerms.size) return null;
+
+  const candidateTerms = new Set(buildLocalVectorTerms(candidateText, candidateSignals));
+  const sharedTerms = [...queryTerms].filter((term) => candidateTerms.has(term));
+  if (!sharedTerms.length) return null;
+
+  const similarity = sharedTerms.length / Math.sqrt(queryTerms.size * Math.max(1, candidateTerms.size));
+  const percent = Math.round(similarity * 100);
+  return {
+    reasonSummary: `로컬 벡터 유사도: ${percent}% · 공통 단서: ${sharedTerms.slice(0, 4).join(", ")}`,
+    score: Math.max(1, Math.round(similarity * maxScore)),
+  };
+}
+
 function normalizeFocusNeedle(value: string) {
   return value.trim().toLowerCase();
 }
@@ -294,6 +334,18 @@ function scoreEvidenceChunk(
     reasons.push(formatQueryCoverageReason(tokenHits, queryTokens));
   }
 
+  const vectorSimilarity = scoreLocalVectorSimilarity(
+    queryTokens,
+    querySignals,
+    searchableText,
+    chunkSignals,
+    16,
+  );
+  if (vectorSimilarity) {
+    score += vectorSimilarity.score;
+    reasons.push(vectorSimilarity.reasonSummary);
+  }
+
   const queryClinicalSignalIds = new Set(getClinicalSignals(querySignals).map((signal) => signal.id));
   const overlappingClinicalSignals = getClinicalSignals(chunkSignals).filter((signal) =>
     queryClinicalSignalIds.has(signal.id),
@@ -369,6 +421,18 @@ function scoreDocumentForContext(
     reasons.push(`검색어 일부: ${tokenHits.slice(0, 4).join(", ")}`);
     score += scoreQueryCoverage(tokenHits, queryTokens, 24);
     reasons.push(formatQueryCoverageReason(tokenHits, queryTokens));
+  }
+
+  const vectorSimilarity = scoreLocalVectorSimilarity(
+    queryTokens,
+    querySignals,
+    searchableText,
+    documentSignals,
+    20,
+  );
+  if (vectorSimilarity) {
+    score += vectorSimilarity.score;
+    reasons.push(vectorSimilarity.reasonSummary);
   }
 
   const queryClinicalSignalIds = new Set(getClinicalSignals(querySignals).map((signal) => signal.id));
