@@ -12,6 +12,7 @@ VALID_REPORT="$TMP_DIR/valid-report.json"
 PATH_LEAK_REPORT="$TMP_DIR/path-leak-report.json"
 MISSING_GROUP_REPORT="$TMP_DIR/missing-group-report.json"
 BAD_JSON_REPORT="$TMP_DIR/bad-json-report.json"
+VERIFY_JSON_PATH="$TMP_DIR/hwp-report-verify.json"
 
 cat > "$VALID_REPORT" <<'JSON'
 {
@@ -129,6 +130,7 @@ if ! "$SCRIPT" --help > "$TMP_DIR/help.out" 2>&1; then
   exit 1
 fi
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH"
+assert_contains "$TMP_DIR/help.out" "CAREVAULT_HWP_SMOKE_REPORT_VERIFY_JSON_PATH"
 
 expect_failure "missing-env"
 assert_contains "$TMP_DIR/missing-env.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH is required"
@@ -157,5 +159,43 @@ assert_contains "$TMP_DIR/valid-report.out" "Minimum observed parsed chars: 386"
 assert_contains "$TMP_DIR/valid-report.out" "Sample basenames: oncology-followup.hwpx, blood-pressure-labs.hwp"
 assert_contains "$TMP_DIR/valid-report.out" "1 passed"
 assert_not_contains "$TMP_DIR/valid-report.out" "$TMP_DIR"
+
+expect_success "valid-report-json" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_REPORT" \
+  CAREVAULT_HWP_SMOKE_REPORT_VERIFY_JSON_PATH="$VERIFY_JSON_PATH"
+python3 - "$VERIFY_JSON_PATH" "$TMP_DIR" <<'PY'
+import json
+import pathlib
+import sys
+
+report_path = pathlib.Path(sys.argv[1])
+tmp_dir = sys.argv[2]
+report_text = report_path.read_text()
+if tmp_dir in report_text:
+    raise SystemExit("verification JSON leaked a temp path")
+report = json.loads(report_text)
+assert report["schema"] == "carevault-hwp-smoke-report-verify.v1"
+assert report["status"] == "verified-ready-for-external-review"
+assert report["verified_blocker"] == "real-private-hwp-hwpx-sample"
+assert report["next_blocking_requirement"] == "external-clinician-source-review"
+assert report["sample_count"] == 2
+assert report["sample_basenames"] == ["oncology-followup.hwpx", "blood-pressure-labs.hwp"]
+assert report["minimum_parsed_chars"] == "200"
+assert report["minimum_observed_parsed_chars"] == 386
+assert report["expected_term_count"] == 3
+assert report["objective_term_groups"] == {
+    "cervical_cancer": True,
+    "hypertension": True,
+    "diabetes": True,
+}
+assert report["input_paths_included"] is False
+PY
+assert_not_contains "$TMP_DIR/valid-report-json.out" "$TMP_DIR"
+
+expect_failure "verify-json-missing-parent" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_REPORT" \
+  CAREVAULT_HWP_SMOKE_REPORT_VERIFY_JSON_PATH="$TMP_DIR/missing/report.json"
+assert_contains "$TMP_DIR/verify-json-missing-parent.out" "HWP smoke report verify JSON parent is not writable"
+assert_not_contains "$TMP_DIR/verify-json-missing-parent.out" "$TMP_DIR/missing/report.json"
 
 printf 'Objective readiness report smoke fixture tests passed.\n'

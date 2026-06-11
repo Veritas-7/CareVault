@@ -45,14 +45,20 @@ After a private sample smoke writes that report, run:
 
 ```bash
 CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
+CAREVAULT_HWP_SMOKE_REPORT_VERIFY_JSON_PATH=/tmp/carevault-hwp-smoke-verify.json \
 npm run objective:readiness:report
 ```
 
 This command fails closed when the report is missing, unreadable, invalid JSON,
 path-leaking, count-mismatched, or otherwise rejected by the same objective
-readiness gate. Without `CAREVAULT_HWP_SMOKE_REPORT_PATH`, the normal
-`npm run objective:readiness:smoke` command still keeps the private-sample
-requirement blocked.
+readiness gate. When `CAREVAULT_HWP_SMOKE_REPORT_VERIFY_JSON_PATH` is set, it
+writes schema `carevault-hwp-smoke-report-verify.v1` with path-safe
+`verified-ready-for-external-review` status, the verified HWP blocker ID, the
+next remaining external-review blocker ID, sample count/basenames, minimum
+parsed-character values, expected-term count, objective term-group coverage, and
+`input_paths_included: false`. Without `CAREVAULT_HWP_SMOKE_REPORT_PATH`, the
+normal `npm run objective:readiness:smoke` command still keeps the
+private-sample requirement blocked.
 
 When both the private HWP smoke report and external clinician/source review
 report are available, run the final command-only evidence gate:
@@ -353,8 +359,12 @@ to the objective-readiness status. When the report is accepted, the command
 prints a basename-only summary with sample count, minimum parsed-character
 threshold, minimum observed parsed-character count, expected-term count, and
 sample basenames so the operator can verify the accepted evidence without
-opening private medical text. `npm run objective:readiness:report:test` uses
-fixture reports to verify the bridge without any private sample.
+opening private medical text. It can also write optional schema
+`carevault-hwp-smoke-report-verify.v1` verification JSON through
+`CAREVAULT_HWP_SMOKE_REPORT_VERIFY_JSON_PATH` for automation that should not
+parse stdout. `npm run objective:readiness:report:test` uses fixture reports to
+verify the bridge, path-safe JSON output, and missing-output-parent failures
+without any private sample.
 
 For a repeatable non-private regression that proves HWPX section XML can become
 source-grounded CareVault RAG evidence, run:
