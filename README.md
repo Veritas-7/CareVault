@@ -174,12 +174,20 @@ npm run rag:ollama:doctor
 ```
 
 The doctor prints the Ollama CLI/client snapshot plus the Homebrew package
-version when available, starts a temporary local Ollama server when port `11434`
-is free, then sends one minimal chat request and one minimal embedding request
-directly to Ollama's OpenAI-compatible endpoints. It verifies whether the local
-Ollama runtime can actually start model workers before CareVault's
-source-grounded RAG smokes are involved, and calls out a missing `llama-server`
-worker binary as an Ollama runtime repair/reinstall issue.
+version when available, checks whether the command or Homebrew package roots
+expose a `llama-server`/runner worker binary without printing local paths,
+starts a temporary local Ollama server when port `11434` is free, then sends one
+minimal chat request and one minimal embedding request directly to Ollama's
+OpenAI-compatible endpoints. It verifies whether the local Ollama runtime can
+actually start model workers before CareVault's source-grounded RAG smokes are
+involved, and calls out a missing `llama-server` worker binary as an Ollama
+runtime repair/reinstall issue.
+
+The doctor fixture is command-only and does not require a real Ollama service:
+
+```bash
+npm run rag:ollama:doctor:test
+```
 
 Run this command to execute both CareVault local model and embedding RAG smokes
 against Ollama:
