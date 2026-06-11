@@ -202,6 +202,7 @@ import {
 } from "./documentParserAuditClipboard";
 import {
   buildDocumentRagContext,
+  buildDocumentRagProfileQuery,
   formatDocumentRagContextClipboardDescription,
   formatDocumentRagContextClipboardFailedStatus,
   formatDocumentRagContextClipboardStatus,
@@ -1834,7 +1835,9 @@ function App() {
         .filter(Boolean)
         .slice(0, 3)
     : [];
-  const documentRagContext = buildDocumentRagContext(filteredDocuments, documentFilter);
+  const documentRagProfileQuery = buildDocumentRagProfileQuery(state.profile);
+  const documentRagContextQuery = documentFilter.trim() || documentRagProfileQuery;
+  const documentRagContext = buildDocumentRagContext(filteredDocuments, documentRagContextQuery);
   const documentRagContextClipboardDescription =
     formatDocumentRagContextClipboardDescription(documentRagContext);
   const documentRagContextClipboardStatus = formatDocumentRagContextClipboardStatus(documentRagContext);
@@ -7639,6 +7642,7 @@ function App() {
                 <div className="document-rag-context-title">
                   <strong>문서 RAG 컨텍스트</strong>
                   <span>{documentRagContext.summary}</span>
+                  <span>기준 {documentRagContext.queryLabel}</span>
                   <button
                     className="secondary-inline-button document-rag-context-copy"
                     type="button"

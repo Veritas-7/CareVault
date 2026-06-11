@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildDocumentRagProfileQuery,
   buildDocumentRagContext,
   formatDocumentRagContextClipboardDescription,
   formatDocumentRagContextClipboardFailedStatus,
@@ -39,6 +40,26 @@ const unrelatedDocument = {
 } as const;
 
 describe("documentRagContext", () => {
+  it("builds a profile-based RAG query with clinical and patient-facing aliases", () => {
+    expect(
+      buildDocumentRagProfileQuery({
+        cancerCareMode: true,
+        diabetes: true,
+        hypertension: true,
+      }),
+    ).toBe("자궁경부암 고혈압 혈압 혈압약 당뇨 혈당 HbA1c 당화혈색소");
+  });
+
+  it("keeps the profile-based RAG query empty when care flags are off", () => {
+    expect(
+      buildDocumentRagProfileQuery({
+        cancerCareMode: false,
+        diabetes: false,
+        hypertension: false,
+      }),
+    ).toBe("");
+  });
+
   it("ranks parsed HWP document context through clinical-signal overlap when query wording differs", () => {
     const context = buildDocumentRagContext([unrelatedDocument, parsedHwpDocument], "혈당 관리");
 

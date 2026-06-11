@@ -57,7 +57,10 @@ import {
   formatVitalAssessmentStatus,
 } from "./vitalAssessmentEvidence";
 import { buildDocumentParserAudit } from "./documentParserAudit";
-import { buildDocumentRagContext } from "./documentRagContext";
+import {
+  buildDocumentRagContext,
+  buildDocumentRagProfileQuery,
+} from "./documentRagContext";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose" | "temperature";
@@ -368,18 +371,6 @@ function buildDocumentParserAuditLines(
   ];
 }
 
-function buildVisitPacketDocumentRagQuery(profile: VisitPacketState["profile"]) {
-  const queryParts = [
-    profile.cancerCareMode ? "자궁경부암" : "",
-    profile.hypertension ? "고혈압" : "",
-    profile.hypertension ? "혈압" : "",
-    profile.diabetes ? "당뇨" : "",
-    profile.diabetes ? "혈당" : "",
-    profile.diabetes ? "HbA1c" : "",
-  ];
-  return queryParts.filter(Boolean).join(" ");
-}
-
 function buildDocumentRagContextLines(
   documents: VisitPacketState["documents"],
   query: string,
@@ -504,7 +495,7 @@ export function buildVisitPacketMarkdown(
       return `- ${document.date}: [${documentLabel[document.category]}] ${document.title}${reviewStatus}${optionalSuffix(document.nextAction ?? "", " / 다음 조치: ")}${attachment}${optionalSuffix(document.tags, " / 태그: ")}${optionalSuffix(document.body, " / 메모: ")}`;
     });
   const documentParserAuditLines = buildDocumentParserAuditLines(rangedDocuments, maxItems);
-  const documentRagQuery = buildVisitPacketDocumentRagQuery(state.profile);
+  const documentRagQuery = buildDocumentRagProfileQuery(state.profile);
   const documentRagContextLines = buildDocumentRagContextLines(
     rangedDocuments,
     documentRagQuery,

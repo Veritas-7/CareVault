@@ -40,6 +40,12 @@ export type DocumentRagContext = {
   summary: string;
 };
 
+export type DocumentRagProfileQuerySource = {
+  cancerCareMode?: boolean;
+  diabetes?: boolean;
+  hypertension?: boolean;
+};
+
 const defaultMaxItems = 5;
 const noContextSummary = "RAG 컨텍스트 없음 · 검색 결과 0개";
 
@@ -55,6 +61,20 @@ function stripLocalPaths(value: string) {
 
 function splitQueryTokens(query: string) {
   return [...new Set(normalizeSearchText(query).split(/[\s,.;:!?()[\]{}"'`~|/\\<>·]+/).filter(Boolean))];
+}
+
+export function buildDocumentRagProfileQuery(profile: DocumentRagProfileQuerySource) {
+  const queryParts = [
+    profile.cancerCareMode ? "자궁경부암" : "",
+    profile.hypertension ? "고혈압" : "",
+    profile.hypertension ? "혈압" : "",
+    profile.hypertension ? "혈압약" : "",
+    profile.diabetes ? "당뇨" : "",
+    profile.diabetes ? "혈당" : "",
+    profile.diabetes ? "HbA1c" : "",
+    profile.diabetes ? "당화혈색소" : "",
+  ];
+  return queryParts.filter(Boolean).join(" ");
 }
 
 function expandQueryTokens(query: string, querySignals: DocumentKnowledgeSignal[]) {

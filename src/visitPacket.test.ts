@@ -1437,7 +1437,9 @@ describe("visit packet", () => {
     );
 
     expect(markdown).toContain("## 문서 RAG 근거 조각");
-    expect(markdown).toContain("검색 기준: 자궁경부암 고혈압 혈압 당뇨 혈당 HbA1c");
+    expect(markdown).toContain(
+      "검색 기준: 자궁경부암 고혈압 혈압 혈압약 당뇨 혈당 HbA1c 당화혈색소",
+    );
     expect(markdown).toContain("- 요약: RAG 컨텍스트 1개 · 파싱 문서 1개 · 임상 단서 1개 · 근거 조각 1개");
     expect(markdown).toContain("- 2026-06-04 · 자궁경부암 추적 HWP 결과");
     expect(markdown).toContain("  - 관련 이유:");
