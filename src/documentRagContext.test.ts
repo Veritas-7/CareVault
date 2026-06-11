@@ -61,6 +61,17 @@ describe("documentRagContext", () => {
     expect(context.summary).toBe("RAG 컨텍스트 1개 · 파싱 문서 1개 · 임상 단서 1개 · 근거 조각 1개");
   });
 
+  it("expands patient-facing query aliases into parsed evidence chunks", () => {
+    const context = buildDocumentRagContext([unrelatedDocument, parsedHwpDocument], "당화혈색소");
+
+    expect(context.items).toHaveLength(1);
+    expect(context.items[0].documentId).toBe("doc-parsed");
+    expect(context.items[0].reasonSummary).toContain("임상 단서: 당뇨");
+    expect(context.items[0].evidenceChunks[0].reasonSummary).toContain("검색어 일부: hba1c");
+    expect(context.items[0].evidenceChunks[0].reasonSummary).toContain("임상 단서: 당뇨");
+    expect(context.items[0].evidenceChunks[0].text).toContain("HbA1c 7.2%");
+  });
+
   it("formats a clinic-ready context packet without leaking local attachment paths", () => {
     const context = buildDocumentRagContext([parsedHwpDocument], "데스크톱 파서");
     const text = formatDocumentRagContextClipboardText(context);

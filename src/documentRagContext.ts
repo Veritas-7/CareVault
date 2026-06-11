@@ -57,6 +57,19 @@ function splitQueryTokens(query: string) {
   return [...new Set(normalizeSearchText(query).split(/[\s,.;:!?()[\]{}"'`~|/\\<>·]+/).filter(Boolean))];
 }
 
+function expandQueryTokens(query: string, querySignals: DocumentKnowledgeSignal[]) {
+  return splitQueryTokens(
+    [
+      query,
+      ...querySignals.flatMap((signal) => [
+        signal.label,
+        ...signal.aliases,
+        ...signal.matchedBy,
+      ]),
+    ].join(" "),
+  );
+}
+
 function getClinicalSignals(signals: DocumentKnowledgeSignal[]) {
   return signals.filter((signal) => signal.id !== "hwp-document");
 }
@@ -302,7 +315,7 @@ export function buildDocumentRagContext(
     body: query,
     title: query,
   });
-  const queryTokens = splitQueryTokens(query);
+  const queryTokens = expandQueryTokens(query, querySignals);
   const items = documents
     .map((document) => scoreDocumentForContext(document, query, querySignals, queryTokens))
     .filter((item): item is DocumentRagContextItem => Boolean(item))

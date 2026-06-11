@@ -43,8 +43,12 @@ describe("documentKnowledge", () => {
     const searchText = buildDocumentKnowledgeSearchText(pathologyDocument);
 
     expect(searchText).toContain("자궁경부암");
+    expect(searchText).toContain("CIN2");
+    expect(searchText).toContain("HSIL");
     expect(searchText).toContain("고혈압");
+    expect(searchText).toContain("혈압약");
     expect(searchText).toContain("당뇨");
+    expect(searchText).toContain("당화혈색소");
     expect(searchText).toContain("한글 문서");
     expect(searchText).toContain("HWP/HWPX");
     expect(searchText).toContain("문서 파싱");

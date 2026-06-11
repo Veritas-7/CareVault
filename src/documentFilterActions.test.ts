@@ -130,6 +130,48 @@ describe("documentFilterActions", () => {
     expect(filtered).toEqual([documents[2]]);
   });
 
+  it("matches patient-facing clinical aliases in saved-document search", () => {
+    expect(
+      filterDocumentsBySearchAndReview(documents, {
+        categoryFilter: "all",
+        categoryLabels,
+        searchText: "당화혈색소",
+        statusFilter: "all",
+        statusLabels,
+      }),
+    ).toEqual([documents[2]]);
+    expect(
+      filterDocumentsBySearchAndReview(documents, {
+        categoryFilter: "all",
+        categoryLabels,
+        searchText: "혈압약",
+        statusFilter: "all",
+        statusLabels,
+      }),
+    ).toEqual([documents[2]]);
+    expect(
+      filterDocumentsBySearchAndReview(documents, {
+        categoryFilter: "all",
+        categoryLabels,
+        searchText: "CIN2",
+        statusFilter: "all",
+        statusLabels,
+      }),
+    ).toEqual([documents[2]]);
+  });
+
+  it("matches multi-token domain alias searches when terms are not adjacent", () => {
+    const filtered = filterDocumentsBySearchAndReview(documents, {
+      categoryFilter: "all",
+      categoryLabels,
+      searchText: "자궁경부암 당화혈색소",
+      statusFilter: "all",
+      statusLabels,
+    });
+
+    expect(filtered).toEqual([documents[2]]);
+  });
+
   it("matches parsed attachment provenance in saved-document search", () => {
     const filtered = filterDocumentsBySearchAndReview(documents, {
       categoryFilter: "all",

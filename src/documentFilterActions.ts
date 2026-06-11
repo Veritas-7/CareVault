@@ -74,6 +74,10 @@ export function hasActiveDocumentFilters({
   return Boolean(searchText.trim()) || categoryFilter !== "all" || statusFilter !== "all";
 }
 
+function splitSearchTokens(value: string) {
+  return [...new Set(value.split(/[\s,.;:!?()[\]{}"'`~|/\\<>·]+/).filter(Boolean))];
+}
+
 export function buildDocumentParserQuickSearchOptions({
   desktopParserCount,
   parsedAttachmentCount,
@@ -155,6 +159,11 @@ export function filterDocumentsBySearchAndReview<Document extends DocumentFilter
       .join(" ")
       .toLowerCase();
 
-    return haystack.includes(normalizedSearch);
+    if (haystack.includes(normalizedSearch)) {
+      return true;
+    }
+
+    const searchTokens = splitSearchTokens(normalizedSearch);
+    return searchTokens.length > 1 && searchTokens.every((token) => haystack.includes(token));
   });
 }
