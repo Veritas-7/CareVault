@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   buildDocumentCareQuestionDraft,
+  buildDocumentCareMeasurementSummary,
   buildDocumentKnowledgeSummary,
   buildDocumentKnowledgeSearchText,
   buildDocumentKnowledgeSnippet,
   buildDocumentParserProvenanceSummary,
   detectDocumentKnowledgeSignals,
+  extractDocumentCareMeasurementCues,
   extractDocumentParsedAttachmentSources,
 } from "./documentKnowledge";
 
@@ -101,10 +103,46 @@ describe("documentKnowledge", () => {
 
     expect(draft).toContain("HbA1c 7.2%");
     expect(draft).toContain("혈압 142/88");
+    expect(draft).toContain("문서 측정 단서(원문): 혈압 142/88 mmHg · HbA1c 7.2%");
+    expect(draft).toContain("수치 해석, 반복 측정 시점, 약·식사·치료 영향은 진료팀 기준으로 확인합니다.");
     expect(draft).toContain("파싱 원천: HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp");
     expect(draft).not.toContain("[첨부 텍스트 파싱:");
     expect(draft).not.toContain("관련 없는 접수 메모 ".repeat(10).trim());
     expect(draft).not.toContain("/Users/wj/private");
+  });
+
+  it("extracts source-grounded document care measurements without interpreting them", () => {
+    const document = {
+      ...parsedHwpDocument,
+      body:
+        "원본 경로 /Users/wj/private/follow.hwpx\n" +
+        "[첨부 텍스트 파싱: follow.hwpx · HWPX 본문 XML]\n" +
+        "혈압 149/93, HbA1c 7.4%, 공복혈당 132 mg/dL. BP 149/93.",
+    };
+
+    expect(extractDocumentCareMeasurementCues(document)).toEqual([
+      {
+        kind: "blood-pressure",
+        text: "혈압 149/93 mmHg",
+      },
+      {
+        kind: "hba1c",
+        text: "HbA1c 7.4%",
+      },
+      {
+        kind: "glucose",
+        text: "혈당 132 mg/dL",
+      },
+    ]);
+
+    const summary = buildDocumentCareMeasurementSummary(document);
+    expect(summary).toBe(
+      "문서 측정 단서(원문): 혈압 149/93 mmHg · HbA1c 7.4% · 혈당 132 mg/dL. 수치 해석, 반복 측정 시점, 약·식사·치료 영향은 진료팀 기준으로 확인합니다.",
+    );
+    expect(summary).not.toContain("진단");
+    expect(summary).not.toContain("처방");
+    expect(summary).not.toContain("치료하세요");
+    expect(summary).not.toContain("/Users/wj/private");
   });
 
   it("builds a search snippet that preserves source text without local paths", () => {

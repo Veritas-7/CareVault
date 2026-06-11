@@ -28,6 +28,11 @@ export type DocumentParsedAttachmentSource = {
   sourceLabel?: string;
 };
 
+export type DocumentCareMeasurementCue = {
+  kind: "blood-pressure" | "glucose" | "hba1c";
+  text: string;
+};
+
 const signalDefinitions: Array<{
   aliases: string[];
   id: DocumentKnowledgeSignalId;
@@ -168,6 +173,73 @@ function stripParsedAttachmentMarkers(value: string) {
   return value.replace(/^\[첨부 텍스트 파싱:\s*[^\]\n]+\]\s*$/gm, "");
 }
 
+function normalizeMeasurementText(value: string) {
+  return stripLocalPaths(value).replace(/\s+/g, " ").trim();
+}
+
+function isInRange(value: number, min: number, max: number) {
+  return Number.isFinite(value) && value >= min && value <= max;
+}
+
+function uniqMeasurementCues(cues: DocumentCareMeasurementCue[]) {
+  const seen = new Set<string>();
+  return cues.filter((cue) => {
+    const key = `${cue.kind}\0${cue.text}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+export function extractDocumentCareMeasurementCues(
+  document: DocumentKnowledgeSource,
+): DocumentCareMeasurementCue[] {
+  const text = normalizeMeasurementText(
+    stripParsedAttachmentMarkers(
+      compactText(document.title, document.body, document.tags, document.nextAction),
+    ),
+  );
+  if (!text) return [];
+
+  const cues: DocumentCareMeasurementCue[] = [];
+  for (const match of text.matchAll(/(?:혈압|BP)\s*[:：]?\s*(\d{2,3})\s*\/\s*(\d{2,3})(?:\s*mmHg)?/gi)) {
+    const systolic = Number(match[1]);
+    const diastolic = Number(match[2]);
+    if (!isInRange(systolic, 40, 260) || !isInRange(diastolic, 30, 180)) continue;
+    cues.push({
+      kind: "blood-pressure",
+      text: `혈압 ${systolic}/${diastolic} mmHg`,
+    });
+  }
+
+  for (const match of text.matchAll(/(?:HbA1c|A1C|당화혈색소)\s*[:：]?\s*(\d{1,2}(?:\.\d+)?)\s*%?/gi)) {
+    const value = Number(match[1]);
+    if (!isInRange(value, 3, 20)) continue;
+    cues.push({
+      kind: "hba1c",
+      text: `HbA1c ${match[1]}%`,
+    });
+  }
+
+  for (const match of text.matchAll(/(?:공복혈당|식후혈당|혈당|glucose)\s*[:：]?\s*(\d{2,3})\s*(?:mg\/?dL)?/gi)) {
+    const value = Number(match[1]);
+    if (!isInRange(value, 20, 600)) continue;
+    cues.push({
+      kind: "glucose",
+      text: `혈당 ${value} mg/dL`,
+    });
+  }
+
+  return uniqMeasurementCues(cues).slice(0, 5);
+}
+
+export function buildDocumentCareMeasurementSummary(document: DocumentKnowledgeSource) {
+  const cues = extractDocumentCareMeasurementCues(document);
+  if (!cues.length) return "";
+
+  return `문서 측정 단서(원문): ${cues.map((cue) => cue.text).join(" · ")}. 수치 해석, 반복 측정 시점, 약·식사·치료 영향은 진료팀 기준으로 확인합니다.`;
+}
+
 function buildDocumentCareQuestionSourceText(
   document: DocumentKnowledgeSource,
   clinicalSignals: DocumentKnowledgeSignal[],
@@ -179,10 +251,12 @@ function buildDocumentCareQuestionSourceText(
   const lowerBody = body.toLowerCase();
   const focusTerm = focusTerms.find((term) => lowerBody.includes(term.toLowerCase())) ?? "";
   const bodyExcerpt = findExcerpt(body, focusTerm, 130);
+  const measurementSummary = buildDocumentCareMeasurementSummary(document);
   const parserSummary = buildDocumentParserProvenanceSummary(document);
 
   return compactText(
     bodyExcerpt ? `원문 메모: ${bodyExcerpt}` : "",
+    measurementSummary,
     parserSummary,
   );
 }
