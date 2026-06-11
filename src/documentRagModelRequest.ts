@@ -52,6 +52,12 @@ export type DocumentRagLocalModelRunResult =
       warnings: string[];
     };
 
+export type DocumentRagLocalModelResponseSafety = {
+  level: "safe" | "blocked";
+  summary: string;
+  warnings: string[];
+};
+
 type Fetcher = (
   input: string,
   init: {
@@ -70,6 +76,11 @@ const defaultTemperature = 0.1;
 const localHostnames = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 const localNetworkPrefixes = ["127."];
 const maxEndpointErrorLength = 220;
+const unsafeClinicalInstructionPatterns = [
+  /(?:진단|처방|치료|복용|투약|중단|증량|감량)(?:하겠습니다|합니다|하세요|하라|해야\s*합니다|권장합니다|시작하세요|중단하세요)/i,
+  /(?:메트포르민|metformin|amlodipine|losartan|insulin|인슐린).{0,32}(?:\d+\s*mg|복용|투약|처방|시작|증량|감량|take|start|prescribe)/i,
+  /\b(?:take|start|stop|prescribe|diagnose|treat)\b.{0,80}\b(?:mg|metformin|amlodipine|losartan|insulin|medication|medicine)\b/i,
+];
 
 function normalizeEndpoint(endpoint: string) {
   return endpoint.trim();
@@ -208,6 +219,32 @@ export function extractDocumentRagLocalModelText(response: unknown) {
   return "";
 }
 
+export function assessDocumentRagLocalModelResponseSafety(
+  text: string,
+): DocumentRagLocalModelResponseSafety {
+  const normalizedText = text.replace(/\s+/g, " ").trim();
+  const hasUnsafeInstruction = unsafeClinicalInstructionPatterns.some((pattern) =>
+    pattern.test(normalizedText),
+  );
+
+  if (!hasUnsafeInstruction) {
+    return {
+      level: "safe",
+      summary: "로컬 모델 RAG 응답 안전 경계 통과",
+      warnings: [],
+    };
+  }
+
+  return {
+    level: "blocked",
+    summary: "로컬 모델 RAG 응답 차단 · 의료 안전 경계",
+    warnings: [
+      "로컬 모델 응답에 진단/처방/치료 지시형 표현이 포함되어 앱 표시를 차단했습니다.",
+      "저장 서류 근거는 진료팀에게 확인할 질문과 기록 초점으로만 정리해야 합니다.",
+    ],
+  };
+}
+
 function sanitizeEndpointErrorText(text: string) {
   return text
     .replace(/\/Users\/[^\s"',)]+/g, "[local path]")
@@ -280,6 +317,14 @@ export async function requestDocumentRagLocalModel(
         ok: false,
         summary: "로컬 모델 RAG 응답 실패 · 본문 없음",
         warnings: ["모델 응답에서 텍스트를 찾지 못했습니다.", ...request.warnings],
+      };
+    }
+    const responseSafety = assessDocumentRagLocalModelResponseSafety(text);
+    if (responseSafety.level === "blocked") {
+      return {
+        ok: false,
+        summary: responseSafety.summary,
+        warnings: [...responseSafety.warnings, ...request.warnings],
       };
     }
 

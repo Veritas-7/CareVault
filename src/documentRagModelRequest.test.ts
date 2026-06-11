@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { buildDocumentRagContext } from "./documentRagContext";
 import {
+  assessDocumentRagLocalModelResponseSafety,
   buildDocumentRagLocalModelRequest,
   extractDocumentRagLocalModelError,
   extractDocumentRagLocalModelText,
@@ -146,6 +147,58 @@ describe("documentRagModelRequest", () => {
         method: "POST",
       }),
     );
+  });
+
+  it("blocks unsafe local model responses before showing direct medical instructions", async () => {
+    const context = sourceGroundedContext();
+    const fetcher = vi.fn().mockResolvedValue({
+      json: async () => ({
+        choices: [
+          {
+            message: {
+              content:
+                "문서 1 근거입니다. 메트포르민 500mg을 복용하세요. 혈압약은 중단하세요.",
+            },
+          },
+        ],
+      }),
+      ok: true,
+      status: 200,
+    });
+
+    const result = await requestDocumentRagLocalModel(
+      context,
+      {
+        endpoint: "http://localhost:11434/v1/chat/completions",
+        model: "qwen-local",
+      },
+      fetcher,
+    );
+
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("expected unsafe model response to be blocked");
+    expect(result.summary).toBe("로컬 모델 RAG 응답 차단 · 의료 안전 경계");
+    expect(result.warnings.join("\n")).toContain("진단/처방/치료 지시형 표현");
+    expect(result.warnings.join("\n")).not.toContain("메트포르민 500mg");
+    expect(fetcher).toHaveBeenCalledOnce();
+  });
+
+  it("allows clinician-question model responses that mention medication review", () => {
+    expect(
+      assessDocumentRagLocalModelResponseSafety(
+        "문서 1 근거로 혈압약과 당뇨약 복용 현황을 담당 의료진에게 확인할 질문으로 정리합니다.",
+      ),
+    ).toEqual({
+      level: "safe",
+      summary: "로컬 모델 RAG 응답 안전 경계 통과",
+      warnings: [],
+    });
+    expect(
+      assessDocumentRagLocalModelResponseSafety("Start metformin 500 mg today."),
+    ).toMatchObject({
+      level: "blocked",
+      summary: "로컬 모델 RAG 응답 차단 · 의료 안전 경계",
+    });
   });
 
   it("does not post when local model request validation fails", async () => {
