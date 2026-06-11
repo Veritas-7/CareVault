@@ -74,6 +74,43 @@ mod tests {
     use super::*;
     use std::process::Command;
 
+    fn hwp_sample_terms_from_env(default_terms: &str) -> Vec<String> {
+        std::env::var("CAREVAULT_HWP_SAMPLE_TERMS")
+            .unwrap_or_else(|_| default_terms.into())
+            .split(',')
+            .map(str::trim)
+            .filter(|term| !term.is_empty())
+            .map(str::to_owned)
+            .collect()
+    }
+
+    fn hwp_sample_min_chars_from_env(default_min_chars: usize) -> usize {
+        std::env::var("CAREVAULT_HWP_SAMPLE_MIN_CHARS")
+            .ok()
+            .and_then(|value| value.trim().parse::<usize>().ok())
+            .unwrap_or(default_min_chars)
+    }
+
+    fn assert_hwp_sample_parse(
+        parsed: &ParsedHwpAttachmentText,
+        sample_label: &str,
+        min_chars: usize,
+        expected_terms: &[String],
+    ) {
+        assert_eq!(parsed.source_label, "HWP/HWPX 데스크톱 파서");
+        assert!(
+            parsed.character_count >= min_chars,
+            "{sample_label} should produce at least {min_chars} chars, got {} chars",
+            parsed.character_count
+        );
+        expected_terms.iter().for_each(|term| {
+            assert!(
+                parsed.text.contains(term),
+                "{sample_label} is missing expected term: {term}"
+            );
+        });
+    }
+
     #[test]
     fn normalizes_hwp_attachment_text_for_local_search() {
         let text =
@@ -97,8 +134,8 @@ mod tests {
             eprintln!("skipping external HWP sample test: CAREVAULT_HWP_SAMPLE_URL is not set");
             return;
         };
-        let expected_terms = std::env::var("CAREVAULT_HWP_SAMPLE_TERMS")
-            .unwrap_or_else(|_| "KTX 노선도,서울,용산,광명".into());
+        let expected_terms = hwp_sample_terms_from_env("KTX 노선도,서울,용산,광명");
+        let min_chars = hwp_sample_min_chars_from_env(1000);
         let sample_path = std::env::temp_dir().join(format!(
             "carevault-hwp-command-sample-{}.hwp",
             std::process::id()
@@ -117,21 +154,33 @@ mod tests {
             .expect("external HWP sample should parse through the Tauri command boundary");
         let _ = std::fs::remove_file(&sample_path);
 
-        assert_eq!(parsed.source_label, "HWP/HWPX 데스크톱 파서");
+        assert_hwp_sample_parse(&parsed, "external HWP sample", min_chars, &expected_terms);
+    }
+
+    #[test]
+    fn hwp_parser_command_parses_private_sample_when_env_is_set() {
+        let Ok(path) = std::env::var("CAREVAULT_HWP_SAMPLE_PATH") else {
+            eprintln!(
+                "skipping private HWP/HWPX sample test: CAREVAULT_HWP_SAMPLE_PATH is not set"
+            );
+            return;
+        };
+        let sample_path = Path::new(&path);
         assert!(
-            parsed.character_count > 1000,
-            "external sample should produce substantial text, got {} chars",
-            parsed.character_count
+            sample_path.is_file(),
+            "CAREVAULT_HWP_SAMPLE_PATH must point to a readable file"
         );
-        expected_terms
-            .split(',')
-            .map(str::trim)
-            .filter(|term| !term.is_empty())
-            .for_each(|term| {
-                assert!(
-                    parsed.text.contains(term),
-                    "parsed external sample is missing expected term: {term}"
-                );
-            });
+
+        let parsed = parse_hwp_attachment_text(sample_path.to_string_lossy().into_owned())
+            .expect("private HWP/HWPX sample should parse through the Tauri command boundary");
+        let expected_terms = hwp_sample_terms_from_env("");
+        let min_chars = hwp_sample_min_chars_from_env(100);
+
+        assert_hwp_sample_parse(
+            &parsed,
+            "private HWP/HWPX sample",
+            min_chars,
+            &expected_terms,
+        );
     }
 }

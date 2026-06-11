@@ -2,6 +2,21 @@
 
 Tauri v2 + React + TypeScript personal health tracking app.
 
+## HWP/HWPX private sample smoke
+
+Run this command when a real user-private HWP/HWPX/HWPML sample is available:
+
+```bash
+CAREVAULT_HWP_SAMPLE_PATH=/path/to/sample.hwp \
+CAREVAULT_HWP_SAMPLE_TERMS='자궁경부암,혈압,당화혈색소' \
+npm run hwp:smoke
+```
+
+`CAREVAULT_HWP_SAMPLE_TERMS` is optional, but adding expected terms makes the
+smoke stronger. The script uses the same Tauri Rust command boundary as the app,
+fails closed on unreadable or unsupported files, and prints only the sample
+basename instead of the full local path.
+
 CareVault is a local-first health notebook for manually tracking:
 
 - blood pressure and blood glucose readings with non-positive/blank draft validation and saved-vital panel summary chips for type/status mix
