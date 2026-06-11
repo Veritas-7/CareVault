@@ -173,6 +173,37 @@ describe("documentFilterActions", () => {
     expect(filtered).toEqual([documents[2]]);
   });
 
+  it("ranks saved-document search results by relevance instead of insertion order", () => {
+    const weakMatch = {
+      body: "자궁경부암 추적검사 일정 메모. 혈압과 HbA1c는 다음 진료 때 따로 확인.",
+      category: "lab",
+      date: "2026-06-03",
+      nextAction: "",
+      reviewStatus: "done",
+      tags: "",
+      title: "일반 검사 메모",
+    };
+    const strongMatch = {
+      body: "자궁경부암 병리 추적. HbA1c 7.8%, 혈압 150/92. 혈압약과 혈당 관리 연결 질문.",
+      category: "pathology",
+      date: "2026-06-04",
+      nextAction: "의료진에게 병리 결과와 혈압/혈당 관리 연결 질문",
+      reviewStatus: "care-question",
+      tags: "자궁경부암 당뇨 고혈압",
+      title: "자궁경부암 병리 혈압 혈당 추적",
+    };
+
+    const filtered = filterDocumentsBySearchAndReview([weakMatch, strongMatch], {
+      categoryFilter: "all",
+      categoryLabels,
+      searchText: "자궁경부암 혈압 당화혈색소",
+      statusFilter: "all",
+      statusLabels,
+    });
+
+    expect(filtered).toEqual([strongMatch, weakMatch]);
+  });
+
   it("matches parsed attachment provenance in saved-document search", () => {
     const filtered = filterDocumentsBySearchAndReview(documents, {
       categoryFilter: "all",

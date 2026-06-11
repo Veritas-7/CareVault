@@ -92,6 +92,84 @@ function splitSearchTokens(value: string) {
   return [...new Set(value.split(/[\s,.;:!?()[\]{}"'`~|/\\<>·]+/).filter(Boolean))];
 }
 
+function normalizeFilterText(...values: Array<string | undefined>) {
+  return values
+    .map((value) => value?.trim())
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function scoreFieldMatch(
+  fieldText: string,
+  normalizedSearch: string,
+  searchTokens: string[],
+  phraseScore: number,
+  tokenScore: number,
+) {
+  if (!fieldText) return 0;
+
+  const phraseMatchScore = normalizedSearch && fieldText.includes(normalizedSearch) ? phraseScore : 0;
+  const tokenMatchScore = searchTokens.filter((token) => fieldText.includes(token)).length * tokenScore;
+  return phraseMatchScore + tokenMatchScore;
+}
+
+function scoreDocumentSearchRelevance<Document extends DocumentFilterSource>(
+  document: Document,
+  {
+    categoryLabel,
+    haystack,
+    normalizedSearch,
+    searchTokens,
+    statusLabel,
+  }: {
+    categoryLabel: string;
+    haystack: string;
+    normalizedSearch: string;
+    searchTokens: string[];
+    statusLabel: string;
+  },
+) {
+  const titleText = normalizeFilterText(document.title);
+  const tagText = normalizeFilterText(document.tags);
+  const nextActionText = normalizeFilterText(document.nextAction);
+  const bodyText = normalizeFilterText(document.body);
+  const attachmentText = normalizeFilterText(document.attachmentName, document.attachmentStatus);
+  const metadataText = normalizeFilterText(
+    document.date,
+    document.category,
+    categoryLabel,
+    document.reviewStatus,
+    statusLabel,
+  );
+  const knowledgeText = normalizeFilterText(buildDocumentKnowledgeSearchText(document));
+  const querySignalIds = new Set(
+    detectDocumentKnowledgeSignals({
+      body: normalizedSearch,
+      title: normalizedSearch,
+    }).map((signal) => signal.id),
+  );
+  const documentSignals = detectDocumentKnowledgeSignals(document);
+  const overlappingSignals = documentSignals.filter((signal) => querySignalIds.has(signal.id));
+  const matchedTokenCount = searchTokens.filter((token) => haystack.includes(token)).length;
+
+  let score = 0;
+  score += scoreFieldMatch(titleText, normalizedSearch, searchTokens, 90, 18);
+  score += scoreFieldMatch(tagText, normalizedSearch, searchTokens, 70, 14);
+  score += scoreFieldMatch(nextActionText, normalizedSearch, searchTokens, 55, 12);
+  score += scoreFieldMatch(bodyText, normalizedSearch, searchTokens, 40, 8);
+  score += scoreFieldMatch(attachmentText, normalizedSearch, searchTokens, 30, 7);
+  score += scoreFieldMatch(metadataText, normalizedSearch, searchTokens, 20, 5);
+  score += scoreFieldMatch(knowledgeText, normalizedSearch, searchTokens, 24, 5);
+  score += overlappingSignals.filter((signal) => signal.id !== "hwp-document").length * 24;
+  score += overlappingSignals.filter((signal) => signal.id === "hwp-document").length * 8;
+  score += matchedTokenCount * 4;
+  if (searchTokens.length > 1 && matchedTokenCount === searchTokens.length) {
+    score += 12;
+  }
+  return score;
+}
+
 export function buildDocumentParserQuickSearchOptions({
   desktopParserCount,
   parsedAttachmentCount,
@@ -200,38 +278,74 @@ export function filterDocumentsBySearchAndReview<Document extends DocumentFilter
   },
 ) {
   const normalizedSearch = searchText.trim().toLowerCase();
+  const searchTokens = splitSearchTokens(normalizedSearch);
 
-  return documents.filter((document) => {
-    const categoryMatches = categoryFilter === "all" || document.category === categoryFilter;
-    const statusMatches = statusFilter === "all" || document.reviewStatus === statusFilter;
+  return documents
+    .map((document, index) => {
+      const categoryMatches = categoryFilter === "all" || document.category === categoryFilter;
+      const statusMatches = statusFilter === "all" || document.reviewStatus === statusFilter;
 
-    if (!categoryMatches || !statusMatches) {
-      return false;
-    }
-    if (!normalizedSearch) {
-      return true;
-    }
+      if (!categoryMatches || !statusMatches) {
+        return null;
+      }
+      if (!normalizedSearch) {
+        return {
+          document,
+          index,
+          score: 0,
+        };
+      }
 
-    const haystack = [
-      document.date,
-      categoryLabels[document.category] ?? document.category,
-      document.title,
-      document.body,
-      document.tags,
-      document.nextAction,
-      statusLabels[document.reviewStatus] ?? document.reviewStatus,
-      document.attachmentName ?? "",
-      document.attachmentStatus ?? "",
-      buildDocumentKnowledgeSearchText(document),
-    ]
-      .join(" ")
-      .toLowerCase();
+      const categoryLabel = categoryLabels[document.category] ?? document.category;
+      const statusLabel = statusLabels[document.reviewStatus] ?? document.reviewStatus;
+      const haystack = [
+        document.date,
+        categoryLabel,
+        document.title,
+        document.body,
+        document.tags,
+        document.nextAction,
+        statusLabel,
+        document.attachmentName ?? "",
+        document.attachmentStatus ?? "",
+        buildDocumentKnowledgeSearchText(document),
+      ]
+        .join(" ")
+        .toLowerCase();
 
-    if (haystack.includes(normalizedSearch)) {
-      return true;
-    }
+      if (haystack.includes(normalizedSearch)) {
+        return {
+          document,
+          index,
+          score: scoreDocumentSearchRelevance(document, {
+            categoryLabel,
+            haystack,
+            normalizedSearch,
+            searchTokens,
+            statusLabel,
+          }),
+        };
+      }
 
-    const searchTokens = splitSearchTokens(normalizedSearch);
-    return searchTokens.length > 1 && searchTokens.every((token) => haystack.includes(token));
-  });
+      if (searchTokens.length > 1 && searchTokens.every((token) => haystack.includes(token))) {
+        return {
+          document,
+          index,
+          score: scoreDocumentSearchRelevance(document, {
+            categoryLabel,
+            haystack,
+            normalizedSearch,
+            searchTokens,
+            statusLabel,
+          }),
+        };
+      }
+
+      return null;
+    })
+    .filter((entry): entry is { document: Document; index: number; score: number } => Boolean(entry))
+    .sort((first, second) =>
+      normalizedSearch ? second.score - first.score || first.index - second.index : first.index - second.index,
+    )
+    .map((entry) => entry.document);
 }
