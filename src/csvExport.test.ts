@@ -125,23 +125,65 @@ describe("csvExport", () => {
     expect(buildCsvExportScopeSummary(state)).toEqual({
       hasCancerCareReferences: true,
       hasFoodCheck: true,
+      parserAuditSummary: "파싱 문서 없음",
       recordCount: 7,
     });
     expect(formatCsvExportScopeSummary(state)).toBe(
-      "기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외",
+      "기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 파싱 문서 없음 · 기준/출처 포함 · 로컬 경로 제외",
     );
     expect(formatCsvExportDescription(state)).toBe(
-      "CSV 내보내기 · 기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외",
+      "CSV 내보내기 · 기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 파싱 문서 없음 · 기준/출처 포함 · 로컬 경로 제외",
     );
     expect(formatCsvExportStatus(state)).toBe(
-      "CSV 내보냄 · 기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외",
+      "CSV 내보냄 · 기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 파싱 문서 없음 · 기준/출처 포함 · 로컬 경로 제외",
     );
     expect(formatCsvPreviewDescription(state)).toBe(
-      "CSV 미리보기 · 기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외",
+      "CSV 미리보기 · 기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 파싱 문서 없음 · 기준/출처 포함 · 로컬 경로 제외",
     );
     expect(formatCsvPreviewStatus(state)).toBe(
-      "CSV 미리보기 생성 · 기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 기준/출처 포함 · 로컬 경로 제외",
+      "CSV 미리보기 생성 · 기록 7개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 파싱 문서 없음 · 기준/출처 포함 · 로컬 경로 제외",
     );
+  });
+
+  it("summarizes parsed document audit coverage in CSV action labels", () => {
+    const parsedState: CsvExportState = {
+      ...state,
+      documents: [
+        {
+          ...state.documents[0],
+          attachmentName: "follow-up.hwp",
+          body: [
+            "[첨부 텍스트 파싱: follow-up.hwp · HWP/HWPX 데스크톱 파서]",
+            "자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.",
+          ].join("\n"),
+          title: "자궁경부암 추적 HWP 결과",
+        },
+      ],
+      deletedDocuments: [
+        {
+          ...state.documents[0],
+          attachmentName: "archived.txt",
+          body: [
+            "[첨부 텍스트 파싱: archived.txt · 텍스트 파일]",
+            "당뇨 식전 혈당 확인 필요.",
+          ].join("\n"),
+          title: "삭제 보관 텍스트 결과",
+        },
+      ],
+    };
+
+    expect(buildCsvExportScopeSummary(parsedState)).toMatchObject({
+      parserAuditSummary: "파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
+      recordCount: 8,
+    });
+    expect(formatCsvExportDescription(parsedState)).toBe(
+      "CSV 내보내기 · 기록 8개 · 케어큐 최대 8개 · 자궁경부암 참고 포함 · 음식 판단 포함 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개 · 기준/출처 포함 · 로컬 경로 제외",
+    );
+    expect(formatCsvPreviewStatus(parsedState)).toContain(
+      "파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
+    );
+    expect(formatCsvExportDescription(parsedState)).not.toContain("attachmentPath");
+    expect(formatCsvExportDescription(parsedState)).not.toContain("/Users/wj/private");
   });
 
   it("fingerprints CSV-relevant state without local attachment paths", () => {

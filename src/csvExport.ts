@@ -144,6 +144,7 @@ const csvRecordArrayKeys = [
 export type CsvExportScopeSummary = {
   hasCancerCareReferences: boolean;
   hasFoodCheck: boolean;
+  parserAuditSummary: string;
   recordCount: number;
 };
 
@@ -194,9 +195,15 @@ const glucoseContextLabel: Record<GlucoseContext, string> = {
 };
 
 export function buildCsvExportScopeSummary(state: CsvExportState): CsvExportScopeSummary {
+  const parserAudit = buildDocumentParserAudit([
+    ...state.documents,
+    ...state.deletedDocuments,
+  ]);
+
   return {
     hasCancerCareReferences: state.profile.cancerCareMode,
     hasFoodCheck: Boolean(state.foodQuery.trim()),
+    parserAuditSummary: parserAudit.summary,
     recordCount: csvRecordArrayKeys.reduce((count, key) => count + state[key].length, 0),
   };
 }
@@ -300,6 +307,7 @@ export function formatCsvExportScopeSummary(state: CsvExportState) {
     "케어큐 최대 8개",
     summary.hasCancerCareReferences ? "자궁경부암 참고 포함" : "자궁경부암 참고 없음",
     summary.hasFoodCheck ? "음식 판단 포함" : "음식 판단 없음",
+    summary.parserAuditSummary,
     "기준/출처 포함",
     "로컬 경로 제외",
   ].join(" · ");
