@@ -16,6 +16,7 @@ import {
 import {
   buildClinicalWorkflowReviewPacket,
   formatClinicalWorkflowReviewPacketMarkdown,
+  type ClinicalWorkflowReviewRequirement,
 } from "../src/clinicalWorkflowReview";
 
 type WrittenArtifact = {
@@ -67,7 +68,10 @@ function writeArtifact(outputDir: string, filename: string, content: string): Wr
   };
 }
 
-function formatReviewerHandoff(artifacts: WrittenArtifact[]) {
+function formatReviewerHandoff(
+  artifacts: WrittenArtifact[],
+  workflowRequirements: ClinicalWorkflowReviewRequirement[],
+) {
   return [
     "# CareVault External Review Packet",
     "",
@@ -79,6 +83,12 @@ function formatReviewerHandoff(artifacts: WrittenArtifact[]) {
     "- clinical-workflow-review-packet.md/json: current synthetic workflow review input across RAG, queue, and export surfaces.",
     "- objective-readiness-report.md/json: current objective readiness report and remaining blockers.",
     "- carevault-external-review-report-template.json: draft report the reviewer fills after reviewing the artifacts.",
+    "",
+    "## Workflow Requirement Summary",
+    ...workflowRequirements.map(
+      (requirement) =>
+        `- ${requirement.status.toUpperCase()}: ${requirement.label} (${requirement.id}) - ${requirement.detail}`,
+    ),
     "",
     "## Artifact Hashes",
     ...artifacts.map((artifact) =>
@@ -177,7 +187,11 @@ artifacts.push(
   ),
 );
 artifacts.push(
-  writeArtifact(outputDir, "reviewer-handoff.md", formatReviewerHandoff(artifacts)),
+  writeArtifact(
+    outputDir,
+    "reviewer-handoff.md",
+    formatReviewerHandoff(artifacts, clinicalWorkflowReviewPacket.requirements),
+  ),
 );
 
 console.error(`External review packet exported with ${artifacts.length} files.`);

@@ -95,6 +95,9 @@ done
 assert_contains "$PACKET_DIR/reviewer-handoff.md" "Artifact Hashes"
 assert_contains "$PACKET_DIR/reviewer-handoff.md" "clinical-review-packet.md"
 assert_contains "$PACKET_DIR/reviewer-handoff.md" "objective-readiness-report.json"
+assert_contains "$PACKET_DIR/reviewer-handoff.md" "Workflow Requirement Summary"
+assert_contains "$PACKET_DIR/reviewer-handoff.md" "parsed-document-user-facing-surfaces"
+assert_contains "$PACKET_DIR/reviewer-handoff.md" "PASS: parsed document evidence across user-facing surfaces"
 assert_contains "$PACKET_DIR/reviewer-handoff.md" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet"
 
 if grep -R -n -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$PACKET_DIR"; then
@@ -112,8 +115,19 @@ const readiness = JSON.parse(fs.readFileSync(path.join(packetDir, "objective-rea
 const template = JSON.parse(fs.readFileSync(path.join(packetDir, "carevault-external-review-report-template.json"), "utf8"));
 if (clinical.summary.totalSources <= 70) process.exit(1);
 if (workflow.surfaces.length !== 6) process.exit(1);
+const workflowParsedSurfaceRequirement = workflow.requirements.find(
+  (requirement) => requirement.id === "parsed-document-user-facing-surfaces",
+);
+if (!workflowParsedSurfaceRequirement) process.exit(1);
+if (workflowParsedSurfaceRequirement.status !== "pass") process.exit(1);
+if (workflowParsedSurfaceRequirement.label !== "parsed document evidence across user-facing surfaces") process.exit(1);
 if (readiness.status !== "blocked") process.exit(1);
 if (!readiness.blockingRequirementIds.includes("real-private-hwp-hwpx-sample")) process.exit(1);
+const readinessParsedSurfaceRequirement = readiness.workflowReviewPacket.requirements.find(
+  (requirement) => requirement.id === "parsed-document-user-facing-surfaces",
+);
+if (!readinessParsedSurfaceRequirement) process.exit(1);
+if (readinessParsedSurfaceRequirement.status !== "pass") process.exit(1);
 if (template.schema !== "carevault-external-clinician-review.v3") process.exit(1);
 if (template.source_registry_total_count !== clinical.summary.totalSources) process.exit(1);
 if (template.workflow_surface_count !== workflow.surfaces.length) process.exit(1);
