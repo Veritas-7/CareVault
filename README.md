@@ -29,6 +29,17 @@ hypertension, and diabetes cues, then verifies the parsed text flows into
 ranked evidence chunks and an answer draft without leaking local paths. It is
 not a substitute for the real private-sample smoke above.
 
+Run this command to verify that parsed document text survives JSON
+backup/import sanitization and remains usable as source-grounded RAG evidence:
+
+```bash
+npm run backup:rag:smoke
+```
+
+The backup smoke strips local attachment paths, marks restored filenames as
+requiring reattachment, and verifies the preserved parsed body still ranks into
+document RAG context and answer drafts.
+
 ## Local model RAG smoke
 
 Run this command when an OpenAI-compatible local model endpoint is available:

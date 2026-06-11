@@ -15,6 +15,11 @@ import {
   restoredAttachmentStatus,
   sanitizeCareVaultBackupState,
 } from "./backupState";
+import {
+  buildDocumentRagContext,
+  formatDocumentRagAnswerDraftClipboardText,
+  formatDocumentRagContextClipboardText,
+} from "./documentRagContext";
 
 describe("backupState", () => {
   it("removes local attachment paths while keeping attachment filenames recoverable", () => {
@@ -244,6 +249,81 @@ describe("backupState", () => {
       "/Users/wj/private",
     );
     expect(formatCareVaultBackupImportSuccessDetail(state)).not.toContain("attachmentPath");
+  });
+
+  it("preserves restored parsed document text as source-grounded RAG evidence", () => {
+    const importResult = prepareCareVaultBackupImport({
+      state: {
+        documents: [
+          {
+            attachmentName: "follow-up.hwpx",
+            attachmentPath: "/Users/wj/private/follow-up.hwpx",
+            body: [
+              "복원 전 진료 메모",
+              "[첨부 텍스트 파싱: follow-up.hwpx · HWPX 본문 XML]",
+              "자궁경부암 추적 진료 기록. 혈압 149/93.",
+              "HbA1c 7.4%, 당화혈색소와 식후혈당 상담 예정.",
+            ].join("\n"),
+            category: "visit-note",
+            date: "2026-06-11",
+            id: "doc-restored-hwpx",
+            nextAction: "복원 후 진료팀에 혈압과 당화혈색소 관리 연결 질문",
+            reviewStatus: "care-question",
+            tags: "자궁경부암,고혈압,당뇨",
+            title: "복원된 HWPX 진료 기록",
+          },
+        ],
+        profile: {
+          cancerCareMode: true,
+          diabetes: true,
+          hypertension: true,
+          name: "나의 건강 기록",
+        },
+        vitals: [],
+      },
+    });
+
+    expect(importResult.type).toBe("ok");
+    if (importResult.type !== "ok") throw new Error("backup import should pass");
+
+    const restoredDocuments = importResult.state.documents as Array<Record<string, string>>;
+    expect(restoredDocuments[0]).toMatchObject({
+      attachmentName: "follow-up.hwpx",
+      attachmentStorage: "browser-reference",
+      attachmentStatus: restoredAttachmentStatus,
+    });
+    expect(JSON.stringify(importResult.state)).not.toContain("/Users/wj/private");
+    expect(JSON.stringify(importResult.state)).not.toContain("attachmentPath");
+    expect(formatCareVaultBackupImportSuccessDetail(importResult.state)).toContain(
+      "파싱 문서 1개",
+    );
+
+    const context = buildDocumentRagContext(
+      restoredDocuments,
+      "자궁경부암 혈압 당화혈색소",
+    );
+    const packetText = formatDocumentRagContextClipboardText(context);
+    const answerText = formatDocumentRagAnswerDraftClipboardText(context);
+
+    expect(context.items).toHaveLength(1);
+    expect(context.items[0]).toMatchObject({
+      documentId: "doc-restored-hwpx",
+      parserSummary: "HWPX 본문 XML: follow-up.hwpx",
+      signalSummary: "자궁경부암 · 고혈압 · 당뇨 · HWP/HWPX",
+      statusSummary: "의료진 질문",
+    });
+    expect(context.items[0].evidenceChunks[0]).toMatchObject({
+      label: "파싱 본문 조각 1",
+      sourceSummary: "HWPX 본문 XML: follow-up.hwpx",
+    });
+    expect(context.items[0].evidenceChunks[0].text).toContain("혈압 149/93");
+    expect(context.items[0].evidenceChunks[0].text).toContain("HbA1c 7.4%");
+    expect(context.evidenceQuality.level).toBe("source-grounded");
+    expect(context.answerDraft.level).toBe("source-grounded");
+    expect(packetText).toContain("복원된 HWPX 진료 기록");
+    expect(answerText).toContain("복원 후 진료팀에 혈압과 당화혈색소 관리 연결 질문");
+    expect(packetText).not.toContain("/Users/wj/private");
+    expect(answerText).not.toContain("/Users/wj/private");
   });
 
   it("counts only usable record objects in backup scope summaries", () => {
