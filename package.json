@@ -12,6 +12,7 @@
     "runtime:doctor:dev": "bash scripts/verify_runtime_clean.sh --expect-dev",
     "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
     "hwp:smoke": "bash scripts/smoke_hwp_sample.sh",
+    "hwp:synthetic:smoke": "vitest run src/documentAttachmentParsing.test.ts src/documentRagContext.test.ts",
     "rag:model:smoke": "bash scripts/smoke_rag_model.sh",
     "rag:embedding:smoke": "bash scripts/smoke_rag_embedding.sh",
     "rag:ollama:doctor": "bash scripts/doctor_ollama_runtime.sh",

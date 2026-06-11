@@ -17,6 +17,18 @@ smoke stronger. The script uses the same Tauri Rust command boundary as the app,
 fails closed on unreadable or unsupported files, and prints only the sample
 basename instead of the full local path.
 
+For a repeatable non-private regression that proves HWPX section XML can become
+source-grounded CareVault RAG evidence, run:
+
+```bash
+npm run hwp:synthetic:smoke
+```
+
+This synthetic smoke parses a generated HWPX care note with cervical-cancer,
+hypertension, and diabetes cues, then verifies the parsed text flows into
+ranked evidence chunks and an answer draft without leaking local paths. It is
+not a substitute for the real private-sample smoke above.
+
 ## Local model RAG smoke
 
 Run this command when an OpenAI-compatible local model endpoint is available:
