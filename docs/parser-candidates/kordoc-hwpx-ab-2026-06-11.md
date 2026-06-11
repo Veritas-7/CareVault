@@ -45,12 +45,30 @@ CareVault HWPX Parser Fixture
 다음 진료 질문: 병리결과, 혈압, 혈당 기록을 함께 의료진에게 확인.
 ```
 
+## Public rhwp Samples
+
+The same `kordoc` installation also parsed public fixtures from `edwardkim/rhwp`:
+
+- `samples/hwp3-sample-hwpx.hwpx`
+  - bytes: `108286`
+  - detected format: `hwpx`
+  - parse: PASS
+  - markdown length: `21650`
+  - preview begins with `Creating Linux Virtual Servers`
+- `samples/basic/KTX.hwp`
+  - bytes: `66048`
+  - detected format: `hwp`
+  - parse: PASS
+  - markdown length: `5014`
+  - preview begins with `# KTX 노선도`
+
 ## Decision
 
-`kordoc` passes the generated HWPX same-sample smoke test, but this is not enough to adopt it into the CareVault runtime yet.
+`kordoc` passes the generated HWPX same-sample smoke test and public rhwp HWP/HWPX smoke tests, but this is not enough to adopt it into the CareVault React runtime directly.
 
 Keep it as a candidate until:
 
-- a real user-safe or public HWP/HWPX sample passes the same term-recovery gate;
 - the adapter load path is proven not to bundle Node-only code into the React runtime;
 - parser failures are surfaced as filename-reference fallback instead of blocking document storage.
+
+CareVault can separately keep a lightweight browser-side HWPX extractor for preview text and section XML, while treating full HWP binary parsing as a `kordoc` candidate gate.

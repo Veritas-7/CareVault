@@ -32,10 +32,30 @@
     "missing": [],
     "markdown_preview": "CareVault HWPX Parser Fixture\n\n자궁경부암 병리 결과: 편평상피세포암, 절제연 음성.\n\n고혈압 기록: 혈압 142/88 mmHg.\n\n당뇨 기록: HbA1c 7.2%, 식후혈당 181 mg/dL.\n\n다음 진료 질문: 병리결과, 혈압, 혈당 기록을 함께 의료진에게 확인."
   },
+  "public_rhwp_sample_results": [
+    {
+      "source": "https://raw.githubusercontent.com/edwardkim/rhwp/main/samples/hwp3-sample-hwpx.hwpx",
+      "file": "hwp3-sample-hwpx.hwpx",
+      "bytes": 108286,
+      "detected_format": "hwpx",
+      "parse_success": true,
+      "markdown_length": 21650,
+      "preview": "Creating Linux Virtual Servers\n\nWensong Zhang, Shiyao Jin, Quanyuan Wu"
+    },
+    {
+      "source": "https://raw.githubusercontent.com/edwardkim/rhwp/main/samples/basic/KTX.hwp",
+      "file": "KTX.hwp",
+      "bytes": 66048,
+      "detected_format": "hwp",
+      "parse_success": true,
+      "markdown_length": 5014,
+      "preview": "# KTX 노선도\n\n서울\n\n용산\n\n광명\n\n천안아산"
+    }
+  ],
   "decision": {
-    "status": "candidate_passed_same_sample_smoke",
+    "status": "candidate_passed_same_sample_and_public_sample_smoke",
     "adopt_runtime_now": false,
-    "reason": "The candidate parsed a generated HWPX same-sample fixture, but CareVault still needs a real user or public HWP/HWPX fixture and a browser/Tauri bundling check before runtime adoption.",
-    "next_gate": "Run the same parser against a real HWP/HWPX sample and verify the adapter can be loaded without bundling Node-only code into the React runtime."
+    "reason": "The candidate parsed generated HWPX and public rhwp HWP/HWPX samples, but it still needs a browser/Tauri bundling check before direct runtime adoption.",
+    "next_gate": "Adopt only through a fail-closed adapter or a non-React runtime path; keep browser-side HWPX preview/XML extraction as the lightweight built-in path."
   }
 }

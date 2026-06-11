@@ -171,6 +171,7 @@ import {
   mergeParsedAttachmentTextIntoDocumentBody,
   normalizeParsedAttachmentText,
 } from "./documentAttachmentText";
+import { canParseHwpxAttachment, extractHwpxTextFromArrayBuffer } from "./documentHwpxText";
 import {
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
@@ -2338,10 +2339,15 @@ function App() {
     setDocumentSaveFeedback(feedback);
     setSaveLabel(feedback);
 
-    if (!canParseDocumentAttachmentText(file)) return;
-
     try {
-      const parsedText = await file.text();
+      let parsedText = "";
+      if (canParseDocumentAttachmentText(file)) {
+        parsedText = await file.text();
+      } else if (canParseHwpxAttachment(file)) {
+        parsedText = (await extractHwpxTextFromArrayBuffer(await file.arrayBuffer())).text;
+      } else {
+        return;
+      }
       if (documentDraftAttachmentFileRef.current !== file) return;
       const normalizedText = normalizeParsedAttachmentText(parsedText);
       if (!normalizedText) return;
