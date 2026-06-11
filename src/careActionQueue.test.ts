@@ -222,6 +222,41 @@ describe("careActionQueue", () => {
     expect(clipboardText).toContain("HWPX 본문 XML: follow.hwpx");
   });
 
+  it("sanitizes local paths from document-derived care queue details", () => {
+    const actions = buildCareActionQueue(
+      {
+        ...state,
+        documents: [
+          {
+            id: "doc-local-path",
+            date: "2026-06-04",
+            title: "재첨부 필요 서류",
+            body: "원본 경로 /Users/wj/private/result.pdf 및 C:\\Users\\wj\\secret\\scan.pdf 확인",
+            tags: "",
+            reviewStatus: "needs-review",
+            nextAction: "",
+          },
+        ],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-04",
+    );
+
+    const documentAction = actions.find((action) => action.id === "document:doc-local-path");
+    expect(documentAction?.detail).toContain("[local path]");
+    expect(documentAction?.detail).not.toContain("/Users/wj/private");
+    expect(documentAction?.detail).not.toContain("C:\\Users\\wj");
+
+    const clipboardText = formatCareActionQueueClipboardText(actions, "2026-06-04");
+    expect(clipboardText).toContain("[local path]");
+    expect(clipboardText).not.toContain("/Users/wj/private");
+    expect(clipboardText).not.toContain("C:\\Users\\wj");
+  });
+
   it("keeps high-risk vital queue rows source-backed and adult-common", () => {
     const actions = buildCareActionQueue(
       {

@@ -21,6 +21,7 @@ import {
 } from "./cervicalCancerCare";
 import { buildLabSourceEvidenceParts, formatLabSourceEvidence } from "./labSourceEvidence";
 import { buildDocumentCareQuestionDraft } from "./documentKnowledge";
+import { stripLocalPathsFromExportText } from "./exportTextSanitizer";
 import { formatTextWithSourceEvidence } from "./sourceEvidence";
 import {
   findSymptomSupportTemplate,
@@ -180,12 +181,13 @@ function hasActiveReviewStatus(document: CareActionDocument): document is Active
 }
 
 function formatDocumentActionDetail(document: ActiveCareActionDocument) {
-  return firstText(
+  const detail = firstText(
     document.nextAction,
     buildDocumentCareQuestionDraft(document),
     document.body,
     document.tags,
   );
+  return stripLocalPathsFromExportText(detail);
 }
 
 function firstText(...values: Array<string | undefined>) {
