@@ -55,6 +55,11 @@ import {
   formatImmuneFoodSafetyContextText,
 } from "./immuneFoodContext";
 import { buildDocumentParserAudit } from "./documentParserAudit";
+import {
+  buildDocumentRagContext,
+  buildDocumentRagProfileQuery,
+  documentRagSourceBoundaryLine,
+} from "./documentRagContext";
 
 type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
 type QuestionStatus = "open" | "answered" | "deferred";
@@ -504,11 +509,50 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
       );
     });
   };
+  const pushDocumentRagEvidence = (documents: CsvDocument[]) => {
+    const context = buildDocumentRagContext(documents, buildDocumentRagProfileQuery(state.profile));
+    const documentsById = new Map(
+      documents.map((document) => [
+        `${document.date ?? "no-date"}-${document.title ?? "document"}`,
+        document,
+      ]),
+    );
+
+    context.items.forEach((item) => {
+      const document = documentsById.get(item.documentId);
+      item.evidenceChunks.forEach((chunk) => {
+        rows.push(
+          row([
+            "document_rag_evidence",
+            csvIsoDate(document?.date ?? ""),
+            document?.title ?? item.titleLine,
+            chunk.label,
+            item.statusSummary,
+            joinDetail([
+              "문서 RAG 근거 | 진단, 처방, 치료 지시가 아님",
+              documentRagSourceBoundaryLine,
+              `검색 기준: ${context.queryLabel}`,
+              `요약: ${context.summary}`,
+              `관련 이유: ${item.reasonSummary || "근거 조각 일치"}`,
+              `다음 조치: ${item.nextActionSummary}`,
+              `임상 단서: ${item.signalSummary}`,
+              `파싱 원천: ${item.parserSummary}`,
+              `근거 스니펫: ${item.snippet}`,
+              `조각 이유: ${chunk.reasonSummary}`,
+              `조각 원천: ${chunk.sourceSummary}`,
+              `조각 본문: ${chunk.text}`,
+            ]),
+          ]),
+        );
+      });
+    });
+  };
 
   state.documents.forEach((document) => pushDocument("document", document));
   state.deletedDocuments.forEach((document) => pushDocument("deleted_document", document));
   pushDocumentParserAudit("document_parser_audit", state.documents);
   pushDocumentParserAudit("deleted_document_parser_audit", state.deletedDocuments);
+  pushDocumentRagEvidence(state.documents);
 
   rows.push(
     row([
