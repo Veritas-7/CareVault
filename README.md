@@ -193,6 +193,16 @@ Optional overrides are `CAREVAULT_OLLAMA_HOST`, `CAREVAULT_OLLAMA_MODEL`, and
 target port, the script uses it and does not stop it. If the script starts
 Ollama itself, it stops only that temporary process.
 
+The wrapper smoke captures and sanitizes both child smoke outputs, so local
+filesystem paths are not exposed when the underlying Ollama runtime fails. When
+Ollama can serve its API but cannot start `llama-server`, the smoke now mirrors
+the doctor diagnosis instead of leaving the failure buried in the model and
+embedding test logs. Its fixture coverage is command-only:
+
+```bash
+npm run rag:ollama:smoke:test
+```
+
 CareVault is a local-first health notebook for manually tracking:
 
 - blood pressure and blood glucose readings with non-positive/blank draft validation and saved-vital panel summary chips for type/status mix
