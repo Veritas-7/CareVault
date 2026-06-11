@@ -8,6 +8,7 @@ describe("documentMetric", () => {
         [
           {
             attachmentStatus: "파일 없음 - 재첨부 필요",
+            body: "[첨부 텍스트 파싱: labs.csv · 텍스트 파일]\nHbA1c 7.2%",
             nextAction: "다음 진료 때 영상 CD 확인",
             reviewStatus: "needs-review",
           },
@@ -17,6 +18,7 @@ describe("documentMetric", () => {
           },
           {
             attachmentStatus: "파일 확인됨",
+            body: "[첨부 텍스트 파싱: 상급병원_병리결과.hwp · HWP/HWPX 데스크톱 파서]\n자궁경부암 병리결과",
             nextAction: "결과지 원본 수령",
             reviewStatus: "waiting-result",
           },
@@ -32,9 +34,10 @@ describe("documentMetric", () => {
       ),
     ).toEqual({
       ariaLabel:
-        "전체 4개 · 검토 필요 1개 · 의료진 질문 1개 · 결과 대기 1개 · 정리 완료 1개 · 열린 조치 2개 · 첨부 복구 1개 · 삭제 보관 2개",
+        "전체 4개 · 검토 필요 1개 · 의료진 질문 1개 · 결과 대기 1개 · 정리 완료 1개 · 파싱 본문 2개 · 데스크톱 파서 1개 · 열린 조치 2개 · 첨부 복구 1개 · 삭제 보관 2개",
       careQuestionCount: 1,
       deletedCount: 2,
+      desktopParserCount: 1,
       doneCount: 1,
       items: [
         { id: "total", label: "전체", value: "4개" },
@@ -42,12 +45,15 @@ describe("documentMetric", () => {
         { id: "care-question", label: "의료진 질문", value: "1개" },
         { id: "waiting-result", label: "결과 대기", value: "1개" },
         { id: "done", label: "정리 완료", value: "1개" },
+        { id: "parsed-attachment", label: "파싱 본문", value: "2개" },
+        { id: "desktop-parser", label: "데스크톱 파서", value: "1개" },
         { id: "open-next-action", label: "열린 조치", value: "2개" },
         { id: "recovery", label: "첨부 복구", value: "1개" },
         { id: "deleted", label: "삭제 보관", value: "2개" },
       ],
       needsReviewCount: 1,
       openNextActionCount: 2,
+      parsedAttachmentCount: 2,
       recoveryCount: 1,
       totalCount: 4,
       waitingResultCount: 1,
@@ -56,26 +62,55 @@ describe("documentMetric", () => {
 
   it("builds an empty saved-document panel summary", () => {
     expect(buildDocumentPanelSummary([], [])).toEqual({
-      ariaLabel: "전체 0개 · 상태 서류 없음 · 열린 조치 없음 · 첨부 복구 없음 · 삭제 보관 없음",
+      ariaLabel:
+        "전체 0개 · 상태 서류 없음 · 파싱 본문 없음 · 데스크톱 파서 없음 · 열린 조치 없음 · 첨부 복구 없음 · 삭제 보관 없음",
       careQuestionCount: 0,
       deletedCount: 0,
+      desktopParserCount: 0,
       doneCount: 0,
       items: [
         { id: "total", label: "전체", value: "0개" },
         { id: "empty", label: "상태", value: "서류 없음" },
+        { id: "parsed-attachment-none", label: "파싱 본문", value: "없음" },
+        { id: "desktop-parser-none", label: "데스크톱 파서", value: "없음" },
         { id: "open-next-action", label: "열린 조치", value: "없음" },
         { id: "recovery-none", label: "첨부 복구", value: "없음" },
         { id: "deleted-none", label: "삭제 보관", value: "없음" },
       ],
       needsReviewCount: 0,
       openNextActionCount: 0,
+      parsedAttachmentCount: 0,
       recoveryCount: 0,
       totalCount: 0,
       waitingResultCount: 0,
     });
   });
 
-  it("keeps zero-count recovery and archive chips visually neutral", () => {
+  it("keeps zero-count parser, recovery, and archive chips visually neutral", () => {
+    expect(
+      buildDocumentPanelSummary(
+        [
+          {
+            attachmentStatus: "브라우저 파일명 참조",
+            nextAction: "다음 진료 때 질문",
+            reviewStatus: "care-question",
+          },
+        ],
+        [],
+      ).items,
+    ).toContainEqual({ id: "parsed-attachment-none", label: "파싱 본문", value: "없음" });
+    expect(
+      buildDocumentPanelSummary(
+        [
+          {
+            attachmentStatus: "브라우저 파일명 참조",
+            nextAction: "다음 진료 때 질문",
+            reviewStatus: "care-question",
+          },
+        ],
+        [],
+      ).items,
+    ).toContainEqual({ id: "desktop-parser-none", label: "데스크톱 파서", value: "없음" });
     expect(
       buildDocumentPanelSummary(
         [

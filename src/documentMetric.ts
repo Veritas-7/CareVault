@@ -1,9 +1,11 @@
 import { needsAttachmentRecovery } from "./attachmentRecovery";
+import { extractDocumentParsedAttachmentSources } from "./documentKnowledge";
 
 type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
 
 export type DocumentPanelSummarySource = {
   attachmentStatus?: string;
+  body?: string;
   nextAction?: string;
   reviewStatus: DocumentReviewStatus;
 };
@@ -18,10 +20,12 @@ export type DocumentPanelSummary = {
   ariaLabel: string;
   careQuestionCount: number;
   deletedCount: number;
+  desktopParserCount: number;
   doneCount: number;
   items: DocumentPanelSummaryItem[];
   needsReviewCount: number;
   openNextActionCount: number;
+  parsedAttachmentCount: number;
   recoveryCount: number;
   totalCount: number;
   waitingResultCount: number;
@@ -48,6 +52,13 @@ export function buildDocumentPanelSummary(
   const recoveryCount = documents.filter((document) =>
     needsAttachmentRecovery(document.attachmentStatus),
   ).length;
+  const parsedAttachmentSources = documents.map((document) =>
+    extractDocumentParsedAttachmentSources(document),
+  );
+  const parsedAttachmentCount = parsedAttachmentSources.filter((sources) => sources.length).length;
+  const desktopParserCount = parsedAttachmentSources.filter((sources) =>
+    sources.some((source) => source.sourceLabel?.includes("데스크톱")),
+  ).length;
   const deletedCount = deletedDocuments.length;
   const statusItems = [
     needsReviewCount
@@ -64,6 +75,16 @@ export function buildDocumentPanelSummary(
   const items = [
     { id: "total", label: "전체", value: `${totalCount}개` },
     ...(statusItems.length ? statusItems : [{ id: "empty", label: "상태", value: "서류 없음" }]),
+    {
+      id: parsedAttachmentCount ? "parsed-attachment" : "parsed-attachment-none",
+      label: "파싱 본문",
+      value: parsedAttachmentCount ? `${parsedAttachmentCount}개` : "없음",
+    },
+    {
+      id: desktopParserCount ? "desktop-parser" : "desktop-parser-none",
+      label: "데스크톱 파서",
+      value: desktopParserCount ? `${desktopParserCount}개` : "없음",
+    },
     {
       id: "open-next-action",
       label: "열린 조치",
@@ -86,10 +107,12 @@ export function buildDocumentPanelSummary(
     ariaLabel,
     careQuestionCount,
     deletedCount,
+    desktopParserCount,
     doneCount,
     items,
     needsReviewCount,
     openNextActionCount,
+    parsedAttachmentCount,
     recoveryCount,
     totalCount,
     waitingResultCount,

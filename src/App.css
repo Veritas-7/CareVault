@@ -4350,6 +4350,8 @@ textarea:focus-visible {
 .symptom-panel-summary-chip.summary-queue-candidate,
 .lab-panel-summary-chip.summary-source-backed,
 .lab-panel-summary-chip.summary-question-candidate,
+.document-panel-summary-chip.summary-parsed-attachment,
+.document-panel-summary-chip.summary-desktop-parser,
 .document-panel-summary-chip.summary-open-next-action,
 .document-panel-summary-chip.summary-waiting-result,
 .food-panel-summary-chip.summary-source-backed {
