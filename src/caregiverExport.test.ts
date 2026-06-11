@@ -1001,6 +1001,55 @@ describe("caregiverExport", () => {
     expect(html).not.toContain("attachmentPath");
   });
 
+  it("includes parsed lab-result document cues in caregiver HTML without local paths", () => {
+    const html = buildCaregiverExportHtml(
+      {
+        ...state,
+        documents: [
+          {
+            date: "2026-06-04",
+            title: "HWPX 혈액·신장 기능 검사",
+            category: "lab",
+            body: [
+              "[첨부 텍스트 파싱: labs.hwpx · HWPX 본문 XML]",
+              "CBC WBC 3.2 10^3/uL, ANC 1.1 10^3/uL, PLT 118 10^3/uL. Cr 1.4 mg/dL, eGFR 52 mL/min/1.73m2. 원본 /Users/wj/private/labs.hwpx",
+            ].join("\n"),
+            reviewStatus: "care-question",
+            nextAction: "",
+            attachmentName: "labs.hwpx",
+            attachmentPath: "/Users/wj/private/labs.hwpx",
+          },
+        ],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-04T10:00:00.000Z",
+    );
+    const queueDetailStart = html.indexOf("HWPX 혈액·신장 기능 검사 서류에서");
+    const documentQueueFragment =
+      queueDetailStart >= 0
+        ? html.slice(queueDetailStart, html.indexOf("</li>", queueDetailStart))
+        : "";
+
+    expect(html).toContain("<h2>진료 준비 큐</h2>");
+    expect(html).toContain("서류 · 서류 질문");
+    expect(html).toContain("HWPX 혈액·신장 기능 검사");
+    expect(html).toContain("HWPX 혈액·신장 기능 검사 서류에서 검사결과 관련 단서");
+    expect(html).toContain(
+      "문서 측정 단서(원문): WBC 3.2 10^3/uL · ANC 1.1 10^3/uL · PLT 118 10^3/uL · Cr 1.4 mg/dL · eGFR 52 mL/min/1.73m2",
+    );
+    expect(html).toContain("수치 해석, 반복 측정 시점, 약·식사·치료 영향은 진료팀 기준으로 확인합니다.");
+    expect(html).toContain("파싱 원천: HWPX 본문 XML: labs.hwpx");
+    expect(html).toContain("[local path]");
+    expect(documentQueueFragment).not.toContain("처방");
+    expect(documentQueueFragment).not.toContain("치료하세요");
+    expect(html).not.toContain("/Users/wj/private");
+    expect(html).not.toContain("attachmentPath");
+  });
+
   it("omits malformed visit dates from caregiver upcoming visits", () => {
     const html = buildCaregiverExportHtml(
       {
