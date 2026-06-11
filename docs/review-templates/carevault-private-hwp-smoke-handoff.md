@@ -11,7 +11,8 @@ real private sample and writes a basename-only success report.
 - Do not paste private medical text into issue trackers, chat, or this repo.
 - The smoke output prints sample basenames only.
 - The optional report stores basenames, extensions, status, sample count, the
-  minimum parsed character threshold, and whether expected terms were provided.
+  minimum parsed character threshold, expected-term count, and objective
+  term-group coverage.
 - The report must not contain full local paths.
 
 ## Single File Smoke
