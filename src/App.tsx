@@ -203,6 +203,11 @@ import {
 import {
   buildDocumentRagContext,
   buildDocumentRagProfileQuery,
+  formatDocumentRagAnswerDraftClipboardDescription,
+  formatDocumentRagAnswerDraftClipboardFailedStatus,
+  formatDocumentRagAnswerDraftClipboardStatus,
+  formatDocumentRagAnswerDraftClipboardText,
+  formatDocumentRagAnswerDraftClipboardUnsupportedStatus,
   formatDocumentRagContextClipboardDescription,
   formatDocumentRagContextClipboardFailedStatus,
   formatDocumentRagContextClipboardStatus,
@@ -1853,6 +1858,10 @@ function App() {
     formatDocumentRagModelHandoffClipboardDescription(documentRagContext);
   const documentRagModelHandoffClipboardStatus =
     formatDocumentRagModelHandoffClipboardStatus(documentRagContext);
+  const documentRagAnswerDraftClipboardDescription =
+    formatDocumentRagAnswerDraftClipboardDescription(documentRagContext);
+  const documentRagAnswerDraftClipboardStatus =
+    formatDocumentRagAnswerDraftClipboardStatus(documentRagContext);
   const hasActiveDocumentFilters = hasActiveDocumentFilterState({
     categoryFilter: documentCategoryFilter,
     searchText: documentFilter,
@@ -1977,6 +1986,22 @@ function App() {
       })
       .catch(() => {
         setSaveLabel(formatDocumentRagModelHandoffClipboardFailedStatus(documentRagContext));
+      });
+  };
+
+  const copyDocumentRagAnswerDraft = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel(formatDocumentRagAnswerDraftClipboardUnsupportedStatus(documentRagContext));
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(formatDocumentRagAnswerDraftClipboardText(documentRagContext))
+      .then(() => {
+        setTransientSaveLabel(documentRagAnswerDraftClipboardStatus);
+      })
+      .catch(() => {
+        setSaveLabel(formatDocumentRagAnswerDraftClipboardFailedStatus(documentRagContext));
       });
   };
 
@@ -7689,6 +7714,16 @@ function App() {
                     모델 핸드오프
                   </button>
                   <button
+                    className="secondary-inline-button document-rag-answer-draft-copy"
+                    type="button"
+                    onClick={copyDocumentRagAnswerDraft}
+                    aria-label={documentRagAnswerDraftClipboardDescription}
+                    title={documentRagAnswerDraftClipboardDescription}
+                  >
+                    <Copy aria-hidden="true" />
+                    답변 초안
+                  </button>
+                  <button
                     className="secondary-inline-button document-rag-context-download"
                     type="button"
                     onClick={downloadDocumentRagContext}
@@ -7708,6 +7743,15 @@ function App() {
                 <div className="document-rag-evidence-quality">
                   <span>{documentRagContext.evidenceQuality.summary}</span>
                   {documentRagContext.evidenceQuality.warnings.map((warning) => (
+                    <small key={warning}>{warning}</small>
+                  ))}
+                </div>
+                <div className="document-rag-answer-draft">
+                  <span>{documentRagContext.answerDraft.summary}</span>
+                  {documentRagContext.answerDraft.lines.slice(0, 3).map((line) => (
+                    <small key={line}>{line}</small>
+                  ))}
+                  {documentRagContext.answerDraft.warnings.slice(0, 1).map((warning) => (
                     <small key={warning}>{warning}</small>
                   ))}
                 </div>

@@ -10,6 +10,11 @@ import {
   formatDocumentRagContextDownloadDescription,
   formatDocumentRagContextDownloadFallbackLabel,
   formatDocumentRagContextDownloadStatus,
+  formatDocumentRagAnswerDraftClipboardDescription,
+  formatDocumentRagAnswerDraftClipboardFailedStatus,
+  formatDocumentRagAnswerDraftClipboardStatus,
+  formatDocumentRagAnswerDraftClipboardText,
+  formatDocumentRagAnswerDraftClipboardUnsupportedStatus,
   formatDocumentRagModelHandoffClipboardDescription,
   formatDocumentRagModelHandoffClipboardFailedStatus,
   formatDocumentRagModelHandoffClipboardStatus,
@@ -217,6 +222,58 @@ describe("documentRagContext", () => {
     );
     expect(emptyText).toContain("근거 품질: 부족 · 검색 결과 없음");
     expect(emptyText).toContain("검색 기준에 맞는 저장 서류 근거가 없습니다.");
+  });
+
+  it("builds an in-app source-grounded answer draft from parsed RAG evidence", () => {
+    const context = buildDocumentRagContext(
+      [parsedHwpDocument],
+      "자궁경부암 혈압 당화혈색소",
+    );
+    const text = formatDocumentRagAnswerDraftClipboardText(context);
+
+    expect(context.answerDraft.level).toBe("source-grounded");
+    expect(context.answerDraft.summary).toBe("답변 초안 3줄 · 근거 인용 1개 · 원문 근거 충분");
+    expect(context.answerDraft.lines).toHaveLength(3);
+    expect(context.answerDraft.lines[0]).toContain("자궁경부암 병리결과");
+    expect(context.answerDraft.lines[0]).toContain("자궁경부암 · 고혈압 · 당뇨 · HWP/HWPX");
+    expect(context.answerDraft.lines[1]).toContain("HbA1c 7.2%");
+    expect(context.answerDraft.lines[2]).toContain("진료 전 혈당과 혈압 관리 연결 질문");
+    expect(context.answerDraft.citations).toEqual([
+      "문서 1 · 2026-06-11 · 자궁경부암 병리결과 · 근거 조각 1",
+    ]);
+    expect(text).toContain("[CareVault 문서 RAG 답변 초안]");
+    expect(text).toContain("진단·처방·치료 지시가 아니라");
+    expect(text).toContain("문서 1 · 2026-06-11 · 자궁경부암 병리결과 · 근거 조각 1");
+    expect(text).not.toContain("/Users/wj/private");
+    expect(formatDocumentRagAnswerDraftClipboardDescription(context)).toBe(
+      "문서 RAG 답변 초안 복사 · 답변 초안 3줄 · 근거 인용 1개 · 원문 근거 충분",
+    );
+    expect(formatDocumentRagAnswerDraftClipboardStatus(context)).toBe(
+      "문서 RAG 답변 초안 복사됨 · 답변 초안 3줄 · 근거 인용 1개 · 원문 근거 충분",
+    );
+    expect(formatDocumentRagAnswerDraftClipboardUnsupportedStatus(context)).toBe(
+      "문서 RAG 답변 초안 복사 미지원 · 브라우저 클립보드 없음 · 답변 초안 3줄 · 근거 인용 1개 · 원문 근거 충분",
+    );
+    expect(formatDocumentRagAnswerDraftClipboardFailedStatus(context)).toBe(
+      "문서 RAG 답변 초안 복사 실패 · 답변 초안 3줄 · 근거 인용 1개 · 원문 근거 충분",
+    );
+  });
+
+  it("fails closed for answer drafts when RAG evidence is insufficient", () => {
+    const context = buildDocumentRagContext([], "혈압");
+    const text = formatDocumentRagAnswerDraftClipboardText(context);
+
+    expect(context.answerDraft.level).toBe("insufficient");
+    expect(context.answerDraft.summary).toBe("답변 초안 없음 · 근거 부족");
+    expect(context.answerDraft.lines).toEqual([
+      "근거 부족: 검색 기준에 맞는 저장 서류 근거가 없습니다.",
+    ]);
+    expect(context.answerDraft.citations).toEqual([]);
+    expect(context.answerDraft.warnings).toContain(
+      "저장 서류 근거가 부족해 답변 초안을 만들 수 없습니다.",
+    );
+    expect(text).toContain("근거 부족");
+    expect(text).toContain("저장 서류 근거가 부족해 답변 초안을 만들 수 없습니다.");
   });
 
   it("formats a fail-closed model handoff prompt from parsed RAG evidence", () => {

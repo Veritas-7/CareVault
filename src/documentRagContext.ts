@@ -37,6 +37,13 @@ export type DocumentRagContextItem = {
 
 export type DocumentRagContext = {
   ariaLabel: string;
+  answerDraft: {
+    citations: string[];
+    level: "source-grounded" | "needs-review" | "insufficient";
+    lines: string[];
+    summary: string;
+    warnings: string[];
+  };
   careBrief: {
     lines: string[];
     summary: string;
@@ -561,6 +568,66 @@ function buildDocumentRagEvidenceQuality(items: DocumentRagContextItem[]) {
   };
 }
 
+function formatDocumentRagEvidenceLevelLabel(
+  level: DocumentRagContext["evidenceQuality"]["level"],
+) {
+  if (level === "source-grounded") return "원문 근거 충분";
+  if (level === "needs-review") return "검토 필요";
+  return "근거 부족";
+}
+
+function buildDocumentRagAnswerDraft(
+  items: DocumentRagContextItem[],
+  evidenceQuality: DocumentRagContext["evidenceQuality"],
+): DocumentRagContext["answerDraft"] {
+  if (!items.length || evidenceQuality.level === "insufficient") {
+    return {
+      citations: [],
+      level: "insufficient",
+      lines: ["근거 부족: 검색 기준에 맞는 저장 서류 근거가 없습니다."],
+      summary: "답변 초안 없음 · 근거 부족",
+      warnings: [
+        "저장 서류 근거가 부족해 답변 초안을 만들 수 없습니다.",
+        ...evidenceQuality.warnings,
+      ],
+    };
+  }
+
+  const topItem = items[0];
+  const topChunk = topItem.evidenceChunks[0];
+  const nextActionLine =
+    topItem.nextActionSummary !== "다음 조치 없음"
+      ? `진료팀 확인 질문: ${topItem.nextActionSummary}`
+      : "진료팀 확인 질문: 이 문서가 현재 치료/검사 계획과 어떻게 연결되는지 확인합니다.";
+  const lines = [
+    compactText(
+      `확인 초점: ${topItem.titleLine}`,
+      topItem.signalSummary !== "임상 단서 없음" ? `관련 단서 ${topItem.signalSummary}` : "",
+      `상태 ${topItem.statusSummary}`,
+    ),
+    `원문 근거 요약: ${topChunk?.text ?? topItem.snippet}`,
+    nextActionLine,
+  ];
+  const citations = [
+    topChunk
+      ? `문서 1 · ${topItem.titleLine} · 근거 조각 1`
+      : `문서 1 · ${topItem.titleLine} · 근거 스니펫`,
+  ];
+  const warnings = [
+    "진단·처방·치료 지시가 아니라 저장 서류 근거를 바탕으로 한 진료팀 확인 초안입니다.",
+    ...evidenceQuality.warnings,
+  ];
+  const levelLabel = formatDocumentRagEvidenceLevelLabel(evidenceQuality.level);
+
+  return {
+    citations,
+    level: evidenceQuality.level,
+    lines,
+    summary: `답변 초안 ${lines.length}줄 · 근거 인용 ${citations.length}개 · ${levelLabel}`,
+    warnings,
+  };
+}
+
 export function buildDocumentRagContext(
   documents: readonly DocumentRagContextSource[],
   query: string,
@@ -580,10 +647,12 @@ export function buildDocumentRagContext(
     .slice(0, Math.max(1, maxItems));
 
   if (!items.length) {
+    const evidenceQuality = buildDocumentRagEvidenceQuality(items);
     return {
       ariaLabel: `${noContextSummary} · 기준 ${queryLabel}`,
+      answerDraft: buildDocumentRagAnswerDraft(items, evidenceQuality),
       careBrief: buildDocumentRagCareBrief(items),
-      evidenceQuality: buildDocumentRagEvidenceQuality(items),
+      evidenceQuality,
       items,
       queryLabel,
       summary: noContextSummary,
@@ -594,11 +663,13 @@ export function buildDocumentRagContext(
   const clinicalDocumentCount = items.filter((item) => item.clinicalSignalCount > 0).length;
   const evidenceChunkCount = items.reduce((count, item) => count + item.evidenceChunks.length, 0);
   const summary = `RAG 컨텍스트 ${items.length}개 · 파싱 문서 ${parsedDocumentCount}개 · 임상 단서 ${clinicalDocumentCount}개 · 근거 조각 ${evidenceChunkCount}개`;
+  const evidenceQuality = buildDocumentRagEvidenceQuality(items);
 
   return {
     ariaLabel: `${summary} · 기준 ${queryLabel}`,
+    answerDraft: buildDocumentRagAnswerDraft(items, evidenceQuality),
     careBrief: buildDocumentRagCareBrief(items),
-    evidenceQuality: buildDocumentRagEvidenceQuality(items),
+    evidenceQuality,
     items,
     queryLabel,
     summary,
@@ -633,6 +704,24 @@ export function formatDocumentRagContextDownloadFallbackLabel() {
   return "문서 RAG 컨텍스트";
 }
 
+export function formatDocumentRagAnswerDraftClipboardDescription(context: DocumentRagContext) {
+  return `문서 RAG 답변 초안 복사 · ${context.answerDraft.summary}`;
+}
+
+export function formatDocumentRagAnswerDraftClipboardStatus(context: DocumentRagContext) {
+  return `문서 RAG 답변 초안 복사됨 · ${context.answerDraft.summary}`;
+}
+
+export function formatDocumentRagAnswerDraftClipboardUnsupportedStatus(
+  context: DocumentRagContext,
+) {
+  return `문서 RAG 답변 초안 복사 미지원 · 브라우저 클립보드 없음 · ${context.answerDraft.summary}`;
+}
+
+export function formatDocumentRagAnswerDraftClipboardFailedStatus(context: DocumentRagContext) {
+  return `문서 RAG 답변 초안 복사 실패 · ${context.answerDraft.summary}`;
+}
+
 export function formatDocumentRagModelHandoffClipboardDescription(context: DocumentRagContext) {
   return `문서 RAG 모델 핸드오프 복사 · ${context.summary}`;
 }
@@ -647,6 +736,28 @@ export function formatDocumentRagModelHandoffClipboardUnsupportedStatus(context:
 
 export function formatDocumentRagModelHandoffClipboardFailedStatus(context: DocumentRagContext) {
   return `문서 RAG 모델 핸드오프 복사 실패 · ${context.summary}`;
+}
+
+export function formatDocumentRagAnswerDraftClipboardText(context: DocumentRagContext) {
+  return [
+    "[CareVault 문서 RAG 답변 초안]",
+    "용도: 저장 서류와 파싱 첨부 본문 근거에서 앱 안에서 바로 검토할 답변 초안을 만듭니다.",
+    "주의: 진단·처방·치료 지시가 아니라 진료팀 확인을 돕는 원문 근거 기반 초안입니다.",
+    documentRagSourceBoundaryLine,
+    `기준 검색어: ${context.queryLabel}`,
+    `요약: ${context.answerDraft.summary}`,
+    "",
+    "[답변 초안]",
+    ...context.answerDraft.lines.map((line) => `- ${line}`),
+    "",
+    "[근거 인용]",
+    ...(context.answerDraft.citations.length
+      ? context.answerDraft.citations.map((citation) => `- ${citation}`)
+      : ["- 근거 부족"]),
+    "",
+    "[주의 및 한계]",
+    ...context.answerDraft.warnings.map((warning) => `- ${warning}`),
+  ].join("\n");
 }
 
 export function formatDocumentRagContextClipboardText(context: DocumentRagContext) {
@@ -704,6 +815,11 @@ export function formatDocumentRagModelHandoffClipboardText(context: DocumentRagC
     "[근거 품질]",
     context.evidenceQuality.summary,
     ...context.evidenceQuality.warnings.map((warning) => `- ${warning}`),
+    "",
+    "[앱 내 답변 초안]",
+    context.answerDraft.summary,
+    ...context.answerDraft.lines.map((line) => `- ${line}`),
+    ...context.answerDraft.citations.map((citation) => `- 근거: ${citation}`),
     "",
     "[사용자 요청]",
     `${context.queryLabel} 관련해서 진료팀에게 확인할 질문과 기록 초점만 정리합니다.`,

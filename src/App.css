@@ -3934,8 +3934,30 @@ textarea:focus-visible {
   overflow-wrap: anywhere;
 }
 
+.document-rag-answer-draft {
+  display: grid;
+  gap: 3px;
+  padding: 7px 8px;
+  border: 1px solid #c9dfdf;
+  border-radius: 6px;
+  background: #f5fbfb;
+}
+
+.document-rag-answer-draft span {
+  color: #284f50;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.document-rag-answer-draft small {
+  color: #4f6262;
+  font-size: 0.76rem;
+  overflow-wrap: anywhere;
+}
+
 .document-rag-context-copy,
 .document-rag-model-handoff-copy,
+.document-rag-answer-draft-copy,
 .document-rag-context-download {
   flex: 0 0 auto;
   min-height: 32px;
