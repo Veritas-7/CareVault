@@ -3914,6 +3914,7 @@ textarea:focus-visible {
 }
 
 .document-rag-context-copy,
+.document-rag-model-handoff-copy,
 .document-rag-context-download {
   flex: 0 0 auto;
   min-height: 32px;

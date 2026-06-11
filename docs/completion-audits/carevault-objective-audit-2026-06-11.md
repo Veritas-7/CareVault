@@ -37,7 +37,7 @@ state instead.
 | Document parsing from attachments | `src/documentAttachmentParsing.ts`, `src/documentHwpxText.ts`, `src/documentTauriAttachmentParsing.ts`, `src-tauri/src/lib.rs` | PASS | Browser path parses text-like files and HWPX preview/section XML. Tauri path accepts HWP/HWPX/HWPML and invokes the Rust command `parse_hwp_attachment_text`; Rust uses `hwarang::extract_text_from_file`, normalizes text, and fails closed on missing or empty parsed text. |
 | rhwp/HWP external evidence | `docs/parser-candidates/hwarang-unhwp-rust-ab-2026-06-11.md`, `docs/parser-candidates/hwarang-unhwp-rust-ab-2026-06-11.json`, `src-tauri/Cargo.toml`, `src-tauri/src/lib.rs` | PASS | `hwarang@0.2.0` was adopted from the rhwp ecosystem with an MIT license note and a public `edwardkim/rhwp` `KTX.hwp` command-gated sample. |
 | Real user/private HWP/HWPX sample smoke | no private sample path supplied | BLOCKED | Public rhwp sample command gate passes, but there is still no user/private medical HWP/HWPX sample available to prove realistic app parsing on the user's actual document type. This blocks a full completion claim. |
-| Search/RAG-like use of parsed documents | `src/documentKnowledge.ts`, `src/documentFilterActions.ts`, `src/documentParserAudit.ts`, `src/documentRagContext.ts`, README | PARTIAL | Parsed attachment bodies are inserted into saved document text, then used by local relevance-ranked lexical search, clinical-signal quick-search buttons, patient-facing/domain alias expansion, multi-token document filtering, parser provenance terms, deterministic local vector-similarity scoring, local-path-sanitized source snippets, clinician-question drafts with focused parsed-document excerpts and parser provenance, local RAG-context copy/download packets with profile-based query fallback, query-coverage scoring, source-boundary wording, saved-document status/next-action handoff lines, source-grounded care-brief lines, sanitized query labels, visit-summary Markdown and caregiver HTML sections, and CSV `document_rag_evidence` rows with ranked parsed-body evidence chunks for matched saved documents. Long parsed chunks are exported as focused excerpts around matched query or clinical terms instead of whole long HWP paragraphs. This is useful local retrieval/context packaging, but it is not model-embedding RAG or a generative RAG pipeline. Do not overclaim it as full RAG. |
+| Search/RAG-like use of parsed documents | `src/documentKnowledge.ts`, `src/documentFilterActions.ts`, `src/documentParserAudit.ts`, `src/documentRagContext.ts`, README | PARTIAL | Parsed attachment bodies are inserted into saved document text, then used by local relevance-ranked lexical search, clinical-signal quick-search buttons, patient-facing/domain alias expansion, multi-token document filtering, parser provenance terms, deterministic local vector-similarity scoring, local-path-sanitized source snippets, clinician-question drafts with focused parsed-document excerpts and parser provenance, local RAG-context copy/download packets with profile-based query fallback, query-coverage scoring, source-boundary wording, fail-closed model handoff prompts for source-grounded external AI use, saved-document status/next-action handoff lines, source-grounded care-brief lines, sanitized query labels, visit-summary Markdown and caregiver HTML sections, and CSV `document_rag_evidence` rows with ranked parsed-body evidence chunks for matched saved documents. Long parsed chunks are exported as focused excerpts around matched query or clinical terms instead of whole long HWP paragraphs. This is useful local retrieval/context packaging and prompt handoff, but it is not model-embedding RAG or an in-app generative RAG pipeline. Do not overclaim it as full RAG. |
 | Clinical signal extraction from parsed documents | `src/documentKnowledge.ts`, `src/documentParserAudit.ts`, `src/documentParserAuditClipboard.ts` | PASS | The app detects cervical-cancer, hypertension, diabetes, and HWP/HWPX signals from saved document fields and parsed bodies; parser-audit reports summarize source and clinical-signal coverage while avoiding diagnosis/treatment wording. |
 | Parsed-document use in exports | `src/visitPacket.ts`, `src/caregiverExport.ts`, `src/csvExport.ts`, `src/backupState.ts`, README | PASS | Parser source and clinical-signal summaries now flow into visit-summary Markdown, caregiver HTML, CSV rows/labels, and backup export/import scope summaries; visit-summary Markdown, caregiver HTML, and CSV `document_rag_evidence` rows also include chunk-ranked document RAG evidence with saved-document status, next-action handoff lines, and focused long-chunk excerpts. Local attachment paths remain excluded. |
 | Local storage and backup safety | `src/storage.ts`, `src/backupState.ts`, tests | PASS | The app uses SQLite in Tauri, localStorage in browser preview, memory fallback when storage is unavailable, sanitized JSON backup/import, reattachment boundaries, and local path exclusion from exports/backups. |
@@ -75,11 +75,11 @@ This audit slice was locally verified before commit with:
    likely private medical document shapes.
 2. PARTIAL: Search is local relevance-ranked lexical/provenance/signal retrieval
    with snippets, focused parsed-document clinician-question drafts, chunk-ranked
-   RAG-context packets, deterministic local vector-similarity scoring, focused
-   long-chunk excerpts, status/next-action handoff lines, source-grounded
-   care-brief lines, visit-summary RAG evidence sections, CSV
-   `document_rag_evidence` rows, and caregiver HTML RAG evidence sections. It
-   is not model-embedding RAG or model-backed generative RAG.
+   RAG-context packets, deterministic local vector-similarity scoring, fail-closed
+   model handoff prompts, focused long-chunk excerpts, status/next-action
+   handoff lines, source-grounded care-brief lines, visit-summary RAG evidence
+   sections, CSV `document_rag_evidence` rows, and caregiver HTML RAG evidence
+   sections. It is not model-embedding RAG or in-app model-backed generative RAG.
 3. PARTIAL: No browser/cmux UI QA was run because of the user constraint. Local
    command verification is the valid evidence surface for this session.
 4. PARTIAL: Clinical content is source-backed and guarded against diagnosis or
@@ -92,8 +92,8 @@ Do not mark the active goal complete yet.
 
 The repo has strong concrete coverage for document storage, parsing, search-like
 retrieval, deterministic local vector-similarity scoring, local chunk-ranked
-RAG-context packaging, source-grounded care-brief lines, visit-summary, CSV, and
-caregiver HTML evidence surfaces with status/next-action handoff lines, export/use paths, cervical-cancer care preparation, and
+RAG-context packaging, fail-closed model handoff prompts, source-grounded
+care-brief lines, visit-summary, CSV, and caregiver HTML evidence surfaces with status/next-action handoff lines, export/use paths, cervical-cancer care preparation, and
 hypertension/diabetes tracking. The remaining blocker is a real user/private
 HWP/HWPX sample smoke, plus the explicit limitation that current retrieval is
-not model-embedding or generative RAG.
+not model-embedding or in-app generative RAG.

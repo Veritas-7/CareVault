@@ -211,6 +211,11 @@ import {
   formatDocumentRagContextDownloadDescription,
   formatDocumentRagContextDownloadFallbackLabel,
   formatDocumentRagContextDownloadStatus,
+  formatDocumentRagModelHandoffClipboardDescription,
+  formatDocumentRagModelHandoffClipboardFailedStatus,
+  formatDocumentRagModelHandoffClipboardStatus,
+  formatDocumentRagModelHandoffClipboardText,
+  formatDocumentRagModelHandoffClipboardUnsupportedStatus,
 } from "./documentRagContext";
 import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
@@ -1844,6 +1849,10 @@ function App() {
   const documentRagContextDownloadDescription =
     formatDocumentRagContextDownloadDescription(documentRagContext);
   const documentRagContextDownloadStatus = formatDocumentRagContextDownloadStatus(documentRagContext);
+  const documentRagModelHandoffClipboardDescription =
+    formatDocumentRagModelHandoffClipboardDescription(documentRagContext);
+  const documentRagModelHandoffClipboardStatus =
+    formatDocumentRagModelHandoffClipboardStatus(documentRagContext);
   const hasActiveDocumentFilters = hasActiveDocumentFilterState({
     categoryFilter: documentCategoryFilter,
     searchText: documentFilter,
@@ -1952,6 +1961,22 @@ function App() {
       })
       .catch(() => {
         setSaveLabel(formatDocumentRagContextClipboardFailedStatus(documentRagContext));
+      });
+  };
+
+  const copyDocumentRagModelHandoff = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel(formatDocumentRagModelHandoffClipboardUnsupportedStatus(documentRagContext));
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(formatDocumentRagModelHandoffClipboardText(documentRagContext))
+      .then(() => {
+        setTransientSaveLabel(documentRagModelHandoffClipboardStatus);
+      })
+      .catch(() => {
+        setSaveLabel(formatDocumentRagModelHandoffClipboardFailedStatus(documentRagContext));
       });
   };
 
@@ -7652,6 +7677,16 @@ function App() {
                   >
                     <Copy aria-hidden="true" />
                     컨텍스트 복사
+                  </button>
+                  <button
+                    className="secondary-inline-button document-rag-model-handoff-copy"
+                    type="button"
+                    onClick={copyDocumentRagModelHandoff}
+                    aria-label={documentRagModelHandoffClipboardDescription}
+                    title={documentRagModelHandoffClipboardDescription}
+                  >
+                    <Copy aria-hidden="true" />
+                    모델 핸드오프
                   </button>
                   <button
                     className="secondary-inline-button document-rag-context-download"
