@@ -86,6 +86,28 @@ describe("documentRagContext", () => {
     expect(text).not.toContain("/Users/wj/private");
   });
 
+  it("strips local paths from query labels and copied RAG context text", () => {
+    const context = buildDocumentRagContext(
+      [
+        {
+          ...parsedHwpDocument,
+          body:
+            "직접 메모 /Users/wj/private/local-note.hwp\n\n" +
+            "[첨부 텍스트 파싱: local-note.hwp · HWP/HWPX 데스크톱 파서]\n" +
+            "HbA1c 7.2% 확인.",
+        },
+      ],
+      "당화혈색소 /Users/wj/private/local-note.hwp",
+    );
+    const text = formatDocumentRagContextClipboardText(context);
+
+    expect(context.queryLabel).toBe("당화혈색소 [local path]");
+    expect(context.ariaLabel).not.toContain("/Users/wj/private");
+    expect(text).toContain("기준 검색어: 당화혈색소 [local path]");
+    expect(text).toContain("[local path]");
+    expect(text).not.toContain("/Users/wj/private");
+  });
+
   it("keeps empty context labels stable", () => {
     const context = buildDocumentRagContext([], "혈압");
 

@@ -135,14 +135,20 @@ function getClinicalSignals(signals: DocumentKnowledgeSignal[]) {
   return signals.filter((signal) => signal.id !== "hwp-document");
 }
 
+function stripLocalPaths(value: string) {
+  return value
+    .replace(/\/Users\/[^\s)]+/g, "[local path]")
+    .replace(/[A-Za-z]:\\[^\s)]+/g, "[local path]");
+}
+
 function truncateText(value: string, maxLength = 120) {
-  const normalized = value.replace(/\s+/g, " ").trim();
+  const normalized = stripLocalPaths(value).replace(/\s+/g, " ").trim();
   if (normalized.length <= maxLength) return normalized;
   return `${normalized.slice(0, maxLength - 1).trim()}...`;
 }
 
 function findExcerpt(text: string, query: string, maxLength = 96) {
-  const normalizedText = text.replace(/\s+/g, " ").trim();
+  const normalizedText = stripLocalPaths(text).replace(/\s+/g, " ").trim();
   const normalizedQuery = query.trim().toLowerCase();
   if (!normalizedText) return "";
   if (!normalizedQuery) return truncateText(normalizedText, maxLength);

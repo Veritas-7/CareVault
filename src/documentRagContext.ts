@@ -309,7 +309,7 @@ export function buildDocumentRagContext(
   query: string,
   { maxItems = defaultMaxItems }: { maxItems?: number } = {},
 ): DocumentRagContext {
-  const queryLabel = query.trim() || "전체 저장 서류";
+  const queryLabel = stripLocalPaths(query.trim()) || "전체 저장 서류";
   const querySignals = detectDocumentKnowledgeSignals({
     attachmentName: query,
     body: query,

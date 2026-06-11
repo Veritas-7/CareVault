@@ -101,6 +101,22 @@ describe("documentKnowledge", () => {
     expect(snippet).not.toContain("/Users/wj/private");
   });
 
+  it("strips local paths from document-derived search snippets", () => {
+    const snippet = buildDocumentKnowledgeSnippet(
+      {
+        ...pathologyDocument,
+        body: "환자가 저장한 원본 경로 /Users/wj/private/상급병원_병리결과.hwp 안에 HbA1c 7.2% 기록이 있음.",
+        title: "로컬 경로 C:\\Users\\wj\\private\\report.hwp 확인",
+      },
+      "HbA1c",
+    );
+
+    expect(snippet).toContain("[local path]");
+    expect(snippet).toContain("HbA1c 7.2%");
+    expect(snippet).not.toContain("/Users/wj/private");
+    expect(snippet).not.toContain("C:\\Users\\wj");
+  });
+
   it("adds parser provenance to search snippets without local paths", () => {
     const snippet = buildDocumentKnowledgeSnippet(
       {
