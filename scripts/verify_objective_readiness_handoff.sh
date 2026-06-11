@@ -236,6 +236,27 @@ assertArrayIncludesAll(
   expectedBlockers,
   "inputs doctor baseline must list current blockers.",
 );
+if (
+  !Array.isArray(inputsDoctor.next_required_actions) ||
+  inputsDoctor.next_required_actions.length !== 2
+) {
+  fail("inputs doctor baseline must list the two next required actions.");
+}
+const nextActionIds = inputsDoctor.next_required_actions.map((action) => action.id);
+if (
+  nextActionIds[0] !== "run-real-private-hwp-smoke" ||
+  nextActionIds[1] !== "complete-external-clinician-source-review"
+) {
+  fail("inputs doctor baseline must list the expected next action ids.");
+}
+for (const action of inputsDoctor.next_required_actions) {
+  if (!Array.isArray(action.commands) || action.commands.length === 0) {
+    fail("inputs doctor baseline next actions must include command names.");
+  }
+  if (!Array.isArray(action.required_env) || action.required_env.length === 0) {
+    fail("inputs doctor baseline next actions must include required env names.");
+  }
+}
 
 const finalHandoff = readText(
   "carevault-final-readiness-handoff.md",

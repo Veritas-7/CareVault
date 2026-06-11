@@ -26,7 +26,8 @@ are missing, partially supplied, accepted by their existing smoke gates, or
 ready for the final completion gate. It does not create private HWP evidence,
 does not create external clinical approval, and does not print configured file
 paths. When CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH is set, it writes a
-path-safe machine-readable status report without configured evidence paths.
+path-safe machine-readable status report with next required actions but without
+configured evidence paths.
 EOF
 }
 
@@ -87,6 +88,65 @@ if packet_status != "accepted" or external_status != "accepted":
 if final_status == "pass":
     blocking_requirements = []
 
+next_required_actions = []
+if final_status != "pass":
+    if hwp_status != "accepted":
+        hwp_action_id = (
+            "rerun-real-private-hwp-smoke"
+            if hwp_status == "rejected"
+            else "run-real-private-hwp-smoke"
+        )
+        hwp_reason = (
+            "The configured HWP smoke report was rejected; rerun the real private HWP/HWPX/HWPML smoke and provide a valid basename-only report."
+            if hwp_status == "rejected"
+            else "A valid real private HWP/HWPX/HWPML smoke report has not been accepted yet."
+        )
+        next_required_actions.append(
+            {
+                "id": hwp_action_id,
+                "blocking_requirement": "real-private-hwp-hwpx-sample",
+                "reason": hwp_reason,
+                "commands": ["npm run hwp:smoke"],
+                "required_env": [
+                    "CAREVAULT_HWP_SAMPLE_PATH or CAREVAULT_HWP_SAMPLE_DIR",
+                    "CAREVAULT_HWP_SAMPLE_TERMS",
+                    "CAREVAULT_HWP_SMOKE_REPORT_PATH",
+                ],
+            }
+        )
+
+    if packet_status != "accepted" or external_status != "accepted":
+        if external_status == "waiting-for-packet":
+            external_action_id = "provide-external-review-packet"
+            external_reason = (
+                "An external review report was supplied, but the matching review packet directory has not been accepted yet."
+            )
+        elif packet_status == "rejected" or external_status == "rejected":
+            external_action_id = "rerun-external-clinician-source-review"
+            external_reason = (
+                "The configured external review evidence was rejected; regenerate the packet if needed and provide a valid reviewed report."
+            )
+        else:
+            external_action_id = "complete-external-clinician-source-review"
+            external_reason = (
+                "A valid external clinician/source review packet and report have not both been accepted yet."
+            )
+        next_required_actions.append(
+            {
+                "id": external_action_id,
+                "blocking_requirement": "external-clinician-source-review",
+                "reason": external_reason,
+                "commands": [
+                    "npm run clinical:external-review:packet",
+                    "npm run clinical:external-review:report",
+                ],
+                "required_env": [
+                    "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR",
+                    "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH",
+                ],
+            }
+        )
+
 report = {
     "schema": "carevault-objective-readiness-inputs-doctor.v1",
     "generated_by": "npm run objective:readiness:inputs:doctor",
@@ -98,6 +158,7 @@ report = {
     },
     "final_readiness_gate": final_status,
     "blocking_requirements": blocking_requirements,
+    "next_required_actions": next_required_actions,
     "input_paths_included": False,
     "path_policy": "Configured evidence paths are intentionally omitted.",
 }

@@ -90,12 +90,15 @@ path-safe status summary such as `missing-evidence`, `partial-evidence`,
 `ready`, or `invalid-evidence`. When
 `CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` is set, it writes schema
 `carevault-objective-readiness-inputs-doctor.v1` with the same evidence input
-states, final gate state, blocker IDs, and `input_paths_included: false`.
+states, final gate state, blocker IDs, path-safe `next_required_actions`, and
+`input_paths_included: false`. Those next actions list only command names and
+required environment variable names, never configured private evidence paths.
 `npm run objective:readiness:inputs:doctor:test` verifies missing inputs,
 unreadable configured inputs, rejected path-leaking HWP reports, partial
 HWP-only or external-only evidence, valid all-inputs readiness, and JSON reports
-for missing, invalid, and ready states. It does not create private HWP evidence,
-external clinical approval, or a completion claim.
+for missing, invalid, and ready states, including next-action lists for blocked
+or rejected evidence and an empty action list for ready evidence. It does not
+create private HWP evidence, external clinical approval, or a completion claim.
 
 Export a single operator bundle for the two remaining external inputs:
 
@@ -122,9 +125,9 @@ sample evidence or external clinician/source review evidence.
 `npm run objective:readiness:handoff:test` verifies missing-output failures,
 bundle contents, current blocker names, machine-readable manifest
 schema/status/file list/command sequence, optional status output, baseline
-input-doctor JSON schema/status/input states, and local-path exclusion. The
-command still does not run or invent a real private sample and does not create
-external clinician/source approval.
+input-doctor JSON schema/status/input states/next actions, and local-path
+exclusion. The command still does not run or invent a real private sample and
+does not create external clinician/source approval.
 
 Verify a previously exported handoff bundle before sharing or archiving it:
 

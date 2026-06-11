@@ -153,6 +153,27 @@ assert report["blocking_requirements"] == [
     "real-private-hwp-hwpx-sample",
     "external-clinician-source-review",
 ]
+actions = report["next_required_actions"]
+assert [action["id"] for action in actions] == [
+    "run-real-private-hwp-smoke",
+    "complete-external-clinician-source-review",
+]
+assert actions[0]["blocking_requirement"] == "real-private-hwp-hwpx-sample"
+assert actions[0]["commands"] == ["npm run hwp:smoke"]
+assert actions[0]["required_env"] == [
+    "CAREVAULT_HWP_SAMPLE_PATH or CAREVAULT_HWP_SAMPLE_DIR",
+    "CAREVAULT_HWP_SAMPLE_TERMS",
+    "CAREVAULT_HWP_SMOKE_REPORT_PATH",
+]
+assert actions[1]["blocking_requirement"] == "external-clinician-source-review"
+assert actions[1]["commands"] == [
+    "npm run clinical:external-review:packet",
+    "npm run clinical:external-review:report",
+]
+assert actions[1]["required_env"] == [
+    "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR",
+    "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH",
+]
 assert report["input_paths_included"] is False
 assert "/Users/" not in json.dumps(report)
 PY
@@ -195,6 +216,11 @@ assert report["schema"] == "carevault-objective-readiness-inputs-doctor.v1"
 assert report["status"] == "invalid-evidence"
 assert report["evidence_inputs"]["hwp_smoke_report"] == "rejected"
 assert "real-private-hwp-hwpx-sample" in report["blocking_requirements"]
+actions = report["next_required_actions"]
+assert actions[0]["id"] == "rerun-real-private-hwp-smoke"
+assert actions[0]["blocking_requirement"] == "real-private-hwp-hwpx-sample"
+assert actions[0]["commands"] == ["npm run hwp:smoke"]
+assert "CAREVAULT_HWP_SMOKE_REPORT_PATH" in actions[0]["required_env"]
 assert report["input_paths_included"] is False
 assert "/Users/" not in json.dumps(report)
 PY
@@ -252,6 +278,7 @@ assert report["evidence_inputs"] == {
     "external_review_report": "accepted",
 }
 assert report["blocking_requirements"] == []
+assert report["next_required_actions"] == []
 assert report["input_paths_included"] is False
 assert "/Users/" not in json.dumps(report)
 PY

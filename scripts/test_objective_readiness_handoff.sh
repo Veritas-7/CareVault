@@ -181,6 +181,13 @@ if (inputsDoctor.evidence_inputs.external_review_report !== "missing") process.e
 for (const blocker of expectedBlockers) {
   if (!inputsDoctor.blocking_requirements.includes(blocker)) process.exit(1);
 }
+const nextActions = inputsDoctor.next_required_actions || [];
+if (nextActions.length !== 2) process.exit(1);
+if (nextActions[0].id !== "run-real-private-hwp-smoke") process.exit(1);
+if (nextActions[1].id !== "complete-external-clinician-source-review") process.exit(1);
+if (!nextActions[0].commands.includes("npm run hwp:smoke")) process.exit(1);
+if (!nextActions[1].commands.includes("npm run clinical:external-review:packet")) process.exit(1);
+if (!nextActions[1].commands.includes("npm run clinical:external-review:report")) process.exit(1);
 NODE
 
 if grep -R -n -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$HANDOFF_DIR"; then
