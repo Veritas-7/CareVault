@@ -189,6 +189,12 @@ The doctor fixture is command-only and does not require a real Ollama service:
 npm run rag:ollama:doctor:test
 ```
 
+If Homebrew reports an older linked Ollama revision and the doctor fails before
+model output, upgrade or repair the Ollama runtime and rerun the doctor. The
+current command gate was verified after `ollama 0.30.7 -> 0.30.7_1`: both the
+minimal chat probe and the minimal embedding probe returned HTTP 200, and the
+temporary listener was cleaned up afterward.
+
 Run this command to execute both CareVault local model and embedding RAG smokes
 against Ollama:
 
@@ -210,6 +216,11 @@ embedding test logs. Its fixture coverage is command-only:
 ```bash
 npm run rag:ollama:smoke:test
 ```
+
+With the repaired local Ollama runtime, this wrapper now verifies both
+`src/documentRagModelRequest.live.test.ts` and
+`src/documentRagEmbeddingRequest.live.test.ts` against the temporary localhost
+Ollama server.
 
 CareVault is a local-first health notebook for manually tracking:
 
