@@ -52,17 +52,20 @@ command-only preflight for the two remaining external evidence inputs. It reuses
 the existing HWP report, external review report, and final completion smoke gates
 while suppressing raw command output, so the operator sees only path-safe input
 states: `missing-evidence`, `partial-evidence`, `ready`, or
-`invalid-evidence`.
+`invalid-evidence`. When `CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` is
+set, it writes schema `carevault-objective-readiness-inputs-doctor.v1` with the
+same evidence input states, final gate state, blocker IDs, and
+`input_paths_included: false`.
 
 `npm run objective:readiness:inputs:doctor:test` verifies missing inputs,
 unreadable configured HWP report, unreadable external packet dir, unreadable
 external review report, rejected path-leaking HWP reports, partial HWP-only
 evidence, external-report-without-packet waiting state, external-only evidence,
-and valid all-inputs readiness. The default live run currently reports
-HWP smoke report missing, external review packet missing, external review report
-missing, and final readiness gate not-ready. This does not execute a real
-private HWP/HWPX sample, create external clinical approval, or change the
-completion decision.
+valid all-inputs readiness, and JSON reports for missing, invalid, and ready
+states. The default live JSON run currently reports
+`status: missing-evidence`, both remaining blocker IDs, and
+`input_paths_included: false`. This does not execute a real private HWP/HWPX
+sample, create external clinical approval, or change the completion decision.
 
 ## Verification Evidence Available Before This Audit
 
@@ -219,7 +222,8 @@ This audit slice was locally verified before commit with:
    objective readiness status, `npm run objective:readiness:complete` to
    verify both remaining evidence reports together, and
    `npm run objective:readiness:inputs:doctor` to preflight supplied evidence
-   states without printing configured paths. A real private medical
+   states without printing configured paths, with optional JSON status output
+   for automation. A real private medical
    sample has not been supplied or run, so no report evidence was accepted for
    the live audit. A public rhwp sample proves the command boundary and parser
    integration, but not the user's likely private medical document shapes.
@@ -252,7 +256,7 @@ command-verified on this machine after the local Homebrew Ollama repair, and
 external review inputs can now be exported as a path-safe packet, structured
 external review reports are command-checked against that packet's artifact
 hashes, and final evidence inputs can be preflighted without leaking configured
-paths. The
+paths, including machine-readable JSON status output. The
 remaining blockers are a real user/private HWP/HWPX sample smoke and an actual
 external clinician/source review report with reviewed current artifacts and real
 workflows before any production medical readiness claim.

@@ -14,6 +14,9 @@ PACKET_DIR="$TMP_DIR/reviewer-packet"
 VALID_HWP_REPORT="$TMP_DIR/valid-hwp-report.json"
 PATH_LEAK_HWP_REPORT="$TMP_DIR/path-leak-hwp-report.json"
 VALID_EXTERNAL_REPORT="$TMP_DIR/valid-external-review.json"
+NO_INPUTS_JSON_REPORT="$TMP_DIR/no-inputs-report.json"
+VALID_ALL_JSON_REPORT="$TMP_DIR/valid-all-inputs-report.json"
+PATH_LEAK_JSON_REPORT="$TMP_DIR/path-leak-hwp-report-output.json"
 
 cat > "$VALID_HWP_REPORT" <<'JSON'
 {
@@ -124,17 +127,45 @@ fi
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH"
+assert_contains "$TMP_DIR/help.out" "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH"
 
-expect_success "no-inputs"
+expect_success "no-inputs" CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH="$NO_INPUTS_JSON_REPORT"
 assert_contains "$TMP_DIR/no-inputs.out" "Objective readiness inputs: missing-evidence"
 assert_contains "$TMP_DIR/no-inputs.out" "HWP smoke report: missing"
 assert_contains "$TMP_DIR/no-inputs.out" "External review packet: missing"
 assert_contains "$TMP_DIR/no-inputs.out" "External review report: missing"
 assert_contains "$TMP_DIR/no-inputs.out" "Final readiness gate: not-ready"
+python3 - "$NO_INPUTS_JSON_REPORT" <<'PY'
+import json
+import pathlib
+import sys
+
+report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+assert report["schema"] == "carevault-objective-readiness-inputs-doctor.v1"
+assert report["status"] == "missing-evidence"
+assert report["final_readiness_gate"] == "not-ready"
+assert report["evidence_inputs"] == {
+    "hwp_smoke_report": "missing",
+    "external_review_packet": "missing",
+    "external_review_report": "missing",
+}
+assert report["blocking_requirements"] == [
+    "real-private-hwp-hwpx-sample",
+    "external-clinician-source-review",
+]
+assert report["input_paths_included"] is False
+assert "/Users/" not in json.dumps(report)
+PY
+assert_not_contains "$NO_INPUTS_JSON_REPORT" "$TMP_DIR"
 
 expect_failure "missing-hwp-file" CAREVAULT_HWP_SMOKE_REPORT_PATH="$TMP_DIR/missing-hwp.json"
 assert_contains "$TMP_DIR/missing-hwp-file.out" "configured HWP smoke report is not readable"
 assert_not_contains "$TMP_DIR/missing-hwp-file.out" "$TMP_DIR"
+
+expect_failure "missing-json-parent" \
+  CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH="$TMP_DIR/missing-parent/report.json"
+assert_contains "$TMP_DIR/missing-json-parent.out" "configured inputs doctor JSON parent is not writable"
+assert_not_contains "$TMP_DIR/missing-json-parent.out" "$TMP_DIR"
 
 expect_failure "missing-packet-dir" \
   CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$TMP_DIR/missing-packet" \
@@ -146,12 +177,28 @@ expect_failure "missing-external-file" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$T
 assert_contains "$TMP_DIR/missing-external-file.out" "configured external review report is not readable"
 assert_not_contains "$TMP_DIR/missing-external-file.out" "$TMP_DIR"
 
-expect_failure "path-leak-hwp" CAREVAULT_HWP_SMOKE_REPORT_PATH="$PATH_LEAK_HWP_REPORT"
+expect_failure "path-leak-hwp" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$PATH_LEAK_HWP_REPORT" \
+  CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH="$PATH_LEAK_JSON_REPORT"
 assert_contains "$TMP_DIR/path-leak-hwp.out" "HWP smoke report: rejected"
 assert_contains "$TMP_DIR/path-leak-hwp.out" "Objective readiness inputs: invalid-evidence"
 assert_contains "$TMP_DIR/path-leak-hwp.out" "configured HWP smoke report did not pass readiness verification"
 assert_not_contains "$TMP_DIR/path-leak-hwp.out" "/Users/wj/private"
 assert_not_contains "$TMP_DIR/path-leak-hwp.out" "$TMP_DIR"
+python3 - "$PATH_LEAK_JSON_REPORT" <<'PY'
+import json
+import pathlib
+import sys
+
+report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+assert report["schema"] == "carevault-objective-readiness-inputs-doctor.v1"
+assert report["status"] == "invalid-evidence"
+assert report["evidence_inputs"]["hwp_smoke_report"] == "rejected"
+assert "real-private-hwp-hwpx-sample" in report["blocking_requirements"]
+assert report["input_paths_included"] is False
+assert "/Users/" not in json.dumps(report)
+PY
+assert_not_contains "$PATH_LEAK_JSON_REPORT" "$TMP_DIR"
 
 expect_success "valid-hwp-only" CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT"
 assert_contains "$TMP_DIR/valid-hwp-only.out" "Objective readiness inputs: partial-evidence"
@@ -182,12 +229,32 @@ assert_not_contains "$TMP_DIR/valid-external-only.out" "$TMP_DIR"
 expect_success "valid-all-inputs" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \
   CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
-  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
+  CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH="$VALID_ALL_JSON_REPORT"
 assert_contains "$TMP_DIR/valid-all-inputs.out" "Objective readiness inputs: ready"
 assert_contains "$TMP_DIR/valid-all-inputs.out" "HWP smoke report: accepted"
 assert_contains "$TMP_DIR/valid-all-inputs.out" "External review packet: accepted"
 assert_contains "$TMP_DIR/valid-all-inputs.out" "External review report: accepted"
 assert_contains "$TMP_DIR/valid-all-inputs.out" "Final readiness gate: pass"
 assert_not_contains "$TMP_DIR/valid-all-inputs.out" "$TMP_DIR"
+python3 - "$VALID_ALL_JSON_REPORT" <<'PY'
+import json
+import pathlib
+import sys
+
+report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+assert report["schema"] == "carevault-objective-readiness-inputs-doctor.v1"
+assert report["status"] == "ready"
+assert report["final_readiness_gate"] == "pass"
+assert report["evidence_inputs"] == {
+    "hwp_smoke_report": "accepted",
+    "external_review_packet": "accepted",
+    "external_review_report": "accepted",
+}
+assert report["blocking_requirements"] == []
+assert report["input_paths_included"] is False
+assert "/Users/" not in json.dumps(report)
+PY
+assert_not_contains "$VALID_ALL_JSON_REPORT" "$TMP_DIR"
 
 printf 'Objective readiness input doctor fixture tests passed.\n'

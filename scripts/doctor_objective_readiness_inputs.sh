@@ -19,12 +19,14 @@ Optional evidence inputs:
   CAREVAULT_HWP_SMOKE_REPORT_PATH
   CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH
+  CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH
 
 This preflight checks whether the remaining objective-readiness evidence inputs
 are missing, partially supplied, accepted by their existing smoke gates, or
 ready for the final completion gate. It does not create private HWP evidence,
 does not create external clinical approval, and does not print configured file
-paths.
+paths. When CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH is set, it writes a
+path-safe machine-readable status report without configured evidence paths.
 EOF
 }
 
@@ -47,6 +49,65 @@ packet_status="missing"
 external_status="missing"
 final_status="not-ready"
 
+if [[ -n "${CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH:-}" ]]; then
+  json_parent="$(dirname "$CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH")"
+  if [[ ! -d "$json_parent" || ! -w "$json_parent" ]]; then
+    printf 'FAIL: configured inputs doctor JSON parent is not writable.\n' >&2
+    exit 2
+  fi
+fi
+
+write_json_report() {
+  if [[ -z "${CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH:-}" ]]; then
+    return 0
+  fi
+
+  CAREVAULT_INPUTS_DOCTOR_STATUS="$overall_status" \
+    CAREVAULT_INPUTS_DOCTOR_HWP_STATUS="$hwp_status" \
+    CAREVAULT_INPUTS_DOCTOR_PACKET_STATUS="$packet_status" \
+    CAREVAULT_INPUTS_DOCTOR_EXTERNAL_STATUS="$external_status" \
+    CAREVAULT_INPUTS_DOCTOR_FINAL_STATUS="$final_status" \
+    python3 - "$CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH" <<'PY'
+import json
+import os
+import pathlib
+import sys
+
+status = os.environ["CAREVAULT_INPUTS_DOCTOR_STATUS"]
+hwp_status = os.environ["CAREVAULT_INPUTS_DOCTOR_HWP_STATUS"]
+packet_status = os.environ["CAREVAULT_INPUTS_DOCTOR_PACKET_STATUS"]
+external_status = os.environ["CAREVAULT_INPUTS_DOCTOR_EXTERNAL_STATUS"]
+final_status = os.environ["CAREVAULT_INPUTS_DOCTOR_FINAL_STATUS"]
+
+blocking_requirements = []
+if hwp_status != "accepted":
+    blocking_requirements.append("real-private-hwp-hwpx-sample")
+if packet_status != "accepted" or external_status != "accepted":
+    blocking_requirements.append("external-clinician-source-review")
+if final_status == "pass":
+    blocking_requirements = []
+
+report = {
+    "schema": "carevault-objective-readiness-inputs-doctor.v1",
+    "generated_by": "npm run objective:readiness:inputs:doctor",
+    "status": status,
+    "evidence_inputs": {
+        "hwp_smoke_report": hwp_status,
+        "external_review_packet": packet_status,
+        "external_review_report": external_status,
+    },
+    "final_readiness_gate": final_status,
+    "blocking_requirements": blocking_requirements,
+    "input_paths_included": False,
+    "path_policy": "Configured evidence paths are intentionally omitted.",
+}
+
+pathlib.Path(sys.argv[1]).write_text(
+    json.dumps(report, indent=2, ensure_ascii=False) + "\n"
+)
+PY
+}
+
 print_summary() {
   printf 'Objective readiness inputs: %s\n' "$overall_status"
   printf 'HWP smoke report: %s\n' "$hwp_status"
@@ -67,6 +128,7 @@ if [[ -n "${CAREVAULT_HWP_SMOKE_REPORT_PATH:-}" ]]; then
   else
     overall_status="invalid-evidence"
     hwp_status="rejected"
+    write_json_report
     print_summary
     printf 'FAIL: configured HWP smoke report did not pass readiness verification.\n' >&2
     exit 2
@@ -98,6 +160,7 @@ if [[ -n "${CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH:-}" ]]; then
     overall_status="invalid-evidence"
     packet_status="rejected"
     external_status="rejected"
+    write_json_report
     print_summary
     printf 'FAIL: configured external review report did not pass readiness verification.\n' >&2
     exit 2
@@ -114,6 +177,7 @@ if [[ "$hwp_status" == "accepted" && "$packet_status" == "accepted" && "$externa
   else
     overall_status="invalid-evidence"
     final_status="rejected"
+    write_json_report
     print_summary
     printf 'FAIL: final objective readiness gate did not pass.\n' >&2
     exit 2
@@ -122,4 +186,5 @@ elif [[ "$hwp_status" == "accepted" || "$packet_status" != "missing" || "$extern
   overall_status="partial-evidence"
 fi
 
+write_json_report
 print_summary

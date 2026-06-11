@@ -80,17 +80,22 @@ partially ready, accepted, or invalid:
 CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet \
 CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
+CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=/tmp/carevault-readiness-inputs.json \
 npm run objective:readiness:inputs:doctor
 ```
 
 This command reuses the existing HWP report, external review report, and final
 completion smoke gates, but suppresses their raw output and prints only a
 path-safe status summary such as `missing-evidence`, `partial-evidence`,
-`ready`, or `invalid-evidence`. `npm run
-objective:readiness:inputs:doctor:test` verifies missing inputs, unreadable
-configured inputs, rejected path-leaking HWP reports, partial HWP-only or
-external-only evidence, and valid all-inputs readiness. It does not create
-private HWP evidence, external clinical approval, or a completion claim.
+`ready`, or `invalid-evidence`. When
+`CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` is set, it writes schema
+`carevault-objective-readiness-inputs-doctor.v1` with the same evidence input
+states, final gate state, blocker IDs, and `input_paths_included: false`.
+`npm run objective:readiness:inputs:doctor:test` verifies missing inputs,
+unreadable configured inputs, rejected path-leaking HWP reports, partial
+HWP-only or external-only evidence, valid all-inputs readiness, and JSON reports
+for missing, invalid, and ready states. It does not create private HWP evidence,
+external clinical approval, or a completion claim.
 
 Export a single operator bundle for the two remaining external inputs:
 
