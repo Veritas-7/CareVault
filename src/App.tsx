@@ -7669,6 +7669,8 @@ function App() {
                     <li key={item.documentId}>
                       <span>{item.titleLine}</span>
                       <small>{item.reasonSummary}</small>
+                      <small>상태: {item.statusSummary}</small>
+                      <small>다음 조치: {item.nextActionSummary}</small>
                       <small>{item.snippet}</small>
                       {item.evidenceChunks.slice(0, 2).map((chunk) => (
                         <small className="document-rag-context-chunk" key={chunk.label}>

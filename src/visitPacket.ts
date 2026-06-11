@@ -387,6 +387,8 @@ function buildDocumentRagContextLines(
       `- ${item.titleLine}`,
       `  - 관련 이유: ${item.reasonSummary || "근거 조각 일치"}`,
       `  - 임상 단서: ${item.signalSummary}`,
+      `  - 문서 상태: ${item.statusSummary}`,
+      `  - 다음 조치: ${item.nextActionSummary}`,
       `  - 파싱 원천: ${item.parserSummary}`,
       `  - 근거 스니펫: ${item.snippet}`,
       ...item.evidenceChunks.flatMap((chunk, chunkIndex) => [

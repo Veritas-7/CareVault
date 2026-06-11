@@ -1447,6 +1447,8 @@ describe("visit packet", () => {
     expect(markdown).toContain("- 2026-06-04 · 자궁경부암 추적 HWP 결과");
     expect(markdown).toContain("  - 관련 이유:");
     expect(markdown).toContain("  - 임상 단서: 자궁경부암 · 고혈압 · 당뇨 · HWP/HWPX");
+    expect(markdown).toContain("  - 문서 상태: 의료진 질문");
+    expect(markdown).toContain("  - 다음 조치: 진료 때 병리 의미와 혈압/혈당 관리 연결 질문");
     expect(markdown).toContain("  - 파싱 원천: HWP/HWPX 데스크톱 파서: follow-up.hwp");
     expect(markdown).toContain("  - 근거 조각 1: 파싱 본문 조각 1");
     expect(markdown).toContain("    - 조각 원천: HWP/HWPX 데스크톱 파서: follow-up.hwp");
