@@ -227,6 +227,10 @@ import {
   validateDocumentRagLocalModelRequest,
 } from "./documentRagModelRequest";
 import {
+  requestDocumentRagEmbeddings,
+  validateDocumentRagEmbeddingRequest,
+} from "./documentRagEmbeddingRequest";
+import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
@@ -981,6 +985,12 @@ function App() {
   const [documentRagModelEndpoint, setDocumentRagModelEndpoint] = useState("");
   const [documentRagModelName, setDocumentRagModelName] = useState("local-care-model");
   const [documentRagModelOutput, setDocumentRagModelOutput] = useState<{
+    status: "error" | "pending" | "success";
+    text: string;
+  } | null>(null);
+  const [documentRagEmbeddingEndpoint, setDocumentRagEmbeddingEndpoint] = useState("");
+  const [documentRagEmbeddingModelName, setDocumentRagEmbeddingModelName] = useState("bge-m3");
+  const [documentRagEmbeddingOutput, setDocumentRagEmbeddingOutput] = useState<{
     status: "error" | "pending" | "success";
     text: string;
   } | null>(null);
@@ -1883,6 +1893,17 @@ function App() {
     documentRagLocalModelValidation.level === "ready"
       ? `로컬 모델 RAG 실행 · ${documentRagContext.summary}`
       : documentRagLocalModelValidation.summary;
+  const documentRagEmbeddingValidation = validateDocumentRagEmbeddingRequest(
+    documentRagContext,
+    {
+      endpoint: documentRagEmbeddingEndpoint,
+      model: documentRagEmbeddingModelName,
+    },
+  );
+  const documentRagEmbeddingRunDescription =
+    documentRagEmbeddingValidation.level === "ready"
+      ? `로컬 임베딩 RAG 점검 · ${documentRagContext.summary}`
+      : documentRagEmbeddingValidation.summary;
   const hasActiveDocumentFilters = hasActiveDocumentFilterState({
     categoryFilter: documentCategoryFilter,
     searchText: documentFilter,
@@ -2047,6 +2068,44 @@ function App() {
     }
 
     setDocumentRagModelOutput({
+      status: "error",
+      text: [result.summary, ...result.warnings].join("\n"),
+    });
+    setSaveLabel(result.summary);
+  };
+
+  const runDocumentRagEmbeddingRanking = async () => {
+    setDocumentRagEmbeddingOutput({
+      status: "pending",
+      text: "로컬 임베딩 RAG 요청 중",
+    });
+
+    const result = await requestDocumentRagEmbeddings(documentRagContext, {
+      endpoint: documentRagEmbeddingEndpoint,
+      model: documentRagEmbeddingModelName,
+    });
+
+    if (result.ok) {
+      setDocumentRagEmbeddingOutput({
+        status: "success",
+        text: [
+          result.summary,
+          ...result.rankedChunks.slice(0, 3).map((chunk, index) =>
+            [
+              `${index + 1}. ${chunk.titleLine} · ${chunk.chunkLabel}`,
+              chunk.reasonSummary,
+              `근거 출처: ${chunk.sourceSummary}`,
+              chunk.text,
+            ].join("\n"),
+          ),
+          ...result.warnings.slice(0, 2).map((warning) => `주의: ${warning}`),
+        ].join("\n"),
+      });
+      setTransientSaveLabel(`로컬 임베딩 RAG 점검 완료 · 근거 조각 ${result.rankedChunks.length}개`);
+      return;
+    }
+
+    setDocumentRagEmbeddingOutput({
       status: "error",
       text: [result.summary, ...result.warnings].join("\n"),
     });
@@ -7844,6 +7903,54 @@ function App() {
                   {documentRagModelOutput ? (
                     <pre className={`document-rag-local-model-output ${documentRagModelOutput.status}`}>
                       {documentRagModelOutput.text}
+                    </pre>
+                  ) : null}
+                  <div className="document-rag-local-model-row document-rag-embedding-row">
+                    <label>
+                      로컬 임베딩 endpoint
+                      <input
+                        value={documentRagEmbeddingEndpoint}
+                        onChange={(event) =>
+                          setDocumentRagEmbeddingEndpoint(event.currentTarget.value)
+                        }
+                        aria-label="로컬 임베딩 RAG endpoint"
+                        title="로컬 임베딩 RAG endpoint"
+                        placeholder="http://127.0.0.1:11434/v1/embeddings"
+                      />
+                    </label>
+                    <label>
+                      임베딩 모델
+                      <input
+                        value={documentRagEmbeddingModelName}
+                        onChange={(event) =>
+                          setDocumentRagEmbeddingModelName(event.currentTarget.value)
+                        }
+                        aria-label="로컬 임베딩 RAG 모델명"
+                        title="로컬 임베딩 RAG 모델명"
+                        placeholder="bge-m3"
+                      />
+                    </label>
+                    <button
+                      className="secondary-inline-button document-rag-local-model-run"
+                      type="button"
+                      onClick={runDocumentRagEmbeddingRanking}
+                      aria-label={documentRagEmbeddingRunDescription}
+                      title={documentRagEmbeddingRunDescription}
+                      disabled={documentRagEmbeddingOutput?.status === "pending"}
+                    >
+                      <LineChartIcon aria-hidden="true" />
+                      임베딩 점검
+                    </button>
+                  </div>
+                  <small>{documentRagEmbeddingValidation.summary}</small>
+                  {documentRagEmbeddingValidation.warnings.slice(0, 2).map((warning) => (
+                    <small key={warning}>{warning}</small>
+                  ))}
+                  {documentRagEmbeddingOutput ? (
+                    <pre
+                      className={`document-rag-local-model-output ${documentRagEmbeddingOutput.status}`}
+                    >
+                      {documentRagEmbeddingOutput.text}
                     </pre>
                   ) : null}
                 </div>
