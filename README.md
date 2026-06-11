@@ -175,18 +175,21 @@ CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
 npm run hwp:smoke
 ```
 
-`CAREVAULT_HWP_SAMPLE_TERMS` is optional, but adding expected terms makes the
-smoke stronger. The script uses the same Tauri Rust command boundary as the app,
-fails closed on unreadable files, unsupported files, empty sample directories,
-or ambiguous path-plus-directory input, and prints only sample basenames instead
-of full local paths. `CAREVAULT_HWP_SMOKE_REPORT_PATH` is optional; when set, a
-passing run writes a JSON evidence report with schema/status, sample count,
-minimum parsed character threshold, expected-term flag, and per-sample
-basename/extension/status only. It never stores full local sample paths.
+`CAREVAULT_HWP_SAMPLE_TERMS` is optional for parser-only smoke, but required for
+objective-readiness evidence because the real-sample proof must check
+cervical-cancer, hypertension, and diabetes terms. The script uses the same
+Tauri Rust command boundary as the app, fails closed on unreadable files,
+unsupported files, empty sample directories, or ambiguous path-plus-directory
+input, and prints only sample basenames instead of full local paths.
+`CAREVAULT_HWP_SMOKE_REPORT_PATH` is optional; when set, a passing run writes a
+JSON evidence report with schema/status, sample count, minimum parsed character
+threshold, expected-term flag, and per-sample basename/extension/status only. It
+never stores full local sample paths.
 `src/carevaultObjectiveReadiness.ts` treats that report as usable readiness
 evidence only when the schema is `carevault-hwp-smoke-report.v1`, the report and
-all samples passed, the sample count matches the samples array, extensions are
-`.hwp`, `.hwpx`, or `.hwpml`, and every sample entry is basename-only.
+all samples passed, the sample count matches the samples array,
+`expected_terms_provided` is true, extensions are `.hwp`, `.hwpx`, or `.hwpml`,
+and every sample entry is basename-only.
 `npm run objective:readiness:report` is the command-only bridge from this report
 to the objective-readiness status; `npm run objective:readiness:report:test`
 uses fixture reports to verify the bridge without any private sample.

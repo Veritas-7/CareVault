@@ -185,6 +185,15 @@ export function assessCareVaultHwpSmokeReportEvidence(
       status: "blocked",
     };
   }
+  if (!report.expected_terms_provided) {
+    return {
+      detail:
+        "Blocked: HWP smoke report must include expected-term checks for the cervical-cancer, hypertension, and diabetes objective.",
+      sampleBasenames: [],
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
   if (report.samples.length !== report.sample_count) {
     return {
       detail: "Blocked: HWP smoke report sample_count must match the samples array.",
@@ -229,13 +238,10 @@ export function assessCareVaultHwpSmokeReportEvidence(
     };
   }
 
-  const termGateText = report.expected_terms_provided
-    ? "with expected-term checks"
-    : "with parser/min-length checks";
   const sampleBasenames = report.samples.map((sample) => sample.basename);
   return {
     detail:
-      `Sanitized real private HWP/HWPX smoke evidence accepted for ${report.sample_count} sample(s) ${termGateText}; report stores basename-only sample evidence: ${sampleBasenames.join(", ")}.`,
+      `Sanitized real private HWP/HWPX smoke evidence accepted for ${report.sample_count} sample(s) with expected-term checks; report stores basename-only sample evidence: ${sampleBasenames.join(", ")}.`,
     sampleBasenames,
     sampleCount: report.sample_count,
     status: "pass",

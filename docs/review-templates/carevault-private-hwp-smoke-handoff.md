@@ -32,8 +32,9 @@ CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
 npm run hwp:smoke
 ```
 
-`CAREVAULT_HWP_SAMPLE_TERMS` is optional, but expected terms make the smoke
-stronger for the cervical-cancer plus hypertension/diabetes objective.
+`CAREVAULT_HWP_SAMPLE_TERMS` is optional for parser-only smoke, but required for
+objective-readiness evidence because this objective must prove that a real
+private sample checks cervical-cancer, hypertension, and diabetes terms.
 
 ## Readiness Report Check
 

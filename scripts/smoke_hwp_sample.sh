@@ -15,6 +15,9 @@ Optional gates:
   CAREVAULT_HWP_SAMPLE_MIN_CHARS=200
   CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json
 
+CAREVAULT_HWP_SAMPLE_TERMS is optional for parser-only smoke, but required for
+objective-readiness evidence.
+
 The script validates user-private .hwp/.hwpx/.hwpml samples through the same
 Tauri Rust command boundary used by the app. It intentionally prints only each
 sample basename, not the full local path. Use exactly one of

@@ -105,6 +105,25 @@ describe("carevaultObjectiveReadiness", () => {
     expect(markdown).not.toContain("Status: pass");
   });
 
+  it("keeps HWP smoke evidence blocked when expected-term checks were not provided", () => {
+    const report = buildCareVaultObjectiveReadinessReport({
+      hwpSmokeReportEvidence: {
+        ...validHwpSmokeReportEvidence,
+        expected_terms_provided: false,
+      },
+    });
+    const requirement = report.requirements.find(
+      ({ id }) => id === "real-private-hwp-hwpx-sample",
+    );
+
+    expect(report.status).toBe("blocked");
+    expect(report.blockingRequirementIds).toContain("real-private-hwp-hwpx-sample");
+    expect(requirement).toMatchObject({
+      status: "blocked",
+    });
+    expect(requirement?.detail).toContain("expected-term checks");
+  });
+
   it("keeps HWP smoke evidence blocked when the report leaks paths or mismatches samples", () => {
     const pathLeakingReport = buildCareVaultObjectiveReadinessReport({
       hwpSmokeReportEvidence: {
