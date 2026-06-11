@@ -20,6 +20,7 @@ import {
   formatCervicalCancerScreeningSummaryEvidence,
 } from "./cervicalCancerCare";
 import { buildLabSourceEvidenceParts, formatLabSourceEvidence } from "./labSourceEvidence";
+import { buildDocumentCareQuestionDraft } from "./documentKnowledge";
 import { formatTextWithSourceEvidence } from "./sourceEvidence";
 import {
   findSymptomSupportTemplate,
@@ -176,6 +177,15 @@ type ActiveCareActionDocument = CareActionDocument & {
 
 function hasActiveReviewStatus(document: CareActionDocument): document is ActiveCareActionDocument {
   return Boolean(document.reviewStatus && document.reviewStatus !== "done");
+}
+
+function formatDocumentActionDetail(document: ActiveCareActionDocument) {
+  return firstText(
+    document.nextAction,
+    buildDocumentCareQuestionDraft(document),
+    document.body,
+    document.tags,
+  );
 }
 
 function firstText(...values: Array<string | undefined>) {
@@ -495,7 +505,7 @@ export function buildCareActionQueue(
         tone: document.reviewStatus === "waiting-result" ? "neutral" : "watch",
         label: documentStatusLabel[document.reviewStatus],
         title: document.title,
-        detail: firstText(document.nextAction, document.body, document.tags),
+        detail: formatDocumentActionDetail(document),
       },
     ];
   });

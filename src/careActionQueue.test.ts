@@ -181,6 +181,47 @@ describe("careActionQueue", () => {
     expect(actions.some((action) => action.id === "vital:bp-2")).toBe(false);
   });
 
+  it("promotes parsed clinical document clues into care queue question detail", () => {
+    const actions = buildCareActionQueue(
+      {
+        ...state,
+        documents: [
+          {
+            id: "doc-parsed",
+            date: "2026-06-04",
+            title: "HWPX 추적 검사",
+            body:
+              "[첨부 텍스트 파싱: follow.hwpx · HWPX 본문 XML]\n자궁경부암 추적 중 혈압 149/93, HbA1c 7.4%, 당화혈색소 상담 필요.",
+            tags: "",
+            reviewStatus: "care-question",
+            nextAction: "",
+          },
+        ],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-04",
+    );
+
+    const documentAction = actions.find((action) => action.id === "document:doc-parsed");
+    expect(documentAction).toMatchObject({
+      label: "서류 질문",
+      source: "document",
+      title: "HWPX 추적 검사",
+    });
+    expect(documentAction?.detail).toContain("자궁경부암, 고혈압, 당뇨 관련 단서");
+    expect(documentAction?.detail).toContain("당화혈색소");
+    expect(documentAction?.detail).toContain("파싱 원천: HWPX 본문 XML: follow.hwpx");
+
+    const clipboardText = formatCareActionQueueClipboardText(actions, "2026-06-04");
+    expect(clipboardText).toContain("서류 질문");
+    expect(clipboardText).toContain("당화혈색소");
+    expect(clipboardText).toContain("HWPX 본문 XML: follow.hwpx");
+  });
+
   it("keeps high-risk vital queue rows source-backed and adult-common", () => {
     const actions = buildCareActionQueue(
       {
