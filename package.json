@@ -13,6 +13,7 @@
     "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
     "hwp:smoke": "bash scripts/smoke_hwp_sample.sh",
     "rag:model:smoke": "bash scripts/smoke_rag_model.sh",
+    "rag:embedding:smoke": "bash scripts/smoke_rag_embedding.sh",
     "tauri:dev:clean": "npm run runtime:doctor && npm run tauri -- dev",
     "preview": "vite preview",
     "tauri": "tauri"
