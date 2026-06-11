@@ -16,6 +16,14 @@ mkdir -p "$FAKE_BIN" "$SAMPLES_DIR"
 cat > "$FAKE_BIN/cargo" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$(basename "$CAREVAULT_HWP_SAMPLE_PATH")" >> "$CAREVAULT_HWP_SMOKE_FAKE_CARGO_LOG"
+if [[ "${CAREVAULT_HWP_SMOKE_FAKE_CARGO_ECHO_PATH:-}" == "1" ]]; then
+  printf 'fake parser read %s\n' "$CAREVAULT_HWP_SAMPLE_PATH"
+  printf 'fake parser stderr path %s\n' "$CAREVAULT_HWP_SAMPLE_PATH" >&2
+fi
+if [[ "${CAREVAULT_HWP_SMOKE_FAKE_CARGO_FAIL:-}" == "1" ]]; then
+  printf 'fake parser failed at %s\n' "$CAREVAULT_HWP_SAMPLE_PATH" >&2
+  exit 1
+fi
 exit 0
 EOF
 chmod +x "$FAKE_BIN/cargo"
@@ -136,6 +144,19 @@ CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" expect_success "single-file
 assert_contains "$TMP_DIR/single-file.out" "Samples: 1"
 assert_contains "$TMP_DIR/single-file.out" "Sample: 02-lab.hwpx"
 assert_not_contains "$TMP_DIR/single-file.out" "$SAMPLES_DIR"
+
+CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
+  CAREVAULT_HWP_SMOKE_FAKE_CARGO_ECHO_PATH=1 \
+  expect_success "single-file-sanitizes-cargo-output"
+assert_contains "$TMP_DIR/single-file-sanitizes-cargo-output.out" "[private-sample-path]"
+assert_not_contains "$TMP_DIR/single-file-sanitizes-cargo-output.out" "$SAMPLES_DIR"
+
+CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
+  CAREVAULT_HWP_SMOKE_FAKE_CARGO_FAIL=1 \
+  expect_failure "cargo-failure-sanitized"
+assert_contains "$TMP_DIR/cargo-failure-sanitized.out" "FAIL: private HWP/HWPX smoke failed for 02-lab.hwpx"
+assert_contains "$TMP_DIR/cargo-failure-sanitized.out" "[private-sample-path]"
+assert_not_contains "$TMP_DIR/cargo-failure-sanitized.out" "$SAMPLES_DIR"
 
 CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
   CAREVAULT_HWP_SAMPLE_TERMS="자궁경부암,혈압,당화혈색소" \

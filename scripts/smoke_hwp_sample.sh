@@ -133,6 +133,34 @@ validate_report_path() {
   fi
 }
 
+sanitize_private_output() {
+  local output_path="$1"
+  local sample_path="$2"
+
+  python3 - "$output_path" "$sample_path" "${CAREVAULT_HWP_SAMPLE_DIR:-}" <<'PY'
+import pathlib
+import sys
+
+output_path = pathlib.Path(sys.argv[1])
+sample_path = sys.argv[2]
+sample_dir = sys.argv[3]
+text = output_path.read_text(errors="replace")
+replacements = []
+
+if sample_path:
+    replacements.append((sample_path, "[private-sample-path]"))
+    replacements.append((str(pathlib.Path(sample_path).parent), "[private-sample-dir]"))
+if sample_dir:
+    replacements.append((sample_dir, "[private-sample-dir]"))
+
+for target, replacement in sorted(set(replacements), key=lambda item: len(item[0]), reverse=True):
+    if target:
+        text = text.replace(target, replacement)
+
+sys.stdout.write(text)
+PY
+}
+
 write_success_report() {
   local report_path="$1"
   local temp_report
@@ -226,14 +254,23 @@ validate_report_path "${CAREVAULT_HWP_SMOKE_REPORT_PATH:-}"
 
 for sample_path in "${sample_paths[@]}"; do
   sample_name="$(basename "$sample_path")"
+  cargo_output="$(mktemp)"
   printf 'Sample: %s\n' "$sample_name"
 
-  CAREVAULT_HWP_SAMPLE_PATH="$sample_path" \
+  if CAREVAULT_HWP_SAMPLE_PATH="$sample_path" \
     cargo test \
       --manifest-path "$ROOT_DIR/src-tauri/Cargo.toml" \
       hwp_parser_command_parses_private_sample_when_env_is_set \
       -- \
-      --nocapture
+      --nocapture > "$cargo_output" 2>&1; then
+    sanitize_private_output "$cargo_output" "$sample_path"
+    rm -f "$cargo_output"
+  else
+    sanitize_private_output "$cargo_output" "$sample_path" >&2
+    rm -f "$cargo_output"
+    printf 'FAIL: private HWP/HWPX smoke failed for %s.\n' "$sample_name" >&2
+    exit 1
+  fi
 
   printf 'Private HWP/HWPX smoke passed for %s.\n' "$sample_name"
 done
