@@ -1,0 +1,18 @@
+{
+  "schema": "carevault-external-clinician-review.v1",
+  "status": "draft",
+  "reviewed_at": "YYYY-MM-DD",
+  "reviewer_role": "REPLACE_WITH_EXTERNAL_CLINICAL_REVIEWER_ROLE",
+  "required_check_ids": ["clinician-source-review", "real-workflow-review"],
+  "unresolved_required_check_ids": ["clinician-source-review", "real-workflow-review"],
+  "attestations": {
+    "source_registry_reviewed": false,
+    "real_workflow_reviewed": false,
+    "non_diagnosis_boundary_reviewed": false,
+    "cervical_hypertension_diabetes_scope_reviewed": false
+  },
+  "critical_findings_open": 0,
+  "major_findings_open": 0,
+  "source_registry_error_count": 0,
+  "source_registry_warning_count": 0
+}

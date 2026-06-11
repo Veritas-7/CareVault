@@ -18,6 +18,8 @@
     "objective:readiness:complete:test": "bash scripts/test_objective_readiness_complete_smoke.sh",
     "clinical:sources:smoke": "bash scripts/smoke_clinical_source_urls.sh",
     "clinical:review:smoke": "vitest run src/clinicalSourceRegistry.test.ts src/clinicalReviewPacket.test.ts",
+    "clinical:external-review:template": "bash scripts/export_external_review_template.sh",
+    "clinical:external-review:template:test": "vitest run src/carevaultExternalReviewTemplate.test.ts",
     "clinical:external-review:report": "bash scripts/smoke_external_review_report.sh",
     "clinical:external-review:report:test": "bash scripts/test_external_review_report_smoke.sh",
     "clinical:workflow:smoke": "vitest run src/clinicalWorkflowReview.test.ts",

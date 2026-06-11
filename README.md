@@ -89,6 +89,21 @@ When an external clinician/source reviewer returns a structured evidence report,
 run:
 
 ```bash
+CAREVAULT_EXTERNAL_REVIEW_TEMPLATE_PATH=/tmp/carevault-external-review.json \
+npm run clinical:external-review:template
+```
+
+The template command exports
+`docs/review-templates/carevault-external-review-report-template.json` only
+after `npm run clinical:external-review:template:test` confirms the draft
+schema, required review IDs, fail-closed defaults, and source-registry
+error/warning counts match the current clinical review packet. The checked-in
+template remains `status: "draft"` and must be filled by an actual external
+reviewer before it can satisfy the readiness gate.
+
+After the reviewer fills a copy of that report, run:
+
+```bash
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
 npm run clinical:external-review:report
 ```
