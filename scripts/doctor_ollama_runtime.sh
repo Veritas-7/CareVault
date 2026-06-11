@@ -82,6 +82,7 @@ OLLAMA_BASE_URL="http://${OLLAMA_HOST_VALUE}"
 OLLAMA_LOG="$(mktemp /tmp/carevault-ollama-doctor.XXXXXX.log)"
 OLLAMA_PID=""
 MISSING_LLAMA_SERVER=0
+WORKER_LAYOUT_MISSING=0
 
 cleanup() {
   if [[ -n "$OLLAMA_PID" ]] && kill -0 "$OLLAMA_PID" >/dev/null 2>&1; then
@@ -103,6 +104,56 @@ wait_for_ollama() {
   return 1
 }
 
+print_worker_snapshot() {
+  local checked_labels=""
+  local candidate=""
+  local command_path=""
+  local command_dir=""
+  local brew_prefix=""
+
+  command_path="$(command -v ollama 2>/dev/null || true)"
+  if [[ -n "$command_path" ]]; then
+    command_dir="$(cd "$(dirname "$command_path")" >/dev/null 2>&1 && pwd -P || true)"
+    if [[ -n "$command_dir" && -d "$command_dir" ]]; then
+      checked_labels="command directory"
+      candidate="$(find "$command_dir" -type f \( -name 'llama-server' -o -name '*runner*' \) -print 2>/dev/null | head -n 1 || true)"
+    fi
+  fi
+
+  if [[ -z "$candidate" ]] && command -v brew >/dev/null 2>&1; then
+    brew_prefix="$(brew --prefix ollama 2>/dev/null || true)"
+    if [[ -n "$brew_prefix" && -d "$brew_prefix" ]]; then
+      if [[ -n "$checked_labels" ]]; then
+        checked_labels="${checked_labels}, Homebrew package prefix"
+      else
+        checked_labels="Homebrew package prefix"
+      fi
+      candidate="$(find "$brew_prefix" -type f \( -name 'llama-server' -o -name '*runner*' \) -print 2>/dev/null | head -n 1 || true)"
+    fi
+  fi
+
+  if [[ -n "$candidate" ]]; then
+    printf 'Ollama worker binary: found (%s)\n' "$(basename "$candidate")"
+    return 0
+  fi
+
+  if [[ -n "$checked_labels" ]]; then
+    printf 'Ollama worker binary: not found in checked install roots (%s)\n' "$checked_labels"
+    WORKER_LAYOUT_MISSING=1
+  else
+    printf 'Ollama worker binary: install roots unavailable for preflight\n'
+  fi
+}
+
+print_repair_hint() {
+  if [[ "$MISSING_LLAMA_SERVER" -eq 1 ]] || [[ "$WORKER_LAYOUT_MISSING" -eq 1 ]] || grep -qi 'llama-server binary not found' "$OLLAMA_LOG" 2>/dev/null; then
+    printf 'Diagnosis: local Ollama can start its API, but its model worker binary `llama-server` is missing; repair or reinstall the Ollama runtime before expecting model-backed CareVault RAG smokes to pass.\n' >&2
+    if [[ "$WORKER_LAYOUT_MISSING" -eq 1 ]]; then
+      printf 'Repair hint: the current install snapshot did not expose a `llama-server`/runner binary in the checked Ollama command or Homebrew package roots.\n' >&2
+    fi
+  fi
+}
+
 print_install_snapshot() {
   printf 'Ollama command: present\n'
   ollama --version 2>&1 | sanitize_log | sed 's/^/Ollama version: /' || true
@@ -116,6 +167,7 @@ print_install_snapshot() {
       printf 'Homebrew package: ollama not found\n'
     fi
   fi
+  print_worker_snapshot
 }
 
 post_json() {
@@ -171,9 +223,7 @@ if ! wait_for_ollama; then
     printf 'Ollama log tail:\n' >&2
     tail -20 "$OLLAMA_LOG" | sanitize_log >&2
   fi
-  if [[ "$MISSING_LLAMA_SERVER" -eq 1 ]] || grep -qi 'llama-server binary not found' "$OLLAMA_LOG" 2>/dev/null; then
-    printf 'Diagnosis: local Ollama can start its API, but its model worker binary `llama-server` is missing; repair or reinstall the Ollama runtime before expecting model-backed CareVault RAG smokes to pass.\n' >&2
-  fi
+  print_repair_hint
   exit 1
 fi
 
@@ -196,9 +246,7 @@ if [[ "$CHAT_STATUS" -ne 0 || "$EMBEDDING_STATUS" -ne 0 ]]; then
     printf 'Ollama log tail:\n' >&2
     tail -20 "$OLLAMA_LOG" | sanitize_log >&2
   fi
-  if [[ "$MISSING_LLAMA_SERVER" -eq 1 ]] || grep -qi 'llama-server binary not found' "$OLLAMA_LOG" 2>/dev/null; then
-    printf 'Diagnosis: local Ollama can start its API, but its model worker binary `llama-server` is missing; repair or reinstall the Ollama runtime before expecting model-backed CareVault RAG smokes to pass.\n' >&2
-  fi
+  print_repair_hint
   exit 1
 fi
 
