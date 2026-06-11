@@ -7622,6 +7622,11 @@ function App() {
                       <span>{item.titleLine}</span>
                       <small>{item.reasonSummary}</small>
                       <small>{item.snippet}</small>
+                      {item.evidenceChunks.slice(0, 2).map((chunk) => (
+                        <small className="document-rag-context-chunk" key={chunk.label}>
+                          {chunk.label}: {chunk.text}
+                        </small>
+                      ))}
                     </li>
                   ))}
                 </ol>

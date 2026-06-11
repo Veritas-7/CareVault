@@ -12,9 +12,18 @@ export type DocumentRagContextSource = DocumentKnowledgeSource & {
   id?: string;
 };
 
+export type DocumentRagEvidenceChunk = {
+  label: string;
+  reasonSummary: string;
+  score: number;
+  sourceSummary: string;
+  text: string;
+};
+
 export type DocumentRagContextItem = {
   clinicalSignalCount: number;
   documentId: string;
+  evidenceChunks: DocumentRagEvidenceChunk[];
   parserSummary: string;
   parsedSourceCount: number;
   reasonSummary: string;
@@ -60,11 +69,146 @@ function getClinicalSignalLabels(signals: DocumentKnowledgeSignal[]) {
   return getSignalLabels(getClinicalSignals(signals));
 }
 
+function formatSourceParts(sourceText: string) {
+  const [fileName, ...sourceParts] = sourceText.split(" · ");
+  const normalizedFileName = fileName.trim();
+  const sourceLabel = sourceParts.join(" · ").trim();
+  if (!normalizedFileName) return "";
+  return sourceLabel ? `${sourceLabel}: ${normalizedFileName}` : `텍스트 파싱: ${normalizedFileName}`;
+}
+
+function formatParsedMarkerSourceSummary(line: string) {
+  const match = line.match(/^\[첨부 텍스트 파싱:\s*([^\]\n]+)\]\s*$/);
+  return match ? formatSourceParts(match[1]) : "";
+}
+
+function removeParserSummaryPrefix(summary: string) {
+  return summary.replace(/^파싱 원천:\s*/, "");
+}
+
 function formatDocumentTitleLine(document: DocumentRagContextSource) {
   const dateLabel = document.date?.trim() || "날짜 없음";
   const titleLabel =
     document.title?.trim() || document.attachmentName?.trim() || document.category?.trim() || "저장된 서류";
   return stripLocalPaths(`${dateLabel} · ${titleLabel}`);
+}
+
+function buildRawEvidenceChunks(document: DocumentRagContextSource) {
+  const chunks: Array<{
+    label: string;
+    sourceSummary: string;
+    text: string;
+  }> = [];
+  let currentSourceSummary = "직접 입력 메모";
+  let currentSourceKind: "manual" | "parsed" = "manual";
+  let manualChunkCount = 0;
+  let parsedChunkCount = 0;
+  let buffer: string[] = [];
+
+  const flushBuffer = () => {
+    const text = stripLocalPaths(buffer.join(" ").replace(/\s+/g, " ").trim());
+    buffer = [];
+    if (!text) return;
+
+    const label =
+      currentSourceKind === "parsed"
+        ? `파싱 본문 조각 ${++parsedChunkCount}`
+        : `문서 메모 조각 ${++manualChunkCount}`;
+    chunks.push({
+      label,
+      sourceSummary: currentSourceSummary,
+      text,
+    });
+  };
+
+  (document.body ?? "").split(/\r?\n/).forEach((line) => {
+    const trimmedLine = line.trim();
+    const parsedSourceSummary = formatParsedMarkerSourceSummary(trimmedLine);
+    if (parsedSourceSummary) {
+      flushBuffer();
+      currentSourceSummary = stripLocalPaths(parsedSourceSummary);
+      currentSourceKind = "parsed";
+      return;
+    }
+
+    if (!trimmedLine) {
+      flushBuffer();
+      return;
+    }
+    buffer.push(trimmedLine);
+  });
+  flushBuffer();
+
+  return chunks;
+}
+
+function scoreEvidenceChunk(
+  chunk: ReturnType<typeof buildRawEvidenceChunks>[number],
+  query: string,
+  querySignals: DocumentKnowledgeSignal[],
+  queryTokens: string[],
+) {
+  const normalizedQuery = normalizeSearchText(query);
+  const searchableText = normalizeSearchText(`${chunk.text} ${chunk.sourceSummary}`);
+  const chunkSignals = detectDocumentKnowledgeSignals({
+    body: chunk.text,
+    title: chunk.sourceSummary,
+  });
+  const reasons: string[] = [];
+  let score = 0;
+
+  if (normalizedQuery && searchableText.includes(normalizedQuery)) {
+    score += 60;
+    reasons.push("검색어 직접 일치");
+  }
+
+  const tokenHits = queryTokens.filter((token) => searchableText.includes(token));
+  if (tokenHits.length) {
+    score += tokenHits.length * 8;
+    reasons.push(`검색어 일부: ${tokenHits.slice(0, 4).join(", ")}`);
+  }
+
+  const queryClinicalSignalIds = new Set(getClinicalSignals(querySignals).map((signal) => signal.id));
+  const overlappingClinicalSignals = getClinicalSignals(chunkSignals).filter((signal) =>
+    queryClinicalSignalIds.has(signal.id),
+  );
+  if (overlappingClinicalSignals.length) {
+    score += overlappingClinicalSignals.length * 20;
+    reasons.push(`임상 단서: ${getSignalLabels(overlappingClinicalSignals).join(" · ")}`);
+  }
+
+  const isParsedChunk = chunk.label.startsWith("파싱 본문");
+  if (!normalizedQuery && isParsedChunk) {
+    score += 12;
+  }
+  if (!normalizedQuery && getClinicalSignals(chunkSignals).length) {
+    score += getClinicalSignals(chunkSignals).length * 8;
+    reasons.push(`임상 단서: ${getClinicalSignalLabels(chunkSignals).join(" · ")}`);
+  }
+  if (isParsedChunk && score > 0) {
+    reasons.push("파싱 본문");
+  }
+
+  if (!score) return null;
+
+  return {
+    ...chunk,
+    reasonSummary: reasons.join(" · "),
+    score,
+  };
+}
+
+function buildDocumentEvidenceChunks(
+  document: DocumentRagContextSource,
+  query: string,
+  querySignals: DocumentKnowledgeSignal[],
+  queryTokens: string[],
+) {
+  return buildRawEvidenceChunks(document)
+    .map((chunk) => scoreEvidenceChunk(chunk, query, querySignals, queryTokens))
+    .filter((chunk): chunk is DocumentRagEvidenceChunk => Boolean(chunk))
+    .sort((first, second) => second.score - first.score || first.label.localeCompare(second.label, "ko"))
+    .slice(0, 3);
 }
 
 function scoreDocumentForContext(
@@ -79,7 +223,8 @@ function scoreDocumentForContext(
   const documentSignalLabels = getSignalLabels(documentSignals);
   const clinicalSignalLabels = getClinicalSignalLabels(documentSignals);
   const parsedSources = extractDocumentParsedAttachmentSources(document);
-  const parserSummary = buildDocumentParserProvenanceSummary(document);
+  const parserSummary = removeParserSummaryPrefix(buildDocumentParserProvenanceSummary(document));
+  const evidenceChunks = buildDocumentEvidenceChunks(document, query, querySignals, queryTokens);
   const reasons: string[] = [];
   let score = 0;
 
@@ -124,18 +269,24 @@ function scoreDocumentForContext(
     }
   }
 
+  if (evidenceChunks.length) {
+    score += Math.min(30, Math.ceil(evidenceChunks[0].score / 2));
+  }
+
   if (!score) return null;
 
   const snippetQuery = normalizedQuery || clinicalSignalLabels.join(" ") || document.title || "";
+  const topEvidenceChunk = evidenceChunks[0];
   return {
     clinicalSignalCount: clinicalSignalLabels.length,
     documentId: document.id ?? `${document.date ?? "no-date"}-${document.title ?? "document"}`,
+    evidenceChunks,
     parserSummary: parserSummary || "파싱 원천 없음",
     parsedSourceCount: parsedSources.length,
     reasonSummary: reasons.join(" · "),
     score,
     signalSummary: documentSignalLabels.length ? documentSignalLabels.join(" · ") : "임상 단서 없음",
-    snippet: stripLocalPaths(buildDocumentKnowledgeSnippet(document, snippetQuery)),
+    snippet: topEvidenceChunk?.text ?? stripLocalPaths(buildDocumentKnowledgeSnippet(document, snippetQuery)),
     titleLine: formatDocumentTitleLine(document),
   };
 }
@@ -169,7 +320,8 @@ export function buildDocumentRagContext(
 
   const parsedDocumentCount = items.filter((item) => item.parsedSourceCount > 0).length;
   const clinicalDocumentCount = items.filter((item) => item.clinicalSignalCount > 0).length;
-  const summary = `RAG 컨텍스트 ${items.length}개 · 파싱 문서 ${parsedDocumentCount}개 · 임상 단서 ${clinicalDocumentCount}개`;
+  const evidenceChunkCount = items.reduce((count, item) => count + item.evidenceChunks.length, 0);
+  const summary = `RAG 컨텍스트 ${items.length}개 · 파싱 문서 ${parsedDocumentCount}개 · 임상 단서 ${clinicalDocumentCount}개 · 근거 조각 ${evidenceChunkCount}개`;
 
   return {
     ariaLabel: `${summary} · 기준 ${queryLabel}`,
@@ -229,6 +381,12 @@ export function formatDocumentRagContextClipboardText(context: DocumentRagContex
       `  - 임상 단서: ${item.signalSummary}`,
       `  - 파싱 원천: ${item.parserSummary}`,
       `  - 근거 스니펫: ${item.snippet}`,
+      ...item.evidenceChunks.flatMap((chunk, chunkIndex) => [
+        `  - 근거 조각 ${chunkIndex + 1}: ${chunk.label}`,
+        `    - 조각 이유: ${chunk.reasonSummary}`,
+        `    - 조각 원천: ${chunk.sourceSummary}`,
+        `    - 조각 본문: ${chunk.text}`,
+      ]),
     ]),
   ].join("\n");
 }

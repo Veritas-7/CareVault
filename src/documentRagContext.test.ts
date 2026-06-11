@@ -49,8 +49,16 @@ describe("documentRagContext", () => {
     });
     expect(context.items[0].reasonSummary).toContain("임상 단서: 당뇨");
     expect(context.items[0].parserSummary).toContain("HWP/HWPX 데스크톱 파서");
+    expect(context.items[0].evidenceChunks).toHaveLength(1);
+    expect(context.items[0].evidenceChunks[0]).toMatchObject({
+      label: "파싱 본문 조각 1",
+      sourceSummary: "HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp",
+    });
+    expect(context.items[0].evidenceChunks[0].reasonSummary).toContain("임상 단서: 당뇨");
+    expect(context.items[0].evidenceChunks[0].text).toContain("HbA1c 7.2%");
+    expect(context.items[0].evidenceChunks[0].text).not.toContain("첨부 텍스트 파싱");
     expect(context.items[0].snippet).toContain("HbA1c 7.2%");
-    expect(context.summary).toBe("RAG 컨텍스트 1개 · 파싱 문서 1개 · 임상 단서 1개");
+    expect(context.summary).toBe("RAG 컨텍스트 1개 · 파싱 문서 1개 · 임상 단서 1개 · 근거 조각 1개");
   });
 
   it("formats a clinic-ready context packet without leaking local attachment paths", () => {
@@ -61,6 +69,8 @@ describe("documentRagContext", () => {
     expect(text).toContain("주의: 진단·처방·치료 지시가 아니라");
     expect(text).toContain("기준 검색어: 데스크톱 파서");
     expect(text).toContain("파싱 원천: HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp");
+    expect(text).toContain("근거 조각 1: 파싱 본문 조각 1");
+    expect(text).toContain("조각 원천: HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp");
     expect(text).toContain("근거 스니펫:");
     expect(text).not.toContain("/Users/wj/private");
   });
