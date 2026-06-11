@@ -20,6 +20,7 @@ const decoder = new TextDecoder("utf-8");
 const eocdSignature = 0x06054b50;
 const centralDirectorySignature = 0x02014b50;
 const localFileHeaderSignature = 0x04034b50;
+const hwpxSectionEntryPattern = /^Contents\/section(\d+)\.xml$/i;
 
 function normalizeExtractedText(text: string) {
   return text
@@ -126,6 +127,11 @@ export function extractHwpxXmlText(xml: string) {
   );
 }
 
+function getHwpxSectionIndex(entryName: string) {
+  const match = hwpxSectionEntryPattern.exec(entryName);
+  return match ? Number(match[1]) : undefined;
+}
+
 export async function extractHwpxTextFromArrayBuffer(
   buffer: ArrayBuffer,
 ): Promise<HwpxTextExtractionResult> {
@@ -139,8 +145,16 @@ export async function extractHwpxTextFromArrayBuffer(
   }
 
   const sectionEntries = entries
-    .filter((entry) => /^Contents\/section\d+\.xml$/i.test(entry.name))
-    .sort((left, right) => left.name.localeCompare(right.name));
+    .map((entry) => ({ entry, sectionIndex: getHwpxSectionIndex(entry.name) }))
+    .filter(
+      (candidate): candidate is { entry: ZipEntry; sectionIndex: number } =>
+        candidate.sectionIndex !== undefined,
+    )
+    .sort(
+      (left, right) =>
+        left.sectionIndex - right.sectionIndex || left.entry.name.localeCompare(right.entry.name),
+    )
+    .map((candidate) => candidate.entry);
   const sectionTexts: string[] = [];
   for (const entry of sectionEntries) {
     const data = await readZipEntryData(buffer, entry);

@@ -24,10 +24,11 @@ source-grounded CareVault RAG evidence, run:
 npm run hwp:synthetic:smoke
 ```
 
-This synthetic smoke parses a generated HWPX care note with cervical-cancer,
-hypertension, and diabetes cues, then verifies the parsed text flows into
-ranked evidence chunks and an answer draft without leaking local paths. It is
-not a substitute for the real private-sample smoke above.
+This synthetic smoke parses generated HWPX care-note fixtures with
+cervical-cancer, hypertension, and diabetes cues, checks that multi-section HWPX
+body XML is read in numeric section order, then verifies the parsed text flows
+into ranked evidence chunks and an answer draft without leaking local paths. It
+is not a substitute for the real private-sample smoke above.
 
 Run this command to verify that parsed document text survives JSON
 backup/import sanitization and remains usable as source-grounded RAG evidence:

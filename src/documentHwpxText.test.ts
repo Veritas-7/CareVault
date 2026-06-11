@@ -145,6 +145,34 @@ describe("documentHwpxText", () => {
     });
   });
 
+  it("orders HWPX body sections numerically before building searchable text", async () => {
+    const zip = await createZip([
+      {
+        name: "Contents/section10.xml",
+        text: "<hp:t>10장 HbA1c 7.4%, 당화혈색소 상담</hp:t>",
+        method: "store",
+      },
+      {
+        name: "Contents/section2.xml",
+        text: "<hp:t>2장 혈압 149/93, 혈압약 확인</hp:t>",
+        method: "store",
+      },
+      {
+        name: "Contents/section1.xml",
+        text: "<hp:t>1장 자궁경부암 추적 진료 기록</hp:t>",
+        method: "store",
+      },
+    ]);
+
+    await expect(extractHwpxTextFromArrayBuffer(zip)).resolves.toEqual({
+      source: "section-xml",
+      text:
+        "1장 자궁경부암 추적 진료 기록\n" +
+        "2장 혈압 149/93, 혈압약 확인\n" +
+        "10장 HbA1c 7.4%, 당화혈색소 상담",
+    });
+  });
+
   it("extracts text nodes from HWPX section XML", () => {
     expect(
       extractHwpxXmlText("<hp:t>당뇨 &lt;HbA1c&gt;</hp:t><hp:t>식후혈당 181</hp:t>"),
