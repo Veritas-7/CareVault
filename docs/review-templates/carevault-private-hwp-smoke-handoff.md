@@ -12,7 +12,7 @@ real private sample and writes a basename-only success report.
 - The smoke output prints sample basenames only.
 - The optional report stores basenames, extensions, status, sample count, the
   minimum parsed character threshold, expected-term count, and objective
-  term-group coverage.
+  term-group coverage, plus each sample's observed parsed character count.
 - The report must not contain full local paths.
 
 ## Single File Smoke

@@ -202,14 +202,15 @@ input, and prints only sample basenames instead of full local paths.
 `CAREVAULT_HWP_SMOKE_REPORT_PATH` is optional; when set, a passing run writes a
 JSON evidence report with schema/status, sample count, minimum parsed character
 threshold, expected-term flag/count, objective term-group coverage, and
-per-sample basename/extension/status only. It never stores full local sample
-paths.
+per-sample basename/extension/status/parsed-character-count evidence only. It
+never stores full local sample paths.
 `src/carevaultObjectiveReadiness.ts` treats that report as usable readiness
-evidence only when the schema is `carevault-hwp-smoke-report.v2`, the report and
-all samples passed, the sample count matches the samples array, at least three
-expected terms were provided, cervical-cancer, hypertension, and diabetes
-objective term groups are all covered, extensions are `.hwp`, `.hwpx`, or
-`.hwpml`, and every sample entry is basename-only.
+evidence only when the schema is `carevault-hwp-smoke-report.v3`, the report and
+all samples passed, the sample count matches the samples array, each observed
+`parsed_character_count` meets `minimum_parsed_chars`, at least three expected
+terms were provided, cervical-cancer, hypertension, and diabetes objective term
+groups are all covered, extensions are `.hwp`, `.hwpx`, or `.hwpml`, and every
+sample entry is basename-only.
 `npm run objective:readiness:report` is the command-only bridge from this report
 to the objective-readiness status; `npm run objective:readiness:report:test`
 uses fixture reports to verify the bridge without any private sample.
