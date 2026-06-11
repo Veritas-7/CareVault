@@ -3769,6 +3769,30 @@ textarea:focus-visible {
   padding-left: 18px;
 }
 
+.document-parser-quick-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -2px 0 12px;
+}
+
+.document-parser-quick-search .secondary-inline-button {
+  min-height: 34px;
+  font-size: 0.82rem;
+}
+
+.document-parser-quick-search .secondary-inline-button[aria-pressed="true"] {
+  color: #0b5c4b;
+  background: #e4f7ef;
+  border-color: #9fd8c9;
+}
+
+.document-parser-quick-search .secondary-inline-button small {
+  color: #526066;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
 .document-filter-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

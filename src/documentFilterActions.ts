@@ -18,6 +18,21 @@ type DocumentFilterResetActionParts = {
   statusLabel: string;
 };
 
+type DocumentParserQuickSearchCounts = {
+  desktopParserCount: number;
+  parsedAttachmentCount: number;
+};
+
+export type DocumentParserQuickSearchOption = {
+  actionLabel: string;
+  disabled: boolean;
+  id: "parsed-attachment" | "desktop-parser";
+  label: string;
+  searchText: string;
+  statusLabel: string;
+  value: string;
+};
+
 function formatDocumentFilterResetContext({
   categoryLabel,
   searchText,
@@ -57,6 +72,43 @@ export function hasActiveDocumentFilters({
   statusFilter: string;
 }) {
   return Boolean(searchText.trim()) || categoryFilter !== "all" || statusFilter !== "all";
+}
+
+export function buildDocumentParserQuickSearchOptions({
+  desktopParserCount,
+  parsedAttachmentCount,
+}: DocumentParserQuickSearchCounts): DocumentParserQuickSearchOption[] {
+  return [
+    {
+      count: parsedAttachmentCount,
+      id: "parsed-attachment" as const,
+      label: "파싱 본문",
+      searchText: "첨부 텍스트 파싱",
+    },
+    {
+      count: desktopParserCount,
+      id: "desktop-parser" as const,
+      label: "데스크톱 파서",
+      searchText: "데스크톱 파서",
+    },
+  ].map(({ count, id, label, searchText }) => {
+    const disabled = count === 0;
+    const value = disabled ? "없음" : `${count}개`;
+
+    return {
+      actionLabel: disabled
+        ? `저장된 서류 ${label} 빠른 검색 불가 · 대상 없음`
+        : `저장된 서류 ${label} ${value} 빠른 검색`,
+      disabled,
+      id,
+      label,
+      searchText,
+      statusLabel: disabled
+        ? `서류 검색 불가 · ${label} 없음`
+        : `서류 검색 적용됨 · ${label} ${value} · 검색어 ${searchText}`,
+      value,
+    };
+  });
 }
 
 export function filterDocumentsBySearchAndReview<Document extends DocumentFilterSource>(

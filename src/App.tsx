@@ -176,6 +176,7 @@ import {
   type TauriInvoke,
 } from "./documentTauriAttachmentParsing";
 import {
+  buildDocumentParserQuickSearchOptions,
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
   formatDocumentFilterResetStatusLabel,
@@ -1530,6 +1531,14 @@ function App() {
     () => buildDocumentPanelSummary(state.documents, state.deletedDocuments),
     [state.documents, state.deletedDocuments],
   );
+  const documentParserQuickSearchOptions = useMemo(
+    () =>
+      buildDocumentParserQuickSearchOptions({
+        desktopParserCount: documentPanelSummary.desktopParserCount,
+        parsedAttachmentCount: documentPanelSummary.parsedAttachmentCount,
+      }),
+    [documentPanelSummary.desktopParserCount, documentPanelSummary.parsedAttachmentCount],
+  );
   const documentDraftHasRequiredFields = hasRequiredTextValues(
     documentDraft.title,
     documentDraft.body,
@@ -1819,6 +1828,17 @@ function App() {
     setDocumentCategoryFilter("all");
     setDocumentStatusFilter("all");
     setSaveLabel(statusLabel);
+  };
+
+  const applyDocumentParserQuickSearch = (
+    option: (typeof documentParserQuickSearchOptions)[number],
+  ) => {
+    if (option.disabled) return;
+
+    setDocumentFilter(option.searchText);
+    setDocumentCategoryFilter("all");
+    setDocumentStatusFilter("all");
+    setSaveLabel(option.statusLabel);
   };
 
   const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>
@@ -7350,6 +7370,32 @@ function App() {
                   <strong>{item.label}</strong>
                   {item.value}
                 </span>
+              ))}
+            </div>
+            <div className="document-parser-quick-search" aria-label="문서 파서 빠른 검색">
+              {documentParserQuickSearchOptions.map((option) => (
+                <button
+                  className={`secondary-inline-button quick-search-${option.id}`}
+                  type="button"
+                  key={option.id}
+                  disabled={option.disabled}
+                  onClick={() => applyDocumentParserQuickSearch(option)}
+                  aria-label={option.actionLabel}
+                  aria-pressed={
+                    documentFilter.trim() === option.searchText &&
+                    documentCategoryFilter === "all" &&
+                    documentStatusFilter === "all"
+                  }
+                  title={option.actionLabel}
+                >
+                  {option.id === "desktop-parser" ? (
+                    <FileText aria-hidden="true" />
+                  ) : (
+                    <Search aria-hidden="true" />
+                  )}
+                  <span>{option.label}</span>
+                  <small>{option.value}</small>
+                </button>
               ))}
             </div>
             <input

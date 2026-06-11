@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildDocumentParserQuickSearchOptions,
   documentFilterResetStatusLabel,
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
@@ -182,5 +183,61 @@ describe("documentFilterActions", () => {
         statusFilter: "needs-review",
       }),
     ).toBe(true);
+  });
+
+  it("builds parser quick-search options from parsed coverage counts", () => {
+    expect(
+      buildDocumentParserQuickSearchOptions({
+        desktopParserCount: 1,
+        parsedAttachmentCount: 2,
+      }),
+    ).toEqual([
+      {
+        actionLabel: "저장된 서류 파싱 본문 2개 빠른 검색",
+        disabled: false,
+        id: "parsed-attachment",
+        label: "파싱 본문",
+        searchText: "첨부 텍스트 파싱",
+        statusLabel: "서류 검색 적용됨 · 파싱 본문 2개 · 검색어 첨부 텍스트 파싱",
+        value: "2개",
+      },
+      {
+        actionLabel: "저장된 서류 데스크톱 파서 1개 빠른 검색",
+        disabled: false,
+        id: "desktop-parser",
+        label: "데스크톱 파서",
+        searchText: "데스크톱 파서",
+        statusLabel: "서류 검색 적용됨 · 데스크톱 파서 1개 · 검색어 데스크톱 파서",
+        value: "1개",
+      },
+    ]);
+  });
+
+  it("disables parser quick-search options when no parsed documents exist", () => {
+    expect(
+      buildDocumentParserQuickSearchOptions({
+        desktopParserCount: 0,
+        parsedAttachmentCount: 0,
+      }),
+    ).toEqual([
+      {
+        actionLabel: "저장된 서류 파싱 본문 빠른 검색 불가 · 대상 없음",
+        disabled: true,
+        id: "parsed-attachment",
+        label: "파싱 본문",
+        searchText: "첨부 텍스트 파싱",
+        statusLabel: "서류 검색 불가 · 파싱 본문 없음",
+        value: "없음",
+      },
+      {
+        actionLabel: "저장된 서류 데스크톱 파서 빠른 검색 불가 · 대상 없음",
+        disabled: true,
+        id: "desktop-parser",
+        label: "데스크톱 파서",
+        searchText: "데스크톱 파서",
+        statusLabel: "서류 검색 불가 · 데스크톱 파서 없음",
+        value: "없음",
+      },
+    ]);
   });
 });
