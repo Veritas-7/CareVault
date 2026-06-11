@@ -12,10 +12,11 @@ Optional overrides:
   CAREVAULT_OLLAMA_MODEL=llama3.2:1b
   CAREVAULT_OLLAMA_EMBEDDING_MODEL=bge-m3:latest
 
-The doctor starts a temporary local Ollama server only when the target port is
-free, then sends one minimal chat request and one minimal embedding request
-directly to Ollama's OpenAI-compatible endpoints. It isolates Ollama runtime
-failures from CareVault RAG request construction.
+The doctor prints the local Ollama install snapshot, starts a temporary local
+Ollama server only when the target port is free, then sends one minimal chat
+request and one minimal embedding request directly to Ollama's OpenAI-compatible
+endpoints. It isolates Ollama runtime failures from CareVault RAG request
+construction and calls out a missing llama-server worker binary.
 EOF
 }
 
@@ -80,6 +81,7 @@ EMBEDDING_MODEL_JSON="$(json_escape "$EMBEDDING_MODEL_NAME")"
 OLLAMA_BASE_URL="http://${OLLAMA_HOST_VALUE}"
 OLLAMA_LOG="$(mktemp /tmp/carevault-ollama-doctor.XXXXXX.log)"
 OLLAMA_PID=""
+MISSING_LLAMA_SERVER=0
 
 cleanup() {
   if [[ -n "$OLLAMA_PID" ]] && kill -0 "$OLLAMA_PID" >/dev/null 2>&1; then
@@ -99,6 +101,21 @@ wait_for_ollama() {
     sleep 0.25
   done
   return 1
+}
+
+print_install_snapshot() {
+  printf 'Ollama command: present\n'
+  ollama --version 2>&1 | sanitize_log | sed 's/^/Ollama version: /' || true
+
+  if command -v brew >/dev/null 2>&1; then
+    local brew_version
+    brew_version="$(brew list --versions ollama 2>/dev/null || true)"
+    if [[ -n "$brew_version" ]]; then
+      printf 'Homebrew package: %s\n' "$brew_version"
+    else
+      printf 'Homebrew package: ollama not found\n'
+    fi
+  fi
 }
 
 post_json() {
@@ -126,6 +143,9 @@ post_json() {
     printf '%s endpoint body:\n' "$label" >&2
     head -c 1200 "$response_file" | sanitize_log >&2
     printf '\n' >&2
+    if grep -qi 'llama-server binary not found' "$response_file"; then
+      MISSING_LLAMA_SERVER=1
+    fi
   fi
   rm -f "$response_file"
   return 1
@@ -135,6 +155,7 @@ printf 'CareVault Ollama runtime doctor\n'
 printf 'Ollama host: %s\n' "$OLLAMA_HOST_VALUE"
 printf 'Model: %s\n' "$MODEL_NAME"
 printf 'Embedding model: %s\n' "$EMBEDDING_MODEL_NAME"
+print_install_snapshot
 
 if lsof -nP -iTCP:"$OLLAMA_PORT" -sTCP:LISTEN >/dev/null 2>&1; then
   printf 'Ollama listener: existing process on port %s, will not stop it\n' "$OLLAMA_PORT"
@@ -149,6 +170,9 @@ if ! wait_for_ollama; then
   if [[ -s "$OLLAMA_LOG" ]]; then
     printf 'Ollama log tail:\n' >&2
     tail -20 "$OLLAMA_LOG" | sanitize_log >&2
+  fi
+  if [[ "$MISSING_LLAMA_SERVER" -eq 1 ]] || grep -qi 'llama-server binary not found' "$OLLAMA_LOG" 2>/dev/null; then
+    printf 'Diagnosis: local Ollama can start its API, but its model worker binary `llama-server` is missing; repair or reinstall the Ollama runtime before expecting model-backed CareVault RAG smokes to pass.\n' >&2
   fi
   exit 1
 fi
@@ -171,6 +195,9 @@ if [[ "$CHAT_STATUS" -ne 0 || "$EMBEDDING_STATUS" -ne 0 ]]; then
   if [[ -s "$OLLAMA_LOG" ]]; then
     printf 'Ollama log tail:\n' >&2
     tail -20 "$OLLAMA_LOG" | sanitize_log >&2
+  fi
+  if [[ "$MISSING_LLAMA_SERVER" -eq 1 ]] || grep -qi 'llama-server binary not found' "$OLLAMA_LOG" 2>/dev/null; then
+    printf 'Diagnosis: local Ollama can start its API, but its model worker binary `llama-server` is missing; repair or reinstall the Ollama runtime before expecting model-backed CareVault RAG smokes to pass.\n' >&2
   fi
   exit 1
 fi
