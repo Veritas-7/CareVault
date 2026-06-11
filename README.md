@@ -16,7 +16,11 @@ AutoResearch discipline, cervical-cancer/hypertension/diabetes source coverage,
 document storage, HWP/HWPX parsing, document RAG/search, parsed-document app
 use, and medical-safety boundaries. It intentionally keeps the report `blocked`
 while real private HWP/HWPX sample smoke and external clinician/source review
-remain unresolved; it is not a completion claim.
+remain unresolved; it is not a completion claim. When a real private sample
+smoke has already produced the optional `CAREVAULT_HWP_SMOKE_REPORT_PATH` JSON,
+the readiness module can accept that basename-only report as evidence for the
+private-sample requirement while still leaving external clinician/source review
+as required.
 
 ## Clinical source smoke
 
@@ -96,6 +100,10 @@ of full local paths. `CAREVAULT_HWP_SMOKE_REPORT_PATH` is optional; when set, a
 passing run writes a JSON evidence report with schema/status, sample count,
 minimum parsed character threshold, expected-term flag, and per-sample
 basename/extension/status only. It never stores full local sample paths.
+`src/carevaultObjectiveReadiness.ts` treats that report as usable readiness
+evidence only when the schema is `carevault-hwp-smoke-report.v1`, the report and
+all samples passed, the sample count matches the samples array, extensions are
+`.hwp`, `.hwpx`, or `.hwpml`, and every sample entry is basename-only.
 
 For a repeatable non-private regression that proves HWPX section XML can become
 source-grounded CareVault RAG evidence, run:

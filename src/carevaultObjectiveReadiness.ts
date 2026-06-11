@@ -17,6 +17,28 @@ export type CareVaultObjectiveRequirement = {
   status: CareVaultObjectiveRequirementStatus;
 };
 
+export type CareVaultHwpSmokeReportSample = {
+  basename: string;
+  extension: string;
+  status: string;
+};
+
+export type CareVaultHwpSmokeReportEvidence = {
+  expected_terms_provided: boolean;
+  minimum_parsed_chars: string;
+  sample_count: number;
+  samples: CareVaultHwpSmokeReportSample[];
+  schema: string;
+  status: string;
+};
+
+export type CareVaultHwpSmokeEvidenceAssessment = {
+  detail: string;
+  sampleBasenames: string[];
+  sampleCount: number;
+  status: Extract<CareVaultObjectiveRequirementStatus, "blocked" | "pass">;
+};
+
 export type CareVaultObjectiveReadinessReport = {
   blockingRequirementIds: string[];
   clinicalReviewPacket: ClinicalReviewPacket;
@@ -34,6 +56,142 @@ export const careVaultObjectiveText =
 
 export const careVaultObjectiveReadinessBoundary =
   "This readiness report is a command-only completion audit input. It is not a clinical approval, not a production medical readiness claim, and not permission to mark the active goal complete while blocked requirements remain.";
+
+const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v1";
+const supportedHwpSampleExtensions = new Set(["hwp", "hwpx", "hwpml"]);
+
+function basenameIsPathSafe(basename: string) {
+  return (
+    basename.length > 0
+    && basename === basename.trim()
+    && !basename.includes("/")
+    && !basename.includes("\\")
+    && !/^[A-Za-z]:/.test(basename)
+  );
+}
+
+function parseMinimumParsedChars(value: string) {
+  if (!/^\d+$/.test(value)) return Number.NaN;
+  return Number(value);
+}
+
+export function assessCareVaultHwpSmokeReportEvidence(
+  report?: CareVaultHwpSmokeReportEvidence,
+): CareVaultHwpSmokeEvidenceAssessment {
+  if (!report) {
+    return {
+      detail:
+        "The private-sample harness is ready, but no sanitized real user/private HWP/HWPX/HWPML smoke report has been supplied.",
+      sampleBasenames: [],
+      sampleCount: 0,
+      status: "blocked",
+    };
+  }
+
+  if (report.schema !== hwpSmokeReportSchema) {
+    return {
+      detail: `Blocked: HWP smoke report schema must be ${hwpSmokeReportSchema}.`,
+      sampleBasenames: [],
+      sampleCount: 0,
+      status: "blocked",
+    };
+  }
+  if (report.status !== "passed") {
+    return {
+      detail: "Blocked: HWP smoke report status must be passed.",
+      sampleBasenames: [],
+      sampleCount: 0,
+      status: "blocked",
+    };
+  }
+  if (!Array.isArray(report.samples)) {
+    return {
+      detail: "Blocked: HWP smoke report samples must be an array.",
+      sampleBasenames: [],
+      sampleCount: 0,
+      status: "blocked",
+    };
+  }
+  if (!Number.isInteger(report.sample_count) || report.sample_count <= 0) {
+    return {
+      detail: "Blocked: HWP smoke report must include at least one parsed private sample.",
+      sampleBasenames: [],
+      sampleCount: 0,
+      status: "blocked",
+    };
+  }
+  if (typeof report.minimum_parsed_chars !== "string") {
+    return {
+      detail: "Blocked: HWP smoke report minimum_parsed_chars must be a string.",
+      sampleBasenames: [],
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
+  if (typeof report.expected_terms_provided !== "boolean") {
+    return {
+      detail: "Blocked: HWP smoke report expected_terms_provided must be a boolean.",
+      sampleBasenames: [],
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
+  if (report.samples.length !== report.sample_count) {
+    return {
+      detail: "Blocked: HWP smoke report sample_count must match the samples array.",
+      sampleBasenames: [],
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
+
+  const minimumParsedChars = parseMinimumParsedChars(report.minimum_parsed_chars);
+  if (!Number.isFinite(minimumParsedChars) || minimumParsedChars <= 0) {
+    return {
+      detail: "Blocked: HWP smoke report minimum_parsed_chars must be a positive integer string.",
+      sampleBasenames: [],
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
+
+  const invalidSample = report.samples.find((sample) => {
+    if (
+      typeof sample.basename !== "string"
+      || typeof sample.extension !== "string"
+      || typeof sample.status !== "string"
+    ) {
+      return true;
+    }
+    const extension = sample.extension.toLowerCase();
+    return (
+      sample.status !== "passed"
+      || !supportedHwpSampleExtensions.has(extension)
+      || !basenameIsPathSafe(sample.basename)
+    );
+  });
+  if (invalidSample) {
+    return {
+      detail:
+        "Blocked: HWP smoke report samples must be passed .hwp/.hwpx/.hwpml basename-only entries.",
+      sampleBasenames: report.samples.map((sample) => sample.basename),
+      sampleCount: report.sample_count,
+      status: "blocked",
+    };
+  }
+
+  const termGateText = report.expected_terms_provided
+    ? "with expected-term checks"
+    : "with parser/min-length checks";
+  const sampleBasenames = report.samples.map((sample) => sample.basename);
+  return {
+    detail:
+      `Sanitized real private HWP/HWPX smoke evidence accepted for ${report.sample_count} sample(s) ${termGateText}; report stores basename-only sample evidence: ${sampleBasenames.join(", ")}.`,
+    sampleBasenames,
+    sampleCount: report.sample_count,
+    status: "pass",
+  };
+}
 
 function hasRequirement(
   workflowPacket: ClinicalWorkflowReviewPacket,
@@ -65,11 +223,14 @@ function computeReportStatus(requirements: CareVaultObjectiveRequirement[]) {
 
 export function buildCareVaultObjectiveReadinessReport({
   clinicalReviewPacket = buildClinicalReviewPacket(),
+  hwpSmokeReportEvidence,
   workflowReviewPacket = buildClinicalWorkflowReviewPacket(),
 }: {
   clinicalReviewPacket?: ClinicalReviewPacket;
+  hwpSmokeReportEvidence?: CareVaultHwpSmokeReportEvidence;
   workflowReviewPacket?: ClinicalWorkflowReviewPacket;
 } = {}): CareVaultObjectiveReadinessReport {
+  const hwpSmokeAssessment = assessCareVaultHwpSmokeReportEvidence(hwpSmokeReportEvidence);
   const sourceRegistryClean =
     clinicalReviewPacket.summary.registryErrorCount === 0
     && clinicalReviewPacket.summary.registryWarningCount === 0
@@ -162,11 +323,10 @@ export function buildCareVaultObjectiveReadinessReport({
         "CAREVAULT_HWP_SAMPLE_DIR",
         "CAREVAULT_HWP_SMOKE_REPORT_PATH",
       ],
-      detail:
-        "The private-sample harness is ready, but no real user/private medical HWP/HWPX/HWPML sample path has been supplied or executed.",
+      detail: hwpSmokeAssessment.detail,
       id: "real-private-hwp-hwpx-sample",
       objectiveText: "prove document parsing on real user/private medical HWP/HWPX documents",
-      status: "blocked",
+      status: hwpSmokeAssessment.status,
     }),
     buildRequirement({
       artifacts: [
