@@ -6,6 +6,19 @@ review report. It is a reviewer handoff artifact, not a clinical approval.
 Use the export command before sending a copy to a reviewer:
 
 ```bash
+CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet \
+npm run clinical:external-review:packet
+```
+
+The packet command writes the current clinical review packet, clinical workflow
+review packet, objective readiness report, this draft JSON template, and a
+reviewer handoff with SHA-256 hashes. It uses path-safe summary JSON and fails
+if the packet would include a local attachment path. It is the preferred
+handoff before asking a reviewer to fill the JSON report.
+
+To export only the draft JSON template:
+
+```bash
 CAREVAULT_EXTERNAL_REVIEW_TEMPLATE_PATH=/tmp/carevault-external-review.json \
 npm run clinical:external-review:template
 ```

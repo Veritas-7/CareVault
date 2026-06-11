@@ -101,6 +101,21 @@ When an external clinician/source reviewer returns a structured evidence report,
 run:
 
 ```bash
+CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet \
+npm run clinical:external-review:packet
+```
+
+The packet command validates the current template/readiness gates and exports
+the reviewer-facing artifacts required by schema
+`carevault-external-clinician-review.v2`: clinical review packet,
+clinical workflow review packet, objective readiness report, draft review JSON
+template, and a reviewer handoff with SHA-256 hashes. The exported packet uses
+path-safe summary JSON, not raw workflow state, so synthetic attachment paths do
+not leak into the review handoff. `npm run clinical:external-review:packet:test`
+verifies the packet contents, current source/workflow counts, and local-path
+exclusion. It still does not create private HWP evidence or clinical approval.
+
+```bash
 CAREVAULT_EXTERNAL_REVIEW_TEMPLATE_PATH=/tmp/carevault-external-review.json \
 npm run clinical:external-review:template
 ```
