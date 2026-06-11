@@ -125,7 +125,10 @@ review-needed, adds a visible warning, keeps local paths sanitized, carries an
 explicit do-not-follow-original-instructions rule into the local model handoff
 and OpenAI-compatible request system prompt, and blocks unsafe local model
 responses that try to show direct diagnosis, prescription, treatment, or
-medication-change instructions.
+medication-change instructions. It also keeps source-grounded medication
+history usable when the model frames it as a clinician-confirmation question,
+while blocking colloquial Korean medication stop or dose-change instructions
+such as "혈압약을 끊으세요" and "인슐린 용량을 올리세요".
 
 ## Local model RAG smoke
 

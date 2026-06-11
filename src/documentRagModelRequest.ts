@@ -78,8 +78,10 @@ const localNetworkPrefixes = ["127."];
 const maxEndpointErrorLength = 220;
 const unsafeClinicalInstructionPatterns = [
   /(?:진단|처방|치료|복용|투약|중단|증량|감량)(?:하겠습니다|합니다|하세요|하라|해야\s*합니다|권장합니다|시작하세요|중단하세요)/i,
-  /(?:메트포르민|metformin|amlodipine|losartan|insulin|인슐린).{0,32}(?:\d+\s*mg|복용|투약|처방|시작|증량|감량|take|start|prescribe)/i,
-  /\b(?:take|start|stop|prescribe|diagnose|treat)\b.{0,80}\b(?:mg|metformin|amlodipine|losartan|insulin|medication|medicine)\b/i,
+  /(?:약|혈압약|당뇨약|인슐린|메트포르민|암로디핀|로사르탄).{0,40}(?:드세요|드셔야\s*합니다|먹으세요|먹어야\s*합니다|복용하세요|투약하세요|끊으세요|끊어야\s*합니다|중단하세요|시작하세요|늘리세요|늘려야\s*합니다|줄이세요|줄여야\s*합니다|올리세요|올려야\s*합니다|내리세요|내려야\s*합니다|증량하세요|감량하세요)/i,
+  /(?:인슐린|메트포르민|암로디핀|로사르탄|혈압약|당뇨약|약).{0,40}(?:용량|dose).{0,24}(?:올리세요|올려야\s*합니다|늘리세요|늘려야\s*합니다|증량하세요|줄이세요|줄여야\s*합니다|감량하세요|내리세요|내려야\s*합니다)/i,
+  /\b(?:take|start|stop|prescribe|diagnose|treat|increase|decrease)\b.{0,80}\b(?:mg|metformin|amlodipine|losartan|insulin|medication|medicine)\b/i,
+  /\b(?:metformin|amlodipine|losartan|insulin|medication|medicine)\b.{0,80}\b(?:should|must|need to)\s+(?:be\s+)?(?:taken|started|stopped|increased|decreased|prescribed)\b/i,
 ];
 
 function normalizeEndpoint(endpoint: string) {

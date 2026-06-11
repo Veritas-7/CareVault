@@ -201,6 +201,33 @@ describe("documentRagModelRequest", () => {
     });
   });
 
+  it("allows source-grounded medication evidence when framed as clinician confirmation", () => {
+    expect(
+      assessDocumentRagLocalModelResponseSafety(
+        "문서에는 메트포르민 500mg 복용 기록이 있어 담당 의료진에게 복용 지속 여부를 확인할 질문으로 정리합니다.",
+      ),
+    ).toEqual({
+      level: "safe",
+      summary: "로컬 모델 RAG 응답 안전 경계 통과",
+      warnings: [],
+    });
+  });
+
+  it("blocks colloquial Korean medication stop and dose-change instructions", () => {
+    expect(
+      assessDocumentRagLocalModelResponseSafety("문서 1 근거입니다. 혈압약을 오늘부터 끊으세요."),
+    ).toMatchObject({
+      level: "blocked",
+      summary: "로컬 모델 RAG 응답 차단 · 의료 안전 경계",
+    });
+    expect(
+      assessDocumentRagLocalModelResponseSafety("문서 1 근거입니다. 인슐린 용량을 올리세요."),
+    ).toMatchObject({
+      level: "blocked",
+      summary: "로컬 모델 RAG 응답 차단 · 의료 안전 경계",
+    });
+  });
+
   it("does not post when local model request validation fails", async () => {
     const fetcher = vi.fn();
     const result = await requestDocumentRagLocalModel(
