@@ -16,6 +16,9 @@ mkdir -p "$FAKE_BIN" "$SAMPLES_DIR"
 cat > "$FAKE_BIN/cargo" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$(basename "$CAREVAULT_HWP_SAMPLE_PATH")" >> "$CAREVAULT_HWP_SMOKE_FAKE_CARGO_LOG"
+if [[ "${CAREVAULT_HWP_SMOKE_FAKE_CARGO_NO_PARSED_CHARS:-}" != "1" ]]; then
+  printf 'CAREVAULT_HWP_SAMPLE_PARSED_CHARS=%s\n' "${CAREVAULT_HWP_SMOKE_FAKE_CARGO_PARSED_CHARS:-321}"
+fi
 if [[ "${CAREVAULT_HWP_SMOKE_FAKE_CARGO_ECHO_PATH:-}" == "1" ]]; then
   printf 'fake parser read %s\n' "$CAREVAULT_HWP_SAMPLE_PATH"
   printf 'fake parser stderr path %s\n' "$CAREVAULT_HWP_SAMPLE_PATH" >&2
@@ -34,6 +37,7 @@ touch "$SAMPLES_DIR/03-note.hwpml"
 touch "$SAMPLES_DIR/ignore.txt"
 REPORT_PATH="$TMP_DIR/hwp-smoke-report.json"
 TERMS_REPORT_PATH="$TMP_DIR/hwp-smoke-terms-report.json"
+MISSING_COUNT_REPORT_PATH="$TMP_DIR/missing-count-report.json"
 
 run_smoke() {
   local output_file="$1"
@@ -116,7 +120,7 @@ report_text = report_path.read_text()
 if sample_dir in report_text:
     raise SystemExit("report leaked the sample directory path")
 report = json.loads(report_text)
-assert report["schema"] == "carevault-hwp-smoke-report.v2"
+assert report["schema"] == "carevault-hwp-smoke-report.v3"
 assert report["status"] == "passed"
 assert report["sample_count"] == 3
 assert report["expected_terms_provided"] is False
@@ -133,6 +137,7 @@ assert [sample["basename"] for sample in report["samples"]] == [
 ]
 assert [sample["extension"] for sample in report["samples"]] == ["hwp", "hwpx", "hwpml"]
 assert {sample["status"] for sample in report["samples"]} == {"passed"}
+assert [sample["parsed_character_count"] for sample in report["samples"]] == [321, 321, 321]
 PY
 if [[ "$(wc -l < "$CARGO_LOG" | tr -d ' ')" != "3" ]]; then
   printf 'Expected fake cargo to run three times.\n' >&2
@@ -171,6 +176,17 @@ assert_contains "$TMP_DIR/cargo-failure-sanitized.out" "[private-sample-path]"
 assert_not_contains "$TMP_DIR/cargo-failure-sanitized.out" "$SAMPLES_DIR"
 
 CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
+  CAREVAULT_HWP_SMOKE_FAKE_CARGO_NO_PARSED_CHARS=1 \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$MISSING_COUNT_REPORT_PATH" \
+  expect_failure "missing-parsed-character-count"
+assert_contains "$TMP_DIR/missing-parsed-character-count.out" "did not emit parsed character count for 02-lab.hwpx"
+assert_not_contains "$TMP_DIR/missing-parsed-character-count.out" "$SAMPLES_DIR"
+if [[ -e "$MISSING_COUNT_REPORT_PATH" ]]; then
+  printf 'Expected missing parsed character count to prevent report creation.\n' >&2
+  exit 1
+fi
+
+CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
   CAREVAULT_HWP_SAMPLE_TERMS="자궁경부암,혈압,당화혈색소" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$TERMS_REPORT_PATH" \
   expect_success "single-file-with-terms"
@@ -185,7 +201,7 @@ report_text = report_path.read_text()
 if sample_dir in report_text:
     raise SystemExit("report leaked the sample directory path")
 report = json.loads(report_text)
-assert report["schema"] == "carevault-hwp-smoke-report.v2"
+assert report["schema"] == "carevault-hwp-smoke-report.v3"
 assert report["expected_terms_provided"] is True
 assert report["expected_term_count"] == 3
 assert report["objective_term_groups"] == {
@@ -194,6 +210,7 @@ assert report["objective_term_groups"] == {
     "diabetes": True,
 }
 assert [sample["basename"] for sample in report["samples"]] == ["02-lab.hwpx"]
+assert [sample["parsed_character_count"] for sample in report["samples"]] == [321]
 PY
 assert_not_contains "$TMP_DIR/single-file-with-terms.out" "$SAMPLES_DIR"
 

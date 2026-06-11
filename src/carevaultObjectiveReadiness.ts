@@ -20,6 +20,7 @@ export type CareVaultObjectiveRequirement = {
 export type CareVaultHwpSmokeReportSample = {
   basename: string;
   extension: string;
+  parsed_character_count: number;
   status: string;
 };
 
@@ -139,7 +140,7 @@ export const careVaultObjectiveText =
 export const careVaultObjectiveReadinessBoundary =
   "This readiness report is a command-only completion audit input. It is not a clinical approval, not a production medical readiness claim, and not permission to mark the active goal complete while blocked requirements remain.";
 
-const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v2";
+const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v3";
 const externalReviewReportSchema = "carevault-external-clinician-review.v2";
 const supportedHwpSampleExtensions = new Set(["hwp", "hwpx", "hwpml"]);
 const hwpObjectiveTermGroupLabels: Record<
@@ -327,6 +328,7 @@ export function assessCareVaultHwpSmokeReportEvidence(
     if (
       typeof sample.basename !== "string"
       || typeof sample.extension !== "string"
+      || typeof sample.parsed_character_count !== "number"
       || typeof sample.status !== "string"
     ) {
       return true;
@@ -334,6 +336,8 @@ export function assessCareVaultHwpSmokeReportEvidence(
     const extension = sample.extension.toLowerCase();
     return (
       sample.status !== "passed"
+      || !Number.isInteger(sample.parsed_character_count)
+      || sample.parsed_character_count < minimumParsedChars
       || !supportedHwpSampleExtensions.has(extension)
       || !basenameIsPathSafe(sample.basename)
     );
@@ -341,7 +345,7 @@ export function assessCareVaultHwpSmokeReportEvidence(
   if (invalidSample) {
     return {
       detail:
-        "Blocked: HWP smoke report samples must be passed .hwp/.hwpx/.hwpml basename-only entries.",
+        "Blocked: HWP smoke report samples must be passed .hwp/.hwpx/.hwpml basename-only entries with parsed_character_count at or above minimum_parsed_chars.",
       sampleBasenames: report.samples.map((sample) => sample.basename),
       sampleCount: report.sample_count,
       status: "blocked",
@@ -349,9 +353,12 @@ export function assessCareVaultHwpSmokeReportEvidence(
   }
 
   const sampleBasenames = report.samples.map((sample) => sample.basename);
+  const minimumObservedParsedChars = Math.min(
+    ...report.samples.map((sample) => sample.parsed_character_count),
+  );
   return {
     detail:
-      `Sanitized real private HWP/HWPX smoke evidence accepted for ${report.sample_count} sample(s) with ${report.expected_term_count} expected terms covering cervical-cancer, hypertension, and diabetes; report stores basename-only sample evidence: ${sampleBasenames.join(", ")}.`,
+      `Sanitized real private HWP/HWPX smoke evidence accepted for ${report.sample_count} sample(s) with ${report.expected_term_count} expected terms covering cervical-cancer, hypertension, and diabetes; minimum observed parsed_character_count ${minimumObservedParsedChars} meets threshold ${minimumParsedChars}; report stores basename-only sample evidence: ${sampleBasenames.join(", ")}.`,
     sampleBasenames,
     sampleCount: report.sample_count,
     status: "pass",

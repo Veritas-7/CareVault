@@ -4,6 +4,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cargo_output_files=()
+parsed_character_counts=()
 
 cleanup_cargo_output_files() {
   local output_file
@@ -35,7 +36,7 @@ sample basename, not the full local path. Use exactly one of
 CAREVAULT_HWP_SAMPLE_PATH or CAREVAULT_HWP_SAMPLE_DIR.
 When CAREVAULT_HWP_SMOKE_REPORT_PATH is set, the success report also stores only
 sample basenames, extensions, expected-term counts, and objective term-group
-coverage, never full local paths.
+coverage plus observed parsed character counts, never full local paths.
 EOF
 }
 
@@ -172,20 +173,45 @@ sys.stdout.write(text)
 PY
 }
 
+extract_parsed_character_count() {
+  local output_path="$1"
+
+  python3 - "$output_path" <<'PY'
+import pathlib
+import re
+import sys
+
+output_path = pathlib.Path(sys.argv[1])
+text = output_path.read_text(errors="replace")
+matches = re.findall(r"^CAREVAULT_HWP_SAMPLE_PARSED_CHARS=(\d+)\s*$", text, re.MULTILINE)
+if len(matches) != 1:
+    raise SystemExit(1)
+value = int(matches[0])
+if value <= 0:
+    raise SystemExit(1)
+print(value)
+PY
+}
+
 write_success_report() {
   local report_path="$1"
   local temp_report
   local sample_path
   local sample_name
   local extension
+  local parsed_character_count
   local index=0
 
   [[ -n "$report_path" ]] || return 0
+  if [[ "${#parsed_character_counts[@]}" -ne "${#sample_paths[@]}" ]]; then
+    printf 'FAIL: parsed character count evidence is incomplete.\n' >&2
+    exit 1
+  fi
 
   temp_report="${report_path}.tmp"
   {
     printf '{\n'
-    printf '  "schema": "carevault-hwp-smoke-report.v2",\n'
+    printf '  "schema": "carevault-hwp-smoke-report.v3",\n'
     printf '  "status": "passed",\n'
     printf '  "sample_count": %s,\n' "${#sample_paths[@]}"
     printf '  "minimum_parsed_chars": %s,\n' "$(json_string "${CAREVAULT_HWP_SAMPLE_MIN_CHARS:-100}")"
@@ -200,12 +226,18 @@ write_success_report() {
     for sample_path in "${sample_paths[@]}"; do
       sample_name="$(basename "$sample_path")"
       extension="$(printf '%s' "${sample_name##*.}" | tr '[:upper:]' '[:lower:]')"
+      parsed_character_count="${parsed_character_counts[$index]:-}"
+      if ! [[ "$parsed_character_count" =~ ^[1-9][0-9]*$ ]]; then
+        printf 'FAIL: parsed character count evidence is incomplete.\n' >&2
+        exit 1
+      fi
       if [[ "$index" -gt 0 ]]; then
         printf ',\n'
       fi
-      printf '    {"basename": %s, "extension": %s, "status": "passed"}' \
+      printf '    {"basename": %s, "extension": %s, "status": "passed", "parsed_character_count": %s}' \
         "$(json_string "$sample_name")" \
-        "$(json_string "$extension")"
+        "$(json_string "$extension")" \
+        "$parsed_character_count"
       index=$((index + 1))
     done
     printf '\n  ]\n'
@@ -267,6 +299,7 @@ for sample_path in "${sample_paths[@]}"; do
   sample_name="$(basename "$sample_path")"
   cargo_output="$(mktemp)"
   cargo_output_files+=("$cargo_output")
+  parsed_character_count=""
   printf 'Sample: %s\n' "$sample_name"
 
   if CAREVAULT_HWP_SAMPLE_PATH="$sample_path" \
@@ -275,6 +308,13 @@ for sample_path in "${sample_paths[@]}"; do
       hwp_parser_command_parses_private_sample_when_env_is_set \
       -- \
       --nocapture > "$cargo_output" 2>&1; then
+    if ! parsed_character_count="$(extract_parsed_character_count "$cargo_output")"; then
+      sanitize_private_output "$cargo_output" "$sample_path" >&2
+      rm -f "$cargo_output"
+      printf 'FAIL: private HWP/HWPX smoke did not emit parsed character count for %s.\n' "$sample_name" >&2
+      exit 1
+    fi
+    parsed_character_counts+=("$parsed_character_count")
     sanitize_private_output "$cargo_output" "$sample_path"
     rm -f "$cargo_output"
   else

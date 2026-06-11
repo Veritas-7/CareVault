@@ -18,10 +18,20 @@ const validHwpSmokeReportEvidence: CareVaultHwpSmokeReportEvidence = {
   },
   sample_count: 2,
   samples: [
-    { basename: "oncology-followup.hwpx", extension: "hwpx", status: "passed" },
-    { basename: "blood-pressure-labs.hwp", extension: "hwp", status: "passed" },
+    {
+      basename: "oncology-followup.hwpx",
+      extension: "hwpx",
+      parsed_character_count: 420,
+      status: "passed",
+    },
+    {
+      basename: "blood-pressure-labs.hwp",
+      extension: "hwp",
+      parsed_character_count: 386,
+      status: "passed",
+    },
   ],
-  schema: "carevault-hwp-smoke-report.v2",
+  schema: "carevault-hwp-smoke-report.v3",
   status: "passed",
 };
 
@@ -113,6 +123,7 @@ describe("carevaultObjectiveReadiness", () => {
     });
     expect(markdown).toContain("Sanitized real private HWP/HWPX smoke evidence accepted");
     expect(markdown).toContain("cervical-cancer, hypertension, and diabetes");
+    expect(markdown).toContain("minimum observed parsed_character_count");
     expect(markdown).toContain("oncology-followup.hwpx");
     expect(requirementsById["real-private-hwp-hwpx-sample"]?.detail).not.toContain(
       "/Users/wj",
@@ -182,9 +193,15 @@ describe("carevaultObjectiveReadiness", () => {
           {
             basename: "/Users/wj/private/oncology-followup.hwpx",
             extension: "hwpx",
+            parsed_character_count: 420,
             status: "passed",
           },
-          { basename: "blood-pressure-labs.hwp", extension: "hwp", status: "passed" },
+          {
+            basename: "blood-pressure-labs.hwp",
+            extension: "hwp",
+            parsed_character_count: 386,
+            status: "passed",
+          },
         ],
       },
     });
@@ -199,6 +216,45 @@ describe("carevaultObjectiveReadiness", () => {
     expect(pathLeakingReport.blockingRequirementIds).toContain("real-private-hwp-hwpx-sample");
     expect(mismatchedCountReport.status).toBe("blocked");
     expect(mismatchedCountReport.blockingRequirementIds).toContain(
+      "real-private-hwp-hwpx-sample",
+    );
+  });
+
+  it("keeps HWP smoke evidence blocked when parsed character counts are missing or below the threshold", () => {
+    const missingParsedCharacterCountReport = buildCareVaultObjectiveReadinessReport({
+      hwpSmokeReportEvidence: {
+        ...validHwpSmokeReportEvidence,
+        samples: [
+          {
+            basename: "oncology-followup.hwpx",
+            extension: "hwpx",
+            status: "passed",
+          } as never,
+        ],
+        sample_count: 1,
+      },
+    });
+    const belowMinimumParsedCharacterCountReport = buildCareVaultObjectiveReadinessReport({
+      hwpSmokeReportEvidence: {
+        ...validHwpSmokeReportEvidence,
+        samples: [
+          {
+            basename: "oncology-followup.hwpx",
+            extension: "hwpx",
+            parsed_character_count: 199,
+            status: "passed",
+          },
+        ],
+        sample_count: 1,
+      },
+    });
+
+    expect(missingParsedCharacterCountReport.status).toBe("blocked");
+    expect(missingParsedCharacterCountReport.blockingRequirementIds).toContain(
+      "real-private-hwp-hwpx-sample",
+    );
+    expect(belowMinimumParsedCharacterCountReport.status).toBe("blocked");
+    expect(belowMinimumParsedCharacterCountReport.blockingRequirementIds).toContain(
       "real-private-hwp-hwpx-sample",
     );
   });

@@ -15,7 +15,7 @@ BAD_JSON_REPORT="$TMP_DIR/bad-json-report.json"
 
 cat > "$VALID_HWP_REPORT" <<'JSON'
 {
-  "schema": "carevault-hwp-smoke-report.v2",
+  "schema": "carevault-hwp-smoke-report.v3",
   "status": "passed",
   "sample_count": 2,
   "minimum_parsed_chars": "200",
@@ -27,8 +27,8 @@ cat > "$VALID_HWP_REPORT" <<'JSON'
     "diabetes": true
   },
   "samples": [
-    {"basename": "oncology-followup.hwpx", "extension": "hwpx", "status": "passed"},
-    {"basename": "blood-pressure-labs.hwp", "extension": "hwp", "status": "passed"}
+    {"basename": "oncology-followup.hwpx", "extension": "hwpx", "status": "passed", "parsed_character_count": 420},
+    {"basename": "blood-pressure-labs.hwp", "extension": "hwp", "status": "passed", "parsed_character_count": 386}
   ]
 }
 JSON
@@ -63,7 +63,7 @@ JSON
 
 cat > "$PATH_LEAK_HWP_REPORT" <<'JSON'
 {
-  "schema": "carevault-hwp-smoke-report.v2",
+  "schema": "carevault-hwp-smoke-report.v3",
   "status": "passed",
   "sample_count": 1,
   "minimum_parsed_chars": "200",
@@ -75,7 +75,7 @@ cat > "$PATH_LEAK_HWP_REPORT" <<'JSON'
     "diabetes": true
   },
   "samples": [
-    {"basename": "/Users/wj/private/oncology-followup.hwpx", "extension": "hwpx", "status": "passed"}
+    {"basename": "/Users/wj/private/oncology-followup.hwpx", "extension": "hwpx", "status": "passed", "parsed_character_count": 420}
   ]
 }
 JSON

@@ -182,5 +182,9 @@ mod tests {
             min_chars,
             &expected_terms,
         );
+        println!(
+            "CAREVAULT_HWP_SAMPLE_PARSED_CHARS={}",
+            parsed.character_count
+        );
     }
 }
