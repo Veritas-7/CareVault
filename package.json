@@ -14,6 +14,7 @@
     "hwp:smoke": "bash scripts/smoke_hwp_sample.sh",
     "rag:model:smoke": "bash scripts/smoke_rag_model.sh",
     "rag:embedding:smoke": "bash scripts/smoke_rag_embedding.sh",
+    "rag:ollama:doctor": "bash scripts/doctor_ollama_runtime.sh",
     "rag:ollama:smoke": "bash scripts/smoke_ollama_rag.sh",
     "tauri:dev:clean": "npm run runtime:doctor && npm run tauri -- dev",
     "preview": "vite preview",
