@@ -51,6 +51,19 @@ npm run backup:exports:smoke
 The export smoke checks CSV, visit-summary Markdown, and caregiver HTML for
 restored parsed-document RAG evidence while keeping local attachment paths out.
 
+Run this command to verify that the normalized SQLite document-search mirror
+stores the same patient-facing aliases used by in-app document search:
+
+```bash
+npm run sqlite:search:smoke
+```
+
+The SQLite search smoke checks that parsed-document clues such as `HbA1c`,
+hypertension, cervical-cancer terms, and HWPX parser provenance are expanded
+into the normalized `care_documents.search_text` mirror so searches such as
+`당화혈색소` can be counted by the SQLite readback path, not only by the
+in-memory document filter.
+
 ## Local model RAG smoke
 
 Run this command when an OpenAI-compatible local model endpoint is available:
@@ -538,7 +551,7 @@ CareVault is a local-first health notebook for manually tracking:
 - saved-document image attachment preview without uploading or exporting medical files
 - normalized SQLite mirror tables for profile including waist circumference, vitals, visits, documents, document attachments, document history, symptoms, questions, labs, and current food check
 - normalized SQLite mirror read status for runtime verification after ordered normalized-table-first saves
-- normalized SQLite search count readback across documents, labs, questions, symptoms, visits, vitals, and food checks
+- normalized SQLite search count readback across documents, labs, questions, symptoms, visits, vitals, and food checks, including alias-expanded parsed-document search text for patient-facing clinical terms
 - document attachment lifecycle controls with Tauri sandbox-copy selection and browser filename fallback
 - clinician visit summary export as a Markdown packet with selectable 7/30/90/all-record date range, range-aware export/preview button labels and status feedback, stale-preview guards for range or record changes, and record-derived care queue section
 

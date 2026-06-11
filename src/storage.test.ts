@@ -71,8 +71,8 @@ const mirror: NormalizedCareVaultMirror = {
       date: "2026-06-03",
       title: "혈액검사",
       category: "lab",
-      body: "WBC 확인",
-      tags: "혈액검사",
+      body: "[첨부 텍스트 파싱: blood.hwpx · HWPX 본문 XML]\nWBC 확인, HbA1c 7.4%, 혈압 149/93",
+      tags: "혈액검사 자궁경부암",
       reviewStatus: "care-question",
       nextAction: "감염 주의 기준 질문",
       attachmentName: "blood.png",
@@ -343,12 +343,23 @@ describe("storage normalized mirror", () => {
     expect(statements.find((statement) => statement.key === "documentRows")?.query).toContain(
       "FROM care_documents",
     );
+    expect(statements.find((statement) => statement.key === "documentRows")?.query).toContain(
+      "OR search_text",
+    );
     expect(statements.find((statement) => statement.key === "labResultRows")?.query).toContain(
       "FROM lab_results",
     );
     expect(statements.find((statement) => statement.key === "questionRows")?.query).toContain(
       "OR priority",
     );
+  });
+
+  it("targets alias-expanded normalized document search text", () => {
+    const statements = buildNormalizedSearchStatements("당화혈색소");
+    const documentStatement = statements.find((statement) => statement.key === "documentRows");
+
+    expect(documentStatement?.bindValues).toEqual(["%당화혈색소%"]);
+    expect(documentStatement?.query).toContain("OR search_text");
   });
 
   it("builds normalized table creation and mirror statements", () => {
@@ -361,6 +372,7 @@ describe("storage normalized mirror", () => {
     expect(sql).toContain("temperature_c REAL");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS visits");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS care_documents");
+    expect(sql).toContain("search_text TEXT NOT NULL DEFAULT ''");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS document_attachments");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS document_history");
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS food_checks");
@@ -408,6 +420,15 @@ describe("storage normalized mirror", () => {
           statement.bindValues?.[0] === "doc-2",
       )?.bindValues,
     ).toContain(1);
+    const documentSearchText = statements.find(
+      (statement) =>
+        statement.query.includes("INSERT INTO care_documents") &&
+        statement.bindValues?.[0] === "doc-1",
+    )?.bindValues?.[11];
+    expect(documentSearchText).toContain("당화혈색소");
+    expect(documentSearchText).toContain("혈압약");
+    expect(documentSearchText).toContain("자궁경부세포검사");
+    expect(documentSearchText).toContain("HWPX 본문 XML");
     expect(
       statements.find(
         (statement) =>

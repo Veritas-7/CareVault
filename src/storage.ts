@@ -1,3 +1,5 @@
+import { buildDocumentKnowledgeSearchText } from "./documentKnowledge";
+
 export type PersistenceBackend = "sqlite" | "localStorage" | "memory";
 
 type PersistedState<T> = {
@@ -293,6 +295,7 @@ const normalizedTableStatements: SqlStatement[] = [
       attachment_name TEXT,
       attachment_storage TEXT,
       attachment_status TEXT,
+      search_text TEXT NOT NULL DEFAULT '',
       is_deleted INTEGER NOT NULL,
       updated_at TEXT NOT NULL
     )`,
@@ -508,6 +511,7 @@ export function buildNormalizedSearchStatements(input: string): NormalizedSearch
             OR next_action ${like}
             OR COALESCE(attachment_name, '') ${like}
             OR COALESCE(attachment_status, '') ${like}
+            OR search_text ${like}
           )`,
       bindValues,
     },
@@ -708,10 +712,11 @@ export function buildNormalizedMirrorDataStatements(
         attachment_name,
         attachment_storage,
         attachment_status,
+        search_text,
         is_deleted,
         updated_at
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
       bindValues: [
         document.id,
         document.date,
@@ -724,6 +729,7 @@ export function buildNormalizedMirrorDataStatements(
         optionalText(document.attachmentName),
         optionalText(document.attachmentStorage),
         optionalText(document.attachmentStatus),
+        buildDocumentKnowledgeSearchText(document),
         boolToSql(document.isDeleted),
         updatedAt,
       ],
@@ -902,6 +908,7 @@ async function ensureNormalizedTables(db: SqlDatabase) {
   }
   await ensureProfileSnapshotColumns(db);
   await ensureVitalColumns(db);
+  await ensureDocumentColumns(db);
   await ensureQuestionColumns(db);
 }
 
@@ -922,6 +929,16 @@ async function ensureVitalColumns(db: SqlDatabase) {
   );
   if (!hasTemperatureColumn) {
     await db.execute("ALTER TABLE vitals ADD COLUMN temperature_c REAL");
+  }
+}
+
+async function ensureDocumentColumns(db: SqlDatabase) {
+  const hasSearchTextColumn = sqlColumnExists(
+    await db.select("PRAGMA table_info(care_documents)"),
+    "search_text",
+  );
+  if (!hasSearchTextColumn) {
+    await db.execute("ALTER TABLE care_documents ADD COLUMN search_text TEXT NOT NULL DEFAULT ''");
   }
 }
 

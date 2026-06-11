@@ -13,6 +13,7 @@
     "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
     "backup:rag:smoke": "vitest run src/backupState.test.ts src/documentRagContext.test.ts",
     "backup:exports:smoke": "vitest run src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts",
+    "sqlite:search:smoke": "vitest run src/storage.test.ts src/documentKnowledge.test.ts",
     "hwp:smoke": "bash scripts/smoke_hwp_sample.sh",
     "hwp:synthetic:smoke": "vitest run src/documentHwpxText.test.ts src/documentAttachmentParsing.test.ts src/documentRagContext.test.ts",
     "rag:model:smoke": "bash scripts/smoke_rag_model.sh",
