@@ -45,8 +45,30 @@ if [[ ! -x "$VITEST_BIN" ]]; then
   exit 2
 fi
 
+print_hwp_report_summary() {
+  python3 - "$CAREVAULT_HWP_SMOKE_REPORT_PATH" <<'PY'
+import json
+import pathlib
+import sys
+
+report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+samples = report.get("samples", [])
+parsed_counts = [sample.get("parsed_character_count") for sample in samples]
+minimum_observed = min(parsed_counts) if parsed_counts else 0
+sample_basenames = ", ".join(sample.get("basename", "") for sample in samples)
+
+print(f"Accepted HWP smoke evidence: {report.get('sample_count')} sample(s)")
+print(f"Minimum parsed chars: {report.get('minimum_parsed_chars')}")
+print(f"Minimum observed parsed chars: {minimum_observed}")
+print(f"Expected term count: {report.get('expected_term_count')}")
+print(f"Sample basenames: {sample_basenames}")
+PY
+}
+
 CAREVAULT_REQUIRE_HWP_SMOKE_REPORT=1 \
   CAREVAULT_HWP_SMOKE_REPORT_JSON="$(cat "$CAREVAULT_HWP_SMOKE_REPORT_PATH")" \
   "$VITEST_BIN" run src/carevaultObjectiveReadinessReportSmoke.test.ts
+
+print_hwp_report_summary
 
 printf 'Objective readiness report smoke passed for basename-only HWP evidence report.\n'

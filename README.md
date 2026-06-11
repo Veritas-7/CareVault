@@ -241,8 +241,12 @@ terms were provided, cervical-cancer, hypertension, and diabetes objective term
 groups are all covered, extensions are `.hwp`, `.hwpx`, or `.hwpml`, and every
 sample entry is basename-only.
 `npm run objective:readiness:report` is the command-only bridge from this report
-to the objective-readiness status; `npm run objective:readiness:report:test`
-uses fixture reports to verify the bridge without any private sample.
+to the objective-readiness status. When the report is accepted, the command
+prints a basename-only summary with sample count, minimum parsed-character
+threshold, minimum observed parsed-character count, expected-term count, and
+sample basenames so the operator can verify the accepted evidence without
+opening private medical text. `npm run objective:readiness:report:test` uses
+fixture reports to verify the bridge without any private sample.
 
 For a repeatable non-private regression that proves HWPX section XML can become
 source-grounded CareVault RAG evidence, run:

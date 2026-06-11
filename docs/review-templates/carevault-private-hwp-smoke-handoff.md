@@ -47,6 +47,11 @@ CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
 npm run objective:readiness:report
 ```
 
+When accepted, the command prints only basename-level evidence: sample count,
+minimum parsed-character threshold, minimum observed parsed-character count,
+expected-term count, and sample basenames. Do not paste the private report body
+or parsed medical text into chat, issues, or this repo.
+
 The objective is still not complete after this check unless external
 clinician/source review evidence is also supplied.
 

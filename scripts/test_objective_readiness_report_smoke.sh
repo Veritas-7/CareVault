@@ -151,6 +151,10 @@ assert_not_contains "$TMP_DIR/missing-group.out" "$TMP_DIR"
 
 expect_success "valid-report" CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_REPORT"
 assert_contains "$TMP_DIR/valid-report.out" "Objective readiness report smoke passed"
+assert_contains "$TMP_DIR/valid-report.out" "Accepted HWP smoke evidence: 2 sample(s)"
+assert_contains "$TMP_DIR/valid-report.out" "Minimum parsed chars: 200"
+assert_contains "$TMP_DIR/valid-report.out" "Minimum observed parsed chars: 386"
+assert_contains "$TMP_DIR/valid-report.out" "Sample basenames: oncology-followup.hwpx, blood-pressure-labs.hwp"
 assert_contains "$TMP_DIR/valid-report.out" "1 passed"
 assert_not_contains "$TMP_DIR/valid-report.out" "$TMP_DIR"
 
