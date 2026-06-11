@@ -3,6 +3,17 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cargo_output_files=()
+
+cleanup_cargo_output_files() {
+  local output_file
+
+  for output_file in "${cargo_output_files[@]:-}"; do
+    [[ -n "$output_file" ]] && rm -f "$output_file"
+  done
+}
+
+trap cleanup_cargo_output_files EXIT
 
 print_usage() {
   cat <<'EOF'
@@ -255,6 +266,7 @@ validate_report_path "${CAREVAULT_HWP_SMOKE_REPORT_PATH:-}"
 for sample_path in "${sample_paths[@]}"; do
   sample_name="$(basename "$sample_path")"
   cargo_output="$(mktemp)"
+  cargo_output_files+=("$cargo_output")
   printf 'Sample: %s\n' "$sample_name"
 
   if CAREVAULT_HWP_SAMPLE_PATH="$sample_path" \

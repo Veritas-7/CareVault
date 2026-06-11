@@ -151,6 +151,18 @@ CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
 assert_contains "$TMP_DIR/single-file-sanitizes-cargo-output.out" "[private-sample-path]"
 assert_not_contains "$TMP_DIR/single-file-sanitizes-cargo-output.out" "$SAMPLES_DIR"
 
+CARGO_TMP_DIR="$TMP_DIR/cargo-output-tmp"
+mkdir -p "$CARGO_TMP_DIR"
+TMPDIR="$CARGO_TMP_DIR" \
+  CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
+  CAREVAULT_HWP_SMOKE_FAKE_CARGO_ECHO_PATH=1 \
+  expect_success "cargo-output-temp-cleanup"
+if find "$CARGO_TMP_DIR" -type f | grep -q .; then
+  printf 'Expected sanitized cargo output temp files to be removed.\n' >&2
+  find "$CARGO_TMP_DIR" -type f -print >&2
+  exit 1
+fi
+
 CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
   CAREVAULT_HWP_SMOKE_FAKE_CARGO_FAIL=1 \
   expect_failure "cargo-failure-sanitized"
