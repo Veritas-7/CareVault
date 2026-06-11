@@ -188,6 +188,7 @@ import {
   buildDocumentKnowledgeSummary,
   buildDocumentParserProvenanceSummary,
 } from "./documentKnowledge";
+import { buildDocumentParserAudit } from "./documentParserAudit";
 import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
@@ -1538,6 +1539,10 @@ function App() {
         parsedAttachmentCount: documentPanelSummary.parsedAttachmentCount,
       }),
     [documentPanelSummary.desktopParserCount, documentPanelSummary.parsedAttachmentCount],
+  );
+  const documentParserAudit = useMemo(
+    () => buildDocumentParserAudit(state.documents),
+    [state.documents],
   );
   const documentDraftHasRequiredFields = hasRequiredTextValues(
     documentDraft.title,
@@ -7398,6 +7403,28 @@ function App() {
                 </button>
               ))}
             </div>
+            {documentParserAudit.items.length ? (
+              <div
+                className="document-parser-audit"
+                aria-label={`문서 파서 점검 ${documentParserAudit.ariaLabel}`}
+              >
+                <div className="document-parser-audit-title">
+                  <strong>문서 파서 점검</strong>
+                  <span>{documentParserAudit.summary}</span>
+                </div>
+                <ul>
+                  {documentParserAudit.items.map((item) => (
+                    <li key={item.documentId}>
+                      <span>
+                        {item.dateLabel} · {item.documentLabel}
+                      </span>
+                      <small>{item.sourceSummary}</small>
+                      <small>{item.clinicalSignalSummary}</small>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <input
               ref={savedAttachmentInputRef}
               className="visually-hidden"
