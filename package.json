@@ -18,6 +18,8 @@
     "objective:readiness:report:test": "bash scripts/test_objective_readiness_report_smoke.sh",
     "objective:readiness:complete": "bash scripts/smoke_objective_readiness_complete.sh",
     "objective:readiness:complete:test": "bash scripts/test_objective_readiness_complete_smoke.sh",
+    "objective:readiness:complete:verify": "bash scripts/verify_objective_readiness_complete.sh",
+    "objective:readiness:complete:verify:test": "bash scripts/test_objective_readiness_complete_verify.sh",
     "objective:readiness:handoff": "bash scripts/export_objective_readiness_handoff.sh",
     "objective:readiness:handoff:test": "bash scripts/test_objective_readiness_handoff.sh",
     "objective:readiness:handoff:verify": "bash scripts/verify_objective_readiness_handoff.sh",

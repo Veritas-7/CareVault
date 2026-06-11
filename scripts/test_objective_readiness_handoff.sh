@@ -121,6 +121,7 @@ assert_contains "$FINAL_HANDOFF" "npm run clinical:external-review:report"
 assert_contains "$FINAL_HANDOFF" "npm run objective:readiness:inputs:doctor"
 assert_contains "$FINAL_HANDOFF" "npm run objective:readiness:inputs:verify"
 assert_contains "$FINAL_HANDOFF" "npm run objective:readiness:complete"
+assert_contains "$FINAL_HANDOFF" "npm run objective:readiness:complete:verify"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=/path/to/carevault-readiness-inputs.json"
@@ -164,6 +165,7 @@ const expectedCommands = [
   "npm run objective:readiness:inputs:doctor",
   "npm run objective:readiness:inputs:verify",
   "npm run objective:readiness:complete",
+  "npm run objective:readiness:complete:verify",
 ];
 if (
   !Array.isArray(manifest.evidence_command_sequence) ||

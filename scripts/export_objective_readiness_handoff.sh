@@ -188,9 +188,20 @@ CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH=/path/to/carevault-objec
 npm run objective:readiness:complete
 ```
 
+## Step 7: Verify Final Completion JSON
+
+Verify the saved final completion JSON before automation treats the blockers as
+resolved. This catches stale, path-leaking, incomplete, or non-complete reports.
+
+```bash
+CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH=/path/to/carevault-objective-readiness-complete-verify.json \
+npm run objective:readiness:complete:verify
+```
+
 Only after the final command prints `Objective readiness complete: pass` and
-`Blocking requirements: none`, and the optional completion verify JSON records
-`verified-complete`, can these two blockers be treated as resolved.
+`Blocking requirements: none`, and the completion verify JSON passes
+`npm run objective:readiness:complete:verify`, can these two blockers be treated
+as resolved.
 EOF
 
 cat > "$MANIFEST_JSON" <<'EOF'
@@ -224,7 +235,8 @@ cat > "$MANIFEST_JSON" <<'EOF'
     "npm run clinical:external-review:report",
     "npm run objective:readiness:inputs:doctor",
     "npm run objective:readiness:inputs:verify",
-    "npm run objective:readiness:complete"
+    "npm run objective:readiness:complete",
+    "npm run objective:readiness:complete:verify"
   ],
   "required_evidence_inputs": [
     "CAREVAULT_HWP_SMOKE_REPORT_PATH",

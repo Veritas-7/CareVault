@@ -124,6 +124,7 @@ const expectedCommands = [
   "npm run objective:readiness:inputs:doctor",
   "npm run objective:readiness:inputs:verify",
   "npm run objective:readiness:complete",
+  "npm run objective:readiness:complete:verify",
 ];
 if (report.schema !== "carevault-objective-readiness-handoff-verify.v1") process.exit(1);
 if (report.status !== "verified-blocked") process.exit(1);
