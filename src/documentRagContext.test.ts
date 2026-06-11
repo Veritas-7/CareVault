@@ -49,6 +49,21 @@ const unrelatedDocument = {
   title: "보험 서류",
 } as const;
 
+const parsedFollowUpDocument = {
+  attachmentName: "혈압_혈당_추적.hwpx",
+  attachmentPath: "/Users/wj/private/혈압_혈당_추적.hwpx",
+  body:
+    "[첨부 텍스트 파싱: 혈압_혈당_추적.hwpx · HWPX 본문 XML]\n" +
+    "자궁경부암 추적 외래 전 확인. 혈압 150/92, 당화혈색소 7.8%.",
+  category: "lab",
+  date: "2026-06-12",
+  id: "doc-follow-up",
+  nextAction: "추적 외래에서 혈압과 당화혈색소 변화 확인",
+  reviewStatus: "care-question",
+  tags: "자궁경부암,혈압,당화혈색소",
+  title: "혈압 혈당 추적",
+} as const;
+
 describe("documentRagContext", () => {
   it("builds a profile-based RAG query with clinical and patient-facing aliases", () => {
     expect(
@@ -295,6 +310,38 @@ describe("documentRagContext", () => {
     expect(formatDocumentRagAnswerDraftClipboardFailedStatus(context)).toBe(
       "문서 RAG 답변 초안 복사 실패 · 답변 초안 3줄 · 근거 인용 1개 · 원문 근거 충분",
     );
+  });
+
+  it("uses multiple relevant parsed documents in the in-app answer draft", () => {
+    const context = buildDocumentRagContext(
+      [parsedHwpDocument, parsedFollowUpDocument, unrelatedDocument],
+      "자궁경부암 혈압 당화혈색소",
+    );
+    const text = formatDocumentRagAnswerDraftClipboardText(context);
+
+    expect(context.items).toHaveLength(2);
+    expect(context.answerDraft.summary).toBe("답변 초안 4줄 · 근거 인용 2개 · 원문 근거 충분");
+    expect(context.answerDraft.lines.some((line) => line.includes("추가 근거 2:"))).toBe(true);
+    expect(context.answerDraft.lines.join("\n")).toContain(
+      "HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp",
+    );
+    expect(context.answerDraft.lines.join("\n")).toContain(
+      "HWPX 본문 XML: 혈압_혈당_추적.hwpx",
+    );
+    expect(context.answerDraft.citations).toHaveLength(2);
+    expect(
+      context.answerDraft.citations.some((citation) =>
+        citation.includes("조각 원천 HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp"),
+      ),
+    ).toBe(true);
+    expect(
+      context.answerDraft.citations.some((citation) =>
+        citation.includes("조각 원천 HWPX 본문 XML: 혈압_혈당_추적.hwpx"),
+      ),
+    ).toBe(true);
+    expect(text).toContain("근거 인용 2개");
+    expect(text).toContain("HWPX 본문 XML: 혈압_혈당_추적.hwpx");
+    expect(text).not.toContain("/Users/wj/private");
   });
 
   it("fails closed for answer drafts when RAG evidence is insufficient", () => {

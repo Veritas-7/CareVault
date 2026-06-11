@@ -67,6 +67,7 @@ export type DocumentRagProfileQuerySource = {
 const defaultMaxItems = 5;
 const maxEvidenceChunkTextLength = 300;
 const evidenceChunkContextRadius = 130;
+const maxAnswerDraftEvidenceItems = 3;
 const noContextSummary = "RAG 컨텍스트 없음 · 검색 결과 0개";
 const noCareBriefSummary = "진료 확인 초점 없음";
 export const documentRagSourceBoundaryLine =
@@ -623,6 +624,26 @@ function formatAnswerDraftCitation(
     : `문서 ${itemIndex + 1} · ${item.titleLine} · 근거 스니펫 · 원천 ${sourceSummary}`;
 }
 
+function formatAnswerDraftAdditionalEvidenceLine(
+  item: DocumentRagContextItem,
+  itemIndex: number,
+) {
+  const topChunk = item.evidenceChunks[0];
+  const evidenceSource = formatAnswerDraftEvidenceSource(item, topChunk);
+  const nextAction =
+    item.nextActionSummary !== "다음 조치 없음"
+      ? `진료팀 확인 질문 ${item.nextActionSummary}`
+      : "진료팀 확인 질문 현재 치료/검사 계획과 연결 여부 확인";
+
+  return compactText(
+    `추가 근거 ${itemIndex + 1}: ${item.titleLine}`,
+    item.signalSummary !== "임상 단서 없음" ? `관련 단서 ${item.signalSummary}` : "",
+    `원천 ${evidenceSource}`,
+    `요약 ${topChunk?.text ?? item.snippet}`,
+    nextAction,
+  );
+}
+
 function buildDocumentRagAnswerDraft(
   items: DocumentRagContextItem[],
   evidenceQuality: DocumentRagContext["evidenceQuality"],
@@ -640,7 +661,8 @@ function buildDocumentRagAnswerDraft(
     };
   }
 
-  const topItem = items[0];
+  const draftItems = items.slice(0, maxAnswerDraftEvidenceItems);
+  const topItem = draftItems[0];
   const topChunk = topItem.evidenceChunks[0];
   const evidenceSource = formatAnswerDraftEvidenceSource(topItem, topChunk);
   const nextActionLine =
@@ -655,8 +677,13 @@ function buildDocumentRagAnswerDraft(
     ),
     `원문 근거 요약: ${evidenceSource} · ${topChunk?.text ?? topItem.snippet}`,
     nextActionLine,
+    ...draftItems
+      .slice(1)
+      .map((item, index) => formatAnswerDraftAdditionalEvidenceLine(item, index + 1)),
   ];
-  const citations = [formatAnswerDraftCitation(topItem, 0, topChunk)];
+  const citations = draftItems.map((item, index) =>
+    formatAnswerDraftCitation(item, index, item.evidenceChunks[0]),
+  );
   const warnings = [
     "진단·처방·치료 지시가 아니라 저장 서류 근거를 바탕으로 한 진료팀 확인 초안입니다.",
     ...evidenceQuality.warnings,
