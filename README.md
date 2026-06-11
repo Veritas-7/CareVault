@@ -148,6 +148,7 @@ Verify a previously exported handoff bundle before sharing or archiving it:
 
 ```bash
 CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR=/tmp/carevault-objective-readiness-handoff \
+CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH=/tmp/carevault-handoff-verify.json \
 npm run objective:readiness:handoff:verify
 ```
 
@@ -161,12 +162,15 @@ sections. It also runs `npm run objective:readiness:inputs:verify` logic
 against the bundled `carevault-readiness-inputs-doctor.json`, so blocker,
 next-action, ready-state, and path-safety drift are caught by the same input
 JSON verifier used outside the bundle. It fails if any bundle file leaks local
-paths.
+paths. When `CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH` is set, it
+writes schema `carevault-objective-readiness-handoff-verify.v1` with only
+path-safe verification status, blocker IDs, command sequence, bundle file count,
+and input-doctor status/next-action IDs.
 `npm run objective:readiness:handoff:verify:test` covers valid bundles, missing
 env/dir/manifest, invalid JSON, missing listed files, wrong manifest status,
-wrong baseline input-doctor status, missing input-verifier command, and
-path-leak failures. It also rejects a baseline input-doctor JSON with extra
-unsupported blockers.
+wrong baseline input-doctor status, missing input-verifier command, JSON report
+output, missing JSON report parent, and path-leak failures. It also rejects a
+baseline input-doctor JSON with extra unsupported blockers.
 
 ## Clinical source smoke
 

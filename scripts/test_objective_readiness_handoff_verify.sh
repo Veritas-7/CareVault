@@ -78,6 +78,7 @@ if ! bash "$VERIFY_SCRIPT" --help > "$TMP_DIR/help.out" 2>&1; then
   exit 1
 fi
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR"
+assert_contains "$TMP_DIR/help.out" "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH"
 
 VALID_BUNDLE="$TMP_DIR/valid-bundle"
 if ! CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$VALID_BUNDLE" \
@@ -104,6 +105,66 @@ assert_contains "$TMP_DIR/valid-bundle.out" "Status: blocked"
 assert_contains "$TMP_DIR/valid-bundle.out" "Bundle files: 14"
 assert_contains "$TMP_DIR/valid-bundle.out" "real-private-hwp-hwpx-sample, external-clinician-source-review"
 assert_not_contains "$TMP_DIR/valid-bundle.out" "$VALID_BUNDLE"
+
+VERIFY_JSON="$TMP_DIR/verify-report.json"
+expect_success "valid-bundle-json" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$VALID_BUNDLE" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH="$VERIFY_JSON"
+if [[ ! -s "$VERIFY_JSON" ]]; then
+  printf 'Expected handoff verify JSON report to be written.\n' >&2
+  exit 1
+fi
+node - <<'NODE' "$VERIFY_JSON"
+const fs = require("fs");
+const report = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+const expectedCommands = [
+  "npm run hwp:smoke",
+  "npm run clinical:external-review:packet",
+  "npm run clinical:external-review:report",
+  "npm run objective:readiness:inputs:doctor",
+  "npm run objective:readiness:inputs:verify",
+  "npm run objective:readiness:complete",
+];
+if (report.schema !== "carevault-objective-readiness-handoff-verify.v1") process.exit(1);
+if (report.status !== "verified-blocked") process.exit(1);
+if (report.bundle_status !== "blocked") process.exit(1);
+if (report.bundle_file_count !== 14) process.exit(1);
+if (report.local_paths_included !== false) process.exit(1);
+if (
+  !Array.isArray(report.blocking_requirement_ids) ||
+  report.blocking_requirement_ids.join(",") !==
+    "real-private-hwp-hwpx-sample,external-clinician-source-review"
+) {
+  process.exit(1);
+}
+if (
+  !Array.isArray(report.evidence_command_sequence) ||
+  report.evidence_command_sequence.join("\n") !== expectedCommands.join("\n")
+) {
+  process.exit(1);
+}
+if (!report.inputs_doctor || report.inputs_doctor.status !== "missing-evidence") process.exit(1);
+if (report.inputs_doctor.final_readiness_gate !== "not-ready") process.exit(1);
+if (report.inputs_doctor.input_paths_included !== false) process.exit(1);
+if (
+  !Array.isArray(report.inputs_doctor.next_required_action_ids) ||
+  report.inputs_doctor.next_required_action_ids.join(",") !==
+    "run-real-private-hwp-smoke,complete-external-clinician-source-review"
+) {
+  process.exit(1);
+}
+NODE
+if grep -q -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$VERIFY_JSON"; then
+  printf 'Expected handoff verify JSON report to be path-safe.\n' >&2
+  exit 1
+fi
+assert_not_contains "$TMP_DIR/valid-bundle-json.out" "$TMP_DIR"
+
+expect_failure "verify-json-missing-parent" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$VALID_BUNDLE" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH="$TMP_DIR/missing/report.json"
+assert_contains "$TMP_DIR/verify-json-missing-parent.err" "handoff verify JSON parent directory is not writable"
+assert_not_contains "$TMP_DIR/verify-json-missing-parent.err" "$TMP_DIR/missing"
 
 MISSING_INPUT_VERIFY_COMMAND_BUNDLE="$(copy_bundle missing-input-verify-command-bundle)"
 node - <<'NODE' "$MISSING_INPUT_VERIFY_COMMAND_BUNDLE/carevault-objective-readiness-handoff-manifest.json" "$MISSING_INPUT_VERIFY_COMMAND_BUNDLE/carevault-final-readiness-handoff.md"

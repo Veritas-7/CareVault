@@ -9,14 +9,17 @@ print_usage() {
   cat <<'EOF'
 Usage:
   CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR=/tmp/carevault-objective-readiness-handoff \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH=/tmp/carevault-handoff-verify.json \
   npm run objective:readiness:handoff:verify
 
 This command verifies a previously exported CareVault objective readiness
 handoff bundle. It checks the machine-readable manifest, required file set,
 current blocked readiness status, final evidence command sequence, and local
 path exclusion. The command sequence must verify the path-safe input doctor JSON
-before the final completion gate. It does not create private HWP evidence or
-clinical approval.
+before the final completion gate. When
+CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH is set, it writes a
+path-safe machine-readable verification report. It does not create private HWP
+evidence or clinical approval.
 EOF
 }
 
@@ -51,6 +54,18 @@ if [[ ! -r "$MANIFEST_PATH" ]]; then
 fi
 
 INPUTS_DOCTOR_PATH="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-readiness-inputs-doctor.json"
+
+if [[ -n "${CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH:-}" ]]; then
+  VERIFY_JSON_PARENT="$(dirname "$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH")"
+  if [[ ! -d "$VERIFY_JSON_PARENT" || ! -w "$VERIFY_JSON_PARENT" ]]; then
+    printf 'FAIL: handoff verify JSON parent directory is not writable.\n' >&2
+    exit 2
+  fi
+  if [[ -e "$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH" && ! -f "$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH" ]]; then
+    printf 'FAIL: handoff verify JSON output path is not a file.\n' >&2
+    exit 2
+  fi
+fi
 
 if grep -R -q -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR"; then
   printf 'FAIL: handoff bundle contains a local path or attachment path field.\n' >&2
@@ -303,6 +318,33 @@ if (!reviewerHandoff.includes("Artifact Hashes")) {
 }
 if (!reviewerHandoff.includes("Workflow Requirement Summary")) {
   fail("reviewer handoff must include workflow requirement summary.");
+}
+
+const verifyReportPath =
+  process.env.CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH;
+if (verifyReportPath) {
+  const report = {
+    schema: "carevault-objective-readiness-handoff-verify.v1",
+    generated_by: "npm run objective:readiness:handoff:verify",
+    status: "verified-blocked",
+    bundle_status: manifest.status,
+    blocking_requirement_ids: expectedBlockers,
+    bundle_file_count: manifest.bundle_files.length,
+    evidence_command_sequence: manifest.evidence_command_sequence,
+    required_evidence_inputs: manifest.required_evidence_inputs,
+    optional_status_outputs: manifest.optional_status_outputs,
+    inputs_doctor: {
+      schema: inputsDoctor.schema,
+      status: inputsDoctor.status,
+      final_readiness_gate: inputsDoctor.final_readiness_gate,
+      blocking_requirements: inputsDoctor.blocking_requirements,
+      next_required_action_ids: nextActionIds,
+      input_paths_included: inputsDoctor.input_paths_included,
+    },
+    local_paths_included: false,
+    non_evidence_statement: manifest.non_evidence_statement,
+  };
+  fs.writeFileSync(verifyReportPath, `${JSON.stringify(report, null, 2)}\n`);
 }
 
 console.log("Objective readiness handoff verified.");
