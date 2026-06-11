@@ -60,6 +60,7 @@ import {
   buildDocumentRagProfileQuery,
   documentRagSourceBoundaryLine,
 } from "./documentRagContext";
+import { stripLocalPathsFromExportText } from "./exportTextSanitizer";
 
 type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
 type QuestionStatus = "open" | "answered" | "deferred";
@@ -218,7 +219,7 @@ export function buildCsvExportFingerprint(state: CsvExportState) {
     deletedDocuments: state.deletedDocuments.map((document) => ({
       attachmentName: document.attachmentName,
       attachmentStatus: document.attachmentStatus,
-      body: document.body,
+      body: stripLocalPathsFromExportText(document.body),
       category: document.category,
       date: document.date,
       nextAction: document.nextAction,
@@ -229,7 +230,7 @@ export function buildCsvExportFingerprint(state: CsvExportState) {
     documents: state.documents.map((document) => ({
       attachmentName: document.attachmentName,
       attachmentStatus: document.attachmentStatus,
-      body: document.body,
+      body: stripLocalPathsFromExportText(document.body),
       category: document.category,
       date: document.date,
       nextAction: document.nextAction,
@@ -487,7 +488,7 @@ export function buildCareVaultCsv(state: CsvExportState, exportedAt: string) {
           document.tags,
           document.attachmentName ? `첨부: ${document.attachmentName}` : undefined,
           document.attachmentStatus,
-          document.body,
+          stripLocalPathsFromExportText(document.body),
         ]),
       ]),
     );

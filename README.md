@@ -40,6 +40,16 @@ The backup smoke strips local attachment paths, marks restored filenames as
 requiring reattachment, and verifies the preserved parsed body still ranks into
 document RAG context and answer drafts.
 
+Run this command to verify that restored parsed document evidence also survives
+into export/share surfaces:
+
+```bash
+npm run backup:exports:smoke
+```
+
+The export smoke checks CSV, visit-summary Markdown, and caregiver HTML for
+restored parsed-document RAG evidence while keeping local attachment paths out.
+
 ## Local model RAG smoke
 
 Run this command when an OpenAI-compatible local model endpoint is available:

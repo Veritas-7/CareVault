@@ -62,6 +62,7 @@ import {
   buildDocumentRagProfileQuery,
   documentRagSourceBoundaryLine,
 } from "./documentRagContext";
+import { stripLocalPathsFromExportText } from "./exportTextSanitizer";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose" | "temperature";
@@ -117,6 +118,7 @@ export type VisitPacketState = {
     nextAction?: string;
     attachmentName?: string;
     attachmentPath?: string;
+    attachmentStatus?: string;
   }>;
   symptoms: Array<{
     date: string;
@@ -223,7 +225,8 @@ export function buildVisitPacketExportFingerprint(
   return JSON.stringify({
     documents: state.documents.filter(hasValidRecordDate).map((document) => ({
       attachmentName: document.attachmentName,
-      body: document.body,
+      attachmentStatus: document.attachmentName ? document.attachmentStatus : "",
+      body: stripLocalPathsFromExportText(document.body),
       category: document.category,
       date: getValidIsoDate(document.date) ?? "",
       nextAction: document.nextAction,
@@ -492,10 +495,14 @@ export function buildVisitPacketMarkdown(
     .slice(0, maxItems)
     .map((document) => {
       const attachment = document.attachmentName ? ` / 첨부: ${document.attachmentName}` : "";
+      const attachmentStatus =
+        document.attachmentName && document.attachmentStatus
+          ? ` / 첨부 상태: ${stripLocalPathsFromExportText(document.attachmentStatus)}`
+          : "";
       const reviewStatus = document.reviewStatus
         ? ` / 상태: ${documentReviewStatusLabel[document.reviewStatus]}`
         : "";
-      return `- ${document.date}: [${documentLabel[document.category]}] ${document.title}${reviewStatus}${optionalSuffix(document.nextAction ?? "", " / 다음 조치: ")}${attachment}${optionalSuffix(document.tags, " / 태그: ")}${optionalSuffix(document.body, " / 메모: ")}`;
+      return `- ${document.date}: [${documentLabel[document.category]}] ${document.title}${reviewStatus}${optionalSuffix(document.nextAction ?? "", " / 다음 조치: ")}${attachment}${attachmentStatus}${optionalSuffix(document.tags, " / 태그: ")}${optionalSuffix(stripLocalPathsFromExportText(document.body), " / 메모: ")}`;
     });
   const documentParserAuditLines = buildDocumentParserAuditLines(rangedDocuments, maxItems);
   const documentRagQuery = buildDocumentRagProfileQuery(state.profile);

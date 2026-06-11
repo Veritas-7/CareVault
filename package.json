@@ -12,6 +12,7 @@
     "runtime:doctor:dev": "bash scripts/verify_runtime_clean.sh --expect-dev",
     "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
     "backup:rag:smoke": "vitest run src/backupState.test.ts src/documentRagContext.test.ts",
+    "backup:exports:smoke": "vitest run src/csvExport.test.ts src/visitPacket.test.ts src/caregiverExport.test.ts",
     "hwp:smoke": "bash scripts/smoke_hwp_sample.sh",
     "hwp:synthetic:smoke": "vitest run src/documentAttachmentParsing.test.ts src/documentRagContext.test.ts",
     "rag:model:smoke": "bash scripts/smoke_rag_model.sh",

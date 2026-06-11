@@ -23,6 +23,7 @@ import {
   cervicalCancerCarePreventionGuides,
 } from "./cervicalCancerCare";
 import { buildVitalStandardQuestionDraft } from "./healthStandards";
+import { restoredAttachmentStatus } from "./backupState";
 
 const kdcaHypertensionUrl =
   "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=28";
@@ -1609,6 +1610,43 @@ describe("csvExport", () => {
     expect(csv).toContain("조각 본문: 자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.");
     expect(csv).not.toContain("attachmentPath");
     expect(csv).not.toContain("/Users/wj/private");
+  });
+
+  it("exports restored parsed document RAG evidence rows without local attachment paths", () => {
+    const csv = buildCareVaultCsv(
+      {
+        ...state,
+        documents: [
+          {
+            date: "2026-06-06",
+            title: "복원된 HWPX 진료 기록",
+            category: "visit-note",
+            body: [
+              "복원 경로 /Users/wj/private/restored-follow-up.hwpx",
+              "",
+              "[첨부 텍스트 파싱: restored-follow-up.hwpx · HWPX 본문 XML]",
+              "자궁경부암 추적 진료 기록. 혈압 149/93. HbA1c 7.4%, 당화혈색소 상담 예정.",
+            ].join("\n"),
+            tags: "자궁경부암 고혈압 당뇨",
+            reviewStatus: "care-question",
+            nextAction: "복원 후 혈압과 당화혈색소 관리 연결 질문",
+            attachmentName: "restored-follow-up.hwpx",
+            attachmentStatus: restoredAttachmentStatus,
+          },
+        ],
+      },
+      "2026-06-06T10:00:00.000Z",
+    );
+
+    expect(csv).toContain(restoredAttachmentStatus);
+    expect(csv).toContain("복원 경로 [local path]");
+    expect(csv).toContain(
+      '"document_rag_evidence","2026-06-06","복원된 HWPX 진료 기록","파싱 본문 조각 1","의료진 질문"',
+    );
+    expect(csv).toContain("조각 원천: HWPX 본문 XML: restored-follow-up.hwpx");
+    expect(csv).toContain("조각 본문: 자궁경부암 추적 진료 기록. 혈압 149/93. HbA1c 7.4%, 당화혈색소 상담 예정.");
+    expect(csv).not.toContain("/Users/wj/private");
+    expect(csv).not.toContain("attachmentPath");
   });
 
   it("exports deleted parsed document audit rows separately", () => {

@@ -19,6 +19,7 @@ import {
   cervicalCancerCarePreventionGuides,
 } from "./cervicalCancerCare";
 import { buildVitalStandardQuestionDraft } from "./healthStandards";
+import { restoredAttachmentStatus } from "./backupState";
 
 const kdcaHypertensionUrl =
   "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=28";
@@ -909,6 +910,45 @@ describe("caregiverExport", () => {
     expect(html).toContain("HWP/HWPX 데스크톱 파서: follow-up.hwp");
     expect(html).toContain("자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.");
     expect(html).not.toContain("/Users/wj/private/follow-up.hwp");
+    expect(html).not.toContain("attachmentPath");
+  });
+
+  it("includes restored parsed document RAG evidence in caregiver HTML without local paths", () => {
+    const html = buildCaregiverExportHtml(
+      {
+        ...state,
+        profile: {
+          ...state.profile,
+          diabetes: true,
+        },
+        documents: [
+          {
+            date: "2026-06-06",
+            title: "복원된 HWPX 진료 기록",
+            category: "visit-note",
+            body: [
+              "복원 경로 /Users/wj/private/restored-follow-up.hwpx",
+              "",
+              "[첨부 텍스트 파싱: restored-follow-up.hwpx · HWPX 본문 XML]",
+              "자궁경부암 추적 진료 기록. 혈압 149/93. HbA1c 7.4%, 당화혈색소 상담 예정.",
+            ].join("\n"),
+            reviewStatus: "care-question",
+            nextAction: "복원 후 혈압과 당화혈색소 관리 연결 질문",
+            attachmentName: "restored-follow-up.hwpx",
+            attachmentStatus: restoredAttachmentStatus,
+          },
+        ],
+      },
+      "2026-06-06T10:00:00.000Z",
+    );
+
+    expect(html).toContain(restoredAttachmentStatus);
+    expect(html).toContain("<h3>문서 RAG 근거 조각</h3>");
+    expect(html).toContain("문서 상태: 의료진 질문");
+    expect(html).toContain("다음 조치: 복원 후 혈압과 당화혈색소 관리 연결 질문");
+    expect(html).toContain("HWPX 본문 XML: restored-follow-up.hwpx");
+    expect(html).toContain("자궁경부암 추적 진료 기록. 혈압 149/93. HbA1c 7.4%, 당화혈색소 상담 예정.");
+    expect(html).not.toContain("/Users/wj/private");
     expect(html).not.toContain("attachmentPath");
   });
 

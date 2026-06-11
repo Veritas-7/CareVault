@@ -21,6 +21,7 @@ import {
   formatVisitPacketPreviewStatus,
   type VisitPacketState,
 } from "./visitPacket";
+import { restoredAttachmentStatus } from "./backupState";
 
 const kdcaHypertensionUrl =
   "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=28";
@@ -1454,6 +1455,45 @@ describe("visit packet", () => {
     expect(markdown).toContain("    - 조각 원천: HWP/HWPX 데스크톱 파서: follow-up.hwp");
     expect(markdown).toContain("    - 조각 본문: 자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.");
     expect(markdown).not.toContain("/Users/wj/private/follow-up.hwp");
+    expect(markdown).not.toContain("attachmentPath");
+  });
+
+  it("includes restored parsed document RAG evidence in clinician-facing visit packets", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        documents: [
+          {
+            date: "2026-06-06",
+            title: "복원된 HWPX 진료 기록",
+            category: "visit-note",
+            body: [
+              "복원 경로 /Users/wj/private/restored-follow-up.hwpx",
+              "",
+              "[첨부 텍스트 파싱: restored-follow-up.hwpx · HWPX 본문 XML]",
+              "자궁경부암 추적 진료 기록. 혈압 149/93. HbA1c 7.4%, 당화혈색소 상담 예정.",
+            ].join("\n"),
+            tags: "자궁경부암 고혈압 당뇨",
+            reviewStatus: "care-question",
+            nextAction: "복원 후 혈압과 당화혈색소 관리 연결 질문",
+            attachmentName: "restored-follow-up.hwpx",
+            attachmentStatus: restoredAttachmentStatus,
+          },
+        ],
+      },
+      { exportedAt: "2026-06-06T08:00:00.000Z" },
+    );
+
+    expect(markdown).toContain(restoredAttachmentStatus);
+    expect(markdown).toContain("복원 경로 [local path]");
+    expect(markdown).toContain("## 문서 RAG 근거 조각");
+    expect(markdown).toContain("- 2026-06-06 · 복원된 HWPX 진료 기록");
+    expect(markdown).toContain("  - 문서 상태: 의료진 질문");
+    expect(markdown).toContain("  - 다음 조치: 복원 후 혈압과 당화혈색소 관리 연결 질문");
+    expect(markdown).toContain("  - 파싱 원천: HWPX 본문 XML: restored-follow-up.hwpx");
+    expect(markdown).toContain("    - 조각 원천: HWPX 본문 XML: restored-follow-up.hwpx");
+    expect(markdown).toContain("    - 조각 본문: 자궁경부암 추적 진료 기록. 혈압 149/93. HbA1c 7.4%, 당화혈색소 상담 예정.");
+    expect(markdown).not.toContain("/Users/wj/private");
     expect(markdown).not.toContain("attachmentPath");
   });
 
