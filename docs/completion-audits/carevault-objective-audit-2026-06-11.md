@@ -45,6 +45,25 @@ state instead.
 | Local command verification without browser/cmux | recent slice gates in `working.md`; package scripts; Rust tests | PASS | Recent pushed state was verified with `npm test`, `npm run build`, `cargo test --manifest-path src-tauri/Cargo.toml`, the external HWP command gate, `npm run objective:readiness:export`, `npm run runtime:doctor`, and gitleaks scans. No cmux/browser QA was used. |
 | Production medical readiness | source-backed templates, non-diagnosis wording, local-only app scope, `docs/review-templates/carevault-external-review-report-template.json`, `CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR`, `CAREVAULT_EXTERNAL_REVIEW_TEMPLATE_PATH`, `CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH`, `npm run clinical:external-review:packet`, `npm run clinical:external-review:template`, `npm run clinical:external-review:report` | PARTIAL | The app is positioned as record keeping and clinic-prep support, not diagnosis/treatment. The repo now has a structured v3 external review evidence gate plus a verified path-safe packet export and draft template/export command that require reviewed artifact IDs, packet SHA-256 hashes, byte counts, current source/workflow counts, and command-time hash comparison against `CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR`, but full medical readiness still requires an actual external clinician/source review report on real patient workflows and current clinical source policy. |
 
+## Objective Readiness Input Doctor
+
+The repo now includes `npm run objective:readiness:inputs:doctor` as a
+command-only preflight for the two remaining external evidence inputs. It reuses
+the existing HWP report, external review report, and final completion smoke gates
+while suppressing raw command output, so the operator sees only path-safe input
+states: `missing-evidence`, `partial-evidence`, `ready`, or
+`invalid-evidence`.
+
+`npm run objective:readiness:inputs:doctor:test` verifies missing inputs,
+unreadable configured HWP report, unreadable external packet dir, unreadable
+external review report, rejected path-leaking HWP reports, partial HWP-only
+evidence, external-report-without-packet waiting state, external-only evidence,
+and valid all-inputs readiness. The default live run currently reports
+HWP smoke report missing, external review packet missing, external review report
+missing, and final readiness gate not-ready. This does not execute a real
+private HWP/HWPX sample, create external clinical approval, or change the
+completion decision.
+
 ## Verification Evidence Available Before This Audit
 
 The latest pushed source state before this audit was `2f51e2d Add parser audit
@@ -197,8 +216,10 @@ This audit slice was locally verified before commit with:
    sanitized v3 passed report with at least 3 expected terms and all three
    objective term groups covered,
    `npm run objective:readiness:report` to read that report back into the
-   objective readiness status, and `npm run objective:readiness:complete` to
-   verify both remaining evidence reports together. A real private medical
+   objective readiness status, `npm run objective:readiness:complete` to
+   verify both remaining evidence reports together, and
+   `npm run objective:readiness:inputs:doctor` to preflight supplied evidence
+   states without printing configured paths. A real private medical
    sample has not been supplied or run, so no report evidence was accepted for
    the live audit. A public rhwp sample proves the command boundary and parser
    integration, but not the user's likely private medical document shapes.
@@ -210,7 +231,9 @@ This audit slice was locally verified before commit with:
    evidence with reviewed artifact hashes matching the exported reviewer packet
    directory and current source/workflow counts, plus
    `npm run clinical:external-review:packet` for a path-safe reviewer packet,
-   but deployment-quality medical accuracy still needs an actual
+   plus `npm run objective:readiness:inputs:doctor` for path-safe input
+   preflight before the final gate, but deployment-quality medical accuracy
+   still needs an actual
    clinician/source review report with real workflows.
 
 ## Completion Decision
@@ -226,9 +249,10 @@ fail-closed model handoff prompts, source-grounded care-brief lines,
 visit-summary, CSV, and caregiver HTML evidence surfaces with status/next-action handoff lines, export/use paths, cervical-cancer care preparation, and
 hypertension/diabetes tracking. Optional live Ollama-backed RAG is now
 command-verified on this machine after the local Homebrew Ollama repair, and
-external review inputs can now be exported as a path-safe packet, and structured
+external review inputs can now be exported as a path-safe packet, structured
 external review reports are command-checked against that packet's artifact
-hashes. The
+hashes, and final evidence inputs can be preflighted without leaking configured
+paths. The
 remaining blockers are a real user/private HWP/HWPX sample smoke and an actual
 external clinician/source review report with reviewed current artifacts and real
 workflows before any production medical readiness claim.

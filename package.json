@@ -22,6 +22,8 @@
     "objective:readiness:handoff:test": "bash scripts/test_objective_readiness_handoff.sh",
     "objective:readiness:handoff:verify": "bash scripts/verify_objective_readiness_handoff.sh",
     "objective:readiness:handoff:verify:test": "bash scripts/test_objective_readiness_handoff_verify.sh",
+    "objective:readiness:inputs:doctor": "bash scripts/doctor_objective_readiness_inputs.sh",
+    "objective:readiness:inputs:doctor:test": "bash scripts/test_objective_readiness_inputs_doctor.sh",
     "clinical:sources:smoke": "bash scripts/smoke_clinical_source_urls.sh",
     "clinical:sources:smoke:test": "bash scripts/test_clinical_source_urls_smoke.sh",
     "clinical:review:smoke": "vitest run src/clinicalSourceRegistry.test.ts src/clinicalReviewPacket.test.ts",

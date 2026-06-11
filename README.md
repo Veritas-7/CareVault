@@ -73,6 +73,25 @@ objective:readiness:complete:test` verifies missing report paths, rejected HWP
 evidence, rejected external-review evidence, and valid combined fixture evidence
 without using private documents or claiming clinical approval.
 
+Before running the final gate, check which supplied evidence inputs are missing,
+partially ready, accepted, or invalid:
+
+```bash
+CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet \
+CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
+CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
+npm run objective:readiness:inputs:doctor
+```
+
+This command reuses the existing HWP report, external review report, and final
+completion smoke gates, but suppresses their raw output and prints only a
+path-safe status summary such as `missing-evidence`, `partial-evidence`,
+`ready`, or `invalid-evidence`. `npm run
+objective:readiness:inputs:doctor:test` verifies missing inputs, unreadable
+configured inputs, rejected path-leaking HWP reports, partial HWP-only or
+external-only evidence, and valid all-inputs readiness. It does not create
+private HWP evidence, external clinical approval, or a completion claim.
+
 Export a single operator bundle for the two remaining external inputs:
 
 ```bash
