@@ -14,6 +14,8 @@ This command creates a path-safe operator handoff bundle for the two remaining
 objective readiness blockers. It validates and exports the private HWP/HWPX
 smoke handoff, exports the external review packet, exports the current blocked
 objective readiness report, and writes the final evidence command sequence.
+The sequence now includes the objective readiness input doctor so automation can
+read a path-safe JSON status before the final completion gate.
 
 It does not create or run a real private HWP/HWPX sample and does not create
 external clinician/source approval.
@@ -140,7 +142,24 @@ CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/path/to/filled-external-review.json \
 npm run clinical:external-review:report
 ```
 
-## Step 4: Verify Final Objective Readiness Evidence
+## Step 4: Preflight Final Evidence Inputs
+
+Use the input doctor after both reports exist and before the final gate. The
+optional JSON output is path-safe and omits configured private evidence paths.
+
+```bash
+CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json \
+CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet \
+CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/path/to/filled-external-review.json \
+CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=/path/to/carevault-readiness-inputs.json \
+npm run objective:readiness:inputs:doctor
+```
+
+The JSON report uses schema `carevault-objective-readiness-inputs-doctor.v1`,
+keeps `input_paths_included: false`, and should report `status: ready` before
+the final completion gate is run.
+
+## Step 5: Verify Final Objective Readiness Evidence
 
 ```bash
 CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json \
@@ -181,12 +200,16 @@ cat > "$MANIFEST_JSON" <<'EOF'
     "npm run hwp:smoke",
     "npm run clinical:external-review:packet",
     "npm run clinical:external-review:report",
+    "npm run objective:readiness:inputs:doctor",
     "npm run objective:readiness:complete"
   ],
   "required_evidence_inputs": [
     "CAREVAULT_HWP_SMOKE_REPORT_PATH",
     "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR",
     "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH"
+  ],
+  "optional_status_outputs": [
+    "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH"
   ],
   "non_evidence_statement": "This handoff bundle does not create private HWP evidence, external clinician/source review, or production medical readiness approval."
 }

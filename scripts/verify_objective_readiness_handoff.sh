@@ -96,12 +96,16 @@ const expectedCommands = [
   "npm run hwp:smoke",
   "npm run clinical:external-review:packet",
   "npm run clinical:external-review:report",
+  "npm run objective:readiness:inputs:doctor",
   "npm run objective:readiness:complete",
 ];
 const expectedEvidenceInputs = [
   "CAREVAULT_HWP_SMOKE_REPORT_PATH",
   "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR",
   "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH",
+];
+const expectedOptionalStatusOutputs = [
+  "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH",
 ];
 const requiredBundleFiles = [
   "carevault-private-hwp-smoke-handoff.md",
@@ -151,6 +155,11 @@ assertArrayIncludesAll(
   manifest.required_evidence_inputs,
   expectedEvidenceInputs,
   "handoff manifest must list required evidence inputs.",
+);
+assertArrayIncludesAll(
+  manifest.optional_status_outputs,
+  expectedOptionalStatusOutputs,
+  "handoff manifest must list optional status outputs.",
 );
 if (
   typeof manifest.non_evidence_statement !== "string" ||

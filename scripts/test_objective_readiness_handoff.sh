@@ -117,9 +117,11 @@ assert_contains "$FINAL_HANDOFF" "external-clinician-source-review"
 assert_contains "$FINAL_HANDOFF" "npm run hwp:smoke"
 assert_contains "$FINAL_HANDOFF" "npm run clinical:external-review:packet"
 assert_contains "$FINAL_HANDOFF" "npm run clinical:external-review:report"
+assert_contains "$FINAL_HANDOFF" "npm run objective:readiness:inputs:doctor"
 assert_contains "$FINAL_HANDOFF" "npm run objective:readiness:complete"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet"
+assert_contains "$FINAL_HANDOFF" "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=/path/to/carevault-readiness-inputs.json"
 
 assert_contains "$HANDOFF_DIR/carevault-objective-readiness-report.md" "Status: blocked"
 assert_contains "$HANDOFF_DIR/carevault-objective-readiness-report.md" "real-private-hwp-hwpx-sample"
@@ -152,10 +154,17 @@ const expectedCommands = [
   "npm run hwp:smoke",
   "npm run clinical:external-review:packet",
   "npm run clinical:external-review:report",
+  "npm run objective:readiness:inputs:doctor",
   "npm run objective:readiness:complete",
 ];
 for (const command of expectedCommands) {
   if (!manifest.evidence_command_sequence.includes(command)) process.exit(1);
+}
+if (
+  !Array.isArray(manifest.optional_status_outputs) ||
+  !manifest.optional_status_outputs.includes("CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH")
+) {
+  process.exit(1);
 }
 if (!manifest.non_evidence_statement.includes("does not create")) process.exit(1);
 NODE
