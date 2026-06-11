@@ -251,7 +251,7 @@ export const cervicalCancerCareSources: Record<
   },
   nccSurvivorPostTreatmentSlump: {
     label: "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프",
-    url: "https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+    url: "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
   },
   nccMentalHealthInsomniaMedicationConcern: {
     label: "국가암정보센터 암환자 정신건강 - 불면증과 정신과 약 중독 우려",

@@ -24,6 +24,8 @@ describe("clinicalSourceRegistry", () => {
         .filter((item) => !isLocalUserEnteredRangeSource(item.sourceUrl))
         .map((item) => getClinicalSourceHost(item.sourceUrl)),
     );
+    expect(approvedHosts.has("cancer.go.kr")).toBe(false);
+    expect(registryHosts.has("cancer.go.kr")).toBe(false);
     expect([...registryHosts].sort()).toEqual([...approvedHosts].sort());
   });
 

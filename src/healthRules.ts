@@ -151,7 +151,7 @@ export const foodGuidanceSources: Record<
   },
   nccDietPracticeFiber: {
     label: "국가암정보센터 국민 암예방 수칙 실천지침 식이",
-    url: "https://cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
+    url: "https://www.cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
   },
   nccPreventionMealExamples: {
     label: "국가암정보센터 암예방 식단 예시",
@@ -211,11 +211,11 @@ export const foodGuidanceSources: Record<
   },
   nccDryMouthDiet: {
     label: "국가암정보센터 증상별 식생활 - 입안의 건조증",
-    url: "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+    url: "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
   },
   nccImmuneLowDiet: {
     label: "국가암정보센터 증상별 식생활 - 면역기능의 저하",
-    url: "https://cancer.go.kr/lay1/S1T479C489/contents.do",
+    url: "https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
   },
   nccStemCellTransplantImmuneSuppressionDiet: {
     label: "국가암정보센터 조혈모세포이식 면역억제 식품표",
@@ -223,7 +223,7 @@ export const foodGuidanceSources: Record<
   },
   nccNauseaVomitingCare: {
     label: "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
-    url: "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+    url: "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
   },
   nccComplementaryTherapy: {
     label: "국가암정보센터 보완대체요법 상담",
@@ -295,7 +295,7 @@ export const foodGuidanceSources: Record<
   },
   nccChemoSideEffectGuide: {
     label: "국가암정보센터 항암 부작용 증상 관리 지침",
-    url: "https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
+    url: "https://www.cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
   },
   kdcaNutrition: {
     label: "질병관리청 국가건강정보포털 식이영양",

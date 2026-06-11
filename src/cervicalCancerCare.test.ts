@@ -1631,7 +1631,7 @@ describe("cervicalCancerCare", () => {
     expect(
       buildCervicalCancerCarePromptQuestion(survivorSlumpPrompt),
     ).toContain(
-      "출처: 국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+      "출처: 국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
     );
     expect(
       Object.values(
@@ -2788,7 +2788,7 @@ describe("cervicalCancerCare", () => {
     expect(
       formatCervicalCancerCareSourceEvidence("nccSurvivorPostTreatmentSlump"),
     ).toContain(
-      "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+      "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
     );
     expect(
       formatCervicalCancerCareSourceEvidence(
@@ -4572,7 +4572,7 @@ describe("cervicalCancerCare", () => {
       "진료를 대신하거나 항우울제 처방을 지시하지 않습니다",
     );
     expect(formatCervicalCancerCareItemEvidence(survivorSlumpGuide!)).toContain(
-      "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+      "국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프 - https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
     );
     expect(
       buildCervicalCancerCareItemSymptomDraft(survivorSlumpGuide!).body,

@@ -80,14 +80,21 @@ reachable without using browser/cmux QA:
 ```bash
 npm test -- --run src/clinicalSourceRegistry.test.ts
 npm run clinical:sources:smoke
+CAREVAULT_CLINICAL_SOURCE_REPORT_PATH=/tmp/carevault-clinical-source-url-smoke.json \
+npm run clinical:sources:smoke
 ```
 
 The static registry test combines `src/healthStandards.ts` and
 `src/healthRules.ts`, keeps the `local-user-entered-range` lab-range sentinel
 separate from external sources, and asserts explicit source coverage for
-cervical cancer, hypertension, and diabetes. The network smoke checks the
-deduplicated public source URLs with `curl`; it is a reachability and source
-policy gate, not a clinician accuracy review.
+cervical cancer, hypertension, and diabetes. It also keeps National Cancer
+Information Center links on the reachable `www.cancer.go.kr` host. The network
+smoke checks the deduplicated public source URLs from `src/healthStandards.ts`,
+`src/healthRules.ts`, and `src/labPresets.ts` with `curl`; when
+`CAREVAULT_CLINICAL_SOURCE_REPORT_PATH` is set, it writes a path-safe JSON report
+with schema `carevault-clinical-source-url-smoke.v1`, source file scope, checked
+URL count, failed URL count, checked URLs, and failed URLs. This is a
+reachability and source policy gate, not a clinician accuracy review.
 
 ## Clinical review packet smoke
 

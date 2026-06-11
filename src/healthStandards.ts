@@ -259,7 +259,7 @@ export const koreanHealthStandardCoverage: HealthStandardCoverage[] = [
     status: "input-helper",
     sexSpecific: false,
     sourceLabel: "국가암정보센터 항암 부작용 증상 관리 지침",
-    sourceUrl: "https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
+    sourceUrl: "https://www.cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
     summary: "ANC 500 미만과 발열·오한·호흡기 증상을 함께 기록해 진료팀 확인 기준을 놓치지 않도록 돕습니다.",
   },
   {
@@ -269,7 +269,7 @@ export const koreanHealthStandardCoverage: HealthStandardCoverage[] = [
     status: "input-helper",
     sexSpecific: false,
     sourceLabel: "국가암정보센터 항암 부작용 증상 관리 지침",
-    sourceUrl: "https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
+    sourceUrl: "https://www.cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
     summary: "혈소판 감소와 코피·검은 변·혈뇨·비정상 질출혈 같은 출혈 신호를 함께 기록해 진료팀 확인 기준을 놓치지 않도록 돕습니다.",
   },
   {

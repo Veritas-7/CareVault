@@ -121,7 +121,7 @@ const asanCompleteBloodCountSource = {
 
 const nccChemoSideEffectSource = {
   sourceLabel: "국가암정보센터 항암 부작용 증상 관리 지침",
-  sourceUrl: "https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
+  sourceUrl: "https://www.cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
 } as const;
 
 export const labPresets: LabPreset[] = [

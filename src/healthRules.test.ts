@@ -305,7 +305,7 @@ describe("healthRules", () => {
       "국가암정보센터 국민 암예방 수칙 실천지침 식이",
     );
     expect(foodGuidanceSources.nccDietPracticeFiber.url).toBe(
-      "https://cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
+      "https://www.cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -322,7 +322,7 @@ describe("healthRules", () => {
       "매일 5가지 색(빨강, 초록, 노랑, 보라, 하양)의 채소와 과일을 먹습니다.",
     );
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 국민 암예방 수칙 실천지침 식이 - https://cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
+      "국가암정보센터 국민 암예방 수칙 실천지침 식이 - https://www.cancer.go.kr/download.do?uuid=646c1953-81f7-48ca-ad26-cdd0f382cfb8.pdf",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장/);
   });
@@ -1020,13 +1020,13 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 면역기능의 저하",
     );
     expect(matchesByTerm.날계란.sourceUrl).toBe(
-      "https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(matchesByTerm["비살균 우유"].sourceUrl).toBe(
-      "https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(formatFoodMatchEvidence(matchesByTerm.회)).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
   });
 
@@ -2867,7 +2867,7 @@ describe("healthRules", () => {
       sourceId: "nccComplementaryTherapy",
     });
     expect(formatFoodMatchEvidence(matchesByTerm.초밥)).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
   });
 
@@ -6379,7 +6379,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([
@@ -6397,7 +6397,7 @@ describe("healthRules", () => {
         sourceId: "nccDryMouthDiet",
       });
       expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
-        "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+        "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
       );
     }
     expect(balancedGuideText).toContain("물 조금씩 자주");
@@ -6422,7 +6422,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -6436,7 +6436,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("소스나 드레싱");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -6458,7 +6458,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -6472,7 +6472,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("딱딱한 사탕");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -6493,7 +6493,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -6508,7 +6508,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("국이나 찌개의 국물 섭취는 제한합니다");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -6530,7 +6530,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -6544,7 +6544,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("소스나 드레싱");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -6566,7 +6566,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -6580,7 +6580,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("껌 씹기");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -6602,7 +6602,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("watch");
     expect(terms).toEqual([sourceSentence]);
@@ -6615,7 +6615,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("사탕, 쿠키 또는 케익 등과 같이 매우 단 음식");
     expect(limitGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -6636,7 +6636,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -6648,7 +6648,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("경우에 따라서는 믹서로 곱게 갈도록 합니다.");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -6669,7 +6669,7 @@ describe("healthRules", () => {
       "국가암정보센터 증상별 식생활 - 입안의 건조증",
     );
     expect(foodGuidanceSources.nccDryMouthDiet.url).toBe(
-      "https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -6682,7 +6682,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("딱딱한 사탕을 빨거나 껌을 씹는 것도 침 분비를 도와줄 수 있습니다.");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://cancer.go.kr/lay1/S1T479C485/contents.do",
+      "국가암정보센터 증상별 식생활 - 입안의 건조증 - https://www.cancer.go.kr/lay1/S1T479C485/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /치료 음식|완치|암을 낫게|자가 치료|치과치료 권장/,
@@ -7097,7 +7097,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("watch");
     expect(terms).toEqual([sourceSentence]);
@@ -7113,7 +7113,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("물");
     expect(limitGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|탈수 치료/);
   });
@@ -7137,7 +7137,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -7152,7 +7152,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("피로감 적은 양의 식사와 간식");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|강제 섭취/);
   });
@@ -7178,7 +7178,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -7193,7 +7193,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("음식을 강요하지");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|강제 섭취/);
   });
@@ -7219,7 +7219,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -7234,7 +7234,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("환기가 잘 되는 쾌적한 장소");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|냄새 치료/);
   });
@@ -7259,7 +7259,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("watch");
     expect(terms).toEqual([sourceSentence]);
@@ -7274,7 +7274,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("좋아하는 음식");
     expect(limitGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|좋아하는 음식 치료/);
   });
@@ -7299,7 +7299,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -7316,7 +7316,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("물");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|탈수 치료|당분 음료 치료/);
   });
@@ -7342,7 +7342,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("watch");
     expect(terms).toEqual([sourceSentence]);
@@ -7359,7 +7359,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("마른 음식");
     expect(limitGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|탈수 치료|수분 제한 치료/);
   });
@@ -7383,7 +7383,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("watch");
     expect(terms).toEqual([sourceSentence]);
@@ -7399,7 +7399,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("음식");
     expect(limitGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|단식 치료|탈수 치료|수분 제한 치료/);
   });
@@ -7423,7 +7423,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("watch");
     expect(terms).toEqual([sourceSentence]);
@@ -7439,7 +7439,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("수분");
     expect(limitGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|탈수 치료|수분 제한 치료|무제한 수분/);
   });
@@ -7464,7 +7464,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -7483,7 +7483,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("밥");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|체중증가 치료|감염 예방 치료|저온살균 지시/);
   });
@@ -7510,7 +7510,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7527,7 +7527,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("의료진");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|탈수 치료|자가 주사|정맥 주사 지시|전해질 치료/);
   });
@@ -7553,7 +7553,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7570,7 +7570,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("구토");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|음식량 목표|강제 섭취|칼로리 처방|탈수 치료/);
   });
@@ -7597,7 +7597,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7615,7 +7615,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("구토");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|삼킴 훈련|연하 치료|흡인 치료|기침 치료/,
@@ -7645,7 +7645,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7664,7 +7664,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("3번");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|응급치료|응급처치|수액 치료|진토제 처방|구토 치료/,
@@ -7693,7 +7693,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7711,7 +7711,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("중요한 일");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|활동 처방|생활 제한 처방|진토제 처방|오심 치료|구토 치료/,
@@ -7739,7 +7739,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7756,7 +7756,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("분출");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|응급치료|응급처치|진토제 처방|구토 치료|분출 치료/,
@@ -7785,7 +7785,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7802,7 +7802,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("현기증");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|응급치료|응급처치|진토제 처방|구토 치료|피로 치료|운동 처방|활동 처방|어지럼 치료/,
@@ -7834,7 +7834,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7854,7 +7854,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("구토");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|탈수 치료|수액 처방|자가 수분 치료|전해질 처방|응급치료|응급처치|진토제 처방|구토 치료|소변 치료/,
@@ -7883,7 +7883,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7902,7 +7902,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("머리가 띵");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|탈수 치료|수액 처방|자가 수분 치료|전해질 처방|응급치료|응급처치|진토제 처방|구토 치료|어지럼 치료|혼란 치료|두통 치료/,
@@ -7933,7 +7933,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -7951,7 +7951,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("구토물");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|응급치료|응급처치|출혈 진단|출혈 치료|혈액검사|혈액 검사|커피 제한|커피 금지|커피 피하기|구토 치료|자가 치료/,
@@ -7983,7 +7983,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -8003,7 +8003,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("구토");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|항구토제 복용 권장|진토제 추가|진토제 복용 권장|복용량 조절|약 변경|약 중단|처방 변경|응급치료|응급처치|오심 치료|구토 치료|자가 치료/,
@@ -8033,7 +8033,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -8053,7 +8053,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("구토");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|항구토제 복용 권장|진토제 추가|진토제 복용 권장|복용량 조절|약 변경|약 중단|처방 변경|부작용 치료|응급치료|응급처치|오심 치료|구토 치료|자가 치료/,
@@ -8084,7 +8084,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("risk");
     expect(terms).toEqual([sourceSentence]);
@@ -8105,7 +8105,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("식사");
     expect(careTeamGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(
       /완치|암을 낫게|특효|보조식품 권장|약 복용 권장|약 추가|복용량 조절|약 변경|약 중단|처방 변경|수액 처방|정맥주사 지시|응급치료|응급처치|오심 치료|구토 치료|수분 치료|식사 치료|자가 치료/,
@@ -8131,7 +8131,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -8145,7 +8145,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("똑바로 앉아서");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|소화 치료/);
   });
@@ -8168,7 +8168,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -8183,7 +8183,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("얼음조각");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|강제 섭취/);
   });
@@ -8207,7 +8207,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -8223,7 +8223,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("소화가 잘 되는 음식");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|구내염 치료|소화 치료/);
   });
@@ -8247,7 +8247,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -8261,7 +8261,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain(mouthPainHotFoodSentence);
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|냉찜질 치료/);
   });
@@ -8284,7 +8284,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("ok");
     expect(terms).toEqual([sourceSentence]);
@@ -8299,7 +8299,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("크래커");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|강제 섭취/);
   });
@@ -8321,7 +8321,7 @@ describe("healthRules", () => {
       "국가암정보센터 메스꺼움과 구토 도움이 되는 방법",
     );
     expect(foodGuidanceSources.nccNauseaVomitingCare.url).toBe(
-      "https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(assessment.level).toBe("watch");
     expect(terms).toEqual([sourceSentence]);
@@ -8336,7 +8336,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("지나치게 단 음식");
     expect(limitGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://cancer.go.kr/lay1/S1T398C404/contents.do",
+      "국가암정보센터 메스꺼움과 구토 도움이 되는 방법 - https://www.cancer.go.kr/lay1/S1T398C404/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/완치|암을 낫게|특효|보조식품 권장|나트륨 치료/);
   });
@@ -9887,7 +9887,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("매운 음식");
     expect(limitGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 항암 부작용 증상 관리 지침 - https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
+      "국가암정보센터 항암 부작용 증상 관리 지침 - https://www.cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -10231,7 +10231,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("호두");
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 항암 부작용 증상 관리 지침 - https://cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
+      "국가암정보센터 항암 부작용 증상 관리 지침 - https://www.cancer.go.kr/download.do?uuid=d402e586-c237-419d-ae6f-da36d3b97109.pdf",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -14660,7 +14660,7 @@ describe("healthRules", () => {
     });
     expect(careTeamGuideText).toContain(sourcePhrase);
     expect(formatFoodMatchEvidence(matchesByTerm[sourcePhrase])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -14690,7 +14690,7 @@ describe("healthRules", () => {
     }
     expect(balancedGuideText).toContain(sourceSentence);
     expect(formatFoodMatchEvidence(matchesByTerm[sourceSentence])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -14823,7 +14823,7 @@ describe("healthRules", () => {
     expect(careTeamGuideText).toContain("녹슬거나 움푹해진 캔");
     expect(careTeamGuideText).toContain("냉동제품이 녹아 있다면 구입하지 않도록");
     expect(formatFoodMatchEvidence(matchesByTerm["녹슬거나 움푹해진 캔"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15022,7 +15022,7 @@ describe("healthRules", () => {
         matchesByTerm["식품의 냄새가 이상하거나 모양이 이상한 경우에는 절대 사용하지 않습니다"],
       ),
     ).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15076,7 +15076,7 @@ describe("healthRules", () => {
     expect(balancedGuideText).toContain("직접 갈아주는 곳에서 구입");
     expect(careTeamGuideText).toContain("가는 과정에서 오염 가능");
     expect(formatFoodMatchEvidence(matchesByTerm["유통기한 꼭 확인"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15146,7 +15146,7 @@ describe("healthRules", () => {
         matchesByTerm["식품의 유통기한을 꼭 확인합니다"],
       ),
     ).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15190,7 +15190,7 @@ describe("healthRules", () => {
     expect(balancedGuideText).toContain("상온 운반 후 즉시 냉장");
     expect(careTeamGuideText).toContain("30분 이상 상온에서 운반");
     expect(formatFoodMatchEvidence(matchesByTerm["상온 운반 후 즉시 냉장"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15230,7 +15230,7 @@ describe("healthRules", () => {
     expect(balancedGuideText).toContain("고기나 생선즙이 떨어지지 않도록 보관");
     expect(balancedGuideText).toContain("남은 음식 즉시 냉장 보관");
     expect(formatFoodMatchEvidence(matchesByTerm["해동한 후 즉시 요리"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15266,7 +15266,7 @@ describe("healthRules", () => {
     expect(balancedGuideText).toContain("고기는 냉장고에서 녹입니다");
     expect(balancedGuideText).toContain("남은 음식은 포장하여 즉시 냉장 보관합니다");
     expect(formatFoodMatchEvidence(matchesByTerm["고기는 냉장고에서 녹입니다"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15317,7 +15317,7 @@ describe("healthRules", () => {
         ],
       ),
     ).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15362,7 +15362,7 @@ describe("healthRules", () => {
     expect(balancedGuideText).toContain("과일이나 채소 썰기 전 세척");
     expect(careTeamGuideText).toContain("딸기 등 꼼꼼히 씻기 어려운 과일");
     expect(formatFoodMatchEvidence(matchesByTerm["채소와 과일 먹기 전 세척"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15416,7 +15416,7 @@ describe("healthRules", () => {
         matchesByTerm["채소와 과일은 먹기 전에 깨끗이 씻어 드시기 바랍니다"],
       ),
     ).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15464,7 +15464,7 @@ describe("healthRules", () => {
     expect(balancedGuideText).toContain("저온살균 주스");
     expect(careTeamGuideText).toContain("곰팡이가 핀 음식");
     expect(formatFoodMatchEvidence(matchesByTerm["저온살균 우유"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15506,7 +15506,7 @@ describe("healthRules", () => {
         ],
       ),
     ).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15561,7 +15561,7 @@ describe("healthRules", () => {
     expect(balancedGuideText).toContain("저온살균 쥬스");
     expect(careTeamGuideText).toContain("비살균 요구르트");
     expect(formatFoodMatchEvidence(matchesByTerm["저온살균 쥬스"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15594,7 +15594,7 @@ describe("healthRules", () => {
         matchesByTerm["쥬스, 우유, 요구르트 등은 저온살균 제품을 드시기 바랍니다"],
       ),
     ).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15627,7 +15627,7 @@ describe("healthRules", () => {
         matchesByTerm["모든 식품은 사용하기 전에 반드시 유효기간을 확인합니다"],
       ),
     ).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15661,7 +15661,7 @@ describe("healthRules", () => {
         sourceId: "nccImmuneLowDiet",
       });
       expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
-        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
       );
     }
     expect(terms).not.toContain("생고기");
@@ -15694,7 +15694,7 @@ describe("healthRules", () => {
     expect(terms).not.toContain("외식보다는 직접 요리");
     expect(balancedGuideText).toContain("외식보다는 직접 요리하여 드시는 것이 안전합니다");
     expect(formatFoodMatchEvidence(matchesByTerm["외식보다는 직접 요리하여 드시는 것이 안전합니다"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15725,7 +15725,7 @@ describe("healthRules", () => {
         sourceId: "nccImmuneLowDiet",
       });
       expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
-        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
       );
     }
     expect(balancedGuideText).toContain("음식을 만지거나 요리를 하려면 손을 깨끗이 씻도록 합니다");
@@ -15759,7 +15759,7 @@ describe("healthRules", () => {
         sourceId: "nccImmuneLowDiet",
       });
       expect(formatFoodMatchEvidence(matchesByTerm[term])).toContain(
-        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+        "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
       );
     }
     expect(terms).not.toContain("조리 기구 식기 수저 소독");
@@ -15817,7 +15817,7 @@ describe("healthRules", () => {
     expect(balancedGuideText).toContain("갈아둔 고기 충분히 익히기");
     expect(careTeamGuideText).toContain("날계란이나 덜 익힌 계란이 들어간 음식");
     expect(formatFoodMatchEvidence(matchesByTerm["갈아둔 고기 충분히 익히기"])).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });
@@ -15873,7 +15873,7 @@ describe("healthRules", () => {
     expect(
       formatFoodMatchEvidence(matchesByTerm["고기, 닭고기, 생선 등은 완전히 익히도록 합니다"]),
     ).toContain(
-      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(JSON.stringify(assessment.matches)).not.toMatch(/치료 음식|완치|암을 낫게/);
   });

@@ -45,7 +45,7 @@ describe("foodQuestionPrompts", () => {
     expect(draft?.question).toContain("자몽: 약물 상호작용 확인 필요");
     expect(draft?.question).toContain("검사 근거: 서울아산병원 전혈구검사 참고치");
     expect(draft?.question).toContain(
-      "출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://cancer.go.kr/lay1/S1T479C489/contents.do",
+      "출처: 국가암정보센터 증상별 식생활 - 면역기능의 저하 - https://www.cancer.go.kr/lay1/S1T479C489/contents.do",
     );
     expect(draft?.question).not.toContain("먹지 마세요");
     expect(draft?.question).not.toContain("치료하세요");
@@ -62,7 +62,7 @@ describe("foodQuestionPrompts", () => {
       topic: draft?.topic ?? "",
     });
     expect(copied).toContain(
-      "근거: 국가암정보센터 증상별 식생활 - 면역기능의 저하 (https://cancer.go.kr/lay1/S1T479C489/contents.do)",
+      "근거: 국가암정보센터 증상별 식생활 - 면역기능의 저하 (https://www.cancer.go.kr/lay1/S1T479C489/contents.do)",
     );
     expect(copied).not.toContain("출처: 국가암정보센터 증상별 식생활");
   });

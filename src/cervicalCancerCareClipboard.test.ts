@@ -630,7 +630,7 @@ describe("cervicalCancerCareClipboard", () => {
     expect(text).toContain("암치료 후 슬럼프·우울상담 메모");
     expect(text).toContain("국가암정보센터 암환자 정신건강 - 암치료 후 슬럼프");
     expect(text).toContain(
-      "https://cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
+      "https://www.cancer.go.kr/lay1/bbs/S1T668C805/G/54/view.do?article_seq=22077&condition=&cpage=4&keyword=&rn=45&rows=12",
     );
     expect(text).toContain("불면증·정신과 약 중독 우려 상담 준비");
     expect(text).toContain("암 진단 후 불면증");

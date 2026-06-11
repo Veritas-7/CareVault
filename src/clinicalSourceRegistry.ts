@@ -53,11 +53,6 @@ export const clinicalSourceDomainPolicies: ClinicalSourceDomainPolicy[] = [
     sourceType: "korean-public-health",
   },
   {
-    host: "cancer.go.kr",
-    owner: "국가암정보센터",
-    sourceType: "korean-public-health",
-  },
-  {
     host: "www.diabetes.or.kr",
     owner: "대한당뇨병학회",
     sourceType: "professional-society",
