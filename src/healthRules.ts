@@ -367,7 +367,7 @@ export const foodGuidanceSources: Record<
   },
   mfdsSalmonellaEggSafety: {
     label: "식품의약품안전처 달걀 조리식품 살모넬라 식중독 주의",
-    url: "https://www.mfds.go.kr/brd/m_99/view.do?seq=50005",
+    url: "https://www.mfds.go.kr/brd/99/down.do?brd_id=ntc0021&data_tp=A&file_seq=2&seq=50005",
   },
   mfdsFoodPoisoningPrevention: {
     label: "식품의약품안전처 식중독 예방 6대요령",

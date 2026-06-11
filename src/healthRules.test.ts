@@ -13444,7 +13444,7 @@ describe("healthRules", () => {
 
     expect(foodGuidanceSources.mfdsSalmonellaEggSafety).toMatchObject({
       label: "식품의약품안전처 달걀 조리식품 살모넬라 식중독 주의",
-      url: "https://www.mfds.go.kr/brd/m_99/view.do?seq=50005",
+      url: "https://www.mfds.go.kr/brd/99/down.do?brd_id=ntc0021&data_tp=A&file_seq=2&seq=50005",
     });
     expect(mfdsGuide).toMatchObject({
       label: "식약처 달걀 살모넬라 식중독 주의",
@@ -13470,7 +13470,7 @@ describe("healthRules", () => {
         sourceId: "mfdsSalmonellaEggSafety",
       });
       expect(formatFoodMatchEvidence(safeMatchesByTerm[term])).toContain(
-        "식품의약품안전처 달걀 조리식품 살모넬라 식중독 주의 - https://www.mfds.go.kr/brd/m_99/view.do?seq=50005",
+        "식품의약품안전처 달걀 조리식품 살모넬라 식중독 주의 - https://www.mfds.go.kr/brd/99/down.do?brd_id=ntc0021&data_tp=A&file_seq=2&seq=50005",
       );
     }
 

@@ -2,6 +2,25 @@
 
 Tauri v2 + React + TypeScript personal health tracking app.
 
+## Clinical source smoke
+
+Run this command to verify that CareVault's embedded clinical source registry
+stays on approved public-health, professional-society, hospital-reference, and
+food-safety domains, and that the public HTTPS source URLs are currently
+reachable without using browser/cmux QA:
+
+```bash
+npm test -- --run src/clinicalSourceRegistry.test.ts
+npm run clinical:sources:smoke
+```
+
+The static registry test combines `src/healthStandards.ts` and
+`src/healthRules.ts`, keeps the `local-user-entered-range` lab-range sentinel
+separate from external sources, and asserts explicit source coverage for
+cervical cancer, hypertension, and diabetes. The network smoke checks the
+deduplicated public source URLs with `curl`; it is a reachability and source
+policy gate, not a clinician accuracy review.
+
 ## HWP/HWPX private sample smoke
 
 Run this command when a real user-private HWP/HWPX/HWPML sample is available:
