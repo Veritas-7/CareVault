@@ -133,6 +133,9 @@ const expectedEvidenceInputs = [
 const expectedOptionalStatusOutputs = [
   "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH",
 ];
+const expectedOptionalVerificationOutputs = [
+  "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH",
+];
 const requiredBundleFiles = [
   "carevault-private-hwp-smoke-handoff.md",
   "carevault-external-review-packet/clinical-review-packet.md",
@@ -194,6 +197,11 @@ assertArrayIncludesAll(
   manifest.optional_status_outputs,
   expectedOptionalStatusOutputs,
   "handoff manifest must list optional status outputs.",
+);
+assertArrayIncludesAll(
+  manifest.optional_verification_outputs,
+  expectedOptionalVerificationOutputs,
+  "handoff manifest must list optional verification outputs.",
 );
 if (
   typeof manifest.non_evidence_statement !== "string" ||
@@ -333,6 +341,7 @@ if (verifyReportPath) {
     evidence_command_sequence: manifest.evidence_command_sequence,
     required_evidence_inputs: manifest.required_evidence_inputs,
     optional_status_outputs: manifest.optional_status_outputs,
+    optional_verification_outputs: manifest.optional_verification_outputs,
     inputs_doctor: {
       schema: inputsDoctor.schema,
       status: inputsDoctor.status,

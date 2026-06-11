@@ -133,16 +133,18 @@ clinical:external-review:report`, `npm run
 objective:readiness:inputs:doctor`, `npm run
 objective:readiness:inputs:verify`, and `npm run
 objective:readiness:complete`. The manifest also records the optional
-`CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` status output for automation
-and includes the baseline input-doctor JSON in the bundle file list. The
-baseline JSON is a status snapshot only; it does not create or replace HWP/HWPX
-sample evidence or external clinician/source review evidence.
+`CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` status output and optional
+`CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH` verification output
+for automation, and includes the baseline input-doctor JSON in the bundle file
+list. The baseline JSON is a status snapshot only; it does not create or
+replace HWP/HWPX sample evidence or external clinician/source review evidence.
 `npm run objective:readiness:handoff:test` verifies missing-output failures,
 bundle contents, current blocker names, machine-readable manifest
-schema/status/file list/exact command sequence, optional status output, baseline
-input-doctor JSON schema/status/input states/next actions, and local-path
-exclusion. The command still does not run or invent a real private sample and
-does not create external clinician/source approval.
+schema/status/file list/exact command sequence, optional status and
+verification output declarations, baseline input-doctor JSON schema/status/input
+states/next actions, and local-path exclusion. The command still does not run
+or invent a real private sample and does not create external clinician/source
+approval.
 
 Verify a previously exported handoff bundle before sharing or archiving it:
 
@@ -157,20 +159,22 @@ the required bundle files, confirms the manifest and readiness report remain
 `blocked` on `real-private-hwp-hwpx-sample` and
 `external-clinician-source-review`, verifies the final evidence command
 sequence including the input JSON verifier before the completion gate, optional
-status-output field, no-input input-doctor baseline JSON, and reviewer handoff
-sections. It also runs `npm run objective:readiness:inputs:verify` logic
-against the bundled `carevault-readiness-inputs-doctor.json`, so blocker,
-next-action, ready-state, and path-safety drift are caught by the same input
-JSON verifier used outside the bundle. It fails if any bundle file leaks local
-paths. When `CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH` is set, it
-writes schema `carevault-objective-readiness-handoff-verify.v1` with only
-path-safe verification status, blocker IDs, command sequence, bundle file count,
-and input-doctor status/next-action IDs.
+status-output field, optional verification-output field, no-input input-doctor
+baseline JSON, and reviewer handoff sections. It also runs `npm run
+objective:readiness:inputs:verify` logic against the bundled
+`carevault-readiness-inputs-doctor.json`, so blocker, next-action, ready-state,
+and path-safety drift are caught by the same input JSON verifier used outside
+the bundle. It fails if any bundle file leaks local paths. When
+`CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH` is set, it writes
+schema `carevault-objective-readiness-handoff-verify.v1` with only path-safe
+verification status, blocker IDs, command sequence, bundle file count, manifest
+declared optional verification outputs, and input-doctor status/next-action IDs.
 `npm run objective:readiness:handoff:verify:test` covers valid bundles, missing
 env/dir/manifest, invalid JSON, missing listed files, wrong manifest status,
 wrong baseline input-doctor status, missing input-verifier command, JSON report
-output, missing JSON report parent, and path-leak failures. It also rejects a
-baseline input-doctor JSON with extra unsupported blockers.
+output with manifest-declared optional verification outputs, missing JSON report
+parent, and path-leak failures. It also rejects a baseline input-doctor JSON
+with extra unsupported blockers.
 
 ## Clinical source smoke
 

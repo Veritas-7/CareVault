@@ -179,6 +179,12 @@ if (
 ) {
   process.exit(1);
 }
+if (
+  !Array.isArray(manifest.optional_verification_outputs) ||
+  !manifest.optional_verification_outputs.includes("CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH")
+) {
+  process.exit(1);
+}
 if (!manifest.non_evidence_statement.includes("does not create")) process.exit(1);
 if (inputsDoctor.schema !== "carevault-objective-readiness-inputs-doctor.v1") process.exit(1);
 if (inputsDoctor.status !== "missing-evidence") process.exit(1);

@@ -232,6 +232,9 @@ cat > "$MANIFEST_JSON" <<'EOF'
   "optional_status_outputs": [
     "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH"
   ],
+  "optional_verification_outputs": [
+    "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH"
+  ],
   "non_evidence_statement": "This handoff bundle does not create private HWP evidence, external clinician/source review, or production medical readiness approval."
 }
 EOF

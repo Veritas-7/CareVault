@@ -143,6 +143,13 @@ if (
 ) {
   process.exit(1);
 }
+if (
+  !Array.isArray(report.optional_verification_outputs) ||
+  report.optional_verification_outputs.join(",") !==
+    "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH"
+) {
+  process.exit(1);
+}
 if (!report.inputs_doctor || report.inputs_doctor.status !== "missing-evidence") process.exit(1);
 if (report.inputs_doctor.final_readiness_gate !== "not-ready") process.exit(1);
 if (report.inputs_doctor.input_paths_included !== false) process.exit(1);
