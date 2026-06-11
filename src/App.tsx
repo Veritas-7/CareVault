@@ -223,6 +223,10 @@ import {
   formatDocumentRagModelHandoffClipboardUnsupportedStatus,
 } from "./documentRagContext";
 import {
+  requestDocumentRagLocalModel,
+  validateDocumentRagLocalModelRequest,
+} from "./documentRagModelRequest";
+import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
@@ -974,6 +978,12 @@ function App() {
     useState<HealthStandardRangeFilterId>("all");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
   const [documentFilter, setDocumentFilter] = useState("");
+  const [documentRagModelEndpoint, setDocumentRagModelEndpoint] = useState("");
+  const [documentRagModelName, setDocumentRagModelName] = useState("local-care-model");
+  const [documentRagModelOutput, setDocumentRagModelOutput] = useState<{
+    status: "error" | "pending" | "success";
+    text: string;
+  } | null>(null);
   const [documentCategoryFilter, setDocumentCategoryFilter] =
     useState<DocumentCategoryFilter>("all");
   const [documentStatusFilter, setDocumentStatusFilter] =
@@ -1862,6 +1872,17 @@ function App() {
     formatDocumentRagAnswerDraftClipboardDescription(documentRagContext);
   const documentRagAnswerDraftClipboardStatus =
     formatDocumentRagAnswerDraftClipboardStatus(documentRagContext);
+  const documentRagLocalModelValidation = validateDocumentRagLocalModelRequest(
+    documentRagContext,
+    {
+      endpoint: documentRagModelEndpoint,
+      model: documentRagModelName,
+    },
+  );
+  const documentRagLocalModelRunDescription =
+    documentRagLocalModelValidation.level === "ready"
+      ? `로컬 모델 RAG 실행 · ${documentRagContext.summary}`
+      : documentRagLocalModelValidation.summary;
   const hasActiveDocumentFilters = hasActiveDocumentFilterState({
     categoryFilter: documentCategoryFilter,
     searchText: documentFilter,
@@ -2003,6 +2024,33 @@ function App() {
       .catch(() => {
         setSaveLabel(formatDocumentRagAnswerDraftClipboardFailedStatus(documentRagContext));
       });
+  };
+
+  const runDocumentRagLocalModel = async () => {
+    setDocumentRagModelOutput({
+      status: "pending",
+      text: "로컬 모델 RAG 요청 중",
+    });
+
+    const result = await requestDocumentRagLocalModel(documentRagContext, {
+      endpoint: documentRagModelEndpoint,
+      model: documentRagModelName,
+    });
+
+    if (result.ok) {
+      setDocumentRagModelOutput({
+        status: "success",
+        text: result.text,
+      });
+      setTransientSaveLabel(`로컬 모델 RAG 응답 수신됨 · ${documentRagContext.summary}`);
+      return;
+    }
+
+    setDocumentRagModelOutput({
+      status: "error",
+      text: [result.summary, ...result.warnings].join("\n"),
+    });
+    setSaveLabel(result.summary);
   };
 
   const downloadDocumentRagContext = async () => {
@@ -7754,6 +7802,50 @@ function App() {
                   {documentRagContext.answerDraft.warnings.slice(0, 1).map((warning) => (
                     <small key={warning}>{warning}</small>
                   ))}
+                </div>
+                <div className="document-rag-local-model">
+                  <div className="document-rag-local-model-row">
+                    <label>
+                      로컬 모델 endpoint
+                      <input
+                        value={documentRagModelEndpoint}
+                        onChange={(event) => setDocumentRagModelEndpoint(event.currentTarget.value)}
+                        aria-label="로컬 모델 RAG endpoint"
+                        title="로컬 모델 RAG endpoint"
+                        placeholder="http://127.0.0.1:11434/v1/chat/completions"
+                      />
+                    </label>
+                    <label>
+                      모델
+                      <input
+                        value={documentRagModelName}
+                        onChange={(event) => setDocumentRagModelName(event.currentTarget.value)}
+                        aria-label="로컬 모델 RAG 모델명"
+                        title="로컬 모델 RAG 모델명"
+                        placeholder="local-care-model"
+                      />
+                    </label>
+                    <button
+                      className="secondary-inline-button document-rag-local-model-run"
+                      type="button"
+                      onClick={runDocumentRagLocalModel}
+                      aria-label={documentRagLocalModelRunDescription}
+                      title={documentRagLocalModelRunDescription}
+                      disabled={documentRagModelOutput?.status === "pending"}
+                    >
+                      <MessageSquare aria-hidden="true" />
+                      로컬 모델 실행
+                    </button>
+                  </div>
+                  <small>{documentRagLocalModelValidation.summary}</small>
+                  {documentRagLocalModelValidation.warnings.slice(0, 2).map((warning) => (
+                    <small key={warning}>{warning}</small>
+                  ))}
+                  {documentRagModelOutput ? (
+                    <pre className={`document-rag-local-model-output ${documentRagModelOutput.status}`}>
+                      {documentRagModelOutput.text}
+                    </pre>
+                  ) : null}
                 </div>
                 <ol>
                   {documentRagContext.items.slice(0, 3).map((item) => (
