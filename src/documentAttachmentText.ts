@@ -8,7 +8,8 @@ export type DocumentAttachmentTextCandidate = {
 export type ParsedAttachmentTextSourceLabel =
   | "텍스트 파일"
   | "HWPX 미리보기 텍스트"
-  | "HWPX 본문 XML";
+  | "HWPX 본문 XML"
+  | "HWP/HWPX 데스크톱 파서";
 
 export type SavedDocumentParsedAttachmentTarget = {
   body: string;

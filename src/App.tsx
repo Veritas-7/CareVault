@@ -172,6 +172,10 @@ import {
 } from "./documentAttachmentText";
 import { parseBrowserDocumentAttachmentText } from "./documentAttachmentParsing";
 import {
+  parseTauriDocumentAttachmentText,
+  type TauriInvoke,
+} from "./documentTauriAttachmentParsing";
+import {
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
   formatDocumentFilterResetStatusLabel,
@@ -2257,6 +2261,14 @@ function App() {
     return nextState;
   };
 
+  const parseTauriSelectedDocumentAttachment = async (
+    attachmentPath: string,
+    attachmentName: string,
+  ) => {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return parseTauriDocumentAttachmentText(attachmentPath, attachmentName, invoke as TauriInvoke);
+  };
+
   const attachDocumentFile = async () => {
     if (!canUseTauriRuntime()) {
       documentAttachmentInputRef.current?.click();
@@ -2311,6 +2323,35 @@ function App() {
       );
       setDocumentSaveFeedback(feedback);
       setSaveLabel(feedback);
+
+      try {
+        const parsedAttachment = await parseTauriSelectedDocumentAttachment(
+          selected,
+          attachmentName,
+        );
+        if (!parsedAttachment) return;
+
+        setDocumentDraft((current) => ({
+          ...current,
+          body: mergeParsedAttachmentTextIntoDocumentBody(
+            current.body,
+            attachmentName,
+            parsedAttachment.normalizedText,
+            parsedAttachment.sourceLabel,
+          ),
+        }));
+        const parsedFeedback = formatDocumentAttachmentTextParsedStatus(
+          attachmentName,
+          parsedAttachment.normalizedText.length,
+          parsedAttachment.sourceLabel,
+        );
+        setDocumentSaveFeedback(parsedFeedback);
+        setSaveLabel(parsedFeedback);
+      } catch {
+        const parseFailedFeedback = formatDocumentAttachmentTextParseFailedStatus(attachmentName);
+        setDocumentSaveFeedback(parseFailedFeedback);
+        setSaveLabel(parseFailedFeedback);
+      }
     } catch (error) {
       console.error("Document attachment selection failed", error);
       const feedback = formatDocumentDraftAttachmentSelectionFailedStatusLabel(
@@ -2704,6 +2745,32 @@ function App() {
         : formatDocumentAttachmentPathUpdatedStatusLabel(document, attachmentName, attachmentStatus);
       setDocumentActionFeedback({ documentId: document.id, message: feedback });
       setActionSaveLabel(feedback);
+
+      try {
+        const parsedAttachment = await parseTauriSelectedDocumentAttachment(
+          selected,
+          attachmentName,
+        );
+        if (!parsedAttachment) return;
+
+        mergeParsedTextIntoSavedDocument(
+          document.id,
+          attachmentName,
+          parsedAttachment.normalizedText,
+          parsedAttachment.sourceLabel,
+        );
+        const parsedFeedback = formatDocumentAttachmentTextParsedStatus(
+          attachmentName,
+          parsedAttachment.normalizedText.length,
+          parsedAttachment.sourceLabel,
+        );
+        setDocumentActionFeedback({ documentId: document.id, message: parsedFeedback });
+        setActionSaveLabel(parsedFeedback);
+      } catch {
+        const parseFailedFeedback = formatDocumentAttachmentTextParseFailedStatus(attachmentName);
+        setDocumentActionFeedback({ documentId: document.id, message: parseFailedFeedback });
+        setActionSaveLabel(parseFailedFeedback);
+      }
     } catch (error) {
       console.error("Saved document attachment replacement failed", error);
       const feedback = formatDocumentAttachmentReconnectFailedStatusLabel(document);

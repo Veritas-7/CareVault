@@ -1,0 +1,86 @@
+{
+  "candidate_set": "Rust HWP/HWPX parser adapter candidates",
+  "date": "2026-06-11",
+  "samples": [
+    {
+      "file": "KTX.hwp",
+      "bytes": 66048,
+      "source": "https://raw.githubusercontent.com/edwardkim/rhwp/main/samples/basic/KTX.hwp"
+    },
+    {
+      "file": "hwp3-sample-hwpx.hwpx",
+      "bytes": 108286,
+      "source": "https://raw.githubusercontent.com/edwardkim/rhwp/main/samples/hwp3-sample-hwpx.hwpx"
+    }
+  ],
+  "candidates": [
+    {
+      "name": "hwarang",
+      "version": "0.2.0",
+      "license": "MIT",
+      "repository": "https://github.com/teammilestone/hwarang",
+      "api": "hwarang::extract_text_from_file(path)",
+      "carevault_features": "default-features = false",
+      "results": [
+        {
+          "file": "KTX.hwp",
+          "success": true,
+          "character_count": 2765,
+          "term_hits": "5/7",
+          "preview": "※ KTX 소요 시간과 운임은 철도청의 사정에 따라 변동할 수 있습니다. | KTX 노선도 | 서울 | 용산 | 광명"
+        },
+        {
+          "file": "hwp3-sample-hwpx.hwpx",
+          "success": true,
+          "character_count": 21573,
+          "term_hits": "2/7",
+          "preview": "Creating Linux Virtual Servers | Wensong Zhang, Shiyao Jin, Quanyuan Wu | National Laboratory for Parallel & Distributed Processing"
+        }
+      ]
+    },
+    {
+      "name": "unhwp",
+      "version": "0.5.1",
+      "license": "MIT",
+      "repository": "https://github.com/iyulab/unhwp",
+      "api": "unhwp::extract_text(path), unhwp::to_markdown(path)",
+      "results": [
+        {
+          "file": "KTX.hwp",
+          "extract_text_success": true,
+          "extract_text_character_count": 1567,
+          "markdown_success": true,
+          "markdown_character_count": 3110,
+          "term_hits": "5/7"
+        },
+        {
+          "file": "hwp3-sample-hwpx.hwpx",
+          "extract_text_success": true,
+          "extract_text_character_count": 20903,
+          "markdown_success": true,
+          "markdown_character_count": 21655,
+          "term_hits": "1/7"
+        }
+      ]
+    },
+    {
+      "name": "hwp2md",
+      "version": "0.5.0",
+      "license": "GPL-3.0-only",
+      "decision": "not adopted as an app runtime dependency because CareVault is not ready to take GPL runtime dependency obligations"
+    }
+  ],
+  "adoption": {
+    "selected": "hwarang",
+    "surface": "Tauri command parse_hwp_attachment_text",
+    "source_label": "HWP/HWPX 데스크톱 파서",
+    "fail_closed_behavior": "The app keeps filename/path attachment metadata first. If parser invocation fails or returns no readable text, parsing status reports failure and the attachment reference remains intact.",
+    "browser_boundary": "Browser file-input .hwp remains filename-reference only; browser-side .hwpx still uses the lightweight ZIP preview/XML extractor."
+  },
+  "verification": [
+    "cargo run -- /tmp/carevault-hwp-rust-ab.cW1uJl/KTX.hwp /tmp/carevault-hwp-rust-ab.cW1uJl/hwp3-sample-hwpx.hwpx with hwarang default-features=false",
+    "cargo test --manifest-path src-tauri/Cargo.toml",
+    "npm test -- src/documentTauriAttachmentParsing.test.ts src/documentAttachmentParsing.test.ts src/documentAttachmentText.test.ts src/documentHwpxText.test.ts src/documentKnowledge.test.ts src/documentFilterActions.test.ts",
+    "npm run typecheck"
+  ]
+}
