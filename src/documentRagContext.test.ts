@@ -108,6 +108,26 @@ describe("documentRagContext", () => {
     expect(text).toContain("쿼리 커버리지:");
   });
 
+  it("focuses long parsed evidence chunks around matched clinical terms", () => {
+    const longParsedDocument = {
+      ...parsedHwpDocument,
+      body: [
+        "[첨부 텍스트 파싱: 긴_검사결과.hwp · HWP/HWPX 데스크톱 파서]",
+        `${"관련 없는 앞부분 ".repeat(80)}자궁경부암 병리 추적. HbA1c 7.8%, 혈압 150/92. 다음 외래에서 확인.${" 관련 없는 뒷부분".repeat(80)}`,
+      ].join("\n"),
+      title: "긴 HWP 검사결과",
+    };
+
+    const context = buildDocumentRagContext([longParsedDocument], "HbA1c 혈압");
+    const chunkText = context.items[0].evidenceChunks[0].text;
+
+    expect(chunkText).toContain("HbA1c 7.8%");
+    expect(chunkText).toContain("혈압 150/92");
+    expect(chunkText.length).toBeLessThanOrEqual(300);
+    expect(chunkText).not.toContain("관련 없는 앞부분 ".repeat(20).trim());
+    expect(chunkText).not.toContain("관련 없는 뒷부분 ".repeat(20).trim());
+  });
+
   it("formats a clinic-ready context packet without leaking local attachment paths", () => {
     const context = buildDocumentRagContext([parsedHwpDocument], "데스크톱 파서");
     const text = formatDocumentRagContextClipboardText(context);
