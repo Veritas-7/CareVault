@@ -39,9 +39,13 @@ export type DocumentRagEmbeddingRequest =
 
 export type DocumentRagEmbeddingRankedChunk = {
   chunkLabel: string;
+  citationLabel: string;
+  documentId: string;
+  nextActionSummary: string;
   reasonSummary: string;
   similarityPercent: number;
   sourceSummary: string;
+  statusSummary: string;
   text: string;
   titleLine: string;
 };
@@ -244,6 +248,10 @@ function cosineSimilarity(first: number[], second: number[]) {
   return dot / (firstMagnitude * secondMagnitude);
 }
 
+function formatEmbeddingCitationLabel(item: DocumentRagContextItem, chunk: DocumentRagEvidenceChunk) {
+  return `${item.titleLine} · ${chunk.label} · 조각 원천 ${chunk.sourceSummary}`;
+}
+
 function rankEmbeddingCorpus(
   corpus: DocumentRagEmbeddingCorpusEntry[],
   vectors: Array<number[] | null>,
@@ -256,9 +264,13 @@ function rankEmbeddingCorpus(
       if (similarity === null) return null;
       return {
         chunkLabel: entry.chunk.label,
+        citationLabel: formatEmbeddingCitationLabel(entry.item, entry.chunk),
+        documentId: entry.item.documentId,
+        nextActionSummary: entry.item.nextActionSummary,
         reasonSummary: `로컬 임베딩 유사도: ${Math.round(similarity * 100)}%`,
         similarityPercent: Math.round(similarity * 100),
         sourceSummary: entry.chunk.sourceSummary,
+        statusSummary: entry.item.statusSummary,
         text: entry.chunk.text,
         titleLine: entry.item.titleLine,
       };

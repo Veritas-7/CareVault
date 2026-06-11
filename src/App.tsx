@@ -2100,9 +2100,10 @@ function App() {
           result.summary,
           ...result.rankedChunks.slice(0, 3).map((chunk, index) =>
             [
-              `${index + 1}. ${chunk.titleLine} · ${chunk.chunkLabel}`,
+              `${index + 1}. ${chunk.citationLabel}`,
               chunk.reasonSummary,
-              `근거 출처: ${chunk.sourceSummary}`,
+              `문서 상태: ${chunk.statusSummary}`,
+              `다음 조치: ${chunk.nextActionSummary}`,
               chunk.text,
             ].join("\n"),
           ),
