@@ -119,6 +119,7 @@ const requiredBundleFiles = [
   "carevault-external-review-packet/reviewer-handoff.md",
   "carevault-objective-readiness-report.md",
   "carevault-objective-readiness-report.json",
+  "carevault-readiness-inputs-doctor.json",
   "carevault-final-readiness-handoff.md",
   "carevault-objective-readiness-handoff-manifest.json",
 ];
@@ -206,6 +207,36 @@ assertArrayIncludesAll(
   "objective readiness report must list current blockers.",
 );
 
+const inputsDoctor = readJson(
+  "carevault-readiness-inputs-doctor.json",
+  "inputs doctor baseline",
+);
+if (inputsDoctor.schema !== "carevault-objective-readiness-inputs-doctor.v1") {
+  fail("inputs doctor baseline schema is unsupported.");
+}
+if (inputsDoctor.status !== "missing-evidence") {
+  fail("inputs doctor baseline status must be missing-evidence.");
+}
+if (inputsDoctor.final_readiness_gate !== "not-ready") {
+  fail("inputs doctor baseline final gate must be not-ready.");
+}
+if (inputsDoctor.input_paths_included !== false) {
+  fail("inputs doctor baseline must omit configured input paths.");
+}
+if (
+  !inputsDoctor.evidence_inputs ||
+  inputsDoctor.evidence_inputs.hwp_smoke_report !== "missing" ||
+  inputsDoctor.evidence_inputs.external_review_packet !== "missing" ||
+  inputsDoctor.evidence_inputs.external_review_report !== "missing"
+) {
+  fail("inputs doctor baseline must list all evidence inputs as missing.");
+}
+assertArrayIncludesAll(
+  inputsDoctor.blocking_requirements,
+  expectedBlockers,
+  "inputs doctor baseline must list current blockers.",
+);
+
 const finalHandoff = readText(
   "carevault-final-readiness-handoff.md",
   "final readiness handoff",
@@ -219,6 +250,9 @@ for (const command of expectedCommands) {
   if (!finalHandoff.includes(command)) {
     fail("final readiness handoff must list the final evidence command sequence.");
   }
+}
+if (!finalHandoff.includes("carevault-readiness-inputs-doctor.json")) {
+  fail("final readiness handoff must list the inputs doctor baseline file.");
 }
 
 const reviewerHandoff = readText(

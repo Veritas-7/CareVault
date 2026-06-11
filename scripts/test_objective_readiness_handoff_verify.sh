@@ -101,7 +101,7 @@ assert_not_contains "$TMP_DIR/unreadable-dir.err" "$TMP_DIR/no-such-bundle"
 expect_success "valid-bundle" CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$VALID_BUNDLE"
 assert_contains "$TMP_DIR/valid-bundle.out" "Objective readiness handoff verified."
 assert_contains "$TMP_DIR/valid-bundle.out" "Status: blocked"
-assert_contains "$TMP_DIR/valid-bundle.out" "Bundle files: 13"
+assert_contains "$TMP_DIR/valid-bundle.out" "Bundle files: 14"
 assert_contains "$TMP_DIR/valid-bundle.out" "real-private-hwp-hwpx-sample, external-clinician-source-review"
 assert_not_contains "$TMP_DIR/valid-bundle.out" "$VALID_BUNDLE"
 
@@ -138,6 +138,18 @@ NODE
 expect_failure "wrong-status" \
   CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$WRONG_STATUS_BUNDLE"
 assert_contains "$TMP_DIR/wrong-status.err" "handoff manifest status must be blocked"
+
+WRONG_INPUTS_STATUS_BUNDLE="$(copy_bundle wrong-inputs-status-bundle)"
+node - <<'NODE' "$WRONG_INPUTS_STATUS_BUNDLE/carevault-readiness-inputs-doctor.json"
+const fs = require("fs");
+const path = process.argv[2];
+const report = JSON.parse(fs.readFileSync(path, "utf8"));
+report.status = "ready";
+fs.writeFileSync(path, `${JSON.stringify(report, null, 2)}\n`);
+NODE
+expect_failure "wrong-inputs-status" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$WRONG_INPUTS_STATUS_BUNDLE"
+assert_contains "$TMP_DIR/wrong-inputs-status.err" "inputs doctor baseline status must be missing-evidence"
 
 PATH_LEAK_BUNDLE="$(copy_bundle path-leak-bundle)"
 printf '\n/Users/wj/private-carevault/sample.hwp\n' >> "$PATH_LEAK_BUNDLE/carevault-final-readiness-handoff.md"

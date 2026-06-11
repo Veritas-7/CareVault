@@ -95,6 +95,7 @@ assert_not_contains "$TMP_DIR/bundle-export.out" "$HANDOFF_DIR"
 assert_file_exists "$HANDOFF_DIR/carevault-private-hwp-smoke-handoff.md"
 assert_file_exists "$HANDOFF_DIR/carevault-objective-readiness-report.md"
 assert_file_exists "$HANDOFF_DIR/carevault-objective-readiness-report.json"
+assert_file_exists "$HANDOFF_DIR/carevault-readiness-inputs-doctor.json"
 assert_file_exists "$HANDOFF_DIR/carevault-final-readiness-handoff.md"
 assert_file_exists "$HANDOFF_DIR/carevault-objective-readiness-handoff-manifest.json"
 
@@ -122,15 +123,17 @@ assert_contains "$FINAL_HANDOFF" "npm run objective:readiness:complete"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet"
 assert_contains "$FINAL_HANDOFF" "CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=/path/to/carevault-readiness-inputs.json"
+assert_contains "$FINAL_HANDOFF" "carevault-readiness-inputs-doctor.json"
 
 assert_contains "$HANDOFF_DIR/carevault-objective-readiness-report.md" "Status: blocked"
 assert_contains "$HANDOFF_DIR/carevault-objective-readiness-report.md" "real-private-hwp-hwpx-sample"
 assert_contains "$HANDOFF_DIR/carevault-objective-readiness-report.md" "external-clinician-source-review"
 assert_contains "$HANDOFF_DIR/carevault-external-review-packet/reviewer-handoff.md" "Workflow Requirement Summary"
 
-node - <<'NODE' "$HANDOFF_DIR/carevault-objective-readiness-handoff-manifest.json"
+node - <<'NODE' "$HANDOFF_DIR/carevault-objective-readiness-handoff-manifest.json" "$HANDOFF_DIR/carevault-readiness-inputs-doctor.json"
 const fs = require("fs");
 const manifest = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+const inputsDoctor = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
 if (manifest.schema !== "carevault-objective-readiness-handoff.v1") process.exit(1);
 if (manifest.status !== "blocked") process.exit(1);
 const expectedBlockers = [
@@ -145,6 +148,7 @@ const expectedRootFiles = [
   "carevault-external-review-packet/reviewer-handoff.md",
   "carevault-objective-readiness-report.md",
   "carevault-objective-readiness-report.json",
+  "carevault-readiness-inputs-doctor.json",
   "carevault-final-readiness-handoff.md",
 ];
 for (const filename of expectedRootFiles) {
@@ -167,6 +171,16 @@ if (
   process.exit(1);
 }
 if (!manifest.non_evidence_statement.includes("does not create")) process.exit(1);
+if (inputsDoctor.schema !== "carevault-objective-readiness-inputs-doctor.v1") process.exit(1);
+if (inputsDoctor.status !== "missing-evidence") process.exit(1);
+if (inputsDoctor.final_readiness_gate !== "not-ready") process.exit(1);
+if (inputsDoctor.input_paths_included !== false) process.exit(1);
+if (inputsDoctor.evidence_inputs.hwp_smoke_report !== "missing") process.exit(1);
+if (inputsDoctor.evidence_inputs.external_review_packet !== "missing") process.exit(1);
+if (inputsDoctor.evidence_inputs.external_review_report !== "missing") process.exit(1);
+for (const blocker of expectedBlockers) {
+  if (!inputsDoctor.blocking_requirements.includes(blocker)) process.exit(1);
+}
 NODE
 
 if grep -R -n -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$HANDOFF_DIR"; then

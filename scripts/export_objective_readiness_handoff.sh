@@ -66,6 +66,7 @@ HWP_HANDOFF="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-private-hwp-sm
 EXTERNAL_PACKET_DIR="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-external-review-packet"
 READINESS_MARKDOWN="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-objective-readiness-report.md"
 READINESS_JSON="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-objective-readiness-report.json"
+INPUTS_DOCTOR_JSON="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-readiness-inputs-doctor.json"
 FINAL_HANDOFF="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-final-readiness-handoff.md"
 MANIFEST_JSON="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-objective-readiness-handoff-manifest.json"
 
@@ -78,6 +79,12 @@ CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$EXTERNAL_PACKET_DIR" \
 CAREVAULT_OBJECTIVE_READINESS_REPORT_PATH="$READINESS_MARKDOWN" \
 CAREVAULT_OBJECTIVE_READINESS_JSON_PATH="$READINESS_JSON" \
   bash "$ROOT_DIR/scripts/export_objective_readiness_report.sh" > "$TMP_DIR/objective-readiness.out"
+
+env -u CAREVAULT_HWP_SMOKE_REPORT_PATH \
+  -u CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR \
+  -u CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH \
+  CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH="$INPUTS_DOCTOR_JSON" \
+  bash "$ROOT_DIR/scripts/doctor_objective_readiness_inputs.sh" > "$TMP_DIR/inputs-doctor.out"
 
 cat > "$FINAL_HANDOFF" <<'EOF'
 # CareVault Final Readiness Evidence Handoff
@@ -93,6 +100,7 @@ approval.
 - `carevault-external-review-packet/`: current clinical source, workflow, objective-readiness, template, and hash handoff files for reviewer use.
 - `carevault-objective-readiness-report.md`: current command-generated blocked readiness report.
 - `carevault-objective-readiness-report.json`: machine-readable readiness report.
+- `carevault-readiness-inputs-doctor.json`: current no-input baseline from the path-safe input doctor; it is status only, not evidence.
 - `carevault-final-readiness-handoff.md`: this final evidence sequence.
 - `carevault-objective-readiness-handoff-manifest.json`: machine-readable bundle manifest for automation.
 
@@ -193,6 +201,7 @@ cat > "$MANIFEST_JSON" <<'EOF'
     "carevault-external-review-packet/reviewer-handoff.md",
     "carevault-objective-readiness-report.md",
     "carevault-objective-readiness-report.json",
+    "carevault-readiness-inputs-doctor.json",
     "carevault-final-readiness-handoff.md",
     "carevault-objective-readiness-handoff-manifest.json"
   ],

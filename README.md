@@ -106,19 +106,25 @@ npm run objective:readiness:handoff
 
 The bundle command validates and exports the private HWP/HWPX smoke handoff,
 exports the current external review packet, exports the current blocked
-objective-readiness report as Markdown and JSON, and writes
+objective-readiness report as Markdown and JSON, writes a no-input
+`carevault-readiness-inputs-doctor.json` baseline showing the current
+`missing-evidence` blocker state without configured evidence paths, and writes
 `carevault-final-readiness-handoff.md` plus
 `carevault-objective-readiness-handoff-manifest.json` with the exact follow-up sequence:
 `npm run hwp:smoke`, `npm run clinical:external-review:packet`, `npm run
 clinical:external-review:report`, `npm run
 objective:readiness:inputs:doctor`, and `npm run
 objective:readiness:complete`. The manifest also records the optional
-`CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` status output for automation.
+`CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` status output for automation
+and includes the baseline input-doctor JSON in the bundle file list. The
+baseline JSON is a status snapshot only; it does not create or replace HWP/HWPX
+sample evidence or external clinician/source review evidence.
 `npm run objective:readiness:handoff:test` verifies missing-output failures,
 bundle contents, current blocker names, machine-readable manifest
-schema/status/file list/command sequence, optional status output, and local-path
-exclusion. The command still does not run or invent a real private sample and
-does not create external clinician/source approval.
+schema/status/file list/command sequence, optional status output, baseline
+input-doctor JSON schema/status/input states, and local-path exclusion. The
+command still does not run or invent a real private sample and does not create
+external clinician/source approval.
 
 Verify a previously exported handoff bundle before sharing or archiving it:
 
@@ -131,11 +137,11 @@ The verifier reads `carevault-objective-readiness-handoff-manifest.json`, checks
 the required bundle files, confirms the manifest and readiness report remain
 `blocked` on `real-private-hwp-hwpx-sample` and
 `external-clinician-source-review`, verifies the final evidence command
-sequence, optional status-output field, and reviewer handoff sections, and
-fails if any bundle file leaks local paths. `npm run
-objective:readiness:handoff:verify:test` covers valid bundles, missing
-env/dir/manifest, invalid JSON, missing listed files, wrong status, and
-path-leak failures.
+sequence, optional status-output field, no-input input-doctor baseline JSON,
+and reviewer handoff sections, and fails if any bundle file leaks local paths.
+`npm run objective:readiness:handoff:verify:test` covers valid bundles, missing
+env/dir/manifest, invalid JSON, missing listed files, wrong manifest status,
+wrong baseline input-doctor status, and path-leak failures.
 
 ## Clinical source smoke
 
