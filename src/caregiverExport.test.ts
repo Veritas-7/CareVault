@@ -952,6 +952,46 @@ describe("caregiverExport", () => {
     expect(html).not.toContain("attachmentPath");
   });
 
+  it("includes parsed document care queue questions in caregiver HTML without local paths", () => {
+    const html = buildCaregiverExportHtml(
+      {
+        ...state,
+        documents: [
+          {
+            date: "2026-06-04",
+            title: "HWPX 추적 검사",
+            category: "visit-note",
+            body: [
+              "[첨부 텍스트 파싱: follow.hwpx · HWPX 본문 XML]",
+              "자궁경부암 추적 중 혈압 149/93, HbA1c 7.4%, 당화혈색소 상담 필요. 원본 경로 /Users/wj/private/follow.hwpx 및 C:\\Users\\wj\\secret\\scan.pdf",
+            ].join("\n"),
+            reviewStatus: "care-question",
+            nextAction: "",
+            attachmentName: "follow.hwpx",
+            attachmentPath: "/Users/wj/private/follow.hwpx",
+          },
+        ],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-04T10:00:00.000Z",
+    );
+
+    expect(html).toContain("<h2>진료 준비 큐</h2>");
+    expect(html).toContain("서류 · 서류 질문");
+    expect(html).toContain("HWPX 추적 검사");
+    expect(html).toContain("HWPX 추적 검사 서류에서 자궁경부암, 고혈압, 당뇨 관련 단서");
+    expect(html).toContain("당화혈색소");
+    expect(html).toContain("파싱 원천: HWPX 본문 XML: follow.hwpx");
+    expect(html).toContain("[local path]");
+    expect(html).not.toContain("/Users/wj/private");
+    expect(html).not.toContain("C:\\Users\\wj");
+    expect(html).not.toContain("attachmentPath");
+  });
+
   it("omits malformed visit dates from caregiver upcoming visits", () => {
     const html = buildCaregiverExportHtml(
       {

@@ -1649,6 +1649,46 @@ describe("csvExport", () => {
     expect(csv).not.toContain("attachmentPath");
   });
 
+  it("exports parsed document care queue questions without local paths", () => {
+    const csv = buildCareVaultCsv(
+      {
+        ...state,
+        documents: [
+          {
+            date: "2026-06-04",
+            title: "HWPX 추적 검사",
+            category: "visit-note",
+            body: [
+              "[첨부 텍스트 파싱: follow.hwpx · HWPX 본문 XML]",
+              "자궁경부암 추적 중 혈압 149/93, HbA1c 7.4%, 당화혈색소 상담 필요. 원본 경로 /Users/wj/private/follow.hwpx 및 C:\\Users\\wj\\secret\\scan.pdf",
+            ].join("\n"),
+            tags: "",
+            reviewStatus: "care-question",
+            nextAction: "",
+            attachmentName: "follow.hwpx",
+          },
+        ],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-04T10:00:00.000Z",
+    );
+
+    expect(csv).toContain(
+      '"care_queue","2026-06-04","서류 · 서류 질문","HWPX 추적 검사","watch"',
+    );
+    expect(csv).toContain("HWPX 추적 검사 서류에서 자궁경부암, 고혈압, 당뇨 관련 단서");
+    expect(csv).toContain("당화혈색소");
+    expect(csv).toContain("파싱 원천: HWPX 본문 XML: follow.hwpx");
+    expect(csv).toContain("[local path]");
+    expect(csv).not.toContain("/Users/wj/private");
+    expect(csv).not.toContain("C:\\Users\\wj");
+    expect(csv).not.toContain("attachmentPath");
+  });
+
   it("exports deleted parsed document audit rows separately", () => {
     const csv = buildCareVaultCsv(
       {

@@ -1497,6 +1497,46 @@ describe("visit packet", () => {
     expect(markdown).not.toContain("attachmentPath");
   });
 
+  it("exports parsed document care queue questions without local paths in visit packets", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        documents: [
+          {
+            date: "2026-06-04",
+            title: "HWPX 추적 검사",
+            category: "visit-note",
+            body: [
+              "[첨부 텍스트 파싱: follow.hwpx · HWPX 본문 XML]",
+              "자궁경부암 추적 중 혈압 149/93, HbA1c 7.4%, 당화혈색소 상담 필요. 원본 경로 /Users/wj/private/follow.hwpx 및 C:\\Users\\wj\\secret\\scan.pdf",
+            ].join("\n"),
+            tags: "",
+            reviewStatus: "care-question",
+            nextAction: "",
+            attachmentName: "follow.hwpx",
+            attachmentPath: "/Users/wj/private/follow.hwpx",
+          },
+        ],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      { exportedAt: "2026-06-04T08:00:00.000Z" },
+    );
+
+    expect(markdown).toContain("## 진료 준비 큐");
+    expect(markdown).toContain("[서류 · 서류 질문] HWPX 추적 검사");
+    expect(markdown).toContain("HWPX 추적 검사 서류에서 자궁경부암, 고혈압, 당뇨 관련 단서");
+    expect(markdown).toContain("당화혈색소");
+    expect(markdown).toContain("파싱 원천: HWPX 본문 XML: follow.hwpx");
+    expect(markdown).toContain("[local path]");
+    expect(markdown).not.toContain("/Users/wj/private");
+    expect(markdown).not.toContain("C:\\Users\\wj");
+    expect(markdown).not.toContain("attachmentPath");
+  });
+
   it("omits parsed document audit sections when no parsed attachment body exists", () => {
     const markdown = buildVisitPacketMarkdown(sampleState, {
       exportedAt: "2026-06-03T08:00:00.000Z",
