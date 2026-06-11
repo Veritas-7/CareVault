@@ -3971,6 +3971,18 @@ textarea:focus-visible {
   align-items: end;
 }
 
+.document-rag-runtime-readiness {
+  display: grid;
+  gap: 3px;
+  padding-bottom: 2px;
+}
+
+.document-rag-runtime-readiness strong {
+  color: #29313d;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
 .document-rag-local-model label {
   min-width: 0;
   color: #3f4550;

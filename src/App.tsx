@@ -230,6 +230,7 @@ import {
   requestDocumentRagEmbeddings,
   validateDocumentRagEmbeddingRequest,
 } from "./documentRagEmbeddingRequest";
+import { buildDocumentRagReadiness } from "./documentRagReadiness";
 import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
@@ -1904,6 +1905,13 @@ function App() {
     documentRagEmbeddingValidation.level === "ready"
       ? `로컬 임베딩 RAG 점검 · ${documentRagContext.summary}`
       : documentRagEmbeddingValidation.summary;
+  const documentRagReadiness = buildDocumentRagReadiness({
+    context: documentRagContext,
+    embeddingOutput: documentRagEmbeddingOutput,
+    embeddingValidation: documentRagEmbeddingValidation,
+    modelOutput: documentRagModelOutput,
+    modelValidation: documentRagLocalModelValidation,
+  });
   const hasActiveDocumentFilters = hasActiveDocumentFilterState({
     categoryFilter: documentCategoryFilter,
     searchText: documentFilter,
@@ -7863,6 +7871,12 @@ function App() {
                   ))}
                 </div>
                 <div className="document-rag-local-model">
+                  <div className="document-rag-runtime-readiness">
+                    <strong>{documentRagReadiness.summary}</strong>
+                    {documentRagReadiness.warnings.slice(0, 2).map((warning) => (
+                      <small key={warning}>{warning}</small>
+                    ))}
+                  </div>
                   <div className="document-rag-local-model-row">
                     <label>
                       로컬 모델 endpoint
