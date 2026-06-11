@@ -1,8 +1,13 @@
 {
-  "schema": "carevault-external-clinician-review.v1",
+  "schema": "carevault-external-clinician-review.v2",
   "status": "draft",
   "reviewed_at": "YYYY-MM-DD",
   "reviewer_role": "REPLACE_WITH_EXTERNAL_CLINICAL_REVIEWER_ROLE",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "pending"},
+    {"id": "clinical-workflow-review-packet", "status": "pending"},
+    {"id": "objective-readiness-report", "status": "pending"}
+  ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "attestations": {
@@ -14,5 +19,7 @@
   "critical_findings_open": 0,
   "major_findings_open": 0,
   "source_registry_error_count": 0,
-  "source_registry_warning_count": 0
+  "source_registry_total_count": 84,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 6
 }

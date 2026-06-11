@@ -5,6 +5,7 @@ import {
   type CareVaultExternalReviewEvidence,
 } from "./carevaultObjectiveReadiness";
 import { buildClinicalReviewPacket } from "./clinicalReviewPacket";
+import { buildClinicalWorkflowReviewPacket } from "./clinicalWorkflowReview";
 
 const externalReviewTemplate =
   externalReviewTemplateJson as CareVaultExternalReviewEvidence;
@@ -17,9 +18,10 @@ const requiredExternalReviewCheckIds = [
 describe("carevaultExternalReviewTemplate", () => {
   it("keeps the checked-in external review template aligned with the current packet", () => {
     const clinicalReviewPacket = buildClinicalReviewPacket();
+    const workflowReviewPacket = buildClinicalWorkflowReviewPacket();
     const serializedTemplate = JSON.stringify(externalReviewTemplate);
 
-    expect(externalReviewTemplate.schema).toBe("carevault-external-clinician-review.v1");
+    expect(externalReviewTemplate.schema).toBe("carevault-external-clinician-review.v2");
     expect(externalReviewTemplate.status).toBe("draft");
     expect(externalReviewTemplate.reviewed_at).toBe("YYYY-MM-DD");
     expect(externalReviewTemplate.reviewer_role).toBe(
@@ -31,6 +33,11 @@ describe("carevaultExternalReviewTemplate", () => {
     expect(externalReviewTemplate.unresolved_required_check_ids).toEqual(
       requiredExternalReviewCheckIds,
     );
+    expect(externalReviewTemplate.reviewed_artifacts).toEqual([
+      { id: "clinical-review-packet", status: "pending" },
+      { id: "clinical-workflow-review-packet", status: "pending" },
+      { id: "objective-readiness-report", status: "pending" },
+    ]);
     expect(externalReviewTemplate.attestations).toEqual({
       cervical_hypertension_diabetes_scope_reviewed: false,
       non_diagnosis_boundary_reviewed: false,
@@ -42,8 +49,14 @@ describe("carevaultExternalReviewTemplate", () => {
     expect(externalReviewTemplate.source_registry_error_count).toBe(
       clinicalReviewPacket.summary.registryErrorCount,
     );
+    expect(externalReviewTemplate.source_registry_total_count).toBe(
+      clinicalReviewPacket.summary.totalSources,
+    );
     expect(externalReviewTemplate.source_registry_warning_count).toBe(
       clinicalReviewPacket.summary.registryWarningCount,
+    );
+    expect(externalReviewTemplate.workflow_surface_count).toBe(
+      workflowReviewPacket.surfaces.length,
     );
     expect(serializedTemplate).not.toContain("/Users/wj");
     expect(serializedTemplate).not.toContain("\\");
@@ -72,6 +85,10 @@ describe("carevaultExternalReviewTemplate", () => {
         source_registry_reviewed: true,
       },
       reviewed_at: "2026-06-11",
+      reviewed_artifacts: externalReviewTemplate.reviewed_artifacts.map((artifact) => ({
+        ...artifact,
+        status: "reviewed",
+      })),
       reviewer_role: "external clinical reviewer",
       status: "passed",
       unresolved_required_check_ids: [],

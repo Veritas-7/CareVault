@@ -35,12 +35,19 @@ const validExternalReviewEvidence: CareVaultExternalReviewEvidence = {
   major_findings_open: 0,
   required_check_ids: ["clinician-source-review", "real-workflow-review"],
   reviewed_at: "2026-06-11",
+  reviewed_artifacts: [
+    { id: "clinical-review-packet", status: "reviewed" },
+    { id: "clinical-workflow-review-packet", status: "reviewed" },
+    { id: "objective-readiness-report", status: "reviewed" },
+  ],
   reviewer_role: "external clinical reviewer",
-  schema: "carevault-external-clinician-review.v1",
+  schema: "carevault-external-clinician-review.v2",
   source_registry_error_count: 0,
+  source_registry_total_count: 84,
   source_registry_warning_count: 0,
   status: "passed",
   unresolved_required_check_ids: [],
+  workflow_surface_count: 6,
 };
 
 describe("carevaultObjectiveReadiness", () => {
@@ -246,6 +253,33 @@ describe("carevaultObjectiveReadiness", () => {
     );
     expect(openMajorFinding.status).toBe("blocked");
     expect(openMajorFinding.blockingRequirementIds).toContain(
+      "external-clinician-source-review",
+    );
+  });
+
+  it("keeps external review required when reviewed artifacts or counts are stale", () => {
+    const missingArtifact = buildCareVaultObjectiveReadinessReport({
+      externalReviewEvidence: {
+        ...validExternalReviewEvidence,
+        reviewed_artifacts: [
+          { id: "clinical-review-packet", status: "reviewed" },
+          { id: "clinical-workflow-review-packet", status: "reviewed" },
+        ],
+      },
+    });
+    const staleCount = buildCareVaultObjectiveReadinessReport({
+      externalReviewEvidence: {
+        ...validExternalReviewEvidence,
+        workflow_surface_count: 5,
+      },
+    });
+
+    expect(missingArtifact.status).toBe("blocked");
+    expect(missingArtifact.blockingRequirementIds).toContain(
+      "external-clinician-source-review",
+    );
+    expect(staleCount.status).toBe("blocked");
+    expect(staleCount.blockingRequirementIds).toContain(
       "external-clinician-source-review",
     );
   });

@@ -15,8 +15,8 @@ Usage:
   npm run clinical:external-review:template
 
 This command exports a draft external clinician/source review report template.
-It validates the checked-in template against the current clinical review packet
-before printing or writing it.
+It validates the checked-in template against the current clinical and workflow
+review packets before printing or writing it.
 EOF
 }
 

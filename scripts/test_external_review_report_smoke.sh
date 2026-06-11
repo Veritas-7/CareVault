@@ -10,15 +10,22 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 
 VALID_REPORT="$TMP_DIR/valid-external-review.json"
 MISSING_SCOPE_REPORT="$TMP_DIR/missing-scope.json"
+MISSING_ARTIFACT_REPORT="$TMP_DIR/missing-artifact.json"
+STALE_COUNT_REPORT="$TMP_DIR/stale-count.json"
 OPEN_FINDING_REPORT="$TMP_DIR/open-finding.json"
 BAD_JSON_REPORT="$TMP_DIR/bad-json.json"
 
 cat > "$VALID_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v1",
+  "schema": "carevault-external-clinician-review.v2",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "reviewed"},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
+    {"id": "objective-readiness-report", "status": "reviewed"}
+  ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],
   "attestations": {
@@ -30,16 +37,23 @@ cat > "$VALID_REPORT" <<'JSON'
   "critical_findings_open": 0,
   "major_findings_open": 0,
   "source_registry_error_count": 0,
-  "source_registry_warning_count": 0
+  "source_registry_total_count": 84,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 6
 }
 JSON
 
 cat > "$MISSING_SCOPE_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v1",
+  "schema": "carevault-external-clinician-review.v2",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "reviewed"},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
+    {"id": "objective-readiness-report", "status": "reviewed"}
+  ],
   "required_check_ids": ["clinician-source-review"],
   "unresolved_required_check_ids": [],
   "attestations": {
@@ -51,16 +65,50 @@ cat > "$MISSING_SCOPE_REPORT" <<'JSON'
   "critical_findings_open": 0,
   "major_findings_open": 0,
   "source_registry_error_count": 0,
-  "source_registry_warning_count": 0
+  "source_registry_total_count": 84,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 6
+}
+JSON
+
+cat > "$MISSING_ARTIFACT_REPORT" <<'JSON'
+{
+  "schema": "carevault-external-clinician-review.v2",
+  "status": "passed",
+  "reviewed_at": "2026-06-11",
+  "reviewer_role": "external clinical reviewer",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "reviewed"},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed"}
+  ],
+  "required_check_ids": ["clinician-source-review", "real-workflow-review"],
+  "unresolved_required_check_ids": [],
+  "attestations": {
+    "source_registry_reviewed": true,
+    "real_workflow_reviewed": true,
+    "non_diagnosis_boundary_reviewed": true,
+    "cervical_hypertension_diabetes_scope_reviewed": true
+  },
+  "critical_findings_open": 0,
+  "major_findings_open": 0,
+  "source_registry_error_count": 0,
+  "source_registry_total_count": 84,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 6
 }
 JSON
 
 cat > "$OPEN_FINDING_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v1",
+  "schema": "carevault-external-clinician-review.v2",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "reviewed"},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
+    {"id": "objective-readiness-report", "status": "reviewed"}
+  ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],
   "attestations": {
@@ -72,7 +120,37 @@ cat > "$OPEN_FINDING_REPORT" <<'JSON'
   "critical_findings_open": 0,
   "major_findings_open": 1,
   "source_registry_error_count": 0,
-  "source_registry_warning_count": 0
+  "source_registry_total_count": 84,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 6
+}
+JSON
+
+cat > "$STALE_COUNT_REPORT" <<'JSON'
+{
+  "schema": "carevault-external-clinician-review.v2",
+  "status": "passed",
+  "reviewed_at": "2026-06-11",
+  "reviewer_role": "external clinical reviewer",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "reviewed"},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
+    {"id": "objective-readiness-report", "status": "reviewed"}
+  ],
+  "required_check_ids": ["clinician-source-review", "real-workflow-review"],
+  "unresolved_required_check_ids": [],
+  "attestations": {
+    "source_registry_reviewed": true,
+    "real_workflow_reviewed": true,
+    "non_diagnosis_boundary_reviewed": true,
+    "cervical_hypertension_diabetes_scope_reviewed": true
+  },
+  "critical_findings_open": 0,
+  "major_findings_open": 0,
+  "source_registry_error_count": 0,
+  "source_registry_total_count": 83,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 5
 }
 JSON
 
@@ -147,11 +225,19 @@ assert_contains "$TMP_DIR/bad-json.out" "Configured external review report must 
 assert_not_contains "$TMP_DIR/bad-json.out" "$BAD_JSON_REPORT"
 
 expect_failure "missing-scope" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$MISSING_SCOPE_REPORT"
-assert_contains "$TMP_DIR/missing-scope.out" "AssertionError"
+assert_contains "$TMP_DIR/missing-scope.out" "must cover clinician-source-review and real-workflow-review"
 assert_not_contains "$TMP_DIR/missing-scope.out" "$TMP_DIR"
 
+expect_failure "missing-artifact" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$MISSING_ARTIFACT_REPORT"
+assert_contains "$TMP_DIR/missing-artifact.out" "must include reviewed artifacts"
+assert_not_contains "$TMP_DIR/missing-artifact.out" "$TMP_DIR"
+
 expect_failure "open-finding" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$OPEN_FINDING_REPORT"
-assert_contains "$TMP_DIR/open-finding.out" "AssertionError"
+assert_contains "$TMP_DIR/open-finding.out" "zero open critical or major findings"
+
+expect_failure "stale-count" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$STALE_COUNT_REPORT"
+assert_contains "$TMP_DIR/stale-count.out" "source registry counts must match"
+assert_not_contains "$TMP_DIR/stale-count.out" "$TMP_DIR"
 
 expect_success "valid-report" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_REPORT"
 assert_contains "$TMP_DIR/valid-report.out" "External clinician/source review report smoke passed"

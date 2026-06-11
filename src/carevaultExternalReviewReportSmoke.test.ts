@@ -36,6 +36,12 @@ describeWhenConfigured("carevaultExternalReviewReportSmoke", () => {
       (requirement) => requirement.id === "external-clinician-source-review",
     );
 
+    if (externalReviewRequirement?.status !== "pass") {
+      throw new Error(
+        externalReviewRequirement?.detail
+        ?? "External clinician/source review report was not accepted.",
+      );
+    }
     expect(externalReviewRequirement?.status).toBe("pass");
     expect(report.status).toBe("blocked");
     expect(report.blockingRequirementIds).toEqual(["real-private-hwp-hwpx-sample"]);

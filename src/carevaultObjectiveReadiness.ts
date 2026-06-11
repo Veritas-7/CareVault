@@ -54,18 +54,26 @@ export type CareVaultExternalReviewAttestations = {
   source_registry_reviewed: boolean;
 };
 
+export type CareVaultExternalReviewArtifact = {
+  id: string;
+  status: string;
+};
+
 export type CareVaultExternalReviewEvidence = {
   attestations: CareVaultExternalReviewAttestations;
   critical_findings_open: number;
   major_findings_open: number;
   required_check_ids: string[];
   reviewed_at: string;
+  reviewed_artifacts: CareVaultExternalReviewArtifact[];
   reviewer_role: string;
   schema: string;
   source_registry_error_count: number;
+  source_registry_total_count: number;
   source_registry_warning_count: number;
   status: string;
   unresolved_required_check_ids: string[];
+  workflow_surface_count: number;
 };
 
 export type CareVaultExternalReviewEvidenceAssessment = {
@@ -93,7 +101,7 @@ export const careVaultObjectiveReadinessBoundary =
   "This readiness report is a command-only completion audit input. It is not a clinical approval, not a production medical readiness claim, and not permission to mark the active goal complete while blocked requirements remain.";
 
 const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v2";
-const externalReviewReportSchema = "carevault-external-clinician-review.v1";
+const externalReviewReportSchema = "carevault-external-clinician-review.v2";
 const supportedHwpSampleExtensions = new Set(["hwp", "hwpx", "hwpml"]);
 const hwpObjectiveTermGroupLabels: Record<
   keyof CareVaultHwpSmokeObjectiveTermGroups,
@@ -106,6 +114,11 @@ const hwpObjectiveTermGroupLabels: Record<
 const externalReviewRequiredCheckIds = [
   "clinician-source-review",
   "real-workflow-review",
+] as const;
+const externalReviewRequiredArtifactIds = [
+  "clinical-review-packet",
+  "clinical-workflow-review-packet",
+  "objective-readiness-report",
 ] as const;
 
 function basenameIsPathSafe(basename: string) {
@@ -309,6 +322,7 @@ export function assessCareVaultHwpSmokeReportEvidence(
 export function assessCareVaultExternalReviewEvidence(
   evidence: CareVaultExternalReviewEvidence | undefined,
   clinicalReviewPacket: ClinicalReviewPacket,
+  workflowReviewPacket: ClinicalWorkflowReviewPacket,
 ): CareVaultExternalReviewEvidenceAssessment {
   if (!evidence) {
     return {
@@ -417,6 +431,7 @@ export function assessCareVaultExternalReviewEvidence(
   }
   if (
     evidence.source_registry_error_count !== clinicalReviewPacket.summary.registryErrorCount
+    || evidence.source_registry_total_count !== clinicalReviewPacket.summary.totalSources
     || evidence.source_registry_warning_count !== clinicalReviewPacket.summary.registryWarningCount
   ) {
     return {
@@ -426,10 +441,44 @@ export function assessCareVaultExternalReviewEvidence(
       status: "required",
     };
   }
+  if (evidence.workflow_surface_count !== workflowReviewPacket.surfaces.length) {
+    return {
+      detail:
+        "Required: external review report workflow_surface_count must match the current workflow review packet.",
+      reviewedCheckIds: evidence.required_check_ids,
+      status: "required",
+    };
+  }
+  if (
+    !Array.isArray(evidence.reviewed_artifacts)
+    || !evidence.reviewed_artifacts.every((artifact) =>
+      artifact
+      && typeof artifact.id === "string"
+      && isPathSafeLabel(artifact.id)
+      && typeof artifact.status === "string"
+      && artifact.status === "reviewed"
+    )
+  ) {
+    return {
+      detail:
+        "Required: external review report reviewed_artifacts must be reviewed, non-path artifact IDs.",
+      reviewedCheckIds: evidence.required_check_ids,
+      status: "required",
+    };
+  }
+  const reviewedArtifactIds = evidence.reviewed_artifacts.map((artifact) => artifact.id);
+  if (!hasAllRequiredIds(reviewedArtifactIds, externalReviewRequiredArtifactIds)) {
+    return {
+      detail:
+        "Required: external review report must include reviewed artifacts for clinical-review-packet, clinical-workflow-review-packet, and objective-readiness-report.",
+      reviewedCheckIds: evidence.required_check_ids,
+      status: "required",
+    };
+  }
 
   return {
     detail:
-      `External clinician/source review evidence accepted for ${evidence.required_check_ids.join(", ")} by ${evidence.reviewer_role} on ${evidence.reviewed_at}; zero open critical or major findings.`,
+      `External clinician/source review evidence accepted for ${evidence.required_check_ids.join(", ")} by ${evidence.reviewer_role} on ${evidence.reviewed_at}; reviewed ${reviewedArtifactIds.length} artifacts with current source/workflow counts and zero open critical or major findings.`,
     reviewedCheckIds: evidence.required_check_ids,
     status: "pass",
   };
@@ -478,6 +527,7 @@ export function buildCareVaultObjectiveReadinessReport({
   const externalReviewAssessment = assessCareVaultExternalReviewEvidence(
     externalReviewEvidence,
     clinicalReviewPacket,
+    workflowReviewPacket,
   );
   const sourceRegistryClean =
     clinicalReviewPacket.summary.registryErrorCount === 0

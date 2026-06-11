@@ -74,10 +74,15 @@ JSON
 
 cat > "$VALID_EXTERNAL_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v1",
+  "schema": "carevault-external-clinician-review.v2",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "reviewed"},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
+    {"id": "objective-readiness-report", "status": "reviewed"}
+  ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],
   "attestations": {
@@ -89,16 +94,23 @@ cat > "$VALID_EXTERNAL_REPORT" <<'JSON'
   "critical_findings_open": 0,
   "major_findings_open": 0,
   "source_registry_error_count": 0,
-  "source_registry_warning_count": 0
+  "source_registry_total_count": 84,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 6
 }
 JSON
 
 cat > "$OPEN_FINDING_EXTERNAL_REPORT" <<'JSON'
 {
-  "schema": "carevault-external-clinician-review.v1",
+  "schema": "carevault-external-clinician-review.v2",
   "status": "passed",
   "reviewed_at": "2026-06-11",
   "reviewer_role": "external clinical reviewer",
+  "reviewed_artifacts": [
+    {"id": "clinical-review-packet", "status": "reviewed"},
+    {"id": "clinical-workflow-review-packet", "status": "reviewed"},
+    {"id": "objective-readiness-report", "status": "reviewed"}
+  ],
   "required_check_ids": ["clinician-source-review", "real-workflow-review"],
   "unresolved_required_check_ids": [],
   "attestations": {
@@ -110,7 +122,9 @@ cat > "$OPEN_FINDING_EXTERNAL_REPORT" <<'JSON'
   "critical_findings_open": 0,
   "major_findings_open": 1,
   "source_registry_error_count": 0,
-  "source_registry_warning_count": 0
+  "source_registry_total_count": 84,
+  "source_registry_warning_count": 0,
+  "workflow_surface_count": 6
 }
 JSON
 
