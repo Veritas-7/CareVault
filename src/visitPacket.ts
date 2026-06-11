@@ -57,6 +57,7 @@ import {
   formatVitalAssessmentStatus,
 } from "./vitalAssessmentEvidence";
 import { buildDocumentParserAudit } from "./documentParserAudit";
+import { buildDocumentRagContext } from "./documentRagContext";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose" | "temperature";
@@ -367,6 +368,45 @@ function buildDocumentParserAuditLines(
   ];
 }
 
+function buildVisitPacketDocumentRagQuery(profile: VisitPacketState["profile"]) {
+  const queryParts = [
+    profile.cancerCareMode ? "자궁경부암" : "",
+    profile.hypertension ? "고혈압" : "",
+    profile.hypertension ? "혈압" : "",
+    profile.diabetes ? "당뇨" : "",
+    profile.diabetes ? "혈당" : "",
+    profile.diabetes ? "HbA1c" : "",
+  ];
+  return queryParts.filter(Boolean).join(" ");
+}
+
+function buildDocumentRagContextLines(
+  documents: VisitPacketState["documents"],
+  query: string,
+  maxItems: number,
+) {
+  const context = buildDocumentRagContext(documents, query, { maxItems });
+  if (!context.items.length) return [];
+
+  return [
+    `- 검색 기준: ${context.queryLabel}`,
+    `- 요약: ${context.summary}`,
+    ...context.items.flatMap((item) => [
+      `- ${item.titleLine}`,
+      `  - 관련 이유: ${item.reasonSummary || "근거 조각 일치"}`,
+      `  - 임상 단서: ${item.signalSummary}`,
+      `  - 파싱 원천: ${item.parserSummary}`,
+      `  - 근거 스니펫: ${item.snippet}`,
+      ...item.evidenceChunks.flatMap((chunk, chunkIndex) => [
+        `  - 근거 조각 ${chunkIndex + 1}: ${chunk.label}`,
+        `    - 조각 이유: ${chunk.reasonSummary}`,
+        `    - 조각 원천: ${chunk.sourceSummary}`,
+        `    - 조각 본문: ${chunk.text}`,
+      ]),
+    ]),
+  ];
+}
+
 export function buildVisitPacketMarkdown(
   state: VisitPacketState,
   options: VisitPacketOptions = {},
@@ -464,6 +504,12 @@ export function buildVisitPacketMarkdown(
       return `- ${document.date}: [${documentLabel[document.category]}] ${document.title}${reviewStatus}${optionalSuffix(document.nextAction ?? "", " / 다음 조치: ")}${attachment}${optionalSuffix(document.tags, " / 태그: ")}${optionalSuffix(document.body, " / 메모: ")}`;
     });
   const documentParserAuditLines = buildDocumentParserAuditLines(rangedDocuments, maxItems);
+  const documentRagQuery = buildVisitPacketDocumentRagQuery(state.profile);
+  const documentRagContextLines = buildDocumentRagContextLines(
+    rangedDocuments,
+    documentRagQuery,
+    maxItems,
+  );
 
   const foodLines = options.foodQuery?.trim()
     ? (() => {
@@ -632,6 +678,16 @@ export function buildVisitPacketMarkdown(
           "파싱 원천과 감지 단서를 진료 전 확인하기 위한 메모입니다. 진단, 처방, 치료 지시가 아닙니다.",
           "",
           ...documentParserAuditLines,
+          "",
+        ]
+      : []),
+    ...(documentRagContextLines.length
+      ? [
+          "## 문서 RAG 근거 조각",
+          "",
+          "저장 서류와 파싱 본문에서 가져온 근거 조각입니다. 진단, 처방, 치료 지시가 아닙니다.",
+          "",
+          ...documentRagContextLines,
           "",
         ]
       : []),

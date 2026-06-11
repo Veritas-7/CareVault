@@ -1410,6 +1410,46 @@ describe("visit packet", () => {
     expect(markdown).not.toContain("attachmentPath");
   });
 
+  it("includes chunk-ranked document RAG evidence in clinician-facing visit packets", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        documents: [
+          {
+            date: "2026-06-04",
+            title: "자궁경부암 추적 HWP 결과",
+            category: "pathology",
+            body: [
+              "진료 전 직접 메모",
+              "",
+              "[첨부 텍스트 파싱: follow-up.hwp · HWP/HWPX 데스크톱 파서]",
+              "자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.",
+            ].join("\n"),
+            tags: "자궁경부암 고혈압 당뇨",
+            reviewStatus: "care-question",
+            nextAction: "진료 때 병리 의미와 혈압/혈당 관리 연결 질문",
+            attachmentName: "follow-up.hwp",
+            attachmentPath: "/Users/wj/private/follow-up.hwp",
+          },
+        ],
+      },
+      { exportedAt: "2026-06-04T08:00:00.000Z" },
+    );
+
+    expect(markdown).toContain("## 문서 RAG 근거 조각");
+    expect(markdown).toContain("검색 기준: 자궁경부암 고혈압 혈압 당뇨 혈당 HbA1c");
+    expect(markdown).toContain("- 요약: RAG 컨텍스트 1개 · 파싱 문서 1개 · 임상 단서 1개 · 근거 조각 1개");
+    expect(markdown).toContain("- 2026-06-04 · 자궁경부암 추적 HWP 결과");
+    expect(markdown).toContain("  - 관련 이유:");
+    expect(markdown).toContain("  - 임상 단서: 자궁경부암 · 고혈압 · 당뇨 · HWP/HWPX");
+    expect(markdown).toContain("  - 파싱 원천: HWP/HWPX 데스크톱 파서: follow-up.hwp");
+    expect(markdown).toContain("  - 근거 조각 1: 파싱 본문 조각 1");
+    expect(markdown).toContain("    - 조각 원천: HWP/HWPX 데스크톱 파서: follow-up.hwp");
+    expect(markdown).toContain("    - 조각 본문: 자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.");
+    expect(markdown).not.toContain("/Users/wj/private/follow-up.hwp");
+    expect(markdown).not.toContain("attachmentPath");
+  });
+
   it("omits parsed document audit sections when no parsed attachment body exists", () => {
     const markdown = buildVisitPacketMarkdown(sampleState, {
       exportedAt: "2026-06-03T08:00:00.000Z",
