@@ -33,9 +33,28 @@ CareVault behavior:
 - Browser-selected `.hwp` remains filename-reference only.
 - Browser-selected `.hwpx` continues to use the lightweight ZIP preview/XML extractor.
 
+## Command-Boundary Gate
+
+The Rust test `hwp_parser_command_parses_external_sample_when_env_is_set` verifies the actual
+Tauri command function `parse_hwp_attachment_text`.
+
+Default `cargo test` remains offline-stable: the external sample test returns early unless
+`CAREVAULT_HWP_SAMPLE_URL` is set.
+
+Verified command:
+
+```bash
+CAREVAULT_HWP_SAMPLE_URL=https://raw.githubusercontent.com/edwardkim/rhwp/main/samples/basic/KTX.hwp \
+CAREVAULT_HWP_SAMPLE_TERMS='KTX 노선도,서울,용산,광명' \
+cargo test --manifest-path src-tauri/Cargo.toml hwp_parser_command_parses_external_sample_when_env_is_set -- --nocapture
+```
+
+Result: passed through `parse_hwp_attachment_text` and recovered the expected KTX terms.
+
 ## Verification
 
 - `cargo run -- /tmp/carevault-hwp-rust-ab.cW1uJl/KTX.hwp /tmp/carevault-hwp-rust-ab.cW1uJl/hwp3-sample-hwpx.hwpx` with `hwarang` `default-features = false`
+- `CAREVAULT_HWP_SAMPLE_URL=https://raw.githubusercontent.com/edwardkim/rhwp/main/samples/basic/KTX.hwp CAREVAULT_HWP_SAMPLE_TERMS='KTX 노선도,서울,용산,광명' cargo test --manifest-path src-tauri/Cargo.toml hwp_parser_command_parses_external_sample_when_env_is_set -- --nocapture`
 - `cargo test --manifest-path src-tauri/Cargo.toml`
 - `npm test -- src/documentTauriAttachmentParsing.test.ts src/documentAttachmentParsing.test.ts src/documentAttachmentText.test.ts src/documentHwpxText.test.ts src/documentKnowledge.test.ts src/documentFilterActions.test.ts`
 - `npm run typecheck`

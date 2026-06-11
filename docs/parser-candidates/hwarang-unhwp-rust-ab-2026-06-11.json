@@ -77,8 +77,15 @@
     "fail_closed_behavior": "The app keeps filename/path attachment metadata first. If parser invocation fails or returns no readable text, parsing status reports failure and the attachment reference remains intact.",
     "browser_boundary": "Browser file-input .hwp remains filename-reference only; browser-side .hwpx still uses the lightweight ZIP preview/XML extractor."
   },
+  "tauri_command_boundary_gate": {
+    "test": "hwp_parser_command_parses_external_sample_when_env_is_set",
+    "default_behavior": "Skips external download when CAREVAULT_HWP_SAMPLE_URL is not set, so default cargo test remains offline-stable.",
+    "verified_command": "CAREVAULT_HWP_SAMPLE_URL=https://raw.githubusercontent.com/edwardkim/rhwp/main/samples/basic/KTX.hwp CAREVAULT_HWP_SAMPLE_TERMS='KTX 노선도,서울,용산,광명' cargo test --manifest-path src-tauri/Cargo.toml hwp_parser_command_parses_external_sample_when_env_is_set -- --nocapture",
+    "result": "passed through parse_hwp_attachment_text and recovered expected KTX terms"
+  },
   "verification": [
     "cargo run -- /tmp/carevault-hwp-rust-ab.cW1uJl/KTX.hwp /tmp/carevault-hwp-rust-ab.cW1uJl/hwp3-sample-hwpx.hwpx with hwarang default-features=false",
+    "CAREVAULT_HWP_SAMPLE_URL=https://raw.githubusercontent.com/edwardkim/rhwp/main/samples/basic/KTX.hwp CAREVAULT_HWP_SAMPLE_TERMS='KTX 노선도,서울,용산,광명' cargo test --manifest-path src-tauri/Cargo.toml hwp_parser_command_parses_external_sample_when_env_is_set -- --nocapture",
     "cargo test --manifest-path src-tauri/Cargo.toml",
     "npm test -- src/documentTauriAttachmentParsing.test.ts src/documentAttachmentParsing.test.ts src/documentAttachmentText.test.ts src/documentHwpxText.test.ts src/documentKnowledge.test.ts src/documentFilterActions.test.ts",
     "npm run typecheck"
