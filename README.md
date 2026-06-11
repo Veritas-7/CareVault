@@ -35,6 +35,21 @@ readiness gate. Without `CAREVAULT_HWP_SMOKE_REPORT_PATH`, the normal
 `npm run objective:readiness:smoke` command still keeps the private-sample
 requirement blocked.
 
+When both the private HWP smoke report and external clinician/source review
+report are available, run the final command-only evidence gate:
+
+```bash
+CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
+CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
+npm run objective:readiness:complete
+```
+
+This command fails unless the objective readiness report reaches `Status: pass`
+with no remaining blocking requirements. `npm run objective:readiness:complete:test`
+verifies missing report paths, rejected HWP evidence, rejected external-review
+evidence, and valid combined fixture evidence without using private documents or
+claiming clinical approval.
+
 ## Clinical source smoke
 
 Run this command to verify that CareVault's embedded clinical source registry

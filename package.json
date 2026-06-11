@@ -14,6 +14,8 @@
     "objective:readiness:smoke": "vitest run src/carevaultObjectiveReadiness.test.ts src/clinicalWorkflowReview.test.ts src/clinicalReviewPacket.test.ts",
     "objective:readiness:report": "bash scripts/smoke_objective_readiness_report.sh",
     "objective:readiness:report:test": "bash scripts/test_objective_readiness_report_smoke.sh",
+    "objective:readiness:complete": "bash scripts/smoke_objective_readiness_complete.sh",
+    "objective:readiness:complete:test": "bash scripts/test_objective_readiness_complete_smoke.sh",
     "clinical:sources:smoke": "bash scripts/smoke_clinical_source_urls.sh",
     "clinical:review:smoke": "vitest run src/clinicalSourceRegistry.test.ts src/clinicalReviewPacket.test.ts",
     "clinical:external-review:report": "bash scripts/smoke_external_review_report.sh",
