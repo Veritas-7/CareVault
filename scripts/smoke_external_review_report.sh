@@ -58,6 +58,33 @@ if [[ ! -x "$VITEST_BIN" ]]; then
   exit 2
 fi
 
+print_external_review_summary() {
+  python3 - "$CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH" <<'PY'
+import json
+import pathlib
+import sys
+
+report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+required_checks = ", ".join(report.get("required_check_ids", []))
+
+print(f"Accepted external review evidence: {report.get('reviewer_role')}")
+print(f"Reviewed artifacts: {len(report.get('reviewed_artifacts', []))}")
+print(f"Required checks: {required_checks}")
+print(
+    "Source registry counts: "
+    f"total={report.get('source_registry_total_count')}, "
+    f"errors={report.get('source_registry_error_count')}, "
+    f"warnings={report.get('source_registry_warning_count')}"
+)
+print(f"Workflow surfaces reviewed: {report.get('workflow_surface_count')}")
+print(
+    "Open findings: "
+    f"critical={report.get('critical_findings_open')}, "
+    f"major={report.get('major_findings_open')}"
+)
+PY
+}
+
 node "$ROOT_DIR/scripts/verify_external_review_packet_hashes.mjs" \
   "$CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH" \
   "$CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
@@ -65,5 +92,7 @@ node "$ROOT_DIR/scripts/verify_external_review_packet_hashes.mjs" \
 CAREVAULT_REQUIRE_EXTERNAL_REVIEW_REPORT=1 \
   CAREVAULT_EXTERNAL_REVIEW_REPORT_JSON="$(cat "$CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH")" \
   "$VITEST_BIN" run src/carevaultExternalReviewReportSmoke.test.ts
+
+print_external_review_summary
 
 printf 'External clinician/source review report smoke passed.\n'

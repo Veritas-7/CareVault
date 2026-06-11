@@ -56,6 +56,11 @@ CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/path/to/filled-external-review.json \
 npm run clinical:external-review:report
 ```
 
+When accepted, the command prints a path-safe evidence summary with reviewer
+role, reviewed artifact count, required checks, source-registry counts,
+workflow surface count, and open finding counts. Do not paste reviewer-private
+notes or patient-specific medical text into chat, issues, or this repo.
+
 When a private HWP/HWPX smoke report is also available, verify both remaining
 evidence reports together:
 

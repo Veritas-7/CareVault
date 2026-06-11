@@ -320,6 +320,12 @@ expect_success "valid-report" \
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_REPORT" \
   CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
 assert_contains "$TMP_DIR/valid-report.out" "External clinician/source review report smoke passed"
+assert_contains "$TMP_DIR/valid-report.out" "Accepted external review evidence: external clinical reviewer"
+assert_contains "$TMP_DIR/valid-report.out" "Reviewed artifacts: 3"
+assert_contains "$TMP_DIR/valid-report.out" "Required checks: clinician-source-review, real-workflow-review"
+assert_contains "$TMP_DIR/valid-report.out" "Source registry counts: total=84, errors=0, warnings=0"
+assert_contains "$TMP_DIR/valid-report.out" "Workflow surfaces reviewed: 6"
+assert_contains "$TMP_DIR/valid-report.out" "Open findings: critical=0, major=0"
 assert_contains "$TMP_DIR/valid-report.out" "1 passed"
 assert_not_contains "$TMP_DIR/valid-report.out" "$TMP_DIR"
 

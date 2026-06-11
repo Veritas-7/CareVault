@@ -167,9 +167,11 @@ cervical-cancer/hypertension/diabetes scope review, match the current registry
 total/error/warning counts and workflow surface count, and have zero open
 critical or major findings. The command compares those hashes and byte counts
 against the files in `CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR` before accepting the
-report. `npm run clinical:external-review:report:test`
-verifies the command bridge with fixture reports; it does not require or create
-real clinical approval.
+report. When accepted, it prints a path-safe summary with reviewer role,
+reviewed artifact count, required checks, source-registry counts, workflow
+surface count, and open finding counts. `npm run
+clinical:external-review:report:test` verifies the command bridge with fixture
+reports; it does not require or create real clinical approval.
 
 Run this command to verify a synthetic cervical-cancer + hypertension + diabetes
 workflow across parsed-document RAG, clinic-prep queue, visit Markdown, CSV, and
