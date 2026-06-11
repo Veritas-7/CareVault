@@ -7705,6 +7705,12 @@ function App() {
                     <small key={line}>{line}</small>
                   ))}
                 </div>
+                <div className="document-rag-evidence-quality">
+                  <span>{documentRagContext.evidenceQuality.summary}</span>
+                  {documentRagContext.evidenceQuality.warnings.map((warning) => (
+                    <small key={warning}>{warning}</small>
+                  ))}
+                </div>
                 <ol>
                   {documentRagContext.items.slice(0, 3).map((item) => (
                     <li key={item.documentId}>

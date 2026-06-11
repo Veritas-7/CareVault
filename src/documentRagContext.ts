@@ -41,6 +41,11 @@ export type DocumentRagContext = {
     lines: string[];
     summary: string;
   };
+  evidenceQuality: {
+    level: "source-grounded" | "needs-review" | "insufficient";
+    summary: string;
+    warnings: string[];
+  };
   items: DocumentRagContextItem[];
   queryLabel: string;
   summary: string;
@@ -523,6 +528,39 @@ function buildDocumentRagCareBrief(items: DocumentRagContextItem[]) {
   };
 }
 
+function buildDocumentRagEvidenceQuality(items: DocumentRagContextItem[]) {
+  if (!items.length) {
+    return {
+      level: "insufficient" as const,
+      summary: "근거 품질: 부족 · 검색 결과 없음",
+      warnings: ["검색 기준에 맞는 저장 서류 근거가 없습니다."],
+    };
+  }
+
+  const parsedDocumentCount = items.filter((item) => item.parsedSourceCount > 0).length;
+  const clinicalDocumentCount = items.filter((item) => item.clinicalSignalCount > 0).length;
+  const evidenceChunkCount = items.reduce((count, item) => count + item.evidenceChunks.length, 0);
+  const warnings = [
+    parsedDocumentCount ? "" : "파싱된 첨부 본문 근거가 없습니다.",
+    clinicalDocumentCount ? "" : "자궁경부암/고혈압/당뇨 임상 단서가 없습니다.",
+    evidenceChunkCount ? "" : "근거 조각이 없어 원문 확인이 필요합니다.",
+  ].filter(Boolean);
+
+  if (!warnings.length) {
+    return {
+      level: "source-grounded" as const,
+      summary: `근거 품질: 원문 근거 충분 · 파싱 문서 ${parsedDocumentCount}개 · 임상 단서 ${clinicalDocumentCount}개 · 근거 조각 ${evidenceChunkCount}개`,
+      warnings,
+    };
+  }
+
+  return {
+    level: "needs-review" as const,
+    summary: `근거 품질: 검토 필요 · 파싱 문서 ${parsedDocumentCount}개 · 임상 단서 ${clinicalDocumentCount}개 · 근거 조각 ${evidenceChunkCount}개`,
+    warnings,
+  };
+}
+
 export function buildDocumentRagContext(
   documents: readonly DocumentRagContextSource[],
   query: string,
@@ -545,6 +583,7 @@ export function buildDocumentRagContext(
     return {
       ariaLabel: `${noContextSummary} · 기준 ${queryLabel}`,
       careBrief: buildDocumentRagCareBrief(items),
+      evidenceQuality: buildDocumentRagEvidenceQuality(items),
       items,
       queryLabel,
       summary: noContextSummary,
@@ -559,6 +598,7 @@ export function buildDocumentRagContext(
   return {
     ariaLabel: `${summary} · 기준 ${queryLabel}`,
     careBrief: buildDocumentRagCareBrief(items),
+    evidenceQuality: buildDocumentRagEvidenceQuality(items),
     items,
     queryLabel,
     summary,
@@ -617,6 +657,8 @@ export function formatDocumentRagContextClipboardText(context: DocumentRagContex
     documentRagSourceBoundaryLine,
     `기준 검색어: ${context.queryLabel}`,
     `요약: ${context.summary}`,
+    context.evidenceQuality.summary,
+    ...context.evidenceQuality.warnings.map((warning) => `품질 경고: ${warning}`),
   ];
 
   if (!context.items.length) {
@@ -658,6 +700,10 @@ export function formatDocumentRagModelHandoffClipboardText(context: DocumentRagC
     "- 진단·처방·치료 지시 금지. 확정 판단 대신 진료팀에게 확인할 질문, 기록 초점, 추가로 확인할 자료만 정리합니다.",
     "- 근거가 부족하면 추측하지 말고 근거 부족이라고 씁니다.",
     "- 답변에는 문서 제목과 근거 조각 번호를 붙입니다.",
+    "",
+    "[근거 품질]",
+    context.evidenceQuality.summary,
+    ...context.evidenceQuality.warnings.map((warning) => `- ${warning}`),
     "",
     "[사용자 요청]",
     `${context.queryLabel} 관련해서 진료팀에게 확인할 질문과 기록 초점만 정리합니다.`,

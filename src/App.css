@@ -3913,6 +3913,27 @@ textarea:focus-visible {
   overflow-wrap: anywhere;
 }
 
+.document-rag-evidence-quality {
+  display: grid;
+  gap: 3px;
+  padding: 7px 8px;
+  border: 1px solid #d7dfd4;
+  border-radius: 6px;
+  background: #f8fcf4;
+}
+
+.document-rag-evidence-quality span {
+  color: #38513a;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.document-rag-evidence-quality small {
+  color: #536252;
+  font-size: 0.76rem;
+  overflow-wrap: anywhere;
+}
+
 .document-rag-context-copy,
 .document-rag-model-handoff-copy,
 .document-rag-context-download {

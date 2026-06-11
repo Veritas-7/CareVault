@@ -193,6 +193,32 @@ describe("documentRagContext", () => {
     expect(text).not.toContain("/Users/wj/private");
   });
 
+  it("summarizes evidence quality for source-grounded and insufficient RAG contexts", () => {
+    const context = buildDocumentRagContext(
+      [parsedHwpDocument],
+      "자궁경부암 혈압 당화혈색소",
+    );
+    const text = formatDocumentRagContextClipboardText(context);
+
+    expect(context.evidenceQuality.level).toBe("source-grounded");
+    expect(context.evidenceQuality.summary).toBe(
+      "근거 품질: 원문 근거 충분 · 파싱 문서 1개 · 임상 단서 1개 · 근거 조각 1개",
+    );
+    expect(context.evidenceQuality.warnings).toEqual([]);
+    expect(text).toContain("근거 품질: 원문 근거 충분");
+
+    const emptyContext = buildDocumentRagContext([], "혈압");
+    const emptyText = formatDocumentRagModelHandoffClipboardText(emptyContext);
+
+    expect(emptyContext.evidenceQuality.level).toBe("insufficient");
+    expect(emptyContext.evidenceQuality.summary).toBe("근거 품질: 부족 · 검색 결과 없음");
+    expect(emptyContext.evidenceQuality.warnings).toContain(
+      "검색 기준에 맞는 저장 서류 근거가 없습니다.",
+    );
+    expect(emptyText).toContain("근거 품질: 부족 · 검색 결과 없음");
+    expect(emptyText).toContain("검색 기준에 맞는 저장 서류 근거가 없습니다.");
+  });
+
   it("formats a fail-closed model handoff prompt from parsed RAG evidence", () => {
     const context = buildDocumentRagContext(
       [parsedHwpDocument],
