@@ -96,6 +96,7 @@ assert_file_exists "$HANDOFF_DIR/carevault-private-hwp-smoke-handoff.md"
 assert_file_exists "$HANDOFF_DIR/carevault-objective-readiness-report.md"
 assert_file_exists "$HANDOFF_DIR/carevault-objective-readiness-report.json"
 assert_file_exists "$HANDOFF_DIR/carevault-final-readiness-handoff.md"
+assert_file_exists "$HANDOFF_DIR/carevault-objective-readiness-handoff-manifest.json"
 
 for filename in \
   clinical-review-packet.md \
@@ -124,6 +125,40 @@ assert_contains "$HANDOFF_DIR/carevault-objective-readiness-report.md" "Status: 
 assert_contains "$HANDOFF_DIR/carevault-objective-readiness-report.md" "real-private-hwp-hwpx-sample"
 assert_contains "$HANDOFF_DIR/carevault-objective-readiness-report.md" "external-clinician-source-review"
 assert_contains "$HANDOFF_DIR/carevault-external-review-packet/reviewer-handoff.md" "Workflow Requirement Summary"
+
+node - <<'NODE' "$HANDOFF_DIR/carevault-objective-readiness-handoff-manifest.json"
+const fs = require("fs");
+const manifest = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+if (manifest.schema !== "carevault-objective-readiness-handoff.v1") process.exit(1);
+if (manifest.status !== "blocked") process.exit(1);
+const expectedBlockers = [
+  "real-private-hwp-hwpx-sample",
+  "external-clinician-source-review",
+];
+for (const blocker of expectedBlockers) {
+  if (!manifest.blocking_requirement_ids.includes(blocker)) process.exit(1);
+}
+const expectedRootFiles = [
+  "carevault-private-hwp-smoke-handoff.md",
+  "carevault-external-review-packet/reviewer-handoff.md",
+  "carevault-objective-readiness-report.md",
+  "carevault-objective-readiness-report.json",
+  "carevault-final-readiness-handoff.md",
+];
+for (const filename of expectedRootFiles) {
+  if (!manifest.bundle_files.includes(filename)) process.exit(1);
+}
+const expectedCommands = [
+  "npm run hwp:smoke",
+  "npm run clinical:external-review:packet",
+  "npm run clinical:external-review:report",
+  "npm run objective:readiness:complete",
+];
+for (const command of expectedCommands) {
+  if (!manifest.evidence_command_sequence.includes(command)) process.exit(1);
+}
+if (!manifest.non_evidence_statement.includes("does not create")) process.exit(1);
+NODE
 
 if grep -R -n -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$HANDOFF_DIR"; then
   printf 'Expected objective readiness handoff bundle to be path-safe.\n' >&2

@@ -83,14 +83,15 @@ npm run objective:readiness:handoff
 The bundle command validates and exports the private HWP/HWPX smoke handoff,
 exports the current external review packet, exports the current blocked
 objective-readiness report as Markdown and JSON, and writes
-`carevault-final-readiness-handoff.md` with the exact follow-up sequence:
+`carevault-final-readiness-handoff.md` plus
+`carevault-objective-readiness-handoff-manifest.json` with the exact follow-up sequence:
 `npm run hwp:smoke`, `npm run clinical:external-review:packet`, `npm run
 clinical:external-review:report`, and `npm run
 objective:readiness:complete`. `npm run objective:readiness:handoff:test`
-verifies missing-output failures, bundle contents, current blocker names, final
-command sequence, and local-path exclusion. The command still does not run or
-invent a real private sample and does not create external clinician/source
-approval.
+verifies missing-output failures, bundle contents, current blocker names,
+machine-readable manifest schema/status/file list/command sequence, and
+local-path exclusion. The command still does not run or invent a real private
+sample and does not create external clinician/source approval.
 
 ## Clinical source smoke
 

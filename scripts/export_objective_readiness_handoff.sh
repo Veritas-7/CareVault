@@ -65,6 +65,7 @@ EXTERNAL_PACKET_DIR="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-extern
 READINESS_MARKDOWN="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-objective-readiness-report.md"
 READINESS_JSON="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-objective-readiness-report.json"
 FINAL_HANDOFF="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-final-readiness-handoff.md"
+MANIFEST_JSON="$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR/carevault-objective-readiness-handoff-manifest.json"
 
 CAREVAULT_HWP_HANDOFF_PATH="$HWP_HANDOFF" \
   bash "$ROOT_DIR/scripts/export_hwp_smoke_handoff.sh" > "$TMP_DIR/hwp-handoff.out"
@@ -91,6 +92,7 @@ approval.
 - `carevault-objective-readiness-report.md`: current command-generated blocked readiness report.
 - `carevault-objective-readiness-report.json`: machine-readable readiness report.
 - `carevault-final-readiness-handoff.md`: this final evidence sequence.
+- `carevault-objective-readiness-handoff-manifest.json`: machine-readable bundle manifest for automation.
 
 ## Current Blocking Requirements
 
@@ -149,6 +151,45 @@ npm run objective:readiness:complete
 
 Only after the final command prints `Objective readiness complete: pass` and
 `Blocking requirements: none` can these two blockers be treated as resolved.
+EOF
+
+cat > "$MANIFEST_JSON" <<'EOF'
+{
+  "schema": "carevault-objective-readiness-handoff.v1",
+  "generated_by": "npm run objective:readiness:handoff",
+  "status": "blocked",
+  "blocking_requirement_ids": [
+    "real-private-hwp-hwpx-sample",
+    "external-clinician-source-review"
+  ],
+  "bundle_files": [
+    "carevault-private-hwp-smoke-handoff.md",
+    "carevault-external-review-packet/clinical-review-packet.md",
+    "carevault-external-review-packet/clinical-review-packet.json",
+    "carevault-external-review-packet/clinical-workflow-review-packet.md",
+    "carevault-external-review-packet/clinical-workflow-review-packet.json",
+    "carevault-external-review-packet/objective-readiness-report.md",
+    "carevault-external-review-packet/objective-readiness-report.json",
+    "carevault-external-review-packet/carevault-external-review-report-template.json",
+    "carevault-external-review-packet/reviewer-handoff.md",
+    "carevault-objective-readiness-report.md",
+    "carevault-objective-readiness-report.json",
+    "carevault-final-readiness-handoff.md",
+    "carevault-objective-readiness-handoff-manifest.json"
+  ],
+  "evidence_command_sequence": [
+    "npm run hwp:smoke",
+    "npm run clinical:external-review:packet",
+    "npm run clinical:external-review:report",
+    "npm run objective:readiness:complete"
+  ],
+  "required_evidence_inputs": [
+    "CAREVAULT_HWP_SMOKE_REPORT_PATH",
+    "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR",
+    "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH"
+  ],
+  "non_evidence_statement": "This handoff bundle does not create private HWP evidence, external clinician/source review, or production medical readiness approval."
+}
 EOF
 
 if grep -R -n -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR" >&2; then
