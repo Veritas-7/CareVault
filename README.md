@@ -93,6 +93,22 @@ machine-readable manifest schema/status/file list/command sequence, and
 local-path exclusion. The command still does not run or invent a real private
 sample and does not create external clinician/source approval.
 
+Verify a previously exported handoff bundle before sharing or archiving it:
+
+```bash
+CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR=/tmp/carevault-objective-readiness-handoff \
+npm run objective:readiness:handoff:verify
+```
+
+The verifier reads `carevault-objective-readiness-handoff-manifest.json`, checks
+the required bundle files, confirms the manifest and readiness report remain
+`blocked` on `real-private-hwp-hwpx-sample` and
+`external-clinician-source-review`, verifies the final evidence command
+sequence and reviewer handoff sections, and fails if any bundle file leaks local
+paths. `npm run objective:readiness:handoff:verify:test` covers valid bundles,
+missing env/dir/manifest, invalid JSON, missing listed files, wrong status, and
+path-leak failures.
+
 ## Clinical source smoke
 
 Run this command to verify that CareVault's embedded clinical source registry

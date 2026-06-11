@@ -20,6 +20,8 @@
     "objective:readiness:complete:test": "bash scripts/test_objective_readiness_complete_smoke.sh",
     "objective:readiness:handoff": "bash scripts/export_objective_readiness_handoff.sh",
     "objective:readiness:handoff:test": "bash scripts/test_objective_readiness_handoff.sh",
+    "objective:readiness:handoff:verify": "bash scripts/verify_objective_readiness_handoff.sh",
+    "objective:readiness:handoff:verify:test": "bash scripts/test_objective_readiness_handoff_verify.sh",
     "clinical:sources:smoke": "bash scripts/smoke_clinical_source_urls.sh",
     "clinical:sources:smoke:test": "bash scripts/test_clinical_source_urls_smoke.sh",
     "clinical:review:smoke": "vitest run src/clinicalSourceRegistry.test.ts src/clinicalReviewPacket.test.ts",

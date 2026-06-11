@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+VERIFY_SCRIPT="$ROOT_DIR/scripts/verify_objective_readiness_handoff.sh"
+EXPORT_SCRIPT="$ROOT_DIR/scripts/export_objective_readiness_handoff.sh"
+TMP_DIR="$(mktemp -d)"
+
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+assert_contains() {
+  local output_file="$1"
+  local expected="$2"
+
+  if ! grep -Fq "$expected" "$output_file"; then
+    printf 'Expected output to contain: %s\n' "$expected" >&2
+    printf '%s\n' '--- output ---' >&2
+    cat "$output_file" >&2
+    exit 1
+  fi
+}
+
+assert_not_contains() {
+  local output_file="$1"
+  local unexpected="$2"
+
+  if grep -Fq "$unexpected" "$output_file"; then
+    printf 'Expected output not to contain: %s\n' "$unexpected" >&2
+    printf '%s\n' '--- output ---' >&2
+    cat "$output_file" >&2
+    exit 1
+  fi
+}
+
+expect_success() {
+  local name="$1"
+  shift
+  local output_file="$TMP_DIR/$name.out"
+  local error_file="$TMP_DIR/$name.err"
+
+  if ! env "$@" bash "$VERIFY_SCRIPT" > "$output_file" 2> "$error_file"; then
+    printf 'Expected success for %s\n' "$name" >&2
+    printf '%s\n' '--- stdout ---' >&2
+    cat "$output_file" >&2
+    printf '%s\n' '--- stderr ---' >&2
+    cat "$error_file" >&2
+    exit 1
+  fi
+  printf 'PASS: %s\n' "$name"
+}
+
+expect_failure() {
+  local name="$1"
+  shift
+  local output_file="$TMP_DIR/$name.out"
+  local error_file="$TMP_DIR/$name.err"
+
+  if env "$@" bash "$VERIFY_SCRIPT" > "$output_file" 2> "$error_file"; then
+    printf 'Expected failure for %s\n' "$name" >&2
+    cat "$output_file" >&2
+    exit 1
+  fi
+  printf 'PASS: %s\n' "$name"
+}
+
+copy_bundle() {
+  local name="$1"
+  local destination="$TMP_DIR/$name"
+
+  cp -R "$VALID_BUNDLE" "$destination"
+  printf '%s\n' "$destination"
+}
+
+if ! bash "$VERIFY_SCRIPT" --help > "$TMP_DIR/help.out" 2>&1; then
+  printf 'Expected help to succeed.\n' >&2
+  cat "$TMP_DIR/help.out" >&2
+  exit 1
+fi
+assert_contains "$TMP_DIR/help.out" "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR"
+
+VALID_BUNDLE="$TMP_DIR/valid-bundle"
+if ! CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$VALID_BUNDLE" \
+  bash "$EXPORT_SCRIPT" > "$TMP_DIR/export.out" 2> "$TMP_DIR/export.err"; then
+  printf 'Expected handoff export setup to succeed.\n' >&2
+  printf '%s\n' '--- stdout ---' >&2
+  cat "$TMP_DIR/export.out" >&2
+  printf '%s\n' '--- stderr ---' >&2
+  cat "$TMP_DIR/export.err" >&2
+  exit 1
+fi
+
+expect_failure "missing-dir-env"
+assert_contains "$TMP_DIR/missing-dir-env.err" "CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR is required"
+
+expect_failure "unreadable-dir" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$TMP_DIR/no-such-bundle"
+assert_contains "$TMP_DIR/unreadable-dir.err" "objective readiness handoff directory is not readable"
+assert_not_contains "$TMP_DIR/unreadable-dir.err" "$TMP_DIR/no-such-bundle"
+
+expect_success "valid-bundle" CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$VALID_BUNDLE"
+assert_contains "$TMP_DIR/valid-bundle.out" "Objective readiness handoff verified."
+assert_contains "$TMP_DIR/valid-bundle.out" "Status: blocked"
+assert_contains "$TMP_DIR/valid-bundle.out" "Bundle files: 13"
+assert_contains "$TMP_DIR/valid-bundle.out" "real-private-hwp-hwpx-sample, external-clinician-source-review"
+assert_not_contains "$TMP_DIR/valid-bundle.out" "$VALID_BUNDLE"
+
+MISSING_MANIFEST_BUNDLE="$(copy_bundle missing-manifest-bundle)"
+rm "$MISSING_MANIFEST_BUNDLE/carevault-objective-readiness-handoff-manifest.json"
+expect_failure "missing-manifest" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$MISSING_MANIFEST_BUNDLE"
+assert_contains "$TMP_DIR/missing-manifest.err" "handoff manifest is not readable"
+assert_not_contains "$TMP_DIR/missing-manifest.err" "$MISSING_MANIFEST_BUNDLE"
+
+BAD_JSON_BUNDLE="$(copy_bundle bad-json-bundle)"
+printf '{not-json' > "$BAD_JSON_BUNDLE/carevault-objective-readiness-handoff-manifest.json"
+expect_failure "bad-manifest-json" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$BAD_JSON_BUNDLE"
+assert_contains "$TMP_DIR/bad-manifest-json.err" "handoff manifest must be valid JSON"
+assert_not_contains "$TMP_DIR/bad-manifest-json.err" "$BAD_JSON_BUNDLE"
+
+MISSING_FILE_BUNDLE="$(copy_bundle missing-file-bundle)"
+rm "$MISSING_FILE_BUNDLE/carevault-final-readiness-handoff.md"
+expect_failure "missing-listed-file" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$MISSING_FILE_BUNDLE"
+assert_contains "$TMP_DIR/missing-listed-file.err" "listed bundle file is missing"
+assert_contains "$TMP_DIR/missing-listed-file.err" "carevault-final-readiness-handoff.md"
+assert_not_contains "$TMP_DIR/missing-listed-file.err" "$MISSING_FILE_BUNDLE"
+
+WRONG_STATUS_BUNDLE="$(copy_bundle wrong-status-bundle)"
+node - <<'NODE' "$WRONG_STATUS_BUNDLE/carevault-objective-readiness-handoff-manifest.json"
+const fs = require("fs");
+const path = process.argv[2];
+const manifest = JSON.parse(fs.readFileSync(path, "utf8"));
+manifest.status = "pass";
+fs.writeFileSync(path, `${JSON.stringify(manifest, null, 2)}\n`);
+NODE
+expect_failure "wrong-status" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$WRONG_STATUS_BUNDLE"
+assert_contains "$TMP_DIR/wrong-status.err" "handoff manifest status must be blocked"
+
+PATH_LEAK_BUNDLE="$(copy_bundle path-leak-bundle)"
+printf '\n/Users/wj/private-carevault/sample.hwp\n' >> "$PATH_LEAK_BUNDLE/carevault-final-readiness-handoff.md"
+expect_failure "path-leak" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$PATH_LEAK_BUNDLE"
+assert_contains "$TMP_DIR/path-leak.err" "handoff bundle contains a local path or attachment path field"
+assert_not_contains "$TMP_DIR/path-leak.err" "$PATH_LEAK_BUNDLE"
+
+printf 'Objective readiness handoff verification fixture tests passed.\n'
