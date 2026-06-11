@@ -9,6 +9,7 @@ Run this command when a real user-private HWP/HWPX/HWPML sample is available:
 ```bash
 CAREVAULT_HWP_SAMPLE_PATH=/path/to/sample.hwp \
 CAREVAULT_HWP_SAMPLE_TERMS='자궁경부암,혈압,당화혈색소' \
+CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
 npm run hwp:smoke
 ```
 
@@ -17,6 +18,7 @@ For a batch of private samples in one directory, use:
 ```bash
 CAREVAULT_HWP_SAMPLE_DIR=/path/to/private-samples \
 CAREVAULT_HWP_SAMPLE_TERMS='자궁경부암,혈압,당화혈색소' \
+CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
 npm run hwp:smoke
 ```
 
@@ -24,7 +26,10 @@ npm run hwp:smoke
 smoke stronger. The script uses the same Tauri Rust command boundary as the app,
 fails closed on unreadable files, unsupported files, empty sample directories,
 or ambiguous path-plus-directory input, and prints only sample basenames instead
-of full local paths.
+of full local paths. `CAREVAULT_HWP_SMOKE_REPORT_PATH` is optional; when set, a
+passing run writes a JSON evidence report with schema/status, sample count,
+minimum parsed character threshold, expected-term flag, and per-sample
+basename/extension/status only. It never stores full local sample paths.
 
 For a repeatable non-private regression that proves HWPX section XML can become
 source-grounded CareVault RAG evidence, run:
