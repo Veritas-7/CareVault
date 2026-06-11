@@ -19,6 +19,7 @@ STALE_PACKET_HASH_REPORT="$TMP_DIR/stale-packet-hash.json"
 STALE_COUNT_REPORT="$TMP_DIR/stale-count.json"
 OPEN_FINDING_REPORT="$TMP_DIR/open-finding.json"
 BAD_JSON_REPORT="$TMP_DIR/bad-json.json"
+VERIFY_JSON_PATH="$TMP_DIR/external-review-verify.json"
 
 cat > "$VALID_REPORT" <<'JSON'
 {
@@ -264,6 +265,7 @@ if ! "$SCRIPT" --help > "$TMP_DIR/help.out" 2>&1; then
 fi
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
+assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_REPORT_VERIFY_JSON_PATH"
 
 expect_failure "missing-env"
 assert_contains "$TMP_DIR/missing-env.out" "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH is required"
@@ -328,5 +330,46 @@ assert_contains "$TMP_DIR/valid-report.out" "Workflow surfaces reviewed: 6"
 assert_contains "$TMP_DIR/valid-report.out" "Open findings: critical=0, major=0"
 assert_contains "$TMP_DIR/valid-report.out" "1 passed"
 assert_not_contains "$TMP_DIR/valid-report.out" "$TMP_DIR"
+
+expect_success "valid-report-json" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_VERIFY_JSON_PATH="$VERIFY_JSON_PATH"
+python3 - "$VERIFY_JSON_PATH" "$TMP_DIR" <<'PY'
+import json
+import pathlib
+import sys
+
+report_path = pathlib.Path(sys.argv[1])
+tmp_dir = sys.argv[2]
+report_text = report_path.read_text()
+if tmp_dir in report_text:
+    raise SystemExit("external review verify JSON leaked a temp path")
+report = json.loads(report_text)
+assert report["schema"] == "carevault-external-review-report-verify.v1"
+assert report["status"] == "verified-external-review-with-hwp-blocked"
+assert report["verified_blocker"] == "external-clinician-source-review"
+assert report["next_blocking_requirement"] == "real-private-hwp-hwpx-sample"
+assert report["reviewer_role"] == "external clinical reviewer"
+assert report["reviewed_at"] == "2026-06-11"
+assert report["required_check_ids"] == ["clinician-source-review", "real-workflow-review"]
+assert report["reviewed_artifact_ids"] == [
+    "clinical-review-packet",
+    "clinical-workflow-review-packet",
+    "objective-readiness-report",
+]
+assert report["source_registry_counts"] == {"total": 84, "errors": 0, "warnings": 0}
+assert report["workflow_surface_count"] == 6
+assert report["open_findings"] == {"critical": 0, "major": 0}
+assert report["input_paths_included"] is False
+PY
+assert_not_contains "$TMP_DIR/valid-report-json.out" "$TMP_DIR"
+
+expect_failure "verify-json-missing-parent" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_VERIFY_JSON_PATH="$TMP_DIR/missing/report.json"
+assert_contains "$TMP_DIR/verify-json-missing-parent.out" "external review report verify JSON parent is not writable"
+assert_not_contains "$TMP_DIR/verify-json-missing-parent.out" "$TMP_DIR/missing/report.json"
 
 printf 'External review report smoke fixture tests passed.\n'

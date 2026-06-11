@@ -265,6 +265,7 @@ After the reviewer fills a copy of that report, run:
 ```bash
 CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet \
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
+CAREVAULT_EXTERNAL_REVIEW_REPORT_VERIFY_JSON_PATH=/tmp/carevault-external-review-verify.json \
 npm run clinical:external-review:report
 ```
 
@@ -281,9 +282,16 @@ critical or major findings. The command compares those hashes and byte counts
 against the files in `CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR` before accepting the
 report. When accepted, it prints a path-safe summary with reviewer role,
 reviewed artifact count, required checks, source-registry counts, workflow
-surface count, and open finding counts. `npm run
+surface count, and open finding counts. When
+`CAREVAULT_EXTERNAL_REVIEW_REPORT_VERIFY_JSON_PATH` is set, it writes schema
+`carevault-external-review-report-verify.v1` with path-safe
+`verified-external-review-with-hwp-blocked` status, the verified external-review
+blocker ID, the next remaining HWP blocker ID, reviewer role/date, required
+check IDs, reviewed artifact IDs, source-registry counts, workflow surface
+count, open finding counts, and `input_paths_included: false`. `npm run
 clinical:external-review:report:test` verifies the command bridge with fixture
-reports; it does not require or create real clinical approval.
+reports, path-safe JSON output, and missing-output-parent failures; it does not
+require or create real clinical approval.
 
 Run this command to verify a synthetic cervical-cancer + hypertension + diabetes
 workflow across parsed-document RAG, clinic-prep queue, visit Markdown, CSV, and
