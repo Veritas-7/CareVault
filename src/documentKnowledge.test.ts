@@ -4,7 +4,9 @@ import {
   buildDocumentKnowledgeSummary,
   buildDocumentKnowledgeSearchText,
   buildDocumentKnowledgeSnippet,
+  buildDocumentParserProvenanceSummary,
   detectDocumentKnowledgeSignals,
+  extractDocumentParsedAttachmentSources,
 } from "./documentKnowledge";
 
 const pathologyDocument = {
@@ -16,6 +18,15 @@ const pathologyDocument = {
   reviewStatus: "needs-review",
   tags: "자궁경부암,당뇨,고혈압",
   title: "자궁경부암 병리결과",
+} as const;
+
+const parsedHwpDocument = {
+  ...pathologyDocument,
+  attachmentName: "상급병원_병리결과.hwp",
+  body:
+    "기존 메모\n\n" +
+    "[첨부 텍스트 파싱: 상급병원_병리결과.hwp · HWP/HWPX 데스크톱 파서]\n" +
+    "자궁경부암 병리 결과: 절제연 음성. HbA1c 7.2%, 혈압 142/88.",
 } as const;
 
 describe("documentKnowledge", () => {
@@ -37,6 +48,23 @@ describe("documentKnowledge", () => {
     expect(searchText).toContain("한글 문서");
     expect(searchText).toContain("HWP/HWPX");
     expect(searchText).toContain("문서 파싱");
+  });
+
+  it("extracts parsed attachment provenance for visible cards and search", () => {
+    expect(extractDocumentParsedAttachmentSources(parsedHwpDocument)).toEqual([
+      {
+        fileName: "상급병원_병리결과.hwp",
+        sourceLabel: "HWP/HWPX 데스크톱 파서",
+      },
+    ]);
+    expect(buildDocumentParserProvenanceSummary(parsedHwpDocument)).toBe(
+      "파싱 원천: HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp",
+    );
+
+    const searchText = buildDocumentKnowledgeSearchText(parsedHwpDocument);
+    expect(searchText).toContain("파싱 원천");
+    expect(searchText).toContain("HWP/HWPX 데스크톱 파서");
+    expect(searchText).toContain("데스크톱 파서");
   });
 
   it("builds a compact local-RAG style summary for saved document cards", () => {
@@ -66,6 +94,20 @@ describe("documentKnowledge", () => {
 
     expect(snippet).toContain("절제연 음성");
     expect(snippet).toContain("문서 단서: 자궁경부암 · 고혈압 · 당뇨 · HWP/HWPX");
+    expect(snippet).not.toContain("/Users/wj/private");
+  });
+
+  it("adds parser provenance to search snippets without local paths", () => {
+    const snippet = buildDocumentKnowledgeSnippet(
+      {
+        ...parsedHwpDocument,
+        attachmentPath: "/Users/wj/private/상급병원_병리결과.hwp",
+      },
+      "데스크톱 파서",
+    );
+
+    expect(snippet).toContain("HWP/HWPX 데스크톱 파서");
+    expect(snippet).toContain("파싱 원천: HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp");
     expect(snippet).not.toContain("/Users/wj/private");
   });
 });

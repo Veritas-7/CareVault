@@ -23,6 +23,11 @@ export type DocumentKnowledgeSignal = {
   matchedBy: string[];
 };
 
+export type DocumentParsedAttachmentSource = {
+  fileName: string;
+  sourceLabel?: string;
+};
+
 const signalDefinitions: Array<{
   aliases: string[];
   id: DocumentKnowledgeSignalId;
@@ -64,6 +69,18 @@ function compactText(...values: Array<string | undefined>) {
 
 function uniq(values: string[]) {
   return [...new Set(values.filter(Boolean))];
+}
+
+function uniqParsedSources(sources: DocumentParsedAttachmentSource[]) {
+  const seen = new Set<string>();
+  const uniqueSources: DocumentParsedAttachmentSource[] = [];
+  sources.forEach((source) => {
+    const key = `${source.fileName}\0${source.sourceLabel ?? ""}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    uniqueSources.push(source);
+  });
+  return uniqueSources;
 }
 
 function getClinicalSignals(signals: DocumentKnowledgeSignal[]) {
@@ -123,6 +140,8 @@ export function detectDocumentKnowledgeSignals(
 
 export function buildDocumentKnowledgeSearchText(document: DocumentKnowledgeSource) {
   const signals = detectDocumentKnowledgeSignals(document);
+  const parsedSources = extractDocumentParsedAttachmentSources(document);
+  const parserAliases = buildDocumentParserProvenanceSearchAliases(parsedSources);
 
   return compactText(
     document.date,
@@ -133,6 +152,8 @@ export function buildDocumentKnowledgeSearchText(document: DocumentKnowledgeSour
     document.nextAction,
     document.reviewStatus,
     document.attachmentName,
+    buildDocumentParserProvenanceSummary(document),
+    ...parserAliases,
     ...signals.flatMap((signal) => [signal.label, ...signal.aliases, ...signal.matchedBy]),
   );
 }
@@ -159,9 +180,60 @@ export function buildDocumentCareQuestionDraft(document: DocumentKnowledgeSource
 
 export function buildDocumentKnowledgeSnippet(document: DocumentKnowledgeSource, query: string) {
   const summary = buildDocumentKnowledgeSummary(document);
+  const parserSummary = buildDocumentParserProvenanceSummary(document);
   const bodyExcerpt = findExcerpt(
     compactText(document.title, document.body, document.tags, document.nextAction),
     query,
   );
-  return compactText(bodyExcerpt, summary);
+  return compactText(bodyExcerpt, summary, parserSummary);
+}
+
+export function extractDocumentParsedAttachmentSources(
+  document: DocumentKnowledgeSource,
+): DocumentParsedAttachmentSource[] {
+  const body = document.body ?? "";
+  const matches = [...body.matchAll(/^\[첨부 텍스트 파싱:\s*([^\]\n]+)\]/gm)];
+  const sources: DocumentParsedAttachmentSource[] = [];
+  matches.forEach((match) => {
+    const [fileName, ...sourceParts] = match[1].split(" · ");
+    const normalizedFileName = fileName.trim();
+    const sourceLabel = sourceParts.join(" · ").trim();
+    if (!normalizedFileName) return;
+
+    sources.push({
+      fileName: normalizedFileName,
+      sourceLabel: sourceLabel || undefined,
+    });
+  });
+  return uniqParsedSources(sources);
+}
+
+export function buildDocumentParserProvenanceSummary(document: DocumentKnowledgeSource) {
+  const sources = extractDocumentParsedAttachmentSources(document);
+  if (!sources.length) return "";
+
+  const summaries = sources.map((source) =>
+    source.sourceLabel
+      ? `${source.sourceLabel}: ${source.fileName}`
+      : `텍스트 파싱: ${source.fileName}`,
+  );
+  return `파싱 원천: ${summaries.join(" · ")}`;
+}
+
+function buildDocumentParserProvenanceSearchAliases(sources: DocumentParsedAttachmentSource[]) {
+  return uniq(
+    sources.flatMap((source) => [
+      "첨부 텍스트 파싱",
+      "문서 파싱 원천",
+      "파싱 원천",
+      "파싱 provenance",
+      source.fileName,
+      source.sourceLabel ?? "",
+      source.sourceLabel?.includes("데스크톱") ? "데스크톱 파서" : "",
+      source.sourceLabel?.includes("HWP") ? "HWP 파서" : "",
+      source.sourceLabel?.includes("HWPX") ? "HWPX 파서" : "",
+      source.sourceLabel?.includes("미리보기") ? "HWPX 미리보기" : "",
+      source.sourceLabel?.includes("본문 XML") ? "HWPX 본문 XML" : "",
+    ]),
+  );
 }

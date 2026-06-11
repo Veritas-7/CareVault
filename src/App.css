@@ -3849,6 +3849,21 @@ textarea:focus-visible {
   overflow-wrap: anywhere;
 }
 
+.document-parser-provenance {
+  max-width: 100%;
+  width: fit-content;
+  margin: -4px 0 10px;
+  padding: 5px 8px;
+  border: 1px solid #d5ddd9;
+  border-radius: 8px;
+  color: #405058;
+  background: #f5f8f7;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .document-status-row {
   display: flex;
   flex-wrap: wrap;

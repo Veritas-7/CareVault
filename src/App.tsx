@@ -185,6 +185,7 @@ import {
   buildDocumentCareQuestionDraft,
   buildDocumentKnowledgeSnippet,
   buildDocumentKnowledgeSummary,
+  buildDocumentParserProvenanceSummary,
 } from "./documentKnowledge";
 import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
@@ -7448,6 +7449,8 @@ function App() {
                       )
                     : "";
                   const documentKnowledgeSummary = buildDocumentKnowledgeSummary(document);
+                  const documentParserProvenanceSummary =
+                    buildDocumentParserProvenanceSummary(document);
                   const documentCareQuestionDraft = buildDocumentCareQuestionDraft(document);
 
                   return (
@@ -7464,6 +7467,11 @@ function App() {
                       <p>{document.body}</p>
                       {documentKnowledgeSummary ? (
                         <p className="document-knowledge-summary">{documentKnowledgeSummary}</p>
+                      ) : null}
+                      {documentParserProvenanceSummary ? (
+                        <p className="document-parser-provenance">
+                          {documentParserProvenanceSummary}
+                        </p>
                       ) : null}
                       <div
                         className="document-update-controls"
