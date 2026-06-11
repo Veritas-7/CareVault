@@ -86,6 +86,20 @@ evidence, valid combined fixture evidence, path-safe JSON output, and
 missing-output-parent failures without using private documents or claiming
 clinical approval.
 
+After writing that JSON, verify it before automation treats the objective as
+complete:
+
+```bash
+CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH=/tmp/carevault-objective-readiness-complete-verify.json \
+npm run objective:readiness:complete:verify
+```
+
+The verifier checks schema `carevault-objective-readiness-complete-verify.v1`,
+`verified-complete` status, no blocking requirements, accepted HWP smoke
+coverage, accepted external-review evidence, zero open critical/major findings,
+and `input_paths_included: false` without reading or printing configured
+private evidence paths.
+
 Before running the final gate, check which supplied evidence inputs are missing,
 partially ready, accepted, or invalid:
 
@@ -145,7 +159,8 @@ objective-readiness report as Markdown and JSON, writes a no-input
 clinical:external-review:report`, `npm run
 objective:readiness:inputs:doctor`, `npm run
 objective:readiness:inputs:verify`, and `npm run
-objective:readiness:complete`. The manifest also records the optional
+objective:readiness:complete`, then `npm run
+objective:readiness:complete:verify`. The manifest also records the optional
 `CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH` status output and optional
 verification outputs
 `CAREVAULT_OBJECTIVE_READINESS_HANDOFF_VERIFY_JSON_PATH` and
@@ -174,8 +189,9 @@ the required bundle files, confirms the manifest and readiness report remain
 `blocked` on `real-private-hwp-hwpx-sample` and
 `external-clinician-source-review`, verifies the final evidence command
 sequence including the input JSON verifier before the completion gate, optional
-status-output field, optional verification-output field, no-input input-doctor
-baseline JSON, and reviewer handoff sections. It also runs `npm run
+status-output field, optional verification-output field, the completion JSON
+verifier after the completion gate, no-input input-doctor baseline JSON, and
+reviewer handoff sections. It also runs `npm run
 objective:readiness:inputs:verify` logic against the bundled
 `carevault-readiness-inputs-doctor.json`, so blocker, next-action, ready-state,
 and path-safety drift are caught by the same input JSON verifier used outside
