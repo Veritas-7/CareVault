@@ -4,10 +4,13 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT="$ROOT_DIR/scripts/export_objective_readiness_report.sh"
+PACKET_SCRIPT="$ROOT_DIR/scripts/export_external_review_packet.sh"
+FIXTURE_WRITER="$ROOT_DIR/scripts/write_external_review_report_fixture.mjs"
 TMP_DIR="$(mktemp -d)"
 
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+PACKET_DIR="$TMP_DIR/reviewer-packet"
 VALID_HWP_REPORT="$TMP_DIR/valid-hwp-report.json"
 VALID_EXTERNAL_REPORT="$TMP_DIR/valid-external-review.json"
 PATH_LEAK_HWP_REPORT="$TMP_DIR/path-leak-hwp-report.json"
@@ -82,6 +85,18 @@ JSON
 
 printf '{not-json' > "$BAD_JSON_REPORT"
 
+if ! CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  bash "$PACKET_SCRIPT" > "$TMP_DIR/packet-export.out" 2> "$TMP_DIR/packet-export.err"; then
+  printf 'Expected packet export fixture setup to succeed.\n' >&2
+  printf '%s\n' '--- stdout ---' >&2
+  cat "$TMP_DIR/packet-export.out" >&2
+  printf '%s\n' '--- stderr ---' >&2
+  cat "$TMP_DIR/packet-export.err" >&2
+  exit 1
+fi
+
+node "$FIXTURE_WRITER" "$PACKET_DIR" valid "$VALID_EXTERNAL_REPORT"
+
 assert_contains() {
   local output_file="$1"
   local expected="$2"
@@ -145,6 +160,7 @@ fi
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_OBJECTIVE_READINESS_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH"
+assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
 
 expect_success "default-blocked"
 assert_contains "$TMP_DIR/default-blocked.out" "Status: blocked"
@@ -166,9 +182,14 @@ if grep -n -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$JSON_REPO
   exit 1
 fi
 
+expect_failure "external-report-missing-packet-dir" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
+assert_contains "$TMP_DIR/external-report-missing-packet-dir.err" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR is required"
+
 expect_success "valid-complete-evidence" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \
-  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
 assert_contains "$TMP_DIR/valid-complete-evidence.out" "Status: pass"
 assert_contains "$TMP_DIR/valid-complete-evidence.out" "No blocking requirements remain"
 assert_contains "$TMP_DIR/valid-complete-evidence.out" "oncology-followup.hwpx"

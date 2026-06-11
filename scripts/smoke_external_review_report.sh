@@ -8,7 +8,9 @@ VITEST_BIN="$ROOT_DIR/node_modules/.bin/vitest"
 print_usage() {
   cat <<'EOF'
 Usage:
-  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json npm run clinical:external-review:report
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
+  npm run clinical:external-review:report
 
 This command connects external clinician/source review evidence to the
 objective readiness gate. It is a command-only verification bridge and does not
@@ -40,10 +42,25 @@ if [[ ! -r "${CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH}" ]]; then
   exit 2
 fi
 
+if [[ -z "${CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR:-}" ]]; then
+  printf 'FAIL: CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR is required.\n' >&2
+  print_usage >&2
+  exit 2
+fi
+
+if [[ ! -d "${CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR}" || ! -r "${CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR}" ]]; then
+  printf 'FAIL: configured external review packet dir is not readable.\n' >&2
+  exit 2
+fi
+
 if [[ ! -x "$VITEST_BIN" ]]; then
   printf 'FAIL: local Vitest binary is missing; run npm install first.\n' >&2
   exit 2
 fi
+
+node "$ROOT_DIR/scripts/verify_external_review_packet_hashes.mjs" \
+  "$CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH" \
+  "$CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
 
 CAREVAULT_REQUIRE_EXTERNAL_REVIEW_REPORT=1 \
   CAREVAULT_EXTERNAL_REVIEW_REPORT_JSON="$(cat "$CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH")" \

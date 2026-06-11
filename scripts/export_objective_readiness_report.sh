@@ -16,6 +16,7 @@ Usage:
 
 Optional evidence inputs:
   CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json
 
 This command exports the current CareVault objective readiness report as
@@ -72,6 +73,20 @@ check_readable_input CAREVAULT_HWP_SMOKE_REPORT_PATH "HWP smoke report"
 check_readable_input CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH "external review report"
 check_writable_parent CAREVAULT_OBJECTIVE_READINESS_REPORT_PATH "objective readiness Markdown"
 check_writable_parent CAREVAULT_OBJECTIVE_READINESS_JSON_PATH "objective readiness JSON"
+
+if [[ -n "${CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH:-}" ]]; then
+  if [[ -z "${CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR:-}" ]]; then
+    printf 'FAIL: CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR is required when CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH is set.\n' >&2
+    exit 2
+  fi
+  if [[ ! -d "${CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR}" || ! -r "${CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR}" ]]; then
+    printf 'FAIL: configured external review packet dir is not readable.\n' >&2
+    exit 2
+  fi
+  node "$ROOT_DIR/scripts/verify_external_review_packet_hashes.mjs" \
+    "$CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH" \
+    "$CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
+fi
 
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT

@@ -4,10 +4,13 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT="$ROOT_DIR/scripts/smoke_objective_readiness_complete.sh"
+PACKET_SCRIPT="$ROOT_DIR/scripts/export_external_review_packet.sh"
+FIXTURE_WRITER="$ROOT_DIR/scripts/write_external_review_report_fixture.mjs"
 TMP_DIR="$(mktemp -d)"
 
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+PACKET_DIR="$TMP_DIR/reviewer-packet"
 VALID_HWP_REPORT="$TMP_DIR/valid-hwp-report.json"
 PATH_LEAK_HWP_REPORT="$TMP_DIR/path-leak-hwp-report.json"
 MISSING_GROUP_HWP_REPORT="$TMP_DIR/missing-group-hwp-report.json"
@@ -128,6 +131,19 @@ cat > "$OPEN_FINDING_EXTERNAL_REPORT" <<'JSON'
 }
 JSON
 
+if ! CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  bash "$PACKET_SCRIPT" > "$TMP_DIR/packet-export.out" 2> "$TMP_DIR/packet-export.err"; then
+  printf 'Expected packet export fixture setup to succeed.\n' >&2
+  printf '%s\n' '--- stdout ---' >&2
+  cat "$TMP_DIR/packet-export.out" >&2
+  printf '%s\n' '--- stderr ---' >&2
+  cat "$TMP_DIR/packet-export.err" >&2
+  exit 1
+fi
+
+node "$FIXTURE_WRITER" "$PACKET_DIR" valid "$VALID_EXTERNAL_REPORT"
+node "$FIXTURE_WRITER" "$PACKET_DIR" open-finding "$OPEN_FINDING_EXTERNAL_REPORT"
+
 assert_contains() {
   local output_file="$1"
   local expected="$2"
@@ -185,6 +201,7 @@ if ! "$SCRIPT" --help > "$TMP_DIR/help.out" 2>&1; then
 fi
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH"
+assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
 
 expect_failure "missing-hwp-env" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
 assert_contains "$TMP_DIR/missing-hwp-env.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH is required"
@@ -198,26 +215,35 @@ expect_failure "missing-hwp-file" \
 assert_contains "$TMP_DIR/missing-hwp-file.out" "configured HWP smoke report is not readable"
 assert_not_contains "$TMP_DIR/missing-hwp-file.out" "$TMP_DIR"
 
+expect_failure "missing-packet-env" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
+assert_contains "$TMP_DIR/missing-packet-env.out" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR is required"
+
 expect_failure "path-leak-hwp" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$PATH_LEAK_HWP_REPORT" \
-  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
 assert_contains "$TMP_DIR/path-leak-hwp.out" "basename-only entries"
 assert_not_contains "$TMP_DIR/path-leak-hwp.out" "/Users/wj/private"
 
 expect_failure "missing-group-hwp" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$MISSING_GROUP_HWP_REPORT" \
-  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
 assert_contains "$TMP_DIR/missing-group-hwp.out" "missing diabetes"
 assert_not_contains "$TMP_DIR/missing-group-hwp.out" "$TMP_DIR"
 
 expect_failure "open-finding-external" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \
-  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$OPEN_FINDING_EXTERNAL_REPORT"
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$OPEN_FINDING_EXTERNAL_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
 assert_contains "$TMP_DIR/open-finding-external.out" "critical or major findings"
 
 expect_success "valid-completion-evidence" \
   CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \
-  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "Objective readiness completion evidence smoke passed"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "1 passed"
 assert_not_contains "$TMP_DIR/valid-completion-evidence.out" "$TMP_DIR"
