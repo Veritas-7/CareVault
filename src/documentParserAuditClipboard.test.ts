@@ -6,6 +6,9 @@ import {
   formatDocumentParserAuditClipboardStatus,
   formatDocumentParserAuditClipboardText,
   formatDocumentParserAuditClipboardUnsupportedStatus,
+  formatDocumentParserAuditDownloadDescription,
+  formatDocumentParserAuditDownloadFallbackLabel,
+  formatDocumentParserAuditDownloadStatus,
 } from "./documentParserAuditClipboard";
 
 const audit = buildDocumentParserAudit([
@@ -56,6 +59,16 @@ describe("documentParserAuditClipboard", () => {
     expect(formatDocumentParserAuditClipboardFailedStatus(audit)).toBe(
       "문서 파서 점검 복사 실패 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
     );
+  });
+
+  it("formats stable download labels from the parser audit summary", () => {
+    expect(formatDocumentParserAuditDownloadDescription(audit)).toBe(
+      "문서 파서 점검 다운로드 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+    );
+    expect(formatDocumentParserAuditDownloadStatus(audit)).toBe(
+      "문서 파서 점검 다운로드됨 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+    );
+    expect(formatDocumentParserAuditDownloadFallbackLabel()).toBe("문서 파서 점검");
   });
 
   it("formats an empty parser audit memo", () => {

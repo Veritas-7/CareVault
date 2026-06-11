@@ -195,6 +195,9 @@ import {
   formatDocumentParserAuditClipboardStatus,
   formatDocumentParserAuditClipboardText,
   formatDocumentParserAuditClipboardUnsupportedStatus,
+  formatDocumentParserAuditDownloadDescription,
+  formatDocumentParserAuditDownloadFallbackLabel,
+  formatDocumentParserAuditDownloadStatus,
 } from "./documentParserAuditClipboard";
 import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
@@ -1559,6 +1562,14 @@ function App() {
     () => formatDocumentParserAuditClipboardStatus(documentParserAudit),
     [documentParserAudit],
   );
+  const documentParserAuditDownloadDescription = useMemo(
+    () => formatDocumentParserAuditDownloadDescription(documentParserAudit),
+    [documentParserAudit],
+  );
+  const documentParserAuditDownloadStatus = useMemo(
+    () => formatDocumentParserAuditDownloadStatus(documentParserAudit),
+    [documentParserAudit],
+  );
   const documentDraftHasRequiredFields = hasRequiredTextValues(
     documentDraft.title,
     documentDraft.body,
@@ -1875,6 +1886,20 @@ function App() {
       .catch(() => {
         setSaveLabel(formatDocumentParserAuditClipboardFailedStatus(documentParserAudit));
       });
+  };
+
+  const downloadDocumentParserAudit = async () => {
+    const result = await downloadTextFile(
+      formatDocumentParserAuditClipboardText(documentParserAudit),
+      `carevault-document-parser-audit-${today}.md`,
+      "text/markdown;charset=utf-8",
+    );
+    setTextFileDownloadStatus(
+      result,
+      documentParserAuditDownloadStatus,
+      formatDocumentParserAuditDownloadFallbackLabel(),
+      documentParserAudit.summary,
+    );
   };
 
   const getCaregiverShareSectionLabel = (id: CaregiverExportSectionId) =>
@@ -7451,6 +7476,16 @@ function App() {
                   >
                     <ClipboardList aria-hidden="true" />
                     점검 복사
+                  </button>
+                  <button
+                    className="secondary-inline-button document-parser-audit-download"
+                    type="button"
+                    onClick={downloadDocumentParserAudit}
+                    aria-label={documentParserAuditDownloadDescription}
+                    title={documentParserAuditDownloadDescription}
+                  >
+                    <Download aria-hidden="true" />
+                    점검 다운로드
                   </button>
                 </div>
                 <ul>

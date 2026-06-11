@@ -16,6 +16,18 @@ export function formatDocumentParserAuditClipboardFailedStatus(audit: DocumentPa
   return `문서 파서 점검 복사 실패 · ${audit.summary}`;
 }
 
+export function formatDocumentParserAuditDownloadDescription(audit: DocumentParserAudit) {
+  return `문서 파서 점검 다운로드 · ${audit.summary}`;
+}
+
+export function formatDocumentParserAuditDownloadStatus(audit: DocumentParserAudit) {
+  return `문서 파서 점검 다운로드됨 · ${audit.summary}`;
+}
+
+export function formatDocumentParserAuditDownloadFallbackLabel() {
+  return "문서 파서 점검";
+}
+
 export function formatDocumentParserAuditClipboardText(audit: DocumentParserAudit) {
   const lines = [
     "[CareVault 문서 파서 점검]",
