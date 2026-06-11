@@ -100,6 +100,20 @@ for missing, invalid, and ready states, including next-action lists for blocked
 or rejected evidence and an empty action list for ready evidence. It does not
 create private HWP evidence, external clinical approval, or a completion claim.
 
+Verify a previously written input-doctor JSON before automation trusts it:
+
+```bash
+CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=/tmp/carevault-readiness-inputs.json \
+npm run objective:readiness:inputs:verify
+```
+
+The verifier checks schema, path-safety, evidence input states, blocker
+consistency, next-action consistency, and ready-state final gate consistency,
+then prints only a path-safe status summary. `npm run
+objective:readiness:inputs:verify:test` covers missing env/file, invalid JSON,
+path-leaking JSON, inconsistent ready JSON, valid missing-evidence JSON, and
+valid ready JSON.
+
 Export a single operator bundle for the two remaining external inputs:
 
 ```bash
