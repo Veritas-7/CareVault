@@ -163,6 +163,75 @@ describe("caregiverExport", () => {
     expect(fingerprint).not.toContain("attachmentPath");
   });
 
+  it("fingerprints rendered caregiver parser audit details without local attachment paths", () => {
+    const stateWithParsedDocument: CaregiverExportState = {
+      ...state,
+      documents: [
+        {
+          date: "2026-06-04",
+          title: "자궁경부암 추적 HWP 결과",
+          category: "pathology",
+          body: [
+            "[첨부 텍스트 파싱: follow-up.hwp · HWP/HWPX 데스크톱 파서]",
+            "자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.",
+          ].join("\n"),
+          reviewStatus: "care-question",
+          nextAction: "진료 때 병리 의미와 혈압/혈당 관리 연결 질문",
+          attachmentName: "follow-up.hwp",
+          attachmentPath: "/Users/wj/private/follow-up.hwp",
+          attachmentStatus: "파일 확인됨",
+        },
+      ],
+    };
+    const fingerprint = buildCaregiverExportContentFingerprint(stateWithParsedDocument);
+    const pathOnlyChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithParsedDocument,
+      documents: [
+        {
+          ...stateWithParsedDocument.documents[0],
+          attachmentPath: "/Users/wj/other/private/follow-up.hwp",
+        },
+      ],
+    });
+    const parserSourceChangedFingerprint = buildCaregiverExportContentFingerprint({
+      ...stateWithParsedDocument,
+      documents: [
+        {
+          ...stateWithParsedDocument.documents[0],
+          body: [
+            "[첨부 텍스트 파싱: follow-up-updated.hwp · HWP/HWPX 데스크톱 파서]",
+            "자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.",
+          ].join("\n"),
+        },
+      ],
+    });
+    const documentsDisabledFingerprint = buildCaregiverExportContentFingerprint(
+      stateWithParsedDocument,
+      { documents: false },
+    );
+    const documentsDisabledChangedFingerprint = buildCaregiverExportContentFingerprint(
+      {
+        ...stateWithParsedDocument,
+        documents: [
+          {
+            ...stateWithParsedDocument.documents[0],
+            body: [
+              "[첨부 텍스트 파싱: follow-up.hwp · HWP/HWPX 데스크톱 파서]",
+              "당뇨와 고혈압 단서 변경",
+            ].join("\n"),
+          },
+        ],
+      },
+      { documents: false },
+    );
+
+    expect(pathOnlyChangedFingerprint).toBe(fingerprint);
+    expect(parserSourceChangedFingerprint).not.toBe(fingerprint);
+    expect(documentsDisabledChangedFingerprint).toBe(documentsDisabledFingerprint);
+    expect(fingerprint).not.toContain("/Users/wj/private/follow-up.hwp");
+    expect(fingerprint).not.toContain("attachmentPath");
+  });
+
   it("trims caregiver food queries in content fingerprints", () => {
     const fingerprint = buildCaregiverExportContentFingerprint({
       ...state,
@@ -767,6 +836,38 @@ describe("caregiverExport", () => {
     expect(html).toContain("첨부 파일명만 포함");
     expect(html).toContain("result.pdf");
     expect(html).toContain("진단, 처방, 치료 지시가 아니며");
+  });
+
+  it("includes parsed document audit details in caregiver HTML without local paths", () => {
+    const html = buildCaregiverExportHtml(
+      {
+        ...state,
+        documents: [
+          {
+            date: "2026-06-04",
+            title: "자궁경부암 추적 HWP 결과",
+            category: "pathology",
+            body: [
+              "[첨부 텍스트 파싱: follow-up.hwp · HWP/HWPX 데스크톱 파서]",
+              "자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.",
+            ].join("\n"),
+            reviewStatus: "care-question",
+            nextAction: "진료 때 병리 의미와 혈압/혈당 관리 연결 질문",
+            attachmentName: "follow-up.hwp",
+            attachmentPath: "/Users/wj/private/follow-up.hwp",
+            attachmentStatus: "파일 확인됨",
+          },
+        ],
+      },
+      "2026-06-04T10:00:00.000Z",
+    );
+
+    expect(html).toContain("<h3>문서 파서 점검</h3>");
+    expect(html).toContain("파싱 원천과 감지 단서를 보호자 확인용으로 요약합니다.");
+    expect(html).toContain("HWP/HWPX 데스크톱 파서: follow-up.hwp");
+    expect(html).toContain("임상 단서: 자궁경부암 · 고혈압 · 당뇨");
+    expect(html).not.toContain("/Users/wj/private/follow-up.hwp");
+    expect(html).not.toContain("attachmentPath");
   });
 
   it("omits malformed visit dates from caregiver upcoming visits", () => {

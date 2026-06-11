@@ -53,6 +53,7 @@ import {
   formatVitalAssessmentStandardLabel,
   type VitalAssessmentEvidence,
 } from "./vitalAssessmentEvidence";
+import { buildDocumentParserAudit } from "./documentParserAudit";
 
 type DocumentReviewStatus = "needs-review" | "care-question" | "waiting-result" | "done";
 type QuestionStatus = "open" | "answered" | "deferred";
@@ -90,9 +91,11 @@ export type CaregiverExportState = {
     date: string;
     title: string;
     category: string;
+    body?: string;
     reviewStatus: DocumentReviewStatus;
     nextAction: string;
     attachmentName?: string;
+    attachmentPath?: string;
     attachmentStatus?: string;
   }>;
   symptoms: Array<{
@@ -176,12 +179,15 @@ export function buildCaregiverExportContentFingerprint(
   const latestLabResults = latestByDate(state.labResults, 5);
   const latestSymptoms = latestByDate(state.symptoms, 5);
   const latestVitals = latestByDate(state.vitals, 5);
+  const activeDocuments = state.documents.filter(
+    (document) => document.reviewStatus !== "done" && getValidIsoDate(document.date),
+  );
+  const documentParserAudit = buildDocumentParserAudit(activeDocuments);
 
   return JSON.stringify({
     documents: enabledSections.documents
-      ? state.documents
-          .filter((document) => document.reviewStatus !== "done" && getValidIsoDate(document.date))
-          .map((document) => ({
+      ? {
+          items: activeDocuments.map((document) => ({
             attachmentName: document.attachmentName,
             attachmentStatus: document.attachmentName ? document.attachmentStatus : "",
             category: document.nextAction ? "" : document.category,
@@ -189,7 +195,14 @@ export function buildCaregiverExportContentFingerprint(
             nextAction: document.nextAction,
             reviewStatus: document.reviewStatus,
             title: document.title,
-          }))
+          })),
+          parserAudit: documentParserAudit.items.map((item) => ({
+            clinicalSignalSummary: item.clinicalSignalSummary,
+            dateLabel: item.dateLabel,
+            documentLabel: item.documentLabel,
+            sourceSummary: item.sourceSummary,
+          })),
+        }
       : [],
     foodQuery: enabledSections.food ? state.foodQuery?.trim() ?? "" : "",
     labResults: enabledSections.labs
@@ -575,6 +588,7 @@ export function buildCaregiverExportHtml(
   const activeDocuments = state.documents.filter(
     (document) => document.reviewStatus !== "done" && getValidIsoDate(document.date),
   );
+  const documentParserAudit = buildDocumentParserAudit(activeDocuments);
   const foodQuery = state.foodQuery?.trim() ?? "";
   const foodAssessment = foodQuery ? assessCancerFood(foodQuery) : null;
   const immuneFoodContext =
@@ -624,6 +638,13 @@ export function buildCaregiverExportHtml(
     ]
       .filter(Boolean)
       .join("<br>"),
+  );
+  const documentParserAuditItems = documentParserAudit.items.map((item) =>
+    [
+      `<strong>${escapeHtml(item.dateLabel)} ${escapeHtml(item.documentLabel)}</strong>`,
+      `<span class="source-label">문서 파서 점검</span> ${escapeHtml(item.sourceSummary)}`,
+      `<small>임상 단서: ${escapeHtml(item.clinicalSignalSummary)}</small>`,
+    ].join("<br>"),
   );
   const symptomItems = latestByDate(state.symptoms, 5).map(
     (symptom) =>
@@ -761,6 +782,13 @@ export function buildCaregiverExportHtml(
       html: `<section>
       <h2>서류 조치</h2>
       ${listItems(documentItems, "진행 중인 서류 조치가 없습니다.")}
+      ${
+        documentParserAuditItems.length
+          ? `<h3>문서 파서 점검</h3>
+      <p class="meta">파싱 원천과 감지 단서를 보호자 확인용으로 요약합니다. 진단, 처방, 치료 지시가 아닙니다.</p>
+      ${listItems(documentParserAuditItems, "파싱된 첨부 본문이 없습니다.")}`
+          : ""
+      }
     </section>`,
     },
     {
