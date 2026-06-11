@@ -14,8 +14,9 @@ This command creates a path-safe operator handoff bundle for the two remaining
 objective readiness blockers. It validates and exports the private HWP/HWPX
 smoke handoff, exports the external review packet, exports the current blocked
 objective readiness report, and writes the final evidence command sequence.
-The sequence now includes the objective readiness input doctor so automation can
-read a path-safe JSON status before the final completion gate.
+The sequence now includes the objective readiness input doctor and input JSON
+verifier so automation can read and validate a path-safe JSON status before the
+final completion gate.
 
 It does not create or run a real private HWP/HWPX sample and does not create
 external clinician/source approval.
@@ -167,7 +168,17 @@ The JSON report uses schema `carevault-objective-readiness-inputs-doctor.v1`,
 keeps `input_paths_included: false`, and should report `status: ready` before
 the final completion gate is run.
 
-## Step 5: Verify Final Objective Readiness Evidence
+## Step 5: Verify Input Doctor JSON
+
+Verify the saved input doctor JSON before running the final gate. This catches
+stale, path-leaking, inconsistent, or incomplete input status reports.
+
+```bash
+CAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=/path/to/carevault-readiness-inputs.json \
+npm run objective:readiness:inputs:verify
+```
+
+## Step 6: Verify Final Objective Readiness Evidence
 
 ```bash
 CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json \
@@ -210,6 +221,7 @@ cat > "$MANIFEST_JSON" <<'EOF'
     "npm run clinical:external-review:packet",
     "npm run clinical:external-review:report",
     "npm run objective:readiness:inputs:doctor",
+    "npm run objective:readiness:inputs:verify",
     "npm run objective:readiness:complete"
   ],
   "required_evidence_inputs": [

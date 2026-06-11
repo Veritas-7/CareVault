@@ -11,7 +11,9 @@ Usage:
 This command verifies a previously exported CareVault objective readiness
 handoff bundle. It checks the machine-readable manifest, required file set,
 current blocked readiness status, final evidence command sequence, and local
-path exclusion. It does not create private HWP evidence or clinical approval.
+path exclusion. The command sequence must verify the path-safe input doctor JSON
+before the final completion gate. It does not create private HWP evidence or
+clinical approval.
 EOF
 }
 
@@ -97,6 +99,7 @@ const expectedCommands = [
   "npm run clinical:external-review:packet",
   "npm run clinical:external-review:report",
   "npm run objective:readiness:inputs:doctor",
+  "npm run objective:readiness:inputs:verify",
   "npm run objective:readiness:complete",
 ];
 const expectedEvidenceInputs = [
@@ -131,6 +134,13 @@ function assertArrayIncludesAll(actual, expected, message) {
   }
 }
 
+function assertArrayEquals(actual, expected, message) {
+  if (!Array.isArray(actual) || actual.length !== expected.length) fail(message);
+  for (let index = 0; index < expected.length; index += 1) {
+    if (actual[index] !== expected[index]) fail(message);
+  }
+}
+
 if (manifest.schema !== "carevault-objective-readiness-handoff.v1") {
   fail("handoff manifest schema is unsupported.");
 }
@@ -147,7 +157,7 @@ assertArrayIncludesAll(
   requiredBundleFiles,
   "handoff manifest must list the required bundle files.",
 );
-assertArrayIncludesAll(
+assertArrayEquals(
   manifest.evidence_command_sequence,
   expectedCommands,
   "handoff manifest must list the final evidence command sequence.",

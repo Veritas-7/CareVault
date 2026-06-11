@@ -105,6 +105,25 @@ assert_contains "$TMP_DIR/valid-bundle.out" "Bundle files: 14"
 assert_contains "$TMP_DIR/valid-bundle.out" "real-private-hwp-hwpx-sample, external-clinician-source-review"
 assert_not_contains "$TMP_DIR/valid-bundle.out" "$VALID_BUNDLE"
 
+MISSING_INPUT_VERIFY_COMMAND_BUNDLE="$(copy_bundle missing-input-verify-command-bundle)"
+node - <<'NODE' "$MISSING_INPUT_VERIFY_COMMAND_BUNDLE/carevault-objective-readiness-handoff-manifest.json" "$MISSING_INPUT_VERIFY_COMMAND_BUNDLE/carevault-final-readiness-handoff.md"
+const fs = require("fs");
+const manifestPath = process.argv[2];
+const handoffPath = process.argv[3];
+const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+manifest.evidence_command_sequence = manifest.evidence_command_sequence.filter(
+  (command) => command !== "npm run objective:readiness:inputs:verify",
+);
+fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+const handoff = fs
+  .readFileSync(handoffPath, "utf8")
+  .replace(/\nCAREVAULT_OBJECTIVE_READINESS_INPUTS_JSON_PATH=\/path\/to\/carevault-readiness-inputs\.json \\\n?npm run objective:readiness:inputs:verify\n?/g, "\n");
+fs.writeFileSync(handoffPath, handoff);
+NODE
+expect_failure "missing-input-verify-command" \
+  CAREVAULT_OBJECTIVE_READINESS_HANDOFF_DIR="$MISSING_INPUT_VERIFY_COMMAND_BUNDLE"
+assert_contains "$TMP_DIR/missing-input-verify-command.err" "final evidence command sequence"
+
 MISSING_MANIFEST_BUNDLE="$(copy_bundle missing-manifest-bundle)"
 rm "$MISSING_MANIFEST_BUNDLE/carevault-objective-readiness-handoff-manifest.json"
 expect_failure "missing-manifest" \
