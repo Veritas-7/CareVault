@@ -12,6 +12,7 @@
     "runtime:doctor:dev": "bash scripts/verify_runtime_clean.sh --expect-dev",
     "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
     "hwp:smoke": "bash scripts/smoke_hwp_sample.sh",
+    "rag:model:smoke": "bash scripts/smoke_rag_model.sh",
     "tauri:dev:clean": "npm run runtime:doctor && npm run tauri -- dev",
     "preview": "vite preview",
     "tauri": "tauri"

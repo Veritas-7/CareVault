@@ -68,6 +68,12 @@ describe("documentRagModelRequest", () => {
       }).level,
     ).toBe("missing-model");
     expect(
+      validateDocumentRagLocalModelRequest(context, {
+        endpoint: "http://[::1]:11434/v1/chat/completions",
+        model: "qwen-local",
+      }).level,
+    ).toBe("ready");
+    expect(
       buildDocumentRagLocalModelRequest(buildDocumentRagContext([], "혈압"), {
         endpoint: "http://127.0.0.1:11434/v1/chat/completions",
         model: "qwen-local",
