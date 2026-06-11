@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { buildClinicalWorkflowReviewPacket } from "./clinicalWorkflowReview";
 import {
   buildCareVaultObjectiveReadinessExport,
   buildCareVaultObjectiveReadinessReport,
@@ -102,6 +103,27 @@ describe("carevaultObjectiveReadiness", () => {
     });
     expect(requirementsById["document-search-rag"]).toMatchObject({ status: "pass" });
     expect(requirementsById["app-uses-parsed-documents"]).toMatchObject({ status: "pass" });
+  });
+
+  it("blocks document RAG readiness when parser-source citations are stripped", () => {
+    const workflowReviewPacket = buildClinicalWorkflowReviewPacket();
+    const report = buildCareVaultObjectiveReadinessReport({
+      workflowReviewPacket: {
+        ...workflowReviewPacket,
+        documentRagContext: {
+          ...workflowReviewPacket.documentRagContext,
+          answerDraft: {
+            ...workflowReviewPacket.documentRagContext.answerDraft,
+            citations: ["문서 1 · 자궁경부암 추적 진료 및 대사질환 검사 메모 · 파싱 본문 조각 1"],
+          },
+        },
+      },
+    });
+    const requirement = report.requirements.find(({ id }) => id === "document-search-rag");
+
+    expect(requirement).toMatchObject({ status: "blocked" });
+    expect(requirement?.detail).toContain("parser/source citation");
+    expect(report.blockingRequirementIds).toContain("document-search-rag");
   });
 
   it("accepts sanitized private HWP smoke report evidence without marking clinical review complete", () => {
@@ -361,6 +383,13 @@ describe("carevaultObjectiveReadiness", () => {
     expect(Object.prototype.hasOwnProperty.call(exported.workflowReviewPacket, "state")).toBe(false);
     expect(Object.prototype.hasOwnProperty.call(exported.workflowReviewPacket, "documentRagContext"))
       .toBe(false);
+    expect(exported.workflowReviewPacket.documentRagProvenance).toMatchObject({
+      answerDraftCitationCount: 1,
+      citationSourceLabelCount: 1,
+      evidenceChunkCount: 1,
+      parserSourceCount: 1,
+      parsedDocumentCount: 1,
+    });
     expect(json).not.toContain("/Users/");
     expect(json).not.toContain("attachmentPath");
     expect(json).not.toContain("private-carevault");

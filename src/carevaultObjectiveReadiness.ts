@@ -130,8 +130,17 @@ export type CareVaultObjectiveReadinessExport = {
   > & {
     answerDraftSummary: string;
     careActionCount: number;
+    documentRagProvenance: CareVaultDocumentRagProvenanceSummary;
     documentRagSummary: string;
   };
+};
+
+export type CareVaultDocumentRagProvenanceSummary = {
+  answerDraftCitationCount: number;
+  citationSourceLabelCount: number;
+  evidenceChunkCount: number;
+  parsedDocumentCount: number;
+  parserSourceCount: number;
 };
 
 export const careVaultObjectiveText =
@@ -544,6 +553,35 @@ function allWorkflowSurfacesPass(workflowPacket: ClinicalWorkflowReviewPacket) {
   return workflowPacket.surfaces.every((surface) => surface.status === "pass");
 }
 
+function buildDocumentRagProvenanceSummary(
+  context: ClinicalWorkflowReviewPacket["documentRagContext"],
+): CareVaultDocumentRagProvenanceSummary {
+  const evidenceChunks = context.items.flatMap((item) => item.evidenceChunks);
+
+  return {
+    answerDraftCitationCount: context.answerDraft.citations.length,
+    citationSourceLabelCount: context.answerDraft.citations.filter((citation) =>
+      citation.includes("조각 원천"),
+    ).length,
+    evidenceChunkCount: evidenceChunks.length,
+    parsedDocumentCount: context.items.filter((item) => item.parsedSourceCount > 0).length,
+    parserSourceCount: evidenceChunks.filter((chunk) => chunk.sourceSummary.trim().length > 0).length,
+  };
+}
+
+function hasDocumentRagProvenance(
+  context: ClinicalWorkflowReviewPacket["documentRagContext"],
+) {
+  const provenance = buildDocumentRagProvenanceSummary(context);
+  return (
+    provenance.parsedDocumentCount > 0
+    && provenance.evidenceChunkCount > 0
+    && provenance.parserSourceCount === provenance.evidenceChunkCount
+    && provenance.answerDraftCitationCount > 0
+    && provenance.citationSourceLabelCount === provenance.answerDraftCitationCount
+  );
+}
+
 function buildRequirement(
   requirement: CareVaultObjectiveRequirement,
 ): CareVaultObjectiveRequirement {
@@ -590,6 +628,9 @@ export function buildCareVaultObjectiveReadinessReport({
   const sourceGroundedRagPass =
     workflowReviewPacket.documentRagContext.answerDraft.level === "source-grounded"
     && workflowReviewPacket.documentRagContext.items.some((item) => item.evidenceChunks.length > 0);
+  const documentRagProvenancePass = hasDocumentRagProvenance(
+    workflowReviewPacket.documentRagContext,
+  );
 
   const requirements = [
     buildRequirement({
@@ -680,16 +721,19 @@ export function buildCareVaultObjectiveReadinessReport({
         "src/documentRagReadiness.ts",
         "src/documentRagModelRequest.ts",
         "src/documentRagEmbeddingRequest.ts",
+        "src/documentRagEmbeddingRequest.test.ts",
         "src/clinicalWorkflowReview.ts",
         "npm run rag:readiness:smoke",
         "npm run rag:ollama:doctor",
         "npm run rag:ollama:smoke",
       ],
       detail:
-        "Parsed document evidence ranks into source-grounded deterministic RAG context, answer drafts, and optional localhost-only model/embedding gates.",
+        "Parsed document evidence ranks into source-grounded deterministic RAG context, answer drafts with parser/source citation labels, and optional localhost-only model/embedding gates with ranked provenance tests.",
       id: "document-search-rag",
       objectiveText: "stored documents should be searchable and usable by RAG",
-      status: parsedDocumentRagPass && sourceGroundedRagPass ? "pass" : "blocked",
+      status: parsedDocumentRagPass && sourceGroundedRagPass && documentRagProvenancePass
+        ? "pass"
+        : "blocked",
     }),
     buildRequirement({
       artifacts: [
@@ -777,6 +821,9 @@ export function buildCareVaultObjectiveReadinessExport(
     workflowReviewPacket: {
       answerDraftSummary: report.workflowReviewPacket.documentRagContext.answerDraft.summary,
       careActionCount: report.workflowReviewPacket.careActions.length,
+      documentRagProvenance: buildDocumentRagProvenanceSummary(
+        report.workflowReviewPacket.documentRagContext,
+      ),
       documentRagSummary: report.workflowReviewPacket.documentRagContext.summary,
       exportedAt: report.workflowReviewPacket.exportedAt,
       query: report.workflowReviewPacket.query,
