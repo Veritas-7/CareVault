@@ -200,6 +200,17 @@ import {
   formatDocumentParserAuditDownloadStatus,
 } from "./documentParserAuditClipboard";
 import {
+  buildDocumentRagContext,
+  formatDocumentRagContextClipboardDescription,
+  formatDocumentRagContextClipboardFailedStatus,
+  formatDocumentRagContextClipboardStatus,
+  formatDocumentRagContextClipboardText,
+  formatDocumentRagContextClipboardUnsupportedStatus,
+  formatDocumentRagContextDownloadDescription,
+  formatDocumentRagContextDownloadFallbackLabel,
+  formatDocumentRagContextDownloadStatus,
+} from "./documentRagContext";
+import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
@@ -1818,6 +1829,13 @@ function App() {
         .filter(Boolean)
         .slice(0, 3)
     : [];
+  const documentRagContext = buildDocumentRagContext(filteredDocuments, documentFilter);
+  const documentRagContextClipboardDescription =
+    formatDocumentRagContextClipboardDescription(documentRagContext);
+  const documentRagContextClipboardStatus = formatDocumentRagContextClipboardStatus(documentRagContext);
+  const documentRagContextDownloadDescription =
+    formatDocumentRagContextDownloadDescription(documentRagContext);
+  const documentRagContextDownloadStatus = formatDocumentRagContextDownloadStatus(documentRagContext);
   const hasActiveDocumentFilters = hasActiveDocumentFilterState({
     categoryFilter: documentCategoryFilter,
     searchText: documentFilter,
@@ -1899,6 +1917,36 @@ function App() {
       documentParserAuditDownloadStatus,
       formatDocumentParserAuditDownloadFallbackLabel(),
       documentParserAudit.summary,
+    );
+  };
+
+  const copyDocumentRagContext = () => {
+    if (!navigator.clipboard?.writeText) {
+      setSaveLabel(formatDocumentRagContextClipboardUnsupportedStatus(documentRagContext));
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(formatDocumentRagContextClipboardText(documentRagContext))
+      .then(() => {
+        setTransientSaveLabel(documentRagContextClipboardStatus);
+      })
+      .catch(() => {
+        setSaveLabel(formatDocumentRagContextClipboardFailedStatus(documentRagContext));
+      });
+  };
+
+  const downloadDocumentRagContext = async () => {
+    const result = await downloadTextFile(
+      formatDocumentRagContextClipboardText(documentRagContext),
+      `carevault-document-rag-context-${today}.md`,
+      "text/markdown;charset=utf-8",
+    );
+    setTextFileDownloadStatus(
+      result,
+      documentRagContextDownloadStatus,
+      formatDocumentRagContextDownloadFallbackLabel(),
+      documentRagContext.summary,
     );
   };
 
@@ -7537,6 +7585,46 @@ function App() {
                     <li key={snippet}>{snippet}</li>
                   ))}
                 </ul>
+              </div>
+            ) : null}
+            {documentRagContext.items.length ? (
+              <div
+                className="document-rag-context"
+                aria-label={`문서 RAG 컨텍스트 ${documentRagContext.ariaLabel}`}
+              >
+                <div className="document-rag-context-title">
+                  <strong>문서 RAG 컨텍스트</strong>
+                  <span>{documentRagContext.summary}</span>
+                  <button
+                    className="secondary-inline-button document-rag-context-copy"
+                    type="button"
+                    onClick={copyDocumentRagContext}
+                    aria-label={documentRagContextClipboardDescription}
+                    title={documentRagContextClipboardDescription}
+                  >
+                    <Copy aria-hidden="true" />
+                    컨텍스트 복사
+                  </button>
+                  <button
+                    className="secondary-inline-button document-rag-context-download"
+                    type="button"
+                    onClick={downloadDocumentRagContext}
+                    aria-label={documentRagContextDownloadDescription}
+                    title={documentRagContextDownloadDescription}
+                  >
+                    <Download aria-hidden="true" />
+                    컨텍스트 다운로드
+                  </button>
+                </div>
+                <ol>
+                  {documentRagContext.items.slice(0, 3).map((item) => (
+                    <li key={item.documentId}>
+                      <span>{item.titleLine}</span>
+                      <small>{item.reasonSummary}</small>
+                      <small>{item.snippet}</small>
+                    </li>
+                  ))}
+                </ol>
               </div>
             ) : null}
             <div className="document-filter-row">

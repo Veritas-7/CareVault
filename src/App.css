@@ -3857,6 +3857,69 @@ textarea:focus-visible {
   overflow-wrap: anywhere;
 }
 
+.document-rag-context {
+  display: grid;
+  gap: 8px;
+  margin: -2px 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #d8d7c4;
+  border-radius: 8px;
+  background: #fbfaf1;
+  color: #4b4a34;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.document-rag-context-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.document-rag-context-title strong {
+  color: #4f4b1d;
+}
+
+.document-rag-context-title span {
+  color: #62614c;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.document-rag-context-copy,
+.document-rag-context-download {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 9px;
+  font-size: 0.78rem;
+}
+
+.document-rag-context ol {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.document-rag-context li {
+  min-width: 0;
+}
+
+.document-rag-context li span {
+  display: block;
+  color: #33331f;
+  font-weight: 800;
+}
+
+.document-rag-context li small {
+  display: block;
+  color: #62614c;
+  font-size: 0.76rem;
+  overflow-wrap: anywhere;
+}
+
 .document-filter-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
