@@ -230,6 +230,56 @@ describe("careActionQueue", () => {
     expect(clipboardText).toContain("HWPX 본문 XML: follow.hwpx");
   });
 
+  it("promotes parsed lab-result document cues into care queue question detail", () => {
+    const actions = buildCareActionQueue(
+      {
+        ...state,
+        documents: [
+          {
+            id: "doc-parsed-labs",
+            date: "2026-06-04",
+            title: "HWPX 혈액·신장 기능 검사",
+            body:
+              "[첨부 텍스트 파싱: labs.hwpx · HWPX 본문 XML]\n" +
+              "CBC WBC 3.2 10^3/uL, ANC 1.1 10^3/uL, PLT 118 10^3/uL. Cr 1.4 mg/dL, eGFR 52 mL/min/1.73m2.",
+            tags: "",
+            reviewStatus: "care-question",
+            nextAction: "",
+          },
+        ],
+        labResults: [],
+        questions: [],
+        symptoms: [],
+        visits: [],
+        vitals: [],
+      },
+      "2026-06-04",
+    );
+
+    const documentAction = actions.find((action) => action.id === "document:doc-parsed-labs");
+    expect(documentAction).toMatchObject({
+      label: "서류 질문",
+      source: "document",
+      title: "HWPX 혈액·신장 기능 검사",
+    });
+    expect(documentAction?.detail).toContain("검사결과 관련 단서");
+    expect(documentAction?.detail).toContain("문서 측정 단서(원문): WBC 3.2 10^3/uL");
+    expect(documentAction?.detail).toContain("ANC 1.1 10^3/uL");
+    expect(documentAction?.detail).toContain("eGFR 52 mL/min/1.73m2");
+    expect(documentAction?.detail).toContain(
+      "수치 해석, 반복 측정 시점, 약·식사·치료 영향은 진료팀 기준으로 확인합니다.",
+    );
+    expect(documentAction?.detail).toContain("파싱 원천: HWPX 본문 XML: labs.hwpx");
+    expect(documentAction?.detail).not.toContain("처방");
+    expect(documentAction?.detail).not.toContain("치료하세요");
+
+    const clipboardText = formatCareActionQueueClipboardText(actions, "2026-06-04");
+    expect(clipboardText).toContain("검사결과");
+    expect(clipboardText).toContain("WBC 3.2 10^3/uL");
+    expect(clipboardText).toContain("Cr 1.4 mg/dL");
+    expect(clipboardText).toContain("HWPX 본문 XML: labs.hwpx");
+  });
+
   it("sanitizes local paths from document-derived care queue details", () => {
     const actions = buildCareActionQueue(
       {

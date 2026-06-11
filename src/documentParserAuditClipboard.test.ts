@@ -37,36 +37,36 @@ describe("documentParserAuditClipboard", () => {
 
     expect(text).toContain("[CareVault 문서 파서 점검]");
     expect(text).toContain("진단·처방·치료 지시가 아니라");
-    expect(text).toContain("요약: 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개");
+    expect(text).toContain("요약: 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개");
     expect(text).toContain("- 2026-06-11 · 병리결과");
     expect(text).toContain("파싱 원천: HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp");
     expect(text).toContain("임상 단서: 자궁경부암 · 고혈압 · 당뇨");
     expect(text).toContain("파싱 원천: 텍스트 파일: blood.csv");
-    expect(text).toContain("임상 단서: 임상 단서 없음");
+    expect(text).toContain("임상 단서: 검사결과");
     expect(text).not.toContain("/Users/wj/private");
   });
 
   it("formats stable copy statuses from the parser audit summary", () => {
     expect(formatDocumentParserAuditClipboardDescription(audit)).toBe(
-      "문서 파서 점검 복사 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+      "문서 파서 점검 복사 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
     );
     expect(formatDocumentParserAuditClipboardStatus(audit)).toBe(
-      "문서 파서 점검 복사됨 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+      "문서 파서 점검 복사됨 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
     );
     expect(formatDocumentParserAuditClipboardUnsupportedStatus(audit)).toBe(
-      "문서 파서 점검 복사 미지원 · 브라우저 클립보드 없음 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+      "문서 파서 점검 복사 미지원 · 브라우저 클립보드 없음 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
     );
     expect(formatDocumentParserAuditClipboardFailedStatus(audit)).toBe(
-      "문서 파서 점검 복사 실패 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+      "문서 파서 점검 복사 실패 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
     );
   });
 
   it("formats stable download labels from the parser audit summary", () => {
     expect(formatDocumentParserAuditDownloadDescription(audit)).toBe(
-      "문서 파서 점검 다운로드 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+      "문서 파서 점검 다운로드 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
     );
     expect(formatDocumentParserAuditDownloadStatus(audit)).toBe(
-      "문서 파서 점검 다운로드됨 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+      "문서 파서 점검 다운로드됨 · 파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
     );
     expect(formatDocumentParserAuditDownloadFallbackLabel()).toBe("문서 파서 점검");
   });

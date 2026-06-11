@@ -33,7 +33,7 @@ describe("documentParserAudit", () => {
     ]);
 
     expect(audit).toEqual({
-      ariaLabel: "파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+      ariaLabel: "파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
       desktopParserDocumentCount: 1,
       items: [
         {
@@ -45,7 +45,7 @@ describe("documentParserAudit", () => {
           sourceSummary: "HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp",
         },
         {
-          clinicalSignalSummary: "임상 단서 없음",
+          clinicalSignalSummary: "검사결과",
           dateLabel: "2026-06-10",
           documentId: "blood-csv",
           documentLabel: "혈액검사 원본",
@@ -54,8 +54,8 @@ describe("documentParserAudit", () => {
         },
       ],
       parsedDocumentCount: 2,
-      parsedWithClinicalSignalCount: 1,
-      summary: "파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 1개",
+      parsedWithClinicalSignalCount: 2,
+      summary: "파싱 문서 2개 · 데스크톱 파서 1개 · 임상 단서 2개",
     });
     expect(JSON.stringify(audit)).not.toContain("/Users/wj/private");
   });

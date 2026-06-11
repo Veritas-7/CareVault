@@ -2,6 +2,7 @@ export type DocumentKnowledgeSignalId =
   | "cervical-cancer"
   | "hypertension"
   | "diabetes"
+  | "lab-result"
   | "hwp-document";
 
 export type DocumentKnowledgeSource = {
@@ -29,7 +30,7 @@ export type DocumentParsedAttachmentSource = {
 };
 
 export type DocumentCareMeasurementCue = {
-  kind: "blood-pressure" | "glucose" | "hba1c";
+  kind: "blood-pressure" | "glucose" | "hba1c" | "lab-result";
   text: string;
 };
 
@@ -104,6 +105,30 @@ const signalDefinitions: Array<{
       "metformin",
     ],
     match: /당뇨|혈당|glucose|hba1c|a1c\b|당화혈색소|공복혈당|식후\s*혈당|인슐린|메트포르민|metformin/i,
+  },
+  {
+    id: "lab-result",
+    label: "검사결과",
+    aliases: [
+      "혈액검사",
+      "검사 수치",
+      "CBC",
+      "WBC",
+      "ANC",
+      "PLT",
+      "혈색소",
+      "Hgb",
+      "Cr",
+      "Creatinine",
+      "eGFR",
+      "AST",
+      "ALT",
+      "Albumin",
+      "신장기능",
+      "간기능",
+    ],
+    match:
+      /\blab\b|검사결과|검사\s*수치|혈액검사|cbc\b|wbc\b|anc\b|plt\b|hgb\b|(?:^|[\s,;:/()[\]{}])혈색소|백혈구|절대\s*호중구|호중구|혈소판|\bcr\b|creatinine|크레아티닌|egfr|사구체\s*여과율|ast\b|alt\b|albumin|알부민|신장기능|간기능/i,
   },
   {
     id: "hwp-document",
@@ -191,6 +216,78 @@ function uniqMeasurementCues(cues: DocumentCareMeasurementCue[]) {
   });
 }
 
+const labMeasurementDefinitions: Array<{
+  canonical: string;
+  max: number;
+  min: number;
+  pattern: RegExp;
+  unit: string;
+}> = [
+  {
+    canonical: "WBC",
+    max: 200,
+    min: 0,
+    pattern: /(?:\bWBC\b|백혈구)\s*[:：]?\s*(\d{1,3}(?:\.\d+)?)\s*(?:10\^3\s*\/?\s*(?:uL|µL)|K\s*\/?\s*(?:uL|µL)|천\s*\/?\s*(?:uL|µL))?/gi,
+    unit: "10^3/uL",
+  },
+  {
+    canonical: "ANC",
+    max: 100,
+    min: 0,
+    pattern: /(?:\bANC\b|절대\s*호중구|호중구)\s*[:：]?\s*(\d{1,3}(?:\.\d+)?)\s*(?:10\^3\s*\/?\s*(?:uL|µL)|K\s*\/?\s*(?:uL|µL)|천\s*\/?\s*(?:uL|µL))?/gi,
+    unit: "10^3/uL",
+  },
+  {
+    canonical: "PLT",
+    max: 2000,
+    min: 0,
+    pattern: /(?:\bPLT\b|platelet|혈소판)\s*[:：]?\s*(\d{1,4}(?:\.\d+)?)\s*(?:10\^3\s*\/?\s*(?:uL|µL)|K\s*\/?\s*(?:uL|µL)|천\s*\/?\s*(?:uL|µL))?/gi,
+    unit: "10^3/uL",
+  },
+  {
+    canonical: "Hgb",
+    max: 30,
+    min: 0,
+    pattern: /(?:\bHgb\b|\bHb\b|헤모글로빈|(?:^|[\s,;:/()[\]{}])혈색소)\s*[:：]?\s*(\d{1,2}(?:\.\d+)?)\s*(?:g\s*\/?\s*dL)?/gi,
+    unit: "g/dL",
+  },
+  {
+    canonical: "Cr",
+    max: 30,
+    min: 0,
+    pattern: /(?:\bCr\b|creatinine|크레아티닌)\s*[:：]?\s*(\d{1,2}(?:\.\d+)?)\s*(?:mg\s*\/?\s*dL)?/gi,
+    unit: "mg/dL",
+  },
+  {
+    canonical: "eGFR",
+    max: 200,
+    min: 1,
+    pattern: /(?:\beGFR\b|사구체\s*여과율)\s*[:：]?\s*(\d{1,3}(?:\.\d+)?)\s*(?:mL\s*\/?\s*min\s*\/?\s*1\.73m(?:2|²))?/gi,
+    unit: "mL/min/1.73m2",
+  },
+  {
+    canonical: "AST",
+    max: 5000,
+    min: 0,
+    pattern: /(?:\bAST\b)\s*[:：]?\s*(\d{1,4}(?:\.\d+)?)\s*(?:U\s*\/?\s*L)?/gi,
+    unit: "U/L",
+  },
+  {
+    canonical: "ALT",
+    max: 5000,
+    min: 0,
+    pattern: /(?:\bALT\b)\s*[:：]?\s*(\d{1,4}(?:\.\d+)?)\s*(?:U\s*\/?\s*L)?/gi,
+    unit: "U/L",
+  },
+  {
+    canonical: "Albumin",
+    max: 10,
+    min: 0,
+    pattern: /(?:\bAlbumin\b|알부민)\s*[:：]?\s*(\d{1,2}(?:\.\d+)?)\s*(?:g\s*\/?\s*dL)?/gi,
+    unit: "g/dL",
+  },
+];
+
 export function extractDocumentCareMeasurementCues(
   document: DocumentKnowledgeSource,
 ): DocumentCareMeasurementCue[] {
@@ -229,6 +326,17 @@ export function extractDocumentCareMeasurementCues(
       text: `혈당 ${value} mg/dL`,
     });
   }
+
+  labMeasurementDefinitions.forEach((definition) => {
+    for (const match of text.matchAll(definition.pattern)) {
+      const value = Number(match[1]);
+      if (!isInRange(value, definition.min, definition.max)) continue;
+      cues.push({
+        kind: "lab-result",
+        text: `${definition.canonical} ${match[1]} ${definition.unit}`,
+      });
+    }
+  });
 
   return uniqMeasurementCues(cues).slice(0, 5);
 }

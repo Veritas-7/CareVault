@@ -145,6 +145,66 @@ describe("documentKnowledge", () => {
     expect(summary).not.toContain("/Users/wj/private");
   });
 
+  it("detects parsed lab-result documents and extracts lab measurement cues as original context", () => {
+    const document = {
+      attachmentName: "blood-panel.hwpx",
+      body:
+        "로컬 원본 /Users/wj/private/blood-panel.hwpx\n" +
+        "[첨부 텍스트 파싱: blood-panel.hwpx · HWPX 본문 XML]\n" +
+        "CBC WBC 3.2 10^3/uL, ANC 1.1 10^3/uL, PLT 118 10^3/uL. Cr 1.4 mg/dL, eGFR 52 mL/min/1.73m2.",
+      category: "lab",
+      date: "2026-06-12",
+      nextAction: "",
+      reviewStatus: "care-question",
+      tags: "혈액검사 신장기능",
+      title: "혈액·신장 기능 검사",
+    } as const;
+
+    expect(detectDocumentKnowledgeSignals(document).map((signal) => signal.id)).toEqual([
+      "lab-result",
+      "hwp-document",
+    ]);
+
+    const searchText = buildDocumentKnowledgeSearchText(document);
+    expect(searchText).toContain("검사결과");
+    expect(searchText).toContain("혈액검사");
+    expect(searchText).toContain("ANC");
+    expect(searchText).toContain("eGFR");
+
+    expect(extractDocumentCareMeasurementCues(document)).toEqual([
+      {
+        kind: "lab-result",
+        text: "WBC 3.2 10^3/uL",
+      },
+      {
+        kind: "lab-result",
+        text: "ANC 1.1 10^3/uL",
+      },
+      {
+        kind: "lab-result",
+        text: "PLT 118 10^3/uL",
+      },
+      {
+        kind: "lab-result",
+        text: "Cr 1.4 mg/dL",
+      },
+      {
+        kind: "lab-result",
+        text: "eGFR 52 mL/min/1.73m2",
+      },
+    ]);
+
+    const draft = buildDocumentCareQuestionDraft(document);
+    expect(draft).toContain("검사결과 관련 단서");
+    expect(draft).toContain(
+      "문서 측정 단서(원문): WBC 3.2 10^3/uL · ANC 1.1 10^3/uL · PLT 118 10^3/uL · Cr 1.4 mg/dL · eGFR 52 mL/min/1.73m2",
+    );
+    expect(draft).toContain("수치 해석, 반복 측정 시점, 약·식사·치료 영향은 진료팀 기준으로 확인합니다.");
+    expect(draft).toContain("파싱 원천: HWPX 본문 XML: blood-panel.hwpx");
+    expect(draft).not.toContain("/Users/wj/private");
+    expect(draft).not.toMatch(/진단한다|처방|복용하세요|치료하세요|완치|괜찮습니다|기다려도 됩니다/);
+  });
+
   it("builds a search snippet that preserves source text without local paths", () => {
     const snippet = buildDocumentKnowledgeSnippet(
       {

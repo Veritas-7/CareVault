@@ -71,7 +71,9 @@ const mirror: NormalizedCareVaultMirror = {
       date: "2026-06-03",
       title: "혈액검사",
       category: "lab",
-      body: "[첨부 텍스트 파싱: blood.hwpx · HWPX 본문 XML]\nWBC 확인, HbA1c 7.4%, 혈압 149/93",
+      body:
+        "[첨부 텍스트 파싱: blood.hwpx · HWPX 본문 XML]\n" +
+        "WBC 확인, ANC 1.1 10^3/uL, eGFR 52 mL/min/1.73m2, HbA1c 7.4%, 혈압 149/93",
       tags: "혈액검사 자궁경부암",
       reviewStatus: "care-question",
       nextAction: "감염 주의 기준 질문",
@@ -428,6 +430,9 @@ describe("storage normalized mirror", () => {
     expect(documentSearchText).toContain("당화혈색소");
     expect(documentSearchText).toContain("혈압약");
     expect(documentSearchText).toContain("자궁경부세포검사");
+    expect(documentSearchText).toContain("검사결과");
+    expect(documentSearchText).toContain("ANC");
+    expect(documentSearchText).toContain("eGFR");
     expect(documentSearchText).toContain("HWPX 본문 XML");
     expect(
       statements.find(
