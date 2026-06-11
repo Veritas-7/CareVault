@@ -60,6 +60,7 @@ import { buildDocumentParserAudit } from "./documentParserAudit";
 import {
   buildDocumentRagContext,
   buildDocumentRagProfileQuery,
+  documentRagSourceBoundaryLine,
 } from "./documentRagContext";
 
 type Sex = "female" | "male" | "other";
@@ -677,6 +678,7 @@ export function buildVisitPacketMarkdown(
           "## 문서 RAG 근거 조각",
           "",
           "저장 서류와 파싱 본문에서 가져온 근거 조각입니다. 진단, 처방, 치료 지시가 아닙니다.",
+          documentRagSourceBoundaryLine,
           "",
           ...documentRagContextLines,
           "",
