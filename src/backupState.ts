@@ -1,3 +1,8 @@
+import {
+  buildDocumentParserAudit,
+  type DocumentParserAuditSource,
+} from "./documentParserAudit";
+
 export const restoredAttachmentStatus = "백업에서 복원됨 - 재첨부 필요";
 
 type BackupDocument = {
@@ -22,7 +27,7 @@ type BackupState = {
 };
 
 export type CareVaultBackupScopeSummaryItem = {
-  id: "profile" | "records" | "caregiver" | "attachments";
+  id: "profile" | "records" | "caregiver" | "attachments" | "parserAudit";
   label: string;
   value: string;
 };
@@ -33,6 +38,7 @@ export type CareVaultBackupScopeSummary = {
   hasCaregiverSettings: boolean;
   hasProfile: boolean;
   items: CareVaultBackupScopeSummaryItem[];
+  parserAuditSummary: string;
   recordCount: number;
 };
 
@@ -61,6 +67,26 @@ function countRecordItems(value: unknown) {
 function countAttachmentNames(documents: unknown) {
   if (!Array.isArray(documents)) return 0;
   return documents.filter((document) => isRecord(document) && hasAttachmentName(document)).length;
+}
+
+function stringValue(value: unknown) {
+  return typeof value === "string" ? value : undefined;
+}
+
+function parserAuditSourcesFromDocuments(documents: unknown): DocumentParserAuditSource[] {
+  if (!Array.isArray(documents)) return [];
+
+  return documents.filter(isRecord).map((document) => ({
+    attachmentName: stringValue(document.attachmentName),
+    body: stringValue(document.body),
+    category: stringValue(document.category),
+    date: stringValue(document.date),
+    id: stringValue(document.id),
+    nextAction: stringValue(document.nextAction),
+    reviewStatus: stringValue(document.reviewStatus),
+    tags: stringValue(document.tags),
+    title: stringValue(document.title),
+  }));
 }
 
 function sanitizeBackupDocument<T extends BackupDocument>(document: T): T {
@@ -100,6 +126,10 @@ export function buildCareVaultBackupScopeSummary(
   );
   const attachmentNameCount =
     countAttachmentNames(state.documents) + countAttachmentNames(state.deletedDocuments);
+  const parserAudit = buildDocumentParserAudit([
+    ...parserAuditSourcesFromDocuments(state.documents),
+    ...parserAuditSourcesFromDocuments(state.deletedDocuments),
+  ]);
   const profileValue = hasProfile ? "포함" : "없음";
   const caregiverValue = hasCaregiverSettings ? "포함" : "없음";
   const items: CareVaultBackupScopeSummaryItem[] = [
@@ -107,14 +137,16 @@ export function buildCareVaultBackupScopeSummary(
     { id: "records", label: "기록", value: `${recordCount}개` },
     { id: "caregiver", label: "공유 설정", value: caregiverValue },
     { id: "attachments", label: "첨부 파일명", value: `${attachmentNameCount}개` },
+    { id: "parserAudit", label: "문서 파서 점검", value: parserAudit.summary },
   ];
 
   return {
-    ariaLabel: `백업 범위 프로필 ${profileValue} · 기록 ${recordCount}개 · 보호자 공유 설정 ${caregiverValue} · 첨부 파일명 ${attachmentNameCount}개`,
+    ariaLabel: `백업 범위 프로필 ${profileValue} · 기록 ${recordCount}개 · 보호자 공유 설정 ${caregiverValue} · 첨부 파일명 ${attachmentNameCount}개 · ${parserAudit.summary}`,
     attachmentNameCount,
     hasCaregiverSettings,
     hasProfile,
     items,
+    parserAuditSummary: parserAudit.summary,
     recordCount,
   };
 }
@@ -129,6 +161,7 @@ export function formatCareVaultBackupScopeCompactSummary(state: BackupState) {
     `기록 ${summary.recordCount}개`,
     `공유 설정 ${itemValue("caregiver")}`,
     `첨부 파일명 ${summary.attachmentNameCount}개`,
+    itemValue("parserAudit"),
   ].join(" · ");
 }
 
