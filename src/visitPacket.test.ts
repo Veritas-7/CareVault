@@ -1377,6 +1377,48 @@ describe("visit packet", () => {
     expect(markdown).not.toContain("/Users/wj/private/scan.pdf");
   });
 
+  it("includes parsed document audit details in clinician-facing visit packets", () => {
+    const markdown = buildVisitPacketMarkdown(
+      {
+        ...sampleState,
+        documents: [
+          {
+            date: "2026-06-04",
+            title: "자궁경부암 추적 HWP 결과",
+            category: "pathology",
+            body: [
+              "[첨부 텍스트 파싱: follow-up.hwp · HWP/HWPX 데스크톱 파서]",
+              "자궁경부암 병리 추적. 혈압 145/92. HbA1c 7.1 당뇨 확인 필요.",
+            ].join("\n"),
+            tags: "자궁경부암 고혈압 당뇨",
+            reviewStatus: "care-question",
+            nextAction: "진료 때 병리 의미와 혈압/혈당 관리 연결 질문",
+            attachmentName: "follow-up.hwp",
+            attachmentPath: "/Users/wj/private/follow-up.hwp",
+          },
+        ],
+      },
+      { exportedAt: "2026-06-04T08:00:00.000Z" },
+    );
+
+    expect(markdown).toContain("## 문서 파서 점검");
+    expect(markdown).toContain("- 요약: 파싱 문서 1개 · 데스크톱 파서 1개 · 임상 단서 1개");
+    expect(markdown).toContain("- 2026-06-04: 자궁경부암 추적 HWP 결과");
+    expect(markdown).toContain("  - 파싱 원천: HWP/HWPX 데스크톱 파서: follow-up.hwp");
+    expect(markdown).toContain("  - 임상 단서: 자궁경부암 · 고혈압 · 당뇨");
+    expect(markdown).not.toContain("/Users/wj/private/follow-up.hwp");
+    expect(markdown).not.toContain("attachmentPath");
+  });
+
+  it("omits parsed document audit sections when no parsed attachment body exists", () => {
+    const markdown = buildVisitPacketMarkdown(sampleState, {
+      exportedAt: "2026-06-03T08:00:00.000Z",
+    });
+
+    expect(markdown).not.toContain("## 문서 파서 점검");
+    expect(markdown).not.toContain("파싱 원천:");
+  });
+
   it("keeps source-backed lab queue details separated in visit packet care queues", () => {
     const markdown = buildVisitPacketMarkdown(
       {

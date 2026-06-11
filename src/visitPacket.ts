@@ -56,6 +56,7 @@ import {
   formatVitalAssessmentSource,
   formatVitalAssessmentStatus,
 } from "./vitalAssessmentEvidence";
+import { buildDocumentParserAudit } from "./documentParserAudit";
 
 type Sex = "female" | "male" | "other";
 type VitalType = "blood-pressure" | "glucose" | "temperature";
@@ -344,6 +345,28 @@ function optionalSuffix(value: string, prefix = "") {
   return trimmed ? `${prefix}${trimmed}` : "";
 }
 
+function buildDocumentParserAuditLines(
+  documents: VisitPacketState["documents"],
+  maxItems: number,
+) {
+  const audit = buildDocumentParserAudit(documents);
+  if (!audit.items.length) return [];
+
+  const visibleItems = audit.items.slice(0, maxItems);
+  const hiddenCount = audit.items.length - visibleItems.length;
+  const hiddenLine = hiddenCount > 0 ? [`- 추가 파싱 문서 ${hiddenCount}개는 앱에서 확인`] : [];
+
+  return [
+    `- 요약: ${audit.summary}`,
+    ...visibleItems.flatMap((item) => [
+      `- ${item.dateLabel}: ${item.documentLabel}`,
+      `  - 파싱 원천: ${item.sourceSummary}`,
+      `  - 임상 단서: ${item.clinicalSignalSummary}`,
+    ]),
+    ...hiddenLine,
+  ];
+}
+
 export function buildVisitPacketMarkdown(
   state: VisitPacketState,
   options: VisitPacketOptions = {},
@@ -430,7 +453,8 @@ export function buildVisitPacketMarkdown(
         `- ${visit.date}: ${visit.hospital} / ${visit.reason}${optionalSuffix(visit.summary, " / 요약: ")}${optionalSuffix(visit.plan, " / 계획: ")}${optionalSuffix(getValidIsoDate(visit.nextDate) ?? "", " / 다음 일정: ")}`,
     );
 
-  const documentLines = latestFirst(filterByRange(state.documents, rangeStartDate))
+  const rangedDocuments = filterByRange(state.documents, rangeStartDate);
+  const documentLines = latestFirst(rangedDocuments)
     .slice(0, maxItems)
     .map((document) => {
       const attachment = document.attachmentName ? ` / 첨부: ${document.attachmentName}` : "";
@@ -439,6 +463,7 @@ export function buildVisitPacketMarkdown(
         : "";
       return `- ${document.date}: [${documentLabel[document.category]}] ${document.title}${reviewStatus}${optionalSuffix(document.nextAction ?? "", " / 다음 조치: ")}${attachment}${optionalSuffix(document.tags, " / 태그: ")}${optionalSuffix(document.body, " / 메모: ")}`;
     });
+  const documentParserAuditLines = buildDocumentParserAuditLines(rangedDocuments, maxItems);
 
   const foodLines = options.foodQuery?.trim()
     ? (() => {
@@ -466,7 +491,7 @@ export function buildVisitPacketMarkdown(
   ]);
   const standardCoverageLines = buildHealthStandardCoverageLines().map((line) => `- ${line}`);
   const careActionState = {
-    documents: filterByRange(state.documents, rangeStartDate),
+    documents: rangedDocuments,
     labResults: filterByRange(state.labResults, rangeStartDate),
     profile: state.profile,
     questions: filterByRange(state.questions, rangeStartDate),
@@ -600,6 +625,16 @@ export function buildVisitPacketMarkdown(
     "",
     ...orNone(documentLines),
     "",
+    ...(documentParserAuditLines.length
+      ? [
+          "## 문서 파서 점검",
+          "",
+          "파싱 원천과 감지 단서를 진료 전 확인하기 위한 메모입니다. 진단, 처방, 치료 지시가 아닙니다.",
+          "",
+          ...documentParserAuditLines,
+          "",
+        ]
+      : []),
     "## 음식 판단 메모",
     "",
     ...orNone(foodLines),
