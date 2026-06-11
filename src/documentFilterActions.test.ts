@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildDocumentClinicalQuickSearchOptions,
   buildDocumentParserQuickSearchOptions,
   documentFilterResetStatusLabel,
   filterDocumentsBySearchAndReview,
@@ -278,6 +279,70 @@ describe("documentFilterActions", () => {
         label: "데스크톱 파서",
         searchText: "데스크톱 파서",
         statusLabel: "서류 검색 불가 · 데스크톱 파서 없음",
+        value: "없음",
+      },
+    ]);
+  });
+
+  it("builds clinical-signal quick-search options from saved documents", () => {
+    expect(buildDocumentClinicalQuickSearchOptions(documents)).toEqual([
+      {
+        actionLabel: "저장된 서류 자궁경부암 1개 빠른 검색",
+        disabled: false,
+        id: "cervical-cancer",
+        label: "자궁경부암",
+        searchText: "자궁경부암",
+        statusLabel: "서류 검색 적용됨 · 자궁경부암 1개 · 검색어 자궁경부암",
+        value: "1개",
+      },
+      {
+        actionLabel: "저장된 서류 혈압약 1개 빠른 검색",
+        disabled: false,
+        id: "hypertension",
+        label: "혈압약",
+        searchText: "혈압약",
+        statusLabel: "서류 검색 적용됨 · 혈압약 1개 · 검색어 혈압약",
+        value: "1개",
+      },
+      {
+        actionLabel: "저장된 서류 당화혈색소 1개 빠른 검색",
+        disabled: false,
+        id: "diabetes",
+        label: "당화혈색소",
+        searchText: "당화혈색소",
+        statusLabel: "서류 검색 적용됨 · 당화혈색소 1개 · 검색어 당화혈색소",
+        value: "1개",
+      },
+    ]);
+  });
+
+  it("disables clinical-signal quick-search options when no matching documents exist", () => {
+    expect(buildDocumentClinicalQuickSearchOptions([documents[1]])).toEqual([
+      {
+        actionLabel: "저장된 서류 자궁경부암 빠른 검색 불가 · 대상 없음",
+        disabled: true,
+        id: "cervical-cancer",
+        label: "자궁경부암",
+        searchText: "자궁경부암",
+        statusLabel: "서류 검색 불가 · 자궁경부암 없음",
+        value: "없음",
+      },
+      {
+        actionLabel: "저장된 서류 혈압약 빠른 검색 불가 · 대상 없음",
+        disabled: true,
+        id: "hypertension",
+        label: "혈압약",
+        searchText: "혈압약",
+        statusLabel: "서류 검색 불가 · 혈압약 없음",
+        value: "없음",
+      },
+      {
+        actionLabel: "저장된 서류 당화혈색소 빠른 검색 불가 · 대상 없음",
+        disabled: true,
+        id: "diabetes",
+        label: "당화혈색소",
+        searchText: "당화혈색소",
+        statusLabel: "서류 검색 불가 · 당화혈색소 없음",
         value: "없음",
       },
     ]);

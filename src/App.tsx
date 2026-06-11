@@ -176,6 +176,7 @@ import {
   type TauriInvoke,
 } from "./documentTauriAttachmentParsing";
 import {
+  buildDocumentClinicalQuickSearchOptions,
   buildDocumentParserQuickSearchOptions,
   filterDocumentsBySearchAndReview,
   formatDocumentFilterResetActionLabel,
@@ -1561,6 +1562,10 @@ function App() {
       }),
     [documentPanelSummary.desktopParserCount, documentPanelSummary.parsedAttachmentCount],
   );
+  const documentClinicalQuickSearchOptions = useMemo(
+    () => buildDocumentClinicalQuickSearchOptions(state.documents),
+    [state.documents],
+  );
   const documentParserAudit = useMemo(
     () => buildDocumentParserAudit(state.documents),
     [state.documents],
@@ -1881,6 +1886,17 @@ function App() {
 
   const applyDocumentParserQuickSearch = (
     option: (typeof documentParserQuickSearchOptions)[number],
+  ) => {
+    if (option.disabled) return;
+
+    setDocumentFilter(option.searchText);
+    setDocumentCategoryFilter("all");
+    setDocumentStatusFilter("all");
+    setSaveLabel(option.statusLabel);
+  };
+
+  const applyDocumentClinicalQuickSearch = (
+    option: (typeof documentClinicalQuickSearchOptions)[number],
   ) => {
     if (option.disabled) return;
 
@@ -7501,6 +7517,34 @@ function App() {
                     <FileText aria-hidden="true" />
                   ) : (
                     <Search aria-hidden="true" />
+                  )}
+                  <span>{option.label}</span>
+                  <small>{option.value}</small>
+                </button>
+              ))}
+            </div>
+            <div className="document-clinical-quick-search" aria-label="문서 임상 단서 빠른 검색">
+              {documentClinicalQuickSearchOptions.map((option) => (
+                <button
+                  className={`secondary-inline-button quick-search-${option.id}`}
+                  type="button"
+                  key={option.id}
+                  disabled={option.disabled}
+                  onClick={() => applyDocumentClinicalQuickSearch(option)}
+                  aria-label={option.actionLabel}
+                  aria-pressed={
+                    documentFilter.trim() === option.searchText &&
+                    documentCategoryFilter === "all" &&
+                    documentStatusFilter === "all"
+                  }
+                  title={option.actionLabel}
+                >
+                  {option.id === "cervical-cancer" ? (
+                    <ShieldCheck aria-hidden="true" />
+                  ) : option.id === "hypertension" ? (
+                    <HeartPulse aria-hidden="true" />
+                  ) : (
+                    <Activity aria-hidden="true" />
                   )}
                   <span>{option.label}</span>
                   <small>{option.value}</small>

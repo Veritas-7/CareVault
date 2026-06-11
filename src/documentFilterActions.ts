@@ -1,4 +1,8 @@
-import { buildDocumentKnowledgeSearchText } from "./documentKnowledge";
+import {
+  buildDocumentKnowledgeSearchText,
+  detectDocumentKnowledgeSignals,
+  type DocumentKnowledgeSignalId,
+} from "./documentKnowledge";
 
 type DocumentFilterSource = {
   attachmentName?: string;
@@ -27,6 +31,16 @@ export type DocumentParserQuickSearchOption = {
   actionLabel: string;
   disabled: boolean;
   id: "parsed-attachment" | "desktop-parser";
+  label: string;
+  searchText: string;
+  statusLabel: string;
+  value: string;
+};
+
+export type DocumentClinicalQuickSearchOption = {
+  actionLabel: string;
+  disabled: boolean;
+  id: "cervical-cancer" | "hypertension" | "diabetes";
   label: string;
   searchText: string;
   statusLabel: string;
@@ -96,6 +110,60 @@ export function buildDocumentParserQuickSearchOptions({
       searchText: "데스크톱 파서",
     },
   ].map(({ count, id, label, searchText }) => {
+    const disabled = count === 0;
+    const value = disabled ? "없음" : `${count}개`;
+
+    return {
+      actionLabel: disabled
+        ? `저장된 서류 ${label} 빠른 검색 불가 · 대상 없음`
+        : `저장된 서류 ${label} ${value} 빠른 검색`,
+      disabled,
+      id,
+      label,
+      searchText,
+      statusLabel: disabled
+        ? `서류 검색 불가 · ${label} 없음`
+        : `서류 검색 적용됨 · ${label} ${value} · 검색어 ${searchText}`,
+      value,
+    };
+  });
+}
+
+const clinicalQuickSearchDefinitions: Array<{
+  id: DocumentClinicalQuickSearchOption["id"];
+  label: string;
+  searchText: string;
+  signalId: DocumentKnowledgeSignalId;
+}> = [
+  {
+    id: "cervical-cancer",
+    label: "자궁경부암",
+    searchText: "자궁경부암",
+    signalId: "cervical-cancer",
+  },
+  {
+    id: "hypertension",
+    label: "혈압약",
+    searchText: "혈압약",
+    signalId: "hypertension",
+  },
+  {
+    id: "diabetes",
+    label: "당화혈색소",
+    searchText: "당화혈색소",
+    signalId: "diabetes",
+  },
+];
+
+export function buildDocumentClinicalQuickSearchOptions<Document extends DocumentFilterSource>(
+  documents: readonly Document[],
+): DocumentClinicalQuickSearchOption[] {
+  const signalIdsByDocument = documents.map(
+    (document) => new Set(detectDocumentKnowledgeSignals(document).map((signal) => signal.id)),
+  );
+
+  return clinicalQuickSearchDefinitions.map(({ id, label, searchText, signalId }) => {
+    const count = signalIdsByDocument.filter((signalIds) => signalIds.has(signalId)).length;
     const disabled = count === 0;
     const value = disabled ? "없음" : `${count}개`;
 

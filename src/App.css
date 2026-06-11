@@ -3769,25 +3769,29 @@ textarea:focus-visible {
   padding-left: 18px;
 }
 
-.document-parser-quick-search {
+.document-parser-quick-search,
+.document-clinical-quick-search {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: -2px 0 12px;
 }
 
-.document-parser-quick-search .secondary-inline-button {
+.document-parser-quick-search .secondary-inline-button,
+.document-clinical-quick-search .secondary-inline-button {
   min-height: 34px;
   font-size: 0.82rem;
 }
 
-.document-parser-quick-search .secondary-inline-button[aria-pressed="true"] {
+.document-parser-quick-search .secondary-inline-button[aria-pressed="true"],
+.document-clinical-quick-search .secondary-inline-button[aria-pressed="true"] {
   color: #0b5c4b;
   background: #e4f7ef;
   border-color: #9fd8c9;
 }
 
-.document-parser-quick-search .secondary-inline-button small {
+.document-parser-quick-search .secondary-inline-button small,
+.document-clinical-quick-search .secondary-inline-button small {
   color: #526066;
   font-size: 0.74rem;
   font-weight: 800;
