@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { buildDocumentRagContext } from "./documentRagContext";
 import {
   buildDocumentRagLocalModelRequest,
+  extractDocumentRagLocalModelError,
   extractDocumentRagLocalModelText,
   requestDocumentRagLocalModel,
   validateDocumentRagLocalModelRequest,
@@ -130,6 +131,37 @@ describe("documentRagModelRequest", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it("reports sanitized endpoint error details for local model HTTP failures", async () => {
+    const context = sourceGroundedContext();
+    const fetcher = vi.fn().mockResolvedValue({
+      json: async () => ({
+        error: {
+          message:
+            "error starting llama-server: binary missing at /Users/wj/private/llama-server and /opt/homebrew/Cellar/ollama/0.30.7/libexec/llama-server",
+        },
+      }),
+      ok: false,
+      status: 500,
+    });
+
+    const result = await requestDocumentRagLocalModel(
+      context,
+      {
+        endpoint: "http://localhost:11434/v1/chat/completions",
+        model: "llama3.2:1b",
+      },
+      fetcher,
+    );
+
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("expected failed request");
+    expect(result.summary).toBe("로컬 모델 RAG 요청 실패 · HTTP 500");
+    expect(result.warnings[0]).toContain("로컬 모델 endpoint 오류: error starting llama-server");
+    expect(result.warnings[0]).toContain("[local path]");
+    expect(result.warnings[0]).not.toContain("/Users/wj/private");
+    expect(result.warnings[0]).not.toContain("/opt/homebrew");
+  });
+
   it("extracts common local and OpenAI-compatible response shapes", () => {
     expect(
       extractDocumentRagLocalModelText({
@@ -144,5 +176,19 @@ describe("documentRagModelRequest", () => {
     expect(extractDocumentRagLocalModelText({ response: "ollama generate text" })).toBe(
       "ollama generate text",
     );
+  });
+
+  it("extracts sanitized local model endpoint error shapes", () => {
+    const detail = extractDocumentRagLocalModelError({
+      error: {
+        message:
+          "Run failed at /Users/wj/private/report.hwp with local runtime /opt/homebrew/Cellar/ollama/0.30.7/bin",
+      },
+    });
+
+    expect(detail).toContain("[local path]");
+    expect(detail).not.toContain("/Users/wj/private");
+    expect(detail).not.toContain("/opt/homebrew");
+    expect(extractDocumentRagLocalModelError({ error: "plain error" })).toBe("plain error");
   });
 });

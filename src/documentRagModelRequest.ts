@@ -69,6 +69,7 @@ const defaultMaxTokens = 700;
 const defaultTemperature = 0.1;
 const localHostnames = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 const localNetworkPrefixes = ["127."];
+const maxEndpointErrorLength = 220;
 
 function normalizeEndpoint(endpoint: string) {
   return endpoint.trim();
@@ -207,6 +208,36 @@ export function extractDocumentRagLocalModelText(response: unknown) {
   return "";
 }
 
+function sanitizeEndpointErrorText(text: string) {
+  return text
+    .replace(/\/Users\/[^\s"',)]+/g, "[local path]")
+    .replace(/\/opt\/homebrew\/[^\s"',)]+/g, "[local path]")
+    .replace(/[A-Za-z]:\\[^\s"',)]+/g, "[local path]")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function extractDocumentRagLocalModelError(response: unknown) {
+  if (!response || typeof response !== "object") return "";
+  const maybeResponse = response as {
+    detail?: unknown;
+    error?: { message?: unknown } | unknown;
+    message?: unknown;
+  };
+  const candidates = [
+    typeof maybeResponse.error === "object" && maybeResponse.error
+      ? (maybeResponse.error as { message?: unknown }).message
+      : maybeResponse.error,
+    maybeResponse.message,
+    maybeResponse.detail,
+  ];
+  const detail = candidates.find((candidate) => typeof candidate === "string" && candidate.trim());
+  if (typeof detail !== "string") return "";
+  const sanitized = sanitizeEndpointErrorText(detail);
+  if (sanitized.length <= maxEndpointErrorLength) return sanitized;
+  return `${sanitized.slice(0, maxEndpointErrorLength).trimEnd()}...`;
+}
+
 export async function requestDocumentRagLocalModel(
   context: DocumentRagContext,
   config: DocumentRagLocalModelConfig,
@@ -230,10 +261,16 @@ export async function requestDocumentRagLocalModel(
       method: "POST",
     });
     if (!response.ok) {
+      const endpointError = extractDocumentRagLocalModelError(
+        await response.json().catch(() => null),
+      );
       return {
         ok: false,
         summary: `로컬 모델 RAG 요청 실패 · HTTP ${response.status}`,
-        warnings: request.warnings,
+        warnings: [
+          ...(endpointError ? [`로컬 모델 endpoint 오류: ${endpointError}`] : []),
+          ...request.warnings,
+        ],
       };
     }
 

@@ -31,6 +31,8 @@ npm run rag:model:smoke
 localhost/127.0.0.1/[::1]-only model request helper as the app, blocks remote
 endpoints before a request can be sent, and skips under the normal test suite
 when no endpoint env is provided.
+When a local endpoint returns HTTP errors, CareVault surfaces a short sanitized
+endpoint error warning while stripping local filesystem paths.
 
 CareVault is a local-first health notebook for manually tracking:
 
