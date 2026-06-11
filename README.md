@@ -108,10 +108,11 @@ npm run clinical:external-review:template
 The template command exports
 `docs/review-templates/carevault-external-review-report-template.json` only
 after `npm run clinical:external-review:template:test` confirms the draft
-schema, required review IDs, fail-closed defaults, and source-registry
-error/warning counts match the current clinical review packet. The checked-in
-template remains `status: "draft"` and must be filled by an actual external
-reviewer before it can satisfy the readiness gate.
+schema, required review IDs, reviewed-artifact placeholders, fail-closed
+defaults, source-registry total/error/warning counts, and workflow surface count
+match the current review packets. The checked-in template remains
+`status: "draft"` and must be filled by an actual external reviewer before it
+can satisfy the readiness gate.
 
 After the reviewer fills a copy of that report, run:
 
@@ -120,11 +121,13 @@ CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
 npm run clinical:external-review:report
 ```
 
-The report must use schema `carevault-external-clinician-review.v1`, cover both
-`clinician-source-review` and `real-workflow-review`, attest source registry,
-real workflow, non-diagnosis boundary, and cervical-cancer/hypertension/diabetes
-scope review, match the current registry error/warning counts, and have zero
-open critical or major findings. `npm run clinical:external-review:report:test`
+The report must use schema `carevault-external-clinician-review.v2`, cover both
+`clinician-source-review` and `real-workflow-review`, mark the clinical review
+packet, clinical workflow review packet, and objective readiness report as
+reviewed artifacts, attest source registry, real workflow, non-diagnosis
+boundary, and cervical-cancer/hypertension/diabetes scope review, match the
+current registry total/error/warning counts and workflow surface count, and have
+zero open critical or major findings. `npm run clinical:external-review:report:test`
 verifies the command bridge with fixture reports; it does not require or create
 real clinical approval.
 

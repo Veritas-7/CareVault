@@ -12,12 +12,15 @@ npm run clinical:external-review:template
 
 The command first runs `npm run clinical:external-review:template:test` through
 the local Vitest binary. That test checks the template schema, required review
-IDs, draft fail-closed defaults, and source-registry error/warning counts
-against the current `src/clinicalReviewPacket.ts` output.
+IDs, reviewed-artifact placeholders, draft fail-closed defaults,
+source-registry total/error/warning counts, and workflow surface count against
+the current review packet outputs.
 
 The reviewer should fill a copy of the JSON, not this checked-in template.
 Keep `schema` unchanged. Set `status` to `passed` only after the actual review
-has been completed. Keep `required_check_ids` covering both
+has been completed. Set every `reviewed_artifacts[*].status` to `reviewed` only
+after checking the clinical review packet, clinical workflow review packet, and
+objective readiness report. Keep `required_check_ids` covering both
 `clinician-source-review` and `real-workflow-review`. Remove those IDs from
 `unresolved_required_check_ids` only when the source registry and real patient
 workflow review are complete.
@@ -25,8 +28,8 @@ workflow review are complete.
 Set every attestation to `true` only after reviewing the source registry, real
 workflow evidence, non-diagnosis boundary, and cervical-cancer plus
 hypertension/diabetes scope. The final gate requires zero open critical and
-major findings. The source-registry error and warning counts must match the
-current clinical review packet.
+major findings. The source-registry total/error/warning counts and workflow
+surface count must match the current review packets.
 
 After receiving the filled report, verify it with:
 
