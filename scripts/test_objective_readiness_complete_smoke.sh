@@ -16,6 +16,7 @@ PATH_LEAK_HWP_REPORT="$TMP_DIR/path-leak-hwp-report.json"
 MISSING_GROUP_HWP_REPORT="$TMP_DIR/missing-group-hwp-report.json"
 VALID_EXTERNAL_REPORT="$TMP_DIR/valid-external-review.json"
 OPEN_FINDING_EXTERNAL_REPORT="$TMP_DIR/open-finding-external-review.json"
+VERIFY_JSON_PATH="$TMP_DIR/objective-readiness-complete-verify.json"
 
 cat > "$VALID_HWP_REPORT" <<'JSON'
 {
@@ -202,6 +203,7 @@ fi
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH"
 assert_contains "$TMP_DIR/help.out" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR"
+assert_contains "$TMP_DIR/help.out" "CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH"
 
 expect_failure "missing-hwp-env" CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT"
 assert_contains "$TMP_DIR/missing-hwp-env.out" "CAREVAULT_HWP_SMOKE_REPORT_PATH is required"
@@ -255,5 +257,53 @@ assert_contains "$TMP_DIR/valid-completion-evidence.out" "Required checks: clini
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "Blocking requirements: none"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "1 passed"
 assert_not_contains "$TMP_DIR/valid-completion-evidence.out" "$TMP_DIR"
+
+expect_success "valid-completion-json" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH="$VERIFY_JSON_PATH"
+python3 - "$VERIFY_JSON_PATH" "$TMP_DIR" <<'PY'
+import json
+import pathlib
+import sys
+
+report_path = pathlib.Path(sys.argv[1])
+tmp_dir = sys.argv[2]
+report_text = report_path.read_text()
+if tmp_dir in report_text:
+    raise SystemExit("completion verify JSON leaked a temp path")
+report = json.loads(report_text)
+assert report["schema"] == "carevault-objective-readiness-complete-verify.v1"
+assert report["status"] == "verified-complete"
+assert report["blocking_requirements"] == []
+assert report["hwp_smoke"]["sample_count"] == 2
+assert report["hwp_smoke"]["sample_basenames"] == [
+    "oncology-followup.hwpx",
+    "blood-pressure-labs.hwp",
+]
+assert report["hwp_smoke"]["minimum_observed_parsed_chars"] == 386
+assert report["external_review"]["reviewer_role"] == "external clinical reviewer"
+assert report["external_review"]["required_check_ids"] == [
+    "clinician-source-review",
+    "real-workflow-review",
+]
+assert report["external_review"]["reviewed_artifact_ids"] == [
+    "clinical-review-packet",
+    "clinical-workflow-review-packet",
+    "objective-readiness-report",
+]
+assert report["external_review"]["open_findings"] == {"critical": 0, "major": 0}
+assert report["input_paths_included"] is False
+PY
+assert_not_contains "$TMP_DIR/valid-completion-json.out" "$TMP_DIR"
+
+expect_failure "verify-json-missing-parent" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$VALID_HWP_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
+  CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH="$TMP_DIR/missing/report.json"
+assert_contains "$TMP_DIR/verify-json-missing-parent.out" "objective readiness complete verify JSON parent is not writable"
+assert_not_contains "$TMP_DIR/verify-json-missing-parent.out" "$TMP_DIR/missing/report.json"
 
 printf 'Objective readiness completion evidence fixture tests passed.\n'

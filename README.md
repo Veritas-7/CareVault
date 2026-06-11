@@ -67,6 +67,7 @@ report are available, run the final command-only evidence gate:
 CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet \
 CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
+CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH=/tmp/carevault-objective-readiness-complete-verify.json \
 npm run objective:readiness:complete
 ```
 
@@ -74,10 +75,16 @@ This command fails unless the objective readiness report reaches `Status: pass`
 with no remaining blocking requirements. When it passes, it prints a path-safe
 final summary covering accepted HWP sample counts/basenames, accepted external
 review evidence, reviewed artifacts, required checks, source/workflow counts,
-open finding counts, and `Blocking requirements: none`. `npm run
-objective:readiness:complete:test` verifies missing report paths, rejected HWP
-evidence, rejected external-review evidence, and valid combined fixture evidence
-without using private documents or claiming clinical approval.
+open finding counts, and `Blocking requirements: none`. When
+`CAREVAULT_OBJECTIVE_READINESS_COMPLETE_VERIFY_JSON_PATH` is set, it writes
+schema `carevault-objective-readiness-complete-verify.v1` with path-safe
+`verified-complete` status, no blocking requirements, accepted HWP evidence
+summary, accepted external-review evidence summary, and
+`input_paths_included: false`. `npm run objective:readiness:complete:test`
+verifies missing report paths, rejected HWP evidence, rejected external-review
+evidence, valid combined fixture evidence, path-safe JSON output, and
+missing-output-parent failures without using private documents or claiming
+clinical approval.
 
 Before running the final gate, check which supplied evidence inputs are missing,
 partially ready, accepted, or invalid:
