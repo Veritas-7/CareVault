@@ -24,6 +24,7 @@ touch "$SAMPLES_DIR/01-follow-up.HWP"
 touch "$SAMPLES_DIR/02-lab.hwpx"
 touch "$SAMPLES_DIR/03-note.hwpml"
 touch "$SAMPLES_DIR/ignore.txt"
+REPORT_PATH="$TMP_DIR/hwp-smoke-report.json"
 
 run_smoke() {
   local output_file="$1"
@@ -86,12 +87,38 @@ expect_failure() {
   printf 'PASS: %s\n' "$name"
 }
 
-CAREVAULT_HWP_SAMPLE_DIR="$SAMPLES_DIR" expect_success "directory-batch"
+CAREVAULT_HWP_SAMPLE_DIR="$SAMPLES_DIR" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$REPORT_PATH" \
+  expect_success "directory-batch"
 assert_contains "$TMP_DIR/directory-batch.out" "Samples: 3"
 assert_contains "$TMP_DIR/directory-batch.out" "Sample: 01-follow-up.HWP"
 assert_contains "$TMP_DIR/directory-batch.out" "Sample: 02-lab.hwpx"
 assert_contains "$TMP_DIR/directory-batch.out" "Sample: 03-note.hwpml"
+assert_contains "$TMP_DIR/directory-batch.out" "Report: written with basename-only sample evidence."
 assert_not_contains "$TMP_DIR/directory-batch.out" "$SAMPLES_DIR"
+python3 - "$REPORT_PATH" "$SAMPLES_DIR" <<'PY'
+import json
+import pathlib
+import sys
+
+report_path = pathlib.Path(sys.argv[1])
+sample_dir = sys.argv[2]
+report_text = report_path.read_text()
+if sample_dir in report_text:
+    raise SystemExit("report leaked the sample directory path")
+report = json.loads(report_text)
+assert report["schema"] == "carevault-hwp-smoke-report.v1"
+assert report["status"] == "passed"
+assert report["sample_count"] == 3
+assert report["expected_terms_provided"] is False
+assert [sample["basename"] for sample in report["samples"]] == [
+    "01-follow-up.HWP",
+    "02-lab.hwpx",
+    "03-note.hwpml",
+]
+assert [sample["extension"] for sample in report["samples"]] == ["hwp", "hwpx", "hwpml"]
+assert {sample["status"] for sample in report["samples"]} == {"passed"}
+PY
 if [[ "$(wc -l < "$CARGO_LOG" | tr -d ' ')" != "3" ]]; then
   printf 'Expected fake cargo to run three times.\n' >&2
   cat "$CARGO_LOG" >&2
@@ -111,6 +138,16 @@ assert_contains "$TMP_DIR/empty-directory.out" "no .hwp/.hwpx/.hwpml files"
 CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/ignore.txt" expect_failure "unsupported-extension"
 assert_contains "$TMP_DIR/unsupported-extension.out" "sample must use .hwp, .hwpx, or .hwpml extension: ignore.txt"
 assert_not_contains "$TMP_DIR/unsupported-extension.out" "$SAMPLES_DIR"
+
+CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
+  CAREVAULT_HWP_SMOKE_REPORT_PATH="$TMP_DIR/missing/report.json" \
+  expect_failure "missing-report-parent"
+assert_contains "$TMP_DIR/missing-report-parent.out" "report parent directory is not writable"
+if [[ -s "$CARGO_LOG" ]]; then
+  printf 'Expected report-parent validation to fail before cargo runs.\n' >&2
+  cat "$CARGO_LOG" >&2
+  exit 1
+fi
 
 CAREVAULT_HWP_SAMPLE_PATH="$SAMPLES_DIR/02-lab.hwpx" \
   CAREVAULT_HWP_SAMPLE_DIR="$SAMPLES_DIR" \

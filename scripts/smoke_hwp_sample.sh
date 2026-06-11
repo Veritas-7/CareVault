@@ -13,11 +13,14 @@ Usage:
 Optional gates:
   CAREVAULT_HWP_SAMPLE_TERMS='자궁경부암,혈압,당화혈색소'
   CAREVAULT_HWP_SAMPLE_MIN_CHARS=200
+  CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json
 
 The script validates user-private .hwp/.hwpx/.hwpml samples through the same
 Tauri Rust command boundary used by the app. It intentionally prints only each
 sample basename, not the full local path. Use exactly one of
 CAREVAULT_HWP_SAMPLE_PATH or CAREVAULT_HWP_SAMPLE_DIR.
+When CAREVAULT_HWP_SMOKE_REPORT_PATH is set, the success report also stores only
+sample basenames and extensions, never full local paths.
 EOF
 }
 
@@ -59,6 +62,72 @@ is_supported_sample() {
       return 1
       ;;
   esac
+}
+
+json_string() {
+  python3 -c 'import json, sys; print(json.dumps(sys.argv[1], ensure_ascii=False))' "$1"
+}
+
+json_bool() {
+  if [[ -n "$1" ]]; then
+    printf 'true'
+  else
+    printf 'false'
+  fi
+}
+
+validate_report_path() {
+  local report_path="$1"
+  local report_parent
+
+  [[ -n "$report_path" ]] || return 0
+
+  report_parent="$(dirname "$report_path")"
+  if [[ ! -d "$report_parent" ]]; then
+    printf 'FAIL: report parent directory is not writable.\n' >&2
+    exit 2
+  fi
+  if [[ ! -w "$report_parent" ]]; then
+    printf 'FAIL: report parent directory is not writable.\n' >&2
+    exit 2
+  fi
+}
+
+write_success_report() {
+  local report_path="$1"
+  local temp_report
+  local sample_path
+  local sample_name
+  local extension
+  local index=0
+
+  [[ -n "$report_path" ]] || return 0
+
+  temp_report="${report_path}.tmp"
+  {
+    printf '{\n'
+    printf '  "schema": "carevault-hwp-smoke-report.v1",\n'
+    printf '  "status": "passed",\n'
+    printf '  "sample_count": %s,\n' "${#sample_paths[@]}"
+    printf '  "minimum_parsed_chars": %s,\n' "$(json_string "${CAREVAULT_HWP_SAMPLE_MIN_CHARS:-100}")"
+    printf '  "expected_terms_provided": %s,\n' "$(json_bool "${CAREVAULT_HWP_SAMPLE_TERMS:-}")"
+    printf '  "samples": [\n'
+    for sample_path in "${sample_paths[@]}"; do
+      sample_name="$(basename "$sample_path")"
+      extension="$(printf '%s' "${sample_name##*.}" | tr '[:upper:]' '[:lower:]')"
+      if [[ "$index" -gt 0 ]]; then
+        printf ',\n'
+      fi
+      printf '    {"basename": %s, "extension": %s, "status": "passed"}' \
+        "$(json_string "$sample_name")" \
+        "$(json_string "$extension")"
+      index=$((index + 1))
+    done
+    printf '\n  ]\n'
+    printf '}\n'
+  } > "$temp_report"
+  mv "$temp_report" "$report_path"
+  printf 'Report: written with basename-only sample evidence.\n'
 }
 
 collect_samples() {
@@ -107,6 +176,8 @@ else
   printf 'Expected terms: not provided, running parser/min-length gate only\n'
 fi
 
+validate_report_path "${CAREVAULT_HWP_SMOKE_REPORT_PATH:-}"
+
 for sample_path in "${sample_paths[@]}"; do
   sample_name="$(basename "$sample_path")"
   printf 'Sample: %s\n' "$sample_name"
@@ -120,5 +191,7 @@ for sample_path in "${sample_paths[@]}"; do
 
   printf 'Private HWP/HWPX smoke passed for %s.\n' "$sample_name"
 done
+
+write_success_report "${CAREVAULT_HWP_SMOKE_REPORT_PATH:-}"
 
 printf 'Private HWP/HWPX smoke passed for %s sample(s).\n' "${#sample_paths[@]}"
