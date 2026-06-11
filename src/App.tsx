@@ -7664,6 +7664,12 @@ function App() {
                     컨텍스트 다운로드
                   </button>
                 </div>
+                <div className="document-rag-care-brief">
+                  <span>{documentRagContext.careBrief.summary}</span>
+                  {documentRagContext.careBrief.lines.slice(0, 2).map((line) => (
+                    <small key={line}>{line}</small>
+                  ))}
+                </div>
                 <ol>
                   {documentRagContext.items.slice(0, 3).map((item) => (
                     <li key={item.documentId}>

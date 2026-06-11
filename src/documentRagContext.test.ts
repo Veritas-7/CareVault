@@ -147,6 +147,30 @@ describe("documentRagContext", () => {
     expect(text).not.toContain("/Users/wj/private");
   });
 
+  it("builds source-grounded care brief lines from parsed RAG evidence", () => {
+    const context = buildDocumentRagContext(
+      [parsedHwpDocument],
+      "자궁경부암 혈압 당화혈색소",
+    );
+    const text = formatDocumentRagContextClipboardText(context);
+
+    expect(context.careBrief.summary).toBe("진료 확인 초점 1개 · 다음 조치 1개 · 파싱 근거 1개");
+    expect(context.careBrief.lines).toHaveLength(1);
+    expect(context.careBrief.lines[0]).toContain("2026-06-11 · 자궁경부암 병리결과");
+    expect(context.careBrief.lines[0]).toContain("상태 검토 필요");
+    expect(context.careBrief.lines[0]).toContain("다음 조치 진료 전 혈당과 혈압 관리 연결 질문");
+    expect(context.careBrief.lines[0]).toContain("임상 단서 자궁경부암 · 고혈압 · 당뇨 · HWP/HWPX");
+    expect(context.careBrief.lines[0]).toContain(
+      "근거 HWP/HWPX 데스크톱 파서: 상급병원_병리결과.hwp",
+    );
+    expect(context.careBrief.lines[0]).toContain("HbA1c 7.2%");
+    expect(context.careBrief.lines[0]).not.toContain("/Users/wj/private");
+    expect(text).toContain("[진료 확인 초점]");
+    expect(text).toContain("- 요약: 진료 확인 초점 1개 · 다음 조치 1개 · 파싱 근거 1개");
+    expect(text).toContain("- 2026-06-11 · 자궁경부암 병리결과");
+    expect(text).not.toContain("/Users/wj/private");
+  });
+
   it("strips local paths from query labels and copied RAG context text", () => {
     const context = buildDocumentRagContext(
       [

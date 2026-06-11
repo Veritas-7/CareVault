@@ -3892,6 +3892,27 @@ textarea:focus-visible {
   font-weight: 800;
 }
 
+.document-rag-care-brief {
+  display: grid;
+  gap: 3px;
+  padding: 7px 8px;
+  border: 1px solid #e4e1ca;
+  border-radius: 6px;
+  background: #fffdf5;
+}
+
+.document-rag-care-brief span {
+  color: #4f4b1d;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.document-rag-care-brief small {
+  color: #62614c;
+  font-size: 0.76rem;
+  overflow-wrap: anywhere;
+}
+
 .document-rag-context-copy,
 .document-rag-context-download {
   flex: 0 0 auto;
