@@ -64,9 +64,9 @@ npm run backup:exports:smoke
 
 The export smoke checks CSV, visit-summary Markdown, and caregiver HTML for
 restored parsed-document RAG evidence, parsed-document care queue questions, and
-source-grounded document measurement cues such as blood pressure and HbA1c while
-keeping local attachment paths out, including macOS and Windows paths embedded
-in parsed notes.
+source-grounded document measurement cues such as blood pressure, HbA1c, WBC,
+ANC, Cr, and eGFR while keeping local attachment paths out, including macOS and
+Windows paths embedded in parsed notes.
 
 Run this command to verify that the normalized SQLite document-search mirror
 stores the same patient-facing aliases used by in-app document search:
