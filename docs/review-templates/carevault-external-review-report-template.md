@@ -34,9 +34,10 @@ Keep `schema` unchanged. Set `status` to `passed` only after the actual review
 has been completed. Set every `reviewed_artifacts[*].status` to `reviewed` only
 after checking the clinical review packet, clinical workflow review packet, and
 objective readiness report. Copy each reviewed artifact's SHA-256 hash and byte
-count from `reviewer-handoff.md` into the matching `reviewed_artifacts[*].sha256`
-and `reviewed_artifacts[*].bytes` fields so stale or substituted packets fail
-closed. Keep `required_check_ids` covering both
+count from the `clinical-review-packet.md`, `clinical-workflow-review-packet.md`,
+and `objective-readiness-report.md` rows in `reviewer-handoff.md` into the
+matching `reviewed_artifacts[*].sha256` and `reviewed_artifacts[*].bytes` fields
+so stale or substituted packets fail closed. Keep `required_check_ids` covering both
 `clinician-source-review` and `real-workflow-review`. Remove those IDs from
 `unresolved_required_check_ids` only when the source registry and real patient
 workflow review are complete.
@@ -50,6 +51,7 @@ surface count must match the current review packets.
 After receiving the filled report, verify it with:
 
 ```bash
+CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet \
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/path/to/filled-external-review.json \
 npm run clinical:external-review:report
 ```
@@ -58,6 +60,7 @@ When a private HWP/HWPX smoke report is also available, verify both remaining
 evidence reports together:
 
 ```bash
+CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet \
 CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json \
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/path/to/filled-external-review.json \
 npm run objective:readiness:complete

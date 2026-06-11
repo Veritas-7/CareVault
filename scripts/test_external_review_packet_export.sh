@@ -95,6 +95,7 @@ done
 assert_contains "$PACKET_DIR/reviewer-handoff.md" "Artifact Hashes"
 assert_contains "$PACKET_DIR/reviewer-handoff.md" "clinical-review-packet.md"
 assert_contains "$PACKET_DIR/reviewer-handoff.md" "objective-readiness-report.json"
+assert_contains "$PACKET_DIR/reviewer-handoff.md" "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/path/to/carevault-external-review-packet"
 
 if grep -R -n -E '/Users/|[A-Za-z]:\\|attachmentPath|private-carevault' "$PACKET_DIR"; then
   printf 'Expected external review packet to be path-safe.\n' >&2

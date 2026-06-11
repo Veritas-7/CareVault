@@ -55,6 +55,7 @@ clinician/source review evidence is also supplied.
 When an external review report is also available, verify both reports together:
 
 ```bash
+CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR=/tmp/carevault-external-review-packet \
 CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json \
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json \
 npm run objective:readiness:complete
