@@ -65,10 +65,13 @@ npm run objective:readiness:complete
 ```
 
 This command fails unless the objective readiness report reaches `Status: pass`
-with no remaining blocking requirements. `npm run objective:readiness:complete:test`
-verifies missing report paths, rejected HWP evidence, rejected external-review
-evidence, and valid combined fixture evidence without using private documents or
-claiming clinical approval.
+with no remaining blocking requirements. When it passes, it prints a path-safe
+final summary covering accepted HWP sample counts/basenames, accepted external
+review evidence, reviewed artifacts, required checks, source/workflow counts,
+open finding counts, and `Blocking requirements: none`. `npm run
+objective:readiness:complete:test` verifies missing report paths, rejected HWP
+evidence, rejected external-review evidence, and valid combined fixture evidence
+without using private documents or claiming clinical approval.
 
 ## Clinical source smoke
 

@@ -70,3 +70,7 @@ CAREVAULT_HWP_SMOKE_REPORT_PATH=/path/to/carevault-hwp-smoke-report.json \
 CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/path/to/filled-external-review.json \
 npm run objective:readiness:complete
 ```
+
+When it passes, the final gate prints a path-safe summary for both accepted
+evidence reports and ends with `Blocking requirements: none`. It is still a
+verification result, not a clinical approval note to publish.

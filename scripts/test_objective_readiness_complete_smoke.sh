@@ -245,6 +245,14 @@ expect_success "valid-completion-evidence" \
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$VALID_EXTERNAL_REPORT" \
   CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "Objective readiness completion evidence smoke passed"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Objective readiness complete: pass"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Accepted HWP smoke evidence: 2 sample(s)"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Minimum observed parsed chars: 386"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "HWP sample basenames: oncology-followup.hwpx, blood-pressure-labs.hwp"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Accepted external review evidence: external clinical reviewer"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Reviewed artifacts: 3"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Required checks: clinician-source-review, real-workflow-review"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Blocking requirements: none"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "1 passed"
 assert_not_contains "$TMP_DIR/valid-completion-evidence.out" "$TMP_DIR"
 

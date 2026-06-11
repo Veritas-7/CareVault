@@ -67,4 +67,7 @@ npm run objective:readiness:complete
 ```
 
 The combined command fails unless the private HWP/HWPX smoke report and external
-review report both satisfy the readiness gate.
+review report both satisfy the readiness gate. When it passes, it prints a
+path-safe final summary for both accepted evidence reports and ends with
+`Blocking requirements: none`; do not paste private medical text or
+reviewer-private notes into chat, issues, or this repo.
