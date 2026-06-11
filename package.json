@@ -23,6 +23,8 @@
     "clinical:external-review:report": "bash scripts/smoke_external_review_report.sh",
     "clinical:external-review:report:test": "bash scripts/test_external_review_report_smoke.sh",
     "clinical:workflow:smoke": "vitest run src/clinicalWorkflowReview.test.ts",
+    "hwp:smoke:handoff": "bash scripts/export_hwp_smoke_handoff.sh",
+    "hwp:smoke:handoff:test": "bash scripts/test_hwp_smoke_handoff.sh",
     "hwp:smoke:test": "bash scripts/test_hwp_sample_smoke.sh",
     "rag:ollama:doctor:test": "bash scripts/test_ollama_runtime_doctor.sh",
     "rag:ollama:smoke:test": "bash scripts/test_ollama_rag_smoke.sh",

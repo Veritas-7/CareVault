@@ -133,6 +133,18 @@ clinician/source review plus private HWP/HWPX sample smoke as unresolved.
 
 ## HWP/HWPX private sample smoke
 
+Export a private-sample handoff after validating the local fixture harness:
+
+```bash
+CAREVAULT_HWP_HANDOFF_PATH=/tmp/carevault-private-hwp-smoke-handoff.md \
+npm run hwp:smoke:handoff
+```
+
+The command exports
+`docs/review-templates/carevault-private-hwp-smoke-handoff.md` only after the
+basename-only private-sample harness fixture and objective-readiness report
+fixture pass. It does not run or create a real private sample.
+
 Run this command when a real user-private HWP/HWPX/HWPML sample is available:
 
 ```bash

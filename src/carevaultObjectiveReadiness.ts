@@ -502,7 +502,9 @@ export function buildCareVaultObjectiveReadinessReport({
     }),
     buildRequirement({
       artifacts: [
+        "docs/review-templates/carevault-private-hwp-smoke-handoff.md",
         "scripts/smoke_hwp_sample.sh",
+        "npm run hwp:smoke:handoff",
         "CAREVAULT_HWP_SAMPLE_PATH",
         "CAREVAULT_HWP_SAMPLE_DIR",
         "CAREVAULT_HWP_SMOKE_REPORT_PATH",
