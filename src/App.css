@@ -646,15 +646,14 @@ h2 {
   justify-content: flex-end;
   min-width: 0;
   max-width: 100%;
-  max-height: 152px;
-  overflow: auto;
+  overflow: visible;
   padding: 8px;
   border: 1px solid #d4e2df;
   border-radius: 8px;
   background: rgba(248, 252, 251, 0.86);
 }
 
-.top-actions span {
+.top-actions > span {
   display: inline-flex;
   align-items: center;
   min-height: 36px;
@@ -706,6 +705,89 @@ h2 {
 
 .top-actions .secondary-button:hover {
   background: #eaf5f4;
+}
+
+.top-actions-drawer {
+  flex: 0 1 auto;
+  min-width: min(100%, 270px);
+}
+
+.top-actions-drawer[open] {
+  flex: 1 1 100%;
+}
+
+.top-actions-drawer summary {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #c7d8da;
+  border-radius: 8px;
+  color: #0f4c5c;
+  background: #ffffff;
+  cursor: pointer;
+  list-style: none;
+  transition:
+    background 180ms ease-out,
+    border-color 180ms ease-out,
+    box-shadow 180ms ease-out,
+    transform 180ms ease-out;
+}
+
+.top-actions-drawer summary::-webkit-details-marker {
+  display: none;
+}
+
+.top-actions-drawer summary:hover {
+  border-color: #9bd2c9;
+  background: #eaf5f4;
+  transform: translateY(-1px);
+}
+
+.top-actions-drawer summary:focus-visible {
+  outline: 3px solid #98d6cf;
+  outline-offset: 2px;
+}
+
+.top-actions-drawer summary svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+}
+
+.top-actions-drawer summary span {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.top-actions-drawer summary small {
+  min-width: 0;
+  color: #657278;
+  font-size: 0.76rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-actions-drawer-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #d4e2df;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .summary-range-select {

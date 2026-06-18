@@ -4736,6 +4736,22 @@ function App() {
             </span>
             <button
               type="button"
+              onClick={saveNow}
+              aria-label="현재 CareVault 기록 수동 저장"
+              title="현재 CareVault 기록 수동 저장"
+            >
+              <Save aria-hidden="true" />
+              수동 저장
+            </button>
+            <details className="top-actions-drawer">
+              <summary>
+                <Download aria-hidden="true" />
+                <span>내보내기·공유</span>
+                <small>백업, 요약, 보호자 공유</small>
+              </summary>
+              <div className="top-actions-drawer-panel">
+            <button
+              type="button"
               className="secondary-button"
               onClick={exportBackup}
               aria-label={backupExportDescription}
@@ -4979,15 +4995,8 @@ function App() {
                 event.currentTarget.value = "";
               }}
             />
-            <button
-              type="button"
-              onClick={saveNow}
-              aria-label="현재 CareVault 기록 수동 저장"
-              title="현재 CareVault 기록 수동 저장"
-            >
-              <Save aria-hidden="true" />
-              수동 저장
-            </button>
+              </div>
+            </details>
           </div>
         </header>
         <nav className="workspace-switcher" aria-label="CareVault 작업 메뉴">
