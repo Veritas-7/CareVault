@@ -15,10 +15,13 @@ Usage:
 Optional evidence inputs:
   CAREVAULT_HWP_SMOKE_REPORT_PATH=/tmp/carevault-hwp-smoke-report.json
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH=/tmp/carevault-external-review.json
+  CAREVAULT_CLINICAL_SOURCE_REPORT_PATH=/tmp/carevault-clinical-source-url-smoke.json
 
 This command exports the current path-safe external review packet: clinical
-review packet, clinical workflow review packet, objective readiness report, and
-the draft external review JSON template. It does not create private HWP
+review packet, clinical workflow review packet, clinical source URL reachability
+report, objective readiness report, and the draft external review JSON template.
+If CAREVAULT_CLINICAL_SOURCE_REPORT_PATH is unset, it runs the clinical source
+URL smoke and includes the generated report. It does not create private HWP
 evidence or clinical approval.
 EOF
 }
@@ -72,11 +75,17 @@ fi
 
 check_readable_input CAREVAULT_HWP_SMOKE_REPORT_PATH "HWP smoke report"
 check_readable_input CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH "external review report"
+check_readable_input CAREVAULT_CLINICAL_SOURCE_REPORT_PATH "clinical source URL smoke report"
 
 "$VITEST_BIN" run src/carevaultExternalReviewTemplate.test.ts src/carevaultObjectiveReadiness.test.ts >&2
 
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
+
+if [[ -z "${CAREVAULT_CLINICAL_SOURCE_REPORT_PATH:-}" ]]; then
+  export CAREVAULT_CLINICAL_SOURCE_REPORT_PATH="$TMP_DIR/clinical-source-url-smoke-report.json"
+  bash "$ROOT_DIR/scripts/smoke_clinical_source_urls.sh" >&2
+fi
 
 "$ESBUILD_BIN" \
   "$ROOT_DIR/scripts/external_review_packet_export_cli.ts" \

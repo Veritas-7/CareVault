@@ -91,6 +91,14 @@ export function buildClinicalReviewPacketRequiredChecks(): ClinicalReviewPacketR
     },
     {
       detail:
+        "현재 clinical source URL smoke report가 모든 내장 public HTTPS source URL을 "
+        + "0 failed URL 상태로 확인했는지 검토해야 합니다.",
+      id: "clinical-source-url-reachability",
+      label: "clinical source URL reachability review required",
+      status: "required",
+    },
+    {
+      detail:
         "명령형 smoke harness는 준비되었지만 실제 사용자/private HWP/HWPX/HWPML 의료 문서 샘플이 "
         + "제공되지 않아 아직 실행되지 않았습니다.",
       id: "private-hwp-hwpx-sample-smoke",

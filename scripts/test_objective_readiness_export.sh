@@ -15,6 +15,7 @@ VALID_HWP_REPORT="$TMP_DIR/valid-hwp-report.json"
 VALID_EXTERNAL_REPORT="$TMP_DIR/valid-external-review.json"
 PATH_LEAK_HWP_REPORT="$TMP_DIR/path-leak-hwp-report.json"
 BAD_JSON_REPORT="$TMP_DIR/bad-json-report.json"
+SOURCE_URL_REPORT="$TMP_DIR/clinical-source-url-smoke-report.json"
 
 cat > "$VALID_HWP_REPORT" <<'JSON'
 {
@@ -85,7 +86,28 @@ JSON
 
 printf '{not-json' > "$BAD_JSON_REPORT"
 
+cat > "$SOURCE_URL_REPORT" <<'JSON'
+{
+  "schema": "carevault-clinical-source-url-smoke.v1",
+  "status": "passed",
+  "checked_url_count": 2,
+  "failed_url_count": 0,
+  "source_files": [
+    "src/healthStandards.ts",
+    "src/healthRules.ts",
+    "src/labPresets.ts"
+  ],
+  "url_limit": 2,
+  "checked_urls": [
+    "https://www.cancer.go.kr",
+    "https://www.kdca.go.kr"
+  ],
+  "failed_urls": []
+}
+JSON
+
 if ! CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  CAREVAULT_CLINICAL_SOURCE_REPORT_PATH="$SOURCE_URL_REPORT" \
   bash "$PACKET_SCRIPT" > "$TMP_DIR/packet-export.out" 2> "$TMP_DIR/packet-export.err"; then
   printf 'Expected packet export fixture setup to succeed.\n' >&2
   printf '%s\n' '--- stdout ---' >&2

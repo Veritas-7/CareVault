@@ -12,6 +12,7 @@ const externalReviewTemplate =
 
 const requiredExternalReviewCheckIds = [
   "clinician-source-review",
+  "clinical-source-url-reachability",
   "real-workflow-review",
 ];
 
@@ -21,7 +22,7 @@ describe("carevaultExternalReviewTemplate", () => {
     const workflowReviewPacket = buildClinicalWorkflowReviewPacket();
     const serializedTemplate = JSON.stringify(externalReviewTemplate);
 
-    expect(externalReviewTemplate.schema).toBe("carevault-external-clinician-review.v3");
+    expect(externalReviewTemplate.schema).toBe("carevault-external-clinician-review.v4");
     expect(externalReviewTemplate.status).toBe("draft");
     expect(externalReviewTemplate.reviewed_at).toBe("YYYY-MM-DD");
     expect(externalReviewTemplate.reviewer_role).toBe(
@@ -48,6 +49,12 @@ describe("carevaultExternalReviewTemplate", () => {
       },
       {
         bytes: 0,
+        id: "clinical-source-url-smoke-report",
+        sha256: "REPLACE_WITH_PACKET_SHA256",
+        status: "pending",
+      },
+      {
+        bytes: 0,
         id: "objective-readiness-report",
         sha256: "REPLACE_WITH_PACKET_SHA256",
         status: "pending",
@@ -58,6 +65,7 @@ describe("carevaultExternalReviewTemplate", () => {
       non_diagnosis_boundary_reviewed: false,
       real_workflow_reviewed: false,
       source_registry_reviewed: false,
+      source_url_reachability_reviewed: false,
     });
     expect(externalReviewTemplate.critical_findings_open).toBe(0);
     expect(externalReviewTemplate.major_findings_open).toBe(0);
@@ -98,6 +106,7 @@ describe("carevaultExternalReviewTemplate", () => {
         non_diagnosis_boundary_reviewed: true,
         real_workflow_reviewed: true,
         source_registry_reviewed: true,
+        source_url_reachability_reviewed: true,
       },
       reviewed_at: "2026-06-11",
       reviewed_artifacts: externalReviewTemplate.reviewed_artifacts.map((artifact, index) => ({

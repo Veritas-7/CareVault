@@ -7,6 +7,7 @@ import { join } from "node:path";
 const requiredReviewedArtifacts = [
   ["clinical-review-packet", "clinical-review-packet.md"],
   ["clinical-workflow-review-packet", "clinical-workflow-review-packet.md"],
+  ["clinical-source-url-smoke-report", "clinical-source-url-smoke-report.json"],
   ["objective-readiness-report", "objective-readiness-report.md"],
 ];
 

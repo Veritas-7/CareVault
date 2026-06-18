@@ -17,6 +17,7 @@ MISSING_GROUP_HWP_REPORT="$TMP_DIR/missing-group-hwp-report.json"
 VALID_EXTERNAL_REPORT="$TMP_DIR/valid-external-review.json"
 OPEN_FINDING_EXTERNAL_REPORT="$TMP_DIR/open-finding-external-review.json"
 VERIFY_JSON_PATH="$TMP_DIR/objective-readiness-complete-verify.json"
+SOURCE_URL_REPORT="$TMP_DIR/clinical-source-url-smoke-report.json"
 
 cat > "$VALID_HWP_REPORT" <<'JSON'
 {
@@ -132,7 +133,28 @@ cat > "$OPEN_FINDING_EXTERNAL_REPORT" <<'JSON'
 }
 JSON
 
+cat > "$SOURCE_URL_REPORT" <<'JSON'
+{
+  "schema": "carevault-clinical-source-url-smoke.v1",
+  "status": "passed",
+  "checked_url_count": 2,
+  "failed_url_count": 0,
+  "source_files": [
+    "src/healthStandards.ts",
+    "src/healthRules.ts",
+    "src/labPresets.ts"
+  ],
+  "url_limit": 2,
+  "checked_urls": [
+    "https://www.cancer.go.kr",
+    "https://www.kdca.go.kr"
+  ],
+  "failed_urls": []
+}
+JSON
+
 if ! CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  CAREVAULT_CLINICAL_SOURCE_REPORT_PATH="$SOURCE_URL_REPORT" \
   bash "$PACKET_SCRIPT" > "$TMP_DIR/packet-export.out" 2> "$TMP_DIR/packet-export.err"; then
   printf 'Expected packet export fixture setup to succeed.\n' >&2
   printf '%s\n' '--- stdout ---' >&2
@@ -253,8 +275,8 @@ assert_contains "$TMP_DIR/valid-completion-evidence.out" "Accepted HWP smoke evi
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "Minimum observed parsed chars: 386"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "HWP sample basenames: oncology-followup.hwpx, blood-pressure-labs.hwp"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "Accepted external review evidence: external clinical reviewer"
-assert_contains "$TMP_DIR/valid-completion-evidence.out" "Reviewed artifacts: 3"
-assert_contains "$TMP_DIR/valid-completion-evidence.out" "Required checks: clinician-source-review, real-workflow-review"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Reviewed artifacts: 4"
+assert_contains "$TMP_DIR/valid-completion-evidence.out" "Required checks: clinician-source-review, clinical-source-url-reachability, real-workflow-review"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "Blocking requirements: none"
 assert_contains "$TMP_DIR/valid-completion-evidence.out" "1 passed"
 assert_not_contains "$TMP_DIR/valid-completion-evidence.out" "$TMP_DIR"
@@ -288,11 +310,13 @@ assert report["hwp_smoke"]["minimum_observed_parsed_chars"] == 386
 assert report["external_review"]["reviewer_role"] == "external clinical reviewer"
 assert report["external_review"]["required_check_ids"] == [
     "clinician-source-review",
+    "clinical-source-url-reachability",
     "real-workflow-review",
 ]
 assert report["external_review"]["reviewed_artifact_ids"] == [
     "clinical-review-packet",
     "clinical-workflow-review-packet",
+    "clinical-source-url-smoke-report",
     "objective-readiness-report",
 ]
 assert report["external_review"]["open_findings"] == {"critical": 0, "major": 0}

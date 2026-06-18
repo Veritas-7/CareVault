@@ -20,6 +20,7 @@ STALE_COUNT_REPORT="$TMP_DIR/stale-count.json"
 OPEN_FINDING_REPORT="$TMP_DIR/open-finding.json"
 BAD_JSON_REPORT="$TMP_DIR/bad-json.json"
 VERIFY_JSON_PATH="$TMP_DIR/external-review-verify.json"
+SOURCE_URL_REPORT="$TMP_DIR/clinical-source-url-smoke-report.json"
 
 cat > "$VALID_REPORT" <<'JSON'
 {
@@ -190,7 +191,28 @@ JSON
 
 printf '{not-json' > "$BAD_JSON_REPORT"
 
+cat > "$SOURCE_URL_REPORT" <<'JSON'
+{
+  "schema": "carevault-clinical-source-url-smoke.v1",
+  "status": "passed",
+  "checked_url_count": 2,
+  "failed_url_count": 0,
+  "source_files": [
+    "src/healthStandards.ts",
+    "src/healthRules.ts",
+    "src/labPresets.ts"
+  ],
+  "url_limit": 2,
+  "checked_urls": [
+    "https://www.cancer.go.kr",
+    "https://www.kdca.go.kr"
+  ],
+  "failed_urls": []
+}
+JSON
+
 if ! CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR" \
+  CAREVAULT_CLINICAL_SOURCE_REPORT_PATH="$SOURCE_URL_REPORT" \
   bash "$PACKET_SCRIPT" > "$TMP_DIR/packet-export.out" 2> "$TMP_DIR/packet-export.err"; then
   printf 'Expected packet export fixture setup to succeed.\n' >&2
   printf '%s\n' '--- stdout ---' >&2
@@ -286,7 +308,7 @@ assert_not_contains "$TMP_DIR/bad-json.out" "$BAD_JSON_REPORT"
 expect_failure "missing-scope" \
   CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH="$MISSING_SCOPE_REPORT" \
   CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
-assert_contains "$TMP_DIR/missing-scope.out" "must cover clinician-source-review and real-workflow-review"
+assert_contains "$TMP_DIR/missing-scope.out" "must cover clinician-source-review, clinical-source-url-reachability, and real-workflow-review"
 assert_not_contains "$TMP_DIR/missing-scope.out" "$TMP_DIR"
 
 expect_failure "missing-artifact" \
@@ -323,8 +345,8 @@ expect_success "valid-report" \
   CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR="$PACKET_DIR"
 assert_contains "$TMP_DIR/valid-report.out" "External clinician/source review report smoke passed"
 assert_contains "$TMP_DIR/valid-report.out" "Accepted external review evidence: external clinical reviewer"
-assert_contains "$TMP_DIR/valid-report.out" "Reviewed artifacts: 3"
-assert_contains "$TMP_DIR/valid-report.out" "Required checks: clinician-source-review, real-workflow-review"
+assert_contains "$TMP_DIR/valid-report.out" "Reviewed artifacts: 4"
+assert_contains "$TMP_DIR/valid-report.out" "Required checks: clinician-source-review, clinical-source-url-reachability, real-workflow-review"
 assert_contains "$TMP_DIR/valid-report.out" "Source registry counts: total=84, errors=0, warnings=0"
 assert_contains "$TMP_DIR/valid-report.out" "Workflow surfaces reviewed: 6"
 assert_contains "$TMP_DIR/valid-report.out" "Open findings: critical=0, major=0"
@@ -352,10 +374,15 @@ assert report["verified_blocker"] == "external-clinician-source-review"
 assert report["next_blocking_requirement"] == "real-private-hwp-hwpx-sample"
 assert report["reviewer_role"] == "external clinical reviewer"
 assert report["reviewed_at"] == "2026-06-11"
-assert report["required_check_ids"] == ["clinician-source-review", "real-workflow-review"]
+assert report["required_check_ids"] == [
+    "clinician-source-review",
+    "clinical-source-url-reachability",
+    "real-workflow-review",
+]
 assert report["reviewed_artifact_ids"] == [
     "clinical-review-packet",
     "clinical-workflow-review-packet",
+    "clinical-source-url-smoke-report",
     "objective-readiness-report",
 ]
 assert report["source_registry_counts"] == {"total": 84, "errors": 0, "warnings": 0}

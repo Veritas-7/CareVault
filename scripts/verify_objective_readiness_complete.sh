@@ -134,7 +134,11 @@ required_checks = require_string_array(
     external.get("required_check_ids"),
     "completion verify JSON required checks must be a string array.",
 )
-for check_id in ("clinician-source-review", "real-workflow-review"):
+for check_id in (
+    "clinician-source-review",
+    "clinical-source-url-reachability",
+    "real-workflow-review",
+):
     if check_id not in required_checks:
         fail("completion verify JSON must list all required check ids.")
 
@@ -145,6 +149,7 @@ reviewed_artifact_ids = require_string_array(
 for artifact_id in (
     "clinical-review-packet",
     "clinical-workflow-review-packet",
+    "clinical-source-url-smoke-report",
     "objective-readiness-report",
 ):
     if artifact_id not in reviewed_artifact_ids:

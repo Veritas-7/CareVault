@@ -7,6 +7,7 @@ import { join } from "node:path";
 const reviewedArtifactFiles = [
   ["clinical-review-packet", "clinical-review-packet.md"],
   ["clinical-workflow-review-packet", "clinical-workflow-review-packet.md"],
+  ["clinical-source-url-smoke-report", "clinical-source-url-smoke-report.json"],
   ["objective-readiness-report", "objective-readiness-report.md"],
 ];
 
@@ -43,20 +44,25 @@ const clinical = readJson(join(packetDir, "clinical-review-packet.json"));
 const workflow = readJson(join(packetDir, "clinical-workflow-review-packet.json"));
 
 const report = {
-  schema: "carevault-external-clinician-review.v3",
+  schema: "carevault-external-clinician-review.v4",
   status: "passed",
   reviewed_at: "2026-06-11",
   reviewer_role: "external clinical reviewer",
   reviewed_artifacts: reviewedArtifactFiles.map(([id, filename]) =>
     artifactFromFile(packetDir, id, filename),
   ),
-  required_check_ids: ["clinician-source-review", "real-workflow-review"],
+  required_check_ids: [
+    "clinician-source-review",
+    "clinical-source-url-reachability",
+    "real-workflow-review",
+  ],
   unresolved_required_check_ids: [],
   attestations: {
     source_registry_reviewed: true,
     real_workflow_reviewed: true,
     non_diagnosis_boundary_reviewed: true,
     cervical_hypertension_diabetes_scope_reviewed: true,
+    source_url_reachability_reviewed: true,
   },
   critical_findings_open: 0,
   major_findings_open: 0,

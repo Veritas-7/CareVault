@@ -53,6 +53,7 @@ export type CareVaultExternalReviewAttestations = {
   non_diagnosis_boundary_reviewed: boolean;
   real_workflow_reviewed: boolean;
   source_registry_reviewed: boolean;
+  source_url_reachability_reviewed: boolean;
 };
 
 export type CareVaultExternalReviewArtifact = {
@@ -152,7 +153,7 @@ export const careVaultObjectiveReadinessBoundary =
   "This readiness report is a command-only completion audit input. It is not a clinical approval, not a production medical readiness claim, and not permission to mark the active goal complete while blocked requirements remain.";
 
 const hwpSmokeReportSchema = "carevault-hwp-smoke-report.v3";
-const externalReviewReportSchema = "carevault-external-clinician-review.v3";
+const externalReviewReportSchema = "carevault-external-clinician-review.v4";
 const supportedHwpSampleExtensions = new Set(["hwp", "hwpx", "hwpml"]);
 const hwpObjectiveTermGroupLabels: Record<
   keyof CareVaultHwpSmokeObjectiveTermGroups,
@@ -164,11 +165,13 @@ const hwpObjectiveTermGroupLabels: Record<
 };
 const externalReviewRequiredCheckIds = [
   "clinician-source-review",
+  "clinical-source-url-reachability",
   "real-workflow-review",
 ] as const;
 const externalReviewRequiredArtifactIds = [
   "clinical-review-packet",
   "clinical-workflow-review-packet",
+  "clinical-source-url-smoke-report",
   "objective-readiness-report",
 ] as const;
 
@@ -435,7 +438,7 @@ export function assessCareVaultExternalReviewEvidence(
   ) {
     return {
       detail:
-        "Required: external review report must cover clinician-source-review and real-workflow-review.",
+        "Required: external review report must cover clinician-source-review, clinical-source-url-reachability, and real-workflow-review.",
       reviewedCheckIds: Array.isArray(evidence.required_check_ids)
         ? evidence.required_check_ids.filter((id) => typeof id === "string")
         : [],
@@ -467,13 +470,14 @@ export function assessCareVaultExternalReviewEvidence(
   if (
     !attestations
     || attestations.source_registry_reviewed !== true
+    || attestations.source_url_reachability_reviewed !== true
     || attestations.real_workflow_reviewed !== true
     || attestations.non_diagnosis_boundary_reviewed !== true
     || attestations.cervical_hypertension_diabetes_scope_reviewed !== true
   ) {
     return {
       detail:
-        "Required: external review report must attest source registry, real workflow, non-diagnosis boundary, and cervical/hypertension/diabetes scope review.",
+        "Required: external review report must attest source registry, clinical source URL reachability, real workflow, non-diagnosis boundary, and cervical/hypertension/diabetes scope review.",
       reviewedCheckIds: evidence.required_check_ids,
       status: "required",
     };
@@ -535,7 +539,7 @@ export function assessCareVaultExternalReviewEvidence(
   if (!hasAllRequiredIds(reviewedArtifactIds, externalReviewRequiredArtifactIds)) {
     return {
       detail:
-        "Required: external review report must include reviewed artifacts for clinical-review-packet, clinical-workflow-review-packet, and objective-readiness-report.",
+        "Required: external review report must include reviewed artifacts for clinical-review-packet, clinical-workflow-review-packet, clinical-source-url-smoke-report, and objective-readiness-report.",
       reviewedCheckIds: evidence.required_check_ids,
       status: "required",
     };
@@ -543,7 +547,7 @@ export function assessCareVaultExternalReviewEvidence(
 
   return {
     detail:
-      `External clinician/source review evidence accepted for ${evidence.required_check_ids.join(", ")} by ${evidence.reviewer_role} on ${evidence.reviewed_at}; reviewed ${reviewedArtifactIds.length} hashed artifacts with current source/workflow counts and zero open critical or major findings.`,
+      `External clinician/source review evidence accepted for ${evidence.required_check_ids.join(", ")} by ${evidence.reviewer_role} on ${evidence.reviewed_at}; reviewed ${reviewedArtifactIds.length} hashed artifacts with current source URL reachability, source/workflow counts, and zero open critical or major findings.`,
     reviewedCheckIds: evidence.required_check_ids,
     status: "pass",
   };
@@ -787,6 +791,8 @@ export function buildCareVaultObjectiveReadinessReport({
         "docs/completion-audits/carevault-objective-audit-2026-06-11.md",
         "CAREVAULT_EXTERNAL_REVIEW_PACKET_DIR",
         "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH",
+        "clinical-source-url-smoke-report.json",
+        "npm run clinical:sources:smoke",
         "scripts/verify_external_review_packet_hashes.mjs",
       ],
       detail: externalReviewAssessment.detail,

@@ -42,10 +42,15 @@ const validExternalReviewEvidence: CareVaultExternalReviewEvidence = {
     non_diagnosis_boundary_reviewed: true,
     real_workflow_reviewed: true,
     source_registry_reviewed: true,
+    source_url_reachability_reviewed: true,
   },
   critical_findings_open: 0,
   major_findings_open: 0,
-  required_check_ids: ["clinician-source-review", "real-workflow-review"],
+  required_check_ids: [
+    "clinician-source-review",
+    "clinical-source-url-reachability",
+    "real-workflow-review",
+  ],
   reviewed_at: "2026-06-11",
   reviewed_artifacts: [
     {
@@ -61,6 +66,12 @@ const validExternalReviewEvidence: CareVaultExternalReviewEvidence = {
       status: "reviewed",
     },
     {
+      bytes: 1350,
+      id: "clinical-source-url-smoke-report",
+      sha256: "d".repeat(64),
+      status: "reviewed",
+    },
+    {
       bytes: 1400,
       id: "objective-readiness-report",
       sha256: "c".repeat(64),
@@ -68,7 +79,7 @@ const validExternalReviewEvidence: CareVaultExternalReviewEvidence = {
     },
   ],
   reviewer_role: "external clinical reviewer",
-  schema: "carevault-external-clinician-review.v3",
+  schema: "carevault-external-clinician-review.v4",
   source_registry_error_count: 0,
   source_registry_total_count: 84,
   source_registry_warning_count: 0,
@@ -441,9 +452,8 @@ describe("carevaultObjectiveReadiness", () => {
     const json = JSON.stringify(exported);
 
     expect(exported.workflowReviewPacket.surfaces).toHaveLength(6);
-    expect(Object.prototype.hasOwnProperty.call(exported.workflowReviewPacket, "state")).toBe(false);
-    expect(Object.prototype.hasOwnProperty.call(exported.workflowReviewPacket, "documentRagContext"))
-      .toBe(false);
+    expect("state" in exported.workflowReviewPacket).toBe(false);
+    expect("documentRagContext" in exported.workflowReviewPacket).toBe(false);
     expect(exported.workflowReviewPacket.documentRagProvenance).toMatchObject({
       answerDraftCitationCount: 1,
       citationSourceLabelCount: 1,

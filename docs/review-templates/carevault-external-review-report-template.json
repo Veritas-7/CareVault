@@ -1,5 +1,5 @@
 {
-  "schema": "carevault-external-clinician-review.v3",
+  "schema": "carevault-external-clinician-review.v4",
   "status": "draft",
   "reviewed_at": "YYYY-MM-DD",
   "reviewer_role": "REPLACE_WITH_EXTERNAL_CLINICAL_REVIEWER_ROLE",
@@ -17,16 +17,31 @@
       "bytes": 0
     },
     {
+      "id": "clinical-source-url-smoke-report",
+      "status": "pending",
+      "sha256": "REPLACE_WITH_PACKET_SHA256",
+      "bytes": 0
+    },
+    {
       "id": "objective-readiness-report",
       "status": "pending",
       "sha256": "REPLACE_WITH_PACKET_SHA256",
       "bytes": 0
     }
   ],
-  "required_check_ids": ["clinician-source-review", "real-workflow-review"],
-  "unresolved_required_check_ids": ["clinician-source-review", "real-workflow-review"],
+  "required_check_ids": [
+    "clinician-source-review",
+    "clinical-source-url-reachability",
+    "real-workflow-review"
+  ],
+  "unresolved_required_check_ids": [
+    "clinician-source-review",
+    "clinical-source-url-reachability",
+    "real-workflow-review"
+  ],
   "attestations": {
     "source_registry_reviewed": false,
+    "source_url_reachability_reviewed": false,
     "real_workflow_reviewed": false,
     "non_diagnosis_boundary_reviewed": false,
     "cervical_hypertension_diabetes_scope_reviewed": false

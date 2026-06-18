@@ -25,6 +25,17 @@ type WrittenArtifact = {
   sha256: string;
 };
 
+type ClinicalSourceUrlSmokeReport = {
+  checked_url_count: number;
+  checked_urls: string[];
+  failed_url_count: number;
+  failed_urls: string[];
+  schema: string;
+  source_files: string[];
+  status: string;
+  url_limit: number | null;
+};
+
 const localPathLeakPattern = /\/Users\/|[A-Za-z]:\\|attachmentPath|private-carevault/;
 
 function fail(message: string): never {
@@ -35,6 +46,19 @@ function fail(message: string): never {
 function readOptionalJson<T>(envName: string, label: string): T | undefined {
   const reportPath = process.env[envName];
   if (!reportPath) return undefined;
+
+  try {
+    return JSON.parse(readFileSync(reportPath, "utf8")) as T;
+  } catch {
+    fail(`FAIL: configured ${label} must be valid JSON.`);
+  }
+}
+
+function readRequiredJson<T>(envName: string, label: string): T {
+  const reportPath = process.env[envName];
+  if (!reportPath) {
+    fail(`FAIL: ${envName} is required.`);
+  }
 
   try {
     return JSON.parse(readFileSync(reportPath, "utf8")) as T;
@@ -54,6 +78,47 @@ function sha256(value: string) {
 function assertPathSafe(filename: string, content: string) {
   if (localPathLeakPattern.test(content)) {
     fail(`FAIL: ${filename} would include a local path or attachment path field.`);
+  }
+}
+
+function validateClinicalSourceUrlSmokeReport(report: ClinicalSourceUrlSmokeReport) {
+  const checkedUrls = Array.isArray(report.checked_urls) ? report.checked_urls : [];
+  const failedUrls = Array.isArray(report.failed_urls) ? report.failed_urls : [];
+  const sourceFiles = Array.isArray(report.source_files) ? report.source_files : [];
+
+  if (report.schema !== "carevault-clinical-source-url-smoke.v1") {
+    fail("FAIL: clinical source URL smoke report schema is unsupported.");
+  }
+  if (report.status !== "passed") {
+    fail("FAIL: clinical source URL smoke report status must be passed.");
+  }
+  if (
+    !Number.isInteger(report.checked_url_count)
+    || report.checked_url_count <= 0
+    || report.checked_url_count !== checkedUrls.length
+  ) {
+    fail("FAIL: clinical source URL smoke report checked_url_count is inconsistent.");
+  }
+  if (
+    !Number.isInteger(report.failed_url_count)
+    || report.failed_url_count !== 0
+    || failedUrls.length !== 0
+  ) {
+    fail("FAIL: clinical source URL smoke report must have zero failed URLs.");
+  }
+  if (
+    !sourceFiles.every((sourceFile) =>
+      typeof sourceFile === "string"
+      && sourceFile.length > 0
+      && !sourceFile.startsWith("/")
+      && !sourceFile.includes("..")
+      && !sourceFile.includes("\\")
+    )
+  ) {
+    fail("FAIL: clinical source URL smoke report source_files must be repo-relative labels.");
+  }
+  if (!checkedUrls.every((url) => typeof url === "string" && url.startsWith("https://"))) {
+    fail("FAIL: clinical source URL smoke report checked URLs must be HTTPS URLs.");
   }
 }
 
@@ -81,6 +146,7 @@ function formatReviewerHandoff(
     "## Required Review Artifacts",
     "- clinical-review-packet.md/json: current clinical source registry review input.",
     "- clinical-workflow-review-packet.md/json: current synthetic workflow review input across RAG, queue, and export surfaces.",
+    "- clinical-source-url-smoke-report.json: current command-verified HTTPS reachability report for embedded clinical source URLs.",
     "- objective-readiness-report.md/json: current objective readiness report and remaining blockers.",
     "- carevault-external-review-report-template.json: draft report the reviewer fills after reviewing the artifacts.",
     "",
@@ -122,6 +188,11 @@ const externalReviewEvidence = readOptionalJson<CareVaultExternalReviewEvidence>
   "CAREVAULT_EXTERNAL_REVIEW_REPORT_PATH",
   "external review report",
 );
+const clinicalSourceUrlSmokeReport = readRequiredJson<ClinicalSourceUrlSmokeReport>(
+  "CAREVAULT_CLINICAL_SOURCE_REPORT_PATH",
+  "clinical source URL smoke report",
+);
+validateClinicalSourceUrlSmokeReport(clinicalSourceUrlSmokeReport);
 
 mkdirSync(outputDir, { recursive: true });
 
@@ -163,6 +234,13 @@ artifacts.push(
     outputDir,
     "clinical-workflow-review-packet.json",
     stableJson(workflowReviewExport),
+  ),
+);
+artifacts.push(
+  writeArtifact(
+    outputDir,
+    "clinical-source-url-smoke-report.json",
+    stableJson(clinicalSourceUrlSmokeReport),
   ),
 );
 artifacts.push(

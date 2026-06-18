@@ -85,10 +85,15 @@ cat > "$VALID_JSON" <<'JSON'
   "external_review": {
     "reviewer_role": "external clinical reviewer",
     "reviewed_at": "2026-06-11",
-    "required_check_ids": ["clinician-source-review", "real-workflow-review"],
+    "required_check_ids": [
+      "clinician-source-review",
+      "clinical-source-url-reachability",
+      "real-workflow-review"
+    ],
     "reviewed_artifact_ids": [
       "clinical-review-packet",
       "clinical-workflow-review-packet",
+      "clinical-source-url-smoke-report",
       "objective-readiness-report"
     ],
     "source_registry_counts": {

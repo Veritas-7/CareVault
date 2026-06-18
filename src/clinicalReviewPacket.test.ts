@@ -17,6 +17,7 @@ describe("clinicalReviewPacket", () => {
     expect(packet.summary.localUserRangeSources).toBe(1);
     expect(packet.summary.approvedHttpsSources).toBe(packet.summary.totalSources - 1);
     expect(markdown).toContain("clinician/source review required");
+    expect(markdown).toContain("clinical source URL reachability review required");
     expect(markdown).toContain("real private HWP/HWPX sample smoke not executed");
     expect(markdown).toContain("Browser/cmux UI QA is intentionally excluded");
     expect(markdown).toContain("진단·처방·치료 지시를 생성하거나");
