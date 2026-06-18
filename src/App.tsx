@@ -311,7 +311,6 @@ import {
   getSidebarHashSectionId,
   normalizeSidebarSectionHash,
   sidebarNavigationItems,
-  sidebarSectionIds,
   type SidebarSectionId,
 } from "./sidebarNavigation";
 import { buildAppointmentReminders } from "./appointmentReminders";
@@ -1147,76 +1146,17 @@ function App() {
   }, [documentDraft.body, documentDraft.title, recordFormFeedback.document]);
 
   useEffect(() => {
-    let activeSectionFrame = 0;
-    let hashScrollFrame = 0;
-
-    const getActiveSectionFromScroll = () => {
-      const anchorY = Math.min(window.innerHeight * 0.35, 220);
-      let activeId = defaultSidebarSectionId;
-
-      for (const sectionId of sidebarSectionIds) {
-        const section = document.getElementById(sectionId);
-        if (!section) continue;
-
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= anchorY && rect.bottom > 80) {
-          activeId = sectionId;
-        }
-      }
-
-      return activeId;
-    };
-
-    const syncActiveSectionFromScroll = () => {
-      if (activeSectionFrame) {
-        window.cancelAnimationFrame(activeSectionFrame);
-      }
-
-      activeSectionFrame = window.requestAnimationFrame(() => {
-        activeSectionFrame = 0;
-        setActiveSectionId(getActiveSectionFromScroll());
-      });
-    };
-
-    const scrollToCurrentHashSection = (behavior: ScrollBehavior) => {
-      const sectionId = getSidebarHashSectionId(window.location.hash);
-      if (!sectionId) return;
-
-      if (hashScrollFrame) {
-        window.cancelAnimationFrame(hashScrollFrame);
-      }
-
-      hashScrollFrame = window.requestAnimationFrame(() => {
-        hashScrollFrame = 0;
-        document.getElementById(sectionId)?.scrollIntoView({
-          behavior,
-          block: "start",
-        });
-      });
-    };
-
-    const syncActiveSectionFromHash = (behavior: ScrollBehavior = "smooth") => {
+    const syncActiveSectionFromHash = () => {
       setActiveSectionId(normalizeSidebarSectionHash(window.location.hash));
-      scrollToCurrentHashSection(behavior);
     };
 
-    const handleHashChange = () => syncActiveSectionFromHash("smooth");
+    const handleHashChange = () => syncActiveSectionFromHash();
 
-    syncActiveSectionFromHash("auto");
+    syncActiveSectionFromHash();
     window.addEventListener("hashchange", handleHashChange);
-    window.addEventListener("resize", syncActiveSectionFromScroll);
-    window.addEventListener("scroll", syncActiveSectionFromScroll, { passive: true });
 
     return () => {
       window.removeEventListener("hashchange", handleHashChange);
-      window.removeEventListener("resize", syncActiveSectionFromScroll);
-      window.removeEventListener("scroll", syncActiveSectionFromScroll);
-      if (activeSectionFrame) {
-        window.cancelAnimationFrame(activeSectionFrame);
-      }
-      if (hashScrollFrame) {
-        window.cancelAnimationFrame(hashScrollFrame);
-      }
     };
   }, []);
 
@@ -1225,16 +1165,7 @@ function App() {
 
     const sectionId = getSidebarHashSectionId(window.location.hash);
     if (!sectionId) return;
-
-    const handle = window.setTimeout(() => {
-      document.getElementById(sectionId)?.scrollIntoView({
-        behavior: "auto",
-        block: "start",
-      });
-      setActiveSectionId(sectionId);
-    }, 0);
-
-    return () => window.clearTimeout(handle);
+    setActiveSectionId(sectionId);
   }, [hydrated]);
 
   useEffect(() => {
@@ -4574,6 +4505,12 @@ function App() {
     exportPreviewDisabledReason,
   );
   const hasCustomCaregiverSettings = hasCustomCaregiverShareSettings(state.caregiverShareSettings);
+  const selectWorkspaceSection = (sectionId: SidebarSectionId) => {
+    setActiveSectionId(sectionId);
+    window.history.replaceState(null, "", `#${sectionId}`);
+  };
+  const getWorkspaceViewClassName = (sectionId: SidebarSectionId, baseClassName: string) =>
+    `${baseClassName} workspace-view${activeSectionId === sectionId ? " is-active" : ""}`;
 
   return (
     <main className="app-shell">
@@ -4590,17 +4527,18 @@ function App() {
             const SidebarIcon = sidebarNavigationIcon[item.id];
 
             return (
-              <a
-                href={item.href}
+              <button
+                type="button"
                 aria-current={activeSectionId === item.id ? "page" : undefined}
+                aria-pressed={activeSectionId === item.id}
                 aria-label={item.actionLabel}
                 title={item.actionLabel}
-                onClick={() => setActiveSectionId(item.id)}
+                onClick={() => selectWorkspaceSection(item.id)}
                 key={item.id}
               >
                 <SidebarIcon aria-hidden="true" />
                 {item.visibleLabel}
-              </a>
+              </button>
             );
           })}
         </nav>
@@ -4887,6 +4825,22 @@ function App() {
             </button>
           </div>
         </header>
+        <nav className="workspace-switcher" aria-label="CareVault 작업 메뉴">
+          {sidebarNavigationItems.map((item) => {
+            const SwitcherIcon = sidebarNavigationIcon[item.id];
+            return (
+              <button
+                type="button"
+                key={item.id}
+                aria-pressed={activeSectionId === item.id}
+                onClick={() => selectWorkspaceSection(item.id)}
+              >
+                <SwitcherIcon aria-hidden="true" />
+                <span>{item.visibleLabel}</span>
+              </button>
+            );
+          })}
+        </nav>
         {backupImportFeedback ? (
           <section
             className={`backup-import-feedback tone-${backupImportFeedback.tone}`}
@@ -4905,7 +4859,11 @@ function App() {
           </section>
         ) : null}
 
-        <section id="dashboard" className="metrics-grid" aria-label="핵심 지표">
+        <section
+          id="dashboard"
+          className={getWorkspaceViewClassName("dashboard", "metrics-grid")}
+          aria-label="핵심 지표"
+        >
           <article className="metric-card">
             <UserRound aria-hidden="true" />
             <span>프로필</span>
@@ -5115,7 +5073,10 @@ function App() {
           </article>
         </section>
 
-        <section className="action-queue-panel" aria-label="진료 준비 큐">
+        <section
+          className={getWorkspaceViewClassName("dashboard", "action-queue-panel")}
+          aria-label="진료 준비 큐"
+        >
           <div className="section-title">
             <h2>진료 준비 큐</h2>
             <div className="section-title-copy">
@@ -5242,7 +5203,10 @@ function App() {
         </section>
 
         {state.profile.cancerCareMode ? (
-          <section className="cervical-care-panel" aria-label="자궁경부암 케어 노트">
+          <section
+            className={getWorkspaceViewClassName("care-plan", "cervical-care-panel")}
+            aria-label="자궁경부암 케어 노트"
+          >
             <div className="section-title">
               <div>
                 <p className="eyebrow">국가암정보센터·KDCA 기반</p>
@@ -5613,7 +5577,7 @@ function App() {
           </section>
         ) : null}
 
-        <section className="content-grid">
+        <section className={getWorkspaceViewClassName("records", "content-grid")}>
           <section id="profile" className="panel profile-panel" aria-label="프로필 입력">
             <div className="section-title">
               <h2>기본 정보</h2>
@@ -6070,7 +6034,10 @@ function App() {
           </section>
         </section>
 
-        <section id="records" className="content-grid two-columns">
+        <section
+          id="records"
+          className={getWorkspaceViewClassName("records", "content-grid two-columns")}
+        >
           <section className="panel">
             <div className="section-title">
               <h2>혈압·혈당·체온 입력</h2>
@@ -6375,7 +6342,10 @@ function App() {
           </section>
         </section>
 
-        <section className="timeline-band" aria-label="최근 기록">
+        <section
+          className={getWorkspaceViewClassName("records", "timeline-band")}
+          aria-label="최근 기록"
+        >
           <div className="section-title">
             <h2>최근 타임라인</h2>
             <span>측정·진료·서류가 한 날짜 흐름에 쌓입니다</span>
@@ -6622,7 +6592,10 @@ function App() {
           </div>
         </section>
 
-        <section id="care-plan" className="content-grid two-columns">
+        <section
+          id="care-plan"
+          className={getWorkspaceViewClassName("care-plan", "content-grid two-columns")}
+        >
           <section className="panel">
             <div className="section-title">
               <h2>증상·부작용 기록</h2>
@@ -7019,7 +6992,10 @@ function App() {
           </section>
         </section>
 
-        <section id="labs" className="content-grid two-columns">
+        <section
+          id="labs"
+          className={getWorkspaceViewClassName("labs", "content-grid two-columns")}
+        >
           <section className="panel lab-panel">
             <div className="section-title">
               <h2>검사 수치 입력</h2>
@@ -7304,7 +7280,10 @@ function App() {
           </section>
         </section>
 
-        <section id="nutrition" className="panel nutrition-panel">
+        <section
+          id="nutrition"
+          className={getWorkspaceViewClassName("nutrition", "panel nutrition-panel")}
+        >
           <div className="section-title">
             <h2>암환자 음식 판단</h2>
             <span>치료가 아니라 근거 기반 주의·기록 도구</span>
@@ -7481,7 +7460,10 @@ function App() {
           </p>
         </section>
 
-        <section id="documents" className="content-grid two-columns">
+        <section
+          id="documents"
+          className={getWorkspaceViewClassName("documents", "content-grid two-columns")}
+        >
           <section className="panel">
             <div className="section-title">
               <h2>일자별 서류 수기 보관</h2>
@@ -8320,7 +8302,7 @@ function App() {
           </section>
         </section>
 
-        <section className="care-boundary-strip">
+        <section className={getWorkspaceViewClassName("documents", "care-boundary-strip")}>
           <ShieldCheck aria-hidden="true" />
           <p>
             기록과 내보내기는 로컬 기기 기준으로 준비되며, 진료 판단은 의료진 기준을 우선하세요.
