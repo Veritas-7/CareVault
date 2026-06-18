@@ -24,7 +24,6 @@ import {
   Save,
   Search,
   ShieldCheck,
-  Thermometer,
   Trash2,
   Unlink,
   Upload,
@@ -32,9 +31,16 @@ import {
   X,
 } from "lucide-react";
 import {
+  Area,
+  Bar,
+  BarChart,
   CartesianGrid,
+  Cell,
+  ComposedChart,
   Line,
   LineChart,
+  Pie,
+  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -666,15 +672,20 @@ function VitalChartTooltip({
   }
 
   const point = payload.find((item) => item.payload)?.payload;
-  const rows = payload
-    .map((item) => ({
-      color: item.color,
-      label:
-        item.dataKey !== undefined
-          ? formatVitalChartTooltipValue(item.dataKey, item.value)
-          : "",
-    }))
-    .filter((item) => item.label);
+  const rows = Array.from(
+    new Map(
+      payload
+        .map((item) => ({
+          color: item.color,
+          label:
+            item.dataKey !== undefined
+              ? formatVitalChartTooltipValue(item.dataKey, item.value)
+              : "",
+        }))
+        .filter((item) => item.label)
+        .map((item) => [item.label, item]),
+    ).values(),
+  );
 
   if (!point || rows.length === 0) {
     return null;
@@ -694,6 +705,159 @@ function VitalChartTooltip({
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+type DashboardActivityPoint = {
+  date: string;
+  day: string;
+  documents: number;
+  labs: number;
+  records: number;
+  symptoms: number;
+  vitals: number;
+};
+
+type DashboardActivityTooltipPayloadItem = {
+  payload?: DashboardActivityPoint;
+  value?: unknown;
+};
+
+type DashboardNutritionSlice = {
+  color: string;
+  count: number;
+  id: "ok" | "watch" | "risk" | "empty";
+  label: string;
+  percentLabel: string;
+  value: number;
+};
+
+const dashboardActivityDayLabels = ["일", "월", "화", "수", "목", "금", "토"] as const;
+
+const dashboardNutritionSliceBase: Array<
+  Omit<DashboardNutritionSlice, "count" | "id" | "percentLabel" | "value"> & {
+    id: "ok" | "watch" | "risk";
+  }
+> = [
+  { color: "#10b981", id: "ok", label: "권장" },
+  { color: "#f59e0b", id: "watch", label: "주의" },
+  { color: "#ef4444", id: "risk", label: "피하기" },
+];
+
+function parseIsoDate(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!match) return null;
+
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatIsoDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function addUtcDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setUTCDate(next.getUTCDate() + days);
+  return next;
+}
+
+function buildDashboardActivityData(state: AppState, todayIso: string): DashboardActivityPoint[] {
+  const datedRecords = [
+    ...state.vitals.map((entry) => entry.date),
+    ...state.symptoms.map((entry) => entry.date),
+    ...state.labResults.map((entry) => entry.date),
+    ...state.documents.map((entry) => entry.date),
+    ...state.questions.map((entry) => entry.date),
+    ...state.visits.map((entry) => entry.date),
+  ]
+    .map(parseIsoDate)
+    .filter((date): date is Date => Boolean(date))
+    .sort((a, b) => a.getTime() - b.getTime());
+  const todayDate = parseIsoDate(todayIso) ?? new Date();
+  const endDate = datedRecords[datedRecords.length - 1] ?? todayDate;
+  const points = Array.from({ length: 7 }, (_, index) => {
+    const date = addUtcDays(endDate, index - 6);
+    return {
+      date: formatIsoDate(date),
+      day: dashboardActivityDayLabels[date.getUTCDay()],
+      documents: 0,
+      labs: 0,
+      records: 0,
+      symptoms: 0,
+      vitals: 0,
+    };
+  });
+  const byDate = new Map(points.map((point) => [point.date, point]));
+
+  const addRecord = (date: string, key: "documents" | "labs" | "symptoms" | "vitals") => {
+    const point = byDate.get(date);
+    if (!point) return;
+
+    point[key] += 1;
+    point.records += 1;
+  };
+
+  state.vitals.forEach((entry) => addRecord(entry.date, "vitals"));
+  state.symptoms.forEach((entry) => addRecord(entry.date, "symptoms"));
+  state.labResults.forEach((entry) => addRecord(entry.date, "labs"));
+  state.documents.forEach((entry) => addRecord(entry.date, "documents"));
+  state.questions.forEach((entry) => addRecord(entry.date, "documents"));
+  state.visits.forEach((entry) => addRecord(entry.date, "documents"));
+
+  return points;
+}
+
+function buildDashboardNutritionData(foodAssessment: FoodAssessment): DashboardNutritionSlice[] {
+  const counts = foodAssessment.matches.reduce<Record<"ok" | "watch" | "risk", number>>(
+    (accumulator, match) => {
+      accumulator[match.level] += 1;
+      return accumulator;
+    },
+    { ok: 0, risk: 0, watch: 0 },
+  );
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+
+  if (total === 0) {
+    return [
+      {
+        color: "#cbd5d1",
+        count: 0,
+        id: "empty",
+        label: "판단 없음",
+        percentLabel: "0%",
+        value: 1,
+      },
+    ];
+  }
+
+  return dashboardNutritionSliceBase.map((slice) => ({
+    ...slice,
+    count: counts[slice.id],
+    percentLabel: `${Math.round((counts[slice.id] / total) * 100)}%`,
+    value: counts[slice.id],
+  }));
+}
+
+function ActivityChartTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: DashboardActivityTooltipPayloadItem[];
+}) {
+  const point = active ? payload?.find((item) => item.payload)?.payload : undefined;
+
+  if (!point) return null;
+
+  return (
+    <div className="dashboard-chart-tooltip">
+      <strong>{point.day}</strong>
+      <span>기록 {point.records}개</span>
+      <small>
+        활력 {point.vitals} · 증상 {point.symptoms} · 검사 {point.labs} · 기타 {point.documents}
+      </small>
     </div>
   );
 }
@@ -1258,6 +1422,14 @@ function App() {
     () => assessCancerFood(state.foodQuery),
     [state.foodQuery],
   );
+  const dashboardActivityData = useMemo(
+    () => buildDashboardActivityData(state, today),
+    [state],
+  );
+  const dashboardNutritionData = useMemo(
+    () => buildDashboardNutritionData(foodAssessment),
+    [foodAssessment],
+  );
   const immuneFoodSafetyContext = useMemo(
     () => buildImmuneFoodSafetyContext(state.labResults),
     [state.labResults],
@@ -1421,15 +1593,8 @@ function App() {
     : undefined;
   const temperatureStatus = latestTemperature ? assessVitalRecord(latestTemperature) : undefined;
   const latestSymptom = latestDatedItem(state.symptoms);
-  const latestSymptomDisplay = latestSymptom
-    ? buildSymptomDisplayParts(latestSymptom)
-    : undefined;
   const latestSymptomRecordLabel = latestSymptom
     ? formatSymptomRecordLabel(latestSymptom)
-    : "";
-  const latestSymptomHasSourceEvidence = Boolean(latestSymptomDisplay?.sourceEvidence);
-  const latestSymptomSourceEvidenceLabels = latestSymptomDisplay
-    ? formatDisplaySourceLabels(latestSymptomDisplay.sources, latestSymptomDisplay.sourceLabel)
     : "";
   const symptomDraftHasRecordPreview = Boolean(
     symptomDraft.symptom.trim()
@@ -4861,45 +5026,342 @@ function App() {
 
         <section
           id="dashboard"
-          className={getWorkspaceViewClassName("dashboard", "metrics-grid")}
-          aria-label="핵심 지표"
+          className={getWorkspaceViewClassName("dashboard", "dashboard-board")}
+          aria-label="대시보드"
         >
-          <article className="metric-card">
-            <UserRound aria-hidden="true" />
-            <span>프로필</span>
-            <strong>
-              {profileAgeDisplay} · {sexLabel[state.profile.sex]}
-            </strong>
-            <small>
-              {profileHeightDisplay} / {profileWeightDisplay}
-              {profileWaistDisplay ? ` · 허리 ${profileWaistDisplay}` : ""}
-            </small>
-            <div
-              className="metric-profile-standards"
-              aria-label={`프로필 성별 적용 기준 ${sexLabel[state.profile.sex]}`}
+          <div className="dashboard-heading">
+            <div>
+              <p className="eyebrow">오늘 볼 것만 정리</p>
+              <h2>대시보드</h2>
+              <span>
+                보기 쉬운 지표부터 건강 추세와 조치 항목까지 한눈에 확인하세요. 기준:
+                {" "}
+                {dashboardMetricStandardCompactSummary}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="secondary-inline-button dashboard-standards-copy"
+              onClick={copyDashboardMetricStandards}
+              aria-label={dashboardMetricStandardCopyDescription}
+              title={dashboardMetricStandardCopyDescription}
             >
-              <span className="metric-profile-standard-heading">현재 성별 기준</span>
-              {profileMetricSexStandardChips.map((item) => (
-                <span
-                  key={item.id}
-                  className="metric-profile-standard-chip"
-                  aria-label={`${item.label}: ${item.detail}. 근거: ${item.sourceLabel}`}
-                  title={`${item.label}: ${item.detail}. 근거: ${item.sourceLabel}`}
-                >
-                  <b>{item.label}</b>
-                  <span className="metric-profile-standard-separator" aria-hidden="true">
-                    ·
-                  </span>
-                  <span>{item.detail}</span>
-                  <ShieldCheck
-                    className="metric-profile-standard-source-icon"
-                    aria-hidden="true"
+              <Copy aria-hidden="true" />
+              기준 복사
+            </button>
+          </div>
+
+          <div className="dashboard-kpi-strip" aria-label="핵심 요약">
+            <article className={`dashboard-kpi status-${bpStatus?.level ?? "neutral"}`}>
+              <HeartPulse aria-hidden="true" />
+              <span>최근 혈압</span>
+              <strong>{latestBp ? formatVitalMetricValue(latestBp) : "-"}</strong>
+              <small>
+                {latestBp ? formatVitalMetricRecordLabel(latestBp) : "입력 대기"}
+              </small>
+            </article>
+            <article className={`dashboard-kpi status-${glucoseStatus?.level ?? "neutral"}`}>
+              <ClipboardList aria-hidden="true" />
+              <span>최근 혈당</span>
+              <strong>{latestGlucose ? formatVitalMetricValue(latestGlucose) : "-"}</strong>
+              <small>
+                {latestGlucose
+                  ? formatVitalMetricRecordLabel(latestGlucose, {
+                      diabetes: state.profile.diabetes,
+                    })
+                  : "입력 대기"}
+              </small>
+            </article>
+            <article className={`dashboard-kpi status-${latestSymptom ? symptomLevel : "neutral"}`}>
+              <Pill aria-hidden="true" />
+              <span>최근 증상</span>
+              <strong>{latestSymptom ? `${latestSymptom.severity}/10` : "-"}</strong>
+              <small>{latestSymptom ? latestSymptomRecordLabel : "입력 대기"}</small>
+            </article>
+            <article className={`dashboard-kpi status-${careActions.length ? "watch" : "ok"}`}>
+              <CalendarDays aria-hidden="true" />
+              <span>진료 준비</span>
+              <strong>{careActions.length}개</strong>
+              <small>
+                예약 {appointmentReminders.length} · 질문 {openQuestionCount} · 검사{" "}
+                {abnormalLabCount} · 서류 {activeDocumentActionCount}
+              </small>
+            </article>
+          </div>
+
+          <div className="dashboard-main-grid">
+            <article className="dashboard-card dashboard-chart-card">
+              <div className="dashboard-card-title">
+                <div>
+                  <h3>혈압 및 혈당 추세</h3>
+                  <span>{chartSummary.map((item) => `${item.label} ${item.value}`).join(" · ")}</span>
+                </div>
+                <div className="dashboard-chart-legend" aria-label="혈압 및 혈당 범례">
+                  {vitalChartLegendItems.map((item) => (
+                    <span key={item.dataKey}>
+                      <mark style={{ backgroundColor: item.color }} />
+                      {item.label.replace(" 혈압", "")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="dashboard-chart-frame">
+                {chartData.length ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <ComposedChart data={chartData} margin={{ left: 0, right: 0, top: 12, bottom: 8 }}>
+                      <defs>
+                        <linearGradient id="dashboardSystolicFill" x1="0" x2="0" y1="0" y2="1">
+                          <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.18} />
+                          <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0.02} />
+                        </linearGradient>
+                        <linearGradient id="dashboardDiastolicFill" x1="0" x2="0" y1="0" y2="1">
+                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.16} />
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.02} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke="#eef3f1" strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        axisLine={false}
+                        dataKey="date"
+                        dy={10}
+                        tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 700 }}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        yAxisId="bloodPressure"
+                        axisLine={false}
+                        tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 700 }}
+                        tickLine={false}
+                        width={42}
+                      />
+                      <YAxis
+                        yAxisId="glucose"
+                        axisLine={false}
+                        orientation="right"
+                        tick={{ fill: "#b7791f", fontSize: 12, fontWeight: 700 }}
+                        tickLine={false}
+                        width={42}
+                      />
+                      <Tooltip content={<VitalChartTooltip />} cursor={{ stroke: "#dbe7e3", strokeWidth: 1 }} />
+                      <Area
+                        connectNulls
+                        dataKey="systolic"
+                        fill="url(#dashboardSystolicFill)"
+                        stroke="none"
+                        type="monotone"
+                        yAxisId="bloodPressure"
+                      />
+                      <Area
+                        connectNulls
+                        dataKey="diastolic"
+                        fill="url(#dashboardDiastolicFill)"
+                        stroke="none"
+                        type="monotone"
+                        yAxisId="bloodPressure"
+                      />
+                      <Line
+                        activeDot={{ r: 6, strokeWidth: 2 }}
+                        connectNulls
+                        dataKey="systolic"
+                        dot={{ fill: "#ffffff", r: 4, strokeWidth: 2 }}
+                        name="수축기 혈압"
+                        stroke="#0ea5e9"
+                        strokeWidth={3}
+                        type="monotone"
+                        yAxisId="bloodPressure"
+                      />
+                      <Line
+                        activeDot={{ r: 6, strokeWidth: 2 }}
+                        connectNulls
+                        dataKey="diastolic"
+                        dot={{ fill: "#ffffff", r: 4, strokeWidth: 2 }}
+                        name="이완기 혈압"
+                        stroke="#8b5cf6"
+                        strokeWidth={3}
+                        type="monotone"
+                        yAxisId="bloodPressure"
+                      />
+                      <Line
+                        activeDot={{ r: 6, strokeWidth: 2 }}
+                        connectNulls
+                        dataKey="glucose"
+                        dot={{ fill: "#ffffff", r: 4, strokeWidth: 2 }}
+                        name="혈당"
+                        stroke="#f59e0b"
+                        strokeWidth={3}
+                        type="monotone"
+                        yAxisId="glucose"
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="dashboard-empty-chart" role="status">
+                    혈압 또는 혈당 기록을 입력하면 추세가 표시됩니다.
+                  </div>
+                )}
+              </div>
+            </article>
+
+            <article className={`dashboard-card dashboard-fact-card status-${bmi.level}`}>
+              <div className="dashboard-card-title">
+                <div>
+                  <h3>팩트 체크 센터</h3>
+                  <span>BMI와 허리둘레를 기준으로 현재 위치를 확인합니다.</span>
+                </div>
+                <ShieldCheck aria-hidden="true" />
+              </div>
+              <div className="dashboard-bmi-block">
+                <span>나의 BMI</span>
+                <strong>{bmi.value ? bmi.value.toFixed(1) : "-"}</strong>
+                <small>{bmi.label}</small>
+              </div>
+              <div className="dashboard-risk-meter" aria-label={`BMI 상태 ${bmi.label}`}>
+                <span>저체중</span>
+                <div>
+                  <mark
+                    style={{
+                      left: bmi.value
+                        ? `calc(${Math.max(0, Math.min(100, ((bmi.value - 15) / 20) * 100))}% - 4px)`
+                        : "50%",
+                    }}
                   />
+                </div>
+                <span>고위험</span>
+              </div>
+              <div className="dashboard-fact-copy">
+                <strong>
+                  {bmi.value ? `${bmi.label} 범위입니다.` : "키와 몸무게 입력이 필요합니다."}
+                </strong>
+                <p>
+                  {waistStatus.value
+                    ? `허리둘레는 ${waistStatus.value} cm, ${waistStatus.label}입니다.`
+                    : "허리둘레를 입력하면 복부비만 기준까지 함께 확인합니다."}
+                </p>
+              </div>
+              <div className="dashboard-standard-row">
+                {renderMetricStandardEvidence(bmiMetricStandardEvidence)}
+                {renderMetricStandardEvidence(waistMetricStandardEvidence)}
+              </div>
+            </article>
+          </div>
+
+          <div className="dashboard-secondary-grid">
+            <article className="dashboard-card dashboard-small-chart">
+              <div className="dashboard-card-title">
+                <div>
+                  <h3>주간 기록 활동</h3>
+                  <span>최근 기록일 기준 7일간 저장된 건강 기록</span>
+                </div>
+              </div>
+              <div className="dashboard-chart-frame compact">
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={dashboardActivityData} margin={{ left: -10, right: 4, top: 8, bottom: 0 }}>
+                    <CartesianGrid stroke="#eef3f1" strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      axisLine={false}
+                      dataKey="day"
+                      dy={8}
+                      tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 800 }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      allowDecimals={false}
+                      axisLine={false}
+                      tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 700 }}
+                      tickLine={false}
+                      width={34}
+                    />
+                    <Tooltip content={<ActivityChartTooltip />} cursor={{ fill: "#f7faf9" }} />
+                    <Bar dataKey="records" fill="#10b981" maxBarSize={34} radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </article>
+
+            <article className="dashboard-card dashboard-donut-card">
+              <div className="dashboard-card-title">
+                <div>
+                  <h3>음식 판단 비율</h3>
+                  <span>현재 음식 입력의 권장·주의·피하기 분류</span>
+                </div>
+              </div>
+              <div className="dashboard-donut-layout">
+                <ResponsiveContainer width="100%" height={190}>
+                  <PieChart>
+                    <Pie
+                      cx="50%"
+                      cy="50%"
+                      data={dashboardNutritionData}
+                      dataKey="value"
+                      innerRadius={58}
+                      outerRadius={82}
+                      paddingAngle={dashboardNutritionData.length > 1 ? 3 : 0}
+                      stroke="none"
+                    >
+                      {dashboardNutritionData.map((slice) => (
+                        <Cell fill={slice.color} key={slice.id} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(_, __, item) => {
+                        const slice = item.payload as DashboardNutritionSlice;
+                        return [`${slice.count}개 · ${slice.percentLabel}`, slice.label];
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="dashboard-donut-legend">
+                  {dashboardNutritionData.map((slice) => (
+                    <span key={slice.id}>
+                      <mark style={{ backgroundColor: slice.color }} />
+                      {slice.label} {slice.percentLabel}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </article>
+
+            <article className="dashboard-card dashboard-profile-card">
+              <div className="dashboard-card-title">
+                <div>
+                  <h3>기본 정보</h3>
+                  <span>수정 결과는 기준 판단에 바로 반영됩니다.</span>
+                </div>
+                <UserRound aria-hidden="true" />
+              </div>
+              <div className="dashboard-profile-fields">
+                <span>
+                  <small>나이</small>
+                  <strong>{profileAgeDisplay}</strong>
                 </span>
-              ))}
+                <span>
+                  <small>성별</small>
+                  <strong>{sexLabel[state.profile.sex]}</strong>
+                </span>
+                <span>
+                  <small>키</small>
+                  <strong>{profileHeightDisplay}</strong>
+                </span>
+                <span>
+                  <small>몸무게</small>
+                  <strong>{profileWeightDisplay}</strong>
+                </span>
+                <span>
+                  <small>허리둘레</small>
+                  <strong>{profileWaistDisplay || "미입력"}</strong>
+                </span>
+              </div>
               <button
                 type="button"
-                className="secondary-inline-button metric-profile-copy-button"
+                className="secondary-inline-button dashboard-profile-edit"
+                onClick={() => selectWorkspaceSection("records")}
+              >
+                <ClipboardList aria-hidden="true" />
+                입력 기록에서 수정
+              </button>
+              <button
+                type="button"
+                className="secondary-inline-button dashboard-profile-edit"
                 onClick={copyProfileMetricSexStandards}
                 aria-label={profileMetricSexStandardCopyDescription}
                 title={profileMetricSexStandardCopyDescription}
@@ -4908,169 +5370,18 @@ function App() {
                 성별 기준 복사
               </button>
               {profileMetricCopyFeedback ? (
-                <div className="metric-profile-copy-feedback" role="status">
+                <div className="dashboard-copy-feedback" role="status">
                   {profileMetricCopyFeedback}
                 </div>
               ) : null}
+            </article>
+          </div>
+
+          {dashboardMetricCopyFeedback ? (
+            <div className="dashboard-copy-feedback" role="status">
+              {dashboardMetricCopyFeedback}
             </div>
-            <div
-              className="metric-dashboard-standard-actions"
-              aria-label={`대시보드 건강 기준 ${dashboardMetricStandardCompactSummary}`}
-            >
-              <span className="metric-profile-standard-heading">대시보드 기준</span>
-              <span className="metric-dashboard-standard-summary">
-                {dashboardMetricStandardCompactSummary}
-              </span>
-              <button
-                type="button"
-                className="secondary-inline-button metric-profile-copy-button metric-dashboard-standard-copy-button"
-                onClick={copyDashboardMetricStandards}
-                aria-label={dashboardMetricStandardCopyDescription}
-                title={dashboardMetricStandardCopyDescription}
-              >
-                <Copy aria-hidden="true" />
-                대시보드 기준 복사
-              </button>
-              {dashboardMetricCopyFeedback ? (
-                <div className="metric-dashboard-standard-feedback" role="status">
-                  {dashboardMetricCopyFeedback}
-                </div>
-              ) : null}
-            </div>
-          </article>
-          <article className={`metric-card status-${bmi.level}`}>
-            <Activity aria-hidden="true" />
-            <span>BMI</span>
-            <strong>{bmi.value ? bmi.value.toFixed(1) : "-"}</strong>
-            <small>{bmi.label}</small>
-            {renderMetricStandardEvidence(bmiMetricStandardEvidence)}
-          </article>
-          <article className={`metric-card status-${waistStatus.level}`}>
-            <Activity aria-hidden="true" />
-            <span>허리둘레</span>
-            <strong>{waistStatus.value ? `${waistStatus.value} cm` : "-"}</strong>
-            <small>{waistStatus.label}</small>
-            {renderMetricStandardEvidence(waistMetricStandardEvidence)}
-          </article>
-          <article className={`metric-card status-${bpStatus?.level ?? "neutral"}`}>
-            <HeartPulse aria-hidden="true" />
-            <span>최근 혈압</span>
-            <strong>{latestBp ? formatVitalMetricValue(latestBp) : "-"}</strong>
-            {latestBp ? (
-              <small
-                className={`metric-record-label metric-record-label-${bpStatus?.level ?? "neutral"}`}
-              >
-                {formatVitalMetricRecordLabel(latestBp)}
-              </small>
-            ) : (
-              <small>입력 대기</small>
-            )}
-            {renderMetricStandardEvidence(bloodPressureMetricStandardEvidence)}
-          </article>
-          <article className={`metric-card status-${glucoseStatus?.level ?? "neutral"}`}>
-            <ClipboardList aria-hidden="true" />
-            <span>최근 혈당</span>
-            <strong>{latestGlucose ? formatVitalMetricValue(latestGlucose) : "-"}</strong>
-            {latestGlucose ? (
-              <small
-                className={`metric-record-label metric-record-label-${glucoseStatus?.level ?? "neutral"}`}
-              >
-                {formatVitalMetricRecordLabel(latestGlucose, {
-                  diabetes: state.profile.diabetes,
-                })}
-              </small>
-            ) : (
-              <small>입력 대기</small>
-            )}
-            {renderMetricStandardEvidence(glucoseMetricStandardEvidence)}
-          </article>
-          <article className={`metric-card status-${temperatureStatus?.level ?? "neutral"}`}>
-            <Thermometer aria-hidden="true" />
-            <span>최근 체온</span>
-            <strong>{latestTemperature ? formatVitalMetricValue(latestTemperature) : "-"}</strong>
-            {latestTemperature ? (
-              <small
-                className={`metric-record-label metric-record-label-${temperatureStatus?.level ?? "neutral"}`}
-              >
-                {formatVitalMetricRecordLabel(latestTemperature)}
-              </small>
-            ) : (
-              <small>입력 대기</small>
-            )}
-            {renderMetricStandardEvidence(temperatureMetricStandardEvidence)}
-          </article>
-          <article className={`metric-card status-${latestSymptom ? symptomLevel : "neutral"}`}>
-            <Pill aria-hidden="true" />
-            <span>최근 증상</span>
-            <strong>{latestSymptom ? `${latestSymptom.severity}/10` : "-"}</strong>
-            <small>{latestSymptom?.symptom ?? "입력 대기"}</small>
-            {latestSymptom ? (
-              <>
-                <small className="metric-record-label">{latestSymptomRecordLabel}</small>
-                {latestSymptomHasSourceEvidence && latestSymptomDisplay ? (
-                  <small
-                    className="metric-source-evidence"
-                    aria-label={`최근 증상 근거 ${latestSymptomSourceEvidenceLabels}`}
-                  >
-                    <ShieldCheck aria-hidden="true" />
-                    <span>근거:</span>
-                    {latestSymptomDisplay.sources.length ? (
-                      latestSymptomDisplay.sources.map((source) =>
-                        source.sourceUrl ? (
-                          <a
-                            href={source.sourceUrl}
-                            key={`${source.sourceLabel}-${source.sourceUrl}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label={`최근 증상 근거 ${source.sourceLabel} 열기`}
-                            title={`최근 증상 근거 ${source.sourceLabel} 열기`}
-                          >
-                            {source.sourceLabel}
-                          </a>
-                        ) : (
-                          <span key={source.sourceLabel}>{source.sourceLabel}</span>
-                        ),
-                      )
-                    ) : (
-                      <span>{latestSymptomDisplay.compactSourceEvidence}</span>
-                    )}
-                  </small>
-                ) : null}
-              </>
-            ) : null}
-          </article>
-          <article className={`metric-card status-${openQuestionCount ? "watch" : "ok"}`}>
-            <MessageSquare aria-hidden="true" />
-            <span>진료 질문</span>
-            <strong>{openQuestionCount}개</strong>
-            <small>{questionMetricSummary.statusText}</small>
-            {openQuestionCount ? (
-              <div
-                className="metric-question-summary"
-                aria-label={`진료 질문 요약 ${questionMetricSummary.priorityText} · ${questionMetricSummary.sourceText}`}
-              >
-                <span className="metric-question-chip">{questionMetricSummary.priorityText}</span>
-                {questionMetricSummary.sourceBackedOpenCount ? (
-                  <span className="metric-question-source-chip">
-                    <ShieldCheck aria-hidden="true" />
-                    {questionMetricSummary.sourceText}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
-          </article>
-          <article className={`metric-card status-${abnormalLabCount ? "watch" : "ok"}`}>
-            <ClipboardList aria-hidden="true" />
-            <span>검사 추적</span>
-            <strong>{abnormalLabCount}개</strong>
-            <small>{abnormalLabCount ? "기준 밖 수치" : "기준 밖 수치 없음"}</small>
-          </article>
-          <article className={`metric-card status-${activeDocumentActionCount ? "watch" : "ok"}`}>
-            <FileText aria-hidden="true" />
-            <span>서류 조치</span>
-            <strong>{activeDocumentActionCount}개</strong>
-            <small>{activeDocumentActionCount ? "검토/질문/대기" : "정리 완료"}</small>
-          </article>
+          ) : null}
         </section>
 
         <section
