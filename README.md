@@ -1032,7 +1032,7 @@ This is not a diagnostic or treatment app. It is a structured personal record an
 
 - React dashboard with localStorage persistence
 - Tauri SQLite `app_state` persistence with browser localStorage fallback
-- `npm run runtime:doctor` clean preflight that fails current-source desktop verification when port 1420, the installed release app, or stale CareVault dev processes are still active; `npm run tauri:dev:clean` runs that guard before `tauri dev`, and `npm run runtime:doctor:dev` verifies an active dev session is using this repo's `127.0.0.1:1420` Vite listener, Tauri CLI, and debug binary with no release-bundle shadow
+- `npm run runtime:doctor` clean preflight that fails current-source desktop verification when port 1420, the installed release app, or stale CareVault dev processes are still active; `npm run tauri:dev:clean` runs that guard before `tauri dev`, `npm run runtime:doctor:dev` verifies an active dev session is using this repo's `127.0.0.1:1420` Vite listener, Tauri CLI, and debug binary with no release-bundle shadow, and `npm run desktop:attachment-archive:smoke` runs the repeatable attachment/archive readiness gate before real native-picker QA
 - Recharts trend chart for BP/glucose with separate left/right Y axes for BP `mmHg` and glucose `mg/dL`, visible line-legend chips, always-visible unit/period/count/latest-value summary chips, a collapsible date-by-date chart source-data list with adult-common BP/glucose assessment and official-source labels, and Korean tooltip labels that keep systolic BP, diastolic BP, glucose, full record date, latest BP, latest glucose value, and glucose measurement context visible
 - dashboard metric cards with compact current-profile sex-standard chips on the profile card whose accessibility labels and hover titles include official-source evidence plus one-click copy for those current-sex criteria, Korean standard context notes and linked `근거:` official-source labels for BMI, waist circumference, blood pressure, glucose, and body temperature, right-pane-sized copy/source targets for those dashboard criteria, plus latest BP/glucose/temperature value labels that choose the newest dated matching record and keep `mmHg`, glucose measurement context, `℃`, and the current assessment visible
 - latest-symptom metric, recent-timeline summary chips, timeline labels, symptom-form save preview with source-evidence hints, matching save button/status text that distinguish generic symptom records, structured or source-labeled cervical warning records, generated cervical memo drafts before export, latest-symptom source rows that show a compact linked `근거:` source label, and source-backed timeline rows, including vital and lab timeline rows, that split raw `출처:` text, official vital evidence, or recovered lab preset evidence into a separate linked `근거:` evidence row, plus date-ordered latest-metric and recent-timeline vital labels that keep BP/glucose/temperature assessment, `mmHg`, glucose measurement context, `℃`, and official-source evidence visible after save
@@ -1124,6 +1124,7 @@ npm run runtime:doctor
 npm run tauri:dev:clean
 npm run runtime:doctor:dev
 npm run runtime:doctor:test
+npm run desktop:attachment-archive:smoke
 npm run test
 npm run build
 ```

@@ -11,6 +11,7 @@
     "runtime:doctor": "bash scripts/verify_runtime_clean.sh",
     "runtime:doctor:dev": "bash scripts/verify_runtime_clean.sh --expect-dev",
     "runtime:doctor:test": "bash scripts/test_runtime_doctor.sh",
+    "desktop:attachment-archive:smoke": "bash scripts/smoke_desktop_attachment_archive_readiness.sh",
     "objective:readiness:smoke": "vitest run src/carevaultObjectiveReadiness.test.ts src/clinicalWorkflowReview.test.ts src/clinicalReviewPacket.test.ts",
     "objective:readiness:export": "bash scripts/export_objective_readiness_report.sh",
     "objective:readiness:export:test": "bash scripts/test_objective_readiness_export.sh",
