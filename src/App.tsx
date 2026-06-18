@@ -5598,7 +5598,7 @@ function App() {
                         href={source.url}
                         target="_blank"
                         rel="noreferrer"
-                        key={source.url}
+                        key={sourceId}
                         aria-label={sourceLinkLabels.ariaLabel}
                         title={sourceLinkLabels.title}
                       >
