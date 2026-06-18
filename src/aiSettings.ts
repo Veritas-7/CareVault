@@ -1,4 +1,10 @@
-export type AiProviderPresetId = "local" | "glm-zai" | "glm-zai-coding" | "custom";
+export type AiProviderPresetId =
+  | "local"
+  | "anythingllm-local"
+  | "openai-chat"
+  | "glm-zai"
+  | "glm-zai-coding"
+  | "custom";
 export type AiEndpointAuthMode = "none" | "bearer";
 export type AiEndpointPrivacyMode = "local-only" | "allow-remote";
 
@@ -50,6 +56,46 @@ export const aiProviderPresets: AiProviderPreset[] = [
       apiKey: "",
       authMode: "none",
       privacyMode: "local-only",
+    },
+  },
+  {
+    id: "anythingllm-local",
+    label: "AnythingLLM 로컬",
+    description:
+      "로컬 AnythingLLM OpenAI-compatible endpoint. 인스턴스의 /api/docs에서 실제 endpoint를 확인해 수정하세요.",
+    chat: {
+      endpoint: "http://127.0.0.1:3001/v1/openai/chat/completions",
+      model: "carevault-workspace",
+      apiKey: "",
+      authMode: "bearer",
+      privacyMode: "local-only",
+    },
+    embedding: {
+      endpoint: "",
+      model: "",
+      apiKey: "",
+      authMode: "bearer",
+      privacyMode: "local-only",
+    },
+  },
+  {
+    id: "openai-chat",
+    label: "OpenAI Chat Completions",
+    description:
+      "OpenAI Chat Completions 호환 설정. 신규 OpenAI 전용 통합은 Responses API가 우선이므로 필요 시 endpoint를 직접 수정하세요.",
+    chat: {
+      endpoint: "https://api.openai.com/v1/chat/completions",
+      model: "gpt-5.5",
+      apiKey: "",
+      authMode: "bearer",
+      privacyMode: "allow-remote",
+    },
+    embedding: {
+      endpoint: "https://api.openai.com/v1/embeddings",
+      model: "text-embedding-3-large",
+      apiKey: "",
+      authMode: "bearer",
+      privacyMode: "allow-remote",
     },
   },
   {

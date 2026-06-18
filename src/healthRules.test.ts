@@ -104,6 +104,7 @@ describe("healthRules", () => {
     const grapefruit = assessCancerFood("자몽쥬스 한 잔");
     const sashimi = assessCancerFood("사시미");
     const unpasteurized = assessCancerFood("비살균 쥬스와 요거트");
+    const mixedList = assessCancerFood("브로콜리, 저지방요거트, 통밀식빵");
 
     expect(grapefruit.level).toBe("risk");
     expect(grapefruit.matches.map((match) => match.term)).toEqual(
@@ -117,6 +118,14 @@ describe("healthRules", () => {
     expect(unpasteurized.matches.map((match) => match.term)).toEqual(
       expect.arrayContaining(["비살균 쥬스"]),
     );
+    expect(mixedList.matches.map((match) => match.term)).toEqual(
+      expect.arrayContaining(["브로콜리", "통밀 식빵"]),
+    );
+    expect(
+      mixedList.matches.some(
+        (match) => match.term === "저지방 요구르트" || match.term === "저지방 요거트",
+      ),
+    ).toBe(true);
   });
 
   it("attaches official Korean source labels to cancer-food matches", () => {

@@ -7,6 +7,7 @@ import {
   buildNormalizedSearchStatements,
   buildSqliteBusyTimeoutStatement,
   buildSqlLikePattern,
+  buildSqlSearchTerms,
   isSqliteBusyError,
   loadPersistedState,
   savePersistedState,
@@ -304,6 +305,16 @@ describe("storage normalized mirror", () => {
     expect(buildSqlLikePattern("")).toBeNull();
   });
 
+  it("expands natural search terms for phrase, compact, and token matching", () => {
+    expect(buildSqlSearchTerms(" 혈액 검사 WBC ")).toEqual([
+      "혈액 검사 WBC",
+      "혈액검사WBC",
+      "혈액",
+      "검사",
+      "WBC",
+    ]);
+  });
+
   it("builds the main app state table before SQLite load/save", () => {
     const statement = buildAppStateTableStatement();
 
@@ -328,7 +339,7 @@ describe("storage normalized mirror", () => {
   });
 
   it("builds normalized search count statements", () => {
-    const statements = buildNormalizedSearchStatements("혈액검사");
+    const statements = buildNormalizedSearchStatements("혈액 검사");
 
     expect(statements.map((statement) => statement.key)).toEqual([
       "vitalRows",
@@ -341,7 +352,10 @@ describe("storage normalized mirror", () => {
       "labResultRows",
       "foodCheckRows",
     ]);
-    expect(statements.every((statement) => statement.bindValues?.[0] === "%혈액검사%")).toBe(true);
+    expect(statements.every((statement) => statement.bindValues?.includes("%혈액 검사%"))).toBe(true);
+    expect(statements.every((statement) => statement.bindValues?.includes("%혈액검사%"))).toBe(true);
+    expect(statements.every((statement) => statement.bindValues?.includes("%혈액%"))).toBe(true);
+    expect(statements.every((statement) => statement.bindValues?.includes("%검사%"))).toBe(true);
     expect(statements.find((statement) => statement.key === "documentRows")?.query).toContain(
       "FROM care_documents",
     );

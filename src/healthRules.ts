@@ -7241,6 +7241,101 @@ function selectFoodMatchCandidates(candidates: FoodRuleMatchCandidate[]) {
   return selected.sort((first, second) => first.start - second.start || first.end - second.end);
 }
 
+function collectAllFoodMatchCandidates(
+  normalizedInput: string,
+  collectOptions: { allowComparableFallback?: boolean } = {},
+) {
+  return [
+    ...collectFoodMatchCandidates(normalizedInput, supportiveFoods, "ok", collectOptions),
+    ...collectFoodMatchCandidates(normalizedInput, limitFoods, "watch", collectOptions),
+    ...collectFoodMatchCandidates(normalizedInput, careTeamFoods, "risk", collectOptions),
+  ];
+}
+
+function dedupeFoodMatchCandidates(candidates: FoodRuleMatchCandidate[]) {
+  const seen = new Set<string>();
+  return candidates.filter((candidate) => {
+    const key = [
+      candidate.term,
+      candidate.level,
+      candidate.reason,
+      candidate.sourceId,
+      candidate.start,
+      candidate.end,
+    ].join("\0");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function splitFoodInputSegments(normalizedInput: string) {
+  const segments: Array<{ offset: number; text: string }> = [];
+  const matcher = /[^,，;；\n\r/|]+/gu;
+  let match: RegExpExecArray | null;
+
+  while ((match = matcher.exec(normalizedInput)) !== null) {
+    const raw = match[0];
+    const leadingWhitespace = raw.match(/^\s*/u)?.[0].length ?? 0;
+    const text = raw.trim();
+    if (text) segments.push({ offset: match.index + leadingWhitespace, text });
+  }
+
+  return segments;
+}
+
+function offsetFoodMatchCandidate(candidate: FoodRuleMatchCandidate, offset: number) {
+  return {
+    ...candidate,
+    start: candidate.start + offset,
+    end: candidate.end + offset,
+  };
+}
+
+function collectSegmentedComparableFallbackCandidates(
+  normalizedInput: string,
+  protectedCandidates: FoodRuleMatchCandidate[],
+) {
+  return splitFoodInputSegments(normalizedInput).flatMap((segment) => {
+    const segmentRange = {
+      start: segment.offset,
+      end: segment.offset + segment.text.length,
+    };
+    if (
+      protectedCandidates.some(
+        (candidate) => candidate.term.length >= 30 && rangesOverlap(candidate, segmentRange),
+      )
+    ) {
+      return [];
+    }
+    const exactSegmentCandidates = collectAllFoodMatchCandidates(segment.text);
+    const maxExactSegmentLength = exactSegmentCandidates.reduce(
+      (maxLength, candidate) => Math.max(maxLength, candidate.end - candidate.start),
+      0,
+    );
+    if (
+      maxExactSegmentLength > 0
+      && maxExactSegmentLength >= Math.ceil(segment.text.length * 0.75)
+    ) {
+      return [];
+    }
+
+    return collectAllFoodMatchCandidates(segment.text, { allowComparableFallback: true })
+      .filter((candidate) => candidate.start >= segment.text.length)
+      .filter((candidate) => candidate.term.length > maxExactSegmentLength + 1)
+      .map((candidate) =>
+        offsetFoodMatchCandidate(
+          {
+            ...candidate,
+            start: 0,
+            end: segment.text.length,
+          },
+          segment.offset,
+        ),
+      );
+  });
+}
+
 export function calculateBmi(heightCm: number, weightKg: number): BmiAssessment {
   if (!Number.isFinite(heightCm) || !Number.isFinite(weightKg) || heightCm <= 0 || weightKg <= 0) {
     return {
@@ -7637,24 +7732,14 @@ export function assessLabTextValue(
 
 export function assessCancerFood(input: string): FoodAssessment {
   const normalized = normalizeFoodInput(input);
-  const exactCandidates = [
-    ...collectFoodMatchCandidates(normalized, supportiveFoods, "ok"),
-    ...collectFoodMatchCandidates(normalized, limitFoods, "watch"),
-    ...collectFoodMatchCandidates(normalized, careTeamFoods, "risk"),
-  ];
+  const exactCandidates = collectAllFoodMatchCandidates(normalized);
+  const segmentedFallbackCandidates = collectSegmentedComparableFallbackCandidates(
+    normalized,
+    exactCandidates,
+  );
   const candidates = exactCandidates.length
-    ? exactCandidates
-    : [
-        ...collectFoodMatchCandidates(normalized, supportiveFoods, "ok", {
-          allowComparableFallback: true,
-        }),
-        ...collectFoodMatchCandidates(normalized, limitFoods, "watch", {
-          allowComparableFallback: true,
-        }),
-        ...collectFoodMatchCandidates(normalized, careTeamFoods, "risk", {
-          allowComparableFallback: true,
-        }),
-      ];
+    ? dedupeFoodMatchCandidates([...exactCandidates, ...segmentedFallbackCandidates])
+    : collectAllFoodMatchCandidates(normalized, { allowComparableFallback: true });
   const matches = selectFoodMatchCandidates(candidates).map((candidate) =>
     createFoodMatch(candidate.term, candidate.level, candidate.reason, candidate.sourceId),
   );

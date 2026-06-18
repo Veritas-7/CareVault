@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   applyAiProviderPreset,
+  aiProviderPresets,
   buildAiEndpointHeaders,
   defaultAiSettings,
   normalizeAiSettings,
@@ -34,6 +35,31 @@ describe("aiSettings", () => {
       privacyMode: "allow-remote",
     });
     expect(settings.embedding.privacyMode).toBe("allow-remote");
+  });
+
+  it("keeps local AnythingLLM and OpenAI presets available for later API setup", () => {
+    const presetIds = aiProviderPresets.map((preset) => preset.id);
+
+    expect(presetIds).toEqual([
+      "local",
+      "anythingllm-local",
+      "openai-chat",
+      "glm-zai",
+      "glm-zai-coding",
+      "custom",
+    ]);
+
+    expect(applyAiProviderPreset(defaultAiSettings, "anythingllm-local").chat).toMatchObject({
+      authMode: "bearer",
+      endpoint: "http://127.0.0.1:3001/v1/openai/chat/completions",
+      privacyMode: "local-only",
+    });
+    expect(applyAiProviderPreset(defaultAiSettings, "openai-chat").chat).toMatchObject({
+      authMode: "bearer",
+      endpoint: "https://api.openai.com/v1/chat/completions",
+      model: "gpt-5.5",
+      privacyMode: "allow-remote",
+    });
   });
 
   it("requires API keys for remote Bearer endpoints but keeps localhost usable", () => {

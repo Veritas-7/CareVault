@@ -83,6 +83,18 @@ const defaultMaxTokens = 850;
 const defaultTemperature = 0.1;
 const maxLineLength = 420;
 const maxDocumentBodyLength = 700;
+const localAnswerMaxLines = 8;
+const localAnswerMinTokenLength = 2;
+
+const localQuerySynonyms: Array<[string, string[]]> = [
+  ["혈압", ["혈압", "수축기", "이완기", "bp"]],
+  ["혈당", ["혈당", "glucose", "공복", "식후", "당뇨"]],
+  ["검사", ["검사", "수치", "lab", "백혈구", "간수치", "hba1c", "당화혈색소"]],
+  ["문서", ["문서", "서류", "첨부", "파일", "검사지", "결과지"]],
+  ["진료", ["진료", "병원", "다음 일정", "질문", "의료진"]],
+  ["증상", ["증상", "오심", "통증", "피로", "구토", "설사", "변비"]],
+  ["음식", ["음식", "식사", "먹", "섭취", "자몽", "술", "회", "비살균"]],
+];
 
 function compactText(value: string, maxLength = maxLineLength) {
   const compact = value.replace(/\s+/g, " ").trim();
@@ -109,6 +121,85 @@ function formatDocumentLine(document: CareDocument, index: number) {
   ]
     .filter(Boolean)
     .join(" · ");
+}
+
+function normalizeLocalSearchText(value: string) {
+  return value.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function compactLocalSearchText(value: string) {
+  return normalizeLocalSearchText(value).replace(/[^\p{L}\p{N}.+-]+/gu, "");
+}
+
+function buildLocalQueryTokens(query: string) {
+  const normalized = normalizeLocalSearchText(query);
+  const compact = compactLocalSearchText(query);
+  const tokens = normalized
+    .split(/[^\p{L}\p{N}.+-]+/u)
+    .map((token) => token.trim())
+    .filter((token) => token.length >= localAnswerMinTokenLength);
+  const synonymTokens = localQuerySynonyms.flatMap(([key, values]) =>
+    [key, ...values].some((value) => {
+      const normalizedValue = normalizeLocalSearchText(value);
+      const compactValue = compactLocalSearchText(value);
+      return normalized.includes(normalizedValue) || compact.includes(compactValue);
+    })
+      ? values
+      : [],
+  );
+
+  return [...new Set([normalized, compact, ...tokens, ...synonymTokens].filter(Boolean))].slice(0, 24);
+}
+
+function scoreLocalContextLine(line: string, tokens: string[]) {
+  const normalizedLine = normalizeLocalSearchText(line);
+  const compactLine = compactLocalSearchText(line);
+
+  return tokens.reduce((score, token) => {
+    const normalizedToken = normalizeLocalSearchText(token);
+    if (!normalizedToken) return score;
+    const compactToken = compactLocalSearchText(normalizedToken);
+    if (normalizedLine.includes(normalizedToken)) return score + Math.max(3, normalizedToken.length);
+    if (compactToken && compactLine.includes(compactToken)) return score + Math.max(2, compactToken.length - 1);
+    return score;
+  }, 0);
+}
+
+export function buildCareVaultLocalNaturalLanguageAnswer(state: AppState, query: string) {
+  const tokens = buildLocalQueryTokens(query);
+  const contextLines = buildCareVaultNaturalLanguageQueryContext(state)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const scoredLines = contextLines
+    .map((line, index) => ({
+      index,
+      line,
+      score: scoreLocalContextLine(line, tokens),
+    }))
+    .filter((item) => item.score > 0)
+    .sort((first, second) => second.score - first.score || second.index - first.index)
+    .slice(0, localAnswerMaxLines)
+    .sort((first, second) => first.index - second.index);
+  const foodAssessment = assessCancerFood(query);
+  const foodLines = foodAssessment.matches.slice(0, 4).map((match) =>
+    `음식 판단 · ${match.term} · ${match.level} · ${match.reason}`,
+  );
+  const answerLines = [...foodLines, ...scoredLines.map((item) => item.line)].slice(0, localAnswerMaxLines);
+
+  if (!answerLines.length) {
+    return [
+      "로컬 기록 검색 결과 · 직접 일치하는 저장 기록을 찾지 못했습니다.",
+      "표현을 바꿔서 날짜, 병원, 검사명, 음식명, 증상명을 함께 입력해 보세요.",
+      "의료 결정은 저장 기록만으로 하지 말고 진료팀 확인 질문으로 정리하세요.",
+    ].join("\n");
+  }
+
+  return [
+    "로컬 기록 검색 결과 · API 없이 저장 기록에서 찾았습니다.",
+    ...answerLines.map((line) => `- ${line}`),
+    "의료 결정은 저장 기록만으로 하지 말고 진료팀 확인 질문으로 정리하세요.",
+  ].join("\n");
 }
 
 export function buildCareVaultNaturalLanguageQueryContext(state: AppState) {
@@ -367,6 +458,24 @@ export async function requestCareVaultNaturalLanguageAnswer(
 ): Promise<CareVaultNaturalLanguageQueryRunResult> {
   const request = buildCareVaultNaturalLanguageQueryRequest(state, query, config);
   if (!request.ok) {
+    if (
+      request.validation.level === "missing-endpoint" ||
+      request.validation.level === "missing-model" ||
+      request.validation.level === "missing-api-key" ||
+      request.validation.level === "invalid-endpoint" ||
+      request.validation.level === "remote-endpoint-blocked"
+    ) {
+      return {
+        ok: true,
+        text: [
+          buildCareVaultLocalNaturalLanguageAnswer(state, query),
+          "",
+          `API 조회 대체 · ${request.summary}`,
+          ...request.warnings.map((warning) => `- ${warning}`),
+        ].join("\n"),
+      };
+    }
+
     return {
       ok: false,
       summary: request.summary,
@@ -384,12 +493,14 @@ export async function requestCareVaultNaturalLanguageAnswer(
     if (!response.ok) {
       const endpointError = extractDocumentRagLocalModelError(json);
       return {
-        ok: false,
-        summary: `자연어 조회 요청 실패 · HTTP ${response.status}`,
-        warnings: [
-          ...(endpointError ? [`자연어 조회 endpoint 오류: ${endpointError}`] : []),
-          ...request.warnings,
-        ],
+        ok: true,
+        text: [
+          buildCareVaultLocalNaturalLanguageAnswer(state, query),
+          "",
+          `API 조회 대체 · 자연어 조회 요청 실패 · HTTP ${response.status}`,
+          ...(endpointError ? [`- 자연어 조회 endpoint 오류: ${endpointError}`] : []),
+          ...request.warnings.map((warning) => `- ${warning}`),
+        ].join("\n"),
       };
     }
 
@@ -417,9 +528,13 @@ export async function requestCareVaultNaturalLanguageAnswer(
     };
   } catch {
     return {
-      ok: false,
-      summary: "자연어 조회 요청 실패 · endpoint 연결 실패",
-      warnings: request.warnings,
+      ok: true,
+      text: [
+        buildCareVaultLocalNaturalLanguageAnswer(state, query),
+        "",
+        "API 조회 대체 · 자연어 조회 요청 실패 · endpoint 연결 실패",
+        ...request.warnings.map((warning) => `- ${warning}`),
+      ].join("\n"),
     };
   }
 }

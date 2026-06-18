@@ -3,6 +3,7 @@ import { defaultState } from "./appState";
 import {
   buildCareVaultNaturalLanguageQueryContext,
   buildCareVaultNaturalLanguageQueryRequest,
+  buildCareVaultLocalNaturalLanguageAnswer,
   requestCareVaultNaturalLanguageAnswer,
   validateCareVaultNaturalLanguageQuery,
 } from "./careVaultNaturalLanguageQuery";
@@ -84,6 +85,45 @@ describe("careVaultNaturalLanguageQuery", () => {
     expect(request.body.messages[1].content).toContain("[CareVault 저장 기록 컨텍스트]");
     expect(request.body.messages[1].content).toContain("혈압");
     expect(request.body.messages[1].content).toContain("혈당");
+  });
+
+  it("answers from local stored records when API settings are not ready", async () => {
+    const localText = buildCareVaultLocalNaturalLanguageAnswer(defaultState, "최근 혈압 혈당 서류");
+
+    expect(localText).toContain("로컬 기록 검색 결과");
+    expect(localText).toContain("혈압");
+    expect(localText).toContain("혈당");
+    expect(localText).toContain("문서");
+
+    const result = await requestCareVaultNaturalLanguageAnswer(
+      defaultState,
+      "최근 혈압 혈당 서류",
+      {
+        ...glmConfig,
+        apiKey: "",
+      },
+      vi.fn(),
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("expected local fallback answer");
+    expect(result.text).toContain("API 조회 대체");
+    expect(result.text).toContain("로컬 기록 검색 결과");
+  });
+
+  it("falls back to local stored records when the configured endpoint fails", async () => {
+    const failingFetcher = vi.fn().mockRejectedValue(new Error("offline"));
+    const result = await requestCareVaultNaturalLanguageAnswer(
+      defaultState,
+      "자몽쥬스 먹어도 돼?",
+      glmConfig,
+      failingFetcher,
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("expected local fallback answer");
+    expect(result.text).toContain("API 조회 대체");
+    expect(result.text).toContain("자몽");
   });
 
   it("posts natural language queries with saved Bearer auth and blocks unsafe replies", async () => {

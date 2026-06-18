@@ -464,116 +464,150 @@ export function buildSqlLikePattern(input: string) {
   return `%${trimmed.replace(/[\\%_]/g, (character) => `\\${character}`)}%`;
 }
 
+function normalizeSqlSearchToken(value: string) {
+  return value.normalize("NFKC").replace(/\s+/g, " ").trim();
+}
+
+export function buildSqlSearchTerms(input: string) {
+  const normalized = normalizeSqlSearchToken(input);
+  if (!normalized) return [];
+
+  const compact = normalized.replace(/\s+/g, "");
+  const tokens = normalized
+    .split(/[^\p{L}\p{N}.+-]+/u)
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 2);
+
+  return [...new Set([normalized, compact, ...tokens].filter(Boolean))].slice(0, 8);
+}
+
+function buildSqlLikePredicates(columns: string[], bindValues: unknown[]) {
+  return bindValues
+    .map((_, index) => {
+      const placeholder = `$${index + 1}`;
+      return `(${columns.map((column) => `${column} LIKE ${placeholder} ESCAPE '\\'`).join(" OR ")})`;
+    })
+    .join(" OR ");
+}
+
 function parseOptionalText(value: unknown) {
   return typeof value === "string" && value.trim() ? value : undefined;
 }
 
 export function buildNormalizedSearchStatements(input: string): NormalizedSearchStatement[] {
-  const likePattern = buildSqlLikePattern(input);
-  if (!likePattern) return [];
+  const bindValues = buildSqlSearchTerms(input)
+    .map(buildSqlLikePattern)
+    .filter((pattern): pattern is string => Boolean(pattern));
+  if (!bindValues.length) return [];
 
-  const bindValues = [likePattern];
-  const like = "LIKE $1 ESCAPE '\\'";
+  const vitalPredicate = buildSqlLikePredicates(
+    [
+      "date",
+      "type",
+      "COALESCE(CAST(temperature_c AS TEXT), '')",
+      "COALESCE(glucose_context, '')",
+      "note",
+    ],
+    bindValues,
+  );
+  const visitPredicate = buildSqlLikePredicates(
+    ["date", "hospital", "reason", "summary", "plan", "next_date"],
+    bindValues,
+  );
+  const documentPredicate = buildSqlLikePredicates(
+    [
+      "date",
+      "title",
+      "category",
+      "body",
+      "tags",
+      "review_status",
+      "next_action",
+      "COALESCE(attachment_name, '')",
+      "COALESCE(attachment_status, '')",
+      "search_text",
+    ],
+    bindValues,
+  );
+  const attachmentPredicate = buildSqlLikePredicates(
+    ["attachment_name", "COALESCE(attachment_storage, '')", "COALESCE(attachment_status, '')"],
+    bindValues,
+  );
+  const historyPredicate = buildSqlLikePredicates(
+    ["document_id", "at", "kind", "label", "detail"],
+    bindValues,
+  );
+  const symptomPredicate = buildSqlLikePredicates(
+    ["date", "symptom", "medication", "body", "action"],
+    bindValues,
+  );
+  const questionPredicate = buildSqlLikePredicates(
+    ["date", "topic", "question", "priority", "status", "answer"],
+    bindValues,
+  );
+  const labPredicate = buildSqlLikePredicates(
+    ["date", "name", "value", "unit", "lower_bound", "upper_bound", "note"],
+    bindValues,
+  );
+  const foodPredicate = buildSqlLikePredicates(
+    ["query", "level", "label", "summary", "matches_json"],
+    bindValues,
+  );
 
   return [
     {
       key: "vitalRows",
       query: `SELECT COUNT(*) AS count FROM vitals
-        WHERE date ${like}
-          OR type ${like}
-          OR COALESCE(CAST(temperature_c AS TEXT), '') ${like}
-          OR COALESCE(glucose_context, '') ${like}
-          OR note ${like}`,
+        WHERE ${vitalPredicate}`,
       bindValues,
     },
     {
       key: "visitRows",
       query: `SELECT COUNT(*) AS count FROM visits
-        WHERE date ${like}
-          OR hospital ${like}
-          OR reason ${like}
-          OR summary ${like}
-          OR plan ${like}
-          OR next_date ${like}`,
+        WHERE ${visitPredicate}`,
       bindValues,
     },
     {
       key: "documentRows",
       query: `SELECT COUNT(*) AS count FROM care_documents
         WHERE is_deleted = 0
-          AND (
-            date ${like}
-            OR title ${like}
-            OR category ${like}
-            OR body ${like}
-            OR tags ${like}
-            OR review_status ${like}
-            OR next_action ${like}
-            OR COALESCE(attachment_name, '') ${like}
-            OR COALESCE(attachment_status, '') ${like}
-            OR search_text ${like}
-          )`,
+          AND (${documentPredicate})`,
       bindValues,
     },
     {
       key: "documentAttachmentRows",
       query: `SELECT COUNT(*) AS count FROM document_attachments
-        WHERE attachment_name ${like}
-          OR COALESCE(attachment_storage, '') ${like}
-          OR COALESCE(attachment_status, '') ${like}`,
+        WHERE ${attachmentPredicate}`,
       bindValues,
     },
     {
       key: "documentHistoryRows",
       query: `SELECT COUNT(*) AS count FROM document_history
-        WHERE document_id ${like}
-          OR at ${like}
-          OR kind ${like}
-          OR label ${like}
-          OR detail ${like}`,
+        WHERE ${historyPredicate}`,
       bindValues,
     },
     {
       key: "symptomRows",
       query: `SELECT COUNT(*) AS count FROM symptoms
-        WHERE date ${like}
-          OR symptom ${like}
-          OR medication ${like}
-          OR body ${like}
-          OR action ${like}`,
+        WHERE ${symptomPredicate}`,
       bindValues,
     },
     {
       key: "questionRows",
       query: `SELECT COUNT(*) AS count FROM questions
-        WHERE date ${like}
-          OR topic ${like}
-          OR question ${like}
-          OR priority ${like}
-          OR status ${like}
-          OR answer ${like}`,
+        WHERE ${questionPredicate}`,
       bindValues,
     },
     {
       key: "labResultRows",
       query: `SELECT COUNT(*) AS count FROM lab_results
-        WHERE date ${like}
-          OR name ${like}
-          OR value ${like}
-          OR unit ${like}
-          OR lower_bound ${like}
-          OR upper_bound ${like}
-          OR note ${like}`,
+        WHERE ${labPredicate}`,
       bindValues,
     },
     {
       key: "foodCheckRows",
       query: `SELECT COUNT(*) AS count FROM food_checks
-        WHERE query ${like}
-          OR level ${like}
-          OR label ${like}
-          OR summary ${like}
-          OR matches_json ${like}`,
+        WHERE ${foodPredicate}`,
       bindValues,
     },
   ];
