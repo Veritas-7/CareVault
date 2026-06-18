@@ -5,6 +5,11 @@ import {
   type CaregiverShareSettings,
 } from "./caregiverShareSettings";
 import {
+  defaultAiSettings,
+  normalizeAiSettings,
+  type AiSettings,
+} from "./aiSettings";
+import {
   defaultQuestionPriority,
   normalizeQuestionPriority,
   type QuestionPriority,
@@ -112,6 +117,7 @@ export type LabResult = {
 export type AppState = {
   profile: Profile;
   foodQuery: string;
+  aiSettings: AiSettings;
   vitals: VitalEntry[];
   visits: VisitEntry[];
   documents: CareDocument[];
@@ -137,6 +143,7 @@ export const defaultState: AppState = {
     hypertension: true,
   },
   foodQuery: "브로콜리, 현미밥, 베이컨, 자몽 주스",
+  aiSettings: defaultAiSettings,
   vitals: [
     {
       id: "bp-1",
@@ -601,6 +608,7 @@ export function normalizeAppState(input: unknown): AppState {
     profile: normalizeProfile(persisted.profile),
     foodQuery:
       typeof persisted.foodQuery === "string" ? persisted.foodQuery : defaultState.foodQuery,
+    aiSettings: normalizeAiSettings(persisted.aiSettings),
     vitals: normalizeRecordArray(persisted.vitals, normalizeVitalEntry),
     visits: normalizeRecordArray(persisted.visits, normalizeVisitEntry),
     documents,

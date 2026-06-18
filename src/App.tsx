@@ -238,6 +238,16 @@ import {
 } from "./documentRagEmbeddingRequest";
 import { buildDocumentRagReadiness } from "./documentRagReadiness";
 import {
+  aiProviderPresets,
+  applyAiProviderPreset,
+  type AiEndpointSettings,
+  type AiProviderPresetId,
+} from "./aiSettings";
+import {
+  requestCareVaultNaturalLanguageAnswer,
+  validateCareVaultNaturalLanguageQuery,
+} from "./careVaultNaturalLanguageQuery";
+import {
   formatDeletedDocumentAttachmentCleanupCanceledStatusLabel,
   formatDeletedDocumentAttachmentCleanedStatusLabel,
   formatDocumentActionButtonLabel,
@@ -1146,15 +1156,17 @@ function App() {
     useState<HealthStandardRangeFilterId>("all");
   const [visitPacketRange, setVisitPacketRange] = useState<VisitPacketRange>("30d");
   const [documentFilter, setDocumentFilter] = useState("");
-  const [documentRagModelEndpoint, setDocumentRagModelEndpoint] = useState("");
-  const [documentRagModelName, setDocumentRagModelName] = useState("local-care-model");
   const [documentRagModelOutput, setDocumentRagModelOutput] = useState<{
     status: "error" | "pending" | "success";
     text: string;
   } | null>(null);
-  const [documentRagEmbeddingEndpoint, setDocumentRagEmbeddingEndpoint] = useState("");
-  const [documentRagEmbeddingModelName, setDocumentRagEmbeddingModelName] = useState("bge-m3");
   const [documentRagEmbeddingOutput, setDocumentRagEmbeddingOutput] = useState<{
+    status: "error" | "pending" | "success";
+    text: string;
+  } | null>(null);
+  const [naturalLanguageQuery, setNaturalLanguageQuery] =
+    useState("최근 혈압과 혈당 관련해서 다음 진료 때 물어볼 것 알려줘");
+  const [naturalLanguageOutput, setNaturalLanguageOutput] = useState<{
     status: "error" | "pending" | "success";
     text: string;
   } | null>(null);
@@ -1979,11 +1991,19 @@ function App() {
     formatDocumentRagAnswerDraftClipboardDescription(documentRagContext);
   const documentRagAnswerDraftClipboardStatus =
     formatDocumentRagAnswerDraftClipboardStatus(documentRagContext);
+  const aiChatSettings = state.aiSettings.chat;
+  const aiEmbeddingSettings = state.aiSettings.embedding;
+  const selectedAiProvider =
+    aiProviderPresets.find((preset) => preset.id === state.aiSettings.providerId) ??
+    aiProviderPresets[0];
   const documentRagLocalModelValidation = validateDocumentRagLocalModelRequest(
     documentRagContext,
     {
-      endpoint: documentRagModelEndpoint,
-      model: documentRagModelName,
+      apiKey: aiChatSettings.apiKey,
+      authMode: aiChatSettings.authMode,
+      endpoint: aiChatSettings.endpoint,
+      model: aiChatSettings.model,
+      privacyMode: aiChatSettings.privacyMode,
     },
   );
   const documentRagLocalModelRunDescription =
@@ -1993,8 +2013,11 @@ function App() {
   const documentRagEmbeddingValidation = validateDocumentRagEmbeddingRequest(
     documentRagContext,
     {
-      endpoint: documentRagEmbeddingEndpoint,
-      model: documentRagEmbeddingModelName,
+      apiKey: aiEmbeddingSettings.apiKey,
+      authMode: aiEmbeddingSettings.authMode,
+      endpoint: aiEmbeddingSettings.endpoint,
+      model: aiEmbeddingSettings.model,
+      privacyMode: aiEmbeddingSettings.privacyMode,
     },
   );
   const documentRagEmbeddingRunDescription =
@@ -2008,6 +2031,15 @@ function App() {
     modelOutput: documentRagModelOutput,
     modelValidation: documentRagLocalModelValidation,
   });
+  const naturalLanguageValidation = validateCareVaultNaturalLanguageQuery(
+    state,
+    naturalLanguageQuery,
+    aiChatSettings,
+  );
+  const naturalLanguageRunDescription =
+    naturalLanguageValidation.level === "ready"
+      ? "전체 기록 자연어 조회 실행"
+      : naturalLanguageValidation.summary;
   const hasActiveDocumentFilters = hasActiveDocumentFilterState({
     categoryFilter: documentCategoryFilter,
     searchText: documentFilter,
@@ -2033,6 +2065,74 @@ function App() {
     pendingActionLabelRef.current = null;
     transientSaveLabelUntilRef.current = Date.now() + 2000;
     setSaveLabel(label);
+  };
+
+  const updateAiSettings = (
+    updates: Partial<AppState["aiSettings"]>,
+    statusLabel = "AI 설정 저장됨",
+  ) => {
+    setState((current) => ({
+      ...current,
+      aiSettings: {
+        ...current.aiSettings,
+        ...updates,
+      },
+    }));
+    setActionSaveLabel(statusLabel);
+    setDocumentRagModelOutput(null);
+    setDocumentRagEmbeddingOutput(null);
+    setNaturalLanguageOutput(null);
+  };
+
+  const applyAiPreset = (providerId: AiProviderPresetId) => {
+    const preset = aiProviderPresets.find((item) => item.id === providerId);
+    setState((current) => ({
+      ...current,
+      aiSettings: applyAiProviderPreset(current.aiSettings, providerId),
+    }));
+    setDocumentRagModelOutput(null);
+    setDocumentRagEmbeddingOutput(null);
+    setNaturalLanguageOutput(null);
+    setActionSaveLabel(`AI 프리셋 적용됨 · ${preset?.label ?? providerId}`);
+  };
+
+  const updateAiChatSettings = (
+    updates: Partial<AiEndpointSettings>,
+    options: { preserveProvider?: boolean } = {},
+  ) => {
+    updateAiSettings(
+      {
+        chat: {
+          ...state.aiSettings.chat,
+          ...updates,
+        },
+        providerId: options.preserveProvider ? state.aiSettings.providerId : "custom",
+      },
+      "AI 모델 설정 저장됨",
+    );
+  };
+
+  const updateAiEmbeddingSettings = (
+    updates: Partial<AiEndpointSettings>,
+    options: { preserveProvider?: boolean } = {},
+  ) => {
+    updateAiSettings(
+      {
+        embedding: {
+          ...state.aiSettings.embedding,
+          ...updates,
+        },
+        providerId: options.preserveProvider ? state.aiSettings.providerId : "custom",
+      },
+      "AI 임베딩 설정 저장됨",
+    );
+  };
+
+  const toggleNaturalLanguageSearch = (enabled: boolean) => {
+    updateAiSettings(
+      { naturalLanguageSearchEnabled: enabled },
+      enabled ? "자연어 조회 켜짐" : "자연어 조회 꺼짐",
+    );
   };
 
   const resetDocumentFilters = () => {
@@ -2158,8 +2258,11 @@ function App() {
     });
 
     const result = await requestDocumentRagLocalModel(documentRagContext, {
-      endpoint: documentRagModelEndpoint,
-      model: documentRagModelName,
+      apiKey: aiChatSettings.apiKey,
+      authMode: aiChatSettings.authMode,
+      endpoint: aiChatSettings.endpoint,
+      model: aiChatSettings.model,
+      privacyMode: aiChatSettings.privacyMode,
     });
 
     if (result.ok) {
@@ -2185,8 +2288,11 @@ function App() {
     });
 
     const result = await requestDocumentRagEmbeddings(documentRagContext, {
-      endpoint: documentRagEmbeddingEndpoint,
-      model: documentRagEmbeddingModelName,
+      apiKey: aiEmbeddingSettings.apiKey,
+      authMode: aiEmbeddingSettings.authMode,
+      endpoint: aiEmbeddingSettings.endpoint,
+      model: aiEmbeddingSettings.model,
+      privacyMode: aiEmbeddingSettings.privacyMode,
     });
 
     if (result.ok) {
@@ -2211,6 +2317,34 @@ function App() {
     }
 
     setDocumentRagEmbeddingOutput({
+      status: "error",
+      text: [result.summary, ...result.warnings].join("\n"),
+    });
+    setSaveLabel(result.summary);
+  };
+
+  const runNaturalLanguageQuery = async () => {
+    setNaturalLanguageOutput({
+      status: "pending",
+      text: "전체 기록 자연어 조회 요청 중",
+    });
+
+    const result = await requestCareVaultNaturalLanguageAnswer(
+      state,
+      naturalLanguageQuery,
+      aiChatSettings,
+    );
+
+    if (result.ok) {
+      setNaturalLanguageOutput({
+        status: "success",
+        text: result.text,
+      });
+      setTransientSaveLabel("전체 기록 자연어 조회 응답 수신됨");
+      return;
+    }
+
+    setNaturalLanguageOutput({
       status: "error",
       text: [result.summary, ...result.warnings].join("\n"),
     });
@@ -8102,12 +8236,11 @@ function App() {
                 </ul>
               </div>
             ) : null}
-            {documentRagContext.items.length ? (
-              <div
-                className="document-rag-context"
-                aria-label={`문서 RAG 컨텍스트 ${documentRagContext.ariaLabel}`}
-              >
-                <div className="document-rag-context-title">
+            <section
+              className="document-rag-context"
+              aria-label={`문서 RAG 컨텍스트 ${documentRagContext.ariaLabel}`}
+            >
+              <div className="document-rag-context-title">
                   <strong>문서 RAG 컨텍스트</strong>
                   <span>{documentRagContext.summary}</span>
                   <span>기준 {documentRagContext.queryLabel}</span>
@@ -8182,22 +8315,72 @@ function App() {
                   </div>
                   <div className="document-rag-local-model-row">
                     <label>
-                      로컬 모델 endpoint
+                      AI 프리셋
+                      <select
+                        value={state.aiSettings.providerId}
+                        onChange={(event) =>
+                          applyAiPreset(event.currentTarget.value as AiProviderPresetId)
+                        }
+                        aria-label="AI provider preset"
+                        title="AI provider preset"
+                      >
+                        {aiProviderPresets.map((preset) => (
+                          <option key={preset.id} value={preset.id}>
+                            {preset.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      API key
                       <input
-                        value={documentRagModelEndpoint}
-                        onChange={(event) => setDocumentRagModelEndpoint(event.currentTarget.value)}
-                        aria-label="로컬 모델 RAG endpoint"
-                        title="로컬 모델 RAG endpoint"
+                        type="password"
+                        value={aiChatSettings.apiKey}
+                        onChange={(event) =>
+                          updateAiChatSettings(
+                            { apiKey: event.currentTarget.value },
+                            { preserveProvider: true },
+                          )
+                        }
+                        aria-label="AI API key"
+                        title="AI API key"
+                        placeholder="Bearer API key"
+                      />
+                    </label>
+                    <label className="checkbox-inline ai-natural-language-toggle">
+                      <input
+                        type="checkbox"
+                        checked={state.aiSettings.naturalLanguageSearchEnabled}
+                        onChange={(event) => toggleNaturalLanguageSearch(event.currentTarget.checked)}
+                      />
+                      자연어 조회
+                    </label>
+                  </div>
+                  <small>
+                    {selectedAiProvider.description} · 원격 API 사용 시 저장 기록 일부가 선택한 endpoint로 전송됩니다.
+                  </small>
+                  <div className="document-rag-local-model-row">
+                    <label>
+                      모델 endpoint
+                      <input
+                        value={aiChatSettings.endpoint}
+                        onChange={(event) =>
+                          updateAiChatSettings({ endpoint: event.currentTarget.value })
+                        }
+                        aria-label="모델 RAG endpoint"
+                        title="모델 RAG endpoint"
                         placeholder="http://127.0.0.1:11434/v1/chat/completions"
                       />
                     </label>
                     <label>
                       모델
                       <input
-                        value={documentRagModelName}
-                        onChange={(event) => setDocumentRagModelName(event.currentTarget.value)}
-                        aria-label="로컬 모델 RAG 모델명"
-                        title="로컬 모델 RAG 모델명"
+                        value={aiChatSettings.model}
+                        onChange={(event) =>
+                          updateAiChatSettings({ model: event.currentTarget.value })
+                        }
+                        aria-label="모델 RAG 모델명"
+                        title="모델 RAG 모델명"
                         placeholder="local-care-model"
                       />
                     </label>
@@ -8210,7 +8393,7 @@ function App() {
                       disabled={documentRagModelOutput?.status === "pending"}
                     >
                       <MessageSquare aria-hidden="true" />
-                      로컬 모델 실행
+                      모델 실행
                     </button>
                   </div>
                   <small>{documentRagLocalModelValidation.summary}</small>
@@ -8222,29 +8405,81 @@ function App() {
                       {documentRagModelOutput.text}
                     </pre>
                   ) : null}
+                  {state.aiSettings.naturalLanguageSearchEnabled ? (
+                    <div className="document-rag-natural-query">
+                      <div className="document-rag-local-model-row">
+                        <label>
+                          전체 기록 자연어 조회
+                          <input
+                            value={naturalLanguageQuery}
+                            onChange={(event) => setNaturalLanguageQuery(event.currentTarget.value)}
+                            aria-label="전체 기록 자연어 조회"
+                            title="전체 기록 자연어 조회"
+                            placeholder="예: 최근 혈압과 검사 결과에서 다음 진료 질문 알려줘"
+                          />
+                        </label>
+                        <button
+                          className="secondary-inline-button document-rag-local-model-run"
+                          type="button"
+                          onClick={runNaturalLanguageQuery}
+                          aria-label={naturalLanguageRunDescription}
+                          title={naturalLanguageRunDescription}
+                          disabled={naturalLanguageOutput?.status === "pending"}
+                        >
+                          <Search aria-hidden="true" />
+                          전체 조회
+                        </button>
+                      </div>
+                      <small>{naturalLanguageValidation.summary}</small>
+                      {naturalLanguageValidation.warnings.slice(0, 2).map((warning) => (
+                        <small key={warning}>{warning}</small>
+                      ))}
+                      {naturalLanguageOutput ? (
+                        <pre className={`document-rag-local-model-output ${naturalLanguageOutput.status}`}>
+                          {naturalLanguageOutput.text}
+                        </pre>
+                      ) : null}
+                    </div>
+                  ) : null}
                   <div className="document-rag-local-model-row document-rag-embedding-row">
                     <label>
-                      로컬 임베딩 endpoint
+                      임베딩 endpoint
                       <input
-                        value={documentRagEmbeddingEndpoint}
+                        value={aiEmbeddingSettings.endpoint}
                         onChange={(event) =>
-                          setDocumentRagEmbeddingEndpoint(event.currentTarget.value)
+                          updateAiEmbeddingSettings({ endpoint: event.currentTarget.value })
                         }
-                        aria-label="로컬 임베딩 RAG endpoint"
-                        title="로컬 임베딩 RAG endpoint"
+                        aria-label="임베딩 RAG endpoint"
+                        title="임베딩 RAG endpoint"
                         placeholder="http://127.0.0.1:11434/v1/embeddings"
                       />
                     </label>
                     <label>
                       임베딩 모델
                       <input
-                        value={documentRagEmbeddingModelName}
+                        value={aiEmbeddingSettings.model}
                         onChange={(event) =>
-                          setDocumentRagEmbeddingModelName(event.currentTarget.value)
+                          updateAiEmbeddingSettings({ model: event.currentTarget.value })
                         }
-                        aria-label="로컬 임베딩 RAG 모델명"
-                        title="로컬 임베딩 RAG 모델명"
+                        aria-label="임베딩 RAG 모델명"
+                        title="임베딩 RAG 모델명"
                         placeholder="bge-m3"
+                      />
+                    </label>
+                    <label>
+                      임베딩 API key
+                      <input
+                        type="password"
+                        value={aiEmbeddingSettings.apiKey}
+                        onChange={(event) =>
+                          updateAiEmbeddingSettings(
+                            { apiKey: event.currentTarget.value },
+                            { preserveProvider: true },
+                          )
+                        }
+                        aria-label="임베딩 API key"
+                        title="임베딩 API key"
+                        placeholder="선택"
                       />
                     </label>
                     <button
@@ -8287,8 +8522,7 @@ function App() {
                     </li>
                   ))}
                 </ol>
-              </div>
-            ) : null}
+            </section>
             <div className="document-filter-row">
               <label>
                 분류 필터

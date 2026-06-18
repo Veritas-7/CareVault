@@ -8,6 +8,7 @@ const host = tauriDevHost || "127.0.0.1";
 // https://vite.dev/config/
 export default defineConfig(async () => ({
   plugins: [react()],
+  base: "./",
 
   build: {
     rollupOptions: {

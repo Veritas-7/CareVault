@@ -4,14 +4,30 @@ import {
   type DocumentRagEvidenceChunk,
 } from "./documentRagContext";
 import { extractDocumentRagLocalModelError } from "./documentRagModelRequest";
+import {
+  buildAiEndpointHeaders,
+  validateAiEndpointSettings,
+  type AiEndpointAuthMode,
+  type AiEndpointPrivacyMode,
+} from "./aiSettings";
 
 export type DocumentRagEmbeddingConfig = {
+  apiKey?: string;
+  authMode?: AiEndpointAuthMode;
   endpoint: string;
   model: string;
+  privacyMode?: AiEndpointPrivacyMode;
 };
 
 export type DocumentRagEmbeddingValidation = {
-  level: "ready" | "missing-endpoint" | "missing-model" | "remote-endpoint-blocked" | "insufficient-evidence";
+  level:
+    | "ready"
+    | "missing-endpoint"
+    | "missing-model"
+    | "missing-api-key"
+    | "remote-endpoint-blocked"
+    | "invalid-endpoint"
+    | "insufficient-evidence";
   summary: string;
   warnings: string[];
 };
@@ -83,30 +99,9 @@ type Fetcher = (
 }>;
 
 const maxEmbeddingInputLength = 900;
-const localHostnames = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
-const localNetworkPrefixes = ["127."];
 
 function normalizeEndpoint(endpoint: string) {
   return endpoint.trim();
-}
-
-function parseEndpoint(endpoint: string) {
-  try {
-    return new URL(endpoint);
-  } catch {
-    return null;
-  }
-}
-
-function isAllowedLocalEndpoint(endpoint: string) {
-  const url = parseEndpoint(endpoint);
-  if (!url) return false;
-  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
-  const hostname = url.hostname.toLowerCase();
-  return (
-    localHostnames.has(hostname) ||
-    localNetworkPrefixes.some((prefix) => hostname.startsWith(prefix))
-  );
 }
 
 function truncateEmbeddingInput(value: string) {
@@ -165,7 +160,17 @@ export function validateDocumentRagEmbeddingRequest(
     };
   }
 
-  if (!endpoint) {
+  const endpointValidation = validateAiEndpointSettings(
+    {
+      apiKey: config.apiKey ?? "",
+      authMode: config.authMode ?? "none",
+      endpoint,
+      privacyMode: config.privacyMode ?? "local-only",
+    },
+    { endpointLabel: "임베딩 RAG endpoint", requireEndpoint: true },
+  );
+
+  if (!endpointValidation.ok && endpointValidation.reason === "missing-endpoint") {
     return {
       level: "missing-endpoint",
       summary: "로컬 임베딩 RAG 요청 대기 · endpoint 없음",
@@ -173,11 +178,27 @@ export function validateDocumentRagEmbeddingRequest(
     };
   }
 
-  if (!isAllowedLocalEndpoint(endpoint)) {
+  if (!endpointValidation.ok && endpointValidation.reason === "invalid-endpoint") {
+    return {
+      level: "invalid-endpoint",
+      summary: "임베딩 RAG 요청 차단 · endpoint 형식 오류",
+      warnings: endpointValidation.warnings,
+    };
+  }
+
+  if (!endpointValidation.ok && endpointValidation.reason === "remote-endpoint-blocked") {
     return {
       level: "remote-endpoint-blocked",
       summary: "로컬 임베딩 RAG 요청 차단 · 로컬 endpoint만 허용",
       warnings: ["개인 의료 서류 근거는 localhost/127.0.0.1/[::1] embeddings endpoint로만 전송할 수 있습니다."],
+    };
+  }
+
+  if (!endpointValidation.ok && endpointValidation.reason === "missing-api-key") {
+    return {
+      level: "missing-api-key",
+      summary: "임베딩 RAG 요청 대기 · API key 없음",
+      warnings: endpointValidation.warnings,
     };
   }
 
@@ -296,9 +317,10 @@ export async function requestDocumentRagEmbeddings(
   try {
     const response = await fetcher(request.endpoint, {
       body: JSON.stringify(request.body),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: buildAiEndpointHeaders({
+        apiKey: config.apiKey ?? "",
+        authMode: config.authMode ?? "none",
+      }),
       method: "POST",
     });
     const json = await response.json().catch(() => null);

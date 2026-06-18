@@ -100,6 +100,25 @@ describe("healthRules", () => {
     expect(assessCancerFood("자몽 주스와 보충제").level).toBe("risk");
   });
 
+  it("recognizes common Korean food spacing and spelling variants", () => {
+    const grapefruit = assessCancerFood("자몽쥬스 한 잔");
+    const sashimi = assessCancerFood("사시미");
+    const unpasteurized = assessCancerFood("비살균 쥬스와 요거트");
+
+    expect(grapefruit.level).toBe("risk");
+    expect(grapefruit.matches.map((match) => match.term)).toEqual(
+      expect.arrayContaining(["자몽"]),
+    );
+    expect(sashimi.level).toBe("risk");
+    expect(sashimi.matches.map((match) => match.term)).toEqual(
+      expect.arrayContaining(["생선회"]),
+    );
+    expect(unpasteurized.level).toBe("risk");
+    expect(unpasteurized.matches.map((match) => match.term)).toEqual(
+      expect.arrayContaining(["비살균 쥬스"]),
+    );
+  });
+
   it("attaches official Korean source labels to cancer-food matches", () => {
     const assessment = assessCancerFood("브로콜리, 베이컨, 자몽 주스, 보충제");
     const matchesByTerm = Object.fromEntries(

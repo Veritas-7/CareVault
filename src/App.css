@@ -4539,7 +4539,7 @@ textarea:focus-visible {
 
 .document-rag-local-model-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1.5fr) minmax(120px, 0.8fr) auto;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 6px;
   align-items: end;
 }
@@ -4563,11 +4563,30 @@ textarea:focus-visible {
   font-weight: 800;
 }
 
-.document-rag-local-model input {
+.document-rag-local-model input,
+.document-rag-local-model select {
   min-height: 32px;
   margin-top: 3px;
   padding: 6px 8px;
   font-size: 0.78rem;
+}
+
+.document-rag-local-model select {
+  width: 100%;
+}
+
+.document-rag-local-model .checkbox-inline {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+}
+
+.document-rag-local-model .checkbox-inline input {
+  width: auto;
+  min-height: 0;
+  margin: 0;
 }
 
 .document-rag-local-model small {

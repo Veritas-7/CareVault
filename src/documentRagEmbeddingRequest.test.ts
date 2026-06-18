@@ -89,6 +89,42 @@ describe("documentRagEmbeddingRequest", () => {
     });
   });
 
+  it("allows an explicitly configured remote embedding endpoint with Bearer auth", async () => {
+    const fetcher = vi.fn().mockResolvedValue({
+      json: async () => ({
+        data: [
+          { embedding: [1, 0], index: 0 },
+          { embedding: [0.9, 0.1], index: 1 },
+        ],
+      }),
+      ok: true,
+      status: 200,
+    });
+
+    const result = await requestDocumentRagEmbeddings(
+      sourceGroundedContext(),
+      {
+        apiKey: "remote-key",
+        authMode: "bearer",
+        endpoint: "https://api.example.com/v1/embeddings",
+        model: "embedding-model",
+        privacyMode: "allow-remote",
+      },
+      fetcher,
+    );
+
+    expect(result.ok).toBe(true);
+    expect(fetcher).toHaveBeenCalledWith(
+      "https://api.example.com/v1/embeddings",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer remote-key",
+          "Content-Type": "application/json",
+        }),
+      }),
+    );
+  });
+
   it("posts only ready embedding requests and ranks evidence chunks by cosine similarity", async () => {
     const context = sourceGroundedContext();
     const fetcher = vi.fn().mockResolvedValue({

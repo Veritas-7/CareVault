@@ -7115,6 +7115,19 @@ function isFoodTermBoundaryChar(char: string | undefined) {
   return !char || !/[\p{L}\p{N}]/u.test(char);
 }
 
+function normalizeFoodInput(value: string) {
+  return value.normalize("NFKC").toLowerCase();
+}
+
+function normalizeFoodComparable(value: string) {
+  return normalizeFoodInput(value)
+    .replace(/쥬스/g, "주스")
+    .replace(/케찹/g, "케첩")
+    .replace(/요거트/g, "요구르트")
+    .replace(/사시미/g, "생선회")
+    .replace(/[·ㆍ,，.。()（）[\]{}<>《》"'“”‘’!?！？/\\|:：;；\s_-]+/g, "");
+}
+
 function hasAllowedKoreanTermSuffix(
   normalizedInput: string,
   end: number,
@@ -7154,16 +7167,21 @@ function collectFoodMatchCandidates(
   normalizedInput: string,
   rules: FoodRuleTerm[],
   level: FoodMatch["level"],
+  collectOptions: { allowComparableFallback?: boolean } = {},
 ): FoodRuleMatchCandidate[] {
   const candidates: FoodRuleMatchCandidate[] = [];
+  const comparableInput = normalizeFoodComparable(normalizedInput);
 
   for (const [term, reason, sourceId, options] of rules) {
-    const normalizedTerm = term.toLowerCase();
+    const normalizedTerm = normalizeFoodInput(term);
+    const comparableTerm = normalizeFoodComparable(term);
+    let hasExactCandidate = false;
     let start = normalizedInput.indexOf(normalizedTerm);
 
     while (start !== -1) {
       const end = start + normalizedTerm.length;
       if (isFoodTermCandidateAllowed(normalizedInput, start, end, options)) {
+        hasExactCandidate = true;
         candidates.push({
           end,
           level,
@@ -7174,6 +7192,24 @@ function collectFoodMatchCandidates(
         });
       }
       start = normalizedInput.indexOf(normalizedTerm, start + normalizedTerm.length);
+    }
+
+    if (
+      collectOptions.allowComparableFallback
+      && !hasExactCandidate
+      && options?.matchMode !== "standalone"
+      && comparableTerm.length >= 2
+      && comparableInput.includes(comparableTerm)
+    ) {
+      const fallbackStart = normalizedInput.length + candidates.length + 1;
+      candidates.push({
+        end: fallbackStart + normalizedTerm.length,
+        level,
+        reason,
+        sourceId,
+        start: fallbackStart,
+        term,
+      });
     }
   }
 
@@ -7600,12 +7636,25 @@ export function assessLabTextValue(
 }
 
 export function assessCancerFood(input: string): FoodAssessment {
-  const normalized = input.toLowerCase();
-  const candidates = [
+  const normalized = normalizeFoodInput(input);
+  const exactCandidates = [
     ...collectFoodMatchCandidates(normalized, supportiveFoods, "ok"),
     ...collectFoodMatchCandidates(normalized, limitFoods, "watch"),
     ...collectFoodMatchCandidates(normalized, careTeamFoods, "risk"),
   ];
+  const candidates = exactCandidates.length
+    ? exactCandidates
+    : [
+        ...collectFoodMatchCandidates(normalized, supportiveFoods, "ok", {
+          allowComparableFallback: true,
+        }),
+        ...collectFoodMatchCandidates(normalized, limitFoods, "watch", {
+          allowComparableFallback: true,
+        }),
+        ...collectFoodMatchCandidates(normalized, careTeamFoods, "risk", {
+          allowComparableFallback: true,
+        }),
+      ];
   const matches = selectFoodMatchCandidates(candidates).map((candidate) =>
     createFoodMatch(candidate.term, candidate.level, candidate.reason, candidate.sourceId),
   );

@@ -11,6 +11,13 @@ describe("normalizeAppState", () => {
           labs: false,
         },
       },
+      aiSettings: {
+        chat: {
+          apiKey: 77,
+          endpoint: 42,
+        },
+        providerId: "unknown",
+      },
       documents: [
         {
           attachmentName: 42,
@@ -196,6 +203,9 @@ describe("normalizeAppState", () => {
     });
     expect(state.caregiverShareSettings.coverMemo).toBe("");
     expect(state.caregiverShareSettings.sections.labs).toBe(false);
+    expect(state.aiSettings.providerId).toBe("local");
+    expect(state.aiSettings.chat.endpoint).toBe("http://127.0.0.1:11434/v1/chat/completions");
+    expect(state.aiSettings.chat.apiKey).toBe("");
   });
 
   it("recovers restored caregiver share settings that disable every section", () => {

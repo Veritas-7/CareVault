@@ -118,6 +118,43 @@ describe("documentRagModelRequest", () => {
     });
   });
 
+  it("allows an explicitly configured GLM/Z.AI remote model request with Bearer auth", async () => {
+    const context = sourceGroundedContext();
+    const fetcher = vi.fn().mockResolvedValue({
+      json: async () => ({
+        choices: [{ message: { content: "저장 서류 근거로 다음 진료 질문을 정리합니다." } }],
+      }),
+      ok: true,
+      status: 200,
+    });
+
+    const result = await requestDocumentRagLocalModel(
+      context,
+      {
+        apiKey: "zai-key",
+        authMode: "bearer",
+        endpoint: "https://api.z.ai/api/paas/v4/chat/completions",
+        model: "glm-5.2",
+        privacyMode: "allow-remote",
+      },
+      fetcher,
+    );
+
+    expect(result).toEqual({
+      ok: true,
+      text: "저장 서류 근거로 다음 진료 질문을 정리합니다.",
+    });
+    expect(fetcher).toHaveBeenCalledWith(
+      "https://api.z.ai/api/paas/v4/chat/completions",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer zai-key",
+          "Content-Type": "application/json",
+        }),
+      }),
+    );
+  });
+
   it("posts only ready local model requests and extracts OpenAI-compatible text", async () => {
     const context = sourceGroundedContext();
     const fetcher = vi.fn().mockResolvedValue({

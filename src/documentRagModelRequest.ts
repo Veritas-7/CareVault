@@ -2,16 +2,32 @@ import {
   formatDocumentRagModelHandoffClipboardText,
   type DocumentRagContext,
 } from "./documentRagContext";
+import {
+  buildAiEndpointHeaders,
+  validateAiEndpointSettings,
+  type AiEndpointAuthMode,
+  type AiEndpointPrivacyMode,
+} from "./aiSettings";
 
 export type DocumentRagLocalModelConfig = {
+  apiKey?: string;
+  authMode?: AiEndpointAuthMode;
   endpoint: string;
   model: string;
   maxTokens?: number;
+  privacyMode?: AiEndpointPrivacyMode;
   temperature?: number;
 };
 
 export type DocumentRagLocalModelValidation = {
-  level: "ready" | "missing-endpoint" | "missing-model" | "remote-endpoint-blocked" | "insufficient-evidence";
+  level:
+    | "ready"
+    | "missing-endpoint"
+    | "missing-model"
+    | "missing-api-key"
+    | "remote-endpoint-blocked"
+    | "invalid-endpoint"
+    | "insufficient-evidence";
   summary: string;
   warnings: string[];
 };
@@ -73,8 +89,6 @@ type Fetcher = (
 
 const defaultMaxTokens = 700;
 const defaultTemperature = 0.1;
-const localHostnames = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
-const localNetworkPrefixes = ["127."];
 const maxEndpointErrorLength = 220;
 const unsafeClinicalInstructionPatterns = [
   /(?:진단|처방|치료|복용|투약|중단|증량|감량)(?:하겠습니다|합니다|하세요|하라|해야\s*합니다|권장합니다|시작하세요|중단하세요)/i,
@@ -86,25 +100,6 @@ const unsafeClinicalInstructionPatterns = [
 
 function normalizeEndpoint(endpoint: string) {
   return endpoint.trim();
-}
-
-function parseEndpoint(endpoint: string) {
-  try {
-    return new URL(endpoint);
-  } catch {
-    return null;
-  }
-}
-
-function isAllowedLocalEndpoint(endpoint: string) {
-  const url = parseEndpoint(endpoint);
-  if (!url) return false;
-  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
-  const hostname = url.hostname.toLowerCase();
-  return (
-    localHostnames.has(hostname) ||
-    localNetworkPrefixes.some((prefix) => hostname.startsWith(prefix))
-  );
 }
 
 export function validateDocumentRagLocalModelRequest(
@@ -125,7 +120,17 @@ export function validateDocumentRagLocalModelRequest(
     };
   }
 
-  if (!endpoint) {
+  const endpointValidation = validateAiEndpointSettings(
+    {
+      apiKey: config.apiKey ?? "",
+      authMode: config.authMode ?? "none",
+      endpoint,
+      privacyMode: config.privacyMode ?? "local-only",
+    },
+    { endpointLabel: "모델 RAG endpoint", requireEndpoint: true },
+  );
+
+  if (!endpointValidation.ok && endpointValidation.reason === "missing-endpoint") {
     return {
       level: "missing-endpoint",
       summary: "로컬 모델 RAG 요청 대기 · endpoint 없음",
@@ -133,11 +138,27 @@ export function validateDocumentRagLocalModelRequest(
     };
   }
 
-  if (!isAllowedLocalEndpoint(endpoint)) {
+  if (!endpointValidation.ok && endpointValidation.reason === "invalid-endpoint") {
+    return {
+      level: "invalid-endpoint",
+      summary: "모델 RAG 요청 차단 · endpoint 형식 오류",
+      warnings: endpointValidation.warnings,
+    };
+  }
+
+  if (!endpointValidation.ok && endpointValidation.reason === "remote-endpoint-blocked") {
     return {
       level: "remote-endpoint-blocked",
       summary: "로컬 모델 RAG 요청 차단 · 로컬 endpoint만 허용",
       warnings: ["개인 의료 서류 근거는 localhost/127.0.0.1/[::1] endpoint로만 전송할 수 있습니다."],
+    };
+  }
+
+  if (!endpointValidation.ok && endpointValidation.reason === "missing-api-key") {
+    return {
+      level: "missing-api-key",
+      summary: "모델 RAG 요청 대기 · API key 없음",
+      warnings: endpointValidation.warnings,
     };
   }
 
@@ -294,9 +315,10 @@ export async function requestDocumentRagLocalModel(
   try {
     const response = await fetcher(request.endpoint, {
       body: JSON.stringify(request.body),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: buildAiEndpointHeaders({
+        apiKey: config.apiKey ?? "",
+        authMode: config.authMode ?? "none",
+      }),
       method: "POST",
     });
     if (!response.ok) {

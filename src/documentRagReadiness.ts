@@ -66,7 +66,7 @@ function isSetupOnly(
   modelValidation: DocumentRagLocalModelValidation,
   embeddingValidation: DocumentRagEmbeddingValidation,
 ) {
-  const setupLevels = new Set(["missing-endpoint", "missing-model", "ready"]);
+  const setupLevels = new Set(["missing-endpoint", "missing-model", "missing-api-key", "ready"]);
   return setupLevels.has(modelValidation.level) && setupLevels.has(embeddingValidation.level);
 }
 

@@ -24,6 +24,24 @@ import {
 describe("backupState", () => {
   it("removes local attachment paths while keeping attachment filenames recoverable", () => {
     const backup = sanitizeCareVaultBackupState({
+      aiSettings: {
+        chat: {
+          apiKey: "zai-secret",
+          authMode: "bearer",
+          endpoint: "https://api.z.ai/api/paas/v4/chat/completions",
+          model: "glm-5.2",
+          privacyMode: "allow-remote",
+        },
+        embedding: {
+          apiKey: "embedding-secret",
+          authMode: "bearer",
+          endpoint: "https://api.example.com/v1/embeddings",
+          model: "embedding-model",
+          privacyMode: "allow-remote",
+        },
+        naturalLanguageSearchEnabled: true,
+        providerId: "glm-zai",
+      },
       profile: { waistCm: "82" },
       documents: [
         {
@@ -56,6 +74,10 @@ describe("backupState", () => {
     });
     expect(JSON.stringify(backup)).not.toContain("/Users/wj/private");
     expect(JSON.stringify(backup)).not.toContain("attachmentPath");
+    expect(JSON.stringify(backup)).not.toContain("zai-secret");
+    expect(JSON.stringify(backup)).not.toContain("embedding-secret");
+    expect(backup.aiSettings?.chat.apiKey).toBe("");
+    expect(backup.aiSettings?.embedding.apiKey).toBe("");
   });
 
   it("marks filename-only backup attachments as needing reattachment", () => {

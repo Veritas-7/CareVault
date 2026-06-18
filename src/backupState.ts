@@ -2,6 +2,10 @@ import {
   buildDocumentParserAudit,
   type DocumentParserAuditSource,
 } from "./documentParserAudit";
+import {
+  normalizeAiSettings,
+  sanitizeAiSettingsForExport,
+} from "./aiSettings";
 
 export const restoredAttachmentStatus = "백업에서 복원됨 - 재첨부 필요";
 
@@ -14,6 +18,7 @@ type BackupDocument = {
 };
 
 type BackupState = {
+  aiSettings?: unknown;
   documents?: unknown;
   deletedDocuments?: unknown;
   caregiverShareSettings?: unknown;
@@ -110,6 +115,9 @@ function sanitizeBackupDocuments(documents: unknown) {
 export function sanitizeCareVaultBackupState<T extends BackupState>(state: T): T {
   return {
     ...state,
+    aiSettings: isRecord(state.aiSettings)
+      ? sanitizeAiSettingsForExport(normalizeAiSettings(state.aiSettings))
+      : state.aiSettings,
     documents: sanitizeBackupDocuments(state.documents),
     deletedDocuments: sanitizeBackupDocuments(state.deletedDocuments),
   };
