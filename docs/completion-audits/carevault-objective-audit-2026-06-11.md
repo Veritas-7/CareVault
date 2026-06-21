@@ -19,7 +19,7 @@ state instead.
 
 ## Source State Inspected
 
-- Repo: `/Users/wj/Ai/System/10_Projects/CareVault`
+- Repo: `/Users/wj/Ai/System/10_Projects/01_apps-products/CareVault`
 - Pre-audit state: `HEAD == origin/main == 2f51e2d37028505b9590465e83676ff9fb263c5b`
 - Pre-audit git status: clean, ahead/behind `0/0`
 - Browser/cmux QA: intentionally not used because the user said cmux browser
@@ -29,7 +29,7 @@ state instead.
 
 | Requirement | Concrete artifacts inspected | Status | Evidence and gaps |
 |---|---|---:|---|
-| Continue the live CareVault target, not a stale handoff | Goal guard for thread `019eb4ff-957f-7173-8897-b1e24508f7ea`; live repo at `/Users/wj/Ai/System/10_Projects/CareVault`; `working.md`; `src/carevaultObjectiveReadiness.ts`; `src/carevaultObjectiveReadiness.test.ts` | PASS | Persisted objective and current goal match CareVault. `/Users/wj/Downloads/working.md/CareVault.txt` was checked and found stale, so current repo state is the source of truth. `npm run objective:readiness:smoke` now maps the active prompt themes to concrete artifacts and keeps completion blocked while private HWP/HWPX sample and clinician/source review requirements remain unresolved. |
+| Continue the live CareVault target, not a stale handoff | Goal guard for thread `019eb4ff-957f-7173-8897-b1e24508f7ea`; live repo at `/Users/wj/Ai/System/10_Projects/01_apps-products/CareVault`; `working.md`; `src/carevaultObjectiveReadiness.ts`; `src/carevaultObjectiveReadiness.test.ts` | PASS | Persisted objective and current goal match CareVault. `/Users/wj/Downloads/working.md/CareVault.txt` was checked and found stale, so current repo state is the source of truth. `npm run objective:readiness:smoke` now maps the active prompt themes to concrete artifacts and keeps completion blocked while private HWP/HWPX sample and clinician/source review requirements remain unresolved. |
 | Apply AutoResearch philosophy | `docs/parser-candidates/*.md`, `working.md`, focused and full gates in recent slices | PASS | Parser candidates were handled with evidence files, A/B notes, fail-closed adoption, source labels, command gates, and incremental commits. Completion is not claimed until this mapping and remaining gaps are explicit. |
 | Cervical-cancer care support | `README.md`, `src/*cervical*`, source-backed warning templates, care queue/export paths | PASS | README feature coverage documents extensive NCC cervical-cancer care notes, warning-record field cards, screening and diagnostic-test prompts, pathology/stage/treatment/follow-up/side-effect templates, official-source links, and non-diagnosis boundaries. |
 | Hypertension and diabetes tracking | `README.md`, `src/healthStandards.ts`, `src/vitalAssessment.ts`, export builders | PASS | The app tracks blood pressure and glucose, includes BP/glucose standard labels, low-glucose and marked-hyperglycemia routing, diabetes-care glucose context, and preserves BP/glucose assessments in Markdown, CSV, caregiver HTML, and care queue paths. |
