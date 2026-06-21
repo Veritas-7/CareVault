@@ -8,7 +8,7 @@ description: >
 source:
   input_type: source_project
   checked_at: 2026-06-05
-  evidence_root: /Users/wj/Ai/System/10_Projects/CareVault
+  evidence_root: /Users/wj/Ai/System/10_Projects/01_apps-products/CareVault
 colors:
   background: "#edf3f2"
   sidebar: "#102326"
